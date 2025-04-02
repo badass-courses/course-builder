@@ -15,8 +15,8 @@ export default function Footer() {
 	}
 
 	return (
-		<footer className="w-full border-t px-5 pb-16 pt-20 lg:px-16">
-			<div className="mx-auto flex w-full items-center justify-center sm:justify-between">
+		<footer className="flex w-full flex-col items-center justify-center border-t px-5 pb-16 pt-20 lg:px-16">
+			<div className="mx-auto flex w-full items-center justify-center">
 				<Link
 					tabIndex={isRoot ? -1 : 0}
 					href="/"
@@ -25,7 +25,7 @@ export default function Footer() {
 					<LogoMark className="h-12 w-12" />
 				</Link>
 			</div>
-			<div className="mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light sm:justify-start">
+			<div className="mx-auto mt-16 flex w-full items-center justify-center gap-5 font-sans text-sm font-light">
 				<span className="opacity-75">© AIHero.dev</span>
 				<Link
 					className="opacity-75 transition hover:opacity-100"

@@ -12,11 +12,10 @@ import {
 import { setProgressForResource } from '@/lib/progress'
 import { track } from '@/utils/analytics'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
-import {
+import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
-import MuxPlayer from '@mux/mux-player-react/lazy'
 import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
@@ -100,11 +99,7 @@ export function PostPlayer({
 		},
 		onEnded: async () => {
 			if (autoplay && nextUp) {
-				router.push(
-					`/${nextUp?.resource.fields?.slug}${
-						list ? `?list=${list.fields.slug}` : ''
-					}`,
-				)
+				router.push(`/${nextUp?.resource.fields?.slug}`)
 			} else {
 				dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
 			}

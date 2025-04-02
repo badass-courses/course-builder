@@ -5,7 +5,7 @@ import {
 } from '@/components/resource-form/with-resource-form'
 import { updateListItemFields } from '@/lib/lists-query'
 import { updateWorkshop } from '@/lib/workshops-query'
-import { ImagePlusIcon, ListOrderedIcon } from 'lucide-react'
+import { ImagePlusIcon, ListOrderedIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import {
@@ -13,6 +13,7 @@ import {
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas'
 
+import StandaloneVideoResourceUploaderAndViewer from '../../posts/_components/standalone-video-resource-uploader-and-viewer'
 import { onWorkshopSave } from '../[module]/edit/actions'
 import { WorkshopMediaTool } from './workshop-media-tool'
 import { WorkshopResourcesTool } from './workshop-resources-tool'
@@ -162,11 +163,18 @@ export function createWorkshopFormConfig(
 			resource: Partial<WorkshopResourceType>,
 		) => Promise<WorkshopResourceType>,
 
-		// Save callback
-		onSave: onWorkshopSave,
-
 		// Custom tools
-		customTools: [mediaUploadTool, resourcesTool], // resourcesTool provides a custom UI for resource management
+		customTools: [
+			mediaUploadTool,
+			resourcesTool,
+			{
+				id: 'videos',
+				icon: () => (
+					<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+			},
+		], // resourcesTool provides a custom UI for resource management
 		createResourceConfig: {
 			title: 'Add Content',
 			availableTypes: [

@@ -208,7 +208,7 @@ export default function ListResourcesEdit({
 					[TYPESENSE_COLLECTION_NAME as string]: {
 						query: '',
 						refinementList: {
-							type: ['post', 'lesson', 'section'],
+							type: ['post', 'lesson', 'section', 'article'],
 						},
 						configure: {},
 					},

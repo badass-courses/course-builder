@@ -1,6 +1,5 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import {
 	ShinyText,
@@ -19,12 +18,9 @@ import { getPage } from '@/lib/pages-query'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
-import { AnimatePresence, motion, useAnimation, useInView } from 'framer-motion'
-import { ChevronRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Badge } from '@coursebuilder/ui'
 
 import {
 	AIPracticesGrid,
@@ -88,25 +84,15 @@ const Home = async (props: Props) => {
 		title: page.resources[0]?.resource?.fields?.title,
 	}
 
-	// Extract h1 and h2 headings from markdown content
-	const h1Headings =
-		page?.fields?.body
-			?.match(/^# (.+)$/gm)
-			?.map((match) => match.replace(/^# /, '')) || []
-
-	const h2Headings =
-		page?.fields?.body
-			?.match(/^## (.+)$/gm)
-			?.map((match) => match.replace(/^## /, '')) || []
-
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
 				{firstPageResource && (
 					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
 						<Link
 							className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
 							href={firstPageResource.path}
+							prefetch
 						>
 							New: <span className="underline">{firstPageResource?.title}</span>{' '}
 							▸

@@ -54,14 +54,6 @@ export function VideoUploader({
 								})),
 							)
 
-							// Add size validation here if needed
-							const isValidSize = files.every(
-								(file) => file.size <= 100 * 1024 * 1024,
-							) // 100MB example limit
-							if (!isValidSize) {
-								throw new Error('File size exceeds maximum allowed size')
-							}
-
 							return files.map(
 								(file) =>
 									new File([file], getUniqueFilename(file.name), {

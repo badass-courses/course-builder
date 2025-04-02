@@ -12,7 +12,7 @@ export async function getNextResource(
 	const flattenedNavResources =
 		navigation?.resources.flatMap((resource) => {
 			if (resource.type === 'section') {
-				return resource.lessons
+				return resource.resources
 			} else {
 				return [resource]
 			}

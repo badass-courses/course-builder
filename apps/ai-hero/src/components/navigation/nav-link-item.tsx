@@ -68,7 +68,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 				{onClick ? (
 					content
 				) : (
-					<Link href={href!} onClick={handleClick}>
+					<Link prefetch href={href!} onClick={handleClick}>
 						{content}
 					</Link>
 				)}

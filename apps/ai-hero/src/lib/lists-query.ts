@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -116,6 +116,13 @@ export async function getList(listIdOrSlug: string) {
 
 	return listParsed.data
 }
+
+export const getCachedListForPost = unstable_cache(
+	async (slugOrId: string) => getListForPost(slugOrId),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
 export async function getListForPost(postIdOrSlug: string) {
 	// optimized query that skips body fields
 	const result = await db.execute(sql`
@@ -155,6 +162,7 @@ export async function getListForPost(postIdOrSlug: string) {
 			ON list.id = relation.resourceOfId
 		LEFT JOIN ${contentResource} AS resources
 			ON resources.id = relation.resourceId
+		WHERE JSON_EXTRACT(resources.fields, '$.state') = 'published'
 		ORDER BY relation.position ASC
 	`)
 
@@ -315,20 +323,56 @@ export async function removePostFromList({
 	const list = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, listId),
 		with: {
-			resources: true,
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	})
 
 	if (!list) throw new Error('List not found')
 
-	await db
-		.delete(contentResourceResource)
-		.where(
-			and(
-				eq(contentResourceResource.resourceOfId, list.id),
-				eq(contentResourceResource.resourceId, postId),
+	// Find the resource to remove - could be in top level or in a section
+	const resourceToRemove = list.resources.find(
+		(r) =>
+			r.resourceId === postId ||
+			r.resource.resources?.some(
+				(childResource) => childResource.resourceId === postId,
 			),
-		)
+	)
+
+	if (!resourceToRemove) throw new Error('Resource not found in list')
+
+	// If the resource is directly in the list
+	if (resourceToRemove.resourceId === postId) {
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, list.id),
+					eq(contentResourceResource.resourceId, postId),
+				),
+			)
+	} else {
+		// If the resource is in a section
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, resourceToRemove.resourceId),
+					eq(contentResourceResource.resourceId, postId),
+				),
+			)
+	}
 }
 
 export async function updateList(

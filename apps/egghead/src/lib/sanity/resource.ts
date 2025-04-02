@@ -4,6 +4,7 @@ import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { sanityWriteClient } from '@/server/sanity-write-client'
 
+import { getEggheadUserProfile } from '../egghead/auth'
 import { getSanityCollaborator } from './collaborator'
 import { getSanityCourseForEggheadCourseId } from './course'
 import { getSanityLessonForEggheadLessonId } from './lesson'
@@ -136,32 +137,18 @@ export async function syncSanityResourceInstructor(
 		throw new Error(`Post with id ${postId} not found.`)
 	}
 
-	// Extract instructor ID using a more flexible approach
-	let instructorId: string | number | null = null
+	const eggheadUser = await getEggheadUserProfile(userId)
 
-	// Use a type guard to safely access properties
-	const fields = post.fields as Record<string, any>
-
-	if (
-		fields.instructor &&
-		typeof fields.instructor === 'object' &&
-		'id' in fields.instructor
-	) {
-		instructorId = fields.instructor.id
-	} else if ('instructorId' in fields) {
-		instructorId = fields.instructorId
-	}
-
-	if (!instructorId) {
-		throw new Error(`Instructor ID not found for post ${postId}.`)
+	if (!eggheadUser || !eggheadUser.instructor?.id) {
+		throw new Error(`egghead instructor for user ${userId} not found.`)
 	}
 
 	const sanityInstructorReference = await getSanityCollaborator(
-		parseInt(instructorId.toString()),
+		parseInt(eggheadUser.instructor.id.toString()),
 	)
 
 	if (!sanityInstructorReference) {
-		throw new Error(`Sanity instructor with id ${instructorId} not found.`)
+		throw new Error(`Sanity instructor with id ${userId} not found.`)
 	}
 
 	switch (post.fields.postType) {

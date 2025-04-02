@@ -30,7 +30,7 @@ export async function generateStaticParams() {
 					lesson: resource.slug,
 				})
 			} else if (resource.type === 'section') {
-				resource.lessons.forEach((sectionResource) => {
+				resource.resources.forEach((sectionResource) => {
 					if (sectionResource.type === 'lesson') {
 						routeParams.push({
 							module: workshop.fields?.slug,

@@ -4,4 +4,4 @@
  */
 
 // Re-export all operations
-export { upsertPostToTypeSense } from './typesense/post'
+export { upsertPostToTypeSense, updatePostInTypeSense } from './typesense/post'

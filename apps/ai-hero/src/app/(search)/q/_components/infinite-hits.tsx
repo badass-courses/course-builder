@@ -12,11 +12,11 @@ import Hit from './instantsearch/hit'
 function SkeletonItem() {
 	return (
 		<div className="flex animate-pulse gap-4 p-4">
-			<div className="bg-muted/50 h-16 w-16 flex-shrink-0 rounded-md" />
+			<div className="h-16 w-16 flex-shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
 			<div className="flex-1 space-y-3">
-				<div className="bg-muted/60 h-4 w-1/3 rounded" />
-				<div className="bg-muted/40 h-3 w-full rounded" />
-				<div className="bg-muted/40 h-3 w-2/3 rounded" />
+				<div className="h-4 w-1/3 rounded bg-black/10 dark:bg-white/10" />
+				<div className="h-3 w-full rounded bg-black/10 dark:bg-white/10" />
+				<div className="h-3 w-2/3 rounded bg-black/10 dark:bg-white/10" />
 			</div>
 		</div>
 	)
@@ -28,7 +28,10 @@ export function InfiniteHits() {
 
 	if (status === 'loading') {
 		return (
-			<div className="w-full border-x border-b border-t" aria-live="polite">
+			<div
+				className="h-[800px] w-full border-x border-b border-t"
+				aria-live="polite"
+			>
 				<div className="sr-only">Loading results...</div>
 				{Array.from({ length: 5 }).map((_, i) => (
 					<SkeletonItem key={i} />
@@ -39,10 +42,13 @@ export function InfiniteHits() {
 
 	return items.length === 0 && status !== 'idle' ? (
 		<div
-			className="text-muted-foreground flex w-full items-center justify-center border-x border-b p-5 py-8"
+			className="h-[800px] w-full border-x border-b border-t"
 			aria-live="polite"
 		>
-			<p>No results found</p>
+			<div className="sr-only">Loading results...</div>
+			{Array.from({ length: 5 }).map((_, i) => (
+				<SkeletonItem key={i} />
+			))}
 		</div>
 	) : (
 		<div>

@@ -209,12 +209,12 @@ export function Mermaid({
 							errorBkgColor: '#ef4444',
 							errorTextColor: '#f3f4f6',
 							// Flowchart specific
-							nodeBorder: '#FFA947',
+							nodeBorder: '#4D4D4D',
 							clusterBkg: '#151617',
 							clusterBorder: '#151617',
 							defaultLinkColor: '#9ca3af',
 							titleColor: '#f3f4f6',
-							edgeLabelBackground: '#2B2C2D',
+							edgeLabelBackground: '#050505',
 							nodeTextColor: '#f3f4f6',
 						}
 					: {
@@ -222,9 +222,9 @@ export function Mermaid({
 							fontFamily: 'inherit',
 							fontSize: '16px',
 							// Primary colors
-							primaryColor: '#3b82f6',
+							primaryColor: '#EA580C',
 							primaryTextColor: '#111827',
-							primaryBorderColor: '#60a5fa',
+							primaryBorderColor: '#EA580C',
 							// Secondary colors
 							secondaryColor: '#e5e7eb',
 							secondaryTextColor: '#111827',
@@ -251,7 +251,7 @@ export function Mermaid({
 							errorBkgColor: '#fecaca',
 							errorTextColor: '#b91c1c',
 							// Flowchart specific
-							nodeBorder: '#3b82f6',
+							nodeBorder: '#4b5563',
 							clusterBkg: '#f3f4f6',
 							clusterBorder: '#e5e7eb',
 							defaultLinkColor: '#4b5563',

@@ -2,16 +2,30 @@
 
 import { revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
-import { Solution, SolutionSchema } from '@/lib/solution'
+import {
+	contentResource,
+	contentResourceResource,
+	contentResourceVersion as contentResourceVersionTable,
+} from '@/db/schema'
+import { generateContentHash } from '@/lib/post-utils'
+import {
+	NewSolutionInputSchema,
+	Solution,
+	SolutionSchema,
+	type NewSolutionInput,
+	type SolutionUpdate,
+} from '@/lib/solution'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { and, eq, isNull, or, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, isNull, or, sql } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+
+import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 /**
  * Get a solution for a specific lesson
@@ -34,7 +48,13 @@ export async function getSolutionForLesson(lessonId: string) {
 	try {
 		const result = await db.execute(query)
 
-		if (!result.rows.length) return null
+		if (!result.rows.length) {
+			log.error('solution.getForLesson.error', {
+				lessonId,
+				error: 'No solution found',
+			})
+			return null
+		}
 
 		// Get the full solution with its resources
 		// Type assertion to handle the SQL result properly
@@ -145,7 +165,7 @@ export async function createSolution({
 				visibility: 'unlisted',
 			},
 			createdById: user.id,
-		} as any) // Using 'any' to bypass the type check as the adapter likely handles the ID generation
+		} as any)
 
 		// Create the link between lesson and solution
 		await db.insert(contentResourceResource).values({
@@ -159,6 +179,20 @@ export async function createSolution({
 			lessonId,
 			userId: user.id,
 		})
+
+		try {
+			await upsertPostToTypeSense(solution, 'save')
+			await log.info('solution.typesense.indexed', {
+				solutionId: solution.id,
+				action: 'save',
+			})
+		} catch (error) {
+			await log.error('solution.typesense.index.failed', {
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+				solutionId: solution.id,
+			})
+		}
 
 		revalidateTag('solution')
 		return solution
@@ -206,22 +240,57 @@ export async function updateSolution(input: Partial<Solution>) {
 		solutionSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	const updatedResource = courseBuilderAdapter.updateContentResourceFields({
-		id: currentSolution.id,
-		fields: {
-			...currentSolution.fields,
-			...input.fields,
-			slug: solutionSlug,
-		},
-	})
+	try {
+		const updatedResource =
+			await courseBuilderAdapter.updateContentResourceFields({
+				id: currentSolution.id,
+				fields: {
+					...currentSolution.fields,
+					...input.fields,
+					slug: solutionSlug,
+				},
+			})
 
-	log.info('solution.updated', {
-		solutionId: currentSolution.id,
-		userId: user.id,
-	})
+		try {
+			await upsertPostToTypeSense(
+				{
+					...currentSolution,
+					fields: {
+						...currentSolution.fields,
+						...input.fields,
+						slug: solutionSlug,
+					},
+				},
+				'save',
+			)
+			await log.info('solution.update.typesense.success', {
+				solutionId: currentSolution.id,
+				userId: user.id,
+			})
+		} catch (error) {
+			await log.error('solution.update.typesense.failed', {
+				solutionId: currentSolution.id,
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+				userId: user.id,
+			})
+		}
 
-	revalidateTag('solution')
-	return updatedResource
+		log.info('solution.updated', {
+			solutionId: currentSolution.id,
+			userId: user.id,
+		})
+
+		revalidateTag('solution')
+		return updatedResource
+	} catch (error) {
+		log.error('solution.update.error', {
+			error,
+			solutionId: currentSolution.id,
+			userId: user.id,
+		})
+		throw error
+	}
 }
 
 /**
@@ -263,6 +332,17 @@ export async function deleteSolution(solutionId: string) {
 				deletedAt: new Date(),
 			})
 			.where(eq(contentResourceResource.resourceId, solutionId))
+
+		try {
+			await deletePostInTypeSense(solutionId)
+			await log.info('solution.delete.typesense.success', { solutionId })
+		} catch (error) {
+			await log.error('solution.delete.typesense.failed', {
+				solutionId,
+				error: error instanceof Error ? error.message : String(error),
+				stack: error instanceof Error ? error.stack : undefined,
+			})
+		}
 
 		log.info('solution.deleted', {
 			solutionId,
@@ -422,5 +502,173 @@ export const getVideoResourceForSolution = async (solutionIdOrSlug: string) => {
 			solutionIdOrSlug,
 		})
 		return null
+	}
+}
+
+export const writeSolutionUpdateToDatabase = async (
+	solution: SolutionUpdate,
+) => {
+	console.log('📝 Starting solution update:', {
+		solutionId: solution.id,
+	})
+
+	try {
+		console.log('🔄 Updating solution fields in database')
+		await courseBuilderAdapter.updateContentResourceFields({
+			id: solution.id,
+			fields: {
+				...solution.fields,
+			},
+		})
+		console.log('✅ Solution fields updated successfully')
+	} catch (error) {
+		console.error('❌ Error updating solution fields:', error)
+		throw error
+	}
+
+	console.log('🔍 Fetching updated solution')
+	const updatedSolutionRaw = await db.query.contentResource.findFirst({
+		where: and(
+			eq(contentResource.id, solution.id),
+			eq(contentResource.type, 'solution'),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	console.log('🔄 Validating updated solution')
+	const updatedSolution = SolutionSchema.safeParse(updatedSolutionRaw)
+
+	if (!updatedSolution.success) {
+		console.error('❌ Failed to validate updated solution:', {
+			error: updatedSolution.error.format(),
+		})
+		throw new Error(`Invalid solution data after update for ${solution.id}`)
+	}
+
+	if (!updatedSolution.data) {
+		console.error('❌ Updated solution not found:', solution.id)
+		throw new Error(`Solution with id ${solution.id} not found after update.`)
+	}
+
+	try {
+		await upsertPostToTypeSense(updatedSolution.data, 'save')
+		console.log('✅ Successfully upserted solution to TypeSense')
+	} catch (error) {
+		console.error(
+			'⚠️ TypeSense indexing failed but continuing with solution update:',
+			{
+				error,
+				solutionId: solution.id,
+				stack: error instanceof Error ? error.stack : undefined,
+			},
+		)
+		// Don't rethrow - let the solution update succeed even if TypeSense fails
+	}
+
+	return updatedSolution.data
+}
+
+export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
+	console.log('📝 Starting creating new solution', { input })
+
+	try {
+		console.log('🔍 Validating input:', input)
+		const validatedInput = NewSolutionInputSchema.parse(input)
+		const { title, parentLessonId, body, slug, description } = validatedInput
+		console.log('✅ Input validated:', validatedInput)
+
+		const solutionGuid = guid()
+		const newSolutionId = `solution_${solutionGuid}`
+		console.log('📝 Generated solution ID:', newSolutionId)
+
+		try {
+			// Step 1: Create the core solution
+			console.log('📝 Creating core solution...')
+			const solution = await courseBuilderAdapter.createContentResource({
+				id: newSolutionId,
+				type: 'solution',
+				fields: {
+					title,
+					body: body || '',
+					slug: slug || `${slugify(title)}~${solutionGuid}`,
+					description: description || '',
+					state: 'draft',
+					visibility: 'unlisted',
+				},
+				createdById: input.createdById,
+			})
+			console.log('✅ Core solution created:', solution)
+
+			// Step 2: Create the link between lesson and solution
+			console.log('🔗 Creating lesson-solution link...')
+			await db.insert(contentResourceResource).values({
+				resourceId: solution.id,
+				resourceOfId: parentLessonId,
+				position: 0,
+			})
+			console.log('✅ Lesson-solution link created')
+
+			try {
+				await upsertPostToTypeSense(solution, 'save')
+				console.log('✅ Successfully indexed solution in TypeSense')
+			} catch (error) {
+				console.error('⚠️ Failed to index solution in TypeSense:', {
+					error,
+					solutionId: solution.id,
+					stack: error instanceof Error ? error.stack : undefined,
+				})
+				// Don't rethrow - let the solution creation succeed even if TypeSense fails
+			}
+
+			revalidateTag('solution')
+			return solution
+		} catch (error) {
+			console.log('❌ Error in solution creation flow:', error)
+			throw new Error(
+				'Failed to create solution: ' +
+					(error instanceof Error ? error.message : String(error)),
+			)
+		}
+	} catch (error) {
+		console.log('❌ Error in input validation:', error)
+		if (error instanceof z.ZodError) {
+			throw new Error('Invalid input for solution creation: ' + error.message)
+		}
+		throw error
+	}
+}
+
+export async function deleteSolutionFromDatabase(solutionId: string) {
+	try {
+		await db.delete(contentResource).where(eq(contentResource.id, solutionId))
+
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceId, solutionId))
+
+		try {
+			await deletePostInTypeSense(solutionId)
+			console.log('✅ Successfully deleted solution from TypeSense')
+		} catch (error) {
+			console.error('⚠️ Failed to delete solution from TypeSense:', {
+				error,
+				solutionId: solutionId,
+				stack: error instanceof Error ? error.stack : undefined,
+			})
+			// Continue with database deletion even if TypeSense fails
+		}
+	} catch (error) {
+		console.error('❌ Failed to delete solution from database:', {
+			error,
+			solutionId: solutionId,
+		})
+		throw error
 	}
 }

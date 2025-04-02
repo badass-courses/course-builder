@@ -3,16 +3,15 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
-import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
+// import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
-import { getAllLists } from '@/lib/lists-query'
+import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
-// import { getPricingProps } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -28,23 +27,19 @@ import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-pl
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
+import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
 export const experimental_ppr = true
 
 type Props = {
 	params: Promise<{ post: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export default async function PostPage(props: {
 	params: Promise<{ post: string }>
-	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
-	const searchParams = await props.searchParams
 	const params = await props.params
-
-	const listSlugFromParam = searchParams.list
 
 	const post = await getCachedPostOrList(params.post)
 
@@ -53,13 +48,12 @@ export default async function PostPage(props: {
 	}
 
 	if (post.type === 'list') {
-		return (
-			<ListPage
-				list={post}
-				params={{ slug: params.post } as any}
-				searchParams={searchParams as any}
-			/>
-		)
+		return <ListPage list={post} params={{ slug: params.post } as any} />
+	}
+
+	let list = null
+	if (post && post.type === 'post') {
+		list = await getCachedListForPost(params.post)
 	}
 
 	const squareGridPattern = generateGridPattern(
@@ -76,15 +70,12 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<main className="w-full">
+		<main className="bg-card w-full dark:bg-transparent">
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
-				className={cn(
-					'container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16',
-					{
-						'pt-16': !hasVideo,
-					},
-				)}
+				className={cn('relative w-full', {
+					'pt-6 sm:pt-14': !hasVideo,
+				})}
 			>
 				<div
 					className={cn('absolute right-0 w-full', {
@@ -99,41 +90,50 @@ export default async function PostPage(props: {
 						className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 					/>
 					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						className="dark:to-background dark:via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent via-white to-white dark:from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
-				<div className="relative z-10 flex w-full items-center justify-between">
-					{!listSlugFromParam ? (
+				<div className="relative z-10 mx-auto flex w-full items-center justify-between px-5 md:px-10 lg:px-14">
+					{!list ? (
 						<Link
 							href="/posts"
 							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
 						>
-							← Posts
+							← All Posts
 						</Link>
 					) : (
 						<div />
 					)}
 				</div>
 				<div className="relative z-10">
-					<article className="flex h-full flex-col gap-5">
-						<PostTitle post={post} />
-						<div className="relative flex w-full items-center justify-between gap-3">
-							<div className="flex items-center gap-8">
-								<Contributor className="flex [&_img]:w-8" />
-								{post.fields?.github && (
-									<Button asChild variant="outline" className="h-11 text-base">
-										<Link href={post.fields?.github} target="_blank">
-											<Github className="text-muted-foreground mr-2 h-4 w-4" />
-											Source Code
-										</Link>
-									</Button>
-								)}
+					<article className="relative flex h-full flex-col">
+						<div className="mx-auto flex w-full flex-col gap-5 px-5 md:px-10 lg:px-14">
+							<PostTitle post={post} />
+							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
+								<div className="flex items-center gap-8">
+									<Contributor className="flex [&_img]:w-8" />
+									{post.fields?.github && (
+										<Button
+											asChild
+											variant="outline"
+											className="h-11 text-base"
+										>
+											<Link href={post.fields?.github} target="_blank">
+												<Github className="text-muted-foreground mr-2 h-4 w-4" />
+												Source Code
+											</Link>
+										</Button>
+									)}
+								</div>
+								<Suspense fallback={null}>
+									<PostActionBar post={post} />
+								</Suspense>
 							</div>
-							<Suspense fallback={null}>
-								<PostActionBar post={post} />
-							</Suspense>
 						</div>
+						{post?.type === 'post' && post?.fields?.body && (
+							<PostToC markdown={post?.fields?.body} />
+						)}
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
 									<PostProgressToggle
@@ -154,16 +154,14 @@ export default async function PostPage(props: {
 								}}
 							/>
 						)}
-						<PostNextUpFromListPagination postId={post.id} />
-						<div className="mx-auto mt-10 flex w-full max-w-[290px] flex-col gap-1">
-							<strong className="w-full text-center text-lg font-semibold">
-								Share
-							</strong>
+						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 border-t pl-5">
+							<strong className="text-lg font-semibold">Share</strong>
 							<Share
-								className="bg-background w-full"
+								className="inline-flex rounded-none border-y-0"
 								title={post?.fields.title}
 							/>
 						</div>
+						<PostNextUpFromListPagination postId={post.id} />
 					</article>
 				</div>
 			</div>
@@ -200,15 +198,17 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-			{content}
-		</article>
+		<div className="px-5 md:px-10 lg:px-14">
+			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+				{content}
+			</article>
+		</div>
 	)
 }
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="fluid-3xl mb-4 font-bold">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
@@ -238,18 +238,18 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 		<VideoPlayerOverlayProvider>
 			<Suspense
 				fallback={
-					<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
+					<PlayerContainerSkeleton className="aspect-video h-full max-h-[75vh] w-full bg-black" />
 				}
 			>
 				<section
 					aria-label="video"
-					className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
-						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
+						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 						videoResource={videoResource}
 					/>
 					<PostNewsletterCta
@@ -285,7 +285,6 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const searchParams = await props.searchParams
 
 	const resource = await getCachedPostOrList(params.post)
 
@@ -297,10 +296,7 @@ export async function generateMetadata(
 		title: resource.fields.title,
 		description: resource.fields.description,
 		alternates: {
-			canonical:
-				searchParams && searchParams.list
-					? `/${resource.fields.slug}`
-					: undefined,
+			canonical: `/${resource.fields.slug}`,
 		},
 		openGraph: {
 			images: [

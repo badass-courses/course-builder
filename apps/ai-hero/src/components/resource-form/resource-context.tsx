@@ -54,8 +54,8 @@ export function useResource<
 	T extends ContentResource = ContentResource,
 >(): ResourceContextType<T> {
 	const context = React.useContext(ResourceContext)
-	if (!context) {
-		throw new Error('useResource must be used within a ResourceProvider')
-	}
+	// if (!context) {
+	// 	throw new Error('useResource must be used within a ResourceProvider')
+	// }
 	return context as ResourceContextType<T>
 }

@@ -1,9 +1,30 @@
+import React from 'react'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
-import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
-import { Lesson, LessonSchema } from '@/lib/lessons'
-import { updateLesson } from '@/lib/lessons-query'
+import {
+	ResourceFormConfig,
+	type BaseTool,
+} from '@/components/resource-form/with-resource-form'
+import { Lesson, LessonSchema, type LessonUpdate } from '@/lib/lessons'
+import { autoUpdateLesson, updateLesson } from '@/lib/lessons-query'
 import { log } from '@/server/logger'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
+
+import StandaloneVideoResourceUploaderAndViewer from '../../posts/_components/standalone-video-resource-uploader-and-viewer'
+import { WorkshopMediaTool } from './workshop-media-tool'
+
+const mediaUploadTool: BaseTool = {
+	id: 'media',
+	label: 'Media',
+	icon: () =>
+		React.createElement(ImagePlusIcon, {
+			strokeWidth: 1.5,
+			size: 24,
+			width: 18,
+			height: 18,
+		}),
+	toolComponent: React.createElement(WorkshopMediaTool),
+}
 
 /**
  * Configuration for the workshop lesson form
@@ -13,7 +34,6 @@ export const createWorkshopLessonFormConfig = (
 ): ResourceFormConfig<Lesson, typeof LessonSchema> => ({
 	resourceType: 'lesson',
 	schema: LessonSchema,
-
 	// Default values for the form
 	defaultValues: (lesson?: Partial<Lesson>): z.infer<typeof LessonSchema> => ({
 		type: lesson?.type || 'lesson',
@@ -36,8 +56,18 @@ export const createWorkshopLessonFormConfig = (
 			github: lesson?.fields?.github || '',
 			gitpod: lesson?.fields?.gitpod || '',
 		},
+		tags: lesson?.tags || [],
 	}),
-
+	customTools: [
+		mediaUploadTool,
+		{
+			id: 'videos',
+			icon: () => (
+				<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+		},
+	],
 	// Resource path generation
 	getResourcePath: (slug?: string) => `/workshops/${moduleSlug}/${slug}`,
 
@@ -47,9 +77,23 @@ export const createWorkshopLessonFormConfig = (
 			if (!resource.id) {
 				throw new Error('Lesson ID is required for updates')
 			}
+			const lessonUpdate: LessonUpdate = {
+				id: resource.id,
+				fields: {
+					title: resource.fields?.title || '',
+					body: resource.fields?.body || '',
+					slug: resource.fields?.slug || '',
+					description: resource.fields?.description || '',
+					state: resource.fields?.state || 'draft',
+					visibility: resource.fields?.visibility || 'public',
+					github: resource.fields?.github || '',
+					thumbnailTime: resource.fields?.thumbnailTime || 0,
+				},
+				tags: resource.tags || [],
+			}
 
 			// updateLesson now accepts Lesson type directly
-			const updatedResource = await updateLesson(resource)
+			const updatedResource = await updateLesson(lessonUpdate)
 
 			// Ensure we never return null
 			if (!updatedResource) {
@@ -80,18 +124,26 @@ export const createWorkshopLessonFormConfig = (
 			throw error
 		}
 	},
-
-	// Save callback
-	onSave: async (resource) => {
-		try {
-			return await onLessonSave(`/workshops/${moduleSlug}/`, resource)
-		} catch (error) {
-			log.error('Failed to save lesson', {
-				error,
-				resourceId: resource.id,
-				moduleSlug,
-			})
-			throw error
+	autoUpdateResource: async (resource: Partial<Lesson>) => {
+		console.log('autoUpdateResource', resource)
+		if (!resource.id || !resource.fields) {
+			throw new Error('Invalid resource data')
 		}
+		const postUpdate: LessonUpdate = {
+			id: resource.id,
+			fields: {
+				title: resource.fields.title || '',
+				body: resource.fields.body || '',
+				slug: resource.fields.slug || '',
+				description: resource.fields.description || '',
+				state: resource.fields.state || 'draft',
+				visibility: resource.fields.visibility || 'public',
+				github: resource.fields.github || '',
+				thumbnailTime: resource.fields.thumbnailTime || 0,
+			},
+			tags: resource.tags || [],
+		}
+		const result = await autoUpdateLesson(postUpdate)
+		return result as Lesson
 	},
 })

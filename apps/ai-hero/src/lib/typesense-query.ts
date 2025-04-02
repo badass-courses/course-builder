@@ -11,10 +11,11 @@ import { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import type { List } from './lists'
 import type { Post, PostAction } from './posts'
 import { getPostTags } from './posts-query'
+import { getLessonForSolution } from './solutions-query'
 import { TypesenseResourceSchema } from './typesense'
+import { getWorkshopsForLesson } from './workshops-query'
 
 export async function upsertPostToTypeSense(
 	post: ContentResource,
@@ -75,6 +76,25 @@ export async function upsertPostToTypeSense(
 			console.error('⚠️ Failed to fetch tags (continuing without tags):', err)
 			return []
 		})
+
+		let parentResources = null
+		if (post.type === 'lesson') {
+			console.log('🔍 Getting parent resources (workshops) for lesson', post.id)
+			parentResources = await getWorkshopsForLesson(post.id)
+			console.log('✅ Retrieved parent resources:', parentResources.length)
+		}
+		if (post.type === 'solution') {
+			console.log('🔍 Getting parent resources (lesson) for solution', post.id)
+			const lesson = await getLessonForSolution(post.id)
+			if (lesson) {
+				const workshops = await getWorkshopsForLesson(lesson.id)
+				parentResources = [lesson, ...workshops]
+				console.log(
+					'✅ Retrieved parent resources for solution',
+					parentResources.length,
+				)
+			}
+		}
 		console.log('✅ Retrieved tags:', tags.length)
 
 		console.log('🔄 Validating resource schema')
@@ -94,6 +114,18 @@ export async function upsertPostToTypeSense(
 			state: post.fields?.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
 			...(tags.length > 0 && { tags: tags.map((tag) => tag) }),
+			...(parentResources && {
+				parentResources: parentResources.map((resource) => {
+					return {
+						id: resource.id,
+						title: resource.fields?.title,
+						slug: resource.fields?.slug,
+						type: resource.type,
+						visibility: resource.fields?.visibility,
+						state: resource.fields?.state,
+					}
+				}),
+			}),
 		})
 
 		if (!resource.success) {

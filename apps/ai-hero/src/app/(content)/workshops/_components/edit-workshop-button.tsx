@@ -7,13 +7,16 @@ import { api } from '@/trpc/react'
 import pluralize from 'pluralize'
 
 import { Button } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function EditWorkshopButton({
 	moduleType,
 	moduleSlug,
+	className,
 }: {
 	moduleType: string
 	moduleSlug: string
+	className?: string
 }) {
 	const { data: abilityRules, status } =
 		api.ability.getCurrentAbilityRules.useQuery()
@@ -27,7 +30,7 @@ export function EditWorkshopButton({
 						<Button
 							asChild
 							variant="secondary"
-							className="absolute right-5 top-5 gap-1"
+							className={cn('absolute right-5 top-5 gap-1', className)}
 						>
 							<Link href={`/${pluralize(moduleType)}/${moduleSlug}/edit`}>
 								Edit

@@ -1,27 +1,34 @@
 import * as React from 'react'
+import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
-import { Certificate } from '@/app/(content)/_components/module-certificate-container'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { NextLessonButton } from '@/app/(content)/workshops/_components/next-lesson-button'
-import { PreviewWorkshopButton } from '@/app/(content)/workshops/_components/preview-workshop-button'
+import { StartLearningWorkshopButton } from '@/app/(content)/workshops/_components/start-learning-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
+import { Share } from '@/components/share'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { getMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
+import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
-import { Construction } from 'lucide-react'
+import { Construction, Github, Share2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	Button,
+	Dialog,
+	DialogContent,
+	DialogTitle,
+	DialogTrigger,
+} from '@coursebuilder/ui'
 
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
@@ -42,12 +49,6 @@ export async function generateStaticParams() {
 			module: workshop.fields?.slug,
 		}))
 }
-
-const getCachedMinimalWorkshop = unstable_cache(
-	async (slug: string) => getMinimalWorkshop(slug),
-	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
-)
 
 export async function generateMetadata(
 	props: Props,
@@ -84,11 +85,44 @@ export default async function ModulePage(props: Props) {
 		notFound()
 	}
 
+	const Links = ({ children }: { children?: React.ReactNode }) => {
+		return (
+			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
+				<div
+					aria-hidden="true"
+					className="via-foreground/10 to-muted absolute -bottom-px right-0 h-px w-2/3 bg-gradient-to-r from-transparent"
+				/>
+				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
+					<div className="h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat sm:w-8 lg:w-10  dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]" />
+					<StartLearningWorkshopButton moduleSlug={params.module} />
+					<div className="w-full items-center sm:flex sm:w-auto">
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button
+									className="h-14 w-full rounded-none px-5 md:w-auto md:border-r"
+									variant="ghost"
+									size="lg"
+								>
+									<Share2 className="mr-2 w-3" /> Share
+								</Button>
+							</DialogTrigger>
+							<DialogContent>
+								<DialogTitle>Share {workshop.fields?.title}</DialogTitle>
+								<Share />
+							</DialogContent>
+						</Dialog>
+					</div>
+				</div>
+				{children}
+			</div>
+		)
+	}
+
 	return (
 		<LayoutClient withContainer>
-			<main className="container relative px-0">
+			<main className="flex min-h-screen w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
-					<div className="bg-muted flex w-full items-center justify-center gap-2 p-3 text-center">
+					<div className="bg-muted flex w-full items-center justify-center gap-2 border-b p-3 text-center">
 						<Construction className="h-4 w-4" />{' '}
 						<p className="text-sm font-medium capitalize">
 							{workshop.fields?.visibility} {workshop.type}
@@ -96,78 +130,95 @@ export default async function ModulePage(props: Props) {
 					</div>
 				)}
 				<WorkshopMetadata
-					title={workshop.fields?.title}
+					title={workshop.fields?.title || ''}
 					description={workshop.fields?.description || ''}
 					imageUrl={workshop.fields?.coverImage?.url}
 					slug={params.module}
 				/>
-				<WorkshopPricing searchParams={searchParams} moduleSlug={params.module}>
-					{(pricingProps) => {
-						return (
-							<>
-								<EditWorkshopButton
-									moduleType="workshop"
-									moduleSlug={params.module}
-								/>
-								<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 sm:px-10 md:flex-row">
-									<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-										<p className="text-primary mb-2 text-base">Pro Workshop</p>
-										<h1 className="font-heading fluid-4xl font-bold">
-											{workshop.fields?.title}
-										</h1>
-										{workshop.fields?.description && (
-											<h2 className="fluid-lg text-muted-foreground mt-5">
-												{workshop.fields?.description}
-											</h2>
-										)}
-										<Contributor className="mt-5" />
-										{pricingProps.hasPurchasedCurrentProduct ? (
-											<NextLessonButton
-												moduleType="workshop"
-												moduleSlug={params.module}
-											/>
-										) : (
-											<PreviewWorkshopButton moduleSlug={params.module} />
-										)}
-									</div>
-									{workshop.fields?.coverImage?.url && (
-										<CldImage
-											width={400}
-											height={400}
-											src={workshop.fields.coverImage.url}
-											alt={workshop.fields.coverImage?.alt || ''}
-										/>
-									)}
+				<header className="relative flex items-center justify-center md:px-8 lg:px-10">
+					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
+						<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
+							{/* <p className="text-primary mb-2 text-base">Pro Workshop</p> */}
+							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+								{workshop.fields?.title}
+							</h1>
+							{workshop.fields?.description && (
+								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+									<p>{workshop.fields?.description}</p>
 								</div>
-								<div className="flex flex-col px-5 pb-10 sm:px-10 md:flex-row md:gap-10">
-									<article className="prose sm:prose-lg w-full max-w-none py-8">
-										{workshop.fields?.body ? (
-											<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-										) : (
-											<p>No description found.</p>
-										)}
-									</article>
-									<div className="flex w-full flex-col gap-3 sm:max-w-sm">
-										{pricingProps.hasPurchasedCurrentProduct ? null : (
-											<WorkshopPricingClient {...pricingProps} />
-										)}
+							)}
+							<div className="flex items-center gap-2">
+								<Contributor />
+							</div>
+						</div>
+						<div className="col-span-2">
+							{workshop.fields?.coverImage?.url && (
+								<div className="group relative flex items-center justify-center">
+									<CldImage
+										width={480}
+										height={270}
+										src={workshop.fields.coverImage.url}
+										alt={
+											workshop.fields.coverImage?.alt ||
+											workshop.fields?.title ||
+											''
+										}
+										className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
+										sizes="(max-width: 768px) 100vw, 480px"
+									/>
+								</div>
+							)}
+						</div>
+						<Suspense fallback={null}>
+							<EditWorkshopButton
+								className="absolute right-0 top-5"
+								moduleType="workshop"
+								moduleSlug={params.module}
+							/>
+						</Suspense>
+					</div>
+				</header>
 
-										<strong className="font-mono text-sm font-bold uppercase tracking-wide">
-											Contents
-										</strong>
-										<WorkshopResourceList
-											isCollapsible={false}
-											className="w-full max-w-none border-r-0"
-											withHeader={false}
-											maxHeight="h-auto"
-											wrapperClassName="border bg-card overflow-hidden rounded pb-0"
-										/>
-										<Certificate resourceSlugOrId={params.module} />
-									</div>
+				<WorkshopPricing searchParams={searchParams} moduleSlug={params.module}>
+					{(pricingProps) => (
+						<>
+							<Links>
+								<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
+									Content
 								</div>
-							</>
-						)
-					}}
+							</Links>
+							<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
+								<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+									{workshop.fields?.body ? (
+										<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+									) : (
+										<p>No description found.</p>
+									)}
+								</article>
+								<div className="col-span-2 flex flex-col gap-3">
+									{pricingProps.hasPurchasedCurrentProduct ? (
+										<NextLessonButton
+											moduleType="workshop"
+											moduleSlug={params.module}
+										/>
+									) : (
+										<>
+											{/* <StartLearningWorkshopButton  moduleSlug={params.module} /> */}
+											<WorkshopPricingClient {...pricingProps} />
+										</>
+									)}
+									<WorkshopResourceList
+										isCollapsible={false}
+										className="w-full max-w-none"
+										withHeader={false}
+										maxHeight="h-auto"
+										wrapperClassName="border-l overflow-hidden pb-0"
+									/>
+								</div>
+							</div>
+							<Links />
+						</>
+					)}
 				</WorkshopPricing>
 			</main>
 		</LayoutClient>

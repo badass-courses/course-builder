@@ -1,6 +1,7 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
@@ -8,6 +9,7 @@ import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resour
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getResourcePath } from '@/utils/resource-paths'
+import { ExternalLink } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -60,47 +62,59 @@ export function CreatePost({
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
-	const { resource: parentResource } = useResource()
+	const resource = useResource()
+	const parentResource = resource?.resource
+	const [resourceUrl, setResourceUrl] = useState<string | null>(null)
 
 	return (
-		<NewResourceWithVideoForm
-			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
-			onResourceCreated={async (resource: ContentResource) => {
-				const editUrl = getResourcePath(
-					resource.type,
-					resource.fields?.slug || resource.id,
-					'edit',
-					{
-						parentType: parentResource.type,
-						parentSlug: parentResource.fields?.slug || parentResource.id,
-					},
-				)
+		<>
+			<NewResourceWithVideoForm
+				className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
+				onResourceCreated={async (resource: ContentResource) => {
+					const editUrl = getResourcePath(
+						resource.type,
+						resource.fields?.slug || resource.id,
+						'edit',
+						parentResource && {
+							parentType: parentResource.type,
+							parentSlug: parentResource.fields?.slug || parentResource.id,
+						},
+					)
+					setResourceUrl(editUrl)
 
-				// Start navigation transition
-				startTransition(() => {
-					router.push(editUrl)
-					// Only close dialog when transition actually starts
-					onNavigationStart?.()
-				})
-
-				// Then notify parent components
-				if (onResourceCreated) {
-					await onResourceCreated(resource)
-				}
-			}}
-			createResource={async (input) => {
-				// All posts get created the same way now
-				return createPost(input)
-			}}
-			getVideoResource={getVideoResource}
-			availableResourceTypes={availableResourceTypes}
-			defaultPostType={defaultResourceType}
-			topLevelResourceTypes={topLevelResourceTypes}
-			uploadEnabled={uploadEnabled}
-		>
-			{(handleSetVideoResourceId: (id: string) => void) => (
-				<PostUploader setVideoResourceId={handleSetVideoResourceId} />
+					// Then notify parent components
+					if (onResourceCreated) {
+						await onResourceCreated(resource)
+					}
+				}}
+				createResource={async (input) => {
+					// All posts get created the same way now
+					return createPost(input)
+				}}
+				getVideoResource={getVideoResource}
+				availableResourceTypes={availableResourceTypes}
+				defaultPostType={defaultResourceType}
+				topLevelResourceTypes={topLevelResourceTypes}
+				uploadEnabled={uploadEnabled}
+			>
+				{(handleSetVideoResourceId: (id: string) => void) => (
+					<>
+						<PostUploader setVideoResourceId={handleSetVideoResourceId} />
+					</>
+				)}
+			</NewResourceWithVideoForm>
+			{resourceUrl && (
+				<div className="flex items-center justify-center gap-2 pt-2">
+					Resource created.{' '}
+					<Link
+						href={resourceUrl}
+						target="_blank"
+						className="inline-flex items-center underline"
+					>
+						Edit <ExternalLink className="ml-1 size-4" />
+					</Link>
+				</div>
 			)}
-		</NewResourceWithVideoForm>
+		</>
 	)
 }

@@ -72,7 +72,7 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-5">
+			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-3">
 				<div
 					className="via-muted-foreground/20 absolute -top-px left-0 z-10 h-px w-1/2 bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
@@ -81,13 +81,13 @@ export const PostNewsletterCta: React.FC<
 					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
 					aria-hidden="true"
 				/>
-				<div className="flex flex-col items-center justify-center gap-2 pt-5 text-center sm:gap-5 sm:pr-5 sm:text-left md:flex-col md:items-start md:gap-1 md:pt-0">
-					<div className="flex items-center gap-2">
-						<div className="sm:fluid-lg font-heading text-balance text-2xl font-semibold">
+				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left md:flex-col md:items-start md:pt-0">
+					<div className="flex items-center">
+						<div className="font-heading flex-shrink-0 text-2xl font-semibold sm:text-base">
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary fluid-base font-heading text-gray-600">
+					<div className="dark:text-primary sm:fluid-sm fluid-base font-heading text-gray-600">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>
@@ -95,7 +95,7 @@ export const PostNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="[&_input]:border-0"
+						className="[&_input]:border-0 [&_input]:text-base"
 					/>
 				</div>
 			</div>

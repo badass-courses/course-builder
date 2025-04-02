@@ -10,7 +10,6 @@ import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
-import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { LogoMark } from '../brand/logo'
@@ -19,7 +18,6 @@ import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { useLiveEventToastNotifier } from './use-live-event-toast-notifier'
 import { useNavLinks } from './use-nav-links'
-import { UserNavigation } from './user'
 import { UserMenu } from './user-menu'
 
 const Navigation = () => {
@@ -52,7 +50,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b px-0 print:hidden',
+				'dark:bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b bg-white px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 				},
@@ -71,6 +69,7 @@ const Navigation = () => {
 						}}
 					>
 						<Link
+							prefetch
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
 							className="font-heading hover:bg-muted flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"
