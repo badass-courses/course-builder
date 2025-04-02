@@ -3,7 +3,11 @@ import { Post, PostAction } from '@/lib/posts'
 import { getCoursesForPost } from '@/lib/posts-query'
 
 import { createTypesenseClient, getTypesenseCollectionName } from './client'
-import { TypesenseInstructorSchema, TypesensePostSchema } from './types'
+import {
+	TypesenseInstructorSchema,
+	TypesensePostSchema,
+	type TypesensePost,
+} from './types'
 
 /**
  * Upsert a post to TypeSense or delete it if not indexable
@@ -135,4 +139,16 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			// Still continue execution rather than failing the whole process
 		}
 	}
+}
+
+export async function updatePostInTypeSense(
+	id: string,
+	attributes: Partial<TypesensePost>,
+) {
+	const client = createTypesenseClient()
+
+	return client
+		.collections(process.env.TYPESENSE_COLLECTION_NAME!)
+		.documents(id)
+		.update(attributes)
 }

@@ -29,7 +29,6 @@ import ListResources from '../_components/list-resources'
 
 type Props = {
 	params: Promise<{ slug: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateStaticParams() {
@@ -71,7 +70,6 @@ export async function generateMetadata(
 export default async function ListPage(props: {
 	list: List
 	params: Promise<{ slug: string }>
-	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
 	const list = props.list
 	let body

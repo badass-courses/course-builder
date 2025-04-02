@@ -27,12 +27,17 @@ import {
 	type WorkshopRaw,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, like, or, sql } from 'drizzle-orm'
 import z from 'zod'
 
-import { ContentResource, productSchema } from '@coursebuilder/core/schemas'
+import {
+	ContentResource,
+	ContentResourceSchema,
+	productSchema,
+} from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
 /**
@@ -67,7 +72,6 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN workshop ON workshop.id = crr.resourceOfId
 			WHERE cr.type = 'section'
-			ORDER BY crr.position
 		),
 		resources AS (
 			-- Get top-level resources (not in sections)
@@ -110,7 +114,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN resources ON resources.id = crr.resourceOfId AND resources.type = 'lesson'
 			WHERE cr.type = 'solution'
 		)
-		-- Get all data in separate result sets
+		-- Get all data in separate result sets without complex ordering
 		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId FROM workshop
 		UNION ALL
 		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId FROM sections
@@ -151,6 +155,9 @@ async function getAllWorkshopLessonsWithSectionInfo(
 				position: row.position,
 			}),
 		)
+
+	// Sort sections by position
+	sections.sort((a, b) => a.position - b.position)
 
 	const resources = validatedRows
 		.filter((row) => row.type === 'resource')
@@ -209,21 +216,67 @@ function transformToNavigationStructure(
 		return acc
 	}, new Map<string, { id: string; slug: string; title: string; type: 'solution' }[]>())
 
-	// Group resources by section
-	const resourcesBySectionId = resources.reduce((acc, resource) => {
-		const key = resource.sectionId || 'top-level'
-		if (!acc.has(key)) {
-			acc.set(key, [])
-		}
+	// Group resources by section first, without sorting
+	const topLevelResources: ResourceRaw[] = []
+	const resourcesBySectionId = new Map<string, ResourceRaw[]>()
 
-		// Add solutions to lessons
+	// First group resources by their section
+	for (const resource of resources) {
+		if (resource.sectionId) {
+			if (!resourcesBySectionId.has(resource.sectionId)) {
+				resourcesBySectionId.set(resource.sectionId, [])
+			}
+			resourcesBySectionId.get(resource.sectionId)!.push(resource)
+		} else {
+			topLevelResources.push(resource)
+		}
+	}
+
+	// Sort top-level resources by position
+	topLevelResources.sort((a, b) => a.position - b.position)
+
+	// Sort resources within each section by position
+	resourcesBySectionId.forEach((sectionResources) => {
+		sectionResources.sort((a, b) => a.position - b.position)
+	})
+
+	// Transform top-level resources to NavigationResource objects
+	const navigationTopLevelResources = topLevelResources.map((resource) => {
 		const resourceSolutions =
 			resource.type === 'lesson'
 				? solutionsByLessonId.get(resource.id) || []
 				: []
 
-		const navigationResource: NavigationResource =
-			resource.type === 'lesson'
+		return resource.type === 'lesson'
+			? NavigationLessonSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'lesson',
+					resources: resourceSolutions,
+				})
+			: NavigationPostSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'post',
+				})
+	})
+
+	// Map sections to navigation sections with their resources
+	const sectionResources = sections.map((section) => {
+		const sectionRawResources = resourcesBySectionId.get(section.id) || []
+
+		// Transform each resource in the section to a NavigationResource
+		const sectionNavigationResources = sectionRawResources.map((resource) => {
+			const resourceSolutions =
+				resource.type === 'lesson'
+					? solutionsByLessonId.get(resource.id) || []
+					: []
+
+			return resource.type === 'lesson'
 				? NavigationLessonSchema.parse({
 						id: resource.id,
 						slug: resource.slug,
@@ -239,27 +292,22 @@ function transformToNavigationStructure(
 						position: resource.position,
 						type: 'post',
 					})
+		})
 
-		acc.get(key)!.push(navigationResource)
-		return acc
-	}, new Map<string, NavigationResource[]>())
-
-	// Create section resources and top-level resources
-	const topLevelResources = resourcesBySectionId.get('top-level') || []
-	const sectionResources = sections.map((section) => {
 		return NavigationSectionSchema.parse({
 			id: section.id,
 			slug: section.slug,
 			title: section.title,
 			position: section.position,
 			type: 'section',
-			resources: resourcesBySectionId.get(section.id) || [],
+			resources: sectionNavigationResources,
 		})
 	})
 
-	// Combine and sort all resources
-	const allResources = [...topLevelResources, ...sectionResources]
+	// Combine top-level resources and sections, sorted by position
+	const allResources = [...navigationTopLevelResources, ...sectionResources]
 	allResources.sort((a, b) => a.position - b.position)
+
 	const workshopNavigation = {
 		id: workshop.id,
 		slug: workshop.slug,
@@ -268,7 +316,6 @@ function transformToNavigationStructure(
 		resources: allResources,
 	}
 
-	// Create the final workshop navigation structure
 	return WorkshopNavigationSchema.parse(workshopNavigation)
 }
 
@@ -286,6 +333,7 @@ export async function getWorkshopNavigation(
 		moduleSlugOrId,
 		moduleType,
 	)
+
 	return workshopNavigation
 }
 
@@ -310,8 +358,14 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	return parsedProduct.data
 }
 
+export const getCachedMinimalWorkshop = unstable_cache(
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop'],
+	{ revalidate: 3600, tags: ['workshop'] },
+)
+
 export async function getMinimalWorkshop(moduleSlugOrId: string) {
-	return db.query.contentResource.findFirst({
+	const workshop = await db.query.contentResource.findFirst({
 		where: and(
 			or(
 				eq(
@@ -327,6 +381,15 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 			fields: true,
 		},
 	})
+
+	if (!workshop) {
+		await log.error('getMinimalWorkshop.notFound', {
+			moduleSlugOrId,
+		})
+		return null
+	}
+
+	return workshop
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
@@ -545,4 +608,84 @@ export async function updateWorkshop(input: Module) {
 		...updatedWorkshop,
 		resources: {},
 	}
+}
+
+export async function getWorkshopsForLesson(lessonId: string) {
+	// Query to find all workshops containing the lesson either directly or through a section
+	const query = sql`
+		WITH workshop_lesson AS (
+			-- Direct lesson in workshop
+			SELECT DISTINCT
+				w.id,
+				w.type,
+				w.fields,
+				w.createdAt,
+				w.updatedAt,
+				w.deletedAt,
+				w.createdById,
+				w.currentVersionId,
+				w.organizationId,
+				w.createdByOrganizationMembershipId,
+				NULL as resources
+			FROM ${contentResource} w
+			JOIN ${contentResourceResource} crr ON w.id = crr.resourceOfId
+			WHERE w.type = 'workshop'
+				AND crr.resourceId = ${lessonId}
+
+			UNION
+
+			-- Lesson in section in workshop
+			SELECT DISTINCT
+				w.id,
+				w.type,
+				w.fields,
+				w.createdAt,
+				w.updatedAt,
+				w.deletedAt,
+				w.createdById,
+				w.currentVersionId,
+				w.organizationId,
+				w.createdByOrganizationMembershipId,
+				NULL as resources
+			FROM ${contentResource} w
+			JOIN ${contentResourceResource} crr_section ON w.id = crr_section.resourceOfId
+			JOIN ${contentResource} section ON section.id = crr_section.resourceId
+			JOIN ${contentResourceResource} crr_lesson ON section.id = crr_lesson.resourceOfId
+			WHERE w.type = 'workshop'
+				AND section.type = 'section'
+				AND crr_lesson.resourceId = ${lessonId}
+		)
+		SELECT 
+			id,
+			type,
+			fields,
+			createdAt,
+			updatedAt,
+			deletedAt,
+			createdById,
+			currentVersionId,
+			organizationId,
+			createdByOrganizationMembershipId,
+			resources
+		FROM workshop_lesson
+		ORDER BY createdAt ASC;
+	`
+
+	const result = await db.execute(query)
+	console.log('parsedWorkshops result', result.rows)
+	if (!result.rows.length) {
+		return []
+	}
+
+	const parsedWorkshops = z.array(ContentResourceSchema).safeParse(result.rows)
+	console.log('parsedWorkshops', parsedWorkshops)
+	if (!parsedWorkshops.success) {
+		await log.error('getWorkshopsForLesson.parseError', {
+			lessonId,
+			issues: parsedWorkshops.error.issues,
+		})
+		return []
+	}
+
+	return parsedWorkshops.data
 }

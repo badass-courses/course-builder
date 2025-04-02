@@ -5,7 +5,7 @@ import { ContentVideoResourceField } from '@/components/content/content-video-re
 import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { PlusCircle, Trash } from 'lucide-react'
+import { Plus, PlusCircle, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -24,6 +24,8 @@ import {
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
+
+import { TagField } from '../../posts/_components/tag-field'
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof LessonSchema>>
@@ -97,9 +99,21 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-
+			<FormField
+				control={form.control}
+				name="fields.slug"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormDescription>Short with keywords is best.</FormDescription>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<TagField resource={lesson} showEditButton />
 			{/* Solution Section */}
-			<div className="mt-6 border-t px-5 pt-6">
+			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
 					<label className="text-lg font-bold">Solution</label>
 				</div>
@@ -165,12 +179,12 @@ export const LessonMetadataFormFields: React.FC<{
 						)}
 					</div>
 				) : (
-					<div className="mt-4">
-						<Button asChild>
+					<div className="mt-1">
+						<Button variant="secondary" asChild>
 							<Link
 								href={`/workshops/${module}/${lesson.fields.slug}/solution/edit`}
 							>
-								<PlusCircle className="mr-2 h-4 w-4" />
+								<Plus className="mr-2 h-4 w-4" />
 								Add Solution
 							</Link>
 						</Button>

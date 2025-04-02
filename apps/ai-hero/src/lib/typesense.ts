@@ -1,6 +1,5 @@
 import * as z from 'zod'
 
-import { ListTypeSchema } from './lists'
 import { TagSchema } from './tags'
 
 export const TypesenseResourceSchema = z.object({
@@ -16,6 +15,18 @@ export const TypesenseResourceSchema = z.object({
 	updated_at_timestamp: z.number().optional(),
 	created_at_timestamp: z.number().optional(),
 	tags: z.array(TagSchema).nullish(),
+	parentResources: z
+		.array(
+			z.object({
+				id: z.string(),
+				title: z.string(),
+				slug: z.string(),
+				type: z.string(),
+				visibility: z.string(),
+				state: z.string(),
+			}),
+		)
+		.nullish(),
 })
 
 export const attributeLabelMap: {
@@ -33,6 +44,7 @@ export const attributeLabelMap: {
 	updated_at_timestamp: 'Updated At',
 	created_at_timestamp: 'Created At',
 	tags: 'Tags',
+	parentResources: 'Parent Resources',
 } as const
 
 export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>

@@ -163,9 +163,6 @@ export function createWorkshopFormConfig(
 			resource: Partial<WorkshopResourceType>,
 		) => Promise<WorkshopResourceType>,
 
-		// Save callback
-		onSave: onWorkshopSave,
-
 		// Custom tools
 		customTools: [
 			mediaUploadTool,

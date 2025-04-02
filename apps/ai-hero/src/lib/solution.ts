@@ -5,6 +5,8 @@ import {
 	ContentResourceSchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { PostStateSchema, PostTagsSchema, PostVisibilitySchema } from './posts'
+
 /**
  * Schema definition for solution resources.
  * Solutions are special resources that provide working code examples
@@ -37,3 +39,35 @@ export const SolutionSchema = ContentResourceSchema.merge(
  * Type definition for a Solution resource
  */
 export type Solution = z.infer<typeof SolutionSchema>
+
+export const SolutionUpdateSchema = z.object({
+	id: z.string(),
+	fields: z.object({
+		title: z.string().min(2).max(90),
+		body: z.string().optional().nullable(),
+		slug: z.string(),
+		description: z.string().nullish(),
+		state: PostStateSchema.default('draft'),
+		visibility: PostVisibilitySchema.default('unlisted'),
+		github: z.string().nullish(),
+		thumbnailTime: z.number().nullish(),
+	}),
+	tags: PostTagsSchema,
+})
+export type SolutionUpdate = z.infer<typeof SolutionUpdateSchema>
+
+export const NewSolutionInputSchema = z.object({
+	title: z.string().min(1, 'Title is required'),
+	videoResourceId: z.string().optional(),
+	body: z.string().optional(),
+	slug: z.string(),
+	description: z.string().optional(),
+	state: PostStateSchema.default('draft'),
+	visibility: PostVisibilitySchema.default('unlisted'),
+	github: z.string().nullish(),
+	thumbnailTime: z.number().nullish(),
+	createdById: z.string(),
+	parentLessonId: z.string(),
+})
+
+export type NewSolutionInput = z.infer<typeof NewSolutionInputSchema>

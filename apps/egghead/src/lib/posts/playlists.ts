@@ -11,6 +11,7 @@ import { last } from '@coursebuilder/nodash'
 
 import { EGGHEAD_API_V1_BASE_URL, getEggheadToken } from '../egghead'
 import { reorderResourcesInSanityCourse } from '../sanity-content-query'
+import { updatePostInTypeSense } from '../typesense/post'
 import { getPost } from './read'
 
 // Simple CourseBuilderError implementation until properly imported
@@ -235,6 +236,20 @@ export const addResourceToResource = async ({
 			resource: true,
 		},
 	})
+
+	if (resource.fields?.postType === 'lesson') {
+		await updatePostInTypeSense(String(resource.fields?.eggheadLessonId), {
+			belongs_to_resource: parentResource.fields?.eggheadPlaylistId,
+			resources: [
+				{
+					id: parentResource.id,
+					title: parentResource.fields?.title,
+					slug: parentResource.fields?.slug,
+					eggheadPlaylistId: parentResource.fields?.eggheadPlaylistId,
+				},
+			],
+		})
+	}
 
 	return resourceResource
 }

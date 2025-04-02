@@ -5,7 +5,7 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import {
 	FeaturedSchema,
 	PostStateSchema,
-	PostTagsChema,
+	PostTagsSchema,
 	PostVisibilitySchema,
 } from './posts'
 
@@ -28,7 +28,7 @@ export const ListSchema = ContentResourceSchema.merge(
 			featured: FeaturedSchema.optional(),
 		}),
 		resources: z.array(z.any()),
-		tags: PostTagsChema,
+		tags: PostTagsSchema,
 	}),
 )
 
@@ -49,7 +49,7 @@ export const ListUpdateSchema = z.object({
 		gitpod: z.string().nullish(),
 	}),
 	resources: z.array(z.any()),
-	tags: PostTagsChema,
+	tags: PostTagsSchema,
 })
 
 export type ListUpdate = z.infer<typeof ListUpdateSchema>
