@@ -5,7 +5,7 @@ import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import MDXVideo from '@/components/content/mdx-video'
 import { Heading } from '@/components/mdx/heading'
-import { TrackLink } from '@/components/mdx/mdx-components'
+import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
@@ -28,6 +28,7 @@ export async function compileMDX(source: string) {
 			// @ts-expect-error
 			Code,
 			Scrollycoding,
+			AISummary,
 			Mermaid: (props) => (
 				<Mermaid
 					{...props}
