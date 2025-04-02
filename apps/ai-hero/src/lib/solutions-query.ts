@@ -647,16 +647,28 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 
 export async function deleteSolutionFromDatabase(solutionId: string) {
 	try {
-		await deletePostInTypeSense(solutionId)
-		console.log('✅ Successfully deleted solution from TypeSense')
+		await db.delete(contentResource).where(eq(contentResource.id, solutionId))
+
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceId, solutionId))
+
+		try {
+			await deletePostInTypeSense(solutionId)
+			console.log('✅ Successfully deleted solution from TypeSense')
+		} catch (error) {
+			console.error('⚠️ Failed to delete solution from TypeSense:', {
+				error,
+				solutionId: solutionId,
+				stack: error instanceof Error ? error.stack : undefined,
+			})
+			// Continue with database deletion even if TypeSense fails
+		}
 	} catch (error) {
-		console.error('⚠️ Failed to delete solution from TypeSense:', {
+		console.error('❌ Failed to delete solution from database:', {
 			error,
 			solutionId: solutionId,
-			stack: error instanceof Error ? error.stack : undefined,
 		})
-		// Continue with database deletion even if TypeSense fails
+		throw error
 	}
-
-	await db.delete(contentResource).where(eq(contentResource.id, solutionId))
 }
