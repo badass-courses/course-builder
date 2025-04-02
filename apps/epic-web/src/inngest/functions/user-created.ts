@@ -53,6 +53,14 @@ export const userCreated = inngest.createFunction(
 				throw new Error('User role not found')
 			}
 
+			if (!event.user.id) {
+				throw new Error('User ID not found')
+			}
+
+			if (!userRole.id) {
+				throw new Error('User role ID not found')
+			}
+
 			await db.insert(userRoles).values({
 				roleId: userRole.id,
 				userId: event.user.id,
@@ -60,6 +68,10 @@ export const userCreated = inngest.createFunction(
 		})
 
 		await step.run('create the user preference', async () => {
+			if (!event.user.id) {
+				throw new Error('User ID not found')
+			}
+
 			await db.insert(communicationPreferences).values({
 				id: nanoid(),
 				userId: event.user.id,
