@@ -52,7 +52,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	const { render } = await import('@react-email/render')
 
 	// The email html needs to be rendered from the React component
-	const emailHtml = render(Component(componentProps))
+	const emailHtml = await render(Component(componentProps))
 
 	// Determine the message stream based on the type
 	const MessageStream = type === 'broadcast' ? 'broadcast' : 'outbound'
