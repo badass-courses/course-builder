@@ -9,6 +9,7 @@ export const PricingFormattedInputSchema = z.object({
 	merchantCoupon: merchantCouponSchema.optional().nullable(),
 	upgradeFromPurchaseId: z.string().optional(),
 	autoApplyPPP: z.boolean().default(true),
+	code: z.string().optional(),
 	country: z.string().optional(),
 	userId: z.string().optional(),
 })
