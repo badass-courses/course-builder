@@ -1,4 +1,5 @@
 import { env } from '@/env.mjs'
+import { log } from '@/server/logger'
 import { SkillRequest, withSkill } from '@/server/with-skill'
 
 import { getMuxOptions } from '@coursebuilder/core/lib/mux'
@@ -28,7 +29,7 @@ export const POST = withSkill(async (req: SkillRequest) => {
 			},
 		})
 	} catch (error) {
-		req.log.error(`mux error`, { error })
+		log.error(`mux error`, { error })
 		return new Response(JSON.stringify(error), {
 			status: 500,
 			headers: {

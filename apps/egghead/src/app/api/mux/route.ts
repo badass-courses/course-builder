@@ -28,7 +28,6 @@ export const POST = withSkill(async (req: SkillRequest) => {
 			},
 		})
 	} catch (error) {
-		req.log.error(`mux error`, { error })
 		return new Response(JSON.stringify(error), {
 			status: 500,
 			headers: {
