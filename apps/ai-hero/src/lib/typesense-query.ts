@@ -384,7 +384,7 @@ export async function getNearestNeighbour(
 				q: '*',
 				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
 				exclude_fields: 'embedding',
-				filter_by: `id:!=${documentId} && state:=published${completedFilter}`,
+				filter_by: `id:!=${documentId} && state:=published && type:=[post,list]${completedFilter}`,
 			},
 		],
 	}
