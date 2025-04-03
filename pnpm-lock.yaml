@@ -186,16 +186,16 @@ importers:
         specifier: ^6.36.2
         version: 6.36.2
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.11
+        specifier: workspace:*
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.3
+        specifier: workspace:*
         version: link:../../packages/core
       '@coursebuilder/email-templates':
-        specifier: ^1.0.4
+        specifier: workspace:*
         version: link:../../packages/email-templates
       '@coursebuilder/mdx-mermaid':
         specifier: workspace:*
@@ -207,46 +207,46 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.4
+        specifier: workspace:*
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-ai
       '@coursebuilder/utils-auth':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-auth
       '@coursebuilder/utils-aws':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-aws
       '@coursebuilder/utils-browser':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-browser
       '@coursebuilder/utils-core':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-core
       '@coursebuilder/utils-email':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-email
       '@coursebuilder/utils-file':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-file
       '@coursebuilder/utils-media':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-media
       '@coursebuilder/utils-resource':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-resource
       '@coursebuilder/utils-search':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-search
       '@coursebuilder/utils-seo':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-seo
       '@coursebuilder/utils-string':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-string
       '@coursebuilder/utils-ui':
-        specifier: 1.0.0
+        specifier: workspace:*
         version: link:../../packages/utils-ui
       '@fontsource/inter':
         specifier: ^5.0.16
@@ -282,11 +282,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.0.2
-        version: 15.0.2(next@15.3.0-canary.26)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(next@15.3.0-canary.31)(react@19.0.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -310,13 +310,13 @@ importers:
         version: 2.11.2(react@19.0.0)
       '@sentry/nextjs':
         specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.26)(react@19.0.0)(webpack@5.97.1)
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.31)(react@19.0.0)(webpack@5.97.1)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.0.1(next@15.3.0-canary.31)(react@19.0.0)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -336,17 +336,17 @@ importers:
         specifier: ^8.17.3
         version: 8.17.3(react-dom@19.0.0)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.604(@trpc/server@11.0.0-rc.604)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.604
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/html-to-text':
         specifier: ^9.0.4
         version: 9.0.4
@@ -370,7 +370,7 @@ importers:
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(@types/react@19.0.7)(codemirror@6.0.1)(react-dom@19.0.0)(react@19.0.0)
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -379,7 +379,7 @@ importers:
         version: 1.28.4
       '@vercel/flags':
         specifier: ^3.0.1
-        version: 3.0.1(@opentelemetry/api@1.9.0)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        version: 3.0.1(@opentelemetry/api@1.9.0)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)
       ai:
         specifier: 3.0.19
         version: 3.0.19(react@19.0.0)(solid-js@1.9.4)(svelte@4.2.19)(vue@3.5.13)(zod@3.22.4)
@@ -406,7 +406,7 @@ importers:
         version: 6.0.1(@lezer/common@1.2.3)
       cookies-next:
         specifier: ^5.1.0
-        version: 5.1.0(next@15.3.0-canary.26)(react@19.0.0)
+        version: 5.1.0(next@15.3.0-canary.31)(react@19.0.0)
       crypto:
         specifier: ^1.0.1
         version: 1.0.1
@@ -445,7 +445,7 @@ importers:
         version: 1.11.2
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -471,17 +471,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 6.5.1(next@15.3.0-canary.31)(react@19.0.0)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(@types/react@19.0.7)(acorn@8.14.0)(react@19.0.0)
@@ -499,7 +499,7 @@ importers:
         version: 10.5.0
       nuqs:
         specifier: ^2.2.3
-        version: 2.2.3(next@15.3.0-canary.26)(react@19.0.0)
+        version: 2.2.3(next@15.3.0-canary.31)(react@19.0.0)
       openai:
         specifier: ^4.28.4
         version: 4.29.1(encoding@0.1.13)
@@ -544,7 +544,7 @@ importers:
         version: 7.14.0(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
         specifier: '0.4'
-        version: 0.4.2(next@15.3.0-canary.26)(react-instantsearch@7.14.0)
+        version: 0.4.2(next@15.3.0-canary.31)(react-instantsearch@7.14.0)
       react-markdown:
         specifier: 9.0.3
         version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
@@ -619,7 +619,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -916,8 +916,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -995,7 +995,7 @@ importers:
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.0.1(next@15.3.0-canary.31)(react@19.0.0)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -1012,17 +1012,17 @@ importers:
         specifier: ^8.17.3
         version: 8.17.3(react-dom@19.0.0)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.477
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
@@ -1037,7 +1037,7 @@ importers:
         version: 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1088,7 +1088,7 @@ importers:
         version: 12.0.0-alpha.1(react-dom@19.0.0)(react@19.0.0)
       geist:
         specifier: ^1.3.0
-        version: 1.3.0(next@15.3.0-canary.26)
+        version: 1.3.0(next@15.3.0-canary.31)
       groq:
         specifier: ^3.18.1
         version: 3.34.0
@@ -1100,7 +1100,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1126,17 +1126,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 6.5.1(next@15.3.0-canary.31)(react@19.0.0)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(@types/react@19.0.7)(acorn@8.14.0)(react@19.0.0)
@@ -1262,7 +1262,7 @@ importers:
         version: 1.3.3
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1593,8 +1593,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -1680,17 +1680,17 @@ importers:
         specifier: 5.54.1
         version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.351
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
@@ -1705,7 +1705,7 @@ importers:
         version: 4.23.7(@codemirror/language@6.10.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -1762,7 +1762,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1785,14 +1785,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(@types/react@19.0.7)(acorn@8.14.0)(react@19.0.0)
@@ -1903,7 +1903,7 @@ importers:
         version: 1.3.3
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2113,8 +2113,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
@@ -2158,14 +2158,14 @@ importers:
         specifier: ^8.17.3
         version: 8.17.3(react-dom@19.0.0)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.498(@trpc/server@11.0.0-rc.498)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.498(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.498)(@trpc/server@11.0.0-rc.498)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.498
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/axios':
         specifier: ^0.14.0
         version: 0.14.0
@@ -2180,7 +2180,7 @@ importers:
         version: 9.0.8
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2216,7 +2216,7 @@ importers:
         version: 1.0.4
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(next@15.3.0-canary.31)(typescript@5.4.5)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0)
@@ -2227,14 +2227,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0)(react@19.0.0)
@@ -2243,7 +2243,7 @@ importers:
         version: 6.9.11
       nuqs:
         specifier: ^2.2.3
-        version: 2.2.3(next@15.3.0-canary.26)(react@19.0.0)
+        version: 2.2.3(next@15.3.0-canary.31)(react@19.0.0)
       openai:
         specifier: ^4.28.4
         version: 4.29.1(encoding@0.1.13)
@@ -2279,10 +2279,10 @@ importers:
         version: 7.14.0(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
         specifier: '0.4'
-        version: 0.4.2(next@15.3.0-canary.26)(react-instantsearch@7.14.0)
+        version: 0.4.2(next@15.3.0-canary.31)(react-instantsearch@7.14.0)
       react-instantsearch-router-nextjs:
         specifier: '7.14'
-        version: 7.14.0(algoliasearch@5.19.0)(next@15.3.0-canary.26)(react@19.0.0)
+        version: 7.14.0(algoliasearch@5.19.0)(next@15.3.0-canary.31)(react@19.0.0)
       react-markdown:
         specifier: 9.0.3
         version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
@@ -2333,7 +2333,7 @@ importers:
         version: 2.8.0(@babel/runtime@7.26.0)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2471,8 +2471,8 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@planetscale/database':
         specifier: 1.19.0
         version: 1.19.0
@@ -2498,14 +2498,14 @@ importers:
         specifier: 5.54.1
         version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.544(@trpc/server@11.0.0-rc.544)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.544(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.544)(@trpc/server@11.0.0-rc.544)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.544
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/mdx':
         specifier: ^2.0.13
         version: 2.0.13
@@ -2517,7 +2517,7 @@ importers:
         version: 9.0.8
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -2547,7 +2547,7 @@ importers:
         version: 12.0.0-alpha.1(react-dom@19.0.0)(react@19.0.0)
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(next@15.3.0-canary.31)(typescript@5.4.5)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0)
@@ -2558,14 +2558,14 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.0.0)(react@19.0.0)
@@ -2628,7 +2628,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.1)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2862,11 +2862,11 @@ importers:
         specifier: ^2.6.0
         version: 2.6.0(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
       '@next/mdx':
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.0.2
-        version: 15.0.2(next@15.3.0-canary.26)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(next@15.3.0-canary.31)(react@19.0.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.1.0
@@ -2941,13 +2941,13 @@ importers:
         version: 2.11.2(react@19.0.0)
       '@sentry/nextjs':
         specifier: ^8
-        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.26)(react@19.0.0)(webpack@5.97.1)
+        version: 8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.31)(react@19.0.0)(webpack@5.97.1)
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
       '@skillrecordings/analytics':
         specifier: ^1.0.1
-        version: 1.0.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.0.1(next@15.3.0-canary.31)(react@19.0.0)
       '@skillrecordings/config':
         specifier: ^0.0.3
         version: 0.0.3
@@ -2967,17 +2967,17 @@ importers:
         specifier: ^8.17.3
         version: 8.17.3(react-dom@19.0.0)(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.621(@trpc/server@11.0.0-rc.621)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.621
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/html-to-text':
         specifier: ^9.0.4
         version: 9.0.4
@@ -3004,7 +3004,7 @@ importers:
         version: 6.1.2(@babel/runtime@7.26.0)(@codemirror/autocomplete@6.18.4)(@codemirror/language@6.10.8)(@codemirror/lint@6.8.4)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.36.2)(@types/react@19.0.7)(codemirror@6.0.1)(react-dom@19.0.0)(react@19.0.0)
       '@uploadthing/react':
         specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4)
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
       '@upstash/ratelimit':
         specifier: ^1.0.1
         version: 1.0.1
@@ -3076,7 +3076,7 @@ importers:
         version: 0.3.7
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3102,17 +3102,17 @@ importers:
         specifier: ^5.0.2
         version: 5.0.6
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0)
       next-axiom:
         specifier: ^1.1.1
-        version: 1.1.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 1.1.1(next@15.3.0-canary.31)(react@19.0.0)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 6.5.1(next@15.3.0-canary.31)(react@19.0.0)
       next-mdx-remote:
         specifier: 5.0.0
         version: 5.0.0(@types/react@19.0.7)(acorn@8.14.0)(react@19.0.0)
@@ -3133,7 +3133,7 @@ importers:
         version: 10.5.0
       nuqs:
         specifier: ^2.2.3
-        version: 2.2.3(next@15.3.0-canary.26)(react@19.0.0)
+        version: 2.2.3(next@15.3.0-canary.31)(react@19.0.0)
       openai:
         specifier: ^4.28.4
         version: 4.29.1(encoding@0.1.13)
@@ -3181,7 +3181,7 @@ importers:
         version: 7.14.0(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-nextjs:
         specifier: '0.4'
-        version: 0.4.2(next@15.3.0-canary.26)(react-instantsearch@7.14.0)
+        version: 0.4.2(next@15.3.0-canary.31)(react-instantsearch@7.14.0)
       react-markdown:
         specifier: 9.0.3
         version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
@@ -3262,7 +3262,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3443,17 +3443,17 @@ importers:
         specifier: 5.54.1
         version: 5.54.1(react@19.0.0)
       '@trpc/client':
-        specifier: next
-        version: 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
       '@trpc/next':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/react-query':
-        specifier: next
-        version: 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
       '@trpc/server':
-        specifier: next
-        version: 11.0.0-rc.351
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
       '@types/fs-extra':
         specifier: ^11.0.1
         version: 11.0.4
@@ -3470,11 +3470,11 @@ importers:
         specifier: 0.27.1
         version: 0.27.1
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(react@19.0.0)
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -3690,10 +3690,10 @@ importers:
         version: 0.288.0(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(react@19.0.0)
       next-cloudinary:
         specifier: ^6.5.1
-        version: 6.5.1(next@15.3.0-canary.26)(react@19.0.0)
+        version: 6.5.1(next@15.3.0-canary.31)(react@19.0.0)
       pluralize:
         specifier: ^8.0.0
         version: 8.0.0
@@ -3756,8 +3756,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -3875,7 +3875,7 @@ importers:
         version: 0.5.1(drizzle-orm@0.36.0)(zod@3.22.4)
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(next@15.3.0-canary.31)(typescript@5.4.5)
       liquidjs:
         specifier: ^10.16.3
         version: 10.16.3
@@ -4003,17 +4003,17 @@ importers:
         version: link:../core
       inngest:
         specifier: ^3.22.5
-        version: 3.22.5(next@15.3.0-canary.26)(typescript@5.4.5)
+        version: 3.22.5(next@15.3.0-canary.31)(typescript@5.4.5)
     devDependencies:
       '@auth/core':
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.9.11)
       next:
-        specifier: 15.3.0-canary.26
-        version: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       next-auth:
         specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.26)(react@19.0.0)
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(react@19.0.0)
       react:
         specifier: 19.0.0
         version: 19.0.0
@@ -10145,7 +10145,7 @@ packages:
       next-auth: ^4
     dependencies:
       '@prisma/client': 5.11.0(prisma@5.11.0)
-      next-auth: 5.0.0-beta.25(next@15.3.0-canary.26)(react@19.0.0)
+      next-auth: 5.0.0-beta.25(next@15.3.0-canary.31)(react@19.0.0)
     dev: true
 
   /@next/env@14.1.0:
@@ -10156,8 +10156,8 @@ packages:
     resolution: {integrity: sha512-jg8ygVq99W3/XXb9Y6UQsritwhjc+qeiO7QrGZRYOfviyr/HcdnhdBQu4gbp2rBIh2ZyBYTBMWbPw3JSCb0GHw==}
     dev: true
 
-  /@next/env@15.3.0-canary.26:
-    resolution: {integrity: sha512-yfRMutfjorrnrDbDpB9L2Jj24gwZaWbrYk73zHVKRz0+HXRVODXWyprSxZwDg3pip/9ImageW1hFlQeUAJUq2A==}
+  /@next/env@15.3.0-canary.31:
+    resolution: {integrity: sha512-+GFb0o+c/N7NVhEOVoaE1KaiYbtSUWCgVzS2OM1NqpesuzhOtz1nHYVGZTbLC8dipHOZsVdtsNSYOhk6HR4U0g==}
 
   /@next/eslint-plugin-next@14.1.3:
     resolution: {integrity: sha512-VCnZI2cy77Yaj3L7Uhs3+44ikMM1VD/fBMwvTBb3hIaTIuqa+DmG4dhUDq+MASu3yx97KhgsVJbsas0XuiKyww==}
@@ -10171,8 +10171,8 @@ packages:
       fast-glob: 3.3.1
     dev: true
 
-  /@next/mdx@15.3.0-canary.26(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
-    resolution: {integrity: sha512-zO1d4zvcmk5sw+7EKOKlgKxIOoNTYsst6AnPsJ5J5dXC0dc+85+pLpP363BEvBhSm0Ndm7tsS1qYP6/ew2i1Bw==}
+  /@next/mdx@15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0):
+    resolution: {integrity: sha512-gpfksmGgaYFECQOiAhSXmqI38G8G06RW8AqLoLRQZU67alBfD+9JqUydONBMyz1xlodCU/0tD5zAccRlDd5pnA==}
     peerDependencies:
       '@mdx-js/loader': '>=0.15.0'
       '@mdx-js/react': '>=0.15.0'
@@ -10205,8 +10205,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-darwin-arm64@15.3.0-canary.26:
-    resolution: {integrity: sha512-/wLlmZSna1KT5QiutwcY6yXNhzwAo4edpt3MHVhA0IIipmWq/TJ1BeUGZv5MC/WWkagpd6aVLaGuoo9ML40tYw==}
+  /@next/swc-darwin-arm64@15.3.0-canary.31:
+    resolution: {integrity: sha512-5zshfqQodHNFlRDt89fQP+nSBOZPxcUg6hyzn8DpIRYIafx3bEvnShV4O3t24IJDOk8wUNYBrUnEFAGhh2LqQw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -10231,8 +10231,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-darwin-x64@15.3.0-canary.26:
-    resolution: {integrity: sha512-qctsbrmSS5DpcslENFRDeMfJTiutCfwOvI2SyqXEokpYZNhvMY+lnNNkVh9u3IS7j5nbf+Bbi68rwi6Ei4Wh5g==}
+  /@next/swc-darwin-x64@15.3.0-canary.31:
+    resolution: {integrity: sha512-v6vxD69JTp5RnjHlN2hJMrc/QHMMySU2D3GnboTzvrMahyCooFB6cY2VD3prnIyUfO7Guuqiz4Zh9izBw1f1Bg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -10257,8 +10257,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-linux-arm64-gnu@15.3.0-canary.26:
-    resolution: {integrity: sha512-47lrwBUsd1cSTIFt3ov8AQjKSUmzdAimsL77ZQG9DiARw1PtuaYpvfW51zHiKwH5aReMUlLn+Zqw2Gk0XDrWFQ==}
+  /@next/swc-linux-arm64-gnu@15.3.0-canary.31:
+    resolution: {integrity: sha512-GC8RUa+5cG7d4yAtQi3p8PFEb+8+1zblEInB+RRSHdH/jqEM25o9CfE1DgaY6bwi8YuZFQajwUaBKg7a+Iwf/w==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -10283,8 +10283,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-linux-arm64-musl@15.3.0-canary.26:
-    resolution: {integrity: sha512-pMu5kHUIP7cdboqbGNn2sgF2xk7oarK4Ie8sprVOY8LbEk/1/sPy6UDL/d6DZHpyAdWwS48VCy8dGCShWSHmIA==}
+  /@next/swc-linux-arm64-musl@15.3.0-canary.31:
+    resolution: {integrity: sha512-R5lUexNnUmN80HbEekL9U8A25Ix30Vmh/ylGcsmfWZ2D4kK2pIGAXMHFwvaNBQb7WyV8m0CMLQhAu140k2WOZg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -10309,8 +10309,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-linux-x64-gnu@15.3.0-canary.26:
-    resolution: {integrity: sha512-H2ZtU2YwMpt9LNyaJgA5IEThF+12uP2njUMS4XdSNAhj2aLg1XXDY7WavQbodxqAqh8OkCXzO/t+3T3s9tgWJg==}
+  /@next/swc-linux-x64-gnu@15.3.0-canary.31:
+    resolution: {integrity: sha512-W84mTs9XQKaEEAT+U5SCitk8KCgJU3sbhBI0LsjhR32WQiyx8UbNa+UAFYiuz1tupg7tw7TM7KTF9s4kQ1/IwQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -10335,8 +10335,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-linux-x64-musl@15.3.0-canary.26:
-    resolution: {integrity: sha512-eTfDfdX4qMCnasg3Nss5UxagOvfxorYWHj6kLE/4b/MIZ1LdEGZ5ijR8D7/w3OFfW3SC371ayXNiBHQ27I2qCg==}
+  /@next/swc-linux-x64-musl@15.3.0-canary.31:
+    resolution: {integrity: sha512-y2k2Dq9uDMtl4ZzGVNSXL4T6FB+ayYD2xagQZs5Q1tTTF61i62zZz0bL1MaoXTTjlwGtIT9CqykLRDXXA9JzYQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -10361,8 +10361,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-win32-arm64-msvc@15.3.0-canary.26:
-    resolution: {integrity: sha512-08Ke+QrRDW5if//xp7X+mLvc3MTcM0cslHXkL2cJ0tjbqhn36k+lkuQ5jsqgeLiwa0/EQDkT1e7MHP6iXZGZNQ==}
+  /@next/swc-win32-arm64-msvc@15.3.0-canary.31:
+    resolution: {integrity: sha512-F2tw+5gcLYkukTUrn8JDbzV3dHbvG+AAh3SKtVKyMc/2JWajII9FDhi3uIM9Nv3dQ+guF308taxHKto44w6A6Q==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -10396,21 +10396,21 @@ packages:
     dev: true
     optional: true
 
-  /@next/swc-win32-x64-msvc@15.3.0-canary.26:
-    resolution: {integrity: sha512-+A9/ljxaKwZS2UQ/yfJLNkEhyDyFGFYMnNyV4kpdME0FA3tdEnwXcBySagxyTG/qqU+a3COsfpc/iELgtRrbvw==}
+  /@next/swc-win32-x64-msvc@15.3.0-canary.31:
+    resolution: {integrity: sha512-qx051K2dGzMfkoh2nPq/LjTFyq2PKn3MHJvr7Hmy4BMD2K/XdVRcP3NSkoqikudaMfFg+vU++3AnoRMQAb1RIw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     optional: true
 
-  /@next/third-parties@15.0.2(next@15.3.0-canary.26)(react@19.0.0):
-    resolution: {integrity: sha512-Ohlh0KKfag3Vrx+yuSMJ/fSoCVvRoVG9wRiz8jvYelmg+l0970d41VoGzF2UeKwh9s5qXVRDVqiN/mIeiJ4iLg==}
+  /@next/third-parties@15.3.0-canary.31(next@15.3.0-canary.31)(react@19.0.0):
+    resolution: {integrity: sha512-2kwGzemanB+IuF4lLc47iTMy3Evj3HYI98L6OggYdOj9MSNjLTLWUHDcDpmvN3tHmToHRaQVhKQWe+5tcIh+Cg==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
-      react: ^18.2.0 || 19.0.0-rc-02c0e824-20241028
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
     dependencies:
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
       third-party-capital: 1.0.20
     dev: false
@@ -15733,7 +15733,7 @@ packages:
       '@sentry/utils': 8.26.0
     dev: false
 
-  /@sentry/nextjs@8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.26)(react@19.0.0)(webpack@5.97.1):
+  /@sentry/nextjs@8.26.0(@opentelemetry/api@1.9.0)(@opentelemetry/core@1.30.1)(@opentelemetry/instrumentation@0.52.1)(@opentelemetry/sdk-trace-base@1.30.1)(encoding@0.1.13)(next@15.3.0-canary.31)(react@19.0.0)(webpack@5.97.1):
     resolution: {integrity: sha512-FO4xtYRpmtKpVt9kJsdcL73SoJbFkfZbHONh2kvGalCa06w8DCdHuzYvPgKaf8UcjEixeb0qiM9ncmPpoDsnHA==}
     engines: {node: '>=14.18'}
     peerDependencies:
@@ -15755,7 +15755,7 @@ packages:
       '@sentry/vercel-edge': 8.26.0
       '@sentry/webpack-plugin': 2.20.1(encoding@0.1.13)(webpack@5.97.1)
       chalk: 3.0.0
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       resolve: 1.22.8
       rollup: 3.29.4
       stacktrace-parser: 0.1.10
@@ -16069,14 +16069,14 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: false
 
-  /@skillrecordings/analytics@1.0.1(next@15.3.0-canary.26)(react@19.0.0):
+  /@skillrecordings/analytics@1.0.1(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-gqJa4mC+3GVpNQD2EHuYi6TOW6kMBONfdrMVx/7jHozJ6jLq2hsadWjk/zXYup+vdLONysAi5aUUpLpizzXitg==}
     peerDependencies:
       next: '>= 11.1.2 < 13'
       react: ^17.0.2 < 18.0.0
     dependencies:
       lodash: 4.17.21
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
     dev: false
 
@@ -17055,63 +17055,26 @@ packages:
     resolution: {integrity: sha512-Saga7/QRGej/IDCVP5BgJ1oDqlDT2d9rQyoflS3fgMS8ntJ8JGw/LBqK2GorHa06+VrNFc0tGz65XQHJQJetFQ==}
     dev: false
 
-  /@trpc/client@11.0.0-rc.351(@trpc/server@11.0.0-rc.351):
-    resolution: {integrity: sha512-48LKVO6pSk6/NSKmwZ1ixzQm/S3DD8iAI5j+L9Pqou/IPbS52qJepaCWd1bTWO+iDgXa9MxcsD0Gr8/IL5TznQ==}
+  /@trpc/client@11.0.1(@trpc/server@11.0.1)(typescript@5.4.5):
+    resolution: {integrity: sha512-HvOrvWAXbGBwt4om+NfuxrK4f+ik2aaNIXq7WLrJbEp7U+YXfh5++1a5p4JDaikrvSaObJ389DhYAGWz90xSGw==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.351+a9b03d7f3
+      '@trpc/server': 11.0.1
+      typescript: '>=5.7.2'
     dependencies:
-      '@trpc/server': 11.0.0-rc.351
+      '@trpc/server': 11.0.1(typescript@5.4.5)
+      typescript: 5.4.5
 
-  /@trpc/client@11.0.0-rc.477(@trpc/server@11.0.0-rc.477):
-    resolution: {integrity: sha512-Ah/Er3vxTm2bIEUcIrike7Z/8Yc+DkFveU2ZHQQ0+zY7yxs931438+4OEJuY/Xl/0p5OTDeZTm6HBuZ1REFiyA==}
+  /@trpc/next@11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/react-query@11.0.1)(@trpc/server@11.0.1)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5):
+    resolution: {integrity: sha512-QWXpuUHHuLHwyXh+hKfIj0Y2AGC6OyT72ouTGMLyy6F411A83EGT4lpbvaW6uEjvh4wtb69pEY7KRVF29Kn+1A==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.477+a467f8314
-    dependencies:
-      '@trpc/server': 11.0.0-rc.477
-    dev: false
-
-  /@trpc/client@11.0.0-rc.498(@trpc/server@11.0.0-rc.498):
-    resolution: {integrity: sha512-a1VjvLHCo8gPENMfzI8lVF1ys6kOGI3f/cIAZUMB0d2TlkDERlFYANnSnzFvmiKy6ICh3lsQQ3OIMmIfyd8OtQ==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.498+5714423cc
-    dependencies:
-      '@trpc/server': 11.0.0-rc.498
-    dev: false
-
-  /@trpc/client@11.0.0-rc.544(@trpc/server@11.0.0-rc.544):
-    resolution: {integrity: sha512-VympvY3/j597XUNEm8ywcH9Q78rC8f7qvLRpfU6u7Bjm7YgWLNaWlBYLpnOjhej0gXjFQjRLsnF1Ffek8KDtZg==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.544+f8e8d1715
-    dependencies:
-      '@trpc/server': 11.0.0-rc.544
-    dev: false
-
-  /@trpc/client@11.0.0-rc.604(@trpc/server@11.0.0-rc.604):
-    resolution: {integrity: sha512-7NdYrASHVX9uNcGAREZtKQDbmKksTZpFs+HSIi22ScID/2XeeRmsPFkf+EBlMn+KVZ6KKMYnPYAhD6cNX0llgQ==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.604+03cd991db
-    dependencies:
-      '@trpc/server': 11.0.0-rc.604
-    dev: false
-
-  /@trpc/client@11.0.0-rc.621(@trpc/server@11.0.0-rc.621):
-    resolution: {integrity: sha512-RJ2D6ySdB7QXf9tn1USBMWn9QJR8dR+GHy+XAVE61z+XHQAWO0DibjlJ+WmAJu6G7xMbPi3xeWVAvqwR3WhbpA==}
-    peerDependencies:
-      '@trpc/server': 11.0.0-rc.621+87fde6297
-    dependencies:
-      '@trpc/server': 11.0.0-rc.621
-    dev: false
-
-  /@trpc/next@11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/react-query@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-WZEJTavWlZ7akZx6mFds2PCBLuYnaYAmL1WzWO5m0hzku2gORoPXfKJc6R8lctn+jG5TH8KKHwjnEKAke9q4GQ==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.351+a9b03d7f3
-      '@trpc/react-query': 11.0.0-rc.351+a9b03d7f3
-      '@trpc/server': 11.0.0-rc.351+a9b03d7f3
-      next: '*'
+      '@tanstack/react-query': ^5.59.15
+      '@trpc/client': 11.0.1
+      '@trpc/react-query': 11.0.1
+      '@trpc/server': 11.0.1
+      next: '>=15.2.2'
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
+      typescript: '>=5.7.2'
     peerDependenciesMeta:
       '@tanstack/react-query':
         optional: true
@@ -17119,205 +17082,37 @@ packages:
         optional: true
     dependencies:
       '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
-      '@trpc/react-query': 11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0)(react@19.0.0)
-      '@trpc/server': 11.0.0-rc.351
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      '@trpc/client': 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
+      '@trpc/react-query': 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
+      '@trpc/server': 11.0.1(typescript@5.4.5)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
+      typescript: 5.4.5
 
-  /@trpc/next@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/react-query@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-cijR4i0nvt9izzZkGoKtHj8CfIquuH1I/QN3c1/9eNi9VZvB6KPlCYuxpgctZBPTlzbpgagh0SmKC634tXnl/Q==}
+  /@trpc/react-query@11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5):
+    resolution: {integrity: sha512-astHk2cchLjyXx4cScUZj4zOM5um10zdX4ExVUllBI+kU5sUTbztigDZCGDz8WbdsOiSzYHL4KINdERaQrXWAQ==}
     peerDependencies:
-      '@tanstack/react-query': ^5.49.2
-      '@trpc/client': 11.0.0-rc.477+a467f8314
-      '@trpc/react-query': 11.0.0-rc.477+a467f8314
-      '@trpc/server': 11.0.0-rc.477+a467f8314
-      next: '*'
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
-      '@trpc/react-query': 11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0)(react@19.0.0)
-      '@trpc/server': 11.0.0-rc.477
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/next@11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/react-query@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-yUA14ehBzv8G2g1a9roO2Z/N3DlKNQVvwvguDdoIja71lnptsZIQhrXfePYHSZVWYGBHpluWgoRu6Tpi+svzHw==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.59.15
-      '@trpc/client': 11.0.0-rc.604+03cd991db
-      '@trpc/react-query': 11.0.0-rc.604+03cd991db
-      '@trpc/server': 11.0.0-rc.604+03cd991db
-      next: 15.0.2
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.604(@trpc/server@11.0.0-rc.604)
-      '@trpc/react-query': 11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(react-dom@19.0.0)(react@19.0.0)
-      '@trpc/server': 11.0.0-rc.604
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/next@11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/react-query@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-M1WOmTqrA8XcLEm0vaG1quvPufViiokWRgpa27nqFucVOBqsuGK4ZR+jXzHxeExPsqiAkEU3AzhklH0jziLgzA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.59.15
-      '@trpc/client': 11.0.0-rc.621+87fde6297
-      '@trpc/react-query': 11.0.0-rc.621+87fde6297
-      '@trpc/server': 11.0.0-rc.621+87fde6297
-      next: 15.0.3
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    peerDependenciesMeta:
-      '@tanstack/react-query':
-        optional: true
-      '@trpc/react-query':
-        optional: true
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.621(@trpc/server@11.0.0-rc.621)
-      '@trpc/react-query': 11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(react-dom@19.0.0)(react@19.0.0)
-      '@trpc/server': 11.0.0-rc.621
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.351(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.351)(@trpc/server@11.0.0-rc.351)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-kEhXm/B1m2yIJ3ZiI2MdTHCzveoDBH03HdjD07pSoKuiXfDo221sX4Az9YaZ1wSwCFIt6L03Z5OopOhlxhK3ww==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.25.0
-      '@trpc/client': 11.0.0-rc.351+a9b03d7f3
-      '@trpc/server': 11.0.0-rc.351+a9b03d7f3
+      '@tanstack/react-query': ^5.67.1
+      '@trpc/client': 11.0.1
+      '@trpc/server': 11.0.1
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
+      typescript: '>=5.7.2'
     dependencies:
       '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.351(@trpc/server@11.0.0-rc.351)
-      '@trpc/server': 11.0.0-rc.351
+      '@trpc/client': 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
+      '@trpc/server': 11.0.1(typescript@5.4.5)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
+      typescript: 5.4.5
 
-  /@trpc/react-query@11.0.0-rc.477(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.477)(@trpc/server@11.0.0-rc.477)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-1ZCAm0wv7yLmb3muq+5DTRxdKXzI1KjTrcM2+QRKCFu6EherGM8x6zGI36P9ZmC6o+SCoedzxqazDNe+kkqVqA==}
+  /@trpc/server@11.0.1(typescript@5.4.5):
+    resolution: {integrity: sha512-DZS3+bONLno4oJjHBMrS3xRPtoZsnmBImDH/Mmo1QhaFt3Xp/S0Riu7WU/oofsLTVj2m1UO5LlgLJFumvlSNoQ==}
     peerDependencies:
-      '@tanstack/react-query': ^5.49.2
-      '@trpc/client': 11.0.0-rc.477+a467f8314
-      '@trpc/server': 11.0.0-rc.477+a467f8314
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
+      typescript: '>=5.7.2'
     dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.477(@trpc/server@11.0.0-rc.477)
-      '@trpc/server': 11.0.0-rc.477
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.498(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.498)(@trpc/server@11.0.0-rc.498)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-il/fgO9DSTHmrJbDInGNl8PymLo19CEfIjBXmerTm4hg/p438fQb4ZKDVbpBxEThgAaaP6D0HTELWn5VDWG3VQ==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.49.2
-      '@trpc/client': 11.0.0-rc.498+5714423cc
-      '@trpc/server': 11.0.0-rc.498+5714423cc
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.498(@trpc/server@11.0.0-rc.498)
-      '@trpc/server': 11.0.0-rc.498
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.544(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.544)(@trpc/server@11.0.0-rc.544)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-lieAIbIdbwWsQcZuyUUzIGMB+ouMfkiPoK/H7N864eftiAmZgIuvtaarnO/7wTtLGsJoMOTzTJLE503UvEu0FA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.54.1
-      '@trpc/client': 11.0.0-rc.544+f8e8d1715
-      '@trpc/server': 11.0.0-rc.544+f8e8d1715
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.544(@trpc/server@11.0.0-rc.544)
-      '@trpc/server': 11.0.0-rc.544
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.604(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.604)(@trpc/server@11.0.0-rc.604)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-NrA5+CQkRzUTUfOFrY3h+1C0AZB9mv8b/CH4kjyctZBzZnXsNpdg3jfmAhbv+ZZUDspkSapycbV+Kij5ei/hYw==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.59.15
-      '@trpc/client': 11.0.0-rc.604+03cd991db
-      '@trpc/server': 11.0.0-rc.604+03cd991db
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.604(@trpc/server@11.0.0-rc.604)
-      '@trpc/server': 11.0.0-rc.604
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/react-query@11.0.0-rc.621(@tanstack/react-query@5.54.1)(@trpc/client@11.0.0-rc.621)(@trpc/server@11.0.0-rc.621)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-JMItQtZFifKxbjPNrkNQPH//W1UnZOa+haVwO1zY9ks+dTNErp0GrV4zLeNChitIP6Q1oZZr4y4m2/yVDIEPAA==}
-    peerDependencies:
-      '@tanstack/react-query': ^5.59.15
-      '@trpc/client': 11.0.0-rc.621+87fde6297
-      '@trpc/server': 11.0.0-rc.621+87fde6297
-      react: '>=18.2.0'
-      react-dom: '>=18.2.0'
-    dependencies:
-      '@tanstack/react-query': 5.54.1(react@19.0.0)
-      '@trpc/client': 11.0.0-rc.621(@trpc/server@11.0.0-rc.621)
-      '@trpc/server': 11.0.0-rc.621
-      react: 19.0.0
-      react-dom: 19.0.0(react@19.0.0)
-    dev: false
-
-  /@trpc/server@11.0.0-rc.351:
-    resolution: {integrity: sha512-Y1Iw9iiF9LCJ2ldS/af+2RXzIbgWvQ4DHVVgHYOGB+uINpAugsUmogoEkZ6rYOgusNz6qkRzY8JKOSR7FQ1aUg==}
-
-  /@trpc/server@11.0.0-rc.477:
-    resolution: {integrity: sha512-K6zmjRv96fWilqm/ETehEK1DWsy5bSyrs2xbsNzCbjguMgamMhOClRHgYzJcwgLp2kasJ7QgD9YbahOhV1/u1w==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.498:
-    resolution: {integrity: sha512-LECCOz8JNB67CBasPA6fkLbhJIbUQRP1wq02xUfUMeaSEZFWJL+7fcTgLaWFQSHMMnMsvkLuDuDDkUSCF2SXmg==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.544:
-    resolution: {integrity: sha512-Hv7w6PV9MQgD+TzX1LI1P1E2siweQaf4fS/xW+b6NCC15REgcYuWNPu69YFFpwcdkl3PuAkh+DL/0NPUpHdiHg==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.604:
-    resolution: {integrity: sha512-JXn6XbheQwj2tWqKnAlWhGnIo6F7cSYWQ3SgPXdq+MCYKJBuSYrurj5NvreNCVAkVZmftjyUlIV+Hs2/se4GNg==}
-    dev: false
-
-  /@trpc/server@11.0.0-rc.621:
-    resolution: {integrity: sha512-hSXWXDX6m7dptKZfALlOhpvC6SLI0TwAos2la9M3U3rJ+wozbRdOG/2hlfaEw4muODRAYu+HVkP0b9iyWZuPqA==}
-    dev: false
+      typescript: 5.4.5
 
   /@tsconfig/node10@1.0.11:
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -18455,7 +18250,7 @@ packages:
     resolution: {integrity: sha512-EB0o0a4y++UJFMLqS8LDVhSQgXUllG6t5fwl5cbmOM0Uay8YY5Nc/JjFwzJ8wccdIKz4oYwQW7EOSfUyaMPbfw==}
     dev: false
 
-  /@uploadthing/react@7.1.5(next@15.3.0-canary.26)(react@19.0.0)(uploadthing@7.4.4):
+  /@uploadthing/react@7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4):
     resolution: {integrity: sha512-D0lP4YnUWw5LFHrLuL+sq26wlul9dGE70G+oOQ+qkM1ZqSeKSGvIdAIOAQUBj2qQi4Re7o0VpF3+3qBF3svN6A==}
     peerDependencies:
       next: '*'
@@ -18467,9 +18262,9 @@ packages:
     dependencies:
       '@uploadthing/shared': 7.1.5
       file-selector: 0.6.0
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
-      uploadthing: 7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1)
+      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1)
     dev: false
 
   /@uploadthing/shared@7.1.5:
@@ -18532,7 +18327,7 @@ packages:
     resolution: {integrity: sha512-0g5uHRyamLJOzmOHp56ISLuZFhFwRIazWcKuRtSBAYjTG1EJrj2KNgW7K1KNSwAJQJzWh7I0qlm7nvvGADQj0Q==}
     dev: false
 
-  /@vercel/flags@3.0.1(@opentelemetry/api@1.9.0)(next@15.3.0-canary.26)(react-dom@19.0.0)(react@19.0.0):
+  /@vercel/flags@3.0.1(@opentelemetry/api@1.9.0)(next@15.3.0-canary.31)(react-dom@19.0.0)(react@19.0.0):
     resolution: {integrity: sha512-MduY0uIwuvfGhQAF06QlG2oftHli5ok5HFO28sSc9j0LWT1GErOHUVyeZoy4fsBPhadLb4JrK015sr37fXaraQ==}
     peerDependencies:
       '@opentelemetry/api': ^1.7.0
@@ -18555,7 +18350,7 @@ packages:
       '@edge-runtime/cookies': 5.0.2
       '@opentelemetry/api': 1.9.0
       jose: 5.9.6
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
     dev: false
@@ -20771,14 +20566,14 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /cookies-next@5.1.0(next@15.3.0-canary.26)(react@19.0.0):
+  /cookies-next@5.1.0(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-9Ekne+q8hfziJtnT9c1yDUBqT0eDMGgPrfPl4bpR3xwQHLTd/8gbSf6+IEkP/pjGsDZt1TGbC6emYmFYRbIXwQ==}
     peerDependencies:
       next: '>=15.0.0'
       react: '>= 16.8.0'
     dependencies:
       cookie: 1.0.2
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
     dev: false
 
@@ -24228,12 +24023,12 @@ packages:
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
 
-  /geist@1.3.0(next@15.3.0-canary.26):
+  /geist@1.3.0(next@15.3.0-canary.31):
     resolution: {integrity: sha512-IoGBfcqVEYB4bEwsfHd35jF4+X9LHRPYZymHL4YOltHSs9LJa24DYs1Z7rEMQ/lsEvaAIc61Y9aUxgcJaQ8lrg==}
     peerDependencies:
       next: '>=13.2.0 <15.0.0-0'
     dependencies:
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
     dev: false
 
   /generate-function@2.3.1:
@@ -25203,7 +24998,7 @@ packages:
       fast-loops: 1.1.3
     dev: false
 
-  /inngest@3.22.5(encoding@0.1.13)(next@15.3.0-canary.26)(typescript@5.4.5):
+  /inngest@3.22.5(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5):
     resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -25247,7 +25042,7 @@ packages:
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
       ms: 2.1.3
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       typescript: 5.4.5
@@ -25257,7 +25052,7 @@ packages:
       - supports-color
     dev: false
 
-  /inngest@3.22.5(next@15.3.0-canary.26)(typescript@5.4.5):
+  /inngest@3.22.5(next@15.3.0-canary.31)(typescript@5.4.5):
     resolution: {integrity: sha512-GF9+XEHi0eGRCLMjba203XFdi45lwLFXCgIhzOYIaSOIkurUDVP2UNiVft3dMIUwGW9kZ5c40ebSYOg8MTg4wQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -25301,7 +25096,7 @@ packages:
       hash.js: 1.1.7
       json-stringify-safe: 5.0.1
       ms: 2.1.3
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       serialize-error-cjs: 0.1.3
       strip-ansi: 5.2.0
       typescript: 5.4.5
@@ -28432,7 +28227,7 @@ packages:
       react: 19.0.0
     dev: true
 
-  /next-auth@5.0.0-beta.25(next@15.3.0-canary.26)(nodemailer@6.9.11)(react@19.0.0):
+  /next-auth@5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.9.11)(react@19.0.0):
     resolution: {integrity: sha512-2dJJw1sHQl2qxCrRk+KTQbeH+izFbGFPuJj5eGgBZFYyiYYtvlrBeUw1E/OJJxTRjuxbSYGnCTkUIRsIIW0bog==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -28449,12 +28244,12 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       nodemailer: 6.9.11
       react: 19.0.0
     dev: false
 
-  /next-auth@5.0.0-beta.25(next@15.3.0-canary.26)(react@19.0.0):
+  /next-auth@5.0.0-beta.25(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-2dJJw1sHQl2qxCrRk+KTQbeH+izFbGFPuJj5eGgBZFYyiYYtvlrBeUw1E/OJJxTRjuxbSYGnCTkUIRsIIW0bog==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
@@ -28471,23 +28266,23 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.37.2(nodemailer@6.9.11)
-      next: 15.3.0-canary.26(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
 
-  /next-axiom@1.1.1(next@15.3.0-canary.26)(react@19.0.0):
+  /next-axiom@1.1.1(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-0r/TJ+/zetD+uDc7B+2E7WpC86hEtQ1U+DuWYrP/JNmUz+ZdPFbrZgzOSqaZ6TwYbXP56VVlPfYwq1YsKHTHYQ==}
     engines: {node: '>=18'}
     peerDependencies:
       next: '>=13.4'
       react: '>=18.0.0'
     dependencies:
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
       remeda: 1.50.1
       whatwg-fetch: 3.6.20
     dev: false
 
-  /next-cloudinary@6.5.1(next@15.3.0-canary.26)(react@19.0.0):
+  /next-cloudinary@6.5.1(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-YxZevyfDBmEa/nThq6HCKaFuvfZldTXrA1nCbGyOcf5tZ/ms5yQSNkJimwz0qApWyqKt/jBC8UfqG8wrRNnD/A==}
     peerDependencies:
       next: ^12 || ^13 || ^14
@@ -28497,7 +28292,7 @@ packages:
       '@cloudinary-util/url-loader': 5.2.2
       '@cloudinary-util/util': 3.0.0
       '@tsconfig/recommended': 1.0.6
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
     dev: false
 
@@ -28614,13 +28409,13 @@ packages:
       - babel-plugin-macros
     dev: true
 
-  /next@15.3.0-canary.26(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-FCkJgFjJEelTQ9yEalXo2IKOWpTWeZQNuEJUqneBeci1RXmhkmYGOjBNTYhec92q8CMPJJHqOZVpjz8Qnife9w==}
+  /next@15.3.0-canary.31(@babel/core@7.24.0)(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-rG+ydC7BHLRRasoZSRf4KYBsKNWsUcOgDCdNCs9CC0706e91L9TDHUOzTh0foULHMuiwaFlGBkbBgdQvB9mtfQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
-      '@playwright/test': ^1.41.2
+      '@playwright/test': ^1.51.1
       babel-plugin-react-compiler: '*'
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
       react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
@@ -28635,7 +28430,7 @@ packages:
       sass:
         optional: true
     dependencies:
-      '@next/env': 15.3.0-canary.26
+      '@next/env': 15.3.0-canary.31
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
@@ -28645,26 +28440,26 @@ packages:
       react-dom: 19.0.0(react@19.0.0)
       styled-jsx: 5.1.6(@babel/core@7.24.0)(react@19.0.0)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.3.0-canary.26
-      '@next/swc-darwin-x64': 15.3.0-canary.26
-      '@next/swc-linux-arm64-gnu': 15.3.0-canary.26
-      '@next/swc-linux-arm64-musl': 15.3.0-canary.26
-      '@next/swc-linux-x64-gnu': 15.3.0-canary.26
-      '@next/swc-linux-x64-musl': 15.3.0-canary.26
-      '@next/swc-win32-arm64-msvc': 15.3.0-canary.26
-      '@next/swc-win32-x64-msvc': 15.3.0-canary.26
+      '@next/swc-darwin-arm64': 15.3.0-canary.31
+      '@next/swc-darwin-x64': 15.3.0-canary.31
+      '@next/swc-linux-arm64-gnu': 15.3.0-canary.31
+      '@next/swc-linux-arm64-musl': 15.3.0-canary.31
+      '@next/swc-linux-x64-gnu': 15.3.0-canary.31
+      '@next/swc-linux-x64-musl': 15.3.0-canary.31
+      '@next/swc-win32-arm64-msvc': 15.3.0-canary.31
+      '@next/swc-win32-x64-msvc': 15.3.0-canary.31
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
 
-  /next@15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-FCkJgFjJEelTQ9yEalXo2IKOWpTWeZQNuEJUqneBeci1RXmhkmYGOjBNTYhec92q8CMPJJHqOZVpjz8Qnife9w==}
+  /next@15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-rG+ydC7BHLRRasoZSRf4KYBsKNWsUcOgDCdNCs9CC0706e91L9TDHUOzTh0foULHMuiwaFlGBkbBgdQvB9mtfQ==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
       '@opentelemetry/api': ^1.1.0
-      '@playwright/test': ^1.41.2
+      '@playwright/test': ^1.51.1
       babel-plugin-react-compiler: '*'
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
       react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
@@ -28679,7 +28474,7 @@ packages:
       sass:
         optional: true
     dependencies:
-      '@next/env': 15.3.0-canary.26
+      '@next/env': 15.3.0-canary.31
       '@opentelemetry/api': 1.9.0
       '@playwright/test': 1.49.1
       '@swc/counter': 0.1.3
@@ -28691,14 +28486,14 @@ packages:
       react-dom: 19.0.0(react@19.0.0)
       styled-jsx: 5.1.6(@babel/core@7.26.0)(react@19.0.0)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.3.0-canary.26
-      '@next/swc-darwin-x64': 15.3.0-canary.26
-      '@next/swc-linux-arm64-gnu': 15.3.0-canary.26
-      '@next/swc-linux-arm64-musl': 15.3.0-canary.26
-      '@next/swc-linux-x64-gnu': 15.3.0-canary.26
-      '@next/swc-linux-x64-musl': 15.3.0-canary.26
-      '@next/swc-win32-arm64-msvc': 15.3.0-canary.26
-      '@next/swc-win32-x64-msvc': 15.3.0-canary.26
+      '@next/swc-darwin-arm64': 15.3.0-canary.31
+      '@next/swc-darwin-x64': 15.3.0-canary.31
+      '@next/swc-linux-arm64-gnu': 15.3.0-canary.31
+      '@next/swc-linux-arm64-musl': 15.3.0-canary.31
+      '@next/swc-linux-x64-gnu': 15.3.0-canary.31
+      '@next/swc-linux-x64-musl': 15.3.0-canary.31
+      '@next/swc-win32-arm64-msvc': 15.3.0-canary.31
+      '@next/swc-win32-x64-msvc': 15.3.0-canary.31
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'
@@ -28987,7 +28782,7 @@ packages:
     dependencies:
       boolbase: 1.0.0
 
-  /nuqs@2.2.3(next@15.3.0-canary.26)(react@19.0.0):
+  /nuqs@2.2.3(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-nMCcUW06KSqEXA0xp+LiRqDpIE59BVYbjZLe0HUisJAlswfihHYSsAjYTzV0lcE1thfh8uh+LqUHGdQ8qq8rfA==}
     peerDependencies:
       '@remix-run/react': '>=2'
@@ -29003,7 +28798,7 @@ packages:
         optional: true
     dependencies:
       mitt: 3.0.1
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
     dev: false
 
@@ -30741,23 +30536,23 @@ packages:
       use-sync-external-store: 1.4.0(react@19.0.0)
     dev: false
 
-  /react-instantsearch-nextjs@0.4.2(next@15.3.0-canary.26)(react-instantsearch@7.14.0):
+  /react-instantsearch-nextjs@0.4.2(next@15.3.0-canary.31)(react-instantsearch@7.14.0):
     resolution: {integrity: sha512-J9olFtioBDoODWcT9m+H+2KLN0LaZRQBo/k3vK6JBkwXXawX07P0gMsU8MMSYIJwxQwHCUvgkdajOMmf8JkSVg==}
     peerDependencies:
       next: '>= 13.4 < 16'
       react-instantsearch: '>= 7.1.0 < 8'
     dependencies:
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch: 7.14.0(algoliasearch@5.19.0)(react-dom@19.0.0)(react@19.0.0)
     dev: false
 
-  /react-instantsearch-router-nextjs@7.14.0(algoliasearch@5.19.0)(next@15.3.0-canary.26)(react@19.0.0):
+  /react-instantsearch-router-nextjs@7.14.0(algoliasearch@5.19.0)(next@15.3.0-canary.31)(react@19.0.0):
     resolution: {integrity: sha512-LIryb/fwD5MJ+BEFuv4IiuLGb2RCeDxixlRLxsCIntFa/OM32WE+L3D5mg0j1bXiSxrMEHOH/M4FUtEfjRpDxg==}
     peerDependencies:
       next: '>= 9 && < 16'
     dependencies:
       instantsearch.js: 4.76.0(algoliasearch@5.19.0)
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       react-instantsearch-core: 7.14.0(algoliasearch@5.19.0)(react@19.0.0)
     transitivePeerDependencies:
       - algoliasearch
@@ -34297,7 +34092,7 @@ packages:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  /uploadthing@7.4.4(next@15.3.0-canary.26)(tailwindcss@3.4.1):
+  /uploadthing@7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.1):
     resolution: {integrity: sha512-dgV8LqaKrXSnpDkqzzLbVEmIubMPi8a5bRtIzM+rG5EbZpIZyOG0bByLxdSlkSbK5L6F+HbIGX5eDkLPFNL8dg==}
     engines: {node: '>=18.13.0'}
     peerDependencies:
@@ -34323,7 +34118,7 @@ packages:
       '@uploadthing/mime-types': 0.3.4
       '@uploadthing/shared': 7.1.5
       effect: 3.11.5
-      next: 15.3.0-canary.26(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
+      next: 15.3.0-canary.31(@babel/core@7.26.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0)(react@19.0.0)
       tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: false
 
