@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Logger } from 'next-axiom/src/logger'
 
-export type SkillRequest = NextRequest & { log: Logger }
+export type SkillRequest = NextRequest
 
 type NextHandler<T = any> = (
 	req: SkillRequest,

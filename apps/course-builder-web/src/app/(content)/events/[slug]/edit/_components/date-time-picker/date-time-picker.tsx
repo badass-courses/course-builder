@@ -41,7 +41,7 @@ const DateTimePicker = React.forwardRef<
 	HTMLDivElement,
 	DatePickerStateOptions<DateValue>
 >((props, forwardedRef) => {
-	const ref = useForwardedRef(forwardedRef)
+	const ref = useForwardedRef<HTMLDivElement>(forwardedRef)
 	const buttonRef = useRef<HTMLButtonElement | null>(null)
 	const contentRef = useRef<HTMLDivElement | null>(null)
 
@@ -91,7 +91,11 @@ const DateTimePicker = React.forwardRef<
 						{!!state.hasTime && (
 							<TimeField
 								value={state.timeValue}
-								onChange={state.setTimeValue}
+								onChange={(value) => {
+									if (value) {
+										state.setTimeValue(value)
+									}
+								}}
 							/>
 						)}
 					</div>

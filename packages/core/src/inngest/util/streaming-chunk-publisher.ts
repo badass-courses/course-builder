@@ -1,5 +1,3 @@
-import { OpenAIStream, StreamingTextResponse } from 'ai'
-
 import { AIOutput } from '../../types'
 
 export const STREAM_COMPLETE = `\\ok`
@@ -35,23 +33,22 @@ export class OpenAIStreamingDataPartykitChunkPublisher {
 		await publishToPartykit(message, this.requestId, this.partyUrl)
 	}
 
-	async writeResponseInChunks(streamingResponse: Response): Promise<AIOutput> {
+	async writeResponseInChunks(
+		stream: ReadableStream<Uint8Array>,
+	): Promise<AIOutput> {
 		const applyChunk = this.appendToBufferAndPublish.bind(this)
 
-		// https://developer.mozilla.org/en-US/docs/Web/API/TransformStream
 		const transformStream = new TransformStream({
 			async transform(chunk, controller) {
-				// When we receive a chunk, publish this as a new request.
 				const text = new TextDecoder().decode(chunk)
 				await applyChunk(text)
-				// await publish(text, requestId);
-				// Continue with the standard stream.
 				controller.enqueue(chunk)
 			},
 		})
-		// Publish via our writing pipe.
-		const stream = OpenAIStream(streamingResponse).pipeThrough(transformStream)
-		const result = await parseStreamToText(stream, this.requestId)
+
+		// Directly pipe the input stream through the transform stream
+		const transformedStream = stream.pipeThrough(transformStream)
+		const result = await parseStreamToText(transformedStream, this.requestId)
 		await this.buffer.signal
 		return result
 	}
@@ -112,23 +109,14 @@ const parseStreamToText = async (
 	stream: ReadableStream,
 	requestId: string,
 ): Promise<AIOutput> => {
-	// And then pass this through the standard text response
-	const text = await new StreamingTextResponse(stream).text()
+	const reader = stream.getReader()
+	let text = ''
+	let done, value
+	while (!done) {
+		;({ done, value } = await reader.read())
+		if (value) {
+			text += new TextDecoder().decode(value)
+		}
+	}
 	return { role: 'assistant', content: text }
-
-	// if we are function calling we want JSON!
-	// try {
-	//   const raw = JSON.parse(text) as Record<string, any>;
-	//
-	//   console.log('raw', raw)
-	//   const output = {
-	//     role: "assistant",
-	//     content: null,
-	//     ...raw,
-	//   } as unknown;
-	//   return output as AIMessage;
-	// } catch (e) {
-	//   // This may not be JSON
-	//   return { role: "assistant", content: text };
-	// }
 }

@@ -1,0 +1,5 @@
+---
+description: use kebab case when naming files
+globs: *.tsx, *.ts
+---
+- always use kebab-case when naming files
