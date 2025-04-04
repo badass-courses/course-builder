@@ -1,9 +1,5 @@
 import { NonRetriableError } from 'inngest'
 import { Liquid } from 'liquidjs'
-import {
-	ChatCompletionRequestMessage,
-	ChatCompletionRequestMessageRoleEnum,
-} from 'openai-edge'
 import { z } from 'zod'
 
 import { CourseBuilderAdapter } from '../../adapters'
@@ -15,7 +11,10 @@ import {
 	CoreInngestHandler,
 	CoreInngestTrigger,
 } from '../create-inngest-middleware'
-import { streamingChatPromptExecutor } from '../util/streaming-chat-prompt-executor'
+import {
+	ChatCompletionRequestMessage,
+	streamingChatPromptExecutor,
+} from '../util/streaming-chat-prompt-executor'
 
 export const ChatResourceSchema = z.object({
 	id: z.string(),
@@ -56,6 +55,14 @@ export const resourceChatConfig = {
 
 export const resourceChatTrigger: CoreInngestTrigger = {
 	event: RESOURCE_CHAT_REQUEST_EVENT,
+}
+
+// Define ChatCompletionRequestMessageRoleEnum
+export enum ChatCompletionRequestMessageRoleEnum {
+	System = 'system',
+	User = 'user',
+	Assistant = 'assistant',
+	Function = 'function',
 }
 
 /**
@@ -250,7 +257,10 @@ Reply in a markdown code fence.`,
 					content: z.string(),
 				}),
 			)
-			.parse(JSON.parse(prompt.fields.body))
+			.parse(JSON.parse(prompt.fields.body)) as Array<{
+			role: ChatCompletionRequestMessageRoleEnum
+			content: string
+		}>
 
 		const actionMessages: ChatCompletionRequestMessage[] = []
 		for (const actionMessage of actionParsed) {
