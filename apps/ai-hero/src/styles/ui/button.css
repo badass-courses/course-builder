@@ -1,5 +1,6 @@
 .button-primary-border {
-	background: linear-gradient(
+	background:
+		linear-gradient(
 			180deg,
 			rgba(255, 255, 255, 0.16) 0%,
 			rgba(255, 255, 255, 0) 100%
