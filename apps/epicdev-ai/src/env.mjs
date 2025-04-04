@@ -66,7 +66,7 @@ export const env = createEnv({
 		AWS_BUCKET_NAME: z.string().optional(),
 		CONVERTKIT_API_SECRET: z.string(),
 		CONVERTKIT_API_KEY: z.string(),
-		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]),
+		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]).optional(),
 		EMAIL_SERVER_HOST: z.string().optional(),
 		EMAIL_SERVER_PORT: z.coerce.number().optional(),
 		POSTMARK_KEY: z.string().optional(),

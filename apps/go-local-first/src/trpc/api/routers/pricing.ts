@@ -26,7 +26,8 @@ const PricingFormattedInputSchema = z.object({
 	couponId: z.string().optional(),
 	merchantCoupon: merchantCouponSchema.optional().nullable(),
 	upgradeFromPurchaseId: z.string().optional(),
-	autoApplyPPP: z.boolean().default(true),
+	autoApplyPPP: z.boolean().default(false),
+	code: z.string().optional(),
 })
 
 export const getValidPurchases = (purchases: any[]): Purchase[] => {
@@ -326,24 +327,15 @@ export const pricingRouter = createTRPCRouter({
 		const token = await getServerAuthSession()
 		const verifiedUserId = token?.session?.user?.id
 
-		let purchases: Purchase[] = []
-
-		if (verifiedUserId) {
-			purchases = getValidPurchases(
-				await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
-			)
-		}
+		const purchases = getValidPurchases(
+			await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
+		)
 		const products = await db.query.products.findMany()
-
-		if (!products) return null
-
 		const productIds = products.map((product) => product.id)
-
 		const defaultCoupons =
-			productIds.length > 0 &&
-			(await courseBuilderAdapter.getDefaultCoupon(productIds))
+			await courseBuilderAdapter.getDefaultCoupon(productIds)
 
-		const defaultCoupon = defaultCoupons && defaultCoupons?.defaultCoupon
+		const defaultCoupon = defaultCoupons?.defaultCoupon
 
 		const hasPurchasedProductFromDefaultCoupon =
 			defaultCoupon &&
@@ -352,10 +344,7 @@ export const pricingRouter = createTRPCRouter({
 			})
 
 		if (!hasPurchasedProductFromDefaultCoupon && defaultCoupon) {
-			const product = products.find((product) => {
-				return product.id === defaultCoupon.restrictedToProductId
-			})
-			return { ...defaultCoupon, product }
+			return defaultCoupon
 		}
 
 		return null
