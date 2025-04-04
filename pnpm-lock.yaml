@@ -2414,7 +2414,296 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
 
-  apps/epic-dev:
+  apps/epic-react:
+    dependencies:
+      '@auth/core':
+        specifier: 0.37.2
+        version: 0.37.2(nodemailer@6.10.0)
+      '@casl/ability':
+        specifier: ^6.5.0
+        version: 6.7.3
+      '@coursebuilder/adapter-drizzle':
+        specifier: 1.0.3
+        version: link:../../packages/adapter-drizzle
+      '@coursebuilder/core':
+        specifier: 1.0.3
+        version: link:../../packages/core
+      '@coursebuilder/next':
+        specifier: workspace:^
+        version: link:../../packages/next
+      '@coursebuilder/nodash':
+        specifier: workspace:^
+        version: link:../../packages/nodash
+      '@coursebuilder/ui':
+        specifier: ^2.0.4
+        version: link:../../packages/ui
+      '@coursebuilder/utils-ai':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ai
+      '@coursebuilder/utils-browser':
+        specifier: 1.0.0
+        version: link:../../packages/utils-browser
+      '@coursebuilder/utils-core':
+        specifier: 1.0.0
+        version: link:../../packages/utils-core
+      '@coursebuilder/utils-email':
+        specifier: 1.0.0
+        version: link:../../packages/utils-email
+      '@coursebuilder/utils-file':
+        specifier: 1.0.0
+        version: link:../../packages/utils-file
+      '@coursebuilder/utils-media':
+        specifier: 1.0.0
+        version: link:../../packages/utils-media
+      '@coursebuilder/utils-seo':
+        specifier: 1.0.0
+        version: link:../../packages/utils-seo
+      '@coursebuilder/utils-string':
+        specifier: 1.0.0
+        version: link:../../packages/utils-string
+      '@coursebuilder/utils-ui':
+        specifier: 1.0.0
+        version: link:../../packages/utils-ui
+      '@heroicons/react':
+        specifier: ^2.0.18
+        version: 2.2.0(react@19.0.0)
+      '@hookform/resolvers':
+        specifier: ^3.3.2
+        version: 3.10.0(react-hook-form@7.55.0)
+      '@mdx-js/loader':
+        specifier: ^3.1.0
+        version: 3.1.0(acorn@8.14.1)(webpack@5.98.0)
+      '@mdx-js/mdx':
+        specifier: ^3.1.0
+        version: 3.1.0(acorn@8.14.1)
+      '@mdx-js/react':
+        specifier: ^3.1.0
+        version: 3.1.0(@types/react@19.0.7)(react@19.0.0)
+      '@mux/mux-player-react':
+        specifier: ^2.6.0
+        version: 2.9.1(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
+      '@next/mdx':
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
+      '@planetscale/database':
+        specifier: 1.19.0
+        version: 1.19.0
+      '@react-email/components':
+        specifier: 0.0.27
+        version: 0.0.27(react-dom@19.0.0)(react@19.0.0)
+      '@react-email/markdown':
+        specifier: ^0.0.11
+        version: 0.0.11(react@19.0.0)
+      '@react-email/render':
+        specifier: 1.0.2
+        version: 1.0.2(react-dom@19.0.0)(react@19.0.0)
+      '@sindresorhus/slugify':
+        specifier: ^2.2.1
+        version: 2.2.1
+      '@t3-oss/env-nextjs':
+        specifier: ^0.7.1
+        version: 0.7.3(typescript@5.4.5)(zod@3.24.2)
+      '@tanstack/react-query':
+        specifier: 5.54.1
+        version: 5.54.1(react@19.0.0)
+      '@tanstack/react-query-devtools':
+        specifier: 5.54.1
+        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0)
+      '@trpc/client':
+        specifier: 11.0.1
+        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
+      '@trpc/react-query':
+        specifier: 11.0.1
+        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
+      '@trpc/server':
+        specifier: 11.0.1
+        version: 11.0.1(typescript@5.4.5)
+      '@types/mdx':
+        specifier: ^2.0.13
+        version: 2.0.13
+      '@types/shortid':
+        specifier: ^0.0.31
+        version: 0.0.31
+      '@types/uuid':
+        specifier: 9.0.8
+        version: 9.0.8
+      '@uploadthing/react':
+        specifier: 7.1.5
+        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
+      '@upstash/ratelimit':
+        specifier: ^1.0.1
+        version: 1.2.1
+      '@upstash/redis':
+        specifier: ^1.28.4
+        version: 1.34.6
+      ai:
+        specifier: 4.2.11
+        version: 4.2.11(react@19.0.0)(zod@3.24.2)
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.1
+      clsx:
+        specifier: ^2.0.0
+        version: 2.1.1
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      date-fns-tz:
+        specifier: ^2.0.1
+        version: 2.0.1(date-fns@2.30.0)
+      drizzle-orm:
+        specifier: 0.36.0
+        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
+      framer-motion:
+        specifier: ^12.0.0-alpha.1
+        version: 12.6.3(react-dom@19.0.0)(react@19.0.0)
+      inngest:
+        specifier: ^3.22.5
+        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
+      lucide-react:
+        specifier: ^0.288.0
+        version: 0.288.0(react@19.0.0)
+      mysql2:
+        specifier: ^3.6.1
+        version: 3.14.0
+      nanoid:
+        specifier: ^5.0.2
+        version: 5.1.5
+      next:
+        specifier: 15.3.0-canary.31
+        version: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
+      next-auth:
+        specifier: 5.0.0-beta.25
+        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.10.0)(react@19.0.0)
+      next-axiom:
+        specifier: 1.9.1
+        version: 1.9.1(next@15.3.0-canary.31)(react@19.0.0)
+      next-themes:
+        specifier: ^0.3
+        version: 0.3.0(react-dom@19.0.0)(react@19.0.0)
+      nodemailer:
+        specifier: ^6.7.2
+        version: 6.10.0
+      openai:
+        specifier: 4.91.1
+        version: 4.91.1(zod@3.24.2)
+      partysocket:
+        specifier: 1.0.1
+        version: 1.0.1
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
+      prism-react-renderer:
+        specifier: ^2.2.0
+        version: 2.4.1(react@19.0.0)
+      react:
+        specifier: 19.0.0
+        version: 19.0.0
+      react-dom:
+        specifier: 19.0.0
+        version: 19.0.0(react@19.0.0)
+      react-hook-form:
+        specifier: ^7.48.0
+        version: 7.55.0(react@19.0.0)
+      react-hot-toast:
+        specifier: ^2.4.1
+        version: 2.5.2(react-dom@19.0.0)(react@19.0.0)
+      react-markdown:
+        specifier: 9.0.3
+        version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
+      react-wrap-balancer:
+        specifier: ^0.2.4
+        version: 0.2.4(react@19.0.0)
+      shortid:
+        specifier: ^2.2.16
+        version: 2.2.17
+      squid:
+        specifier: ^0.5.2
+        version: 0.5.2
+      srt-parser-2:
+        specifier: ^1.2.3
+        version: 1.2.3
+      styled-components:
+        specifier: ~5.2.3
+        version: 5.2.3(@babel/core@7.26.10)(react-dom@19.0.0)(react-is@19.1.0)(react@19.0.0)
+      superjson:
+        specifier: ^2.2.1
+        version: 2.2.2
+      tailwind-merge:
+        specifier: ^1.14.0
+        version: 1.14.0
+      tailwind-scrollbar:
+        specifier: ^3.0.0
+        version: 3.1.0(tailwindcss@3.4.17)
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.17)
+      uploadthing:
+        specifier: 7.4.4
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+      y-partykit:
+        specifier: ^0.0.28
+        version: 0.0.28
+      yjs:
+        specifier: ^13.6.10
+        version: 13.6.24
+      zod:
+        specifier: ^3.22.4
+        version: 3.24.2
+    devDependencies:
+      '@tailwindcss/typography':
+        specifier: ^0.5.10
+        version: 0.5.16(tailwindcss@3.4.17)
+      '@types/node':
+        specifier: ^20.12.5
+        version: 20.17.30
+      '@types/pg':
+        specifier: ^8.11.6
+        version: 8.11.11
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
+      '@types/react':
+        specifier: 19.0.7
+        version: 19.0.7
+      '@types/react-gravatar':
+        specifier: ^2.6.13
+        version: 2.6.14
+      concurrently:
+        specifier: ^8.2.2
+        version: 8.2.2
+      dotenv-cli:
+        specifier: ^7.3.0
+        version: 7.4.4
+      drizzle-kit:
+        specifier: 0.27.1
+        version: 0.27.1
+      partykit:
+        specifier: 0.0.104
+        version: 0.0.104
+      postcss:
+        specifier: ^8.4.47
+        version: 8.5.3
+      prettier:
+        specifier: ^3.2.5
+        version: 3.5.3
+      prettier-plugin-tailwindcss:
+        specifier: ^0.5.12
+        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.4.17(ts-node@10.9.2)
+      tsx:
+        specifier: ^4.7.1
+        version: 4.19.3
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+
+  apps/epicdev-ai:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.3.6
@@ -3071,295 +3360,6 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
-
-  apps/epic-react:
-    dependencies:
-      '@auth/core':
-        specifier: 0.37.2
-        version: 0.37.2(nodemailer@6.10.0)
-      '@casl/ability':
-        specifier: ^6.5.0
-        version: 6.7.3
-      '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
-        version: link:../../packages/adapter-drizzle
-      '@coursebuilder/core':
-        specifier: 1.0.3
-        version: link:../../packages/core
-      '@coursebuilder/next':
-        specifier: workspace:^
-        version: link:../../packages/next
-      '@coursebuilder/nodash':
-        specifier: workspace:^
-        version: link:../../packages/nodash
-      '@coursebuilder/ui':
-        specifier: ^2.0.4
-        version: link:../../packages/ui
-      '@coursebuilder/utils-ai':
-        specifier: 1.0.0
-        version: link:../../packages/utils-ai
-      '@coursebuilder/utils-browser':
-        specifier: 1.0.0
-        version: link:../../packages/utils-browser
-      '@coursebuilder/utils-core':
-        specifier: 1.0.0
-        version: link:../../packages/utils-core
-      '@coursebuilder/utils-email':
-        specifier: 1.0.0
-        version: link:../../packages/utils-email
-      '@coursebuilder/utils-file':
-        specifier: 1.0.0
-        version: link:../../packages/utils-file
-      '@coursebuilder/utils-media':
-        specifier: 1.0.0
-        version: link:../../packages/utils-media
-      '@coursebuilder/utils-seo':
-        specifier: 1.0.0
-        version: link:../../packages/utils-seo
-      '@coursebuilder/utils-string':
-        specifier: 1.0.0
-        version: link:../../packages/utils-string
-      '@coursebuilder/utils-ui':
-        specifier: 1.0.0
-        version: link:../../packages/utils-ui
-      '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.2.0(react@19.0.0)
-      '@hookform/resolvers':
-        specifier: ^3.3.2
-        version: 3.10.0(react-hook-form@7.55.0)
-      '@mdx-js/loader':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.1)(webpack@5.98.0)
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.0(acorn@8.14.1)
-      '@mdx-js/react':
-        specifier: ^3.1.0
-        version: 3.1.0(@types/react@19.0.7)(react@19.0.0)
-      '@mux/mux-player-react':
-        specifier: ^2.6.0
-        version: 2.9.1(@types/react-dom@19.0.3)(@types/react@19.0.7)(react-dom@19.0.0)(react@19.0.0)
-      '@next/mdx':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
-      '@planetscale/database':
-        specifier: 1.19.0
-        version: 1.19.0
-      '@react-email/components':
-        specifier: 0.0.27
-        version: 0.0.27(react-dom@19.0.0)(react@19.0.0)
-      '@react-email/markdown':
-        specifier: ^0.0.11
-        version: 0.0.11(react@19.0.0)
-      '@react-email/render':
-        specifier: 1.0.2
-        version: 1.0.2(react-dom@19.0.0)(react@19.0.0)
-      '@sindresorhus/slugify':
-        specifier: ^2.2.1
-        version: 2.2.1
-      '@t3-oss/env-nextjs':
-        specifier: ^0.7.1
-        version: 0.7.3(typescript@5.4.5)(zod@3.24.2)
-      '@tanstack/react-query':
-        specifier: 5.54.1
-        version: 5.54.1(react@19.0.0)
-      '@tanstack/react-query-devtools':
-        specifier: 5.54.1
-        version: 5.54.1(@tanstack/react-query@5.54.1)(react@19.0.0)
-      '@trpc/client':
-        specifier: 11.0.1
-        version: 11.0.1(@trpc/server@11.0.1)(typescript@5.4.5)
-      '@trpc/react-query':
-        specifier: 11.0.1
-        version: 11.0.1(@tanstack/react-query@5.54.1)(@trpc/client@11.0.1)(@trpc/server@11.0.1)(react-dom@19.0.0)(react@19.0.0)(typescript@5.4.5)
-      '@trpc/server':
-        specifier: 11.0.1
-        version: 11.0.1(typescript@5.4.5)
-      '@types/mdx':
-        specifier: ^2.0.13
-        version: 2.0.13
-      '@types/shortid':
-        specifier: ^0.0.31
-        version: 0.0.31
-      '@types/uuid':
-        specifier: 9.0.8
-        version: 9.0.8
-      '@uploadthing/react':
-        specifier: 7.1.5
-        version: 7.1.5(next@15.3.0-canary.31)(react@19.0.0)(uploadthing@7.4.4)
-      '@upstash/ratelimit':
-        specifier: ^1.0.1
-        version: 1.2.1
-      '@upstash/redis':
-        specifier: ^1.28.4
-        version: 1.34.6
-      ai:
-        specifier: 4.2.11
-        version: 4.2.11(react@19.0.0)(zod@3.24.2)
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.1
-      clsx:
-        specifier: ^2.0.0
-        version: 2.1.1
-      date-fns:
-        specifier: ^2.30.0
-        version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.1
-        version: 2.0.1(date-fns@2.30.0)
-      drizzle-orm:
-        specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
-      framer-motion:
-        specifier: ^12.0.0-alpha.1
-        version: 12.6.3(react-dom@19.0.0)(react@19.0.0)
-      inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
-      lucide-react:
-        specifier: ^0.288.0
-        version: 0.288.0(react@19.0.0)
-      mysql2:
-        specifier: ^3.6.1
-        version: 3.14.0
-      nanoid:
-        specifier: ^5.0.2
-        version: 5.1.5
-      next:
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
-      next-auth:
-        specifier: 5.0.0-beta.25
-        version: 5.0.0-beta.25(next@15.3.0-canary.31)(nodemailer@6.10.0)(react@19.0.0)
-      next-axiom:
-        specifier: 1.9.1
-        version: 1.9.1(next@15.3.0-canary.31)(react@19.0.0)
-      next-themes:
-        specifier: ^0.3
-        version: 0.3.0(react-dom@19.0.0)(react@19.0.0)
-      nodemailer:
-        specifier: ^6.7.2
-        version: 6.10.0
-      openai:
-        specifier: 4.91.1
-        version: 4.91.1(zod@3.24.2)
-      partysocket:
-        specifier: 1.0.1
-        version: 1.0.1
-      pluralize:
-        specifier: ^8.0.0
-        version: 8.0.0
-      prism-react-renderer:
-        specifier: ^2.2.0
-        version: 2.4.1(react@19.0.0)
-      react:
-        specifier: 19.0.0
-        version: 19.0.0
-      react-dom:
-        specifier: 19.0.0
-        version: 19.0.0(react@19.0.0)
-      react-hook-form:
-        specifier: ^7.48.0
-        version: 7.55.0(react@19.0.0)
-      react-hot-toast:
-        specifier: ^2.4.1
-        version: 2.5.2(react-dom@19.0.0)(react@19.0.0)
-      react-markdown:
-        specifier: 9.0.3
-        version: 9.0.3(@types/react@19.0.7)(react@19.0.0)
-      react-wrap-balancer:
-        specifier: ^0.2.4
-        version: 0.2.4(react@19.0.0)
-      shortid:
-        specifier: ^2.2.16
-        version: 2.2.17
-      squid:
-        specifier: ^0.5.2
-        version: 0.5.2
-      srt-parser-2:
-        specifier: ^1.2.3
-        version: 1.2.3
-      styled-components:
-        specifier: ~5.2.3
-        version: 5.2.3(@babel/core@7.26.10)(react-dom@19.0.0)(react-is@19.1.0)(react@19.0.0)
-      superjson:
-        specifier: ^2.2.1
-        version: 2.2.2
-      tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
-      tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
-      tailwindcss-animate:
-        specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
-      uploadthing:
-        specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
-      uuid:
-        specifier: ^9.0.1
-        version: 9.0.1
-      y-partykit:
-        specifier: ^0.0.28
-        version: 0.0.28
-      yjs:
-        specifier: ^13.6.10
-        version: 13.6.24
-      zod:
-        specifier: ^3.22.4
-        version: 3.24.2
-    devDependencies:
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
-      '@types/node':
-        specifier: ^20.12.5
-        version: 20.17.30
-      '@types/pg':
-        specifier: ^8.11.6
-        version: 8.11.11
-      '@types/pluralize':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/react':
-        specifier: 19.0.7
-        version: 19.0.7
-      '@types/react-gravatar':
-        specifier: ^2.6.13
-        version: 2.6.14
-      concurrently:
-        specifier: ^8.2.2
-        version: 8.2.2
-      dotenv-cli:
-        specifier: ^7.3.0
-        version: 7.4.4
-      drizzle-kit:
-        specifier: 0.27.1
-        version: 0.27.1
-      partykit:
-        specifier: 0.0.104
-        version: 0.0.104
-      postcss:
-        specifier: ^8.4.47
-        version: 8.5.3
-      prettier:
-        specifier: ^3.2.5
-        version: 3.5.3
-      prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.19.3
-      typescript:
-        specifier: 5.4.5
-        version: 5.4.5
 
   apps/go-local-first:
     dependencies:
@@ -28877,7 +28877,7 @@ packages:
     dependencies:
       nanoid: 3.3.11
       picocolors: 1.1.1
-      source-map-js: 1.0.2
+      source-map-js: 1.2.1
     dev: false
 
   /postcss@8.5.3:
@@ -30376,7 +30376,7 @@ packages:
     dependencies:
       debug: 4.4.0(supports-color@5.5.0)
       module-details-from-path: 1.0.3
-      resolve: 1.22.8
+      resolve: 1.22.10
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -31829,7 +31829,7 @@ packages:
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       didyoumean: 1.2.2
       dlv: 1.1.3
       fast-glob: 3.3.3
