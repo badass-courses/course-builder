@@ -155,9 +155,8 @@ export default function ListResourceNavigation({
 export function MobileListResourceNavigation() {
 	const { list } = useList()
 	const [isOpen, setIsOpen] = React.useState(false)
-	const searchParams = useSearchParams()
+
 	if (!list) return null
-	if (!searchParams.has('list')) return null
 
 	return (
 		<>

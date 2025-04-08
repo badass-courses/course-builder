@@ -116,7 +116,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					<div>
 						<AlignLeft className="size-4" />
 					</div>
-					<div className="font-medium">On this page</div>
+					<div className="flex-shrink-0 font-medium">On this page</div>
 					<div>
 						<ChevronRight
 							className={cn(
