@@ -21,7 +21,7 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"openai": "^4.28.4"
+		"openai": "4.91.1"
 	},
 	"devDependencies": {
 		"@types/node": "^20.12.5",
