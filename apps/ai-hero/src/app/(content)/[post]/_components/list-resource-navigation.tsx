@@ -155,13 +155,12 @@ export default function ListResourceNavigation({
 export function MobileListResourceNavigation() {
 	const { list } = useList()
 	const [isOpen, setIsOpen] = React.useState(false)
-	const searchParams = useSearchParams()
+
 	if (!list) return null
-	if (!searchParams.has('list')) return null
 
 	return (
 		<>
-			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow xl:sr-only xl:hidden">
+			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow sm:left-3 xl:sr-only xl:hidden">
 				<Button
 					className="rounded"
 					onClick={() => {
