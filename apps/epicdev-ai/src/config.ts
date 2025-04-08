@@ -10,7 +10,7 @@ const config = {
 		{
 			rel: 'mask-icon',
 			href: `${process.env.NEXT_PUBLIC_URL}/favicon.svg`,
-			color: '#363438',
+			color: '#7C3BED',
 		},
 		{
 			rel: 'apple-touch-icon',
@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `card@2x.jpg`,
+				url: `https://res.cloudinary.com/epic-web/image/upload/v1744126642/epicdev.ai/card_2x.jpg`,
 				width: 1200,
 				height: 630,
 			},
