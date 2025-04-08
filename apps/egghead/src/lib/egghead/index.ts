@@ -22,3 +22,5 @@ export * from './tags'
 
 // Re-export utility functions
 export * from './utils'
+
+export * from './instructor'

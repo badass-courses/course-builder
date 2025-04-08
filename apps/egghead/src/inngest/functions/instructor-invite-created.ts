@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { communicationPreferences, invites, userRoles } from '@/db/schema'
 import BasicEmail from '@/emails/basic-email'
+import InstructorInviteEmail from '@/emails/instructor-invite-email'
 import { INSTRUCTOR_INVITE_CREATED_EVENT } from '@/inngest/events/instructor-invite-created'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -18,37 +19,36 @@ export const instructorInviteCreated = inngest.createFunction(
 		event: INSTRUCTOR_INVITE_CREATED_EVENT,
 	},
 	async ({ event, step }) => {
-		// const email = {
-		// 	body: `{{user.email}} signed up.`,
-		// 	subject: 'egghead Post Builder Signup from {{user.email}}',
-		// }
-
-		await step.run('create invite', async () => {
-			const invite = await db.insert(invites).values({
-				id: nanoid(),
+		const newInviteId = await step.run('create invite', async () => {
+			const inviteId = nanoid()
+			await db.insert(invites).values({
+				id: inviteId,
 				inviteState: 'INITIATED',
 				inviteEmail: event.data.email,
+				invitedById: event.data.invitedById,
 				createdAt: new Date(),
 			})
 
-			return invite
+			return inviteId
 		})
 
-		// const sendResponse = await step.run('send the email', async () => {
-		// 	return await sendAnEmail({
-		// 		Component: BasicEmail,
-		// 		componentProps: {
-		// 			body: email.body,
-		// 		},
-		// 		Subject: email.subject,
-		// 		To: event.user.email,
-		// 		type: 'broadcast',
-		// 	})
-		// })
+		const inviteUrl = `${process.env.COURSEBUILDER_URL}/invites/${newInviteId}`
+
+		const sendResponse = await step.run('send the invite email', async () => {
+			return await sendAnEmail({
+				Component: InstructorInviteEmail,
+				componentProps: {
+					inviteUrl,
+				},
+				Subject: 'You have been invited to join egghead as an instructor',
+				To: event.data.email,
+				ReplyTo: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				From: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				type: 'transactional',
+			})
+		})
 
 		return {
-			// sendResponse,
-			// email,
 			email: event.data.email,
 		}
 	},
