@@ -58,10 +58,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	)
 
 	return (
-		<div className="flex items-stretch sm:hidden">
+		<div className="absolute right-0 flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex h-full items-center justify-center border-l px-5"
+				className="flex h-full items-center justify-center"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
@@ -119,7 +119,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 							<ul className="flex flex-col gap-1">
 								{links.map((link) => (
 									<NavLinkItem
-										className=""
+										className="[&_span]:flex [&_span]:items-center"
 										key={link.href || link.label}
 										{...link}
 									/>

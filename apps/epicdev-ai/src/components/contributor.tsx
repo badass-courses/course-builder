@@ -12,7 +12,7 @@ export const Contributor: React.FC<{ className?: string }> = ({
 	return (
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<ContributorImage />
-			<span className="text-muted-foreground">{config.author}</span>
+			<span className="text-foreground">{config.author}</span>
 		</div>
 	)
 }
@@ -27,13 +27,13 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
+				'https://res.cloudinary.com/epic-web/image/upload/v1718221991/epicweb.dev/instructors/kent-c-dodds.png'
 			}
 			alt={config.author}
 			width={40}
 			height={40}
 			priority
-			className={cn('rounded-full', className)}
+			className={cn('bg-muted rounded-full', className)}
 		/>
 	)
 }

@@ -1,4 +1,5 @@
 import LayoutClient from '@/components/layout-client'
+import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
@@ -26,13 +27,15 @@ export default async function Layout(props: {
 	return (
 		<ListProvider initialList={list}>
 			<ProgressProvider initialProgress={initialProgress}>
-				<LayoutClient withContainer>
-					<div className="flex flex-1">
-						<ListResourceNavigation />
-						<MobileListResourceNavigation />
-						<div className="w-full min-w-0">{props.children}</div>
-					</div>
-				</LayoutClient>
+				<ActiveHeadingProvider>
+					<LayoutClient withContainer>
+						<div className="flex flex-1">
+							<ListResourceNavigation />
+							<MobileListResourceNavigation />
+							<div className="w-full min-w-0">{props.children}</div>
+						</div>
+					</LayoutClient>
+				</ActiveHeadingProvider>
 			</ProgressProvider>
 		</ListProvider>
 	)

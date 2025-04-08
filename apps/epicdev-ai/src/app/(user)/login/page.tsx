@@ -19,7 +19,7 @@ export default async function LoginPage() {
 			<Login
 				csrfToken={csrfToken}
 				providers={providers}
-				title={`Log In`}
+				title={`Sign in`}
 				subtitle={`We'll create your account if you don't have one yet.`}
 			/>
 		</LayoutClient>

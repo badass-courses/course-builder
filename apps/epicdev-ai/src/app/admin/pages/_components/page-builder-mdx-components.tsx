@@ -3,6 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 import { CldImage } from '@/components/cld-image'
+import MDXVideo from '@/components/content/mdx-video'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -63,31 +65,55 @@ const Spacer = ({
 	)
 }
 
+const SubscribeForm = ({
+	title,
+	byline,
+	actionLabel,
+	formId,
+}: {
+	title: string
+	byline: string
+	actionLabel: string
+	formId: number
+}) => {
+	return (
+		<PrimaryNewsletterCta
+			className="not-prose w-full"
+			formId={formId}
+			title={title}
+			byline={byline}
+			actionLabel={actionLabel}
+		/>
+	)
+}
+
 const Instructor = ({
 	className,
 	children,
+	title,
 }: {
 	className?: string
 	children?: React.ReactNode
+	title?: string
 }) => {
 	return (
 		<section
 			className={cn(
-				'not-prose relative flex w-full flex-col items-center gap-16 border-y px-5 py-16 lg:flex-row lg:px-16',
+				'not-prose relative flex w-full flex-col items-center gap-10 py-5',
 				className,
 			)}
 		>
-			{/* <CldImage
+			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png"
+				src="https://res.cloudinary.com/epic-web/image/upload/v1744119330/epicweb.dev/instructors/kent-speaking-all-things-open.webp"
 				alt={config.author}
-				width={290}
-				height={290}
-				className="flex-shrink-0 rotate-2"
-			/> */}
+				width={1280}
+				height={854}
+				className="flex-shrink-0 rounded-md"
+			/>
 
 			<div className="">
-				<h3 className="mb-5 text-3xl font-bold">Hi, I'm {config.author}</h3>
+				<h3 className="mb-5 text-3xl font-bold">{title || config.author}</h3>
 				<div className="flex flex-col gap-3 text-xl leading-relaxed">
 					{children}
 				</div>
@@ -147,40 +173,28 @@ const Testimonial = ({
 }
 
 const data = {
-	layout: [
+	ctas: [
 		{
-			name: 'Spacer',
-			component: Spacer,
+			name: 'PrimaryNewsletterCta',
+			component: PrimaryNewsletterCta,
 			props: {
-				variant: 'default',
+				title: 'Primary Newsletter Title',
+				byline: 'Primary Newsletter Byline',
+				actionLabel: 'Subscribe',
 			},
 		},
-	],
-	typography: [
 		{
-			name: 'CenteredTitle',
-			component: CenteredTitle,
+			name: 'SubscribeForm',
+			component: SubscribeForm,
 			props: {
-				as: 'h2',
-				children: 'Centered Title',
+				title: 'Subscribe to this event',
+				byline: 'Get the latest news and updates from me',
+				actionLabel: 'Subscribe',
+				formId: 123,
+				onSuccess: (router: any) => {
+					router.push('/')
+				},
 			},
-		},
-	],
-	sections: [
-		{
-			name: 'Section',
-			component: Section,
-			props: {
-				title: 'Section Title',
-				children: 'Section Content',
-			},
-		},
-	],
-	instructor: [
-		{
-			name: 'Instructor',
-			component: Instructor,
-			props: {},
 		},
 	],
 	lists: [
@@ -188,6 +202,15 @@ const data = {
 			name: 'CheckList',
 			component: CheckList,
 			props: {},
+		},
+	],
+	instructor: [
+		{
+			name: 'Instructor',
+			component: Instructor,
+			props: {
+				title: 'Kent C. Dodds',
+			},
 		},
 	],
 	testimonial: [
@@ -199,6 +222,13 @@ const data = {
 				authorAvatar: 'http://res.cloudinary.com/TODO',
 				children: 'This is my feedback',
 			},
+		},
+	],
+	video: [
+		{
+			name: 'Video',
+			component: MDXVideo,
+			props: {},
 		},
 	],
 }
@@ -229,121 +259,93 @@ const BlockItem = ({
 const PageBlocks = () => {
 	return (
 		<div className="flex flex-col gap-4 ">
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Layout</strong>
-				{data.layout.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData('text/plain', `<${item.name} />`)
-							}
-						/>
-					)
-				})}
-			</div>
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Typography</strong>
-				{data.typography.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData(
-									'text/plain',
-									`<${item.name}>${item.name}</${item.name}>`,
-								)
-							}
-						/>
-					)
-				})}
-			</div>
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Lists</strong>
-				{data.lists.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData(
-									'text/plain',
-									`
-<ul data-checklist="">
-- List Item 1
-- List Item 2
-- List Item 3
-</ul>
+			{data?.ctas && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">CTAs</strong>
+					{data?.ctas?.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`<${item.name} ${Object.entries(item.props)
+											.map(([key, value]) => `${key}="${value}"`)
+											.join(' ')} />`,
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
+			{data?.video && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">Video</strong>
+					{data?.video?.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`
+<${item.name} resourceId="RESOURCE_ID_FROM_DATABASE" />
 `,
-								)
-							}
-						/>
-					)
-				})}
-			</div>
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Sections</strong>
-				{data.sections.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData(
-									'text/plain',
-									`<${item.name}>${item.name}</${item.name}>`,
-								)
-							}
-						/>
-					)
-				})}
-			</div>
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Instructor</strong>
-				{data.instructor.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData(
-									'text/plain',
-									`
-<${item.name}>
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
 
-Before creating AI Hero, I created Total TypeScript - the industry standard course for learning TS.
+			{data?.instructor && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">Instructor</strong>
+					{data?.instructor?.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`
+<${item.name} title="Kent C. Dodds">
 
-I was a member of the XState core team, and was a developer advocate at Vercel.
-
-I'm building AI Hero to make the secrets of the AI Engineer available to everyone.
+Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's actively involved in the open source community as a maintainer and contributor of hundreds of popular npm packages. He is the creator of EpicReact.Dev and TestingJavaScript.com. He's an instructor on egghead.io and Frontend Masters. He's also a Google Developer Expert. Kent is happily married and the father of four kids. He likes his family, code, JavaScript, and Remix.
 
 </${item.name}>
 `,
-								)
-							}
-						/>
-					)
-				})}
-			</div>
-			<div className="flex flex-wrap items-center gap-1">
-				<strong className="mb-1">Testimonials</strong>
-				{data.testimonial.map((item, index) => {
-					return (
-						<BlockItem
-							key={item.name}
-							item={item}
-							onDragStart={(e) =>
-								e.dataTransfer.setData(
-									'text/plain',
-									`<${item.name} authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
-								)
-							}
-						/>
-					)
-				})}
-			</div>
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
+			{data?.testimonial && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">Testimonials</strong>
+					{data.testimonial.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`<${item.name} authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
 		</div>
 	)
 }
@@ -353,7 +355,6 @@ I'm building AI Hero to make the secrets of the AI Engineer available to everyon
 const allMdxPageBuilderComponents = {
 	CenteredTitle,
 	Instructor,
-
 	Spacer,
 	Section,
 	CheckList,
@@ -370,4 +371,5 @@ export {
 	allMdxPageBuilderComponents,
 	PageBlocks,
 	Testimonial,
+	SubscribeForm,
 }

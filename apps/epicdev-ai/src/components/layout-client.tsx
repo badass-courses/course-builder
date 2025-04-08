@@ -24,13 +24,13 @@ export default function LayoutClient({
 			className={cn(
 				'',
 				{
-					'relative mx-auto w-full max-w-[1200px]': withContainer,
+					'relative mx-auto w-full max-w-[1200px] px-8 sm:px-10': withContainer,
 				},
 				className,
 			)}
 		>
-			<div className="border-x">
-				<Navigation />
+			<div className="">
+				<Navigation withContainer={withContainer} />
 				{children}
 				<Footer />
 			</div>

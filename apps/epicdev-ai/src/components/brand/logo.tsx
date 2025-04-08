@@ -3,8 +3,14 @@ import { cn } from '@/utils/cn'
 
 export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 	return (
-		<div className={cn('flex items-center gap-2', className)}>
-			{env.NEXT_PUBLIC_APP_NAME}
+		<div
+			className={cn(
+				'text-primary flex items-center gap-2 font-bold tracking-tight',
+				className,
+			)}
+		>
+			Epic <span className="text-foreground -mx-1 font-mono">AI</span>{' '}
+			<span className="text-foreground">Dev</span>
 		</div>
 	)
 }

@@ -87,7 +87,7 @@ export default function RootLayout({
 								disableTransitionOnChange
 							>
 								<HolyLoader
-									color="hsl(var(--primary))"
+									color="hsl(var(--foreground))"
 									height="0.15rem"
 									speed={250}
 								/>

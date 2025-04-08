@@ -30,7 +30,7 @@ export function ThemeToggle({ className }: { className?: string }) {
 				<Button
 					variant="link"
 					className={cn(
-						'text-foreground flex h-full items-stretch gap-2 rounded-none py-2 sm:py-0',
+						'text-foreground flex h-full items-stretch gap-2 py-3',
 						className,
 					)}
 				>

@@ -1,5 +1,7 @@
 import * as React from 'react'
 import { api } from '@/trpc/react'
+import { AcademicCapIcon } from '@heroicons/react/24/outline'
+import { Newspaper } from 'lucide-react'
 
 import type { NavLinkItem } from './nav-link-item'
 
@@ -11,7 +13,13 @@ export function useNavLinks() {
 	return [
 		{
 			href: '/posts',
-			label: 'Learn',
+			label: (
+				<>
+					<AcademicCapIcon className="text-muted-foreground mr-1 size-5" />
+					Learn
+				</>
+			),
+
 			// label: (
 			// 	<span className="relative">
 			// 		Posts
@@ -25,6 +33,15 @@ export function useNavLinks() {
 			// 		)}
 			// 	</span>
 			// ),
+		},
+		{
+			href: '/newsletter',
+			label: (
+				<>
+					<Newspaper className="text-muted-foreground mr-2 size-4" />
+					Newsletter
+				</>
+			),
 		},
 		// {
 		// 	href: '/workshops',

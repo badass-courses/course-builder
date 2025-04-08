@@ -16,7 +16,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { Github } from 'lucide-react'
+import { ChevronLeft, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
@@ -61,32 +61,37 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<main className="bg-card w-full dark:bg-transparent">
+		<main className="w-full">
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
 				className={cn('relative w-full', {
-					'pt-6 sm:pt-14': !hasVideo,
+					'pt-6 sm:pt-10': !hasVideo,
 				})}
 			>
-				<div className="relative z-10 mx-auto flex w-full items-center justify-between px-5 md:px-10 lg:px-14">
-					{!list ? (
-						<Link
-							href="/posts"
-							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
-						>
-							← All Posts
-						</Link>
-					) : (
-						<div />
-					)}
-				</div>
+				<Suspense fallback={null}>
+					<PostActionBar post={post} />
+				</Suspense>
+				{post?.fields?.postType !== 'event' && (
+					<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
+						{!list ? (
+							<Link
+								href="/posts"
+								className="hover:text-primary mb-3 inline-flex items-center text-sm font-medium transition ease-in-out"
+							>
+								<ChevronLeft className="mr-1 size-3" /> All Posts
+							</Link>
+						) : (
+							<div />
+						)}
+					</div>
+				)}
 				<div className="relative z-10">
 					<article className="relative flex h-full flex-col">
-						<div className="mx-auto flex w-full flex-col gap-5 px-5 md:px-10 lg:px-14">
+						<div className="mx-auto flex w-full flex-col items-center justify-center gap-5 pb-10">
 							<PostTitle post={post} />
-							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
-								<div className="flex items-center gap-8">
-									<Contributor className="flex [&_img]:w-8" />
+							<div className="relative mb-3 flex w-full items-center justify-center gap-3">
+								<div className="flex w-full items-center justify-center gap-8">
+									<Contributor className=" " />
 									{post.fields?.github && (
 										<Button
 											asChild
@@ -100,13 +105,12 @@ export default async function PostPage(props: {
 										</Button>
 									)}
 								</div>
-								<Suspense fallback={null}>
-									<PostActionBar post={post} />
-								</Suspense>
 							</div>
 						</div>
 						{post?.type === 'post' && post?.fields?.body && (
-							<PostToC markdown={post?.fields?.body} />
+							<div className="mx-auto w-full max-w-3xl">
+								<PostToC markdown={post?.fields?.body} />
+							</div>
 						)}
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
@@ -115,7 +119,7 @@ export default async function PostPage(props: {
 										postId={post.id}
 									/>
 								)} */}
-						{!hasVideo && (
+						{!hasVideo && post?.fields?.postType !== 'event' && (
 							<PrimaryNewsletterCta
 								isHiddenForSubscribers
 								className="pt-20"
@@ -128,14 +132,16 @@ export default async function PostPage(props: {
 								}}
 							/>
 						)}
-						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 border-t pl-5">
+						<div className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
-								className="inline-flex rounded-none border-y-0"
+								className="inline-flex rounded-md border"
 								title={post?.fields.title}
 							/>
 						</div>
-						<PostNextUpFromListPagination postId={post.id} />
+						{post?.fields?.postType !== 'event' && (
+							<PostNextUpFromListPagination postId={post.id} />
+						)}
 					</article>
 				</div>
 			</div>
@@ -172,8 +178,8 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<div className="px-5 md:px-10 lg:px-14">
-			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+		<div className="">
+			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto mt-10 max-w-3xl">
 				{content}
 			</article>
 		</div>
@@ -182,7 +188,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold dark:text-white">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full text-center font-bold dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
@@ -290,7 +296,7 @@ async function PostActionBar({ post }: { post: Post | null }) {
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
+				<Button asChild size="sm" className="absolute right-0 top-0 z-10">
 					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
 				</Button>
 			) : null}

@@ -1,7 +1,10 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import {
+	SubscribeForm,
+	Testimonial,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage } from '@/components/cld-image'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
@@ -74,7 +77,7 @@ const Home = async (props: Props) => {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="flex w-full flex-col justify-center px-5 py-10 sm:px-10">
+			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link
 						className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
@@ -85,12 +88,16 @@ const Home = async (props: Props) => {
 					</Link>
 				)}
 				<header>
-					<h1 className="text-center text-5xl font-semibold">
+					<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full py-10 text-center font-bold dark:text-white">
 						{page?.fields?.title || 'Title'}
 					</h1>
 				</header>
 
-				<article className={cn('prose dark:prose-invert py-10')}>
+				<article
+					className={cn(
+						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',
+					)}
+				>
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
@@ -102,6 +109,7 @@ const Home = async (props: Props) => {
 								CheckList,
 								Testimonial,
 								CldImage: (props) => <CldImage {...props} />,
+								SubscribeForm,
 								PrimaryNewsletterCta: (props) => (
 									<PrimaryNewsletterCta
 										resource={firstPageResource}

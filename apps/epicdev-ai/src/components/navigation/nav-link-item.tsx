@@ -46,8 +46,8 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	)
 
 	const styles = {
-		nav: 'text-foreground hover:bg-muted relative flex h-full items-center px-5 w-full justify-start text-lg sm:text-sm transition hover:no-underline sm:px-5',
-		menu: 'text-foreground hover:bg-muted flex w-full items-center justify-start text-xl hover:no-underline px-3 sm:text-sm',
+		nav: 'text-foreground relative hover:no-underline hover:text-primary flex h-full items-center px-5 w-full justify-start text-lg sm:text-sm transition sm:px-5',
+		menu: 'text-foreground flex w-full items-center justify-start text-xl hover:no-underline hover:text-primary px-3 sm:text-sm',
 	}
 
 	return (
@@ -56,7 +56,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 				className={cn(
 					styles[variant],
 					{
-						underline: isActive,
+						'text-primary [&_svg]:text-primary': isActive,
 						'bg-muted': isActive && variant === 'menu',
 					},
 					className,

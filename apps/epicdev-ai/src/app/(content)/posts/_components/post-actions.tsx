@@ -139,7 +139,11 @@ export function PostActions({
 					</AccordionItem>
 				</Accordion>
 			) : null}
-			<CreatePostModal />
+			<CreatePostModal
+				availableResourceTypes={['article', 'event']}
+				defaultResourceType="article"
+				topLevelResourceTypes={['post']}
+			/>
 		</aside>
 	)
 }

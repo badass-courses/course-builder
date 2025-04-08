@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useActiveHeadingContext } from '@/hooks/use-active-heading'
 import { extractMarkdownHeadings } from '@/utils/extract-markdown-headings'
 import { motion } from 'framer-motion'
 import { AlignLeft, ChevronRight } from 'lucide-react'
@@ -82,7 +83,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	}
 
 	const data = filterHeadings(allHeadings)
-	const { activeHeading } = { activeHeading: null } // useActiveHeadingContext()
+	const { activeHeading } = useActiveHeadingContext()
 	const [isOpen, setIsOpen] = React.useState(false)
 	const containerRef = React.useRef<HTMLElement>(null)
 
@@ -102,10 +103,10 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y"
+			className="bg-background sticky top-0 z-50 -mb-5 flex min-w-[200px] flex-col sm:relative"
 			aria-label="On this page"
 		>
-			<div className="mx-auto flex w-full max-w-screen-xl items-center px-5 md:px-10 lg:px-16">
+			<div className="mx-auto flex w-full max-w-screen-xl items-center">
 				<button
 					onClick={() => {
 						setIsOpen(!isOpen)
@@ -135,13 +136,13 @@ export default function PostToC({ markdown }: { markdown: string }) {
 							},
 						)}
 					>
-						{/* {activeHeading?.text} */}
+						{activeHeading?.text}
 					</p>
 				</button>
 				{isOpen && (
-					<div className="bg-background absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto border-y pb-5">
-						<ol className="relative mx-auto w-full max-w-screen-xl px-5 md:px-10 lg:px-16">
-							<div className="bg-border absolute left-5 h-full w-px md:left-10 lg:left-16" />
+					<div className="bg-card absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto rounded-md border py-3 shadow">
+						<ol className="relative mx-auto w-full max-w-screen-xl">
+							{/* <div className="bg-border absolute left-0 h-full w-px" /> */}
 							{data.map((item) => (
 								<TOCItem
 									key={item.slug}

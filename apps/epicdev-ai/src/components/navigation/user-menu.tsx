@@ -10,6 +10,7 @@ import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import {
+	Button,
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuLabel,
@@ -44,7 +45,13 @@ export const UserMenu = () => {
 	}
 
 	if (!sessionData?.user?.email) {
-		return <NavLinkItem className="border-l" label="Log in" href="/login" />
+		return (
+			<NavLinkItem
+				className="rounded-md border"
+				label="Sign in"
+				href="/login"
+			/>
+		)
 	}
 
 	const userAvatar = sessionData.user.image ? (
@@ -65,19 +72,24 @@ export const UserMenu = () => {
 
 	return (
 		<>
-			{canViewTeam && <NavLinkItem label="Invite Team" href="/team" />}
+			{/* {canViewTeam && <NavLinkItem label="Invite Team" href="/team" />} */}
 			<li className="hidden items-stretch sm:flex">
 				<DropdownMenu>
-					<DropdownMenuTrigger className="hover:bg-muted flex items-center space-x-1 border-l px-5">
-						{userAvatar}
-						<div className="flex flex-col pl-0.5">
-							<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
-								<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
-									{sessionData.user.name?.split(' ')[0] || 'Account'}
+					<DropdownMenuTrigger asChild>
+						<Button
+							variant="link"
+							className="text-foreground hover:text-primary flex items-center space-x-1 px-5 py-2"
+						>
+							{userAvatar}
+							<div className="flex flex-col pl-0.5">
+								<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
+									<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
+										{sessionData.user.name?.split(' ')[0] || 'Account'}
+									</span>
+									<ChevronDownIcon className="w-2" />
 								</span>
-								<ChevronDownIcon className="w-2" />
-							</span>
-						</div>
+							</div>
+						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
 						<DropdownMenuLabel>
@@ -85,22 +97,18 @@ export const UserMenu = () => {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<ul className="flex flex-col">
-							{canViewInvoice && (
-								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
-							)}
-							<NavLinkItem variant="menu" href="/profile" label="Profile" />
 							{canCreateContent && (
-								<NavLinkItem
-									variant="menu"
-									href="/admin/dashboard"
-									label="Admin"
-								/>
+								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
 							)}
+							{/* {canViewInvoice && (
+								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
+							)} */}
+							{/* <NavLinkItem variant="menu" href="/profile" label="Profile" /> */}
 							<hr className="my-1" />
 							<NavLinkItem
 								variant="menu"
 								href="#"
-								label="Log out"
+								label="Sign out"
 								onClick={() => signOut()}
 								icon={<ArrowRightEndOnRectangleIcon className="mr-2 h-4 w-4" />}
 							/>

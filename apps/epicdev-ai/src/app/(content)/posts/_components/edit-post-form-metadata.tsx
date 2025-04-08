@@ -3,7 +3,8 @@ import { use } from 'react'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
-import { Post, PostSchema } from '@/lib/posts'
+import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
+import { POST_SUBTYPES } from '@/lib/resource-types'
 import { Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -17,6 +18,11 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 	Textarea,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
@@ -134,6 +140,36 @@ export const PostMetadataFormFields: React.FC<{
 						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.postType"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Post Type</FormLabel>
+						<FormDescription>
+							Select the type of post you are creating.
+						</FormDescription>
+						<Select
+							onValueChange={(value) => {
+								field.onChange(value)
+							}}
+							defaultValue={field.value}
+							{...field}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Select a post type" />
+							</SelectTrigger>
+							<SelectContent>
+								{POST_SUBTYPES.map((type) => (
+									<SelectItem key={type} value={type}>
+										{type}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 					</FormItem>
 				)}
 			/>

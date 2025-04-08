@@ -17,11 +17,12 @@ import common from '../text/common'
 import { CldImage } from './cld-image'
 
 type PrimaryNewsletterCtaProps = {
-	onSuccess?: () => void
+	onSuccess?: (router: any) => void
 	title?: string
 	byline?: string
 	actionLabel?: string
 	id?: string
+	formId?: number
 	className?: string
 	trackProps?: {
 		event?: string
@@ -40,6 +41,7 @@ export const PrimaryNewsletterCta: React.FC<
 	resource,
 	children,
 	className,
+	formId,
 	id = 'primary-newsletter-cta',
 	title = common['primary-newsletter-tittle'],
 	byline = common['primary-newsletter-byline'],
@@ -67,11 +69,10 @@ export const PrimaryNewsletterCta: React.FC<
 
 	return (
 		<section
-			// data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'flex flex-col items-center justify-center px-5',
+				'not-prose flex flex-col items-center justify-center px-5',
 				className,
 			)}
 		>
@@ -79,17 +80,17 @@ export const PrimaryNewsletterCta: React.FC<
 				children
 			) : (
 				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10">
-					<h2 className="font-heading sm:fluid-3xl fluid-2xl text-center font-semibold dark:text-white">
+					<h2 className="sm:fluid-2xl fluid-xl text-balance text-center font-bold">
 						{title}
 					</h2>
-					<h3 className="pt-5 text-center font-sans text-lg font-normal opacity-90 sm:pt-8 sm:text-xl sm:font-light lg:text-2xl">
+					<h3 className="text-balance pt-5 text-center font-sans text-base font-normal opacity-90 sm:text-lg lg:text-xl">
 						{byline}
 					</h3>
 				</div>
 			)}
 
 			<div className="not-prose relative flex w-full items-center justify-center">
-				{subscriber && (
+				{!formId && subscriber && (
 					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
 						<p className="text-lg font-semibold sm:text-xl lg:text-2xl">
 							You're subscribed, thanks!
@@ -106,23 +107,26 @@ export const PrimaryNewsletterCta: React.FC<
 					</div>
 				)}
 				<div
-					className={cn('', {
+					className={cn('flex w-full max-w-sm flex-col items-center', {
 						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
-							subscriber,
+							subscriber && !formId,
 					})}
 				>
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
+						formId={formId}
 						className="[&_input]:border-foreground/40 relative z-10 [&_input]:h-16"
 					/>
-					<p
-						data-nospam=""
-						className="text-muted-foreground inline-flex items-center pt-8 text-xs opacity-75 sm:text-sm"
-					>
-						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
-						Unsubscribe at any time.
-					</p>
+					{!formId && (
+						<p
+							data-nospam=""
+							className="text-muted-foreground inline-flex items-center pt-8 text-xs opacity-75 sm:text-sm"
+						>
+							<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your
+							privacy. Unsubscribe at any time.
+						</p>
+					)}
 				</div>
 			</div>
 		</section>

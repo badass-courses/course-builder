@@ -2,12 +2,13 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
-import { ImagePlusIcon, VideoIcon } from 'lucide-react'
+import { ImagePlusIcon, LayoutTemplate, VideoIcon } from 'lucide-react'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
@@ -66,6 +67,26 @@ export function EditPostForm({
 							belongsToResourceId={post.id}
 							uploadDirectory={`posts`}
 						/>
+					),
+				},
+				{
+					id: 'MDX Components',
+					label: 'MDX Components',
+					icon: () => (
+						<LayoutTemplate
+							strokeWidth={1.5}
+							size={24}
+							width={18}
+							height={18}
+						/>
+					),
+					toolComponent: (
+						<div className="mt-3 px-5">
+							<h3 className="mb-3 inline-flex text-xl font-bold">
+								MDX Components
+							</h3>
+							<PageBlocks />
+						</div>
 					),
 				},
 				{

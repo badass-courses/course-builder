@@ -116,7 +116,7 @@ export async function GET(request: Request) {
 					tw="flex h-full w-full bg-white flex-col"
 					style={{
 						fontFamily: 'HeadingFont',
-						background: '#0D0D0D',
+						background: '#fff',
 						width: 1200,
 						height: 630,
 						backgroundImage:
@@ -127,17 +127,6 @@ export async function GET(request: Request) {
 						backgroundPosition: 'center',
 					}}
 				>
-					<div
-						style={{
-							position: 'absolute',
-							width: '100%',
-							height: '100%',
-							backdropFilter: 'blur(10px)',
-							background:
-								'linear-gradient(-130deg, rgba(4, 4, 4, 0.4), #040404 50%)',
-							zIndex: 1,
-						}}
-					/>
 					{resource && resource.type === 'post' && image && (
 						<div tw="absolute right-40 top-26 z-10 flex">
 							<svg
@@ -157,7 +146,7 @@ export async function GET(request: Request) {
 					)}
 					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
 						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-16`}
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] text-black leading-tight pr-16`}
 						>
 							{title}
 						</div>

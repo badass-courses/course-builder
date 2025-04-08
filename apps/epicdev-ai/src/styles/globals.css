@@ -1,4 +1,3 @@
-/* @import url('https://use.typekit.net/tjw2gng.css'); */
 @import './primary-newsletter-cta.css';
 @import './tip-newsletter-cta.css';
 
@@ -16,7 +15,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 4rem;
+		--nav-height: 6rem;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -25,13 +24,13 @@
 			100vh - var(--nav-height) - var(--command-bar-height) - 30px
 		);
 
-		--background: 0 0% 98%;
+		--background: 0 0% 100%;
 		--foreground: 0 0% 10%;
 		--card: 0 0% 100%;
 		--card-foreground: 0 0% 10%;
-		--popover: 32 8% 99%;
-		--popover-foreground: 32 95% 10%;
-		--primary: 0 0% 0%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 0 0% 10%;
+		--primary: 262 83% 58%;
 		--primary-foreground: 0 0% 100%;
 		--secondary: 0 0% 91%;
 		--secondary-foreground: 0 0% 0%;
@@ -41,24 +40,11 @@
 		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
-		--border: 0 0% 91%;
+		--border: 0 0% 89%;
 		--input: 0 0% 90%;
-		--ring: 0 0% 80%;
-		--radius: 0.3rem;
+		--ring: 262 83% 58%;
+		--radius: 0.7rem;
 		color-scheme: light;
-
-		[data-theme='elysium'] {
-			/* blue-ish color scheme */
-			--primary: 241.2 43.4% 76.5%;
-			--primary-foreground: 0 0% 0%;
-			--secondary: 176.5 37.6% 54.2%;
-			--secondary-foreground: 0 0% 0%;
-			--muted: 231 20% 19%;
-			--muted-foreground: 235 100% 95%;
-			--border: 230.8 20.7% 18.8%;
-			--input: 230.8 20.7% 18.8%;
-			--ring: 241.2 43.4% 76.5%;
-		}
 
 		/* codehike theme */
 		--ch-0: light;
@@ -91,26 +77,21 @@
 	}
 
 	.dark {
-		/* golden color scheme */
-		--background: 0 0% 2%;
-		--foreground: 0 0% 87%;
+		--background: 0 0% 5%;
+		--foreground: 0 0% 95%;
 		--card: 0 0% 5%;
 		--card-foreground: 32 5% 90%;
 		--popover: 32 10% 5%;
 		--popover-foreground: 32 5% 90%;
-		/* @supports not (color: color(display-p3 1 1 1)) { */
-		--primary: 32 100% 64%; /* hsl */
-		/* } */
-		/* @supports (color: color(display-p3 1 1 1)) { */
-		/* oklch p3 */
-		/* --primary: 80.66% 0.1769 66.73;  */
-		/* } */
+
+		--primary: 262 83% 85%;
+
 		--primary-foreground: 0 0% 0%;
 		--secondary: 0 0% 11%;
 		--secondary-foreground: 0 0% 100%;
 
-		--muted: 0 0% 10%;
-		--muted-foreground: 0 0% 70%;
+		--muted: 0 0% 3%;
+		--muted-foreground: 0 0% 90%;
 
 		--accent: 0 0% 10%;
 		--accent-foreground: 32 5% 90%;
@@ -118,28 +99,11 @@
 		--destructive: 0 50% 30%;
 		--destructive-foreground: 32 5% 90%;
 
-		--border: 0 0% 10%;
+		--border: 0 0% 12%;
 		--input: 0 0% 15%;
-		--ring: 32 100% 64%;
-		--radius: 0.3rem;
+		--ring: 262 83% 85%;
+		--radius: 0.7rem;
 		color-scheme: dark;
-
-		[data-theme='elysium'] {
-			/* blue-ish color scheme */
-			--primary: 241.2 43.4% 76.5%;
-			--primary-foreground: 0 0% 0%;
-			--secondary: 176.5 37.6% 54.2%;
-			--secondary-foreground: 0 0% 0%;
-			--muted: 231 20% 19%;
-			--muted-foreground: 235 100% 95%;
-			--border: 230.8 20.7% 18.8%;
-			--input: 230.8 20.7% 18.8%;
-			--ring: 241.2 43.4% 76.5%;
-		}
-
-		[data-theme='erebus'] {
-			/* green-ish color scheme */
-		}
 	}
 	/* codehike theme */
 	.dark {
@@ -207,6 +171,15 @@
 		font-weight: var(--shiki-dark-font-weight) !important;
 		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
+
+	/* 
+  Hide the second #primary-newsletter-cta only if there are exactly two on the page.
+  This is a temporary workaround for duplicate IDs rendered by the framework.
+  Ideally, IDs should be unique—consider refactoring to use class names or unique IDs.
+*/
+	section#primary-newsletter-cta + section#primary-newsletter-cta {
+		display: none;
+	}
 }
 
 .md-editor-toolbar-warp {
@@ -214,18 +187,8 @@
 }
 
 [data-checklist] {
-	@apply list-outside !pl-4;
-	list-style-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8cGF0aCBmaWxsPSIjRjNBRDVCIiBkPSJtMTQgMy4xNS0uNy0xLjRjLTYuMDM4IDEuNzUtOS4xIDUuNi05LjEgNS42bC0yLjgtMi4xTDAgNi42NWw0LjIgNS42YzMuMjM3LTYuMDM3IDkuOC05LjEgOS44LTkuMVoiLz4KPC9zdmc+Cg==');
-}
-
-[data-builders-heading] {
-	@apply relative flex items-center justify-center;
-
-	img {
-		@apply absolute right-[-10px] max-w-24 rotate-[8deg] sm:right-[-20px] lg:max-w-full;
+	@apply list-outside !pl-0;
+	li {
+		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDMuMTVMMTMuMyAxLjc1QzcuMjYyIDMuNSA0LjIgNy4zNSA0LjIgNy4zNUwxLjQgNS4yNUwwIDYuNjVMNC4yIDEyLjI1QzcuNDM3IDYuMjEzIDE0IDMuMTUgMTQgMy4xNVoiIGZpbGw9IiM3QzNCRUQiLz4KPC9zdmc+Cg==');
 	}
-}
-
-[data-every-hero-needs-a-guide] {
-	@apply relative w-80 translate-y-5 sm:w-auto;
 }

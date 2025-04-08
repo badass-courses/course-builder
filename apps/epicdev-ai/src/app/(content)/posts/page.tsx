@@ -59,7 +59,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 
 	return (
 		<div className="">
-			<div className="grid grid-cols-1 border-x md:grid-cols-2 md:divide-x">
+			<div className="grid grid-cols-1 md:grid-cols-2">
 				{/* Primary hero */}
 				{primary && (
 					<div className="relative overflow-hidden">
@@ -81,7 +81,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 				)}
 			</div>
 			{secondary.length > 2 && (
-				<div className="grid grid-cols-1 divide-x border-x md:grid-cols-2">
+				<div className="grid grid-cols-1 md:grid-cols-2">
 					{secondary.slice(2).map((post, i) => (
 						<PostTeaser
 							key={post.fields.slug}
@@ -232,9 +232,9 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between rounded-none border-0 border-b bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
+						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between rounded-none bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
 						{
-							'sm:border-r': (i && i % 2 === 0) || i === 0,
+							// 'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},
 					)}
 				>

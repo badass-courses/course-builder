@@ -1,9 +1,15 @@
 import Link from 'next/link'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import {
+	SubscribeForm,
+	Testimonial,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ThemeImage } from '@/components/cld-image'
 import { Code } from '@/components/codehike/code'
 import Scrollycoding from '@/components/codehike/scrollycoding'
 import MDXVideo from '@/components/content/mdx-video'
+import { Heading } from '@/components/mdx/heading'
+import { TrackLink } from '@/components/mdx/mdx-components'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
@@ -48,9 +54,15 @@ export async function compileMDX(source: string) {
 			}: { urls: { dark: string; light: string } } & CldImageProps) => (
 				<ThemeImage urls={urls} {...props} />
 			),
+			h1: ({ children }) => <Heading level={1}>{children}</Heading>,
+			h2: ({ children }) => <Heading level={2}>{children}</Heading>,
+			h3: ({ children }) => <Heading level={3}>{children}</Heading>,
+			Link: TrackLink,
 			Button: ({ children, ...props }) => (
 				<Button {...props}>{children}</Button>
 			),
+			PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
+			SubscribeForm: (props) => <SubscribeForm {...props} />,
 			Testimonial: ({
 				children,
 				authorName,
