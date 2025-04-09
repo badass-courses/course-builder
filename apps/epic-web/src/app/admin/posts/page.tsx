@@ -22,7 +22,7 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-import CreatePostModalClient from './_components/create-post-modal'
+import CreatePostModalClient from './_components/modal-client'
 
 export default async function PagesIndexPage() {
 	const { ability } = await getServerAuthSession()
