@@ -223,7 +223,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
+					className="mb-6 flex flex-col items-center justify-center rounded-md border-b bg-black shadow-md sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}
