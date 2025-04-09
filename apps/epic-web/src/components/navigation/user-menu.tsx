@@ -30,9 +30,7 @@ export const UserMenu = () => {
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 
-	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
-	const canViewInvoice = ability.can('read', 'Invoice')
 
 	if (sessionStatus === 'loading') {
 		return (

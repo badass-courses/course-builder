@@ -3,7 +3,6 @@ import '@/styles/globals.css'
 import * as React from 'react'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import LayoutClient from '@/components/layout-client'
 import Navigation from '@/components/navigation'
 import Footer from '@/components/navigation/footer'
@@ -76,7 +75,6 @@ export default function RootLayout({
 					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
 				>
 					<Toaster />
-					<FeedbackInsert />
 					<TRPCReactProvider>
 						<NuqsAdapter>
 							<Party />

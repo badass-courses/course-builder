@@ -30,7 +30,7 @@ const AdminLayout = async ({
 										<FileText className="h-4 w-4" />
 										Pages
 									</NavItem>
-									<NavItem href="/admin/posts">
+									<NavItem href="/posts">
 										<FileText className="h-4 w-4" />
 										Posts
 									</NavItem>

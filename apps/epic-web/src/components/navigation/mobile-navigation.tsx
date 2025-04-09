@@ -11,11 +11,9 @@ import { Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
-import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
-import { useNavLinks } from './use-nav-links'
 
 type MobileNavigationProps = {
 	isMobileMenuOpen: boolean
@@ -31,9 +29,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	setIsMobileMenuOpen,
 	subscriber,
 }) => {
-	const links = useNavLinks()
 	const { data: sessionData, status: sessionStatus } = useSession()
-	const { setIsFeedbackDialogOpen } = useFeedback()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 
@@ -117,30 +113,6 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								/>
 							)}
 							<ul className="flex flex-col gap-1">
-								{links.map((link) => (
-									<NavLinkItem
-										className="[&_span]:flex [&_span]:items-center"
-										key={link.href || link.label}
-										{...link}
-									/>
-								))}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem
-										className=""
-										label="Send Feedback"
-										onClick={() => setIsFeedbackDialogOpen(true)}
-									/>
-								)}
-
-								{canViewTeam && (
-									<NavLinkItem className="" label="Invite Team" href="/team" />
-								)}
-								{canViewInvoice && (
-									<NavLinkItem className="" href="/invoices" label="Invoices" />
-								)}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem className="" href="/profile" label="Profile" />
-								)}
 								{canCreateContent && (
 									<NavLinkItem
 										className=""
