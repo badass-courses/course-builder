@@ -9,7 +9,7 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 				className,
 			)}
 		>
-			<span>Epic</span> <span className="text-foreground font-mono">Dev</span>{' '}
+			<span>Epic</span>
 			<span className="text-background bg-primary relative ml-0.5 translate-y-[-1px] rotate-[-2deg] rounded px-1 py-0.5 pl-0.5">
 				AI
 			</span>
