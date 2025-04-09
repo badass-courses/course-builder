@@ -1,10 +1,14 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
+import { PostActions } from '@/app/(content)/posts/_components/post-actions'
 import LayoutClient from '@/components/layout-client'
+import { getAllLists } from '@/lib/lists-query'
 import { Page } from '@/lib/pages'
 import { getPages } from '@/lib/pages-query'
 import type { Post } from '@/lib/posts'
+import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
@@ -18,33 +22,31 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+import CreatePostModalClient from './_components/create-post-modal'
+
 export default async function PagesIndexPage() {
 	const { ability } = await getServerAuthSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
 	}
 
-	const allPages = await getPages()
+	const allPosts = await getAllPosts()
 
 	return (
 		<main className="flex w-full justify-between p-10">
 			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 				<div className="mb-5 flex w-full items-center justify-between">
-					<h1 className="fluid-3xl font-heading font-bold">Pots</h1>
-					<Button asChild className="gap-1">
-						<Link href={`/admin/pages/new`}>
-							<FilePlus2 className="h-4 w-4" />
-							New Page
-						</Link>
-					</Button>
+					<h1 className="fluid-3xl font-heading font-bold">Posts</h1>
+
+					<CreatePostModalClient />
 				</div>
 				<ul className="divide-border flex flex-col divide-y">
-					{allPages.map((page, i) => {
+					{allPosts.map((post, i) => {
 						return (
-							<PageTeaser
+							<PostTeaser
 								i={i}
-								article={page}
-								key={page.id}
+								article={post}
+								key={post.id}
 								className="flex w-full items-center py-4"
 							/>
 						)
@@ -55,8 +57,8 @@ export default async function PagesIndexPage() {
 	)
 }
 
-const PageTeaser: React.FC<{
-	article: Page
+const PostTeaser: React.FC<{
+	article: Post
 	i?: number
 	className?: string
 }> = ({ article, className, i }) => {
@@ -67,7 +69,7 @@ const PageTeaser: React.FC<{
 	return (
 		<li className={cn('', className)}>
 			<Link
-				href={`/admin/pages/${article.fields.slug}/edit`}
+				href={`/admin/posts/${article.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>
