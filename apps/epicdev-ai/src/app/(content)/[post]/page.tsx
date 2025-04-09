@@ -229,7 +229,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
-						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
+						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-md"
 						videoResource={videoResource}
 					/>
 					{post?.fields?.postType !== 'event' && (
@@ -298,7 +298,7 @@ async function PostActionBar({ post }: { post: Post | null }) {
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm" className="absolute right-0 top-0 z-10">
+				<Button asChild size="sm" className="absolute right-0 top-0 z-20">
 					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
 				</Button>
 			) : null}
