@@ -34,7 +34,7 @@
 		--primary-foreground: 0 0% 100%;
 		--secondary: 0 0% 91%;
 		--secondary-foreground: 0 0% 0%;
-		--muted: 0 0% 96%;
+		--muted: 256 25% 97%;
 		--muted-foreground: 0 0% 30%;
 		--accent: 0 0% 92%;
 		--accent-foreground: 0 0% 5%;
@@ -77,11 +77,11 @@
 	}
 
 	.dark {
-		--background: 0 0% 5%;
-		--foreground: 0 0% 95%;
+		--background: 240 19% 10%;
+		--foreground: 254 54% 95%;
 		--card: 0 0% 5%;
 		--card-foreground: 32 5% 90%;
-		--popover: 32 10% 5%;
+		--popover: 240 19% 11%;
 		--popover-foreground: 32 5% 90%;
 
 		--primary: 262 83% 85%;
@@ -90,10 +90,10 @@
 		--secondary: 0 0% 11%;
 		--secondary-foreground: 0 0% 100%;
 
-		--muted: 0 0% 3%;
+		--muted: 240 25% 7%;
 		--muted-foreground: 0 0% 90%;
 
-		--accent: 0 0% 10%;
+		--accent: 240 19% 15%;
 		--accent-foreground: 32 5% 90%;
 
 		--destructive: 0 50% 30%;
@@ -159,7 +159,7 @@
 	}
 
 	html {
-		scrollbar-gutter: stable;
+		/* scrollbar-gutter: stable; */
 	}
 
 	html.dark .shiki,

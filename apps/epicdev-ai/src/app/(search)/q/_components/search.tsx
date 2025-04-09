@@ -115,7 +115,7 @@ function Search() {
 				filters={'visibility:public && state:published'}
 				hitsPerPage={40}
 			/>
-			<div className="bg-background top-[var(--nav-height)] z-10 flex flex-col items-end gap-x-3 pb-4 sm:sticky sm:flex-row sm:items-center sm:pb-0">
+			<div className="top-[var(--nav-height)] z-10 flex flex-col items-end gap-x-3 pb-4 sm:sticky sm:flex-row sm:items-center sm:pb-0">
 				<SearchBox />
 				{/* <RefinementList
 					attribute="instructor_name"

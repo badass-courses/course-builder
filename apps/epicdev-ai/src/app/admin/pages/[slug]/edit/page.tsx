@@ -24,7 +24,9 @@ export default async function ArticleEditPage(props: {
 
 	return (
 		<MDXPreviewProvider initialValue={page.fields.body}>
-			<EditPagesForm key={page.fields.slug} page={page} />
+			<div className="border-t">
+				<EditPagesForm key={page.fields.slug} page={page} />
+			</div>
 		</MDXPreviewProvider>
 	)
 }

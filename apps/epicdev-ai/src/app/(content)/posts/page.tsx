@@ -62,13 +62,11 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 			<div className="grid grid-cols-1">
 				{/* Primary hero */}
 				{primary && (
-					<div className="relative overflow-hidden">
-						<PostTeaser
-							isHighlighted
-							post={primary}
-							className="[&_[data-card='']]:text-foreground [&_[data-title='']]:hover:text-primary sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold [&_[data-title='']]:transition"
-						/>
-					</div>
+					<PostTeaser
+						isHighlighted
+						post={primary}
+						className="[&_[data-card='']]:text-foreground [&_[data-title='']]:hover:text-primary sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold [&_[data-title='']]:transition"
+					/>
 				)}
 
 				{/* Secondary posts */}
@@ -221,7 +219,7 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'mx-auto flex h-full w-full flex-col justify-between border bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
+						'mx-auto flex h-full w-full flex-col justify-between border bg-white p-8 shadow-xl shadow-gray-800/10 transition duration-300 ease-in-out dark:border-white/5 dark:bg-white/5',
 						{
 							// 'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},

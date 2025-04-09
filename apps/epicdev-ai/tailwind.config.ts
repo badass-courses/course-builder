@@ -35,7 +35,7 @@ module.exports = {
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.neutral,
+				gray: colors.slate,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

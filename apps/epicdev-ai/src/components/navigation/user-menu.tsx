@@ -78,7 +78,7 @@ export const UserMenu = () => {
 					<DropdownMenuTrigger asChild>
 						<Button
 							variant="link"
-							className="text-foreground hover:text-primary flex items-center space-x-1 px-5 py-2"
+							className="text-foreground hover:text-primary flex items-center space-x-1 px-3 py-2"
 						>
 							{userAvatar}
 							<div className="flex flex-col pl-0.5">

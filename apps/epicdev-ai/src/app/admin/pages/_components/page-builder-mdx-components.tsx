@@ -104,7 +104,7 @@ const Instructor = ({
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/epic-web/image/upload/v1744130353/epicdev.ai/kent-speaking-all-things-open.jpg"
+				src="https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg"
 				alt={config.author}
 				width={1280}
 				height={854}
