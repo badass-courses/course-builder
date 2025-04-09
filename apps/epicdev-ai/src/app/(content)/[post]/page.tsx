@@ -122,7 +122,7 @@ export default async function PostPage(props: {
 						{!hasVideo && post?.fields?.postType !== 'event' && (
 							<PrimaryNewsletterCta
 								isHiddenForSubscribers
-								className="pt-20"
+								className="pt-5 sm:pt-10"
 								trackProps={{
 									event: 'subscribed',
 									params: {

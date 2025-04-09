@@ -58,8 +58,9 @@ export default {
 	},
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle': 'Primary Newsletter Title',
-	'primary-newsletter-byline': `Primary Newsletter Byline`,
+	'primary-newsletter-tittle':
+		'Start designing the future of intelligent user experiences',
+	'primary-newsletter-byline': `Join the EpicAI.pro newsletter to get updates on events, articles, and more as they’re releasedPrimary Newsletter Byline`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'Tip Newsletter Title',
 	'video-newsletter-title': 'Build the next-gen UX with AI',
