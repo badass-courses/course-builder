@@ -77,7 +77,11 @@ const Home = async (props: Props) => {
 	}
 
 	return (
-		<LayoutClient highlightedResource={firstPageResource} withContainer>
+		<LayoutClient
+			className="static"
+			highlightedResource={firstPageResource}
+			withContainer
+		>
 			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link

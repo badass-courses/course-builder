@@ -57,6 +57,7 @@ const Navigation = ({
 				},
 			)}
 		>
+			<div className="absolute -inset-x-12 -top-6 h-12 -rotate-3 bg-gradient-to-r from-violet-300 via-pink-300 to-sky-300 opacity-50 blur-3xl dark:opacity-5" />
 			<div
 				className={cn('relative flex w-full items-center justify-center', {
 					// container: !isEditRoute,
@@ -80,9 +81,12 @@ const Navigation = ({
 				</span>
 				{links.length > 0 && (
 					<nav
-						className={cn('flex items-center', {
-							'hidden md:flex': true, // links.length > 3,
-						})}
+						className={cn(
+							'absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 ring-gray-800/[.075] backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
+							{
+								'hidden md:flex': true, // links.length > 3,
+							},
+						)}
 						aria-label={`Navigation header with ${links.length} links`}
 					>
 						<ul className="flex items-center">

@@ -25,7 +25,7 @@
 		);
 
 		--background: 0 0% 100%;
-		--foreground: 0 0% 10%;
+		--foreground: 256 54% 13%;
 		--card: 0 0% 100%;
 		--card-foreground: 0 0% 10%;
 		--popover: 0 0% 100%;
@@ -40,9 +40,9 @@
 		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
-		--border: 0 0% 89%;
+		--border: 256 11% 94%;
 		--input: 0 0% 90%;
-		--ring: 262 83% 58%;
+		--ring: 259 75% 65%;
 		--radius: 0.7rem;
 		color-scheme: light;
 

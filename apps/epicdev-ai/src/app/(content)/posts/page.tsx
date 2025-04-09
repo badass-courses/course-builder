@@ -66,7 +66,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 						<PostTeaser
 							isHighlighted
 							post={primary}
-							className="[&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+							className="[&_[data-card='']]:text-foreground [&_[data-title='']]:hover:text-primary sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold [&_[data-title='']]:transition"
 						/>
 					</div>
 				)}
@@ -221,7 +221,7 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
+						'mx-auto flex h-full w-full flex-col justify-between border bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
 						{
 							// 'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},
