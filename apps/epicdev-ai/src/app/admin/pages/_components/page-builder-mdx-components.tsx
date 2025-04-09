@@ -187,6 +187,8 @@ const data = {
 			props: {
 				title: 'Subscribe to this event',
 				byline: 'Get the latest news and updates from me',
+				subscribedTitle: 'You are subscribed, thanks!',
+				subscribedSubtitle: 'We will notify you when the event is live',
 				actionLabel: 'Subscribe',
 				formId: 123,
 				onSuccess: (router: any) => {

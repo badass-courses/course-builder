@@ -24,6 +24,9 @@ type PrimaryNewsletterCtaProps = {
 	id?: string
 	formId?: number
 	className?: string
+	subscribedTitle?: string
+	subscribedSubtitle?: string
+	shouldHideTitleWhenSubscribed?: boolean
 	trackProps?: {
 		event?: string
 		params?: Record<string, string>
@@ -46,8 +49,11 @@ export const PrimaryNewsletterCta: React.FC<
 	title = common['primary-newsletter-tittle'],
 	byline = common['primary-newsletter-byline'],
 	actionLabel = common['primary-newsletter-button-cta-label'],
+	subscribedTitle,
+	subscribedSubtitle,
 	trackProps = { event: 'subscribed', params: {} },
 	isHiddenForSubscribers = false,
+	shouldHideTitleWhenSubscribed = true,
 	onSuccess,
 }) => {
 	const router = useRouter()
@@ -83,7 +89,7 @@ export const PrimaryNewsletterCta: React.FC<
 					className={cn(
 						'relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10',
 						{
-							'opacity-0': subscriber,
+							'opacity-0': subscriber && shouldHideTitleWhenSubscribed,
 						},
 					)}
 				>
@@ -97,19 +103,20 @@ export const PrimaryNewsletterCta: React.FC<
 			)}
 
 			<div className="not-prose relative flex w-full items-center justify-center">
-				{!formId && subscriber && (
+				{subscriber && (
 					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
 						<p className="text-lg font-semibold sm:text-xl lg:text-2xl">
-							You're subscribed, thanks!
+							{subscribedTitle || "You're subscribed, thanks!"}
 						</p>
 						<p className="[&_a]:text-primary pt-3 text-center font-sans text-lg font-normal">
-							{session?.user
-								? common['newsletter-subscribed-logged-in']({
-										resource,
-									})
-								: common['newsletter-subscribed-logged-out']({
-										resource,
-									})}
+							{subscribedSubtitle ||
+								(session?.user
+									? common['newsletter-subscribed-logged-in']({
+											resource,
+										})
+									: common['newsletter-subscribed-logged-out']({
+											resource,
+										}))}
 						</p>
 					</div>
 				)}
