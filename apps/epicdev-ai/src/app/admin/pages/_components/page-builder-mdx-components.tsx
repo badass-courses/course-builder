@@ -9,7 +9,6 @@ import config from '@/config'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
-import { useTheme } from 'next-themes'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 

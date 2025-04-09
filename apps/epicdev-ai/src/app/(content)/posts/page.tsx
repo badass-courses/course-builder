@@ -59,14 +59,14 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 
 	return (
 		<div className="">
-			<div className="grid grid-cols-1 md:grid-cols-2">
+			<div className="grid grid-cols-1">
 				{/* Primary hero */}
 				{primary && (
 					<div className="relative overflow-hidden">
 						<PostTeaser
 							isHighlighted
 							post={primary}
-							className="[&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+							className="[&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
 						/>
 					</div>
 				)}
@@ -96,7 +96,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 }
 
 export default async function PostsIndexPage() {
-	const page = await getPage('posts-vhq68')
+	const page = await getPage('posts')
 
 	let featuredContent: any[] = [
 		// First featured item
@@ -125,65 +125,65 @@ export default async function PostsIndexPage() {
 		})) || []),
 	].filter(Boolean)
 
-	if (featuredContent.length < 4) {
-		const latestTutorial = await getList('vercel-ai-sdk-tutorial')
+	// if (featuredContent.length < 4) {
+	// 	const latestTutorial = await getList('vercel-ai-sdk-tutorial')
 
-		const featuredSlugs = [
-			'the-prompt-report',
-			'three-types-of-evals',
-			'building-effective-agents',
-			'evalite-an-early-preview',
-		]
+	// 	const featuredSlugs = [
+	// 		'the-prompt-report',
+	// 		'three-types-of-evals',
+	// 		'building-effective-agents',
+	// 		'evalite-an-early-preview',
+	// 	]
 
-		const posts = await db.query.contentResource.findMany({
-			where: inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-				featuredSlugs,
-			),
-			orderBy: desc(contentResource.createdAt),
-			with: {
-				resources: {
-					with: {
-						resource: true,
-					},
-				},
-				tags: {
-					with: {
-						tag: true,
-					},
-				},
-			},
-		})
+	// 	const posts = await db.query.contentResource.findMany({
+	// 		where: inArray(
+	// 			sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+	// 			featuredSlugs,
+	// 		),
+	// 		orderBy: desc(contentResource.createdAt),
+	// 		with: {
+	// 			resources: {
+	// 				with: {
+	// 					resource: true,
+	// 				},
+	// 			},
+	// 			tags: {
+	// 				with: {
+	// 					tag: true,
+	// 				},
+	// 			},
+	// 		},
+	// 	})
 
-		// Fallback featured content
-		featuredContent = [
-			...(latestTutorial
-				? [
-						{
-							...latestTutorial,
-							fields: {
-								...latestTutorial.fields,
-								featured: {
-									priority: 1,
-									layout: 'primary',
-								},
-							},
-						},
-					]
-				: []),
-			...posts.map((post, index) => {
-				return {
-					fields: {
-						...post.fields,
-						featured: {
-							priority: index + 1,
-							layout: 'secondary',
-						},
-					},
-				}
-			}),
-		]
-	}
+	// 	// Fallback featured content
+	// 	featuredContent = [
+	// 		...(latestTutorial
+	// 			? [
+	// 					{
+	// 						...latestTutorial,
+	// 						fields: {
+	// 							...latestTutorial.fields,
+	// 							featured: {
+	// 								priority: 1,
+	// 								layout: 'primary',
+	// 							},
+	// 						},
+	// 					},
+	// 				]
+	// 			: []),
+	// 		...posts.map((post, index) => {
+	// 			return {
+	// 				fields: {
+	// 					...post.fields,
+	// 					featured: {
+	// 						priority: index + 1,
+	// 						layout: 'secondary',
+	// 					},
+	// 				},
+	// 			}
+	// 		}),
+	// 	]
+	// }
 
 	return (
 		<LayoutClient withContainer>
@@ -212,17 +212,6 @@ const PostTeaser: React.FC<{
 
 	return (
 		<li className={cn('relative flex h-full', className)}>
-			{isHighlighted && (
-				<div className="absolute inset-0 -z-10 flex items-center justify-center">
-					<div className="bg-background absolute z-10 h-[97%] w-[98%] md:w-[97%]" />
-					<CldImage
-						alt=""
-						src="https://res.cloudinary.com/total-typescript/image/upload/v1741960224/aihero.dev/assets/vojtaholik_wired_--no_face_robot_human_person_body_--ar_21_--sr_82bb670f-8f36-4c22-9412-4d94f90bc705_3_ht5kyu.jpg"
-						fill
-						className="object-cover"
-					/>
-				</div>
-			)}
 			<Link
 				prefetch
 				href={`/${post.fields.slug}`}
@@ -232,7 +221,7 @@ const PostTeaser: React.FC<{
 				<Card
 					data-card=""
 					className={cn(
-						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between rounded-none bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
+						'hover:bg-muted/50 mx-auto flex h-full w-full flex-col justify-between bg-transparent p-8 shadow-none transition duration-300 ease-in-out',
 						{
 							// 'sm:border-r': (i && i % 2 === 0) || i === 0,
 						},
@@ -254,17 +243,13 @@ const PostTeaser: React.FC<{
 								{title}
 							</CardTitle>
 						</CardHeader>
+
 						{description && (
 							<CardContent className="p-0">
 								<p className="text-balance pt-4 text-sm opacity-75 sm:text-base">
 									{description}
 								</p>
 							</CardContent>
-						)}
-						{isHighlighted && (
-							<Button className="mt-4 md:mt-8" variant="outline">
-								Learn More <ChevronRight className="ml-2 w-3" />
-							</Button>
 						)}
 					</div>
 					<div>
@@ -273,21 +258,28 @@ const PostTeaser: React.FC<{
 							className="mt-8 flex items-center justify-between gap-1.5 p-0 text-sm"
 						>
 							<Contributor />
-							{post.tags && post.tags.length > 0 && (
-								<div className="flex items-center gap-1">
-									{post.tags.map((tag) => {
-										return tag?.tag?.fields?.label ? (
-											<Badge
-												key={tag.tagId}
-												variant="outline"
-												className="rounded-full"
-											>
-												# {tag.tag.fields.label}
-											</Badge>
-										) : null
-									})}
-								</div>
-							)}
+							<div className="flex items-center gap-2">
+								{post.tags && post.tags.length > 0 && (
+									<div className="flex items-center gap-1">
+										{post.tags.map((tag) => {
+											return tag?.tag?.fields?.label ? (
+												<Badge
+													key={tag.tagId}
+													variant="outline"
+													className="rounded-full"
+												>
+													# {tag.tag.fields.label}
+												</Badge>
+											) : null
+										})}
+									</div>
+								)}
+								{isHighlighted && (
+									<Button className="" variant="default">
+										Learn More <ChevronRight className="ml-2 w-3" />
+									</Button>
+								)}
+							</div>
 						</CardFooter>
 					</div>
 				</Card>

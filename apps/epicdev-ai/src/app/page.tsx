@@ -5,7 +5,7 @@ import {
 	SubscribeForm,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { CldImage } from '@/components/cld-image'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
@@ -88,7 +88,7 @@ const Home = async (props: Props) => {
 					</Link>
 				)}
 				<header>
-					<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full py-10 text-center font-bold dark:text-white">
+					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
 						{page?.fields?.title || 'Title'}
 					</h1>
 				</header>
@@ -110,6 +110,7 @@ const Home = async (props: Props) => {
 								Testimonial,
 								CldImage: (props) => <CldImage {...props} />,
 								SubscribeForm,
+								ThemeImage: (props) => <ThemeImage {...props} />,
 								PrimaryNewsletterCta: (props) => (
 									<PrimaryNewsletterCta
 										resource={firstPageResource}
