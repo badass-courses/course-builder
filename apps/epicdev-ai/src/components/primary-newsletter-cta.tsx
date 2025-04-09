@@ -79,7 +79,14 @@ export const PrimaryNewsletterCta: React.FC<
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10">
+				<div
+					className={cn(
+						'relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10',
+						{
+							'opacity-0': subscriber,
+						},
+					)}
+				>
 					<h2 className="sm:fluid-2xl fluid-xl text-balance text-center font-bold">
 						{title}
 					</h2>
@@ -95,7 +102,7 @@ export const PrimaryNewsletterCta: React.FC<
 						<p className="text-lg font-semibold sm:text-xl lg:text-2xl">
 							You're subscribed, thanks!
 						</p>
-						<p className="pt-3 text-center font-sans text-lg font-normal opacity-90 sm:text-xl sm:font-light lg:text-2xl">
+						<p className="[&_a]:text-primary pt-3 text-center font-sans text-lg font-normal">
 							{session?.user
 								? common['newsletter-subscribed-logged-in']({
 										resource,

@@ -99,7 +99,7 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'not-prose relative flex w-full flex-col items-center gap-10 py-5',
+				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 py-5',
 				className,
 			)}
 		>
@@ -109,14 +109,12 @@ const Instructor = ({
 				alt={config.author}
 				width={1280}
 				height={854}
-				className="flex-shrink-0 rounded-md"
+				className="!mb-0 flex-shrink-0 rounded-md"
 			/>
 
 			<div className="">
-				<h3 className="mb-5 text-3xl font-bold">{title || config.author}</h3>
-				<div className="flex flex-col gap-3 text-xl leading-relaxed">
-					{children}
-				</div>
+				<h3 className="">{title || config.author}</h3>
+				<div className="flex flex-col gap-3">{children}</div>
 			</div>
 		</section>
 	)

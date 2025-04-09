@@ -11,8 +11,8 @@ export default {
 		}
 	}) => {
 		const defaultResource = {
-			path: '/vercel-ai-sdk-tutorial',
-			title: 'AI SDK tutorial',
+			path: '/the-game-changing-potential-of-model-context-protocol',
+			title: 'The game-changing potential of Model Context Protocol',
 		}
 		return (
 			<>
@@ -36,8 +36,8 @@ export default {
 		}
 	}) => {
 		const defaultResource = {
-			path: '/vercel-ai-sdk-tutorial',
-			title: 'AI SDK tutorial',
+			path: '/the-game-changing-potential-of-model-context-protocol',
+			title: 'The game-changing potential of Model Context Protocol',
 		}
 		return (
 			<>

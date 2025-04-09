@@ -111,7 +111,7 @@ module.exports = {
 						},
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
-							fontWeight: 800,
+							fontWeight: 700,
 							color: theme('colors.foreground'),
 						},
 						ul: {
