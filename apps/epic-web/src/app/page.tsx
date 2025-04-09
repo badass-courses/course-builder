@@ -31,8 +31,9 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
+	// TODO: fix the ogImage
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg'
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -43,6 +44,7 @@ export async function generateMetadata(
 			courseBuilderAdapter,
 		)
 		const validCoupon = Boolean(coupon && coupon.isValid)
+		// TODO: fix the ogImage
 		if (validCoupon)
 			ogImageUrl =
 				'https://res.cloudinary.com/total-typescript/image/upload/v1730364326/aihero-golden-ticket_2x_qghsfq.png'
@@ -50,8 +52,8 @@ export async function generateMetadata(
 
 	return {
 		title: {
-			template: '%s | Epic AI Pro',
-			default: `Epic AI Pro`,
+			template: '%s | Epic Web',
+			default: `Epic Web`,
 		},
 		openGraph: {
 			images: [
@@ -85,7 +87,7 @@ const Home = async (props: Props) => {
 			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md bg-violet-100 px-3 py-1 text-sm font-medium dark:bg-violet-500/20"
+						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md  px-3 py-1 text-sm font-medium "
 						href={firstPageResource.path}
 						prefetch
 					>
