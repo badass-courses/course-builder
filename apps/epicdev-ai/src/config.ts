@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/epic-web/image/upload/v1744126642/epicdev.ai/card_2x.jpg`,
+				url: `https://res.cloudinary.com/epic-web/image/upload/v1744193556/epicdev.ai/card_2x.jpg`,
 				width: 1200,
 				height: 630,
 			},
