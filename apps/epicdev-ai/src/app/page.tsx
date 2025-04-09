@@ -120,6 +120,7 @@ const Home = async (props: Props) => {
 												location: 'home',
 											},
 										}}
+										{...props}
 									/>
 								),
 								// @ts-expect-error
