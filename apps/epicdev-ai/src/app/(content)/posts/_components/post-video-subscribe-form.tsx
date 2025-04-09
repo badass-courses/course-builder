@@ -68,30 +68,22 @@ export const PostNewsletterCta: React.FC<
 		<section
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-muted relative flex w-full flex-row items-center border-t',
+				'bg-background dark:border-border relative flex w-full flex-row items-center overflow-hidden rounded-b-md border-x border-b border-transparent',
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-3">
-				<div
-					className="via-muted-foreground/20 absolute -top-px left-0 z-10 h-px w-1/2 bg-gradient-to-r from-transparent to-transparent"
-					aria-hidden="true"
-				/>
-				<div
-					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
-					aria-hidden="true"
-				/>
-				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left md:flex-col md:items-start md:pt-0">
+			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
+				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left lg:flex-col lg:items-start lg:pt-0">
 					<div className="flex items-center">
-						<div className="font-heading flex-shrink-0 text-2xl font-semibold sm:text-base">
+						<div className="font-heading flex-shrink-0 text-xl font-semibold lg:text-base">
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary sm:fluid-sm fluid-base font-heading text-gray-600">
+					<div className="dark:text-primary lg:fluid-sm fluid-base font-heading text-gray-600">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>
-				<div id={id} className="w-full md:w-auto">
+				<div id={id} className="w-full border-t lg:w-auto lg:border-t-0">
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}

@@ -13,11 +13,16 @@ import Footer from './navigation/footer'
 export default function LayoutClient({
 	children,
 	withContainer = false,
+	highlightedResource,
 	className,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
+	highlightedResource?: {
+		path: string
+		title: string
+	}
 }) {
 	return (
 		<div
@@ -30,7 +35,10 @@ export default function LayoutClient({
 			)}
 		>
 			<div className="">
-				<Navigation withContainer={withContainer} />
+				<Navigation
+					highlightedResource={highlightedResource}
+					withContainer={withContainer}
+				/>
 				{children}
 				<Footer />
 			</div>

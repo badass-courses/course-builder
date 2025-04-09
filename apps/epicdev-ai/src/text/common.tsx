@@ -62,8 +62,8 @@ export default {
 	'primary-newsletter-byline': `Primary Newsletter Byline`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'Tip Newsletter Title',
-	'video-newsletter-title': 'Video Newsletter Title',
-	'video-newsletter-subtitle': 'Video Newsletter Subtitle',
+	'video-newsletter-title': 'Build the next-gen UX with AI',
+	'video-newsletter-subtitle': 'For builders of the AI-native future',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
 		`Level up with ${moduleTitle}`,

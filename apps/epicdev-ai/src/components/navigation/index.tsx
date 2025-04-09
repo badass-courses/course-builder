@@ -18,7 +18,13 @@ import { ThemeToggle } from './theme-toggle'
 import { useNavLinks } from './use-nav-links'
 import { UserMenu } from './user-menu'
 
-const Navigation = ({ withContainer }: { withContainer?: boolean }) => {
+const Navigation = ({
+	withContainer,
+	highlightedResource,
+}: {
+	withContainer?: boolean
+	highlightedResource?: { path: string; title: string }
+}) => {
 	const links = useNavLinks()
 	const pathname = usePathname()
 	const isRoot = pathname === '/'

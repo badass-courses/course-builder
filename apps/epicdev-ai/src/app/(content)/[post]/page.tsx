@@ -213,6 +213,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 	const resource = post.resources?.[0]?.resource.id
 
 	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
+	const showNewsletterCta = post.fields?.postType !== 'event'
 
 	return videoResource ? (
 		<VideoPlayerOverlayProvider>
@@ -223,16 +224,21 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="mb-6 flex flex-col items-center justify-center rounded-md border-b bg-black shadow-md sm:mb-10"
+					className="mb-6 flex flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
-						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-md"
+						className={cn(
+							'aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-t-md',
+							{
+								'rounded-b-md': !showNewsletterCta,
+							},
+						)}
 						videoResource={videoResource}
 					/>
-					{post?.fields?.postType !== 'event' && (
+					{showNewsletterCta && (
 						<PostNewsletterCta
 							trackProps={{
 								event: 'subscribed',
