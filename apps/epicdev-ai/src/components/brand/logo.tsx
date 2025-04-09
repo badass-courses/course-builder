@@ -5,12 +5,14 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 	return (
 		<div
 			className={cn(
-				'text-primary flex items-center gap-2 font-bold tracking-tight',
+				'text-foreground flex items-center font-bold tracking-tight',
 				className,
 			)}
 		>
-			Epic <span className="text-foreground -mx-1 font-mono">AI</span>{' '}
-			<span className="text-foreground">Dev</span>
+			<span>Epic</span> <span className="text-foreground font-mono">Dev</span>{' '}
+			<span className="text-background bg-primary relative ml-0.5 translate-y-[-1px] rotate-[-2deg] rounded px-1 py-0.5 pl-0.5">
+				AI
+			</span>
 		</div>
 	)
 }

@@ -58,10 +58,10 @@ const Navigation = ({ withContainer }: { withContainer?: boolean }) => {
 			>
 				<span
 					className="flex items-center justify-center"
-					onContextMenu={(e) => {
-						e.preventDefault()
-						router.push('/brand')
-					}}
+					// onContextMenu={(e) => {
+					// 	e.preventDefault()
+					// 	router.push('/brand')
+					// }}
 				>
 					<Link
 						prefetch
