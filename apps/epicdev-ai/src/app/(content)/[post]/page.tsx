@@ -108,9 +108,7 @@ export default async function PostPage(props: {
 							</div>
 						</div>
 						{post?.type === 'post' && post?.fields?.body && (
-							<div className="mx-auto w-full max-w-3xl">
-								<PostToC markdown={post?.fields?.body} />
-							</div>
+							<PostToC markdown={post?.fields?.body} />
 						)}
 						<PostBody post={post} />
 						{/* {listSlugFromParam && (
@@ -179,7 +177,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="">
-			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto mt-10 max-w-3xl">
+			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
 				{content}
 			</article>
 		</div>
