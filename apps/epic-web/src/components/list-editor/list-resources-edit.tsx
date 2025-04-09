@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useReducer } from 'react'
-import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
+import { CreatePostModal } from '@/app/admin/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
 import { track } from '@/utils/analytics'
 import {

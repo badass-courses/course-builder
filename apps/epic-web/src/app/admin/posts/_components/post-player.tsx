@@ -2,6 +2,9 @@
 
 import * as React from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import PostNextUpFromListPagination from '@/app/(content)/_components/post-next-up-from-list-pagination'
+import { useList } from '@/app/(content)/[post]/_components/list-provider'
+import { useProgress } from '@/app/(content)/[post]/_components/progress-provider'
 import Spinner from '@/components/spinner'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
@@ -21,10 +24,6 @@ import { useSession } from 'next-auth/react'
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
-
-import PostNextUpFromListPagination from '../../_components/post-next-up-from-list-pagination'
-import { useList } from '../../[post]/_components/list-provider'
-import { useProgress } from '../../[post]/_components/progress-provider'
 
 export function PostPlayer({
 	muxPlaybackId,

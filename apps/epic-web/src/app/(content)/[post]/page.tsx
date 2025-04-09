@@ -2,6 +2,9 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { PostPlayer } from '@/app/admin/posts/_components/post-player'
+import PostToC from '@/app/admin/posts/_components/post-toc'
+import { PostNewsletterCta } from '@/app/admin/posts/_components/post-video-subscribe-form'
 import { Contributor } from '@/components/contributor'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 // import { getPricingProps } from '@/lib/pricing-query'
@@ -24,9 +27,6 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
-import { PostPlayer } from '../posts/_components/post-player'
-import PostToC from '../posts/_components/post-toc'
-import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
 export const experimental_ppr = true
 

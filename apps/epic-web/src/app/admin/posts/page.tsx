@@ -1,26 +1,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
-import { PostActions } from '@/app/(content)/posts/_components/post-actions'
-import LayoutClient from '@/components/layout-client'
-import { getAllLists } from '@/lib/lists-query'
-import { Page } from '@/lib/pages'
-import { getPages } from '@/lib/pages-query'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { format } from 'date-fns'
-import { FilePlus2, FileText, Pencil } from 'lucide-react'
-
-import {
-	Button,
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from '@coursebuilder/ui'
+import { FileText } from 'lucide-react'
 
 import CreatePostModalClient from './_components/modal-client'
 
@@ -63,8 +48,6 @@ const PostTeaser: React.FC<{
 	className?: string
 }> = ({ article, className, i }) => {
 	const title = article.fields.title
-	const description = article.fields.description
-	const createdAt = article.createdAt
 
 	return (
 		<li className={cn('', className)}>

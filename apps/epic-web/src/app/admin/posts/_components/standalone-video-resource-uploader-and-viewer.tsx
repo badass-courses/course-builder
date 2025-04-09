@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { PostUploader } from '@/app/admin/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
 import { api } from '@/trpc/react'

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
+import { reprocessTranscript } from '@/app/admin/posts/[slug]/edit/actions'
 import Spinner from '@/components/spinner'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { RefreshCcw } from 'lucide-react'

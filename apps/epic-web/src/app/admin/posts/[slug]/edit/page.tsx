@@ -71,13 +71,11 @@ export default async function ArticleEditPage(props: {
 	const listsLoader = getAllLists()
 
 	return (
-		<LayoutClient>
-			<EditPostForm
-				key={post.fields.slug}
-				post={{ ...post }}
-				videoResource={videoResource}
-				listsLoader={listsLoader}
-			/>
-		</LayoutClient>
+		<EditPostForm
+			key={post.fields.slug}
+			post={{ ...post }}
+			videoResource={videoResource}
+			listsLoader={listsLoader}
+		/>
 	)
 }
