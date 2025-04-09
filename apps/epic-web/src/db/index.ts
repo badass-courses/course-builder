@@ -9,6 +9,7 @@ import { DrizzleAdapter } from '@coursebuilder/adapter-drizzle'
 
 import * as schema from './schema'
 
+console.log('env.DATABASE_URL==', env.DATABASE_URL)
 export const db = drizzle(
 	new Client({
 		url: env.DATABASE_URL,

@@ -26,33 +26,13 @@ const AdminLayout = async ({
 						<nav className="">
 							<ul>
 								<li className="divide-border flex flex-col divide-y">
-									<NavItem href="/admin/dashboard">
-										<HomeIcon className="h-4 w-4" />
-										Dashboard
-									</NavItem>
 									<NavItem href="/admin/pages">
 										<FileText className="h-4 w-4" />
 										Pages
 									</NavItem>
-									<NavItem href="/lists">
-										<ListChecks className="h-4 w-4" />
-										Lists
-									</NavItem>
-									<NavItem href="/admin/coupons">
-										<TicketIcon className="h-4 w-4" />
-										Coupons
-									</NavItem>
-									<NavItem href="/admin/tags">
-										<TagIcon className="h-4 w-4" />
-										Tags
-									</NavItem>
-									<NavItem href="/admin/emails">
-										<Mail className="h-4 w-4" />
-										Emails
-									</NavItem>
-									<NavItem href="/admin/flags">
-										<Flag className="h-4 w-4" />
-										Feature Flags
+									<NavItem href="/admin/posts">
+										<FileText className="h-4 w-4" />
+										Posts
 									</NavItem>
 								</li>
 							</ul>

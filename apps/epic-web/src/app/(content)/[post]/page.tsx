@@ -24,7 +24,6 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
-import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
@@ -44,10 +43,6 @@ export default async function PostPage(props: {
 
 	if (!post) {
 		notFound()
-	}
-
-	if (post.type === 'list') {
-		return <ListPage list={post} params={{ slug: params.post } as any} />
 	}
 
 	let list = null

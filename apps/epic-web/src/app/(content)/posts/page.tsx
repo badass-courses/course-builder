@@ -95,6 +95,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 
 export default async function PostsIndexPage() {
 	const page = await getPage('posts')
+	console.log('page==', page)
 
 	let featuredContent: any[] = [
 		// First featured item
@@ -207,6 +208,7 @@ const PostTeaser: React.FC<{
 	if (!post) return null
 	const title = post.fields.title
 	const description = post.fields.description
+	console.log('post==', post)
 
 	return (
 		<li className={cn('relative flex h-full', className)}>
@@ -292,6 +294,7 @@ async function PostListActions({}: {}) {
 		return null
 	}
 	const allPosts = await getAllPosts()
+	console.log('allPosts==**', allPosts)
 	const allLists = await getAllLists()
 
 	return <PostActions allPosts={allPosts} allLists={allLists} />
