@@ -8,6 +8,7 @@ import {
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import config from '@/config'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
@@ -31,8 +32,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
-	let ogImageUrl =
-		'https://res.cloudinary.com/epic-web/image/upload/v1744263842/epicdev.ai/card_2x.jpg'
+	let ogImageUrl = config?.openGraph?.images?.[0]!.url
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
