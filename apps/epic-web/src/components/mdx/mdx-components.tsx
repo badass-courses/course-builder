@@ -84,8 +84,8 @@ export const AISummary = ({
 			<div ref={ref}>
 				<Accordion type="single" collapsible>
 					<AccordionItem
-						title="AI Summary"
-						value="ai-summary"
+						title="Epic Web Summary"
+						value="epic-web-summary"
 						className="dark:bg-card bg-muted/30 border-border flex w-full flex-col rounded-xl border"
 					>
 						<div className="flex items-center">
