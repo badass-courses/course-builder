@@ -12,9 +12,8 @@ import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
-import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
-import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
+import { getAllPosts, getCachedPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -39,18 +38,13 @@ export default async function PostPage(props: {
 }) {
 	const params = await props.params
 
-	const post = await getCachedPostOrList(params.post)
+	const post = await getCachedPost(params.post)
 
 	if (!post) {
 		notFound()
 	}
 
-	let list = null
-	if (post && post.type === 'post') {
-		list = await getCachedListForPost(params.post)
-	}
-
-	const hasVideo = post?.resources?.find(
+	const hasVideo = post.resources?.find(
 		({ resource }: ContentResourceResource) =>
 			resource.type === 'videoResource',
 	)
@@ -66,20 +60,7 @@ export default async function PostPage(props: {
 				<Suspense fallback={null}>
 					<PostActionBar post={post} />
 				</Suspense>
-				{post?.fields?.postType !== 'event' && (
-					<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
-						{!list ? (
-							<Link
-								href="/posts"
-								className="hover:text-primary mb-3 inline-flex items-center text-sm font-medium transition ease-in-out"
-							>
-								<ChevronLeft className="mr-1 size-3" /> All Posts
-							</Link>
-						) : (
-							<div />
-						)}
-					</div>
-				)}
+
 				<div className="relative z-10">
 					<article className="relative flex h-full flex-col">
 						<div className="mx-auto flex w-full flex-col items-center justify-center gap-5 pb-10">
@@ -102,39 +83,15 @@ export default async function PostPage(props: {
 								</div>
 							</div>
 						</div>
-						{post?.type === 'post' && post?.fields?.body && (
-							<PostToC markdown={post?.fields?.body} />
-						)}
+						{post.fields.body && <PostToC markdown={post.fields.body} />}
 						<PostBody post={post} />
-						{/* {listSlugFromParam && (
-									<PostProgressToggle
-										className="flex w-full items-center justify-center"
-										postId={post.id}
-									/>
-								)} */}
-						{!hasVideo && post?.fields?.postType !== 'event' && (
-							<PrimaryNewsletterCta
-								isHiddenForSubscribers
-								className="pt-5 sm:pt-10"
-								trackProps={{
-									event: 'subscribed',
-									params: {
-										post: post.fields.slug,
-										location: 'post',
-									},
-								}}
-							/>
-						)}
 						<div className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
 								className="inline-flex rounded-md border"
-								title={post?.fields.title}
+								title={post.fields.title}
 							/>
 						</div>
-						{post?.fields?.postType !== 'event' && (
-							<PostNextUpFromListPagination postId={post.id} />
-						)}
 					</article>
 				</div>
 			</div>
@@ -250,14 +207,11 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 
 export async function generateStaticParams() {
 	const posts = await getAllPosts()
-	const lists = await getAllLists()
 
-	const resources = [...posts, ...lists]
-
-	return resources
-		.filter((resource) => Boolean(resource.fields?.slug))
-		.map((resource) => ({
-			post: resource.fields?.slug,
+	return posts
+		.filter((post) => Boolean(post.fields?.slug))
+		.map((post) => ({
+			post: post.fields?.slug,
 		}))
 }
 
@@ -267,24 +221,24 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const params = await props.params
 
-	const resource = await getCachedPostOrList(params.post)
+	const post = await getCachedPost(params.post)
 
-	if (!resource) {
+	if (!post) {
 		return parent as Metadata
 	}
 
 	return {
-		title: resource.fields.title,
-		description: resource.fields.description,
+		title: post.fields.title,
+		description: post.fields.description,
 		alternates: {
-			canonical: `/${resource.fields.slug}`,
+			canonical: `/${post.fields.slug}`,
 		},
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({
-					fields: { slug: resource.fields.slug },
-					id: resource.id,
-					updatedAt: resource.updatedAt,
+					fields: { slug: post.fields.slug },
+					id: post.id,
+					updatedAt: post.updatedAt,
 				}),
 			],
 		},
