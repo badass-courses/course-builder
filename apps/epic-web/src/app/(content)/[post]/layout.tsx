@@ -3,7 +3,7 @@ import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 
-import { getCachedPost } from '../../../lib/posts-query'
+import { getCachedPostOrList } from '../../../lib/posts-query'
 import { ListProvider } from './_components/list-provider'
 import ListResourceNavigation, {
 	MobileListResourceNavigation,
@@ -15,9 +15,9 @@ export default async function Layout(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
-	const post = await getCachedPost(params.post)
+	const post = await getCachedPostOrList(params.post)
 	let list = null
-	if (post) {
+	if (post && post.type === 'post') {
 		list = await getCachedListForPost(params.post)
 	}
 	const initialProgress = await getModuleProgressForUser(
