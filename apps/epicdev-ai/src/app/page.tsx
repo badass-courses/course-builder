@@ -32,7 +32,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+		'https://res.cloudinary.com/epic-web/image/upload/v1744263842/epicdev.ai/card_2x.jpg'
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
