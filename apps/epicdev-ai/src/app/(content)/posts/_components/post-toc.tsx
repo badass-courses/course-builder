@@ -103,7 +103,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background/50 border-foreground/5 sticky top-2 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:border-transparent sm:px-0"
+			className="bg-background/50 border-foreground/5 sticky top-8 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:mb-10 sm:border-transparent sm:px-0"
 			aria-label="On this page"
 		>
 			<div className="mx-auto flex w-full max-w-screen-xl items-center">

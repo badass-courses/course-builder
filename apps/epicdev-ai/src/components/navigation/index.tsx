@@ -76,7 +76,7 @@ const Navigation = ({
 						href="/"
 						className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
 					>
-						<Logo />
+						<Logo className="origin-left scale-[1.15]" />
 					</Link>
 				</span>
 				{links.length > 0 && (
