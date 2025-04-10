@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { PostPlayer } from '@/app/admin/posts/_components/post-player'
 import PostToC from '@/app/admin/posts/_components/post-toc'
-import { PostNewsletterCta } from '@/app/admin/posts/_components/post-video-subscribe-form'
 import { Contributor } from '@/components/contributor'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 // import { getPricingProps } from '@/lib/pricing-query'
@@ -70,7 +69,7 @@ export default async function PostPage(props: {
 					<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
 						{!list ? (
 							<Link
-								href="/posts"
+								href="/admin/posts"
 								className="hover:text-primary mb-3 inline-flex items-center text-sm font-medium transition ease-in-out"
 							>
 								<ChevronLeft className="mr-1 size-3" /> All Posts
@@ -126,11 +125,11 @@ export default async function PostPage(props: {
 							/>
 						)}
 						<div className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
-							<strong className="text-lg font-semibold">Share</strong>
+							{/* <strong className="text-lg font-semibold">Share</strong>
 							<Share
 								className="inline-flex rounded-md border"
 								title={post?.fields.title}
-							/>
+							/> */}
 						</div>
 						{post?.fields?.postType !== 'event' && (
 							<PostNextUpFromListPagination postId={post.id} />
@@ -231,17 +230,6 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						)}
 						videoResource={videoResource}
 					/>
-					{showNewsletterCta && (
-						<PostNewsletterCta
-							trackProps={{
-								event: 'subscribed',
-								params: {
-									location: 'post-below-video',
-									post: post.fields.slug,
-								},
-							}}
-						/>
-					)}
 				</section>
 			</Suspense>
 		</VideoPlayerOverlayProvider>

@@ -20,9 +20,9 @@ export default auth(async function middleware(req) {
 
 	const result = determineOrgAccess(user.organizationRoles, currentOrgId)
 
-	if (result.action === 'REDIRECT_TO_ORG_LIST') {
-		return NextResponse.redirect(new URL('/organization-list', req.url))
-	}
+	// if (result.action === 'REDIRECT_TO_ORG_LIST') {
+	// 	return NextResponse.redirect(new URL('/organization-list', req.url))
+	// }
 
 	if (result.action === 'SET_OWNER_ORG' && result.organizationId) {
 		response.cookies.set(
