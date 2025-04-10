@@ -58,11 +58,11 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 					)}
 					<div className="text-muted-foreground leading-1 flex min-w-[130px] flex-shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
 						<span className="font-semibold">{hit.type}</span>
-						{hit.created_at_timestamp && (
+						{/* {hit.created_at_timestamp && (
 							<span>
 								{format(new Date(hit.created_at_timestamp), 'MMM d, y')}
 							</span>
-						)}
+						)} */}
 					</div>
 				</div>
 			</Link>

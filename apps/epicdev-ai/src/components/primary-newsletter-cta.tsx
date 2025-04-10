@@ -80,7 +80,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose flex flex-col items-center justify-center px-5',
+				'not-prose flex flex-col items-center justify-center',
 				className,
 			)}
 		>
@@ -89,7 +89,7 @@ export const PrimaryNewsletterCta: React.FC<
 			) : (
 				<div
 					className={cn(
-						'relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10',
+						'relative z-10 flex max-w-3xl flex-col items-center justify-center pb-5 pt-10 sm:pb-10',
 						{
 							'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
 						},
