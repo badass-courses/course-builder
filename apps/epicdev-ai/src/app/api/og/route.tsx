@@ -119,14 +119,20 @@ export async function GET(request: Request) {
 						background: '#fff',
 						width: 1200,
 						height: 630,
-						backgroundImage:
-							resource && resource.type === 'post' && image
-								? `url(${image})`
-								: '',
+						// backgroundImage:
+						// 	resource && resource.type === 'post' && image
+						// 		? `url(${image})`
+						// 		: '',
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 					}}
 				>
+					{resource && resource.type === 'post' && image && (
+						<img src={image} tw="object-contain absolute w-full h-full" />
+					)}
+					{resource && resource.type === 'post' && image && (
+						<div tw="absolute w-full h-full bg-white/80" />
+					)}
 					{resource && resource.type === 'post' && image && (
 						<div tw="absolute right-40 top-26 z-10 flex">
 							<svg
