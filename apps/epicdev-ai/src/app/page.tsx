@@ -31,6 +31,7 @@ export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const page = await getPage('root')
 	const searchParams = await props.searchParams
 	let ogImageUrl = config?.openGraph?.images?.[0]!.url
 	const codeParam = searchParams?.code
@@ -53,6 +54,7 @@ export async function generateMetadata(
 			template: '%s | Epic AI Pro',
 			default: `Epic AI Pro`,
 		},
+		description: page?.fields?.description,
 		openGraph: {
 			images: [
 				{

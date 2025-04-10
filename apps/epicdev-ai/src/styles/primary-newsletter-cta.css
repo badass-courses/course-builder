@@ -15,7 +15,7 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply bg-primary relative mt-4 py-8 text-base font-medium;
+		@apply from-primary relative mt-4 origin-bottom bg-gradient-to-bl to-indigo-800 py-8 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg];
 	}
 }
 
