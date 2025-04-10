@@ -62,19 +62,6 @@ const SidePatternColumn = ({ side }: { side: 'left' | 'right' }) => {
 						'h-full w-[8px] bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-contain bg-repeat-y sm:w-[16px] dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]',
 					)}
 				/>
-				{/* <CldImage
-					src={
-						theme === 'light'
-							? 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png'
-							: 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png'
-					}
-					width={16}
-					height={35}
-					alt=""
-					className={cn('', {
-						'-scale-x-100': flipped,
-					})}
-				/> */}
 			</div>
 		</div>
 	)
