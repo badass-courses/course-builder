@@ -6,6 +6,7 @@ import {
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
+import MDXVideo from '@/components/content/mdx-video'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -133,6 +134,9 @@ const Home = async (props: Props) => {
 								),
 								// @ts-expect-error
 								MuxPlayer,
+								Video: ({ resourceId }: { resourceId: string }) => (
+									<MDXVideo resourceId={resourceId} />
+								),
 							}}
 						/>
 					) : (

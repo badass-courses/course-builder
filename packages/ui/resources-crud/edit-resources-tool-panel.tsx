@@ -83,12 +83,12 @@ export function EditResourcesToolPanel({
 			<EditResourcesToolbar
 				tools={tools}
 				onToolChange={(tool) => {
-					if (activeToolId === tool.id) {
+					if (activeToolId === tool?.id) {
 						setActiveToolId(null)
 						return
 					}
 
-					setActiveToolId(tool.id)
+					setActiveToolId(tool?.id ?? null)
 				}}
 			/>
 		</>

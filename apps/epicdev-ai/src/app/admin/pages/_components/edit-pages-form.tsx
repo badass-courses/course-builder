@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
+import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
 import {
 	onPageSave,
 	serializeForPreview,
 } from '@/app/admin/pages/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
+import { ResourceProvider } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
@@ -14,7 +16,12 @@ import { Page, PageSchema } from '@/lib/pages'
 import { updatePage } from '@/lib/pages-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ImagePlusIcon, LayoutTemplate, ListOrderedIcon } from 'lucide-react'
+import {
+	ImagePlusIcon,
+	LayoutTemplate,
+	ListOrderedIcon,
+	VideoIcon,
+} from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
@@ -39,7 +46,6 @@ type EditArticleFormProps = {
 
 export function EditPagesForm({
 	page,
-
 	tools = [
 		{
 			id: 'MDX Components',
@@ -54,9 +60,9 @@ export function EditPagesForm({
 				</div>
 			),
 		},
-		{ id: 'assistant' },
+		// { id: 'assistant' },
 		{
-			id: 'media',
+			id: 'images',
 			icon: () => (
 				<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
 			),
@@ -67,6 +73,13 @@ export function EditPagesForm({
 					uploadDirectory={`workshops`}
 				/>
 			),
+		},
+		{
+			id: 'videos',
+			icon: () => (
+				<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
 		},
 	],
 }: EditArticleFormProps) {
@@ -119,54 +132,56 @@ export function EditPagesForm({
 	}, [])
 
 	return (
-		<ResourceForm
-			onResourceBodyChange={debouncedOnChange}
-			mdxPreviewComponent={<MDXLivePreview />}
-			resource={page}
-			form={form}
-			bodyPanelSlot={
-				<ListResourcesEdit
-					list={page}
-					config={{
-						title: (
-							<div>
-								<span className="flex text-lg font-bold">Resources</span>
-								<span className="text-muted-foreground mt-2 font-normal">
-									Attach resources to this page to create a curated collection
-									that can be displayed in any order.
-								</span>
-							</div>
-						),
-						selection: {
-							availableResourceTypes: ['article'],
-							defaultResourceType: 'article',
-							createResourceTitle: 'Create a Resource',
-							showTierSelector: false,
-							searchConfig: <SearchConfig />,
-						},
-					}}
-				/>
-			}
-			resourceSchema={PageSchema}
-			getResourcePath={(slug) => `/${slug}`}
-			updateResource={updatePage}
-			availableWorkflows={[
-				{
-					value: 'article-chat-default-5aj1o',
-					label: 'Page Chat',
-					default: true,
-				},
-			]}
-			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-			user={session?.data?.user}
-			tools={tools}
-			theme={theme}
-			toggleMdxPreview={togglePreviewPanel}
-			isShowingMdxPreview={isShowingMdxPreview}
-		>
-			<PageMetadataFormFields form={form} />
-		</ResourceForm>
+		<ResourceProvider resource={page} resourceType="page" form={form}>
+			<ResourceForm
+				onResourceBodyChange={debouncedOnChange}
+				mdxPreviewComponent={<MDXLivePreview />}
+				resource={page}
+				form={form}
+				bodyPanelSlot={
+					<ListResourcesEdit
+						list={page}
+						config={{
+							title: (
+								<div>
+									<span className="flex text-lg font-bold">Resources</span>
+									<span className="text-muted-foreground mt-2 font-normal">
+										Attach resources to this page to create a curated collection
+										that can be displayed in any order.
+									</span>
+								</div>
+							),
+							selection: {
+								availableResourceTypes: ['article'],
+								defaultResourceType: 'article',
+								createResourceTitle: 'Create a Resource',
+								showTierSelector: false,
+								searchConfig: <SearchConfig />,
+							},
+						}}
+					/>
+				}
+				resourceSchema={PageSchema}
+				getResourcePath={(slug) => `/${slug}`}
+				updateResource={updatePage}
+				availableWorkflows={[
+					{
+						value: 'article-chat-default-5aj1o',
+						label: 'Page Chat',
+						default: true,
+					},
+				]}
+				sendResourceChatMessage={sendResourceChatMessage}
+				hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
+				user={session?.data?.user}
+				tools={tools}
+				theme={theme}
+				toggleMdxPreview={togglePreviewPanel}
+				isShowingMdxPreview={isShowingMdxPreview}
+			>
+				<PageMetadataFormFields form={form} />
+			</ResourceForm>
+		</ResourceProvider>
 	)
 }
 
