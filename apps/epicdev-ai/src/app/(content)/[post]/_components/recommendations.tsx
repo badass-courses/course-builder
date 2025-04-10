@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { Button, Skeleton } from '@coursebuilder/ui'
@@ -24,6 +24,7 @@ export default function Recommendations({
 		},
 		{
 			refetchOnWindowFocus: false,
+			refetchOnMount: false,
 		},
 	)
 	const { progress, addLessonProgress } = useProgress()
@@ -48,7 +49,7 @@ export default function Recommendations({
 						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
 					) : post ? (
 						<Link
-							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-orange-600 hover:underline lg:text-xl"
+							className="text-primary lg:fluid-lg flex w-full items-center justify-center gap-2 py-4 text-center text-lg font-medium hover:underline"
 							href={`/${post.slug}`}
 							onClick={async () => {
 								if (!isCompleted) {
@@ -60,7 +61,8 @@ export default function Recommendations({
 								}
 							}}
 						>
-							{post.title} <ArrowRight className="hidden w-4 sm:block" />
+							{post.title}{' '}
+							<ChevronRight className="hidden size-4 sm:block sm:size-5" />
 						</Link>
 					) : null}
 					{!session?.user && (
