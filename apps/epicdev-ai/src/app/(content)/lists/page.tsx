@@ -26,11 +26,13 @@ export default async function ListsPage() {
 	const canCreateContent = ability.can('create', 'Content')
 	return (
 		<LayoutClient withContainer className="">
-			<main className="p-5">
+			<main>
 				<h1 className="fluid-2xl font-bold">Lists</h1>
 				<div className="flex flex-col gap-5">
 					<ListsTable canCreateContent={canCreateContent} lists={lists} />
-					{canCreateContent && <CreateListForm />}
+					<div className="flex flex-col gap-5 py-5">
+						{canCreateContent && <CreateListForm />}
+					</div>
 				</div>
 			</main>
 		</LayoutClient>

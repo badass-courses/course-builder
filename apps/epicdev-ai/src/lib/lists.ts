@@ -9,7 +9,7 @@ import {
 	PostVisibilitySchema,
 } from './posts'
 
-export const ListTypeSchema = z.enum(['nextUp', 'tutorial', 'workshop'])
+export const ListTypeSchema = z.enum(['tutorial', 'nextUp'])
 
 export const ListSchema = ContentResourceSchema.merge(
 	z.object({

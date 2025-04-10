@@ -83,15 +83,11 @@ export function ListsTable({
 							)}
 						</TableRow>
 					))}
-					{lists.length === 0 && (
-						<TableRow>
-							<TableCell colSpan={3} className="py-4 text-center">
-								No lists found
-							</TableCell>
-						</TableRow>
-					)}
 				</TableBody>
 			</Table>
+			{lists.length === 0 && (
+				<div className="pb-2">You haven't created any lists yet.</div>
+			)}
 		</>
 	)
 }
