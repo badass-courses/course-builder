@@ -34,7 +34,7 @@ export default function LayoutClient({
 				className,
 			)}
 		>
-			<div className="absolute -inset-x-12 -top-6 h-12 -rotate-3 bg-gradient-to-r from-violet-300 via-pink-300 to-sky-300 blur-3xl dark:from-violet-500/10 dark:via-pink-500/10 dark:to-sky-500/10" />
+			<div className="absolute inset-x-0 -top-6 h-12 -rotate-3 bg-gradient-to-r from-violet-300 via-pink-300 to-sky-300 blur-3xl dark:from-violet-500/10 dark:via-pink-500/10 dark:to-sky-500/10" />
 			<div className="">
 				<Navigation
 					highlightedResource={highlightedResource}
