@@ -98,8 +98,8 @@ export const PrimaryNewsletterCta: React.FC<
 					{withImage && (
 						<CldImage
 							src="https://res.cloudinary.com/epic-web/image/upload/v1744279600/epicdev.ai/beacon_2x.png"
-							width={281}
-							height={206}
+							width={281 * 1.2}
+							height={206 * 1.2}
 							alt=""
 							aria-hidden="true"
 							className="mx-auto mb-5"
