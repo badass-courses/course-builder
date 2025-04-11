@@ -74,6 +74,11 @@
 		--ch-24: #8c959f;
 		--ch-25: #afb8c133;
 		--ch-26: #ffffffe6;
+
+		.cm-scroller {
+			color-scheme: light;
+			@apply scrollbar-thin;
+		}
 	}
 
 	.dark {
@@ -104,6 +109,10 @@
 		--ring: 262 83% 85%;
 		--radius: 0.7rem;
 		color-scheme: dark;
+		.cm-scroller {
+			color-scheme: dark;
+			@apply scrollbar-thin;
+		}
 	}
 	/* codehike theme */
 	.dark {
