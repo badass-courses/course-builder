@@ -27,7 +27,6 @@ export const LessonSchema = ContentResourceSchema.merge(
 			github: z.string().optional(),
 			gitpod: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
-			prompt: z.string().nullish(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 		tags: PostTagsSchema,
@@ -47,7 +46,6 @@ export const LessonUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
-		prompt: z.string().nullish(),
 	}),
 	tags: PostTagsSchema,
 })

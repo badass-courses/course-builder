@@ -118,61 +118,6 @@ export const LessonMetadataFormFields: React.FC<{
 				)}
 			/>
 			<TagField resource={lesson} showEditButton />
-			<FormField
-				control={form.control}
-				name="fields.prompt"
-				render={({ field }) => {
-					const prompt = form.watch('fields.prompt')
-					return (
-						<Dialog>
-							<div className="px-5">
-								<div className="flex items-center justify-between">
-									<FormLabel className="text-lg font-bold">Prompt</FormLabel>
-									{prompt && (
-										<DialogTrigger asChild>
-											<Button
-												variant="ghost"
-												size="sm"
-												className="flex items-center gap-1 opacity-75 hover:opacity-100"
-											>
-												<Pencil className="h-3 w-3" /> Edit
-											</Button>
-										</DialogTrigger>
-									)}
-								</div>
-								{prompt ? (
-									<DialogTrigger asChild>
-										<button className="text-muted-foreground hover:bg-muted mt-2 flex h-10 w-full cursor-text items-center rounded border p-3 font-mono text-xs transition ">
-											<span className="truncate overflow-ellipsis">
-												{prompt?.slice(0, 100)}
-											</span>
-										</button>
-									</DialogTrigger>
-								) : (
-									<DialogTrigger asChild>
-										<Button variant="outline" className="w-full">
-											<Plus className="mr-2 size-4 opacity-75" />
-											Add Prompt
-										</Button>
-									</DialogTrigger>
-								)}
-							</div>
-							<DialogContent>
-								<DialogHeader>
-									<DialogTitle>Edit Prompt</DialogTitle>
-								</DialogHeader>
-								<DialogDescription>
-									<Textarea
-										className="min-h-96"
-										{...field}
-										value={field.value || ''}
-									/>
-								</DialogDescription>
-							</DialogContent>
-						</Dialog>
-					)
-				}}
-			/>
 			{/* Solution Section */}
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
