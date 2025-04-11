@@ -69,7 +69,7 @@ export const EventMetadataFormFields: React.FC<{
 				if (
 					data.name === 'resource.chat.completed' &&
 					data.requestId === post.id &&
-					data.metadata?.workflow === 'prompt-0541t'
+					data.metadata?.workflow === 'prompt-1ixsd'
 				) {
 					const lastMessage = data.body[data.body.length - 1]
 					if (lastMessage?.content) {
@@ -98,7 +98,7 @@ export const EventMetadataFormFields: React.FC<{
 					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
 				},
 			],
-			selectedWorkflow: 'prompt-0541t',
+			selectedWorkflow: 'prompt-1ixsd',
 		})
 	}
 

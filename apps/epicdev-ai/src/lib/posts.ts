@@ -123,6 +123,7 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
+		...EventFieldsSchema.shape,
 	}),
 	tags: PostTagsSchema,
 	videoResourceId: z.string().optional().nullable(),
