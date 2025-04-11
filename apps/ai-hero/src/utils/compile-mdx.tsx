@@ -54,6 +54,7 @@ export async function compileMDX(source: string) {
 			h2: ({ children }) => <Heading level={2}>{children}</Heading>,
 			h3: ({ children }) => <Heading level={3}>{children}</Heading>,
 			Link: TrackLink,
+			AIOnly: ({ children }) => <span data-ai-only="">{children}</span>,
 			Button: ({ children, ...props }) => (
 				<Button {...props}>{children}</Button>
 			),
