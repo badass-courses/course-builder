@@ -38,10 +38,16 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							}}
 						/>
 					)}
-					<div className="mt-3 flex items-center gap-3">
-						<Contributor className="hidden text-sm md:flex [&_img]:w-7" />
-						<div className="text-muted-foreground flex flex-row gap-3 text-sm capitalize">
-							<span className="font-normal">{hit.type}</span>
+					<div className="mt-3 flex flex-wrap items-center gap-4">
+						<Contributor className="flex text-sm [&_img]:w-7" />
+
+						<div className="text-muted-foreground flex flex-row flex-wrap gap-3 text-sm capitalize">
+							{hit.type && (
+								<>
+									<span className="font-normal">{hit.type}</span>
+								</>
+							)}
+
 							{hit.type === 'event' && hit?.startsAt && (
 								<>
 									<span>
@@ -57,7 +63,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						</div>
 					</div>
 				</div>
-				<div className="mt-3 flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
+				{/* <div className="mt-3 flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
 					<Contributor className="flex text-sm md:hidden [&_img]:size-8" />
 					{hit?.tags && hit.tags.length > 0 && (
 						<div className="flex flex-wrap items-center gap-1">
@@ -74,7 +80,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							})}
 						</div>
 					)}
-				</div>
+				</div> */}
 			</Link>
 		</li>
 	)
