@@ -238,7 +238,7 @@ export const EventMetadataFormFields: React.FC<{
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
-						<Input {...field} readOnly disabled value={'PDT'} />
+						<Input {...field} readOnly disabled value={'America/Los_Angeles'} />
 						<FormMessage />
 					</FormItem>
 				)}

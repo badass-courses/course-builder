@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
 import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Highlight } from 'react-instantsearch'
 
 import { Badge } from '@coursebuilder/ui'
@@ -37,7 +38,24 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							}}
 						/>
 					)}
-					<Contributor className="mt-3 hidden text-sm md:flex [&_img]:w-7" />
+					<div className="mt-3 flex items-center gap-3">
+						<Contributor className="hidden text-sm md:flex [&_img]:w-7" />
+						<div className="text-muted-foreground flex flex-row gap-3 text-sm capitalize">
+							<span className="font-normal">{hit.type}</span>
+							{hit.type === 'event' && hit?.startsAt && (
+								<>
+									<span>
+										{formatInTimeZone(
+											hit.startsAt,
+											'America/Los_Angeles',
+											'MMM d, y - h:mmaaa',
+										)}{' '}
+										{hit.timezone}
+									</span>
+								</>
+							)}
+						</div>
+					</div>
 				</div>
 				<div className="mt-3 flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
 					<Contributor className="flex text-sm md:hidden [&_img]:size-8" />
@@ -56,14 +74,6 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							})}
 						</div>
 					)}
-					<div className="text-muted-foreground leading-1 flex min-w-[130px] flex-shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
-						<span className="font-semibold">{hit.type}</span>
-						{/* {hit.created_at_timestamp && (
-							<span>
-								{format(new Date(hit.created_at_timestamp), 'MMM d, y')}
-							</span>
-						)} */}
-					</div>
 				</div>
 			</Link>
 		</li>
