@@ -55,6 +55,7 @@ export const createWorkshopLessonFormConfig = (
 			description: lesson?.fields?.description || '',
 			github: lesson?.fields?.github || '',
 			gitpod: lesson?.fields?.gitpod || '',
+			prompt: lesson?.fields?.prompt || '',
 		},
 		tags: lesson?.tags || [],
 	}),
@@ -88,6 +89,7 @@ export const createWorkshopLessonFormConfig = (
 					visibility: resource.fields?.visibility || 'public',
 					github: resource.fields?.github || '',
 					thumbnailTime: resource.fields?.thumbnailTime || 0,
+					prompt: resource.fields?.prompt || '',
 				},
 				tags: resource.tags || [],
 			}
