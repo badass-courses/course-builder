@@ -249,10 +249,10 @@ const PostTeaser: React.FC<{
 										<Calendar className="w-3" />{' '}
 										{formatInTimeZone(
 											post.fields.startsAt,
-											'America/Los_Angeles',
+											post.fields.timezone || 'America/Los_Angeles',
 											'MMM d, y - h:mmaaa',
 										)}{' '}
-										{'PT'}
+										PT
 									</p>
 								)}
 						</CardHeader>

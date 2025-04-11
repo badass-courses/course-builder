@@ -55,7 +55,7 @@ export const PrimaryNewsletterCta: React.FC<
 	subscribedSubtitle,
 	trackProps = { event: 'subscribed', params: {} },
 	isHiddenForSubscribers = false,
-	shouldHideTitleWhenSubscribed = true,
+	shouldHideTitleWhenSubscribed = false,
 	onSuccess,
 }) => {
 	const router = useRouter()

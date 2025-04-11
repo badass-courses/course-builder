@@ -36,7 +36,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 										'America/Los_Angeles',
 										'MMM d, y - h:mmaaa',
 									)}{' '}
-									{hit.timezone}
+									PT
 								</span>
 							</>
 						)}
