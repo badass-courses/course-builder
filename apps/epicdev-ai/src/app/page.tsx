@@ -77,6 +77,7 @@ const Home = async (props: Props) => {
 	const firstPageResource = page?.resources?.[0] && {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
+		type: page.resources[0]?.resource?.fields?.postType,
 	}
 
 	return (
@@ -88,11 +89,12 @@ const Home = async (props: Props) => {
 			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md bg-violet-100 px-3 py-1 text-sm font-medium dark:bg-violet-500/20"
+						className="text-primary dark:border-foreground/5 mx-auto flex items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
 						href={firstPageResource.path}
 						prefetch
 					>
-						New: <span className="underline">{firstPageResource?.title}</span>
+						New {firstPageResource.type}:{' '}
+						<span className="underline">{firstPageResource?.title}</span>
 					</Link>
 				)}
 				<header>

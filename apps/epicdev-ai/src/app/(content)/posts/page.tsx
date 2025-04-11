@@ -186,7 +186,7 @@ export default async function PostsIndexPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="mx-[-1px] flex min-h-[calc(100vh-var(--nav-height))] flex-col lg:flex-row">
+			<main className="mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full max-w-4xl flex-col lg:flex-row">
 				<div className="mx-auto flex w-full flex-col">
 					<FeaturedGrid posts={featuredContent} />
 					<Search />
