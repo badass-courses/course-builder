@@ -13,7 +13,7 @@ import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
-import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
+import { getAllPosts, getCachedPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -38,7 +38,7 @@ export default async function PostPage(props: {
 }) {
 	const params = await props.params
 
-	const post = await getCachedPostOrList(params.post)
+	const post = await getCachedPost(params.post)
 
 	if (!post) {
 		notFound()
@@ -255,7 +255,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const params = await props.params
 
-	const resource = await getCachedPostOrList(params.post)
+	const resource = await getCachedPost(params.post)
 
 	if (!resource) {
 		return parent as Metadata
@@ -286,7 +286,9 @@ async function PostActionBar({ post }: { post: Post | null }) {
 		<>
 			{post && ability.can('update', 'Content') ? (
 				<Button asChild size="sm" className="absolute right-0 top-0 z-20">
-					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
+					<Link href={`/admin/posts/${post.fields?.slug || post.id}/edit`}>
+						Edit
+					</Link>
 				</Button>
 			) : null}
 		</>

@@ -389,23 +389,17 @@ export async function updatePost(
 }
 
 export const getCachedPost = unstable_cache(
-	async (slug: string) => getPost(slug),
+	async (slugOrId: string) => getPost(slugOrId),
 	['posts'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
 
 export async function getPost(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
-
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public', 'unlisted']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'unlisted',
+	]
+	const states = ['draft', 'published']
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
