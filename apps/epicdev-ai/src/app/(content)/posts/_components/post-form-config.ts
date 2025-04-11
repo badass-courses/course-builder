@@ -81,6 +81,8 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 				github: resource.fields.github || '',
 				thumbnailTime: resource.fields.thumbnailTime || 0,
 				postType: resource.fields.postType || 'article',
+				startsAt: resource.fields.startsAt || null,
+				endsAt: resource.fields.endsAt || null,
 			},
 			tags: resource.tags || [],
 		}
