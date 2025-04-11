@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas'
 
 import { ArticleMetadataFormFields } from './article-metadata-form-fields'
+import { EventMetadataFormFields } from './event-metadata-form-fields'
 
 interface MetadataFormFieldsSwitcherProps {
 	post: Post
@@ -30,8 +31,14 @@ interface MetadataFormFieldsSwitcherProps {
 export function MetadataFormFieldsSwitcher(
 	props: MetadataFormFieldsSwitcherProps,
 ) {
-	const { post, ...rest } = props
+	const { post, form, ...rest } = props
 
-	// For now, all types use the ArticleMetadataFormFields
-	return <ArticleMetadataFormFields post={post} {...rest} />
+	switch (form.watch('fields.postType')) {
+		case 'article':
+			return <ArticleMetadataFormFields post={post} form={form} {...rest} />
+		case 'event':
+			return <EventMetadataFormFields post={post} form={form} {...rest} />
+		default:
+			return <ArticleMetadataFormFields post={post} form={form} {...rest} />
+	}
 }

@@ -27,6 +27,9 @@ export const TypesenseResourceSchema = z.object({
 			}),
 		)
 		.nullish(),
+	startsAt: z.string().nullish(),
+	endsAt: z.string().nullish(),
+	timezone: z.string().nullish(),
 })
 
 export const attributeLabelMap: {
@@ -45,6 +48,9 @@ export const attributeLabelMap: {
 	created_at_timestamp: 'Created At',
 	tags: 'Tags',
 	parentResources: 'Parent Resources',
+	startsAt: 'Starts At',
+	endsAt: 'Ends At',
+	timezone: 'Timezone',
 } as const
 
 export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>
