@@ -27,6 +27,20 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							}}
 						/>
 					</span>
+					<span className="text-muted-foreground -mt-1 text-sm font-medium">
+						{hit.type === 'event' && hit?.startsAt && (
+							<>
+								<span>
+									{formatInTimeZone(
+										hit.startsAt,
+										'America/Los_Angeles',
+										'MMM d, y - h:mmaaa',
+									)}{' '}
+									{hit.timezone}
+								</span>
+							</>
+						)}
+					</span>
 					{hit.summary && (
 						<Highlight
 							attribute="summary"
@@ -44,19 +58,6 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							{hit.type && (
 								<>
 									<span className="font-normal">{hit.type}</span>
-								</>
-							)}
-
-							{hit.type === 'event' && hit?.startsAt && (
-								<>
-									<span>
-										{formatInTimeZone(
-											hit.startsAt,
-											'America/Los_Angeles',
-											'MMM d, y - h:mmaaa',
-										)}{' '}
-										{hit.timezone}
-									</span>
 								</>
 							)}
 						</div>
