@@ -82,7 +82,7 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
-								defaultTheme="system"
+								defaultTheme="light"
 								enableSystem={true}
 								disableTransitionOnChange
 							>
