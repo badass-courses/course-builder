@@ -91,19 +91,6 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									</span>
 								</div>
 							)}
-
-							{sessionStatus === 'unauthenticated' && !subscriber && (
-								<NavLinkItem
-									href="/newsletter"
-									className="[&_span]:flex [&_span]:items-center"
-									label={
-										<>
-											<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
-											Newsletter
-										</>
-									}
-								/>
-							)}
 							<ul className="flex flex-col gap-1">
 								{links.map((link) => (
 									<NavLinkItem
@@ -138,19 +125,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								)}
 							</ul>
 							{sessionStatus === 'unauthenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b px-4 py-5">
-									{/* <div className="bg-muted flex h-16 w-16 rounded-full" /> */}
-									<span className="text-xl font-bold">
-										<NavLinkItem
-											className="rounded-md border px-3 py-2"
-											icon={
-												<div className="mr-3 flex h-8 w-8 rounded-full border bg-gradient-to-tr from-pink-300 to-indigo-300" />
-											}
-											label="Sign in"
-											href="/login"
-										/>
-									</span>
-								</div>
+								<NavLinkItem label="Sign in" href="/login" />
 							)}
 						</div>
 
