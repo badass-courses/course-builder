@@ -19,7 +19,6 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 			>
 				<div className="flex flex-col gap-2 ">
 					<span className="fluid-lg group-hover:text-primary pr-5 font-bold transition sm:truncate">
-						{/* {hit.title} */}
 						<Highlight
 							attribute="title"
 							hit={hit as any}
