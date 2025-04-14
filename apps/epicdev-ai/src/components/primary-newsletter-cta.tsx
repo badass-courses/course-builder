@@ -27,6 +27,7 @@ type PrimaryNewsletterCtaProps = {
 	subscribedTitle?: string
 	subscribedSubtitle?: string
 	shouldHideTitleWhenSubscribed?: boolean
+	withImage?: boolean
 	trackProps?: {
 		event?: string
 		params?: Record<string, string>
@@ -45,6 +46,7 @@ export const PrimaryNewsletterCta: React.FC<
 	children,
 	className,
 	formId,
+	withImage = false,
 	id = 'primary-newsletter-cta',
 	title = common['primary-newsletter-tittle'],
 	byline = common['primary-newsletter-byline'],
@@ -53,7 +55,7 @@ export const PrimaryNewsletterCta: React.FC<
 	subscribedSubtitle,
 	trackProps = { event: 'subscribed', params: {} },
 	isHiddenForSubscribers = false,
-	shouldHideTitleWhenSubscribed = true,
+	shouldHideTitleWhenSubscribed = false,
 	onSuccess,
 }) => {
 	const router = useRouter()
@@ -78,7 +80,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'not-prose flex flex-col items-center justify-center px-5',
+				'not-prose flex flex-col items-center justify-center',
 				className,
 			)}
 		>
@@ -87,12 +89,22 @@ export const PrimaryNewsletterCta: React.FC<
 			) : (
 				<div
 					className={cn(
-						'relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10',
+						'relative z-10 flex max-w-3xl flex-col items-center justify-center pb-5 pt-10 sm:pb-10',
 						{
-							'opacity-0': subscriber && shouldHideTitleWhenSubscribed,
+							'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
 						},
 					)}
 				>
+					{withImage && (
+						<CldImage
+							src="https://res.cloudinary.com/epic-web/image/upload/v1744279600/epicdev.ai/beacon_2x.png"
+							width={281 * 1.2}
+							height={206 * 1.2}
+							alt=""
+							aria-hidden="true"
+							className="mx-auto mb-5"
+						/>
+					)}
 					<h2 className="sm:fluid-2xl fluid-xl text-balance text-center font-bold">
 						{title}
 					</h2>

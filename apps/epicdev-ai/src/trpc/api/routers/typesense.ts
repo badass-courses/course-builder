@@ -12,10 +12,20 @@ export const typesenseRouter = createTRPCRouter({
 			}),
 		)
 		.query(async ({ input }) => {
-			return await getNearestNeighbour(
-				input.documentId,
-				input.numberOfNearestNeighborsToReturn,
-				input.distanceThreshold,
-			)
+			try {
+				const result = await getNearestNeighbour(
+					input.documentId,
+					input.numberOfNearestNeighborsToReturn,
+					input.distanceThreshold,
+				)
+				if (result) {
+					return result
+				} else {
+					return null
+				}
+			} catch (error) {
+				console.error(error)
+				return null
+			}
 		}),
 })

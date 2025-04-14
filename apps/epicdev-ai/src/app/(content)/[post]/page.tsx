@@ -281,9 +281,6 @@ export async function generateMetadata(
 	return {
 		title: resource.fields.title,
 		description: resource.fields.description,
-		alternates: {
-			canonical: `/${resource.fields.slug}`,
-		},
 		openGraph: {
 			images: [
 				getOGImageUrlForResource({

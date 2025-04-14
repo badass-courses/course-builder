@@ -39,7 +39,7 @@ export const PostPurchaseLoginEmail = (
 		host = 'https://coursebuilder.dev',
 		email = 'joel@coursebuilder.dev',
 		siteName = 'Course Builder',
-		invoiceUrl = 'https://coursebuilder.dev',
+		invoiceUrl,
 		previewText = 'Welcome!',
 	}: PostPurchaseLoginEmailProps,
 	theme?: Theme,
@@ -102,7 +102,11 @@ export const PostPurchaseLoginEmail = (
 						</Section>
 						<Text className="text-[14px] leading-[24px] text-black">
 							or copy and paste this URL into your browser:{' '}
-							<Link href={url} className="text-blue-600 no-underline">
+							<Link
+								href={url}
+								className="text-blue-600 no-underline"
+								style={{ wordBreak: 'break-word' }}
+							>
 								{url}
 							</Link>
 						</Text>

@@ -16,11 +16,9 @@ export function EditResourcesToolbar({
 	onToolChange,
 }: {
 	tools: ResourceTool[]
-	onToolChange: (tool: ResourceTool) => void
+	onToolChange: (tool: ResourceTool | null) => void
 }) {
-	const [activeTool, setActiveTool] = React.useState<ResourceTool>(
-		tools.values().next().value,
-	)
+	const [activeTool, setActiveTool] = React.useState<ResourceTool | null>(null)
 	return (
 		<div className="bg-muted h-12 w-full md:h-[var(--pane-layout-height)] md:w-12 md:border-l">
 			<div className="flex flex-row gap-1 p-1 md:flex-col">
@@ -34,14 +32,19 @@ export function EditResourcesToolbar({
 									className={cn(
 										`hover:bg-background/50 flex aspect-square items-center justify-center rounded-lg border p-0 transition`,
 										{
-											'border-border bg-background': activeTool.id === tool.id,
+											'border-border bg-background': activeTool?.id === tool.id,
 											'border-transparent bg-transparent':
-												activeTool.id !== tool.id,
+												activeTool?.id !== tool.id,
 										},
 									)}
 									onClick={() => {
-										setActiveTool(tool)
-										onToolChange(tool)
+										if (tool.id === activeTool?.id) {
+											setActiveTool(null)
+											onToolChange(null)
+										} else {
+											setActiveTool(tool)
+											onToolChange(tool)
+										}
 									}}
 								>
 									{tool.icon ? (

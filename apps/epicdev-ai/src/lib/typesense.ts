@@ -1,5 +1,6 @@
 import * as z from 'zod'
 
+import { EventFieldsSchema } from './posts'
 import { TagSchema } from './tags'
 
 export const TypesenseResourceSchema = z.object({
@@ -27,6 +28,7 @@ export const TypesenseResourceSchema = z.object({
 			}),
 		)
 		.nullish(),
+	...EventFieldsSchema.shape,
 })
 
 export const attributeLabelMap: {
@@ -45,6 +47,9 @@ export const attributeLabelMap: {
 	created_at_timestamp: 'Created At',
 	tags: 'Tags',
 	parentResources: 'Parent Resources',
+	startsAt: 'Starts At',
+	endsAt: 'Ends At',
+	timezone: 'Timezone',
 } as const
 
 export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>

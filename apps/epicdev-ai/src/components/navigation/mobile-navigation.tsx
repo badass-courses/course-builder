@@ -13,6 +13,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
+import { Logo } from '../brand/logo'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { useNavLinks } from './use-nav-links'
@@ -58,10 +59,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	)
 
 	return (
-		<div className="absolute right-0 flex items-stretch md:hidden">
+		<div className="fixed right-8 top-[33px] flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex h-full items-center justify-center"
+				className="bg-background flex h-10 items-center justify-center rounded-full border px-3"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
@@ -81,6 +82,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 						className="flex h-full flex-col items-start justify-between gap-2"
 					>
 						<div className="flex w-full flex-col">
+							<Logo className="mb-10 origin-top-left scale-[1.2] pl-5 pt-1" />
 							{sessionStatus === 'authenticated' && (
 								<div className="mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5">
 									{userAvatar}
@@ -88,33 +90,6 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 										{sessionData.user.name?.split(' ')[0] || ''}
 									</span>
 								</div>
-							)}
-							{sessionStatus === 'unauthenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b py-5">
-									{/* <div className="bg-muted flex h-16 w-16 rounded-full" /> */}
-									<span className="text-xl font-bold">
-										<NavLinkItem
-											className=""
-											icon={
-												<div className="border-primary mr-3 flex h-12 w-12 rounded-full border border-dashed" />
-											}
-											label="Login"
-											href="/login"
-										/>
-									</span>
-								</div>
-							)}
-							{sessionStatus === 'unauthenticated' && !subscriber && (
-								<NavLinkItem
-									href="/newsletter"
-									className="[&_span]:flex [&_span]:items-center"
-									label={
-										<>
-											<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
-											Newsletter
-										</>
-									}
-								/>
 							)}
 							<ul className="flex flex-col gap-1">
 								{links.map((link) => (
@@ -149,6 +124,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									/>
 								)}
 							</ul>
+							{sessionStatus === 'unauthenticated' && (
+								<NavLinkItem label="Sign in" href="/login" />
+							)}
 						</div>
 
 						<div className="flex w-full flex-col items-start justify-start border-t pt-3">

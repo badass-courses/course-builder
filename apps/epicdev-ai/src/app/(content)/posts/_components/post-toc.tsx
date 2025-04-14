@@ -103,7 +103,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background/50 border-foreground/5 sticky top-2 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:border-transparent sm:px-0"
+			className="bg-background/50 border-foreground/5 sticky top-8 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:mb-10 sm:border-transparent sm:px-0"
 			aria-label="On this page"
 		>
 			<div className="mx-auto flex w-full max-w-screen-xl items-center">
@@ -130,7 +130,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					</div>
 					<p
 						className={cn(
-							'relative max-w-[300px] truncate overflow-ellipsis text-nowrap opacity-80 transition ease-in-out sm:max-w-full',
+							'relative max-w-[300px] truncate overflow-ellipsis text-nowrap pr-10 opacity-80 transition ease-in-out sm:max-w-full sm:pr-0',
 							{
 								'translate-x-1 opacity-0': isOpen,
 							},

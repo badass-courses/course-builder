@@ -46,7 +46,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	)
 
 	const styles = {
-		nav: 'text-foreground relative hover:no-underline [&_svg]:text-foreground/80 hover:text-primary [&_svg]:hover:text-primary [&_svg]:transition flex h-full items-center px-5 w-full justify-start text-lg sm:text-sm transition sm:px-5',
+		nav: 'text-foreground relative hover:no-underline [&_svg]:text-foreground/80 hover:text-primary [&_svg]:hover:text-primary [&_svg]:transition flex h-full items-center px-4 w-full justify-start text-lg sm:text-sm transition sm:px-5',
 		menu: 'text-foreground flex w-full items-center justify-start text-xl hover:no-underline hover:text-primary px-3 sm:text-sm',
 	}
 

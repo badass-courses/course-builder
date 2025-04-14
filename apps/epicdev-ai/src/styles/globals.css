@@ -32,16 +32,16 @@
 		--popover-foreground: 0 0% 10%;
 		--primary: 259 75% 65%;
 		--primary-foreground: 0 0% 100%;
-		--secondary: 0 0% 91%;
-		--secondary-foreground: 0 0% 0%;
+		--secondary: 259 30% 93%;
+		--secondary-foreground: 256 54% 13%;
 		--muted: 256 25% 97%;
-		--muted-foreground: 0 0% 30%;
+		--muted-foreground: 256 64% 20%;
 		--accent: 0 0% 92%;
 		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
 		--border: 256 11% 94%;
-		--input: 0 0% 90%;
+		--input: 256 15% 90%;
 		--ring: 259 75% 65%;
 		--radius: 0.7rem;
 		color-scheme: light;
@@ -74,6 +74,11 @@
 		--ch-24: #8c959f;
 		--ch-25: #afb8c133;
 		--ch-26: #ffffffe6;
+
+		.cm-scroller {
+			color-scheme: light;
+			@apply scrollbar-thin;
+		}
 	}
 
 	.dark {
@@ -87,11 +92,11 @@
 		--primary: 262 83% 85%;
 
 		--primary-foreground: 0 0% 0%;
-		--secondary: 0 0% 11%;
+		--secondary: 240 25% 18%;
 		--secondary-foreground: 0 0% 100%;
 
 		--muted: 240 25% 7%;
-		--muted-foreground: 0 0% 90%;
+		--muted-foreground: 254 64% 90%;
 
 		--accent: 240 19% 15%;
 		--accent-foreground: 32 5% 90%;
@@ -99,11 +104,15 @@
 		--destructive: 0 50% 30%;
 		--destructive-foreground: 32 5% 90%;
 
-		--border: 0 0% 12%;
-		--input: 0 0% 15%;
+		--border: 240 20% 15%;
+		--input: 240 19% 20%;
 		--ring: 262 83% 85%;
 		--radius: 0.7rem;
 		color-scheme: dark;
+		.cm-scroller {
+			color-scheme: dark;
+			@apply scrollbar-thin;
+		}
 	}
 	/* codehike theme */
 	.dark {

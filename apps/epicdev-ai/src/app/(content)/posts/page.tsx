@@ -16,8 +16,9 @@ import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+import { formatInTimeZone } from 'date-fns-tz'
 import { desc, inArray, sql } from 'drizzle-orm'
-import { Book, ChevronRight } from 'lucide-react'
+import { Book, Calendar, ChevronRight } from 'lucide-react'
 
 import {
 	Badge,
@@ -185,7 +186,7 @@ export default async function PostsIndexPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="mx-[-1px] flex min-h-[calc(100vh-var(--nav-height))] flex-col lg:flex-row">
+			<main className="mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full max-w-4xl flex-col lg:flex-row">
 				<div className="mx-auto flex w-full flex-col">
 					<FeaturedGrid posts={featuredContent} />
 					<Search />
@@ -240,6 +241,20 @@ const PostTeaser: React.FC<{
 							>
 								{title}
 							</CardTitle>
+							{post?.fields &&
+								'postType' in post.fields &&
+								post?.fields?.postType === 'event' &&
+								post?.fields?.startsAt && (
+									<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+										<Calendar className="w-3" />{' '}
+										{formatInTimeZone(
+											post.fields.startsAt,
+											post.fields.timezone || 'America/Los_Angeles',
+											'MMM d, y - h:mmaaa',
+										)}{' '}
+										PT
+									</p>
+								)}
 						</CardHeader>
 
 						{description && (

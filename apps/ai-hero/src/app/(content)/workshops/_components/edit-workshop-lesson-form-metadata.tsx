@@ -5,7 +5,7 @@ import { ContentVideoResourceField } from '@/components/content/content-video-re
 import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { Plus, PlusCircle, Trash } from 'lucide-react'
+import { Pencil, Plus, PlusCircle, Trash } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -13,6 +13,12 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -180,7 +186,7 @@ export const LessonMetadataFormFields: React.FC<{
 					</div>
 				) : (
 					<div className="mt-1">
-						<Button variant="secondary" asChild>
+						<Button className="w-full" variant="outline" asChild>
 							<Link
 								href={`/workshops/${module}/${lesson.fields.slug}/solution/edit`}
 							>

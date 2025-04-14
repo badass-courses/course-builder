@@ -16,6 +16,9 @@ const config = createDefaultConfig({
 	sortBy: '_text_match:desc', // default sort
 })
 
+// Add exclude_fields to the additionalSearchParameters
+config.additionalSearchParameters.exclude_fields = 'embedding'
+
 // Create adapter directly instead of using the createTypesenseAdapter function
 export const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter(
 	config,

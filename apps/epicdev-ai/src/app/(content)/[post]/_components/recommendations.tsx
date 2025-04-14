@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { Button, Skeleton } from '@coursebuilder/ui'
@@ -24,6 +24,7 @@ export default function Recommendations({
 		},
 		{
 			refetchOnWindowFocus: false,
+			refetchOnMount: false,
 		},
 	)
 	const { progress, addLessonProgress } = useProgress()
@@ -36,7 +37,7 @@ export default function Recommendations({
 	return (
 		<nav
 			className={cn(
-				'bg-card flex w-full flex-col items-center border-y px-5 py-16 text-center',
+				'flex w-full flex-col items-center border-t px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="Recommendations"
@@ -45,10 +46,10 @@ export default function Recommendations({
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
-						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
+						<Skeleton className="mx-auto mt-2 flex h-20 w-full max-w-sm sm:h-[49px]" />
 					) : post ? (
 						<Link
-							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-orange-600 hover:underline lg:text-xl"
+							className="text-primary lg:fluid-lg flex w-full items-center justify-center gap-2 py-4 text-center text-lg font-medium hover:underline"
 							href={`/${post.slug}`}
 							onClick={async () => {
 								if (!isCompleted) {
@@ -60,7 +61,8 @@ export default function Recommendations({
 								}
 							}}
 						>
-							{post.title} <ArrowRight className="hidden w-4 sm:block" />
+							{post.title}{' '}
+							<ChevronRight className="hidden size-4 sm:block sm:size-5" />
 						</Link>
 					) : null}
 					{!session?.user && (
@@ -68,11 +70,11 @@ export default function Recommendations({
 							<Link
 								href="/login"
 								target="_blank"
-								className="hover:text-foreground text-center underline"
+								className="text-primary text-center hover:underline"
 							>
-								Log in
+								Sign in
 							</Link>{' '}
-							to save progress
+							to save your progress
 						</span>
 					)}
 				</li>

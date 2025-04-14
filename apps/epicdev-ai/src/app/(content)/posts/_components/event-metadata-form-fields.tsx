@@ -5,6 +5,7 @@ import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
 import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
 import { POST_SUBTYPES } from '@/lib/resource-types'
+import { parseAbsolute } from '@internationalized/date'
 import { Sparkles } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -30,10 +31,11 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { AddToList } from './add-to-list'
+import { DateTimePicker } from './date-time-picker/date-time-picker'
 import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 
-export const PostMetadataFormFields: React.FC<{
+export const EventMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResource?: VideoResource | null
 	videoResourceId?: string | null | undefined
@@ -173,6 +175,75 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.startsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Starts At</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name="fields.endsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Ends At</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.timezone"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
+						<Input {...field} readOnly disabled value={'America/Los_Angeles'} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
 			<TagField resource={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField
@@ -228,20 +299,6 @@ export const PostMetadataFormFields: React.FC<{
 						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
 						<FormDescription>
 							Direct link to the GitHub file associated with the post.
-						</FormDescription>
-						<Input {...field} value={field.value ?? ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="fields.gitpod"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
-						<FormDescription>
-							Gitpod link to start a new workspace with the post.
 						</FormDescription>
 						<Input {...field} value={field.value ?? ''} />
 						<FormMessage />

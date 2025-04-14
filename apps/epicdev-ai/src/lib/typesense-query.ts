@@ -126,6 +126,11 @@ export async function upsertPostToTypeSense(
 					}
 				}),
 			}),
+			...(post.fields?.postType === 'event' && {
+				startsAt: post.fields?.startsAt ?? null,
+				endsAt: post.fields?.endsAt ?? null,
+				timezone: post.fields?.timezone ?? 'America/Los_Angeles',
+			}),
 		})
 
 		if (!resource.success) {
@@ -384,7 +389,7 @@ export async function getNearestNeighbour(
 				q: '*',
 				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
 				exclude_fields: 'embedding',
-				filter_by: `id:!=${documentId} && state:=published && type:=[post,list]${completedFilter}`,
+				filter_by: `id:!=${documentId} && state:=published && type:=[article,post,event,list]${completedFilter}`,
 			},
 		],
 	}
