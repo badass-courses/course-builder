@@ -31,9 +31,9 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
-	// TODO: fix the ogImage
+
 	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg'
+		'https://res.cloudinary.com/epic-web/image/upload/v1744667710/ogImages/card-workshops_2x.png'
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -43,11 +43,6 @@ export async function generateMetadata(
 			[],
 			courseBuilderAdapter,
 		)
-		const validCoupon = Boolean(coupon && coupon.isValid)
-		// TODO: fix the ogImage
-		if (validCoupon)
-			ogImageUrl =
-				'https://res.cloudinary.com/total-typescript/image/upload/v1730364326/aihero-golden-ticket_2x_qghsfq.png'
 	}
 
 	return {
