@@ -107,7 +107,7 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 	return hasPurchasedCurrentProduct ? (
 		<div>
 			Ticket Purchased. We'll send all necessary information to your email
-			address. View your <Link href="/invoices">invoice</Link>
+			address. <Link href="/invoices">Invoice</Link>
 		</div>
 	) : (
 		<Pricing.Root
@@ -150,6 +150,7 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
+	hasPurchasedCurrentProduct,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -160,7 +161,7 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 	return hasPurchasedCurrentProduct ? (
 		<div>
 			Ticket Purchased. We'll send all necessary information to your email
-			address. View your <Link href="/invoices">invoice</Link>
+			address. <Link href="/invoices">Invoice</Link>
 		</div>
 	) : (
 		<Pricing.Root
