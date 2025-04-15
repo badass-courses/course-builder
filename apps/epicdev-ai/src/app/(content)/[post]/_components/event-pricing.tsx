@@ -65,28 +65,26 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product className="w-full">
-				{/* <Pricing.ProductImage /> */}
-				{/* <Pricing.Name className="" /> */}
-				<Pricing.Details className="flex w-full flex-row items-center justify-between pt-0">
-					<div className="flex flex-col items-center gap-1">
-						<Pricing.Price className="scale-[0.7] text-base" />
-						<Pricing.LiveQuantity className="leading-0 -mt-5 flex items-center bg-transparent" />
-						<Pricing.SaleCountdown className="py-4" />
-					</div>
-					{pricingWidgetOptions?.allowTeamPurchase && (
-						<>
-							<Pricing.TeamToggle />
-							<Pricing.TeamQuantityInput />
-						</>
-					)}
-					<div className="">
-						<Pricing.BuyButton className="from-primary relative mt-4 w-auto origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-							Buy Ticket
-						</Pricing.BuyButton>
-						<Pricing.LiveRefundPolicy />
-						<Pricing.PPPToggle />
-					</div>
-				</Pricing.Details>
+				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+					<Pricing.Details className="flex w-full flex-row items-center justify-between pt-0">
+						<div className="flex flex-col items-center gap-1">
+							<Pricing.Price className="scale-[0.7] text-base" />
+							<Pricing.LiveQuantity className="leading-0 -mt-5 flex items-center bg-transparent" />
+							<Pricing.SaleCountdown className="py-4" />
+						</div>
+						{pricingWidgetOptions?.allowTeamPurchase && (
+							<>
+								<Pricing.TeamToggle />
+								<Pricing.TeamQuantityInput />
+							</>
+						)}
+						<div className="">
+							<BuyButton />
+							<Pricing.LiveRefundPolicy />
+							<Pricing.PPPToggle />
+						</div>
+					</Pricing.Details>
+				</div>
 			</Pricing.Product>
 		</Pricing.Root>
 	)
@@ -199,17 +197,39 @@ export const BuyTicketButton: React.FC<
 
 const BuyButton = () => {
 	const { formattedPrice, status } = usePricing()
+	const fullPrice = formattedPrice?.fullPrice || 0
+	const finalPrice = formattedPrice?.calculatedPrice || 0
+	const savings = fullPrice - finalPrice
+	const savingsPercentage = Math.round((savings / fullPrice) * 100)
 
 	return (
-		<Pricing.BuyButton className="from-primary relative w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-			Buy Ticket —{' '}
-			{status === 'pending' ? (
-				<Spinner className="ml-1 w-5" />
-			) : (
-				formattedPrice?.calculatedPrice &&
-				formatUsd(formattedPrice?.calculatedPrice).dollars
-			)}
-		</Pricing.BuyButton>
+		<div className="flex flex-col items-start gap-2">
+			<div className="flex items-center gap-3">
+				<div className="flex items-baseline">
+					<span className="text-sm font-medium text-gray-500">US</span>
+					<span className="ml-1 text-3xl font-bold">
+						{status === 'pending' ? (
+							<Spinner className="ml-1 w-5" />
+						) : (
+							formatUsd(finalPrice).dollars
+						)}
+					</span>
+				</div>
+				{savings > 0 && (
+					<>
+						<span className="text-muted-foreground line-through">
+							{formatUsd(fullPrice).dollars}
+						</span>
+						<span className="rounded-md bg-green-100 px-2 py-1 text-sm font-medium text-green-800">
+							Save {savingsPercentage}%
+						</span>
+					</>
+				)}
+			</div>
+			<Pricing.BuyButton className="from-primary relative w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+				Buy Ticket
+			</Pricing.BuyButton>
+		</div>
 	)
 }
 
