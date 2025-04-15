@@ -36,6 +36,7 @@ export type PricingComponentProps = {
 	pricingDataLoader: Promise<PricingData>
 	hasPurchasedCurrentProduct?: boolean
 	pricingWidgetOptions?: Partial<PricingOptions>
+	centered?: boolean
 }
 
 /**
@@ -330,6 +331,7 @@ export const withEventPricing = (
 		return (
 			<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 				<PricingComponent
+					centered={centered}
 					hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
 					commerceProps={commerceProps}
 					product={product}
