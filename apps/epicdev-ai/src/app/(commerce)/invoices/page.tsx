@@ -12,19 +12,19 @@ const Invoices = async () => {
 		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
 	return (
 		<LayoutClient withContainer>
-			<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5">
-				<div className="mx-auto flex h-full w-full max-w-screen-md flex-grow flex-col items-center border-x py-16">
-					<h1 className="font-heading mb-16 text-3xl font-black">
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col ">
+				<div className="mx-auto flex h-full w-full max-w-screen-md flex-grow flex-col items-center py-16">
+					<h1 className="font-heading mb-16 text-3xl font-bold">
 						{purchases.length > 0 ? 'Your Invoices' : 'No invoices'}
 					</h1>
-					<ul className="divide-border flex w-full flex-col divide-y border-t">
+					<ul className="flex w-full flex-col">
 						{purchases
 							.filter((purchase: Purchase) => purchase.merchantChargeId)
 							.map((purchase: Purchase | any) => {
 								return (
 									<li key={purchase.merchantChargeId}>
 										<InvoiceCard
-											className="rounded-none border-0"
+											className="rounded-none border-0 shadow-none"
 											purchase={purchase}
 										/>
 									</li>

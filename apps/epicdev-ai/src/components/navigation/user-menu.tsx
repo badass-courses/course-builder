@@ -94,9 +94,9 @@ export const UserMenu = () => {
 							{canCreateContent && (
 								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
 							)}
-							{/* {canViewInvoice && (
+							{canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
-							)} */}
+							)}
 							{/* <NavLinkItem variant="menu" href="/profile" label="Profile" /> */}
 							<hr className="my-1" />
 							<NavLinkItem

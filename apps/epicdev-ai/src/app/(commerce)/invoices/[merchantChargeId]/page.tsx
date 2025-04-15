@@ -129,7 +129,7 @@ const Invoice = async (props: {
 
 	return (
 		<LayoutClient withContainer>
-			<div className="container border-x px-5">
+			<div className="container">
 				<main className="mx-auto w-full max-w-screen-md">
 					<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
 						<Link
