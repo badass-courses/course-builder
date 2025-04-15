@@ -25,14 +25,17 @@ import { Button } from '@coursebuilder/ui'
  * @param source - MDX source content to compile
  * @returns Compiled MDX content
  */
-export async function compileMDX(source: string) {
+export async function compileMDX(
+	source: string,
+	components?: Record<string, React.ComponentType<any>>,
+) {
 	return await _compileMDX({
 		source: source,
 		components: {
+			...components,
 			// @ts-expect-error
 			Code,
 			Scrollycoding,
-
 			Mermaid: (props) => (
 				<Mermaid
 					{...props}

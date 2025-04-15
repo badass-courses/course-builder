@@ -3,15 +3,17 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
-// import { PricingWidget } from '@/components/home-pricing-widget'
-// import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import { courseBuilderAdapter } from '@/db'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
-import { type Post } from '@/lib/posts'
-import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
+import { type Post, type ProductForPostProps } from '@/lib/posts'
+import {
+	getAllPosts,
+	getCachedPostOrList,
+	getProductForPost,
+} from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -28,6 +30,11 @@ import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+import {
+	EventPricing,
+	EventPricingButton,
+	EventPricingInline,
+} from './_components/event-pricing'
 
 export const experimental_ppr = true
 
@@ -60,6 +67,8 @@ export default async function PostPage(props: {
 			resource.type === 'videoResource',
 	)
 
+	const pricingPropsLoader = getProductForPost(post.id)
+
 	return (
 		<main className="w-full">
 			{hasVideo && <PlayerContainer post={post} />}
@@ -85,6 +94,7 @@ export default async function PostPage(props: {
 						)}
 					</div>
 				)}
+
 				<div className="relative z-10">
 					<article className="relative flex h-full flex-col">
 						<div className="mx-auto flex w-full flex-col items-center justify-center gap-5 pb-10">
@@ -110,7 +120,7 @@ export default async function PostPage(props: {
 						{post?.type === 'post' && post?.fields?.body && (
 							<PostToC markdown={post?.fields?.body} />
 						)}
-						<PostBody post={post} />
+						<PostBody post={post} pricingPropsLoader={pricingPropsLoader} />
 						{/* {listSlugFromParam && (
 									<PostProgressToggle
 										className="flex w-full items-center justify-center"
@@ -164,7 +174,13 @@ export default async function PostPage(props: {
 	)
 }
 
-async function PostBody({ post }: { post: Post | null }) {
+async function PostBody({
+	post,
+	pricingPropsLoader,
+}: {
+	post: Post | null
+	pricingPropsLoader: Promise<ProductForPostProps | null>
+}) {
 	if (!post) {
 		return null
 	}
@@ -173,7 +189,26 @@ async function PostBody({ post }: { post: Post | null }) {
 		return null
 	}
 
-	const { content } = await compileMDX(post.fields.body)
+	const { content } = await compileMDX(post.fields.body, {
+		EventPricing: (props) => (
+			<Suspense fallback={<div className="py-5">Loading...</div>}>
+				<EventPricingInline
+					pricingPropsLoader={pricingPropsLoader}
+					post={post}
+					{...props}
+				/>
+			</Suspense>
+		),
+		BuyTicketButton: (props) => (
+			<Suspense fallback={<div className="py-5">Loading...</div>}>
+				<EventPricingButton
+					pricingPropsLoader={pricingPropsLoader}
+					post={post}
+					{...props}
+				/>
+			</Suspense>
+		),
+	})
 
 	return (
 		<div className="">
