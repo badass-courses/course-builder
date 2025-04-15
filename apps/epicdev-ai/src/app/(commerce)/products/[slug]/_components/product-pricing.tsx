@@ -1,9 +1,11 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
+import type { Purchase } from '@coursebuilder/core/schemas'
 import { CommerceProps, PricingData } from '@coursebuilder/core/types'
 
 import { PricingWidget } from './pricing-widget'
@@ -16,6 +18,7 @@ export function ProductPricing({
 	purchasedProductIds,
 	hasPurchasedCurrentProduct,
 	organizationId,
+	existingPurchase,
 }: {
 	product: any
 	quantityAvailable: number
@@ -24,7 +27,9 @@ export function ProductPricing({
 	purchasedProductIds: string[]
 	hasPurchasedCurrentProduct?: boolean
 	organizationId?: string
+	existingPurchase?: Purchase
 }) {
+	const merchantChargeId = existingPurchase?.merchantChargeId
 	const teamQuantityLimit =
 		product.type === 'live'
 			? quantityAvailable && quantityAvailable > 5

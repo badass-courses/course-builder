@@ -76,7 +76,7 @@ function ComboboxDemo({
 	const [open, setOpen] = React.useState(false)
 
 	const { data = [] } = api.contentResources.getAll.useQuery({
-		contentTypes: ['event', 'workshop', 'cohort'],
+		contentTypes: ['post', 'event', 'workshop', 'cohort'],
 	})
 
 	const filteredResources = data
@@ -283,6 +283,59 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
+				name="quantityAvailable"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">
+								Quantity Available
+							</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The number of items that can be purchased at one time.
+							</FormDescription>
+							<FormControl>
+								<Input type="number" min={-1} {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<FormField
+				control={form.control}
+				name="price.unitAmount"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Price</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The price of the product in USD.
+							</FormDescription>
+							<FormControl>
+								<Input type="number" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<div className="flex flex-col gap-3 px-5">
+				<div className="text-lg font-bold">Product Resources</div>
+				<ComboboxDemo
+					onSelect={(value) => {
+						handleResourceAdded(value)
+					}}
+					currentResources={product.resources || []}
+				/>
+			</div>
+			<Tree
+				rootResource={product}
+				rootResourceId={product.id}
+				state={state}
+				updateState={updateState}
+			/>
+			<FormField
+				control={form.control}
 				name="fields.description"
 				render={({ field }) => {
 					return (
@@ -335,59 +388,6 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
-			<FormField
-				control={form.control}
-				name="quantityAvailable"
-				render={({ field }) => {
-					return (
-						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">
-								Quantity Available
-							</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The number of items that can be purchased at one time.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" min={-1} {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)
-				}}
-			/>
-			<FormField
-				control={form.control}
-				name="price.unitAmount"
-				render={({ field }) => {
-					return (
-						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Price</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The price of the product in USD.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)
-				}}
-			/>
-			<div className="flex flex-col gap-3 px-5">
-				<div className="text-lg font-bold">Product Resources</div>
-				<ComboboxDemo
-					onSelect={(value) => {
-						handleResourceAdded(value)
-					}}
-					currentResources={product.resources || []}
-				/>
-			</div>
-			<Tree
-				rootResource={product}
-				rootResourceId={product.id}
-				state={state}
-				updateState={updateState}
-			/>
 		</EditProductFormDesktop>
 	)
 }

@@ -2,15 +2,19 @@
 
 import crypto from 'node:crypto'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
 	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
+	products,
+	purchases,
 } from '@/db/schema'
 import {
 	NewPostInput,
@@ -18,24 +22,29 @@ import {
 	Post,
 	PostAction,
 	PostSchema,
+	ProductForPostPropsSchema,
 	type PostUpdate,
+	type ProductForPostProps,
 } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
+import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
 import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
+import { getPricingData } from './pricing-query'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -1083,4 +1092,103 @@ export async function getPostOrList(slugOrId: string) {
 	}
 
 	return parsed.data
+}
+
+export async function getProductForPost(
+	postId: string,
+): Promise<ProductForPostProps | null> {
+	const contentProduct = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, postId),
+	})
+	console.log('🔍 contentProduct', contentProduct)
+	const product = await courseBuilderAdapter.getProduct(
+		contentProduct?.productId,
+	)
+	if (!product) {
+		return null
+	}
+
+	let props
+	const productParsed = productSchema.parse(product)
+
+	const pricingDataLoader = getPricingData({
+		productId: productParsed.id,
+	})
+
+	const { session } = await getServerAuthSession()
+
+	const countryCode =
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				allowPurchase: 'true',
+			},
+			userId: session?.user?.id,
+			products: [productParsed],
+			countryCode,
+		},
+		courseBuilderAdapter,
+	)
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, productParsed.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const baseProps = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	if (!session?.user?.id) {
+		props = baseProps
+	} else {
+		const purchaseForProduct = commerceProps.purchases?.find(
+			(purchase: Purchase) => {
+				return purchase.productId === productSchema.parse(product).id
+			},
+		)
+
+		if (!purchaseForProduct) {
+			props = baseProps
+		} else {
+			const { purchase, existingPurchase } =
+				await courseBuilderAdapter.getPurchaseDetails(
+					purchaseForProduct.id,
+					session?.user?.id,
+				)
+			props = {
+				...baseProps,
+				hasPurchasedCurrentProduct: Boolean(purchase),
+				existingPurchase,
+			}
+		}
+	}
+	return ProductForPostPropsSchema.parse(props)
 }

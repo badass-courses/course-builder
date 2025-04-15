@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getActiveSelfPacedProducts } from '@/lib/products-query'
+import LayoutClient from '@/components/layout-client'
+import { getProducts } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import {
@@ -13,19 +14,19 @@ import {
 
 export default async function ProductsPage() {
 	const { ability } = await getServerAuthSession()
-	const products = await getActiveSelfPacedProducts()
+	const products = await getProducts()
 
 	return (
-		<div>
+		<LayoutClient withContainer>
 			{ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+				<div className="flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild className="h-7">
 						<Link href={`/products/new`}>New Product</Link>
 					</Button>
 				</div>
 			) : null}
-			<div className="flex flex-col space-y-4 p-5 sm:p-10">
+			<div className="flex flex-col space-y-4">
 				<h2 className="text-lg font-bold">Products</h2>
 				{products.map((product) => (
 					<Card key={product.id}>
@@ -40,6 +41,6 @@ export default async function ProductsPage() {
 					</Card>
 				))}
 			</div>
-		</div>
+		</LayoutClient>
 	)
 }

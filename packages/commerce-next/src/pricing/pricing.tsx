@@ -87,8 +87,6 @@ const PricingProduct = ({
 		organizationId,
 	})
 
-	console.log({ checkoutPath })
-
 	return (
 		<form className={cn('', className)} action={checkoutPath} method="POST">
 			{children}

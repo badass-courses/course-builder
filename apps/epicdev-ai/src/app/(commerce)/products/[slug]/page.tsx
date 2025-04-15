@@ -5,6 +5,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -51,7 +52,7 @@ async function ProductActionBar({
 	return (
 		<>
 			{product && ability.can('update', 'Content') ? (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1">
+				<div className="flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild size="sm">
 						<Link href={`/products/${product.fields?.slug || product.id}/edit`}>
@@ -60,7 +61,7 @@ async function ProductActionBar({
 					</Button>
 				</div>
 			) : (
-				<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
+				<div className="flex h-9 w-full items-center justify-between px-1" />
 			)}
 		</>
 	)
@@ -86,21 +87,23 @@ export default async function ProductPage(props: {
 	const productLoader = getProduct(params.slug)
 
 	return (
-		<div>
-			<Suspense
-				fallback={
-					<div className="bg-muted flex h-9 w-full items-center justify-between px-1" />
-				}
-			>
-				<ProductActionBar productLoader={productLoader} />
-			</Suspense>
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
-				<ProductCommerce
-					productLoader={productLoader}
-					searchParams={searchParams}
-				/>
-			</article>
-		</div>
+		<LayoutClient withContainer>
+			<div>
+				<Suspense
+					fallback={
+						<div className="flex h-9 w-full items-center justify-between px-1" />
+					}
+				>
+					<ProductActionBar productLoader={productLoader} />
+				</Suspense>
+				<article className="mx-auto flex w-full flex-col px-5 py-10 md:py-16">
+					<ProductCommerce
+						productLoader={productLoader}
+						searchParams={searchParams}
+					/>
+				</article>
+			</div>
+		</LayoutClient>
 	)
 }
 
@@ -190,10 +193,10 @@ async function ProductCommerce({
 		productProps = {
 			...baseProps,
 			hasPurchasedCurrentProduct: Boolean(purchase),
-			...(Boolean(existingPurchase)
+			...(Boolean(true)
 				? {
-						purchasedProductIds: [existingPurchase?.productId, '72', 69],
-						existingPurchase: existingPurchase,
+						purchasedProductIds: [existingPurchase?.productId],
+						existingPurchase: purchase,
 					}
 				: {}),
 			organizationId: currentOrganization,
