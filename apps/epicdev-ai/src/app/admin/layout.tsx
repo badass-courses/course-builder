@@ -1,6 +1,7 @@
 import React from 'react'
 import LayoutClient from '@/components/layout-client'
 import {
+	DollarSign,
 	FileText,
 	Flag,
 	ListChecks,
@@ -33,6 +34,10 @@ const AdminLayout = async ({
 									<NavItem href="/admin/pages">
 										<FileText className="h-4 w-4" />
 										Pages
+									</NavItem>
+									<NavItem href="/admin/products">
+										<DollarSign className="h-4 w-4" />
+										Products
 									</NavItem>
 									<NavItem href="/lists">
 										<ListChecks className="h-4 w-4" />

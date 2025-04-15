@@ -189,37 +189,41 @@ async function PostBody({
 		return null
 	}
 
-	const { content } = await compileMDX(post.fields.body, {
-		// EventPricing: (props) => (
-		// 	<Suspense fallback={<div className="py-5">Loading...</div>}>
-		// 		<EventPricingInline
-		// 			pricingPropsLoader={pricingPropsLoader}
-		// 			post={post}
-		// 			{...props}
-		// 		/>
-		// 	</Suspense>
-		// ),
-		// BuyTicketButton: (props) => (
-		// 	<Suspense fallback={<div className="py-5">Loading...</div>}>
-		// 		<EventPricingButton
-		// 			pricingPropsLoader={pricingPropsLoader}
-		// 			post={post}
-		// 			{...props}
-		// 		/>
-		// 	</Suspense>
-		// ),
-	})
+	const { content } = await compileMDX(
+		post.fields.body,
+		post.fields.postType === 'event'
+			? {
+					EventPricing: (props) => (
+						<EventPricingInline
+							pricingPropsLoader={pricingPropsLoader}
+							post={post}
+							{...props}
+						/>
+					),
+
+					BuyTicketButton: (props) => (
+						<EventPricingButton
+							pricingPropsLoader={pricingPropsLoader}
+							post={post}
+							{...props}
+						/>
+					),
+				}
+			: undefined,
+	)
 
 	return (
 		<div className="">
 			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
 				{content}
-				<Suspense fallback={<div className="py-5">Loading...</div>}>
-					<EventPricingButton
-						pricingPropsLoader={pricingPropsLoader}
-						post={post}
-					/>
-				</Suspense>
+				{post.fields?.postType === 'event' && (
+					<Suspense fallback={<div className="py-5">Loading...</div>}>
+						<EventPricingButton
+							pricingPropsLoader={pricingPropsLoader}
+							post={post}
+						/>
+					</Suspense>
+				)}
 			</article>
 		</div>
 	)
