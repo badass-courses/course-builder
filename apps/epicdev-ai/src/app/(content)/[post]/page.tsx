@@ -199,11 +199,6 @@ async function PostBody({ post }: { post: Post | null }) {
 		<div className="">
 			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
 				{content}
-				{post.fields?.postType === 'event' && (
-					<Suspense fallback={<div className="py-5">Loading...</div>}>
-						<EventPricingButton post={post} />
-					</Suspense>
-				)}
 			</article>
 		</div>
 	)

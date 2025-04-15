@@ -108,7 +108,7 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 	return hasPurchasedCurrentProduct ? (
 		<div>
 			Ticket Purchased. We'll send all necessary information to your email
-			address. <Link href="/invoices">Invoice</Link>
+			address. <Link href="/invoices">Get your invoice</Link>
 		</div>
 	) : (
 		<Pricing.Root
@@ -121,7 +121,8 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 		>
 			<Pricing.Product>
 				<BuyButton />
-				<Pricing.LiveRefundPolicy className="mt-2 w-full max-w-none text-left" />
+				<Pricing.LiveQuantity className="mt-2 inline-flex w-full max-w-none text-balance bg-transparent px-0 text-left text-sm capitalize opacity-75" />
+				<Pricing.LiveRefundPolicy className="w-full max-w-none pt-0 text-left" />
 			</Pricing.Product>
 		</Pricing.Root>
 	)
@@ -197,15 +198,24 @@ export const withEventPricing = (
 		post: Post
 		pricingOptions?: Partial<PricingOptions>
 	}) {
-		const { data: pricingProps } = api.pricing.getPostProductPricing.useQuery(
-			{
-				postSlugOrId: post.id,
-			},
-			{
-				refetchOnWindowFocus: false,
-				refetchOnMount: false,
-			},
-		)
+		const { data: pricingProps, status } =
+			api.pricing.getPostProductPricing.useQuery(
+				{
+					postSlugOrId: post.id,
+				},
+				{
+					refetchOnWindowFocus: false,
+					refetchOnMount: false,
+				},
+			)
+
+		if (status === 'pending') {
+			return (
+				<div className="text-muted-foreground flex items-center gap-1 py-5 text-sm">
+					<Spinner className="w-5" /> Loading pricing...
+				</div>
+			)
+		}
 
 		if (!pricingProps) {
 			return null
