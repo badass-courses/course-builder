@@ -20,6 +20,7 @@ import type {
 } from '@coursebuilder/core/types'
 // import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import { formatUsd } from '@coursebuilder/core/utils/format-usd'
+import { Button } from '@coursebuilder/ui'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
@@ -89,6 +90,38 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 	)
 }
 
+const TeamToggle = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	const { isTeamPurchaseActive, toggleTeamPurchase } = usePricing()
+	return (
+		<div className={'flex flex-row gap-1 text-sm'}>
+			{children || (
+				<>
+					Buying for team?{' '}
+					<button
+						type="button"
+						aria-label="Switch to team pricing"
+						aria-checked={isTeamPurchaseActive}
+						onClick={() => {
+							toggleTeamPurchase()
+						}}
+						className="text-primary underline"
+					>
+						{isTeamPurchaseActive
+							? 'Switch to individual pricing'
+							: 'Switch to team pricing'}
+					</button>
+				</>
+			)}
+		</div>
+	)
+}
+
 /**
  * Buy ticket button only
  */
@@ -112,7 +145,7 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 		</div>
 	) : (
 		<Pricing.Root
-			className="items-start justify-start"
+			className="mt-4 items-start justify-start"
 			product={product}
 			couponId={couponId}
 			options={pricingWidgetOptions}
@@ -120,8 +153,16 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product>
-				<BuyButton />
-				<Pricing.LiveQuantity className="mt-2 inline-flex w-full max-w-none text-balance bg-transparent px-0 text-left text-sm capitalize opacity-75" />
+				<div className="flex flex-wrap items-center gap-5">
+					<BuyButton />
+					<div className="flex items-center">
+						<Pricing.TeamQuantityInput className="mb-0 px-0 xl:px-0" />
+					</div>
+				</div>
+				<div className="mt-2 flex flex-wrap items-center gap-3">
+					<Pricing.LiveQuantity className="text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100" />
+					<TeamToggle />
+				</div>
 				<Pricing.LiveRefundPolicy className="w-full max-w-none pt-0 text-left" />
 			</Pricing.Product>
 		</Pricing.Root>
@@ -132,7 +173,7 @@ const BuyButton = () => {
 	const { formattedPrice, status } = usePricing()
 
 	return (
-		<Pricing.BuyButton className="from-primary relative mt-4 w-auto min-w-[240px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+		<Pricing.BuyButton className="from-primary relative w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
 			Buy Ticket —{' '}
 			{status === 'pending' ? (
 				<Spinner className="ml-1 w-5" />
@@ -211,8 +252,8 @@ export const withEventPricing = (
 
 		if (status === 'pending') {
 			return (
-				<div className="text-muted-foreground flex items-center gap-1 py-5 text-sm">
-					<Spinner className="w-5" /> Loading pricing...
+				<div className="text-muted-foreground flex items-center gap-1 py-5 text-base">
+					<Spinner className="w-5" /> Loading price...
 				</div>
 			)
 		}
