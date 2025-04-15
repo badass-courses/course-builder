@@ -1,4 +1,4 @@
-import { Suspense } from 'react'
+import React, { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -189,28 +189,7 @@ async function PostBody({
 		return null
 	}
 
-	const { content } = await compileMDX(
-		post.fields.body,
-		post.fields.postType === 'event'
-			? {
-					EventPricing: (props) => (
-						<EventPricingInline
-							pricingPropsLoader={pricingPropsLoader}
-							post={post}
-							{...props}
-						/>
-					),
-
-					BuyTicketButton: (props) => (
-						<EventPricingButton
-							pricingPropsLoader={pricingPropsLoader}
-							post={post}
-							{...props}
-						/>
-					),
-				}
-			: undefined,
-	)
+	const { content } = await compileMDX(post.fields.body)
 
 	return (
 		<div className="">
