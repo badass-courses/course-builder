@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { Post, ProductForPostProps } from '@/lib/posts'
@@ -78,7 +79,6 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 						<Pricing.BuyButton className="from-primary relative mt-4 w-auto origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
 							Buy Ticket
 						</Pricing.BuyButton>
-
 						<Pricing.LiveRefundPolicy />
 						<Pricing.PPPToggle />
 					</div>
@@ -96,6 +96,7 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
+	hasPurchasedCurrentProduct,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -103,7 +104,12 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
-	return (
+	return hasPurchasedCurrentProduct ? (
+		<div>
+			Ticket Purchased. We'll send all necessary information to your email
+			address. View your <Link href="/invoices">invoice</Link>
+		</div>
+	) : (
 		<Pricing.Root
 			className="items-start justify-start"
 			product={product}
@@ -151,7 +157,12 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
-	return (
+	return hasPurchasedCurrentProduct ? (
+		<div>
+			Ticket Purchased. We'll send all necessary information to your email
+			address. View your <Link href="/invoices">invoice</Link>
+		</div>
+	) : (
 		<Pricing.Root
 			className="relative inline-flex items-center gap-4"
 			product={product}
