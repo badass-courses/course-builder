@@ -12,12 +12,12 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
-export async function ProductsPage() {
+export default async function ProductsPage() {
 	const { ability } = await getServerAuthSession()
 	const products = await getProducts()
 
 	return (
-		<>
+		<LayoutClient withContainer>
 			{ability.can('update', 'Content') ? (
 				<div className="flex h-9 w-full items-center justify-between px-1">
 					<div />
@@ -41,14 +41,6 @@ export async function ProductsPage() {
 					</Card>
 				))}
 			</div>
-		</>
-	)
-}
-
-export default async function Page() {
-	return (
-		<LayoutClient withContainer>
-			<ProductsPage />
 		</LayoutClient>
 	)
 }

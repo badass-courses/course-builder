@@ -35,7 +35,7 @@ const AdminLayout = async ({
 										<FileText className="h-4 w-4" />
 										Pages
 									</NavItem>
-									<NavItem href="/admin/products">
+									<NavItem href="/products">
 										<DollarSign className="h-4 w-4" />
 										Products
 									</NavItem>
