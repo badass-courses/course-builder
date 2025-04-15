@@ -3,8 +3,6 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
-// import { PricingWidget } from '@/components/home-pricing-widget'
-// import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
@@ -33,6 +31,7 @@ import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 import {
+	EventPricing,
 	EventPricingButton,
 	EventPricingInline,
 } from './_components/event-pricing'
@@ -192,18 +191,22 @@ async function PostBody({
 
 	const { content } = await compileMDX(post.fields.body, {
 		EventPricing: (props) => (
-			<EventPricingInline
-				pricingPropsLoader={pricingPropsLoader}
-				post={post}
-				{...props}
-			/>
+			<Suspense fallback={<div className="py-5">Loading...</div>}>
+				<EventPricingInline
+					pricingPropsLoader={pricingPropsLoader}
+					post={post}
+					{...props}
+				/>
+			</Suspense>
 		),
 		BuyTicketButton: (props) => (
-			<EventPricingButton
-				pricingPropsLoader={pricingPropsLoader}
-				post={post}
-				{...props}
-			/>
+			<Suspense fallback={<div className="py-5">Loading...</div>}>
+				<EventPricingButton
+					pricingPropsLoader={pricingPropsLoader}
+					post={post}
+					{...props}
+				/>
+			</Suspense>
 		),
 	})
 

@@ -112,8 +112,10 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
 		>
-			<BuyButton />
-			<Pricing.LiveRefundPolicy className="mt-2 w-full max-w-none text-left" />
+			<Pricing.Product>
+				<BuyButton />
+				<Pricing.LiveRefundPolicy className="mt-2 w-full max-w-none text-left" />
+			</Pricing.Product>
 		</Pricing.Root>
 	)
 }
@@ -158,10 +160,12 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
 		>
-			<Pricing.Price className="text-base font-medium" />
-			<Pricing.BuyButton className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-				Buy Ticket
-			</Pricing.BuyButton>
+			<Pricing.Product>
+				<Pricing.Price className="text-base font-medium" />
+				<Pricing.BuyButton className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+					Buy Ticket
+				</Pricing.BuyButton>
+			</Pricing.Product>
 		</Pricing.Root>
 	)
 }
