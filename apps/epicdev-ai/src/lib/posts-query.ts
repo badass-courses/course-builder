@@ -1100,7 +1100,7 @@ export async function getProductForPost(
 	const contentProduct = await db.query.contentResourceProduct.findFirst({
 		where: eq(contentResourceProduct.resourceId, postId),
 	})
-	console.log('🔍 contentProduct', contentProduct)
+
 	const product = await courseBuilderAdapter.getProduct(
 		contentProduct?.productId,
 	)
