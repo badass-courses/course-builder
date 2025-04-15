@@ -21,6 +21,7 @@ import type {
 // import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import { formatUsd } from '@coursebuilder/core/utils/format-usd'
 import { Button } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
@@ -125,12 +126,15 @@ const TeamToggle = ({
 /**
  * Buy ticket button only
  */
-export const BuyTicketButton: React.FC<PricingComponentProps> = ({
+export const BuyTicketButton: React.FC<
+	PricingComponentProps & { centered?: boolean }
+> = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
 	hasPurchasedCurrentProduct,
+	centered,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -139,13 +143,21 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 		(validCoupon ? couponFromCode?.id : undefined)
 
 	return hasPurchasedCurrentProduct ? (
-		<div>
+		<div
+			className={cn(
+				'',
+				centered && 'flex items-center justify-center text-center',
+			)}
+		>
 			Ticket Purchased. We'll send all necessary information to your email
 			address. <Link href="/invoices">Get your invoice</Link>
 		</div>
 	) : (
 		<Pricing.Root
-			className="mt-4 items-start justify-start"
+			className={cn(
+				'mt-4 items-start justify-start',
+				centered && 'flex items-center justify-center',
+			)}
 			product={product}
 			couponId={couponId}
 			options={pricingWidgetOptions}
@@ -153,14 +165,29 @@ export const BuyTicketButton: React.FC<PricingComponentProps> = ({
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product>
-				<div className="flex flex-wrap items-center gap-5">
+				<div
+					className={cn(
+						'flex flex-wrap items-center gap-5',
+						centered && 'flex items-center justify-center',
+					)}
+				>
 					<BuyButton />
 					<div className="flex items-center">
 						<Pricing.TeamQuantityInput className="mb-0 px-0 xl:px-0" />
 					</div>
 				</div>
-				<div className="mt-2 flex flex-wrap items-center gap-3">
-					<Pricing.LiveQuantity className="text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100" />
+				<div
+					className={cn(
+						'mt-2 flex flex-wrap items-center gap-3',
+						centered && 'justify-center',
+					)}
+				>
+					<Pricing.LiveQuantity
+						className={cn(
+							'text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100',
+							centered && 'text-center',
+						)}
+					/>
 					<TeamToggle />
 				</div>
 				<Pricing.LiveRefundPolicy className="w-full max-w-none pt-0 text-left" />
@@ -235,9 +262,11 @@ export const withEventPricing = (
 	return function WithEventPricing({
 		post,
 		pricingOptions,
+		centered = false,
 	}: {
 		post: Post
 		pricingOptions?: Partial<PricingOptions>
+		centered?: boolean
 	}) {
 		const { data: pricingProps, status } =
 			api.pricing.getPostProductPricing.useQuery(
@@ -252,7 +281,12 @@ export const withEventPricing = (
 
 		if (status === 'pending') {
 			return (
-				<div className="text-muted-foreground flex items-center gap-1 py-5 text-base">
+				<div
+					className={cn(
+						'text-muted-foreground flex items-center gap-1 py-5 text-base',
+						centered && 'flex items-center justify-center',
+					)}
+				>
 					<Spinner className="w-5" /> Loading price...
 				</div>
 			)
