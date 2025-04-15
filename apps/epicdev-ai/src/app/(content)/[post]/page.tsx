@@ -67,8 +67,6 @@ export default async function PostPage(props: {
 			resource.type === 'videoResource',
 	)
 
-	const pricingPropsLoader = getProductForPost(post.id)
-
 	return (
 		<main className="w-full">
 			{hasVideo && <PlayerContainer post={post} />}
@@ -120,7 +118,7 @@ export default async function PostPage(props: {
 						{post?.type === 'post' && post?.fields?.body && (
 							<PostToC markdown={post?.fields?.body} />
 						)}
-						<PostBody post={post} pricingPropsLoader={pricingPropsLoader} />
+						<PostBody post={post} />
 						{/* {listSlugFromParam && (
 									<PostProgressToggle
 										className="flex w-full items-center justify-center"
@@ -174,13 +172,7 @@ export default async function PostPage(props: {
 	)
 }
 
-async function PostBody({
-	post,
-	pricingPropsLoader,
-}: {
-	post: Post | null
-	pricingPropsLoader: Promise<ProductForPostProps | null>
-}) {
+async function PostBody({ post }: { post: Post | null }) {
 	if (!post) {
 		return null
 	}
@@ -189,7 +181,19 @@ async function PostBody({
 		return null
 	}
 
-	const { content } = await compileMDX(post.fields.body)
+	const { content } = await compileMDX(
+		post.fields.body,
+		post.fields.postType === 'event'
+			? {
+					EventPricing: (props) => (
+						<EventPricingInline post={post} {...props} />
+					),
+					BuyTicketButton: (props) => (
+						<EventPricingButton post={post} {...props} />
+					),
+				}
+			: {},
+	)
 
 	return (
 		<div className="">
@@ -197,10 +201,7 @@ async function PostBody({
 				{content}
 				{post.fields?.postType === 'event' && (
 					<Suspense fallback={<div className="py-5">Loading...</div>}>
-						<EventPricingButton
-							pricingPropsLoader={pricingPropsLoader}
-							post={post}
-						/>
+						<EventPricingButton post={post} />
 					</Suspense>
 				)}
 			</article>

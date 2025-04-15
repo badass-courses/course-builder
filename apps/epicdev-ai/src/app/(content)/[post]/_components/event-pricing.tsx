@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { Post, ProductForPostProps } from '@/lib/posts'
+import { api } from '@/trpc/react'
 import { Shield } from 'lucide-react'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
@@ -190,15 +191,22 @@ export const withEventPricing = (
 	PricingComponent: React.ComponentType<PricingComponentProps>,
 ) => {
 	return function WithEventPricing({
-		pricingPropsLoader,
 		post,
 		pricingOptions,
 	}: {
-		pricingPropsLoader: Promise<ProductForPostProps | null>
 		post: Post
 		pricingOptions?: Partial<PricingOptions>
 	}) {
-		const pricingProps = React.use(pricingPropsLoader)
+		const { data: pricingProps } = api.pricing.getPostProductPricing.useQuery(
+			{
+				postSlugOrId: post.id,
+			},
+			{
+				refetchOnWindowFocus: false,
+				refetchOnMount: false,
+			},
+		)
+
 		if (!pricingProps) {
 			return null
 		}

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
+import { getProductForPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
@@ -349,4 +350,19 @@ export const pricingRouter = createTRPCRouter({
 
 		return null
 	}),
+	getPostProductPricing: publicProcedure
+		.input(
+			z.object({
+				postSlugOrId: z.string(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			const { postSlugOrId } = input
+			try {
+				const pricingProps = await getProductForPost(postSlugOrId)
+				return pricingProps
+			} catch (error) {
+				return null
+			}
+		}),
 })
