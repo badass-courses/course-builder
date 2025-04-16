@@ -7,8 +7,8 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
-		STRIPE_SECRET_TOKEN: z.string(),
-		STRIPE_WEBHOOK_SECRET: z.string(),
+		STRIPE_SECRET_TOKEN: z.string().optional(),
+		STRIPE_WEBHOOK_SECRET: z.string().optional(),
 		COURSEBUILDER_URL: z.preprocess(
 			// This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
 			// Since NextAuth.js automatically uses the VERCEL_URL if present.
@@ -64,8 +64,8 @@ export const env = createEnv({
 		AWS_ACCESS_KEY_ID: z.string().optional(),
 		AWS_SECRET_ACCESS_KEY: z.string().optional(),
 		AWS_BUCKET_NAME: z.string().optional(),
-		CONVERTKIT_API_SECRET: z.string(),
-		CONVERTKIT_API_KEY: z.string(),
+		CONVERTKIT_API_SECRET: z.string().optional(),
+		CONVERTKIT_API_KEY: z.string().optional(),
 		CONVERTKIT_SIGNUP_FORM: z.union([z.string(), z.number()]).optional(),
 		EMAIL_SERVER_HOST: z.string().optional(),
 		EMAIL_SERVER_PORT: z.coerce.number().optional(),
