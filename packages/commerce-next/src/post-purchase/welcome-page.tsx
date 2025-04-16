@@ -200,6 +200,19 @@ const Header = ({
 		(p: { id: string }) => p.id === 'discord',
 	)
 	const firstResource = first(productResources)
+	const getWelcomeMessageForProductType = (
+		productType?: 'live' | 'self-paced' | 'membership' | 'cohort',
+	) => {
+		if (productType === 'live') {
+			return ''
+		}
+
+		if (upgrade) {
+			return "You've Upgraded "
+		}
+
+		return 'Welcome to '
+	}
 
 	return (
 		<header>
@@ -217,7 +230,7 @@ const Header = ({
 				<div className="flex w-full flex-col items-center text-center sm:items-start sm:text-left">
 					<h1 className="font-text w-full text-3xl font-bold sm:text-3xl lg:text-4xl">
 						<div className="text-primary pb-2 text-sm font-normal uppercase">
-							{upgrade ? `You've Upgraded ` : `Welcome to `}
+							{getWelcomeMessageForProductType(purchase?.product?.type)}
 						</div>
 						<Balancer>{purchase?.product?.name || 'a Thing'}</Balancer>
 					</h1>

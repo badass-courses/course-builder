@@ -6,6 +6,7 @@ import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-pu
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
+import { sendWelcomeEmail } from '@/inngest/functions/post-purchase-automation/send-welcome-email'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
@@ -47,5 +48,6 @@ export const inngestConfig = {
 		createUserOrganizations,
 		videoResourceAttached,
 		videoResourceDetached,
+		sendWelcomeEmail,
 	],
 }

@@ -108,12 +108,12 @@ const Navigation = ({
 					aria-label={`User navigation`}
 				>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
-					<div className="flex items-center pr-5">
-						<Button asChild size="sm" className="h-8">
-							<Link href="/#buy">Get Access</Link>
-						</Button>
-					</div>
-				)} */}
+						<div className="flex items-center pr-5">
+							<Button asChild size="sm" className="h-8">
+								<Link href="/#buy">Get Access</Link>
+							</Button>
+						</div>
+					)} */}
 					<ul className="hidden items-center md:flex">
 						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
