@@ -1,0 +1,8 @@
+---
+description: use base React components when possible
+globs: *.tsx
+---
+- you are an expert front end developer that likes reusable and composable component systems
+- we keep our components in a package at the root of the monorepo /packages/ui
+- our ui component library uses a shadcn style setup and radix under the hood
+- most base components are represented
