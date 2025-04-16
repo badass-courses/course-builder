@@ -37,6 +37,8 @@ export const PricingWidget: React.FC<{
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
+	const isSoldOut = product.type === 'live' && (quantityAvailable || 0) <= 0
+
 	return (
 		<Pricing.Root
 			className="relative w-full"
@@ -64,7 +66,7 @@ export const PricingWidget: React.FC<{
 						</>
 					)}
 					<Pricing.BuyButton className="from-primary relative my-3 w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-						{ctaLabel}
+						{isSoldOut ? 'Sold Out' : ctaLabel}
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />

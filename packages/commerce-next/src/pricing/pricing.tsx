@@ -449,22 +449,34 @@ const BuyButton = ({
 	asChild?: boolean
 }) => {
 	const Comp = asChild ? Slot : Button
-	const { formattedPrice, product, status } = usePricing()
+	const {
+		formattedPrice,
+		product,
+		status,
+		pricingData: { quantityAvailable },
+	} = usePricing()
+
+	const isSoldOut = Boolean(
+		product.type === 'live' && (quantityAvailable || 0) <= 0,
+	)
+
 	return (
 		<Comp
 			className={cn(
-				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-wait',
+				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-not-allowed disabled:opacity-50',
 				className,
 			)}
 			type="submit"
 			size="lg"
-			disabled={status === 'pending' || status === 'error'}
+			disabled={status === 'pending' || status === 'error' || isSoldOut}
 		>
 			{children
 				? children
-				: formattedPrice?.upgradeFromPurchaseId
-					? `Upgrade Now`
-					: product?.fields.action || `Buy Now`}
+				: isSoldOut
+					? 'Sold Out'
+					: formattedPrice?.upgradeFromPurchaseId
+						? `Upgrade Now`
+						: product?.fields.action || `Buy Now`}
 		</Comp>
 	)
 }
