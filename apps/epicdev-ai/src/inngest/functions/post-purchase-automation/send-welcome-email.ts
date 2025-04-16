@@ -38,10 +38,10 @@ export const sendWelcomeEmail = inngest.createFunction(
 			throw new NonRetriableError('Product not found')
 		}
 
-		if (product.id !== 'product-nyodb') {
+		if (product.id !== 'product-bxkqx') {
 			return {
 				skipped: true,
-				reason: 'Product is not product-nyodb',
+				reason: 'Product is not product-bxkqx',
 			}
 		}
 
