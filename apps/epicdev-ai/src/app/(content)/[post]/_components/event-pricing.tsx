@@ -58,7 +58,10 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 	const cancelUrl = pricingWidgetOptions?.cancelUrl || ''
-	return (
+
+	return hasPurchasedCurrentProduct ? (
+		<PurchasedTicketInfo />
+	) : (
 		<div className="mx-auto w-full max-w-sm py-10">
 			<PricingWidget
 				ctaLabel="Reserve Your Spot"
@@ -83,6 +86,34 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 					cancelUrl: cancelUrl,
 				}}
 			/>
+		</div>
+	)
+}
+
+const PurchasedTicketInfo = ({ centered }: { centered?: boolean }) => {
+	return (
+		<div
+			className={cn(
+				'bg-primary/10 not-prose inline-flex flex-wrap items-center gap-1.5 rounded-md p-4 text-base sm:justify-start sm:text-lg',
+				centered && 'justify-center',
+			)}
+		>
+			<div className="inline-flex items-baseline gap-2 sm:items-center">
+				<BadgeCheck className="text-primary size-4 flex-shrink-0 sm:size-5" />
+				<p className="text-primary">
+					Ticket purchased. We sent the details of the event to your email.{' '}
+					<Link
+						target="_blank"
+						href="/invoices"
+						className="underline-offset-2 hover:underline"
+					>
+						<span className="inline-flex items-center gap-1 underline">
+							Get Invoice
+							<ExternalLink className="size-4" />
+						</span>
+					</Link>
+				</p>
+			</div>
 		</div>
 	)
 }
@@ -139,23 +170,7 @@ export const BuyTicketButton: React.FC<
 		(validCoupon ? couponFromCode?.id : undefined)
 
 	return hasPurchasedCurrentProduct ? (
-		<div
-			className={cn(
-				'inline-flex items-center gap-3 rounded-md bg-green-50 px-4 py-2 text-sm',
-				centered && 'justify-center',
-			)}
-		>
-			<BadgeCheck className="h-4 w-4 text-green-600" />
-			<span className="text-green-700">
-				Ticket Purchased! We sent the details of the event to your email.
-			</span>
-			<Link href="/invoices" className="underline-offset-2 hover:underline">
-				<span className="inline-flex items-center gap-1">
-					Get Invoice
-					<ExternalLink className="h-4 w-4" />
-				</span>
-			</Link>
-		</div>
+		<PurchasedTicketInfo centered={centered} />
 	) : (
 		<Pricing.Root
 			className={cn(
@@ -308,22 +323,7 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 		(validCoupon ? couponFromCode?.id : undefined)
 
 	return hasPurchasedCurrentProduct ? (
-		<div
-			className={cn(
-				'inline-flex items-center gap-3 rounded-md bg-green-50 px-4 py-2 text-sm',
-			)}
-		>
-			<BadgeCheck className="h-4 w-4 text-green-600" />
-			<span className="text-green-700">
-				Ticket Purchased! We sent the details of the event to your email.
-			</span>
-			<Link href="/invoices" className="underline-offset-2 hover:underline">
-				<span className="inline-flex items-center gap-1">
-					Get Invoice
-					<ExternalLink className="h-4 w-4" />
-				</span>
-			</Link>
-		</div>
+		<PurchasedTicketInfo />
 	) : (
 		<Pricing.Root
 			className="relative flex w-full items-center justify-center border-t pt-8"
