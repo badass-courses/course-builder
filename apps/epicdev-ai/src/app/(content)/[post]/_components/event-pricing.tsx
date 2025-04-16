@@ -6,7 +6,7 @@ import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { Post, ProductForPostProps } from '@/lib/posts'
 import { api } from '@/trpc/react'
-import { BadgeCheck, Shield } from 'lucide-react'
+import { BadgeCheck, ExternalLink, Shield } from 'lucide-react'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -153,7 +153,10 @@ export const BuyTicketButton: React.FC<
 				Ticket Purchased! We sent the details of the event to your email.
 			</span>
 			<Link href="/invoices" className="underline-offset-2 hover:underline">
-				Get Invoice
+				<span className="inline-flex items-center gap-1">
+					Get Invoice
+					<ExternalLink className="h-4 w-4" />
+				</span>
 			</Link>
 		</div>
 	) : (
