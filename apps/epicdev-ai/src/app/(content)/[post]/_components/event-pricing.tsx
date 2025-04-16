@@ -193,12 +193,21 @@ export const BuyTicketButton: React.FC<
 }
 
 const BuyButton = ({ centered }: { centered?: boolean }) => {
-	const { formattedPrice, status } = usePricing()
+	const {
+		formattedPrice,
+		status,
+		product,
+		pricingData: { quantityAvailable },
+	} = usePricing()
 	const fullPrice = formattedPrice?.fullPrice || 0
 
 	const finalPrice = formattedPrice?.calculatedPrice || 0
 	const savings = fullPrice - finalPrice
 	const savingsPercentage = Math.round((savings / fullPrice) * 100)
+
+	const isSoldOut = Boolean(
+		product.type === 'live' && (quantityAvailable || 0) <= 0,
+	)
 
 	return (
 		<>
@@ -221,7 +230,7 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 									<span className="font-semibold tabular-nums">
 										{formatUsd(finalPrice).dollars}
 									</span>
-									{savings > 0 && (
+									{savings > 0 && !isSoldOut && (
 										<>
 											<span className="ml-1 text-lg font-normal line-through opacity-90">
 												{formatUsd(fullPrice).dollars}
@@ -249,7 +258,7 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 							centered && 'justify-center',
 						)}
 					>
-						{savings > 0 && (
+						{savings > 0 && !isSoldOut && (
 							<>
 								<span className="text-sm font-semibold">
 									Save {savingsPercentage}%{' '}
@@ -271,20 +280,24 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 							)}
 						/>
 					</div>
-					<TeamToggle
-						className={cn(
-							'',
-							centered && 'w-full items-center justify-center text-center',
-						)}
-					/>
-					<div className="inline-flex w-full items-center justify-center">
-						<Pricing.LiveRefundPolicy
-							className={cn(
-								'inline-flex max-w-none pt-0 text-left',
-								centered && 'text-center',
-							)}
-						/>
-					</div>
+					{!isSoldOut && (
+						<>
+							<TeamToggle
+								className={cn(
+									'',
+									centered && 'w-full items-center justify-center text-center',
+								)}
+							/>
+							<div className="inline-flex w-full items-center justify-center">
+								<Pricing.LiveRefundPolicy
+									className={cn(
+										'inline-flex max-w-none pt-0 text-left',
+										centered && 'text-center',
+									)}
+								/>
+							</div>
+						</>
+					)}
 				</>
 			)}
 		</>
