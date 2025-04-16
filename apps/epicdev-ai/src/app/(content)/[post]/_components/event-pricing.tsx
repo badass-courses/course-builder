@@ -6,7 +6,7 @@ import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { Post, ProductForPostProps } from '@/lib/posts'
 import { api } from '@/trpc/react'
-import { Shield } from 'lucide-react'
+import { BadgeCheck, Shield } from 'lucide-react'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -144,12 +144,17 @@ export const BuyTicketButton: React.FC<
 	return hasPurchasedCurrentProduct ? (
 		<div
 			className={cn(
-				'',
-				centered && 'flex items-center justify-center text-center',
+				'inline-flex items-center gap-3 rounded-md bg-green-50 px-4 py-2 text-sm',
+				centered && 'justify-center',
 			)}
 		>
-			Ticket Purchased. We'll send all necessary information to your email
-			address. <Link href="/invoices">Get your invoice</Link>
+			<BadgeCheck className="h-4 w-4 text-green-600" />
+			<span className="text-green-700">
+				Ticket Purchased! We sent the details of the event to your email.
+			</span>
+			<Link href="/invoices" className="underline-offset-2 hover:underline">
+				Get Invoice
+			</Link>
 		</div>
 	) : (
 		<Pricing.Root
