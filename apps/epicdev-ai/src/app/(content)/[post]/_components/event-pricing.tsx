@@ -39,6 +39,7 @@ export type PricingComponentProps = {
 	hasPurchasedCurrentProduct?: boolean
 	pricingWidgetOptions?: Partial<PricingOptions>
 	centered?: boolean
+	className?: string
 }
 
 /**
@@ -51,6 +52,7 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 	pricingWidgetOptions,
 	quantityAvailable,
 	hasPurchasedCurrentProduct,
+	className,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -62,7 +64,7 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 	return hasPurchasedCurrentProduct ? (
 		<PurchasedTicketInfo />
 	) : (
-		<div className="mx-auto w-full max-w-sm py-10">
+		<div className={cn('mx-auto w-full max-w-sm py-10', className)}>
 			<PricingWidget
 				ctaLabel="Reserve Your Spot"
 				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
@@ -419,10 +421,12 @@ export const withEventPricing = (
 		post,
 		pricingOptions,
 		centered = false,
+		className,
 	}: {
 		post: Post
 		pricingOptions?: Partial<PricingOptions>
 		centered?: boolean
+		className?: string
 	}) {
 		const { data: pricingProps, status } =
 			api.pricing.getPostProductPricing.useQuery(
@@ -493,6 +497,7 @@ export const withEventPricing = (
 					quantityAvailable={quantityAvailable}
 					pricingDataLoader={pricingDataLoader}
 					pricingWidgetOptions={defaultPricingOptions}
+					className={className}
 				/>
 			</PriceCheckProvider>
 		)
