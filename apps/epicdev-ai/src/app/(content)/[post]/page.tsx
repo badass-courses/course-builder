@@ -185,9 +185,7 @@ async function PostBody({ post }: { post: Post | null }) {
 		post.fields.body,
 		post.fields.postType === 'event'
 			? {
-					EventPricing: (props) => (
-						<EventPricingInline post={post} {...props} />
-					),
+					EventPricing: (props) => <EventPricing post={post} {...props} />,
 					BuyTicketButton: (props) => (
 						<EventPricingButton post={post} {...props} />
 					),

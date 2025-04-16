@@ -2,11 +2,13 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import type { Post, ProductForPostProps } from '@/lib/posts'
 import { api } from '@/trpc/react'
 import { BadgeCheck, ExternalLink, Shield } from 'lucide-react'
+import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -48,45 +50,40 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 	pricingDataLoader,
 	pricingWidgetOptions,
 	quantityAvailable,
+	hasPurchasedCurrentProduct,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
 	const couponId =
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
-
+	const cancelUrl = pricingWidgetOptions?.cancelUrl || ''
 	return (
-		<Pricing.Root
-			className="relative w-full"
-			product={product}
-			couponId={couponId}
-			options={pricingWidgetOptions}
-			userId={commerceProps?.userId}
-			pricingDataLoader={pricingDataLoader}
-		>
-			<Pricing.Product className="w-full">
-				<div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-					<Pricing.Details className="flex w-full flex-row items-center justify-between pt-0">
-						<div className="flex flex-col items-center gap-1">
-							<Pricing.Price className="scale-[0.7] text-base" />
-							<Pricing.LiveQuantity className="leading-0 -mt-5 flex items-center bg-transparent" />
-							<Pricing.SaleCountdown className="py-4" />
-						</div>
-						{pricingWidgetOptions?.allowTeamPurchase && (
-							<>
-								<Pricing.TeamToggle />
-								<Pricing.TeamQuantityInput />
-							</>
-						)}
-						<div className="">
-							<BuyButton />
-							<Pricing.LiveRefundPolicy />
-							<Pricing.PPPToggle />
-						</div>
-					</Pricing.Details>
-				</div>
-			</Pricing.Product>
-		</Pricing.Root>
+		<div className="mx-auto w-full max-w-sm py-10">
+			<PricingWidget
+				ctaLabel="Reserve Your Spot"
+				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+				commerceProps={{ ...commerceProps, products: [product] }}
+				product={product}
+				quantityAvailable={quantityAvailable}
+				pricingDataLoader={pricingDataLoader}
+				pricingWidgetOptions={{
+					withTitle: false,
+					withImage: false,
+					withGuaranteeBadge: false,
+					isLiveEvent: true,
+					teamQuantityLimit:
+						quantityAvailable >= 0 && quantityAvailable > 5
+							? 5
+							: quantityAvailable < 0
+								? 100
+								: quantityAvailable,
+					isPPPEnabled: false,
+					allowTeamPurchase: true,
+					cancelUrl: cancelUrl,
+				}}
+			/>
+		</div>
 	)
 }
 
@@ -99,7 +96,7 @@ const TeamToggle = ({
 }) => {
 	const { isTeamPurchaseActive, toggleTeamPurchase } = usePricing()
 	return (
-		<div className={'flex flex-row gap-1 text-sm'}>
+		<div className={cn('flex flex-row gap-1 text-sm', className)}>
 			{children || (
 				<>
 					Buying for team?{' '}
@@ -110,7 +107,7 @@ const TeamToggle = ({
 						onClick={() => {
 							toggleTeamPurchase()
 						}}
-						className="text-primary underline"
+						className="text-primary font-semibold underline"
 					>
 						{isTeamPurchaseActive
 							? 'Switch to individual pricing'
@@ -172,71 +169,124 @@ export const BuyTicketButton: React.FC<
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product>
-				<div
-					className={cn(
-						'flex flex-wrap items-center gap-5',
-						centered && 'flex items-center justify-center',
-					)}
-				>
-					<BuyButton />
-					<div className="flex items-center">
-						<Pricing.TeamQuantityInput className="mb-0 px-0 xl:px-0" />
-					</div>
-				</div>
-				<div
-					className={cn(
-						'mt-2 flex flex-wrap items-center gap-3',
-						centered && 'justify-center',
-					)}
-				>
-					<Pricing.LiveQuantity
-						className={cn(
-							'text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100',
-							centered && 'text-center',
-						)}
-					/>
-					<TeamToggle />
-				</div>
-				<Pricing.LiveRefundPolicy className="w-full max-w-none pt-0 text-left" />
+				<BuyButton centered={centered} />
 			</Pricing.Product>
 		</Pricing.Root>
 	)
 }
 
-const BuyButton = () => {
+const BuyButton = ({ centered }: { centered?: boolean }) => {
 	const { formattedPrice, status } = usePricing()
 	const fullPrice = formattedPrice?.fullPrice || 0
+
 	const finalPrice = formattedPrice?.calculatedPrice || 0
 	const savings = fullPrice - finalPrice
 	const savingsPercentage = Math.round((savings / fullPrice) * 100)
 
 	return (
-		<div className="flex flex-col items-start gap-2">
-			<div className="flex items-center gap-3">
-				<div className="flex items-baseline">
-					<span className="text-sm font-medium text-gray-500">US</span>
-					<span className="ml-1 text-3xl font-bold">
-						{status === 'pending' ? (
-							<Spinner className="ml-1 w-5" />
-						) : (
-							formatUsd(finalPrice).dollars
-						)}
-					</span>
-				</div>
-				{savings > 0 && (
-					<>
-						<span className="text-muted-foreground line-through">
-							{formatUsd(fullPrice).dollars}
-						</span>
-						<span className="rounded-md bg-green-100 px-2 py-1 text-sm font-medium text-green-800">
-							Save {savingsPercentage}%
-						</span>
-					</>
+		<>
+			<div
+				className={cn(
+					'flex flex-wrap items-center gap-5',
+					centered && 'flex items-center justify-center',
 				)}
+			>
+				<div className="flex flex-col items-start gap-2">
+					<Pricing.BuyButton className="from-primary relative w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+						Buy Ticket
+						<span className="bg-primary-foreground/30 mx-5 h-full w-px" />
+						<div className="flex items-baseline">
+							{status === 'pending' ? (
+								<Spinner className="w-5" />
+							) : (
+								<>
+									<sup className="text-xs leading-tight opacity-50">US</sup>
+									<span className="font-semibold tabular-nums">
+										{formatUsd(finalPrice).dollars}
+									</span>
+									{savings > 0 && (
+										<>
+											<span className="ml-1 text-lg font-normal line-through opacity-90">
+												{formatUsd(fullPrice).dollars}
+											</span>
+										</>
+									)}
+								</>
+							)}
+						</div>
+					</Pricing.BuyButton>
+				</div>
 			</div>
-			<Pricing.BuyButton className="from-primary relative w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-10 py-6 text-lg font-medium !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-				Buy Ticket
-			</Pricing.BuyButton>
+			<div
+				className={cn('mt-2 flex items-center', centered && 'justify-center')}
+			>
+				<Pricing.TeamQuantityInput
+					className={cn('mb-0 w-auto px-0 xl:px-0', centered && 'w-full')}
+				/>
+			</div>
+			{status === 'pending' ? null : (
+				<>
+					<div
+						className={cn(
+							'my-2 flex flex-wrap items-center',
+							centered && 'justify-center',
+						)}
+					>
+						{savings > 0 && (
+							<>
+								<span className="text-sm font-semibold">
+									Save {savingsPercentage}%{' '}
+								</span>
+								<Pricing.SaleCountdown
+									countdownRenderer={(props) => (
+										<CountdownRenderer
+											className={cn('', centered && 'text-center')}
+											{...props}
+										/>
+									)}
+								/>
+							</>
+						)}
+						<Pricing.LiveQuantity
+							className={cn(
+								'text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100',
+								centered && 'text-center',
+							)}
+						/>
+					</div>
+					<TeamToggle
+						className={cn(
+							'',
+							centered && 'w-full items-center justify-center text-center',
+						)}
+					/>
+					<div className="inline-flex w-full items-center justify-center">
+						<Pricing.LiveRefundPolicy
+							className={cn(
+								'inline-flex max-w-none pt-0 text-left',
+								centered && 'text-center',
+							)}
+						/>
+					</div>
+				</>
+			)}
+		</>
+	)
+}
+
+const CountdownRenderer: React.FC<
+	React.PropsWithChildren<CountdownRenderProps & { className?: string }>
+> = ({ days, hours, minutes, seconds, completed, className, ...rest }) => {
+	return completed ? null : (
+		<div className={cn('text-sm tabular-nums', className)}>
+			・ Price increases in{' '}
+			<span className="font-semibold">
+				{days > 0 && `${days} days`}
+				{days === 0 && hours > 0 && `${hours} hours`}
+				{days === 0 && hours === 0 && minutes > 0 && `${minutes} minutes`}
+				{days === 0 && hours === 0 && minutes === 0 && `${seconds} seconds`}
+			</span>{' '}
+			・
 		</div>
 	)
 }
@@ -258,26 +308,103 @@ export const InlinePricingWidget: React.FC<PricingComponentProps> = ({
 		(validCoupon ? couponFromCode?.id : undefined)
 
 	return hasPurchasedCurrentProduct ? (
-		<div>
-			Ticket Purchased. We'll send all necessary information to your email
-			address. <Link href="/invoices">Invoice</Link>
+		<div
+			className={cn(
+				'inline-flex items-center gap-3 rounded-md bg-green-50 px-4 py-2 text-sm',
+			)}
+		>
+			<BadgeCheck className="h-4 w-4 text-green-600" />
+			<span className="text-green-700">
+				Ticket Purchased! We sent the details of the event to your email.
+			</span>
+			<Link href="/invoices" className="underline-offset-2 hover:underline">
+				<span className="inline-flex items-center gap-1">
+					Get Invoice
+					<ExternalLink className="h-4 w-4" />
+				</span>
+			</Link>
 		</div>
 	) : (
 		<Pricing.Root
-			className="relative inline-flex items-center gap-4"
+			className="relative flex w-full items-center justify-center border-t pt-8"
 			product={product}
 			couponId={couponId}
 			options={pricingWidgetOptions}
 			userId={commerceProps?.userId}
 			pricingDataLoader={pricingDataLoader}
 		>
-			<Pricing.Product>
-				<Pricing.Price className="text-base font-medium" />
-				<Pricing.BuyButton className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-					Buy Ticket
-				</Pricing.BuyButton>
+			<Pricing.Product className="w-full">
+				<CardPricing />
 			</Pricing.Product>
 		</Pricing.Root>
+	)
+}
+
+const CardPricing = () => {
+	const { formattedPrice, status } = usePricing()
+	const fullPrice = formattedPrice?.fullPrice || 0
+
+	const finalPrice = formattedPrice?.calculatedPrice || 0
+	const savings = fullPrice - finalPrice
+	const savingsPercentage = Math.round((savings / fullPrice) * 100)
+
+	return (
+		<>
+			<div className={cn('flex flex-wrap items-center justify-between gap-5')}>
+				<div className="flex items-center">
+					{status === 'pending' ? (
+						<Spinner className="w-5" />
+					) : (
+						<>
+							<sup className="text-sm leading-tight opacity-50">US</sup>
+							<span className="text-3xl font-semibold tabular-nums">
+								{formatUsd(finalPrice).dollars}
+							</span>
+							{savings > 0 && (
+								<div className="ml-1 flex flex-col">
+									<span className="text-base font-normal leading-none line-through opacity-90">
+										{formatUsd(fullPrice).dollars}
+									</span>
+									<span className="text-xs font-semibold opacity-90">
+										Save {savingsPercentage}%{' '}
+									</span>
+								</div>
+							)}
+						</>
+					)}
+				</div>
+				<div className="flex flex-col items-start gap-2">
+					<Pricing.BuyButton className="from-primary relative w-auto min-w-[170px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-5 py-4 text-base font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+						Buy Ticket
+					</Pricing.BuyButton>
+				</div>
+			</div>
+			<div className={cn('mt-2 flex items-center')}>
+				<Pricing.TeamQuantityInput className={cn('mb-0 w-auto px-0 xl:px-0')} />
+			</div>
+			{status === 'pending' ? null : (
+				<>
+					<div className={cn('my-2 flex flex-wrap items-center')}>
+						{savings > 0 && (
+							<>
+								<Pricing.SaleCountdown />
+							</>
+						)}
+						<Pricing.LiveQuantity
+							className={cn(
+								'text-foreground inline-flex w-auto text-balance bg-transparent px-0 py-0 text-left text-sm capitalize opacity-100',
+							)}
+						/>
+					</div>
+					<TeamToggle className={cn('')} />
+					<div className="inline-flex w-full items-center justify-center">
+						<Pricing.LiveRefundPolicy
+							className={cn('inline-flex max-w-none pt-0 text-left')}
+						/>
+					</div>
+				</>
+			)}
+		</>
 	)
 }
 
@@ -316,7 +443,7 @@ export const withEventPricing = (
 						centered && 'flex items-center justify-center',
 					)}
 				>
-					<Spinner className="w-5" /> Loading price...
+					<Spinner className="w-5" /> Loading ticket...
 				</div>
 			)
 		}
