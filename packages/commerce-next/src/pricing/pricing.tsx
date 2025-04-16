@@ -773,7 +773,17 @@ const SaleCountdown = ({
 		props: CountdownRenderProps & { className?: string },
 	) => React.ReactElement
 }) => {
-	const { formattedPrice } = usePricing()
+	const {
+		formattedPrice,
+		product,
+		pricingData: { quantityAvailable },
+	} = usePricing()
+
+	const isSoldOut = Boolean(
+		product.type === 'live' && (quantityAvailable || 0) <= 0,
+	)
+
+	if (isSoldOut) return null
 
 	return formattedPrice?.defaultCoupon?.expires ? (
 		<Countdown
