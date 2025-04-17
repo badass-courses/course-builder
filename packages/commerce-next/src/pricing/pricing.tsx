@@ -879,6 +879,28 @@ const CountdownRenderer: React.FC<
 	)
 }
 
+const Waitlist = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	// if no spots are available, show a waitlist form
+	const {
+		product,
+		pricingData: { quantityAvailable },
+	} = usePricing()
+
+	const isSoldOut = Boolean(
+		product.type === 'live' && (quantityAvailable || 0) <= 0,
+	)
+
+	if (!isSoldOut) return null
+
+	return <div className={cn('', className)}>{children}</div>
+}
+
 export {
 	Root,
 	PricingProduct as Product,
@@ -897,4 +919,5 @@ export {
 	BuyMoreSeatsToggle,
 	BuyMoreSeats,
 	SaleCountdown,
+	Waitlist,
 }
