@@ -1,0 +1,28 @@
+---
+description: Analytics Usage
+globs: *.ts, *.tsx
+---
+ ## Client-side Tracking
+The `track` function in `@/utils/analytics.ts` is ONLY for tracking learner/customer activity. 
+This includes:
+- Course progress
+- Video watching
+- Exercise completion
+- Purchase activity
+- User preferences
+
+DO NOT use `track` for:
+- Internal admin actions
+- Content management
+- System operations
+- Backend processes
+
+## Server-side Logging
+Use `log` from `@/server/logger.ts` for:
+- System operations
+- Content management
+- Error tracking
+- Performance monitoring
+- Backend processes
+
+Always include relevant IDs and context in log messages. 
