@@ -4,8 +4,6 @@ import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { type Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import type { User } from 'next-auth'
-import { useSession } from 'next-auth/react'
 import queryString from 'query-string'
 import * as Yup from 'yup'
 
@@ -29,7 +27,6 @@ export type SubscribeFormProps = {
 	className?: string
 	validationSchema?: Yup.ObjectSchema<any>
 	validateOnChange?: boolean
-	user?: User
 	[rest: string]: any
 }
 
@@ -89,7 +86,6 @@ export const SubscribeToConvertkitForm: React.FC<
 	className,
 	validationSchema,
 	validateOnChange,
-	user,
 	...rest
 }) => {
 	const {
