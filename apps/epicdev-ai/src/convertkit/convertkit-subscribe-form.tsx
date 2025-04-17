@@ -2,6 +2,7 @@ import React from 'react'
 import Spinner from '@/components/spinner'
 import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { type Subscriber } from '@/schemas/subscriber'
+import { api } from '@/trpc/react'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
 import * as Yup from 'yup'
@@ -87,16 +88,23 @@ export const SubscribeToConvertkitForm: React.FC<
 	validateOnChange,
 	...rest
 }) => {
-	const { isSubmitting, status, handleChange, handleSubmit, errors, touched } =
-		useConvertkitForm({
-			formId,
-			onSuccess,
-			onError,
-			fields,
-			submitUrl: subscribeApiURL,
-			validationSchema,
-			validateOnChange,
-		})
+	const {
+		isSubmitting,
+		status,
+		handleChange,
+		handleSubmit,
+		errors,
+		touched,
+		values,
+	} = useConvertkitForm({
+		formId,
+		onSuccess,
+		onError,
+		fields,
+		submitUrl: subscribeApiURL,
+		validationSchema,
+		validateOnChange,
+	})
 
 	return (
 		<form
@@ -122,6 +130,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					onChange={handleChange}
 					placeholder="Preferred name"
 					type="text"
+					defaultValue={values.first_name}
 				/>
 				{validationSchema && touched.first_name && errors.first_name && (
 					<p data-input-error-message>{errors.first_name}</p>
@@ -140,6 +149,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					placeholder="you@example.com"
 					type="email"
 					required
+					defaultValue={values.email}
 				/>
 				{validationSchema && touched.email && errors.email && (
 					<p data-input-error-message>{errors.email}</p>

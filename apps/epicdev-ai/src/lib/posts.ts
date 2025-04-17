@@ -166,6 +166,7 @@ export const ProductForPostPropsSchema = z.object({
 	purchases: z.array(z.any()).optional(),
 	hasPurchasedCurrentProduct: z.boolean().optional(),
 	existingPurchase: z.any().optional(),
+	session: z.any().optional(),
 })
 
 export type ProductForPostProps = z.infer<typeof ProductForPostPropsSchema>
