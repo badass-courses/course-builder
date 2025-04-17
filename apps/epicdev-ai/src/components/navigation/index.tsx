@@ -9,6 +9,7 @@ import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
+import { Button } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { Logo } from '../brand/logo'
@@ -70,14 +71,20 @@ const Navigation = ({
 					// 	router.push('/brand')
 					// }}
 				>
-					<Link
-						prefetch
-						tabIndex={isRoot ? -1 : 0}
-						href="/"
-						className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
+					<Button
+						asChild
+						variant="ghost"
+						className="h-10 p-0 text-lg hover:bg-transparent"
 					>
-						<Logo className="origin-left scale-[1.15]" />
-					</Link>
+						<Link
+							prefetch
+							tabIndex={isRoot ? -1 : 0}
+							href="/"
+							className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
+						>
+							<Logo className="origin-left scale-[1.15]" />
+						</Link>
+					</Button>
 				</span>
 				{links.length > 0 && (
 					<nav

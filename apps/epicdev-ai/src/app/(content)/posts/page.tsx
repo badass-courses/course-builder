@@ -32,7 +32,6 @@ import {
 
 import { PostActions } from './_components/post-actions'
 
-// export const experimental_ppr = true
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -268,10 +267,10 @@ const PostTeaser: React.FC<{
 					<div>
 						<CardFooter
 							data-footer=""
-							className="mt-8 flex items-center justify-between gap-1.5 p-0 text-sm"
+							className="mt-4 flex flex-col items-start justify-between gap-1.5 p-0 text-sm sm:mt-8 sm:flex-row sm:items-center"
 						>
-							<Contributor />
-							<div className="flex items-center gap-2">
+							<div className="flex flex-wrap items-center gap-4">
+								<Contributor className="flex-shrink-0 [&_img]:size-8 sm:[&_img]:size-10" />
 								{post.tags && post.tags.length > 0 && (
 									<div className="flex items-center gap-1">
 										{post.tags.map((tag) => {
@@ -287,6 +286,8 @@ const PostTeaser: React.FC<{
 										})}
 									</div>
 								)}
+							</div>
+							<div className="flex items-center gap-2">
 								{isHighlighted && (
 									<Button className="" variant="default">
 										Learn More <ChevronRight className="ml-2 w-3" />
