@@ -54,8 +54,10 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 
 		const courses = await getCoursesForPost(post.id)
 
+		const resourceId = eggheadResource ? String(eggheadResource.id) : postGuid
+
 		const resource = TypesensePostSchema.safeParse({
-			id: String(eggheadResource.id),
+			id: resourceId,
 			externalId: postGuid,
 			title: post.fields.title,
 			slug: post.fields.slug,
@@ -76,11 +78,15 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				instructor_name: eggheadUser.instructor?.full_name,
 				instructor: typeSenseInstructor,
 			}),
-			...(eggheadResource.published_at && {
+			...(eggheadResource?.published_at && {
 				published_at_timestamp: eggheadResource.published_at
 					? new Date(eggheadResource.published_at).getTime()
 					: null,
 			}),
+			...(post.fields.postType === 'article' &&
+				post?.createdAt && {
+					published_at_timestamp: new Date(post?.createdAt).getTime(),
+				}),
 			belongs_to_resource:
 				courses.length > 0 ? courses[0]?.eggheadPlaylistId : null,
 			...(courses.length > 0 && {
