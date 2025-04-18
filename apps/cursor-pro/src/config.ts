@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/epic-web/image/upload/v1744263842/epicdev.ai/card_2x.jpg`,
+				url: `https://res.cloudinary.com/badass-courses/image/upload/v1744992474/cursor-pro/cursor-pro-og-image_oy8dit.png`,
 				width: 1200,
 				height: 630,
 			},
