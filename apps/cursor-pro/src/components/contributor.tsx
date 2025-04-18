@@ -27,7 +27,7 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/epic-web/image/upload/v1718221991/epicweb.dev/instructors/kent-c-dodds.png'
+				'https://res.cloudinary.com/dg3gyk0gu/image/upload/v1683164538/assets/john.webp'
 			}
 			alt={config.author}
 			width={40}

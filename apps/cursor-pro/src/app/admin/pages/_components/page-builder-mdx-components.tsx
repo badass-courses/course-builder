@@ -104,7 +104,7 @@ const Instructor = ({
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg"
+				src="https://res.cloudinary.com/dg3gyk0gu/image/upload/v1683164538/assets/john.webp"
 				alt={config.author}
 				width={1280}
 				height={854}
@@ -208,7 +208,7 @@ const data = {
 			name: 'Instructor',
 			component: Instructor,
 			props: {
-				title: 'Kent C. Dodds',
+				title: 'John Lindquist',
 			},
 		},
 	],
@@ -313,9 +313,9 @@ const PageBlocks = () => {
 									e.dataTransfer.setData(
 										'text/plain',
 										`
-<${item.name} title="Kent C. Dodds">
+<${item.name} title="John Lindquist">
 
-Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's actively involved in the open source community as a maintainer and contributor of hundreds of popular npm packages. He is the creator of EpicReact.Dev and TestingJavaScript.com. He's an instructor on egghead.io and Frontend Masters. He's also a Google Developer Expert. Kent is happily married and the father of four kids. He likes his family, code, JavaScript, and Remix.
+ohn Lindquist is a co-founder of egghead.io John has spent the majority of his career developing Rich Web Applications. Before starting egghead.io, John worked at JetBrains as a WebStorm evangelist, and before that he was a Technical Architect at Isobar leading large teams in building the latest and greatest in web apps for the Air Force, HBO, and Bloomberg.
 
 </${item.name}>
 `,
