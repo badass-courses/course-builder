@@ -52,8 +52,8 @@ export async function generateMetadata(
 
 	return {
 		title: {
-			template: '%s | Epic AI Pro',
-			default: `Epic AI Pro`,
+			template: '%s | Cursor Pro',
+			default: `Cursor Pro`,
 		},
 		description: page?.fields?.description,
 		openGraph: {
