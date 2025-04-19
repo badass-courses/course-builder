@@ -19,11 +19,13 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 } from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
@@ -114,6 +116,20 @@ const EventMetadataFormFields = ({
 }) => {
 	return (
 		<EditResourcesMetadataFields form={form}>
+			<FormField
+				control={form.control}
+				name="fields.details"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Event Details</FormLabel>
+						<FormDescription>
+							Details to be used in Google calendar for this event.
+						</FormDescription>
+						<Textarea {...field} value={field.value?.toString()} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<div className="px-5">
 				<FormLabel>Cover Image</FormLabel>
 				{form.watch('fields.image') && (
