@@ -3,9 +3,8 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { CldImage } from '@/app/_components/cld-image'
-import { Contributor } from '@/app/_components/contributor'
-import { Layout } from '@/components/layout'
+import { CldImage } from '@/components/cld-image'
+import { Contributor } from '@/components/contributor'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -186,7 +185,7 @@ export default async function EventPage(props: {
 		)}`
 
 	return (
-		<Layout className="relative flex flex-col">
+		<div className="relative flex flex-col">
 			<EventMetadata
 				event={event}
 				quantityAvailable={eventProps.quantityAvailable}
@@ -265,7 +264,7 @@ export default async function EventPage(props: {
 					<EventDetails event={event} />
 				</EventSidebar>
 			</div>
-		</Layout>
+		</div>
 	)
 }
 
