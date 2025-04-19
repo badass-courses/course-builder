@@ -5,6 +5,61 @@ import { env } from '../env.mjs'
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
+// Helper function to get authenticated JWT client
+function getAuthClient() {
+	const rawCredentialsJson = env.GOOGLE_CREDENTIALS_JSON
+	if (!rawCredentialsJson) {
+		throw new Error('GOOGLE_CREDENTIALS_JSON not found in environment.')
+	}
+
+	let credentialsJson: string
+	if (isBase64(rawCredentialsJson)) {
+		try {
+			credentialsJson = Buffer.from(rawCredentialsJson, 'base64').toString(
+				'utf8',
+			)
+		} catch (error: any) {
+			throw new Error(`Failed to decode Base64 credentials: ${error.message}`)
+		}
+	} else {
+		credentialsJson = rawCredentialsJson
+	}
+
+	let credentials
+	try {
+		credentials = JSON.parse(credentialsJson)
+	} catch (error: any) {
+		throw new Error(
+			`Failed to parse credentials JSON: ${error.message}. Ensure correct format.`,
+		)
+	}
+
+	if (
+		!credentials.client_email ||
+		!credentials.private_key ||
+		!credentials.project_id
+	) {
+		throw new Error(
+			'Credentials JSON missing required fields (client_email, private_key, project_id).',
+		)
+	}
+
+	if (!env.GOOGLE_CALENDAR_IMPERSONATE_USER) {
+		throw new Error('GOOGLE_CALENDAR_IMPERSONATE_USER not configured.')
+	}
+
+	console.log(
+		`Authenticating GCal as service account: ${credentials.client_email} (impersonating ${env.GOOGLE_CALENDAR_IMPERSONATE_USER})`,
+	)
+
+	return new JWT({
+		email: credentials.client_email,
+		key: credentials.private_key,
+		scopes: SCOPES,
+		subject: env.GOOGLE_CALENDAR_IMPERSONATE_USER,
+	})
+}
+
 // Function to check if a string is likely Base64
 function isBase64(str: string): boolean {
 	if (!str || str.trim() === '') {
@@ -22,83 +77,21 @@ function isBase64(str: string): boolean {
 }
 
 /**
- * Creates an event on a Google Calendar using service account impersonation.
- * Reads credentials from the GOOGLE_CREDENTIALS_JSON environment variable,
- * which can be either raw JSON or Base64 encoded JSON.
+ * Creates an event on the impersonated user's primary Google Calendar.
+ * Reads credentials and impersonation target from environment variables.
  *
- * @param {string} userToImpersonate The email address of the user whose calendar to modify.
- * @param {calendar_v3.Schema$Event} eventDetails The event object to create. See Google Calendar API docs.
+ * @param {calendar_v3.Schema$Event} eventDetails The event object to create.
  * @returns {Promise<calendar_v3.Schema$Event>} The created event object.
- * @throws {Error} If credentials are not found, invalid, or if the API call fails.
+ * @throws {Error} If authentication or API call fails.
  */
 export async function createGoogleCalendarEvent(
-	userToImpersonate: string,
 	eventDetails: calendar_v3.Schema$Event,
 ): Promise<calendar_v3.Schema$Event> {
-	console.log(
-		`Attempting Google Calendar API call for user: ${userToImpersonate}`,
-	)
-
-	// 1. Load Credentials from Validated Environment
-	const rawCredentialsJson = env.GOOGLE_CREDENTIALS_JSON
-
-	let credentialsJson: string
-	if (isBase64(rawCredentialsJson)) {
-		console.log('Decoding Base64 encoded Google credentials...')
-		try {
-			credentialsJson = Buffer.from(rawCredentialsJson, 'base64').toString(
-				'utf8',
-			)
-		} catch (error: any) {
-			console.error('Base64 Decoding Error:', error)
-			throw new Error(`Failed to decode Base64 credentials: ${error.message}`)
-		}
-	} else {
-		console.log(
-			'Using raw Google credentials string from environment variable.',
-		)
-		credentialsJson = rawCredentialsJson // Assume it's raw JSON
-	}
-
-	let credentials
 	try {
-		credentials = JSON.parse(credentialsJson)
-	} catch (error: any) {
-		console.error('Credentials Parsing Error:', error)
-		throw new Error(
-			`Failed to parse credentials JSON: ${error.message}. Ensure the environment variable contains valid JSON (or valid Base64 encoded JSON).`,
-		)
-	}
+		const authClient = getAuthClient()
+		const calendar = google.calendar({ version: 'v3', auth: authClient })
 
-	// Check for essential credential properties
-	if (
-		!credentials.client_email ||
-		!credentials.private_key ||
-		!credentials.project_id
-	) {
-		throw new Error(
-			'Credentials JSON is missing required fields (client_email, private_key, project_id).',
-		)
-	}
-
-	console.log(
-		`Authenticating as service account: ${credentials.client_email} (impersonating ${userToImpersonate})`,
-	)
-
-	// 2. Create JWT Auth Client with Impersonation
-	const authClient = new JWT({
-		email: credentials.client_email,
-		key: credentials.private_key, // The key format should be correct now after JSON parsing
-		scopes: SCOPES,
-		subject: userToImpersonate,
-	})
-
-	// 3. Initialize Google Calendar API Client
-	const calendar = google.calendar({ version: 'v3', auth: authClient })
-
-	// 4. Insert the Event
-	try {
-		console.log(`Creating event on primary calendar of ${userToImpersonate}...`)
+		console.log(`Creating Google Calendar event: ${eventDetails.summary}`)
 		const response = await calendar.events.insert({
 			calendarId: 'primary',
 			requestBody: eventDetails,
@@ -108,22 +101,109 @@ export async function createGoogleCalendarEvent(
 			throw new Error('Google Calendar API returned no data for created event.')
 		}
 
-		console.log('SUCCESS! Event created via library function.')
+		console.log('SUCCESS! Event created.', { eventId: response.data.id })
 		return response.data
 	} catch (error: any) {
-		console.error('------------------------------------------------------')
-		console.error('ERROR creating calendar event via library function:')
+		console.error('ERROR creating calendar event:', error.message)
 		// Log specific Google API errors if available
 		if (error.response?.data?.error) {
 			console.error('API Error Details:', error.response.data.error)
 			throw new Error(
-				`Google Calendar API Error: ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
+				`Google Calendar API Error (Create): ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
 			)
 		} else {
-			console.error('Full Error:', error.message || error)
+			throw new Error(`Failed to create calendar event: ${error.message}`)
+		}
+	}
+}
+
+/**
+ * Updates an existing event on the impersonated user's primary Google Calendar.
+ *
+ * @param {string} calendarEventId The ID of the Google Calendar event to update.
+ * @param {Partial<calendar_v3.Schema$Event>} eventDetails The event fields to update.
+ * @returns {Promise<calendar_v3.Schema$Event>} The updated event object.
+ * @throws {Error} If authentication or API call fails.
+ */
+export async function updateGoogleCalendarEvent(
+	calendarEventId: string,
+	eventDetails: Partial<calendar_v3.Schema$Event>,
+): Promise<calendar_v3.Schema$Event> {
+	if (!calendarEventId) {
+		throw new Error('Missing calendarEventId for update.')
+	}
+	try {
+		const authClient = getAuthClient()
+		const calendar = google.calendar({ version: 'v3', auth: authClient })
+
+		console.log(`Updating Google Calendar event: ${calendarEventId}`)
+		const response = await calendar.events.patch({
+			// Use patch for partial updates
+			calendarId: 'primary',
+			eventId: calendarEventId,
+			requestBody: eventDetails,
+		})
+
+		if (!response.data) {
+			throw new Error('Google Calendar API returned no data for updated event.')
+		}
+
+		console.log('SUCCESS! Event updated.', { eventId: response.data.id })
+		return response.data
+	} catch (error: any) {
+		console.error('ERROR updating calendar event:', error.message)
+		if (error.response?.data?.error) {
+			console.error('API Error Details:', error.response.data.error)
 			throw new Error(
-				`Failed to create calendar event: ${error.message || 'Unknown error'}`,
+				`Google Calendar API Error (Update): ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
 			)
+		} else {
+			throw new Error(`Failed to update calendar event: ${error.message}`)
+		}
+	}
+}
+
+/**
+ * Retrieves an event from the impersonated user's primary Google Calendar.
+ *
+ * @param {string} calendarEventId The ID of the Google Calendar event to retrieve.
+ * @returns {Promise<calendar_v3.Schema$Event | null>} The event object or null if not found.
+ * @throws {Error} If authentication or API call fails (excluding 404).
+ */
+export async function getGoogleCalendarEvent(
+	calendarEventId: string,
+): Promise<calendar_v3.Schema$Event | null> {
+	if (!calendarEventId) {
+		throw new Error('Missing calendarEventId for get.')
+	}
+	try {
+		const authClient = getAuthClient()
+		const calendar = google.calendar({ version: 'v3', auth: authClient })
+
+		console.log(`Getting Google Calendar event: ${calendarEventId}`)
+		const response = await calendar.events.get({
+			calendarId: 'primary',
+			eventId: calendarEventId,
+		})
+
+		console.log('SUCCESS! Event retrieved.', { eventId: response.data.id })
+		return response.data || null // Return data or null
+	} catch (error: any) {
+		// Specifically handle 404 (Not Found) by returning null
+		if (error.code === 404 || error.response?.status === 404) {
+			console.log(`Google Calendar event not found: ${calendarEventId}`)
+			return null
+		}
+
+		// Log and re-throw other errors
+		console.error('ERROR getting calendar event:', error.message)
+		if (error.response?.data?.error) {
+			console.error('API Error Details:', error.response.data.error)
+			throw new Error(
+				`Google Calendar API Error (Get): ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
+			)
+		} else {
+			throw new Error(`Failed to get calendar event: ${error.message}`)
 		}
 	}
 }

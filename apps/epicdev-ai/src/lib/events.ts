@@ -23,6 +23,7 @@ export const EventSchema = ContentResourceSchema.merge(
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
+			details: z.string().optional(),
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
