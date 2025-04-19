@@ -3,10 +3,7 @@
  * for Docker builds.
  */
 import createMDX from '@next/mdx'
-import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
-
-console.dir(process.env, { depth: null })
 
 await import('./src/env.mjs')
 
