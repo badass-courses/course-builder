@@ -69,9 +69,11 @@ export default function WelcomeEmail({
 							<Text style={bulletPoint}>
 								• Access your Invoice: Once you're logged in, you can view and
 								fully customize your invoice{' '}
-								<Link href="https://www.epicai.pro/invoices">here</Link>. You
-								can add any required information to the "Prepared for" section
-								of the invoice and download a PDF that can be shared or
+								<Link href="https://joel-x42.coursebuilder.dev/invoices">
+									here
+								</Link>
+								. You can add any required information to the "Prepared for"
+								section of the invoice and download a PDF that can be shared or
 								forwarded.
 							</Text>
 						</Section>
