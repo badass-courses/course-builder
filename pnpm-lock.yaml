@@ -3675,9 +3675,6 @@ importers:
       date-fns-tz:
         specifier: ^2.0.1
         version: 2.0.1(date-fns@2.30.0)
-      dotenv:
-        specifier: ^10.0.0
-        version: 10.0.0
       dotenv-flow:
         specifier: ^4.1.0
         version: 4.1.0
@@ -22093,6 +22090,7 @@ packages:
   /dotenv@10.0.0:
     resolution: {integrity: sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==}
     engines: {node: '>=10'}
+    dev: true
 
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}

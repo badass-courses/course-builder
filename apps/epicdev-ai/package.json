@@ -130,7 +130,6 @@
 		"crypto": "^1.0.1",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
-		"dotenv": "^10.0.0",
 		"dotenv-flow": "^4.1.0",
 		"feed": "^4.2.2",
 		"formik": "2.2.9",
