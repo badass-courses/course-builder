@@ -73,13 +73,7 @@ export const calendarSync = inngest.createFunction(
 		{ event: RESOURCE_UPDATED_EVENT, if: "event.data.type == 'event'" },
 	],
 	// Argument 3: Handler Function with explicit event type union
-	async ({
-		event,
-		step,
-	}: {
-		event: ResourceCreated | ResourceUpdated // Explicit union type for the event
-		step: any // Use 'any' for step for now, or import Step type if needed
-	}) => {
+	async ({ event, step }) => {
 		const resourceId = event.data.id
 		console.log(
 			`Received event for resource: ${resourceId} (event name: ${event.name})`,
@@ -114,9 +108,10 @@ export const calendarSync = inngest.createFunction(
 		}
 
 		// Step 4: Map resource fields to Google Calendar Event payload
-		const googleEventPayload = mapResourceToGoogleEvent(validEventResource)
+		const partialGoogleEventPayload =
+			mapResourceToGoogleEvent(validEventResource)
 
-		if (!googleEventPayload) {
+		if (!partialGoogleEventPayload) {
 			// Required fields (like startsAt) were missing.
 			console.log(
 				`Skipping Google Calendar sync for ${resourceId} due to missing required fields.`,
@@ -133,7 +128,7 @@ export const calendarSync = inngest.createFunction(
 			)
 			try {
 				await step.run('update-google-event', async () => {
-					await updateGoogleCalendarEvent(calendarId, googleEventPayload)
+					await updateGoogleCalendarEvent(calendarId, partialGoogleEventPayload)
 				})
 				return { outcome: 'updated', calendarId }
 			} catch (error: any) {
@@ -147,13 +142,25 @@ export const calendarSync = inngest.createFunction(
 			console.log(
 				`Creating new Google Calendar event for resource ${resourceId}`,
 			)
+
+			// *** Add check for essential fields before casting/calling create ***
+			if (
+				!partialGoogleEventPayload.summary ||
+				!partialGoogleEventPayload.start ||
+				!partialGoogleEventPayload.end
+			) {
+				throw new NonRetriableError(
+					`Mapped payload is missing essential fields (summary, start, end) for resource ${resourceId}`,
+				)
+			}
+			// Now it's safer to treat it as the full type needed by create
+			const googleEventPayload =
+				partialGoogleEventPayload as calendar_v3.Schema$Event
+
 			let createdGoogleEvent: calendar_v3.Schema$Event | null = null
 			try {
 				createdGoogleEvent = await step.run('create-google-event', async () => {
-					// Ensure the payload passed is not partial
-					return await createGoogleCalendarEvent(
-						googleEventPayload as calendar_v3.Schema$Event,
-					)
+					return await createGoogleCalendarEvent(googleEventPayload)
 				})
 			} catch (error: any) {
 				console.error(`Failed to create Google event for ${resourceId}:`, error)

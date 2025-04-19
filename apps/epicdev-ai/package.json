@@ -23,8 +23,7 @@
 		"index-typesense": "tsx ./scripts/index-content.ts",
 		"test": "vitest run -c vitest.config.ts",
 		"test:e2e": "playwright test",
-		"posts": "tsx scripts/posts-cli.ts",
-		"test:event": "dotenv tsx ./src/scripts/test-event.ts"
+		"posts": "tsx scripts/posts-cli.ts"
 	},
 	"dependencies": {
 		"@ai-sdk/openai": "^1.3.6",
@@ -144,7 +143,7 @@
 		"human-readable-ids": "^1.0.4",
 		"i": "^0.3.7",
 		"import-in-the-middle": "^1.11.2",
-		"inngest": "^3.22.5",
+		"inngest": "3.35.0",
 		"intl-segmenter-polyfill": "^0.4.4",
 		"js-cookie": "^3.0.5",
 		"json-schema": "^0.4.0",

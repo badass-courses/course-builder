@@ -450,8 +450,8 @@ importers:
         specifier: ^1.11.2
         version: 1.13.1
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1111,8 +1111,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -1773,8 +1773,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -2227,8 +2227,8 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(next@15.3.0-canary.31)(typescript@5.4.5)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0)
@@ -2558,8 +2558,8 @@ importers:
         specifier: ^12.0.0-alpha.1
         version: 12.6.3(react-dom@19.0.0)(react@19.0.0)
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(next@15.3.0-canary.31)(typescript@5.4.5)
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0)
@@ -3048,8 +3048,8 @@ importers:
         specifier: ^1.11.2
         version: 1.13.1
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -3715,8 +3715,8 @@ importers:
         specifier: ^1.11.2
         version: 1.13.1
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -4424,8 +4424,8 @@ importers:
         specifier: ^0.3.7
         version: 0.3.7
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
         version: 0.4.4
@@ -5226,8 +5226,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.1(drizzle-orm@0.36.0)(zod@3.24.2)
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(next@15.3.0-canary.31)(typescript@5.4.5)
       liquidjs:
         specifier: ^10.16.3
         version: 10.21.0
@@ -5354,8 +5354,8 @@ importers:
         specifier: 1.0.3
         version: link:../core
       inngest:
-        specifier: ^3.22.5
-        version: 3.34.1(next@15.3.0-canary.31)(typescript@5.4.5)
+        specifier: 3.35.0
+        version: 3.35.0(next@15.3.0-canary.31)(typescript@5.4.5)
     devDependencies:
       '@auth/core':
         specifier: 0.37.2
@@ -25073,8 +25073,8 @@ packages:
       css-in-js-utils: 3.1.0
     dev: false
 
-  /inngest@3.34.1(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-q3GZFS8Owg1LRt70P3j/LBkhl5ZTIItO/37/IjZweR6udAdseazgZzqxqrlLxPn/EiTbebFNFY04afCCc11gQQ==}
+  /inngest@3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-CDXVSji7ZTjbv81Atr7IGL3vpxAfTnzXQCxLy2DRTWa4cis+4fobBd8QMgneJCmp/ypaJpUbH6tmbU8e2jOKGw==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sveltejs/kit': '>=1.27.3'
@@ -25132,8 +25132,8 @@ packages:
       - supports-color
     dev: false
 
-  /inngest@3.34.1(next@15.3.0-canary.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-q3GZFS8Owg1LRt70P3j/LBkhl5ZTIItO/37/IjZweR6udAdseazgZzqxqrlLxPn/EiTbebFNFY04afCCc11gQQ==}
+  /inngest@3.35.0(next@15.3.0-canary.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-CDXVSji7ZTjbv81Atr7IGL3vpxAfTnzXQCxLy2DRTWa4cis+4fobBd8QMgneJCmp/ypaJpUbH6tmbU8e2jOKGw==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sveltejs/kit': '>=1.27.3'

@@ -12,13 +12,15 @@ import {
  */
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
-		resourceProducts: z.array(
-			z.object({
-				resourceId: z.string(),
-				productId: z.string(),
-				product: productSchema,
-			}),
-		),
+		resourceProducts: z
+			.array(
+				z.object({
+					resourceId: z.string(),
+					productId: z.string(),
+					product: productSchema,
+				}),
+			)
+			.optional(),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
@@ -30,7 +32,7 @@ export const EventSchema = ContentResourceSchema.merge(
 			startsAt: z.string().datetime().nullable().optional(),
 			endsAt: z.string().datetime().nullable().optional(),
 			timezone: z.string().default('America/Los_Angeles'),
-			image: z.string().url().optional(),
+			image: z.string().optional(),
 			socialImage: z
 				.object({
 					type: z.string(),

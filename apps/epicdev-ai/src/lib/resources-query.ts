@@ -1,12 +1,12 @@
 'use server'
 
 import { courseBuilderAdapter } from '@/db'
+import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 
 import { RESOURCE_UPDATED_EVENT } from '../inngest/events/resource-management'
-import { inngest } from '../inngest/inngest.server'
 
 export async function updateResource(input: {
 	id: string
@@ -64,13 +64,17 @@ export async function updateResource(input: {
 		console.log(
 			`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
 		)
-		await inngest.send({
+		const result = await inngest.send({
 			name: RESOURCE_UPDATED_EVENT,
 			data: {
 				id: updatedResource.id,
 				type: updatedResource.type,
 			},
 		})
+		console.log(
+			`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
+			result,
+		)
 	} catch (error) {
 		console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
 	}

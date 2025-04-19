@@ -87,11 +87,21 @@ function isBase64(str: string): boolean {
 export async function createGoogleCalendarEvent(
 	eventDetails: calendar_v3.Schema$Event,
 ): Promise<calendar_v3.Schema$Event> {
+	let authClient
+	let calendar
 	try {
-		const authClient = getAuthClient()
-		const calendar = google.calendar({ version: 'v3', auth: authClient })
+		authClient = getAuthClient()
+		calendar = google.calendar({ version: 'v3', auth: authClient })
 
-		console.log(`Creating Google Calendar event: ${eventDetails.summary}`)
+		console.log(
+			`Attempting to create Google Calendar event: ${eventDetails.summary}`,
+		)
+		// Log the payload being sent
+		console.log(
+			'Google Calendar Request Body:',
+			JSON.stringify(eventDetails, null, 2),
+		)
+
 		const response = await calendar.events.insert({
 			calendarId: 'primary',
 			requestBody: eventDetails,
@@ -105,6 +115,8 @@ export async function createGoogleCalendarEvent(
 		return response.data
 	} catch (error: any) {
 		console.error('ERROR creating calendar event:', error.message)
+		// Log the full error object for more details
+		console.error('Full Google API Error Object:', error)
 		// Log specific Google API errors if available
 		if (error.response?.data?.error) {
 			console.error('API Error Details:', error.response.data.error)
@@ -112,6 +124,7 @@ export async function createGoogleCalendarEvent(
 				`Google Calendar API Error (Create): ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
 			)
 		} else {
+			// Rethrow the original error message if no specific API error details found
 			throw new Error(`Failed to create calendar event: ${error.message}`)
 		}
 	}
