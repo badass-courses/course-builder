@@ -34,7 +34,7 @@ function isBase64(str: string): boolean {
 export async function createGoogleCalendarEvent(
 	userToImpersonate: string,
 	eventDetails: calendar_v3.Schema$Event,
-): Promise {
+): Promise<calendar_v3.Schema$Event> {
 	console.log(
 		`Attempting Google Calendar API call for user: ${userToImpersonate}`,
 	)
@@ -125,9 +125,5 @@ export async function createGoogleCalendarEvent(
 				`Failed to create calendar event: ${error.message || 'Unknown error'}`,
 			)
 		}
-		// Note: Removed the specific troubleshooting suggestions here as they are less relevant for a general library function error.
-		// The calling code should handle the thrown error.
-		console.error('------------------------------------------------------')
-		throw error
 	}
 }
