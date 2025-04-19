@@ -37,6 +37,7 @@ export const EventSchema = ContentResourceSchema.merge(
 					url: z.string().url(),
 				})
 				.optional(),
+			calendarId: z.string().optional(),
 		}),
 	}),
 )

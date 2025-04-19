@@ -7,9 +7,9 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
 // Helper function to get authenticated JWT client
 function getAuthClient() {
-	const rawCredentialsJson = env.GOOGLE_CREDENTIALS_JSON
+	const rawCredentialsJson = env.GOOG_CREDENTIALS_JSON
 	if (!rawCredentialsJson) {
-		throw new Error('GOOGLE_CREDENTIALS_JSON not found in environment.')
+		throw new Error('GOOG_CREDENTIALS_JSON not found in environment.')
 	}
 
 	let credentialsJson: string
@@ -44,19 +44,19 @@ function getAuthClient() {
 		)
 	}
 
-	if (!env.GOOGLE_CALENDAR_IMPERSONATE_USER) {
-		throw new Error('GOOGLE_CALENDAR_IMPERSONATE_USER not configured.')
+	if (!env.GOOG_CALENDAR_IMPERSONATE_USER) {
+		throw new Error('GOOG_CALENDAR_IMPERSONATE_USER not configured.')
 	}
 
 	console.log(
-		`Authenticating GCal as service account: ${credentials.client_email} (impersonating ${env.GOOGLE_CALENDAR_IMPERSONATE_USER})`,
+		`Authenticating GCal as service account: ${credentials.client_email} (impersonating ${env.GOOG_CALENDAR_IMPERSONATE_USER})`,
 	)
 
 	return new JWT({
 		email: credentials.client_email,
 		key: credentials.private_key,
 		scopes: SCOPES,
-		subject: env.GOOGLE_CALENDAR_IMPERSONATE_USER,
+		subject: env.GOOG_CALENDAR_IMPERSONATE_USER,
 	})
 }
 

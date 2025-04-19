@@ -34,19 +34,19 @@ Automate the creation and updating of Google Calendar events corresponding to `e
 
 - **Add `getGoogleCalendarEvent` function:**
     - Signature: `async function getGoogleCalendarEvent(calendarEventId: string): Promise<calendar_v3.Schema$Event | null>`
-    - Authenticates using `env.GOOGLE_CALENDAR_IMPERSONATE_USER`.
+    - Authenticates using `env.GOOG_CALENDAR_IMPERSONATE_USER`.
     - Uses `calendar.events.get({ calendarId: 'primary', eventId: calendarEventId })`.
     - Includes try/catch to handle 404 errors (return `null`), re-throw other errors.
 - **Add `updateGoogleCalendarEvent` function:**
     - Signature: `async function updateGoogleCalendarEvent(calendarEventId: string, eventDetails: Partial<calendar_v3.Schema$Event>): Promise<calendar_v3.Schema$Event>`
-    - Authenticates using `env.GOOGLE_CALENDAR_IMPERSONATE_USER`.
+    - Authenticates using `env.GOOG_CALENDAR_IMPERSONATE_USER`.
     - Uses `calendar.events.patch({ calendarId: 'primary', eventId: calendarEventId, requestBody: eventDetails })`.
     - Returns `response.data`.
     - Includes try/catch to re-throw errors with more context.
 - **Refactor `createGoogleCalendarEvent`:**
     - Update signature: `async function createGoogleCalendarEvent(eventDetails: calendar_v3.Schema$Event): Promise<calendar_v3.Schema$Event>` (remove `userToImpersonate` parameter).
-    - Update authentication logic inside to use `env.GOOGLE_CALENDAR_IMPERSONATE_USER`.
-- **Environment Variable:** Add `GOOGLE_CALENDAR_IMPERSONATE_USER` to `env.mjs` (see step 7).
+    - Update authentication logic inside to use `env.GOOG_CALENDAR_IMPERSONATE_USER`.
+- **Environment Variable:** Add `GOOG_CALENDAR_IMPERSONATE_USER` to `env.mjs` (see step 7).
 
 ## 5. Implement `calendar-sync` Inngest Function (`apps/epicdev-ai/src/inngest/functions/calendar-sync.ts`)
 
@@ -71,7 +71,7 @@ Automate the creation and updating of Google Calendar events corresponding to `e
     - `const validEventResource = validation.data;`
     - `const calendarId = validEventResource.fields.calendarId;`
     - `const googleEventPayload = { /* Map fields: summary, description, start, end, timeZone */ };`
-    - `if (!env.GOOGLE_CALENDAR_IMPERSONATE_USER) throw new Error('GOOGLE_CALENDAR_IMPERSONATE_USER not configured');`
+    - `if (!env.GOOG_CALENDAR_IMPERSONATE_USER) throw new Error('GOOG_CALENDAR_IMPERSONATE_USER not configured');`
     - **If `calendarId` exists:**
         - `await step.run('update-google-event', async () => { await updateGoogleCalendarEvent(calendarId, googleEventPayload); });` (Add error handling)
     - **If `calendarId` does not exist:**
@@ -85,8 +85,8 @@ Automate the creation and updating of Google Calendar events corresponding to `e
 
 ## 7. Environment Variables (`apps/epicdev-ai/src/env.mjs`)
 
-- Add `GOOGLE_CALENDAR_IMPERSONATE_USER: z.string()` to `server` schema and `runtimeEnv`.
-- **Decision:** Should `GOOGLE_CREDENTIALS_JSON` be required? Change from `.optional()` back to `.string()` if this sync is mandatory.
+- Add `GOOG_CALENDAR_IMPERSONATE_USER: z.string()` to `server` schema and `runtimeEnv`.
+- **Decision:** Should `GOOG_CREDENTIALS_JSON` be required? Change from `.optional()` back to `.string()` if this sync is mandatory.
 
 ## 8. Future Steps (Attendee Management)
 
