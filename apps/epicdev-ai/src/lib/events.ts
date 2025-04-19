@@ -12,30 +12,34 @@ import {
  */
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
-		resourceProducts: z.array(
-			z.object({
-				resourceId: z.string(),
-				productId: z.string(),
-				product: productSchema,
-			}),
-		),
+		resourceProducts: z
+			.array(
+				z.object({
+					resourceId: z.string(),
+					productId: z.string(),
+					product: productSchema,
+				}),
+			)
+			.default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
+			details: z.string().optional(),
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
 			startsAt: z.string().datetime().nullable().optional(),
 			endsAt: z.string().datetime().nullable().optional(),
 			timezone: z.string().default('America/Los_Angeles'),
-			image: z.string().url().optional(),
+			image: z.string().optional(),
 			socialImage: z
 				.object({
 					type: z.string(),
 					url: z.string().url(),
 				})
 				.optional(),
+			calendarId: z.string().optional(),
 		}),
 	}),
 )

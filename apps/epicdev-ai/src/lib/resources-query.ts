@@ -1,9 +1,12 @@
 'use server'
 
 import { courseBuilderAdapter } from '@/db'
+import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
+
+import { RESOURCE_UPDATED_EVENT } from '../inngest/events/resource-management'
 
 export async function updateResource(input: {
 	id: string
@@ -23,7 +26,8 @@ export async function updateResource(input: {
 	)
 
 	if (!currentResource) {
-		return courseBuilderAdapter.createContentResource(input)
+		console.warn(`Resource with id ${input.id} not found for update.`)
+		return null
 	}
 
 	let resourceSlug = input.fields.slug
@@ -33,15 +37,47 @@ export async function updateResource(input: {
 		resourceSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	return courseBuilderAdapter.updateContentResourceFields({
+	const updatedFields = {
+		...currentResource.fields,
+		...input.fields,
+		slug: resourceSlug,
+		...(input.fields.image && {
+			image: input.fields.image,
+		}),
+	}
+
+	await courseBuilderAdapter.updateContentResourceFields({
 		id: currentResource.id,
-		fields: {
-			...currentResource.fields,
-			...input.fields,
-			slug: resourceSlug,
-			...(input.fields.image && {
-				image: input.fields.image,
-			}),
-		},
+		fields: updatedFields,
 	})
+
+	const updatedResource = await courseBuilderAdapter.getContentResource(
+		currentResource.id,
+	)
+
+	if (!updatedResource) {
+		console.error(`Failed to fetch updated resource: ${currentResource.id}`)
+		return null
+	}
+
+	try {
+		console.log(
+			`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
+		)
+		const result = await inngest.send({
+			name: RESOURCE_UPDATED_EVENT,
+			data: {
+				id: updatedResource.id,
+				type: updatedResource.type,
+			},
+		})
+		console.log(
+			`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
+			result,
+		)
+	} catch (error) {
+		console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
+	}
+
+	return updatedResource
 }

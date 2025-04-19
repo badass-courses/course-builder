@@ -84,7 +84,7 @@
 		"drizzle-orm": "0.36.0",
 		"framer-motion": "^12.0.0-alpha.1",
 		"human-readable-ids": "^1.0.4",
-		"inngest": "^3.22.5",
+		"inngest": "3.35.0",
 		"lucide-react": "^0.288.0",
 		"memoize-one": "^6.0.0",
 		"nanoid": "^5.0.2",
