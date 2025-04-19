@@ -20,7 +20,7 @@ export const EventSchema = ContentResourceSchema.merge(
 					product: productSchema,
 				}),
 			)
-			.optional(),
+			.default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),

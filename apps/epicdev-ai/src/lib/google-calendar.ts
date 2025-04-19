@@ -135,13 +135,13 @@ export async function createGoogleCalendarEvent(
  *
  * @param {string} calendarEventId The ID of the Google Calendar event to update.
  * @param {Partial<calendar_v3.Schema$Event>} eventDetails The event fields to update.
- * @returns {Promise<calendar_v3.Schema$Event>} The updated event object.
- * @throws {Error} If authentication or API call fails.
+ * @returns {Promise<calendar_v3.Schema$Event | null>} The updated event object, or null if the event was not found (404).
+ * @throws {Error} If authentication or API call fails (excluding 404).
  */
 export async function updateGoogleCalendarEvent(
 	calendarEventId: string,
 	eventDetails: Partial<calendar_v3.Schema$Event>,
-): Promise<calendar_v3.Schema$Event> {
+): Promise<calendar_v3.Schema$Event | null> {
 	if (!calendarEventId) {
 		throw new Error('Missing calendarEventId for update.')
 	}
@@ -149,21 +149,32 @@ export async function updateGoogleCalendarEvent(
 		const authClient = getAuthClient()
 		const calendar = google.calendar({ version: 'v3', auth: authClient })
 
-		console.log(`Updating Google Calendar event: ${calendarEventId}`)
+		console.log(
+			`Attempting to update Google Calendar event: ${calendarEventId}`,
+		)
 		const response = await calendar.events.patch({
-			// Use patch for partial updates
 			calendarId: 'primary',
 			eventId: calendarEventId,
 			requestBody: eventDetails,
 		})
 
 		if (!response.data) {
-			throw new Error('Google Calendar API returned no data for updated event.')
+			console.warn(
+				`Google Calendar API returned no data for updated event ${calendarEventId}.`,
+			)
+			return null
 		}
 
 		console.log('SUCCESS! Event updated.', { eventId: response.data.id })
 		return response.data
 	} catch (error: any) {
+		if (error.code === 404 || error.response?.status === 404) {
+			console.log(
+				`Google Calendar event not found during update attempt: ${calendarEventId}`,
+			)
+			return null
+		}
+
 		console.error('ERROR updating calendar event:', error.message)
 		if (error.response?.data?.error) {
 			console.error('API Error Details:', error.response.data.error)

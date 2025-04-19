@@ -3,6 +3,7 @@ import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
 import {
 	createGoogleCalendarEvent,
+	getGoogleCalendarEvent,
 	updateGoogleCalendarEvent,
 } from '@/lib/google-calendar'
 import { calendar_v3 } from 'googleapis'
@@ -119,31 +120,85 @@ export const calendarSync = inngest.createFunction(
 			return { skipped: true, reason: 'Missing required fields' }
 		}
 
-		const calendarId = validEventResource.fields.calendarId
+		let currentCalendarId = validEventResource.fields.calendarId
+		let outcome: 'created' | 'updated' | 'skipped' = 'skipped'
+		let finalCalendarId: string | null = currentCalendarId || null
+		let requiresCreation = !currentCalendarId
 
-		if (calendarId) {
-			// Step 5a: Update existing Google Calendar event
+		// Step 5a: Check and attempt update if calendarId exists
+		if (currentCalendarId) {
 			console.log(
-				`Updating existing Google Calendar event ${calendarId} for resource ${resourceId}`,
+				`Checking existing Google Calendar event ${currentCalendarId} for resource ${resourceId}`,
 			)
+			let existingGoogleEvent: calendar_v3.Schema$Event | null = null
 			try {
-				await step.run('update-google-event', async () => {
-					await updateGoogleCalendarEvent(calendarId, partialGoogleEventPayload)
+				existingGoogleEvent = await step.run('get-google-event', async () => {
+					return await getGoogleCalendarEvent(currentCalendarId!)
 				})
-				return { outcome: 'updated', calendarId }
 			} catch (error: any) {
-				console.error(`Failed to update Google event ${calendarId}:`, error)
-				// Consider if specific errors should be non-retriable (e.g., 404 Not Found means we should maybe create?)
-				// For now, let Inngest handle retries based on the error thrown by the lib function.
+				console.error(`Failed to get Google event ${currentCalendarId}:`, error)
+				// If get fails for reasons other than 404 (already handled in lib), let it retry
 				throw error
 			}
-		} else {
-			// Step 5b: Create new Google Calendar event
+
+			if (!existingGoogleEvent || existingGoogleEvent.status === 'cancelled') {
+				// Event doesn't exist on Google's side or is cancelled
+				console.log(
+					`Google Calendar event ${currentCalendarId} not found or cancelled. Will attempt to create a new one.`,
+				)
+				requiresCreation = true // Mark for creation
+				finalCalendarId = null // Clear the stale ID
+			} else {
+				// Event exists and is not cancelled, proceed with update
+				console.log(
+					`Attempting update for existing Google Calendar event ${currentCalendarId}`,
+				)
+				try {
+					const updatedEvent = await step.run(
+						'update-google-event',
+						async () => {
+							return await updateGoogleCalendarEvent(
+								currentCalendarId!,
+								partialGoogleEventPayload,
+							)
+						},
+					)
+
+					if (updatedEvent) {
+						console.log(
+							`Successfully updated Google Calendar event ${currentCalendarId}`,
+						)
+						outcome = 'updated'
+						// finalCalendarId remains currentCalendarId
+					} else {
+						// Update returned null (404 Not Found), which is unexpected after a successful get
+						// Log it and proceed to create, just in case of race conditions or weirdness
+						console.warn(
+							`Update failed (404) for Google Calendar event ${currentCalendarId} immediately after get succeeded. Proceeding to create.`,
+						)
+						requiresCreation = true
+						finalCalendarId = null
+					}
+				} catch (error: any) {
+					console.error(
+						`Failed to update Google event ${currentCalendarId}:`,
+						error,
+					)
+					throw error // Allow retries for other update errors
+				}
+			}
+		}
+
+		// Step 5b: Create if needed
+		if (requiresCreation) {
+			// TODO: If creating a new event because the old one was cancelled/deleted,
+			// any existing attendees from the old event need to be re-added.
+			// This requires fetching attendees from the old event (if possible via API even when cancelled)
+			// or storing attendee info alongside our resource.
 			console.log(
 				`Creating new Google Calendar event for resource ${resourceId}`,
 			)
 
-			// *** Add check for essential fields before casting/calling create ***
 			if (
 				!partialGoogleEventPayload.summary ||
 				!partialGoogleEventPayload.start ||
@@ -153,7 +208,6 @@ export const calendarSync = inngest.createFunction(
 					`Mapped payload is missing essential fields (summary, start, end) for resource ${resourceId}`,
 				)
 			}
-			// Now it's safer to treat it as the full type needed by create
 			const googleEventPayload =
 				partialGoogleEventPayload as calendar_v3.Schema$Event
 
@@ -162,46 +216,52 @@ export const calendarSync = inngest.createFunction(
 				createdGoogleEvent = await step.run('create-google-event', async () => {
 					return await createGoogleCalendarEvent(googleEventPayload)
 				})
+
+				if (createdGoogleEvent?.id) {
+					outcome = 'created'
+					finalCalendarId = createdGoogleEvent.id
+				} else {
+					console.error(
+						`Google event created for ${resourceId}, but no ID was returned.`,
+					)
+					throw new NonRetriableError(
+						'Google event created but ID missing from response.',
+					)
+				}
 			} catch (error: any) {
 				console.error(`Failed to create Google event for ${resourceId}:`, error)
 				throw error // Allow retries
 			}
+		}
 
-			// Step 5c: Update our resource with the new Google Calendar ID
-			if (createdGoogleEvent?.id) {
-				const newCalendarId = createdGoogleEvent.id
-				console.log(
-					`Updating resource ${resourceId} with new calendar ID ${newCalendarId}`,
-				)
-				try {
-					await step.run('update-resource-with-calendar-id', async () => {
-						await courseBuilderAdapter.updateContentResourceFields({
-							id: validEventResource.id,
-							fields: {
-								...validEventResource.fields,
-								calendarId: newCalendarId,
-							},
-						})
+		// Step 5c: Update our resource with the new/final Google Calendar ID if it changed
+		if (
+			finalCalendarId &&
+			finalCalendarId !== validEventResource.fields.calendarId
+		) {
+			console.log(
+				`Updating resource ${resourceId} with final calendar ID ${finalCalendarId}`,
+			)
+			try {
+				await step.run('update-resource-with-calendar-id', async () => {
+					await courseBuilderAdapter.updateContentResourceFields({
+						id: validEventResource.id,
+						fields: {
+							...validEventResource.fields,
+							calendarId: finalCalendarId,
+						},
 					})
-					return { outcome: 'created', calendarId: newCalendarId }
-				} catch (error: any) {
-					console.error(
-						`Failed to update resource ${resourceId} with calendar ID ${newCalendarId}:`,
-						error,
-					)
-					// This is tricky. The Google event exists, but our DB link failed.
-					// Maybe schedule a follow-up event? For now, let it retry.
-					throw error
-				}
-			} else {
-				// This shouldn't happen if createGoogleCalendarEvent succeeded without error
+				})
+			} catch (error: any) {
 				console.error(
-					`Google event created for ${resourceId}, but no ID was returned.`,
+					`Failed to update resource ${resourceId} with calendar ID ${finalCalendarId}:`,
+					error,
 				)
-				throw new NonRetriableError(
-					'Google event created but ID missing from response.',
-				)
+				// If DB update fails after successful GCal operation, let it retry.
+				throw error
 			}
 		}
+
+		return { outcome: outcome, calendarId: finalCalendarId }
 	},
 )
