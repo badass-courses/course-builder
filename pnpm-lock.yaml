@@ -3938,7 +3938,7 @@ importers:
         specifier: ^7.0.14
         version: 7.0.15
       '@types/node':
-        specifier: ^20.17.30
+        specifier: ^20.12.5
         version: 20.17.30
       '@types/pluralize':
         specifier: ^0.0.33
