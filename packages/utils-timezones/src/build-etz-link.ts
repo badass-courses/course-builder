@@ -1,4 +1,8 @@
-// == Wrapper functions to match original request signature ==
+/** *
+Build Every Time Zone links
+* * @param param1 - Description of parameter 1 * @returns Description of return
+value * * @example * ```ts *
+buildEtzLink('example') * // Returns expected result * ``` */
 
 import { parse } from 'date-fns'
 import { format, zonedTimeToUtc } from 'date-fns-tz'
@@ -36,7 +40,6 @@ export const encodeT = (d: Date): string => {
  * decode: "hex[,hex]" → Date in local tz (or supplied tz)
  * Decodes an EveryTimeZone 't' parameter string into a Date object.
  * @param t The 't' parameter string (e.g., "68195100,3a2").
- * @param tz Target timezone offset from UTC in minutes (e.g., -420 for PDT). Defaults to system's current offset.
  */
 export const decodeT = (t: string): Date => {
 	const [epochHex = '0', minsHex = '0'] = t.split(',')

@@ -2,7 +2,7 @@ import { parse } from 'date-fns'
 import { zonedTimeToUtc } from 'date-fns-tz'
 import { describe, expect, it } from 'vitest'
 
-import { buildEtzLink, buildEtzLinkFromEpoch } from './build-timezone-link'
+import { buildEtzLink, buildEtzLinkFromEpoch } from './build-etz-link'
 
 // Test cases based on the final pure UTC algorithm:
 // Link: https://everytimezone.com/?t=<hex_midnightUTC>,<hex_minuteOfDayUTC>

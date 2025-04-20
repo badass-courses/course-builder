@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { env } from '@/env.mjs'
 import {
 	Body,
 	Container,
@@ -11,7 +12,7 @@ import {
 	Text,
 } from '@react-email/components'
 
-import { buildEtzLink } from '../utils/build-timezone-link'
+import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 interface WelcomeEmailProps {
 	productName?: string
@@ -70,9 +71,9 @@ export default function WelcomeEmail({
 							<Text style={bulletPoint}>
 								• Access your Invoice: Once you're logged in, you can view and
 								fully customize your invoice{' '}
-								<Link href="https://www.epicai.pro/invoices">here</Link>. You
-								can add any required information to the "Prepared for" section
-								of the invoice and download a PDF that can be shared or
+								<Link href={`${env.COURSEBUILDER_URL}/invoices`}>here</Link>.
+								You can add any required information to the "Prepared for"
+								section of the invoice and download a PDF that can be shared or
 								forwarded.
 							</Text>
 						</Section>
