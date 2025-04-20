@@ -11,6 +11,8 @@ import {
 	Text,
 } from '@react-email/components'
 
+import { buildEtzLink } from '../utils/build-timezone-link'
+
 interface WelcomeEmailProps {
 	productName?: string
 	startDate?: string
@@ -24,6 +26,8 @@ export default function WelcomeEmail({
 	startTime = '8:30 AM',
 	endTime = '2:30 PM',
 }: WelcomeEmailProps) {
+	const everyTimeZoneLink = buildEtzLink(startDate, startTime)
+
 	return (
 		<Html>
 			<Head />
@@ -41,10 +45,7 @@ export default function WelcomeEmail({
 							<Text style={text}>
 								The event will occur on {startDate} at {startTime} - {endTime}{' '}
 								(Pacific time).{' '}
-								<Link href={`https://everytimezone.com/s/005d0749`}>
-									Click here for timezones
-								</Link>
-								.
+								<Link href={everyTimeZoneLink}>Click here for timezones</Link>.
 							</Text>
 						</Section>
 						<Section style={contentSection}>
