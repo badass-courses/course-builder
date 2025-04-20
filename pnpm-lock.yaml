@@ -3938,7 +3938,7 @@ importers:
         specifier: ^7.0.14
         version: 7.0.15
       '@types/node':
-        specifier: ^20.12.5
+        specifier: ^20.17.30
         version: 20.17.30
       '@types/pluralize':
         specifier: ^0.0.33
@@ -3955,6 +3955,9 @@ importers:
       '@types/styled-components':
         specifier: ^5.1.29
         version: 5.1.34
+      '@vitest/ui':
+        specifier: 1.2.2
+        version: 1.2.2(vitest@1.6.0)
       autoprefixer:
         specifier: ^10.4.14
         version: 10.4.21(postcss@8.5.3)
@@ -4027,6 +4030,9 @@ importers:
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
+      vitest:
+        specifier: 1.6.0
+        version: 1.6.0(@types/node@20.17.30)(@vitest/ui@1.2.2)
 
   apps/go-local-first:
     dependencies:
