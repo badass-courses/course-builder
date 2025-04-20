@@ -1431,7 +1431,7 @@ importers:
         version: 1.19.0
       astro:
         specifier: ^5.1.2
-        version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
+        version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.8.2)
       drizzle-orm:
         specifier: 0.36.0
         version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
@@ -3504,6 +3504,9 @@ importers:
       '@coursebuilder/utils-string':
         specifier: workspace:*
         version: link:../../packages/utils-string
+      '@coursebuilder/utils-timezones':
+        specifier: workspace:*
+        version: link:../../packages/utils-timezones
       '@coursebuilder/utils-ui':
         specifier: workspace:*
         version: link:../../packages/utils-ui
@@ -4933,7 +4936,7 @@ importers:
         version: 2.4.10
       astro:
         specifier: ^5.1.2
-        version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
+        version: 5.6.0(@types/node@20.17.30)(typescript@5.4.5)
       prettier:
         specifier: ^3.2.5
         version: 3.5.3
@@ -4964,7 +4967,7 @@ importers:
         version: 2.4.10
       astro:
         specifier: ^5.1.2
-        version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
+        version: 5.6.0(@types/node@20.17.30)(typescript@5.4.5)
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@15.2.4)(react@19.0.0)
@@ -5100,7 +5103,7 @@ importers:
         version: 9.0.8
       bunchee:
         specifier: ^5.1.2
-        version: 5.6.2(typescript@5.4.5)
+        version: 5.6.2(typescript@5.8.2)
       esbuild-react18-useclient:
         specifier: ^1.0.7
         version: 1.0.8
@@ -5815,6 +5818,34 @@ importers:
         specifier: 1.6.0
         version: 1.6.0(@types/node@20.17.30)(@vitest/ui@1.2.2)
 
+  packages/utils-timezones:
+    dependencies:
+      date-fns:
+        specifier: ^2.30.0
+        version: 2.30.0
+      date-fns-tz:
+        specifier: ^2.0.1
+        version: 2.0.1(date-fns@2.30.0)
+    devDependencies:
+      '@coursebuilder/eslint-config':
+        specifier: workspace:*
+        version: link:../config/eslint-config
+      '@coursebuilder/tsconfig':
+        specifier: workspace:*
+        version: link:../config/tsconfig
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.1
+      tsup:
+        specifier: ^8.0.2
+        version: 8.0.2(typescript@5.8.2)
+      typescript:
+        specifier: ^5.5.3
+        version: 5.8.2
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.17.30)(@vitest/ui@1.2.2)
+
   packages/utils-ui:
     dependencies:
       clsx:
@@ -6194,7 +6225,7 @@ packages:
       '@vercel/edge': 1.2.1
       '@vercel/nft': 0.29.2
       '@vercel/routing-utils': 5.0.4
-      astro: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
+      astro: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.8.2)
       esbuild: 0.25.2
       tinyglobby: 0.2.12
     transitivePeerDependencies:
@@ -19877,7 +19908,106 @@ packages:
     hasBin: true
     dev: false
 
-  /astro@5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5):
+  /astro@5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.8.2):
+    resolution: {integrity: sha512-ZzHqdTQ4qtCnXzN9bVb75p/F0UweZYubmijjo++frn4E4KxLX8E7fizbX5Wbo2flvA6z/tUsoDwnYASxLHiM1Q==}
+    engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
+    hasBin: true
+    dependencies:
+      '@astrojs/compiler': 2.11.0
+      '@astrojs/internal-helpers': 0.6.1
+      '@astrojs/markdown-remark': 6.3.1
+      '@astrojs/telemetry': 3.2.0
+      '@oslojs/encoding': 1.1.0
+      '@rollup/pluginutils': 5.1.4(rollup@4.39.0)
+      acorn: 8.14.1
+      aria-query: 5.3.2
+      axobject-query: 4.1.0
+      boxen: 8.0.1
+      ci-info: 4.2.0
+      clsx: 2.1.1
+      common-ancestor-path: 1.0.1
+      cookie: 1.0.2
+      cssesc: 3.0.0
+      debug: 4.4.0(supports-color@5.5.0)
+      deterministic-object-hash: 2.0.2
+      devalue: 5.1.1
+      diff: 5.2.0
+      dlv: 1.1.3
+      dset: 3.1.4
+      es-module-lexer: 1.6.0
+      esbuild: 0.25.2
+      estree-walker: 3.0.3
+      flattie: 1.1.1
+      github-slugger: 2.0.0
+      html-escaper: 3.0.3
+      http-cache-semantics: 4.1.1
+      js-yaml: 4.1.0
+      kleur: 4.1.5
+      magic-string: 0.30.17
+      magicast: 0.3.5
+      mrmime: 2.0.1
+      neotraverse: 0.6.18
+      p-limit: 6.2.0
+      p-queue: 8.1.0
+      package-manager-detector: 1.1.0
+      picomatch: 4.0.2
+      prompts: 2.4.2
+      rehype: 13.0.2
+      semver: 7.7.1
+      shiki: 3.2.1
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.12
+      tsconfck: 3.1.5(typescript@5.8.2)
+      ultrahtml: 1.5.3
+      unist-util-visit: 5.0.0
+      unstorage: 1.15.0(@planetscale/database@1.19.0)
+      vfile: 6.0.3
+      vite: 6.2.5(@types/node@20.17.30)
+      vitefu: 1.0.6(vite@6.2.5)
+      xxhash-wasm: 1.1.0
+      yargs-parser: 21.1.1
+      yocto-spinner: 0.2.1
+      zod: 3.24.2
+      zod-to-json-schema: 3.24.5(zod@3.24.2)
+      zod-to-ts: 1.2.0(typescript@5.8.2)(zod@3.24.2)
+    optionalDependencies:
+      sharp: 0.33.5
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@types/node'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/kv'
+      - aws4fetch
+      - db0
+      - idb-keyval
+      - ioredis
+      - jiti
+      - less
+      - lightningcss
+      - rollup
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - typescript
+      - uploadthing
+      - yaml
+    dev: false
+
+  /astro@5.6.0(@types/node@20.17.30)(typescript@5.4.5):
     resolution: {integrity: sha512-ZzHqdTQ4qtCnXzN9bVb75p/F0UweZYubmijjo++frn4E4KxLX8E7fizbX5Wbo2flvA6z/tUsoDwnYASxLHiM1Q==}
     engines: {node: ^18.17.1 || ^20.3.0 || >=22.0.0, npm: '>=9.6.5', pnpm: '>=7.1.0'}
     hasBin: true
@@ -19974,6 +20104,7 @@ packages:
       - typescript
       - uploadthing
       - yaml
+    dev: true
 
   /async-function@1.0.0:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
@@ -20357,7 +20488,7 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@5.6.2(typescript@5.4.5):
+  /bunchee@5.6.2(typescript@5.8.2):
     resolution: {integrity: sha512-r5AaDJBsMhx7oFPcE7+vJjDylhvNK0C8E3NA6VON5T5vr3p+JIaWHgg4RK8jNIzFFWyHgjcda80aqZTxYjunHA==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
@@ -20380,11 +20511,11 @@ packages:
       ora: 8.2.0
       pretty-bytes: 5.6.0
       rollup: 4.39.0
-      rollup-plugin-dts: 6.2.1(rollup@4.39.0)(typescript@5.4.5)
+      rollup-plugin-dts: 6.2.1(rollup@4.39.0)(typescript@5.8.2)
       rollup-plugin-swc3: 0.11.2(@swc/core@1.11.16)(rollup@4.39.0)
       rollup-preserve-directives: 1.1.3(rollup@4.39.0)
       tslib: 2.8.1
-      typescript: 5.4.5
+      typescript: 5.8.2
       yargs: 17.7.2
     dev: true
 
@@ -31318,7 +31449,7 @@ packages:
     resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==}
     dev: false
 
-  /rollup-plugin-dts@6.2.1(rollup@4.39.0)(typescript@5.4.5):
+  /rollup-plugin-dts@6.2.1(rollup@4.39.0)(typescript@5.8.2):
     resolution: {integrity: sha512-sR3CxYUl7i2CHa0O7bA45mCrgADyAQ0tVtGSqi3yvH28M+eg1+g5d7kQ9hLvEz5dorK3XVsH5L2jwHLQf72DzA==}
     engines: {node: '>=16'}
     peerDependencies:
@@ -31327,7 +31458,7 @@ packages:
     dependencies:
       magic-string: 0.30.17
       rollup: 4.39.0
-      typescript: 5.4.5
+      typescript: 5.8.2
     optionalDependencies:
       '@babel/code-frame': 7.26.2
     dev: true
@@ -32966,6 +33097,20 @@ packages:
         optional: true
     dependencies:
       typescript: 5.4.5
+    dev: true
+
+  /tsconfck@3.1.5(typescript@5.8.2):
+    resolution: {integrity: sha512-CLDfGgUp7XPswWnezWwsCRxNmgQjhYq3VXHM0/XIRxhVrKw0M1if9agzryh1QS3nxjCROvV+xWxoJO1YctzzWg==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.0.0
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.8.2
+    dev: false
 
   /tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
@@ -33097,6 +33242,45 @@ packages:
       sucrase: 3.35.0
       tree-kill: 1.2.2
       typescript: 5.4.5
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
+
+  /tsup@8.0.2(typescript@5.8.2):
+    resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+    peerDependencies:
+      '@microsoft/api-extractor': ^7.36.0
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      '@microsoft/api-extractor':
+        optional: true
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 4.2.1(esbuild@0.19.12)
+      cac: 6.7.14
+      chokidar: 3.6.0
+      debug: 4.4.0(supports-color@5.5.0)
+      esbuild: 0.19.12
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2)
+      resolve-from: 5.0.0
+      rollup: 4.39.0
+      source-map: 0.8.0-beta.0
+      sucrase: 3.35.0
+      tree-kill: 1.2.2
+      typescript: 5.8.2
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -33279,7 +33463,6 @@ packages:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: false
 
   /typesense-instantsearch-adapter@2.9.0(@babel/runtime@7.27.0):
     resolution: {integrity: sha512-ZSgpi9T/S70Zs2eYIv0VmD0o4+VfBN9jz97Rhbf9Bj+gpUAbjmm46XAobEE2TGs2Wo04hpzCrXifXNJecalC/w==}
@@ -34591,6 +34774,17 @@ packages:
     dependencies:
       typescript: 5.4.5
       zod: 3.24.2
+    dev: true
+
+  /zod-to-ts@1.2.0(typescript@5.8.2)(zod@3.24.2):
+    resolution: {integrity: sha512-x30XE43V+InwGpvTySRNz9kB7qFU8DlyEy7BsSTCHPH1R0QasMmHWZDCzYm6bVXtj/9NNJAZF3jW8rzFvH5OFA==}
+    peerDependencies:
+      typescript: ^4.9.4 || ^5.0.2
+      zod: ^3
+    dependencies:
+      typescript: 5.8.2
+      zod: 3.24.2
+    dev: false
 
   /zod@3.22.5:
     resolution: {integrity: sha512-HqnGsCdVZ2xc0qWPLdO25WnseXThh0kEYKIdV5F/hTHO75hNZFp8thxSeHhiPrHZKrFTo1SOgkAj9po5bexZlw==}
