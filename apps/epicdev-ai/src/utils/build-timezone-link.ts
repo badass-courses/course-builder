@@ -38,22 +38,13 @@ export const encodeT = (d: Date): string => {
  * @param t The 't' parameter string (e.g., "68195100,3a2").
  * @param tz Target timezone offset from UTC in minutes (e.g., -420 for PDT). Defaults to system's current offset.
  */
-export const decodeT = (
-	t: string,
-	tz: number = new Date().getTimezoneOffset() * -1, // default to *current* system offset
-): Date => {
+export const decodeT = (t: string): Date => {
 	const [epochHex = '0', minsHex = '0'] = t.split(',')
 	const midnightUTCms = parseInt(epochHex, 16) * 1000 // ms
 	const minsPastUtc = parseInt(minsHex, 16)
 	const instantUTCms = midnightUTCms + minsPastUtc * 60000
 
-	// The result of Date constructor is ms since epoch UTC.
-	// To represent this instant *in a specific timezone*, we adjust.
-	// However, creating `new Date(instantUTCms)` already represents the correct UTC instant.
-	// The `tz` parameter seems intended to shift the *output representation*, not the underlying instant.
-	// Standard `Date` objects don't inherently store timezone, their methods use system locale.
-	// Returning the Date object for the UTC instant. Formatting it is separate.
-	// The user's provided code `new Date(epoch + mins + tz * 60000)` seems incorrect as it modifies the UTC instant.
+	// Return Date object representing the calculated UTC instant.
 	return new Date(instantUTCms)
 }
 
@@ -63,9 +54,10 @@ export const decodeT = (
 export const extractParam = (url: string): string => {
 	const match = url.match(/[?&\/]t=([\da-f,]+)/i)
 
-	// Check if match exists and group 1 is defined and a non-empty string
-	if (match && match[1] && typeof match[1] === 'string') {
-		return match[1]
+	// Use optional chaining for cleaner access to the capture group
+	const tParam = match?.[1]
+	if (tParam && typeof tParam === 'string') {
+		return tParam
 	}
 
 	throw new Error('no t param value found in url')
@@ -105,21 +97,8 @@ export function buildEtzLinkFromEpoch(epochSecsUtc: number): string {
 	// Convert epoch seconds to UTC Date object
 	const d = new Date(epochSecsUtc * 1000)
 
-	// Use the same logic as encodeT for consistency
-	const year = d.getUTCFullYear()
-	const month = d.getUTCMonth()
-	const day = d.getUTCDate()
-	const midnightUTCms = Date.UTC(year, month, day)
-	const midnightUTCsecs = Math.floor(midnightUTCms / 1000) // Ensure integer seconds
-
-	const instantMs = d.getTime()
-	const minsPastUtc = Math.floor((instantMs - midnightUTCms) / 60000)
-
-	const hMid = toHex(midnightUTCsecs) // Use pre-calculated integer seconds
-	const hOff = toHex(minsPastUtc)
-
-	// Handle minute 0 case
-	const tParam = minsPastUtc ? `${hMid},${hOff}` : hMid
+	// Reuse the encodeT function for consistency
+	const tParam = encodeT(d)
 
 	return `${BASE_URL}?t=${tParam}`
 }
