@@ -28,7 +28,7 @@ type Params = z.input<typeof ParamsSchema>
 
 export const buildStripeCheckoutPath = (params: Params) => {
 	const result = ParamsSchema.safeParse(params)
-	console.log({ result })
+
 	if (result.success) {
 		const queryParams = omitBy(result.data, isNil)
 		const queryParamString = new URLSearchParams(queryParams).toString()
