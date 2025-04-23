@@ -119,19 +119,22 @@ export async function GET(request: Request) {
 						background: '#fff',
 						width: 1200,
 						height: 630,
-						// backgroundImage:
-						// 	resource && resource.type === 'post' && image
-						// 		? `url(${image})`
-						// 		: '',
+						backgroundImage:
+							resource && resource.type === 'post' && image
+								? `url(${image})`
+								: '',
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 					}}
 				>
 					{resource && resource.type === 'post' && image && (
-						<img src={image} tw="object-contain absolute w-full h-full" />
-					)}
-					{resource && resource.type === 'post' && image && (
-						<div tw="absolute w-full h-full bg-white/80" />
+						<div
+							tw="absolute w-full h-full"
+							style={{
+								backgroundImage:
+									'linear-gradient(to bottom left, rgba(255,255,255,0.2), rgba(255,255,255,0.6), rgba(255,255,255,0.8))',
+							}}
+						/>
 					)}
 					{resource && resource.type === 'post' && image && (
 						<div tw="absolute right-40 top-26 z-10 flex">
@@ -141,10 +144,10 @@ export async function GET(request: Request) {
 								height={48}
 								viewBox="0 0 12 12"
 							>
-								<g fill="#fff">
+								<g fill="#000">
 									<path
 										d="M11.741,5.562l-10-5.5a.5.5,0,0,0-.5.008A.5.5,0,0,0,1,.5v11a.5.5,0,0,0,.246.43A.491.491,0,0,0,1.5,12a.5.5,0,0,0,.241-.062l10-5.5a.5.5,0,0,0,0-.876Z"
-										fill="#fff"
+										fill="#000"
 									/>
 								</g>
 							</svg>

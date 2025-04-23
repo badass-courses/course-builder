@@ -169,6 +169,37 @@ const Testimonial = ({
 	)
 }
 
+const calloutVariants = cva('p-4 rounded-md flex gap-3', {
+	variants: {
+		variant: {
+			default: 'bg-primary/10 border-l-4 border-primary',
+			success: 'bg-green-500/10 border-l-4 border-green-500',
+			warning: 'bg-amber-500/10 border-l-4 border-amber-500',
+			error: 'bg-red-500/10 border-l-4 border-red-500',
+			info: 'bg-blue-500/10 border-l-4 border-blue-500',
+		},
+	},
+	defaultVariants: {
+		variant: 'default',
+	},
+})
+
+const Callout = ({
+	children,
+	variant = 'default',
+	className,
+}: {
+	children: React.ReactNode
+	variant?: VariantProps<typeof calloutVariants>['variant']
+	className?: string
+}) => {
+	return (
+		<div className={cn(calloutVariants({ variant }), className)}>
+			{children}
+		</div>
+	)
+}
+
 const data = {
 	ctas: [
 		{
@@ -228,6 +259,43 @@ const data = {
 			name: 'Video',
 			component: MDXVideo,
 			props: {},
+		},
+	],
+	callouts: [
+		{
+			name: 'Callout',
+			component: Callout,
+			props: {
+				variant: 'default',
+			},
+		},
+		{
+			name: 'Callout',
+			component: Callout,
+			props: {
+				variant: 'success',
+			},
+		},
+		{
+			name: 'Callout',
+			component: Callout,
+			props: {
+				variant: 'warning',
+			},
+		},
+		{
+			name: 'Callout',
+			component: Callout,
+			props: {
+				variant: 'error',
+			},
+		},
+		{
+			name: 'Callout',
+			component: Callout,
+			props: {
+				variant: 'info',
+			},
 		},
 	],
 }
@@ -345,6 +413,28 @@ Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's activel
 					})}
 				</div>
 			)}
+			{data?.callouts && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">Callouts</strong>
+					{data.callouts.map((item, index) => {
+						return (
+							<BlockItem
+								key={`${item.name}-${item.props.variant}-${index}`}
+								item={{
+									...item,
+									name: `${item.name} (${item.props.variant})`,
+								}}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`<${item.name} variant="${item.props.variant}">Important information goes here</${item.name}>`,
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
 		</div>
 	)
 }
@@ -359,6 +449,7 @@ const allMdxPageBuilderComponents = {
 	CheckList,
 	MuxPlayer,
 	Testimonial,
+	Callout,
 }
 
 export {
@@ -371,4 +462,5 @@ export {
 	PageBlocks,
 	Testimonial,
 	SubscribeForm,
+	Callout,
 }

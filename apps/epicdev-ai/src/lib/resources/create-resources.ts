@@ -10,6 +10,8 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { RESOURCE_CREATED_EVENT } from '../../inngest/events/resource-management'
+import { inngest } from '../../inngest/inngest.server'
 import { upsertPostToTypeSense } from '../typesense-query'
 
 const NewResourceSchema = z.object({
@@ -68,6 +70,21 @@ export async function createResource(input: NewResource) {
 	if (!parsedResource.success) {
 		console.error('Error parsing resource', resource)
 		throw new Error('Error parsing resource')
+	}
+
+	try {
+		console.log(
+			`Dispatching ${RESOURCE_CREATED_EVENT} for resource: ${parsedResource.data.id} (type: ${parsedResource.data.type})`,
+		)
+		await inngest.send({
+			name: RESOURCE_CREATED_EVENT,
+			data: {
+				id: parsedResource.data.id,
+				type: parsedResource.data.type,
+			},
+		})
+	} catch (error) {
+		console.error(`Error dispatching ${RESOURCE_CREATED_EVENT}`, error)
 	}
 
 	await upsertPostToTypeSense(parsedResource.data, 'save')

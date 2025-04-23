@@ -21,6 +21,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
 import {
+	Callout,
 	CenteredTitle,
 	CheckList,
 	Instructor,
@@ -120,6 +121,7 @@ const Home = async (props: Props) => {
 								Section,
 								CheckList,
 								Testimonial,
+								Callout,
 								CldImage: (props) => <CldImage {...props} />,
 								SubscribeForm,
 								ThemeImage: (props) => <ThemeImage {...props} />,
