@@ -42,10 +42,6 @@ export const PricingWidget: React.FC<{
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
-	const isSoldOut =
-		Boolean(product.type === 'live' && (quantityAvailable || 0) <= 0) &&
-		!couponId
-
 	const waitlistCkFields = {
 		// example: waitlist_mcp_workshop_ticket: "2025-04-17"
 		[`waitlist_${toSnakeCase(product.name)}`]: new Date()
@@ -68,25 +64,23 @@ export const PricingWidget: React.FC<{
 					<Pricing.Name />
 					<Pricing.LiveQuantity className="bg-primary/10 text-primary px-2 pb-1 font-semibold" />
 					<div className="flex items-center gap-1">
-						<Pricing.Price className={cn(isSoldOut && 'opacity-50')} />
+						<Pricing.Price />
 						{product.type === 'membership' && (
 							<span className="text-xl opacity-80">/ year</span>
 						)}
 					</div>
 
-					{pricingWidgetOptions?.allowTeamPurchase && !isSoldOut && (
+					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>
 							<Pricing.TeamToggle />
 							<Pricing.TeamQuantityInput />
 						</>
 					)}
-					{!isSoldOut && (
-						<Pricing.BuyButton className="from-primary relative my-3 w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-							{isSoldOut ? 'Sold Out' : ctaLabel}
-						</Pricing.BuyButton>
-					)}
+					<Pricing.BuyButton className="from-primary relative my-3 w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+						{ctaLabel}
+					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
-					{!isSoldOut && <Pricing.LiveRefundPolicy />}
+					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="[&_p]:pb-0" />
 					<Pricing.PPPToggle />
 				</Pricing.Details>
