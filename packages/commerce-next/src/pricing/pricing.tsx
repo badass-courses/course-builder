@@ -454,11 +454,12 @@ const BuyButton = ({
 		product,
 		status,
 		pricingData: { quantityAvailable },
+		couponId,
 	} = usePricing()
 
-	const isSoldOut = Boolean(
-		product.type === 'live' && (quantityAvailable || 0) <= 0,
-	)
+	const isSoldOut =
+		Boolean(product.type === 'live' && (quantityAvailable || 0) <= 0) &&
+		!couponId
 
 	return (
 		<Comp
