@@ -455,11 +455,8 @@ const BuyButton = ({
 		status,
 		pricingData: { quantityAvailable },
 		couponId,
+		isSoldOut,
 	} = usePricing()
-
-	const isSoldOut =
-		Boolean(product.type === 'live' && (quantityAvailable || 0) <= 0) &&
-		!couponId
 
 	return (
 		<Comp
@@ -660,13 +657,9 @@ const LiveQuantity = ({
 		isPreviouslyPurchased,
 		options: { isLiveEvent },
 		pricingData: { quantityAvailable },
+		formattedPrice,
+		isSoldOut,
 	} = usePricing()
-
-	const isSoldOut = Boolean(
-		product.type === 'live' &&
-			!isPreviouslyPurchased &&
-			(quantityAvailable || 0) <= 0,
-	)
 
 	return isLiveEvent
 		? children || (
@@ -778,11 +771,8 @@ const SaleCountdown = ({
 		formattedPrice,
 		product,
 		pricingData: { quantityAvailable },
+		isSoldOut,
 	} = usePricing()
-
-	const isSoldOut = Boolean(
-		product.type === 'live' && (quantityAvailable || 0) <= 0,
-	)
 
 	if (isSoldOut) return null
 
@@ -891,11 +881,9 @@ const Waitlist = ({
 	const {
 		product,
 		pricingData: { quantityAvailable },
+		formattedPrice,
+		isSoldOut,
 	} = usePricing()
-
-	const isSoldOut = Boolean(
-		product.type === 'live' && (quantityAvailable || 0) <= 0,
-	)
 
 	if (!isSoldOut) return null
 

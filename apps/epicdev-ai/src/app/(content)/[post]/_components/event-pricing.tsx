@@ -199,16 +199,13 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 		status,
 		product,
 		pricingData: { quantityAvailable },
+		isSoldOut,
 	} = usePricing()
 	const fullPrice = formattedPrice?.fullPrice || 0
 
 	const finalPrice = formattedPrice?.calculatedPrice || 0
 	const savings = fullPrice - finalPrice
 	const savingsPercentage = Math.round((savings / fullPrice) * 100)
-
-	const isSoldOut = Boolean(
-		product.type === 'live' && (quantityAvailable || 0) <= 0,
-	)
 
 	return (
 		<>

@@ -20,6 +20,7 @@ const PricingContext = React.createContext<
 			userId: string | undefined
 			pricingData: PricingData
 			organizationId: string | undefined
+			isSoldOut: boolean
 	  })
 	| undefined
 >(undefined)
@@ -62,6 +63,16 @@ export const PricingProvider = ({
 		})
 	}
 
+	const hasUsedCouponWithBypassSoldOut = Boolean(
+		state.context.formattedPrice?.usedCoupon?.fields?.bypassSoldOut,
+	)
+
+	const isSoldOut = Boolean(
+		!hasUsedCouponWithBypassSoldOut &&
+			state.context.product.type === 'live' &&
+			(pricingData.quantityAvailable || 0) <= 0,
+	)
+
 	return (
 		<PricingContext.Provider
 			value={{
@@ -73,6 +84,7 @@ export const PricingProvider = ({
 				setMerchantCoupon,
 				pricingData,
 				organizationId: props.organizationId,
+				isSoldOut,
 			}}
 		>
 			{children}
