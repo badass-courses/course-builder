@@ -42,9 +42,10 @@ export const PricingWidget: React.FC<{
 		commerceProps?.couponIdFromCoupon ||
 		(validCoupon ? couponFromCode?.id : undefined)
 
-	const isSoldOut = Boolean(
-		product.type === 'live' && (quantityAvailable || 0) <= 0,
-	)
+	const isSoldOut =
+		Boolean(product.type === 'live' && (quantityAvailable || 0) <= 0) &&
+		!couponId
+
 	const waitlistCkFields = {
 		// example: waitlist_mcp_workshop_ticket: "2025-04-17"
 		[`waitlist_${toSnakeCase(product.name)}`]: new Date()
