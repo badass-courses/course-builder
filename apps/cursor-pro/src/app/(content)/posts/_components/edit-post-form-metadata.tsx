@@ -143,36 +143,7 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<FormField
-				control={form.control}
-				name="fields.postType"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Post Type</FormLabel>
-						<FormDescription>
-							Select the type of post you are creating.
-						</FormDescription>
-						<Select
-							onValueChange={(value) => {
-								field.onChange(value)
-							}}
-							defaultValue={field.value}
-							{...field}
-						>
-							<SelectTrigger>
-								<SelectValue placeholder="Select a post type" />
-							</SelectTrigger>
-							<SelectContent>
-								{POST_SUBTYPES.map((type) => (
-									<SelectItem key={type} value={type}>
-										{type}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</FormItem>
-				)}
-			/>
+
 			<TagField resource={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField
