@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -185,86 +186,90 @@ export default async function EventPage(props: {
 		)}`
 
 	return (
-		<div className="relative flex flex-col">
-			<EventMetadata
-				event={event}
-				quantityAvailable={eventProps.quantityAvailable}
-			/>
-			{event && ability.can('update', 'Content') && (
-				<div className="absolute right-5 top-20 flex items-center gap-2">
-					{product && (
+		<LayoutClient withContainer>
+			<div className="relative flex flex-col">
+				<EventMetadata
+					event={event}
+					quantityAvailable={eventProps.quantityAvailable}
+				/>
+				{event && ability.can('update', 'Content') && (
+					<div className="absolute right-5 top-20 flex items-center gap-2">
+						{product && (
+							<Button asChild variant="secondary">
+								<Link
+									href={`/products/${product?.fields?.slug || product?.id}/edit`}
+								>
+									Edit Product
+								</Link>
+							</Button>
+						)}
 						<Button asChild variant="secondary">
-							<Link
-								href={`/products/${product?.fields?.slug || product?.id}/edit`}
-							>
-								Edit Product
+							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+								Edit Event
 							</Link>
 						</Button>
-					)}
-					<Button asChild variant="secondary">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit Event
-						</Link>
-					</Button>
-				</div>
-			)}
-			{eventProps.hasPurchasedCurrentProduct ? (
-				<div className="flex w-full items-center border-b-2 px-5 py-5 text-left">
-					You have purchased a ticket to this event. See you on {eventDate}.{' '}
-					<span role="img" aria-label="Waving hand">
-						👋
-					</span>
-				</div>
-			) : null}
-			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
-				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-					<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-						<Link
-							href="/events"
-							className="text-primary w-full hover:underline sm:w-auto"
-						>
-							Live Workshop
-						</Link>
-						<span className="hidden opacity-50 sm:inline-block">・</span>
-						{eventDate ? (
-							<>
-								<p>{eventDate}</p>
-								<span className="opacity-50">・</span>
-								<p>{eventTime} (PT)</p>
-							</>
-						) : (
-							'Date TBD'
-						)}
 					</div>
-					<h1 className="font-heading fluid-3xl text-balance font-bold">
-						{fields.title}
-					</h1>
-					{fields.description && (
-						<h2 className="mt-5 text-balance text-xl">{fields.description}</h2>
-					)}
-					<Contributor className="mt-5" />
-				</div>
-				{product?.fields?.image?.url && (
-					<CldImage
-						width={400}
-						height={400}
-						src={product?.fields.image.url}
-						alt={fields?.title}
-					/>
 				)}
-			</div>
-			<div className="flex h-full flex-grow flex-col-reverse border-t-2 md:flex-row">
-				<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
-					{event.fields.body && (
-						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
+				{eventProps.hasPurchasedCurrentProduct ? (
+					<div className="flex w-full items-center border-b-2 px-5 py-5 text-left">
+						You have purchased a ticket to this event. See you on {eventDate}.{' '}
+						<span role="img" aria-label="Waving hand">
+							👋
+						</span>
+					</div>
+				) : null}
+				<div className="flex w-full flex-col-reverse items-center justify-between py-8 md:flex-row">
+					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
+							<Link
+								href="/events"
+								className="text-primary w-full hover:underline sm:w-auto"
+							>
+								Live Workshop
+							</Link>
+							<span className="hidden opacity-50 sm:inline-block">・</span>
+							{eventDate ? (
+								<>
+									<p>{eventDate}</p>
+									<span className="opacity-50">・</span>
+									<p>{eventTime} (PT)</p>
+								</>
+							) : (
+								'Date TBD'
+							)}
+						</div>
+						<h1 className="font-heading fluid-3xl text-balance font-bold">
+							{fields.title}
+						</h1>
+						{fields.description && (
+							<h2 className="mt-5 text-balance text-xl">
+								{fields.description}
+							</h2>
+						)}
+						<Contributor className="mt-5" />
+					</div>
+					{product?.fields?.image?.url && (
+						<CldImage
+							width={400}
+							height={400}
+							src={product?.fields.image.url}
+							alt={fields?.title}
+						/>
 					)}
-				</article>
-				<EventSidebar>
-					<EventPricingWidgetContainer {...eventProps} />
-					<EventDetails event={event} />
-				</EventSidebar>
+				</div>
+				<div className="flex h-full flex-grow flex-col-reverse md:flex-row">
+					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
+						{event.fields.body && (
+							<ReactMarkdown>{event.fields.body}</ReactMarkdown>
+						)}
+					</article>
+					<EventSidebar>
+						<EventPricingWidgetContainer {...eventProps} />
+						<EventDetails event={event} />
+					</EventSidebar>
+				</div>
 			</div>
-		</div>
+		</LayoutClient>
 	)
 }
 

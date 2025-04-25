@@ -1,3 +1,4 @@
+import { DateTimePicker } from './date-time-picker/date-time-picker'
 import * as ModuleNavigation from './module-navigation'
 import {
 	Accordion,
@@ -300,4 +301,5 @@ export {
 	ContextMenuSubContent,
 	ContextMenuSubTrigger,
 	ContextMenuRadioGroup,
+	DateTimePicker,
 }

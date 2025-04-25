@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
@@ -21,36 +22,39 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+import CreateNewEventForm from './_components/create-new-event-dialog'
+
 export const metadata: Metadata = {
 	title: `Live Events & Workshops hosted by ${config.author}`,
 }
 
 export default async function EventIndexPage() {
-	const { ability } = await getServerAuthSession()
-
 	return (
-		<>
-			<div>
-				<div className=" mx-auto w-full max-w-screen-md pb-10 pt-16">
+		<LayoutClient withContainer>
+			<main className="">
+				<div className=" w-fullpb-10 mx-auto pt-16">
 					<h1 className="font-heading fluid-3xl text-center font-bold">
-						Epic AI Pro Live Events & Workshops
+						Epic AI Events & Live Workshops
 					</h1>
 				</div>
-				<EventsList />
-				{ability.can('update', 'Content') ? (
-					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center py-10">
-						<Button asChild variant="secondary">
-							<Link href={`/events/new`}>New Event</Link>
-						</Button>
-					</div>
-				) : null}
-				<div
-					className="absolute top-0 -z-10 h-full w-full max-w-screen-md"
-					aria-hidden="true"
-				/>
-			</div>
-		</>
+				<React.Suspense fallback={<div>Loading...</div>}>
+					<EventsList />
+				</React.Suspense>
+				<React.Suspense fallback={<div>Loading...</div>}>
+					<EventActions />
+				</React.Suspense>
+			</main>
+		</LayoutClient>
 	)
+}
+
+async function EventActions({}: {}) {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('create', 'Content') || !ability.can('update', 'Content')) {
+		return null
+	}
+
+	return <CreateNewEventForm />
 }
 
 async function EventsList() {
