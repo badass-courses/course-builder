@@ -58,12 +58,11 @@ export default {
 	},
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle':
-		'Start designing the future of intelligent user experiences',
-	'primary-newsletter-byline': `Join the CursorPro newsletter to get updates on events, articles, and more as they’re released`,
+	'primary-newsletter-tittle': 'Level up your workflow with Cursor IDE',
+	'primary-newsletter-byline': `Subscribe for first-look access to workshops, tools, and ideas from Cursor Pro`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'Tip Newsletter Title',
-	'video-newsletter-title': 'Build the next-gen UX with AI',
+	'video-newsletter-title': 'Level up your workflow with Cursor IDE',
 	'video-newsletter-subtitle': 'For builders of the AI-native future',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
