@@ -2380,7 +2380,7 @@ importers:
         specifier: ^1.11.2
         version: 1.13.1
       inngest:
-        specifier: ^3.22.5
+        specifier: 3.35.0
         version: 3.35.0(encoding@0.1.13)(next@15.3.0-canary.31)(typescript@5.4.5)
       intl-segmenter-polyfill:
         specifier: ^0.4.4
