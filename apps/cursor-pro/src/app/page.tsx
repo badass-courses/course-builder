@@ -51,10 +51,6 @@ export async function generateMetadata(
 	}
 
 	return {
-		title: {
-			template: '%s | Cursor Pro',
-			default: `Cursor Pro`,
-		},
 		description: page?.fields?.description,
 		openGraph: {
 			images: [

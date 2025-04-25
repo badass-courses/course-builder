@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/badass-courses/image/upload/v1744992474/cursor-pro/cursor-pro-og-image_oy8dit.png`,
+				url: `https://res.cloudinary.com/johnlindquist/image/upload/v1745572399/cursorpro-card_2x_udc8w6.jpg`,
 				width: 1200,
 				height: 630,
 			},

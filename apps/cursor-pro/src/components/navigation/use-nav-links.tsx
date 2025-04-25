@@ -11,38 +11,24 @@ export function useNavLinks() {
 	// 	api.contentResources.getPublishedResourcesLength.useQuery()
 
 	return [
-		{
-			href: '/posts',
-			label: (
-				<>
-					<AcademicCapIcon className="text-muted-foreground mr-1 size-5" />
-					Learn
-				</>
-			),
-
-			// label: (
-			// 	<span className="relative">
-			// 		Posts
-			// 		{publishedResourcesLength && publishedResourcesLength > 0 && (
-			// 			<div
-			// 				className="text-primary absolute -right-3 -top-0.5 flex items-center justify-center rounded-full font-mono text-[8px] font-semibold saturate-50"
-			// 				aria-label={`${publishedResourcesLength} scheduled`}
-			// 			>
-			// 				{publishedResourcesLength}
-			// 			</div>
-			// 		)}
-			// 	</span>
-			// ),
-		},
-		{
-			href: '/newsletter',
-			label: (
-				<>
-					<Newspaper className="text-muted-foreground mr-2 size-4" />
-					Newsletter
-				</>
-			),
-		},
+		// {
+		// 	href: '/posts',
+		// 	label: (
+		// 		<>
+		// 			<AcademicCapIcon className="text-muted-foreground mr-1 size-5" />
+		// 			Learn
+		// 		</>
+		// 	),
+		// },
+		// {
+		// 	href: '/newsletter',
+		// 	label: (
+		// 		<>
+		// 			<Newspaper className="text-muted-foreground mr-2 size-4" />
+		// 			Newsletter
+		// 		</>
+		// 	),
+		// },
 		// {
 		// 	href: '/workshops',
 		// 	label: 'Pro Workshops',
