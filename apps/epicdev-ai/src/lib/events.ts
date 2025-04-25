@@ -7,11 +7,14 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { PostTagsSchema } from './posts'
+
 /**
  * @description Schema for time-bound events like workshops, webinars, and live sessions
  */
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
+		videoResourceId: z.string().optional().nullable(),
 		resourceProducts: z
 			.array(
 				z.object({
@@ -21,6 +24,7 @@ export const EventSchema = ContentResourceSchema.merge(
 				}),
 			)
 			.default([]),
+		tags: PostTagsSchema,
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
@@ -40,24 +44,20 @@ export const EventSchema = ContentResourceSchema.merge(
 				})
 				.optional(),
 			calendarId: z.string().optional(),
+			thumbnailTime: z.number().nullish(),
 		}),
 	}),
 )
 
 export type Event = z.infer<typeof EventSchema>
 
-/**
- * @description Helper to create a new event with default values
- */
-export const createEvent = (input: Partial<Event>): Event => {
-	return {
-		...input,
-		type: 'event',
-		fields: {
-			...input.fields,
-			state: input.fields?.state ?? 'draft',
-			visibility: input.fields?.visibility ?? 'unlisted',
-			timezone: input.fields?.timezone ?? 'America/Los_Angeles',
-		},
-	} as Event
-}
+export const NewEventSchema = z.object({
+	type: z.literal('event').default('event'),
+	fields: z.object({
+		title: z.string().min(2).max(90),
+		startsAt: z.date().nullish(),
+		endsAt: z.date().nullish(),
+	}),
+})
+
+export type NewEvent = z.infer<typeof NewEventSchema>
