@@ -28,6 +28,13 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { debounce } from '@coursebuilder/nodash'
+import {
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	Input,
+} from '@coursebuilder/ui'
 import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
 import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
@@ -192,6 +199,28 @@ const PageMetadataFormFields = ({
 }) => {
 	return (
 		<EditResourcesMetadataFields form={form}>
+			<FormField
+				control={form.control}
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Image URL</FormLabel>
+						<Input
+							{...field}
+							onDrop={(e) => {
+								console.log(e)
+								const result = e.dataTransfer.getData('text/plain')
+								const parsedResult = result.match(/\(([^)]+)\)/)
+								if (parsedResult) {
+									field.onChange(parsedResult[1])
+								}
+							}}
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+				name="fields.image"
+			/>
 			<MetadataFieldSocialImage
 				form={form}
 				currentSocialImage={getOGImageUrlForResource(form.getValues())}

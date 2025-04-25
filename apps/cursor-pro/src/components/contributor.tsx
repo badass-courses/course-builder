@@ -27,7 +27,7 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/dg3gyk0gu/image/upload/v1683164538/assets/john.webp'
+				'https://res.cloudinary.com/johnlindquist/image/upload/v1745576123/john-lindquist_qai9on.jpg'
 			}
 			alt={config.author}
 			width={40}

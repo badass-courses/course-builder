@@ -7,6 +7,7 @@ import {
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
+import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -51,6 +52,7 @@ export async function generateMetadata(
 	}
 
 	return {
+		title: page?.fields?.title,
 		description: page?.fields?.description,
 		openGraph: {
 			images: [
@@ -95,10 +97,21 @@ const Home = async (props: Props) => {
 						</span>
 					</Link>
 				)}
-				<header>
-					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
+				<header className="flex flex-col items-center justify-center pb-16">
+					<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full max-w-lg pt-10 text-center font-bold dark:text-white">
 						{page?.fields?.title || 'Title'}
 					</h1>
+					<Contributor className="[&_span]:text-foreground/80 mx-auto flex items-center justify-center" />
+					{page?.fields?.image && (
+						<CldImage
+							src={page.fields.image}
+							alt={page.fields.title}
+							width={1280}
+							height={718}
+							className="mx-auto mt-16 w-full"
+							priority
+						/>
+					)}
 				</header>
 
 				<article
