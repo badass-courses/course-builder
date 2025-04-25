@@ -98,16 +98,16 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 py-5',
+				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 py-5 sm:flex-row sm:items-start',
 				className,
 			)}
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/dg3gyk0gu/image/upload/v1683164538/assets/john.webp"
+				src="https://res.cloudinary.com/johnlindquist/image/upload/v1745576123/john-lindquist_qai9on.jpg"
 				alt={config.author}
-				width={1280}
-				height={854}
+				width={240}
+				height={240}
 				className="!mb-0 flex-shrink-0 rounded-md"
 			/>
 
