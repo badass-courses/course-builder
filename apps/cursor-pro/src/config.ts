@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/johnlindquist/image/upload/v1745580279/cursorpro-card_2x_dfcvx3.jpg`,
+				url: `https://res.cloudinary.com/johnlindquist/image/upload/v1745590169/cursorpro-card_2x_nplt99.jpg`,
 				width: 1200,
 				height: 630,
 			},
