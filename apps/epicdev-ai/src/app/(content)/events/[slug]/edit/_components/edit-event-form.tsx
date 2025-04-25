@@ -1,23 +1,29 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import {
+	ResourceFormProps,
+	withResourceForm,
+} from '@/components/resource-form/with-resource-form'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
-import { updateResource } from '@/lib/resources-query'
+import { updateResource as originalUpdateResource } from '@/lib/resources-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
 import { ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
-import { useForm, type UseFormReturn } from 'react-hook-form'
+import { type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import type { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	FormDescription,
 	FormField,
@@ -27,69 +33,150 @@ import {
 	Input,
 	Textarea,
 } from '@coursebuilder/ui'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 
-export function EditEventForm({ event }: { event: Event }) {
-	const { data: session } = useSession()
-	const defaultSocialImage = getOGImageUrlForResource(event)
-	const { theme } = useTheme()
-	const form = useForm<z.infer<typeof EventSchema>>({
-		resolver: zodResolver(EventSchema),
-		defaultValues: {
-			...event,
+import { VideoResourceField } from './video-resource-field'
+
+// Wrapper function for updateResource to match HOC's Partial<T> input and return type
+async function updateEventResource(
+	eventUpdate: Partial<Event>,
+): Promise<Event> {
+	// Ensure required fields are present for the original updateResource function
+	// We might need the original event context here if the partial doesn't contain everything.
+	// For now, let's assume the partial *should* contain enough, or the original function handles it.
+	// A more robust approach might involve fetching the original event if needed.
+	if (
+		!eventUpdate.id ||
+		!eventUpdate.type ||
+		!eventUpdate.createdById ||
+		!eventUpdate.fields
+	) {
+		// Log the problematic update object
+		console.error('Update payload missing required fields:', eventUpdate)
+		// Consider throwing an error or returning null/error state
+		throw new Error(
+			'Update payload missing required fields: id, type, createdById, fields',
+		)
+	}
+
+	// Cast to the type expected by originalUpdateResource
+	const updatePayload = {
+		id: eventUpdate.id,
+		type: eventUpdate.type,
+		createdById: eventUpdate.createdById,
+		fields: eventUpdate.fields,
+		// Pass other fields if the original function accepts them
+		...(eventUpdate.updatedAt && { updatedAt: eventUpdate.updatedAt }),
+		...(eventUpdate.deletedAt && { deletedAt: eventUpdate.deletedAt }),
+	}
+
+	// Call the original imported function
+	const updatedEvent = await originalUpdateResource(
+		updatePayload as {
+			id: string
+			type: string
+			fields: Record<string, any>
+			createdById: string
+		},
+	)
+
+	// Handle null case: throw error as HOC expects a resource
+	if (!updatedEvent) {
+		console.error('Failed to update event, received null', { updatePayload })
+		throw new Error('Failed to update event.')
+	}
+
+	return updatedEvent as Event
+}
+
+// Define the configuration for the event form
+const eventFormConfig = {
+	// Set resourceType back to 'event' as it's now a top-level type
+	resourceType: 'event' as const,
+	schema: EventSchema,
+	defaultValues: (event?: Event) => {
+		// Explicitly define all top-level fields from ContentResourceSchema
+		// and event-specific fields, providing defaults or null.
+		const initialValues = {
+			// Top-level fields from ContentResourceSchema
+			id: event?.id || '',
+			type: event?.type || 'event',
+			createdById: event?.createdById || '',
+			createdAt: event?.createdAt || new Date(),
+			updatedAt: event?.updatedAt || new Date(),
+			deletedAt: event?.deletedAt || null,
+			organizationId: event?.organizationId || null,
+			createdByOrganizationMembershipId:
+				event?.createdByOrganizationMembershipId || null,
+			currentVersionId: event?.currentVersionId || null, // Assuming null default
+			resources: event?.resources || null,
+			// fields needs special handling for event specifics
 			fields: {
-				...event.fields,
-				...(event.fields.startsAt && {
+				...(event?.fields || {}), // Start with existing fields
+				// Ensure specific event fields have defaults
+				...(event?.fields?.startsAt && {
 					startsAt: new Date(event.fields.startsAt).toISOString(),
 				}),
-				...(event.fields.endsAt && {
+				...(event?.fields?.endsAt && {
 					endsAt: new Date(event.fields.endsAt).toISOString(),
 				}),
-				title: event.fields.title || '',
-				visibility: event.fields.visibility || 'unlisted',
-				image: event.fields.image || '',
-				description: event.fields.description ?? '',
-				slug: event.fields.slug ?? '',
-				timezone: event.fields.timezone || 'America/Los_Angeles',
-				socialImage: {
+				title: event?.fields?.title || '',
+				visibility: event?.fields?.visibility || 'unlisted',
+				state: event?.fields?.state || 'draft', // Default state
+				image: event?.fields?.image || '',
+				description: event?.fields?.description ?? '',
+				slug: event?.fields?.slug ?? '',
+				timezone: event?.fields?.timezone || 'America/Los_Angeles',
+				socialImage: event?.fields?.socialImage || {
 					type: 'imageUrl',
-					url: defaultSocialImage,
+					url: getOGImageUrlForResource(event as Event),
 				},
+				details: event?.fields?.details || '',
 			},
-		},
-	})
+			// Handle resourceProducts (specific to EventSchema merge)
+			resourceProducts: event?.resourceProducts || [],
+		}
 
-	const isMobile = useIsMobile()
+		// Refine the type for startsAt/endsAt if they exist in initialValues.fields
+		// The schema expects string | null, but the initial processing might leave Date objects.
+		// It's safer to handle this conversion closer to where the form uses the data, or ensure
+		// EventSchema itself handles the transformation if needed.
+		// For now, we assume the structure matches z.infer<typeof EventSchema>
 
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+		return initialValues as z.infer<typeof EventSchema> // Assert type compatibility
+	},
+	getResourcePath: (slug?: string) => `/events/${slug}`,
+	// Use the wrapper function here
+	updateResource: updateEventResource,
+	onSave: onEventSave,
+	sendResourceChatMessage: sendResourceChatMessage,
+	hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
+}
 
-	return (
-		<ResourceForm
-			resource={event}
-			form={form}
-			resourceSchema={EventSchema}
-			getResourcePath={(slug?: string) => `/events/${slug}`}
-			updateResource={updateResource}
-			onSave={onEventSave}
-			availableWorkflows={[
-				{
-					value: 'article-chat-default-5aj1o',
-					label: 'Article Chatzz',
-					default: true,
-				},
-			]}
-			sendResourceChatMessage={sendResourceChatMessage}
-			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
-			user={session?.user}
-			tools={[
-				{ id: 'assistant' },
+export function EditEventForm({
+	event,
+	videoResource,
+}: {
+	event: Event
+	videoResource: VideoResource | null
+}) {
+	const router = useRouter()
+
+	const EventForm = withResourceForm(
+		(props) => <EventFormFields {...props} videoResource={videoResource} />,
+		{
+			...eventFormConfig,
+			onSave: async (resource, hasNewSlug) => {
+				if (hasNewSlug) {
+					router.push(`/events/${resource.fields?.slug}/edit`)
+				}
+			},
+			customTools: [
+				// { id: 'assistant' },
 				{
 					id: 'media',
+					label: 'Media',
 					icon: () => (
 						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
 					),
@@ -101,59 +188,64 @@ export function EditEventForm({ event }: { event: Event }) {
 						/>
 					),
 				},
-			]}
-			theme={theme}
-		>
-			<EventMetadataFormFields form={form} />
-		</ResourceForm>
+			],
+		},
 	)
+
+	return <EventForm resource={event} />
 }
 
-const EventMetadataFormFields = ({
+// New component for the actual form fields
+const EventFormFields = ({
 	form,
-}: {
-	form: UseFormReturn<z.infer<typeof EventSchema>>
+	resource,
+	videoResource,
+}: ResourceFormProps<Event, typeof EventSchema> & {
+	videoResource: VideoResource | null
 }) => {
+	// Provide both generic arguments
+	// Handle potential undefined form prop
+	if (!form) {
+		return null // Or a loading indicator
+	}
 	return (
-		<EditResourcesMetadataFields form={form}>
+		// <EditResourcesMetadataFields form={form}>
+		<>
+			<VideoResourceField
+				form={form}
+				event={resource}
+				videoResource={videoResource}
+				initialVideoResourceId={videoResource ? videoResource.id : null}
+			/>
 			<FormField
 				control={form.control}
-				name="fields.details"
+				name="id"
+				render={({ field }) => <Input type="hidden" {...field} />}
+			/>
+
+			<FormField
+				control={form.control}
+				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Event Details</FormLabel>
+						<FormLabel className="text-lg font-bold">Title</FormLabel>
 						<FormDescription>
-							Details to be used in Google calendar for this event.
+							A title should summarize the post and explain what it is about
+							clearly.
 						</FormDescription>
-						<Textarea {...field} value={field.value?.toString()} />
+						<Input {...field} />
 						<FormMessage />
 					</FormItem>
 				)}
 			/>
-			<div className="px-5">
-				<FormLabel>Cover Image</FormLabel>
-				{form.watch('fields.image') && (
-					<img src={form.watch('fields.image') || ''} />
-				)}
-			</div>
 			<FormField
 				control={form.control}
-				name="fields.image"
+				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Image URL</FormLabel>
-						<Input
-							{...field}
-							onDrop={(e) => {
-								console.log(e)
-								const result = e.dataTransfer.getData('text/plain')
-								const parsedResult = result.match(/\(([^)]+)\)/)
-								if (parsedResult) {
-									field.onChange(parsedResult[1])
-								}
-							}}
-							value={field.value || ''}
-						/>
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormDescription>Short with keywords is best.</FormDescription>
+						<Input {...field} />
 						<FormMessage />
 					</FormItem>
 				)}
@@ -187,7 +279,6 @@ const EventMetadataFormFields = ({
 					</FormItem>
 				)}
 			/>
-
 			<FormField
 				control={form.control}
 				name="fields.endsAt"
@@ -222,15 +313,63 @@ const EventMetadataFormFields = ({
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel>Timezone:</FormLabel>
-						<Input {...field} readOnly disabled />
+						<Input {...field} readOnly disabled value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.details"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Event Details</FormLabel>
+						<FormDescription>
+							Details to be used in Google calendar for this event.
+						</FormDescription>
+						<Textarea {...field} value={field.value?.toString()} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<div className="px-5">
+				<FormLabel>Cover Image</FormLabel>
+				{form.watch('fields.image') && (
+					<img
+						alt="Cover image preview"
+						src={form.watch('fields.image') || ''}
+					/>
+				)}
+			</div>
+			<FormField
+				control={form.control}
+				name="fields.image"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel>Image URL</FormLabel>
+						<Input
+							{...field}
+							onDrop={(e) => {
+								console.log(e)
+								const result = e.dataTransfer.getData('text/plain')
+								const urlMatch = result.match(/\\(([^)]+)\\)/)
+								if (urlMatch) {
+									field.onChange(urlMatch[1])
+								}
+							}}
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
 			<MetadataFieldSocialImage
 				form={form}
-				currentSocialImage={getOGImageUrlForResource(form.getValues())}
+				// Ensure form.getValues() is safe to call
+				currentSocialImage={getOGImageUrlForResource(form.getValues() as Event)}
 			/>
-		</EditResourcesMetadataFields>
+		</>
+		// </EditResourcesMetadataFields>
 	)
 }

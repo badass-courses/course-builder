@@ -34,6 +34,7 @@ export const ResourceTypeSchema = z.enum([
 	'lesson',
 	'solution',
 	'section',
+	'event',
 ])
 
 /**
