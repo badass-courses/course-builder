@@ -12,6 +12,8 @@ import { getEggheadLesson } from './lesson'
  */
 export async function getEggheadResource(post: Post) {
 	switch (post.fields.postType) {
+		case 'article':
+			return undefined
 		case 'lesson':
 			if (!post.fields.eggheadLessonId) {
 				throw new Error(
