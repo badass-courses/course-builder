@@ -15,6 +15,7 @@ const CouponInputSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentageDiscount: z.string(),
+	fields: z.record(z.any()).default({}),
 })
 
 const findClosestDiscount = function (percentOff: number) {

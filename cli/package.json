@@ -1,6 +1,6 @@
 {
 	"name": "create-course-app",
-	"version": "8.1.3",
+	"version": "8.1.4",
 	"description": "Create web application with the Course Builder stack",
 	"license": "MIT",
 	"repository": {

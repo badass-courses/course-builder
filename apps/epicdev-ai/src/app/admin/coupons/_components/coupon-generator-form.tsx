@@ -43,6 +43,7 @@ const formSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentOff: z.string(),
+	bypassSoldOut: z.boolean().default(false),
 })
 
 const CouponGeneratorForm = ({
@@ -59,6 +60,7 @@ const CouponGeneratorForm = ({
 			restrictedToProductId: undefined,
 			percentOff: '20',
 			expires: undefined,
+			bypassSoldOut: false,
 		},
 	})
 	const [codes, setCodes] = React.useState<string[]>([])
@@ -68,12 +70,20 @@ const CouponGeneratorForm = ({
 	const expiresAtDateTime = form.watch('expires')?.setHours(23, 59, 0, 0)
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		form.reset()
+
+		// Extract bypassSoldOut from the form and put it in fields
+		const { bypassSoldOut, ...rest } = values
+
 		const codes = await createCoupon({
+			...rest,
 			quantity: values.quantity,
 			maxUses: Number(values.maxUses),
 			expires: values.expires,
 			restrictedToProductId: values.restrictedToProductId,
 			percentageDiscount: (Number(values.percentOff) / 100).toString(),
+			fields: {
+				bypassSoldOut: values.bypassSoldOut,
+			},
 		})
 		setCodes(codes)
 		router.refresh()
@@ -155,6 +165,27 @@ const CouponGeneratorForm = ({
 										</SelectContent>
 									</Select>
 								</FormControl>
+							</FormItem>
+						)}
+					/>
+					<FormField
+						name="bypassSoldOut"
+						render={({ field }) => (
+							<FormItem className="flex flex-col">
+								<FormLabel
+									htmlFor="bypassSoldOut"
+									className="mb-0.5 mt-1.5 flex items-center gap-1.5"
+								>
+									<Checkbox
+										id="bypassSoldOut"
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+									Bypass Sold Out
+								</FormLabel>
+								<FormDescription>
+									Allow purchasing even when a product is sold out
+								</FormDescription>
 							</FormItem>
 						)}
 					/>

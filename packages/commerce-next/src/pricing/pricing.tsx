@@ -449,22 +449,32 @@ const BuyButton = ({
 	asChild?: boolean
 }) => {
 	const Comp = asChild ? Slot : Button
-	const { formattedPrice, product, status } = usePricing()
+	const {
+		formattedPrice,
+		product,
+		status,
+		pricingData: { quantityAvailable },
+		couponId,
+		isSoldOut,
+	} = usePricing()
+
 	return (
 		<Comp
 			className={cn(
-				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-wait',
+				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-not-allowed disabled:opacity-50',
 				className,
 			)}
 			type="submit"
 			size="lg"
-			disabled={status === 'pending' || status === 'error'}
+			disabled={status === 'pending' || status === 'error' || isSoldOut}
 		>
 			{children
 				? children
-				: formattedPrice?.upgradeFromPurchaseId
-					? `Upgrade Now`
-					: product?.fields.action || `Buy Now`}
+				: isSoldOut
+					? 'Sold Out'
+					: formattedPrice?.upgradeFromPurchaseId
+						? `Upgrade Now`
+						: product?.fields.action || `Buy Now`}
 		</Comp>
 	)
 }
@@ -647,13 +657,9 @@ const LiveQuantity = ({
 		isPreviouslyPurchased,
 		options: { isLiveEvent },
 		pricingData: { quantityAvailable },
+		formattedPrice,
+		isSoldOut,
 	} = usePricing()
-
-	const isSoldOut = Boolean(
-		product.type === 'live' &&
-			!isPreviouslyPurchased &&
-			(quantityAvailable || 0) <= 0,
-	)
 
 	return isLiveEvent
 		? children || (
@@ -761,7 +767,14 @@ const SaleCountdown = ({
 		props: CountdownRenderProps & { className?: string },
 	) => React.ReactElement
 }) => {
-	const { formattedPrice } = usePricing()
+	const {
+		formattedPrice,
+		product,
+		pricingData: { quantityAvailable },
+		isSoldOut,
+	} = usePricing()
+
+	if (isSoldOut) return null
 
 	return formattedPrice?.defaultCoupon?.expires ? (
 		<Countdown
@@ -857,6 +870,26 @@ const CountdownRenderer: React.FC<
 	)
 }
 
+const Waitlist = ({
+	className,
+	children,
+}: {
+	className?: string
+	children?: React.ReactNode
+}) => {
+	// if no spots are available, show a waitlist form
+	const {
+		product,
+		pricingData: { quantityAvailable },
+		formattedPrice,
+		isSoldOut,
+	} = usePricing()
+
+	if (!isSoldOut) return null
+
+	return <div className={cn('', className)}>{children}</div>
+}
+
 export {
 	Root,
 	PricingProduct as Product,
@@ -875,4 +908,5 @@ export {
 	BuyMoreSeatsToggle,
 	BuyMoreSeats,
 	SaleCountdown,
+	Waitlist,
 }

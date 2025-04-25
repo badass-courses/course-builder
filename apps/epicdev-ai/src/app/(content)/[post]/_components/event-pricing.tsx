@@ -10,6 +10,7 @@ import { api } from '@/trpc/react'
 import { BadgeCheck, ExternalLink, Shield } from 'lucide-react'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
+import { CouponContext } from '@coursebuilder/commerce-next/coupons/coupon-context'
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -66,9 +67,9 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 	) : (
 		<div className={cn('mx-auto w-full max-w-sm py-10', className)}>
 			<PricingWidget
+				commerceProps={{ ...commerceProps, products: [product] }}
 				ctaLabel="Reserve Your Spot"
 				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
-				commerceProps={{ ...commerceProps, products: [product] }}
 				product={product}
 				quantityAvailable={quantityAvailable}
 				pricingDataLoader={pricingDataLoader}
@@ -193,7 +194,13 @@ export const BuyTicketButton: React.FC<
 }
 
 const BuyButton = ({ centered }: { centered?: boolean }) => {
-	const { formattedPrice, status } = usePricing()
+	const {
+		formattedPrice,
+		status,
+		product,
+		pricingData: { quantityAvailable },
+		isSoldOut,
+	} = usePricing()
 	const fullPrice = formattedPrice?.fullPrice || 0
 
 	const finalPrice = formattedPrice?.calculatedPrice || 0
@@ -221,7 +228,7 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 									<span className="font-semibold tabular-nums">
 										{formatUsd(finalPrice).dollars}
 									</span>
-									{savings > 0 && (
+									{savings > 0 && !isSoldOut && (
 										<>
 											<span className="ml-1 text-lg font-normal line-through opacity-90">
 												{formatUsd(fullPrice).dollars}
@@ -249,7 +256,7 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 							centered && 'justify-center',
 						)}
 					>
-						{savings > 0 && (
+						{savings > 0 && !isSoldOut && (
 							<>
 								<span className="text-sm font-semibold">
 									Save {savingsPercentage}%{' '}
@@ -271,20 +278,24 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 							)}
 						/>
 					</div>
-					<TeamToggle
-						className={cn(
-							'',
-							centered && 'w-full items-center justify-center text-center',
-						)}
-					/>
-					<div className="inline-flex w-full items-center justify-center">
-						<Pricing.LiveRefundPolicy
-							className={cn(
-								'inline-flex max-w-none pt-0 text-left',
-								centered && 'text-center',
-							)}
-						/>
-					</div>
+					{!isSoldOut && (
+						<>
+							<TeamToggle
+								className={cn(
+									'',
+									centered && 'w-full items-center justify-center text-center',
+								)}
+							/>
+							<div className="inline-flex w-full items-center justify-center">
+								<Pricing.LiveRefundPolicy
+									className={cn(
+										'inline-flex max-w-none pt-0 text-left',
+										centered && 'text-center',
+									)}
+								/>
+							</div>
+						</>
+					)}
 				</>
 			)}
 		</>
@@ -428,6 +439,8 @@ export const withEventPricing = (
 		centered?: boolean
 		className?: string
 	}) {
+		const { coupon } = React.useContext(CouponContext)
+
 		const { data: pricingProps, status } =
 			api.pricing.getPostProductPricing.useQuery(
 				{
@@ -465,7 +478,10 @@ export const withEventPricing = (
 		const commerceProps = {
 			...pricingProps,
 			products: [product],
+			couponFromCode: coupon,
+			couponIdFromCoupon: coupon?.id,
 		}
+
 		const purchasedProductIds =
 			commerceProps?.purchases?.map((purchase) => purchase.productId) || []
 

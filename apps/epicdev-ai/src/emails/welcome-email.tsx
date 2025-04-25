@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { env } from '@/env.mjs'
 import {
 	Body,
 	Container,
@@ -10,6 +11,8 @@ import {
 	Section,
 	Text,
 } from '@react-email/components'
+
+import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 interface WelcomeEmailProps {
 	productName?: string
@@ -24,6 +27,8 @@ export default function WelcomeEmail({
 	startTime = '8:30 AM',
 	endTime = '2:30 PM',
 }: WelcomeEmailProps) {
+	const everyTimeZoneLink = buildEtzLink(startDate, startTime)
+
 	return (
 		<Html>
 			<Head />
@@ -41,10 +46,7 @@ export default function WelcomeEmail({
 							<Text style={text}>
 								The event will occur on {startDate} at {startTime} - {endTime}{' '}
 								(Pacific time).{' '}
-								<Link href={`https://everytimezone.com/s/005d0749`}>
-									Click here for timezones
-								</Link>
-								.
+								<Link href={everyTimeZoneLink}>Click here for timezones</Link>.
 							</Text>
 						</Section>
 						<Section style={contentSection}>
@@ -69,9 +71,9 @@ export default function WelcomeEmail({
 							<Text style={bulletPoint}>
 								• Access your Invoice: Once you're logged in, you can view and
 								fully customize your invoice{' '}
-								<Link href="https://www.epicai.pro/invoices">here</Link>. You
-								can add any required information to the "Prepared for" section
-								of the invoice and download a PDF that can be shared or
+								<Link href={`${env.COURSEBUILDER_URL}/invoices`}>here</Link>.
+								You can add any required information to the "Prepared for"
+								section of the invoice and download a PDF that can be shared or
 								forwarded.
 							</Text>
 						</Section>

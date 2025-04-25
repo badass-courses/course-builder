@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import {
+	Callout,
 	SubscribeForm,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
@@ -66,6 +67,7 @@ export async function compileMDX(
 			),
 			PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
 			SubscribeForm: (props) => <SubscribeForm {...props} />,
+			Callout,
 			Testimonial: ({
 				children,
 				authorName,

@@ -147,6 +147,11 @@ export const columns = () => {
 			header: 'Status',
 			accessorFn: (data) => data.status,
 		},
+		{
+			id: 'bypassSoldOut',
+			header: 'Bypass Sold Out',
+			accessorFn: (data) => data.fields?.bypassSoldOut,
+		},
 		// {
 		//   id: 'code',
 		//   header: 'Code',

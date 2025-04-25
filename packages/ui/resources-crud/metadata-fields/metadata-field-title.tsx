@@ -17,7 +17,7 @@ export function MetadataFieldTitle({ form }: { form: UseFormReturn<any> }) {
 			name="fields.title"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>Title</FormLabel>
+					<FormLabel className="text-lg font-bold">Title</FormLabel>
 					<FormDescription>
 						A title should summarize the tip and explain what it is about
 						clearly.

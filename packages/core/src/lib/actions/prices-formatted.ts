@@ -255,7 +255,9 @@ export async function getPricesFormatted(
 			productId,
 			courseBuilderAdapter: options.adapter,
 		})
-
+	const usedCoupon = usedCouponId
+		? await options.adapter.getCoupon(usedCouponId)
+		: null
 	const productPrices = await formatPricesForProduct({
 		productId,
 		country,
@@ -272,6 +274,10 @@ export async function getPricesFormatted(
 		body: {
 			...productPrices,
 			...(defaultCoupon && { defaultCoupon }),
+			...(usedCoupon && {
+				usedCoupon,
+				usedCouponId,
+			}),
 		},
 		headers: {
 			'Content-Type': 'application/json',

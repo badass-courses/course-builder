@@ -16,7 +16,7 @@ export function MetadataFieldSlug({ form }: { form: UseFormReturn<any> }) {
 			name="fields.slug"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>Slug</FormLabel>
+					<FormLabel className="text-lg font-bold">Slug</FormLabel>
 					<Input {...field} />
 					<FormMessage />
 				</FormItem>

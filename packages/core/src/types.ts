@@ -283,6 +283,7 @@ export type FormattedPrice = {
 	upgradedProduct?: ProductWithPrices | null
 	bulk: boolean
 	usedCouponId?: string
+	usedCoupon?: Coupon | null
 	defaultCoupon?: Coupon | null
 }
 

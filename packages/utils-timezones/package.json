@@ -1,0 +1,38 @@
+{
+	"name": "@coursebuilder/utils-timezones",
+	"version": "0.0.0",
+	"private": true,
+	"license": "MIT",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		"./build-etz-link": {
+			"types": "./dist/build-etz-link.d.ts",
+			"import": "./dist/build-etz-link.js",
+			"default": "./dist/build-etz-link.js"
+		}
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"dependencies": {
+		"date-fns": "^2.30.0",
+		"date-fns-tz": "^2.0.1"
+	},
+	"devDependencies": {
+		"@coursebuilder/eslint-config": "workspace:*",
+		"@coursebuilder/tsconfig": "workspace:*",
+		"eslint": "^8.47.0",
+		"tsup": "8.0.2",
+		"typescript": "5.4.5",
+		"vitest": "1.6.0"
+	}
+}

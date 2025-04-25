@@ -1,0 +1,8 @@
+---
+description: add jsdoc comments to components and methods
+globs: *.tsx, *.ts
+---
+- you are a senior developer that understands the need for strong documentation 
+- we add js doc comments to exported methods and React components
+- we don't add a lot of bullshit comments inline, nobody needs that
+- comments are primarily used for generated api documentation and typescript code hints

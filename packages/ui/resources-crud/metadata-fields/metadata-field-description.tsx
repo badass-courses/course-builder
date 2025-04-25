@@ -21,7 +21,7 @@ export function MetadataFieldDescription({
 			name="fields.description"
 			render={({ field }) => (
 				<FormItem className="px-5">
-					<FormLabel>Short Description</FormLabel>
+					<FormLabel className="text-lg font-bold">Short Description</FormLabel>
 					<FormDescription>
 						Used as a short &quot;SEO&quot; summary on Twitter cards etc.
 					</FormDescription>
