@@ -5,8 +5,7 @@
 		@apply mb-2;
 	}
 	input {
-		@apply placeholder:text-muted-foreground text-foreground relative flex p-5 text-base placeholder:opacity-75;
-		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
+		@apply placeholder:text-muted-foreground outline-ring text-foreground border-input bg-muted relative flex p-5 text-base placeholder:opacity-75;
 	}
 	[data-sr-input-label] {
 		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal;
@@ -15,7 +14,7 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply text-primary-foreground bg-primary relative mt-4 py-8 text-lg font-medium shadow-lg transition ease-in-out hover:hue-rotate-[8deg];
+		@apply text-primary-foreground bg-primary relative mt-4 py-8 text-lg font-medium shadow-lg transition ease-in-out hover:brightness-90;
 	}
 }
 

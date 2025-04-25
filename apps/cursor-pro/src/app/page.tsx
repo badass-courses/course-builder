@@ -106,9 +106,9 @@ const Home = async (props: Props) => {
 						<CldImage
 							src={page.fields.image}
 							alt={page.fields.title}
-							width={1280}
-							height={718}
-							className="mx-auto mt-16 w-full"
+							width={1955 / 2}
+							height={811 / 2}
+							className="mx-auto mt-16 w-full rounded-2xl shadow-2xl"
 							priority
 						/>
 					)}
