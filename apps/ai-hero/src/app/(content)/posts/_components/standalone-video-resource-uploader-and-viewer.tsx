@@ -18,6 +18,7 @@ import {
 	DropdownMenuTrigger,
 	ScrollArea,
 	Skeleton,
+	useToast,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
@@ -70,6 +71,8 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 			videoResource: undefined,
 		})
 
+	const { toast } = useToast()
+
 	return (
 		<ScrollArea className="h-[var(--pane-layout-height)]">
 			<div className="mb-3 px-3">
@@ -94,7 +97,22 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 			{standaloneVideoResources && (
 				<ul className="flex flex-col">
 					{standaloneVideoResources.map((videoResource) => (
-						<li key={videoResource.id} className="group/item">
+						<li
+							key={videoResource.id}
+							className="group/item"
+							onClick={(e) => {
+								if (e.metaKey || e.ctrlKey) {
+									e.preventDefault()
+									navigator.clipboard.writeText(
+										`<Video resourceId="${videoResource.id}" />`,
+									)
+									toast({
+										title: 'Copied to clipboard',
+										description: 'Video component code copied',
+									})
+								}
+							}}
+						>
 							<div
 								onDragStart={(e) => {
 									e.dataTransfer.setData(
