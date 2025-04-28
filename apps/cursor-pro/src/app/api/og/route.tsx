@@ -116,7 +116,12 @@ export async function GET(request: Request) {
 			}
 		}
 
-		const seed = resourceSlugOrID || title || 'default-seed'
+		const titleLengthLimit = 60
+
+		const titleTruncated =
+			title?.length > titleLengthLimit
+				? `${title?.slice(0, titleLengthLimit)}...`
+				: title
 
 		return new ImageResponse(
 			(
@@ -158,6 +163,24 @@ export async function GET(request: Request) {
 							</svg>
 						</div>
 					)}
+					<div tw="w-full absolute left-24 bottom-28 flex">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="621"
+							height="2"
+							fill="none"
+							viewBox="0 0 621 2"
+						>
+							<path
+								stroke="#fff"
+								stroke-dasharray="1 23"
+								stroke-linecap="round"
+								stroke-width="2"
+								d="M1 1h619"
+								opacity=".5"
+							/>
+						</svg>
+					</div>
 					<div tw="flex items-center absolute right-24 bottom-24 justify-center text-5xl font-bold">
 						<div tw="text-foreground flex items-end gap-1.5 font-bold tracking-tight">
 							<svg
@@ -173,12 +196,10 @@ export async function GET(request: Request) {
 							<span tw="pl-4">Cursor Pro</span>
 						</div>
 					</div>
-					<main tw="flex p-26 pt-32 relative z-10 flex-row w-full h-full flex-grow items-start justify-between">
-						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] leading-tight pr-16 flex`}
-						>
-							<span tw="opacity-50 flex pr-5"># </span>
-							<span>{title}</span>
+					<main tw="flex p-26 pt-28 relative z-10 flex-row w-full h-full flex-grow items-start justify-between">
+						<div tw={`text-[64px] min-w-[500px] leading-tight pr-24 flex`}>
+							<span tw="flex pr-8 text-[#EE762F]"># </span>
+							<span>{titleTruncated}</span>
 						</div>
 						{image && resource && resource?.type !== 'post' && (
 							<div tw={`flex items-start -mr-32 justify-start h-full`}>

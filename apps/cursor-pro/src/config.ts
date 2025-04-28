@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/johnlindquist/image/upload/v1745849973/cursorpro-card_2x_e328qs.jpg`,
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og?resource=root`,
 				width: 1200,
 				height: 630,
 			},
