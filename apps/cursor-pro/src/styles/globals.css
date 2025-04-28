@@ -15,7 +15,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 6rem;
+		--nav-height: 5rem;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -86,9 +86,9 @@
 	}
 
 	.dark {
-		--background: 240 3% 12%;
+		--background: 240 3% 9%;
 		--foreground: 240 7% 91%;
-		--card: 240 3% 15%;
+		--card: 240 3% 13%;
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
 		--popover-foreground: 0 0% 98%;
@@ -163,7 +163,7 @@
 	}
 
 	body {
-		@apply bg-background text-foreground overflow-x-hidden font-normal antialiased;
+		@apply bg-background text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden font-normal antialiased;
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;

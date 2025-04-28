@@ -81,7 +81,7 @@ const Navigation = ({
 							href="/"
 							className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
 						>
-							<Logo className="[&_svg]:hover:text-primary origin-left scale-[1.15] [&_svg]:transition" />
+							<Logo className="[&_svg]:hover:text-primary origin-left [&_svg]:transition" />
 						</Link>
 					</Button>
 				</span>

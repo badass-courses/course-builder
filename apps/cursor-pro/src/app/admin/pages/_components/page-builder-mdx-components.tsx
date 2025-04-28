@@ -104,11 +104,11 @@ const Instructor = ({
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/johnlindquist/image/upload/v1745576123/john-lindquist_qai9on.jpg"
+				src="https://res.cloudinary.com/johnlindquist/image/upload/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm.jpg"
 				alt={config.author}
-				width={240}
+				width={320}
 				height={240}
-				className="!mb-0 flex-shrink-0 rounded-md"
+				className="!mb-0 flex-shrink-0"
 			/>
 
 			<div className="">

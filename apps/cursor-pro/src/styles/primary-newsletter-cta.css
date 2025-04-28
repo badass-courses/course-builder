@@ -1,20 +1,20 @@
 #primary-newsletter-cta [data-sr-convertkit-subscribe-form] {
-	@apply mx-auto flex w-full max-w-[420px] flex-col;
+	@apply flex w-full items-end gap-x-5;
 
 	[data-sr-fieldset] {
-		@apply mb-2;
+		@apply mb-0;
 	}
 	input {
-		@apply placeholder:text-muted-foreground outline-ring text-foreground border-input bg-muted relative flex p-5 text-base placeholder:opacity-75;
+		@apply placeholder:text-muted-foreground text-foreground focus-within:border-primary bg-card relative flex rounded-none border-x-0 border-b border-t-0 border-dashed p-3 text-base ring-0 placeholder:opacity-75;
 	}
 	[data-sr-input-label] {
-		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal;
+		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal after:content-[':'];
 	}
 	[data-sr-input-asterisk] {
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply text-primary-foreground bg-primary relative mt-4 py-8 text-lg font-medium shadow-lg transition ease-in-out hover:brightness-90;
+		@apply text-primary bg-transparent text-base font-semibold underline;
 	}
 }
 

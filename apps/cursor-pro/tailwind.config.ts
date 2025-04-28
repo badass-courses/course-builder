@@ -76,8 +76,8 @@ module.exports = {
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-geist)', ...fontFamily.sans],
-				heading: ['var(--font-geist)', ...fontFamily.sans],
+				sans: ['var(--font-geist-mono)', ...fontFamily.mono],
+				heading: ['var(--font-geist-mono)', ...fontFamily.mono],
 				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
 			},
 			keyframes: {
@@ -114,10 +114,7 @@ module.exports = {
 							fontWeight: 700,
 							color: theme('colors.foreground'),
 						},
-						ul: {
-							listStylePosition: 'outside',
-							listStyleType: 'square',
-						},
+
 						'ul > li': {
 							color: theme('colors.foreground'),
 						},
@@ -149,6 +146,51 @@ module.exports = {
 						},
 						pre: {
 							border: `1px solid ${theme('colors.border')}`,
+						},
+					},
+				},
+				IDE: {
+					css: {
+						'*': {
+							fontFamily: 'var(--font-geist-mono)',
+							fontSize: '1rem',
+							lineHeight: '1.75',
+							marginBottom: '0',
+							marginTop: '0',
+						},
+						ul: {
+							margin: '1em 0 0 0',
+							padding: '0 !important',
+							listStylePosition: 'inside',
+							listStyleType: '"✦ "',
+						},
+						'li::marker': {
+							fontSize: '1em',
+							color: theme('colors.foreground'),
+						},
+						'h1, h2, h3, h4': {
+							marginTop: '2em',
+						},
+						'p::before': {
+							content: '""',
+							display: 'block',
+							height: '1em',
+						},
+						'h1::before': {
+							content: '"# "',
+							opacity: 0.5,
+						},
+						'h2::before': {
+							content: '"## "',
+							opacity: 0.5,
+						},
+						'h3::before': {
+							content: '"### "',
+							opacity: 0.5,
+						},
+						'h4::before': {
+							content: '"#### "',
+							opacity: 0.5,
 						},
 					},
 				},

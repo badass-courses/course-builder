@@ -13,6 +13,21 @@ export const runtime = 'edge'
 export const revalidate = 60
 // export const contentType = 'image/png'
 
+async function loadGoogleFont(font: string, text: string) {
+	const url = `https://fonts.googleapis.com/css2?family=${font}:wght@600&text=${encodeURIComponent(text)}`
+	const css = await (await fetch(url)).text()
+	const resource = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/)
+
+	if (resource) {
+		const response = await fetch(resource[1] as any)
+		if (response.status == 200) {
+			return await response.arrayBuffer()
+		}
+	}
+
+	throw new Error('failed to load font data')
+}
+
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
@@ -101,22 +116,15 @@ export async function GET(request: Request) {
 			}
 		}
 
-		const fontData = await fetch(
-			new URL(
-				'../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
-				import.meta.url,
-			),
-		).then((res) => res.arrayBuffer())
-
 		const seed = resourceSlugOrID || title || 'default-seed'
 
 		return new ImageResponse(
 			(
 				<div
-					tw="flex h-full w-full bg-white flex-col"
+					tw="flex h-full w-full bg-white flex-col text-white"
 					style={{
 						fontFamily: 'HeadingFont',
-						background: '#fff',
+						background: '#1F1F22',
 						width: 1200,
 						height: 630,
 						// backgroundImage:
@@ -150,14 +158,27 @@ export async function GET(request: Request) {
 							</svg>
 						</div>
 					)}
-					<div tw="flex items-center absolute left-24 top-24 justify-center text-5xl font-bold">
-						CursorPro.ai
+					<div tw="flex items-center absolute right-24 bottom-24 justify-center text-5xl font-bold">
+						<div tw="text-foreground flex items-end gap-1.5 font-bold tracking-tight">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width={20 * 2.3}
+								height={16 * 2.3}
+								fill="none"
+								viewBox="0 0 20 16"
+							>
+								<path fill="#fff" d="M.5 0H20L10 15.5v-10L.5 0Z" opacity=".5" />
+								<path fill="#fff" d="M20 0 10 5.5.5 0H20Z" />
+							</svg>
+							<span tw="pl-4">Cursor Pro</span>
+						</div>
 					</div>
-					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
+					<main tw="flex p-26 pt-32 relative z-10 flex-row w-full h-full flex-grow items-start justify-between">
 						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] text-black leading-tight pr-16`}
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] leading-tight pr-16 flex`}
 						>
-							{title}
+							<span tw="opacity-50 flex pr-5"># </span>
+							<span>{title}</span>
 						</div>
 						{image && resource && resource?.type !== 'post' && (
 							<div tw={`flex items-start -mr-32 justify-start h-full`}>
@@ -188,7 +209,7 @@ export async function GET(request: Request) {
 				fonts: [
 					{
 						name: 'HeadingFont',
-						data: fontData,
+						data: await loadGoogleFont('Geist Mono', `Cursor Pro ${title}`),
 						style: 'normal',
 					},
 				],

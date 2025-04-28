@@ -79,21 +79,15 @@ export const PrimaryNewsletterCta: React.FC<
 		<section
 			id={id}
 			aria-label="Newsletter sign-up"
-			className={cn(
-				'not-prose flex flex-col items-center justify-center',
-				className,
-			)}
+			className={cn('', className)}
 		>
 			{children ? (
 				children
 			) : (
 				<div
-					className={cn(
-						'relative z-10 flex max-w-3xl flex-col items-center justify-center pb-5 pt-10 sm:pb-10',
-						{
-							'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
-						},
-					)}
+					className={cn('relative z-10', {
+						'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
+					})}
 				>
 					{withImage && (
 						<CldImage
@@ -105,35 +99,37 @@ export const PrimaryNewsletterCta: React.FC<
 							className="mx-auto mb-5"
 						/>
 					)}
-					<h2 className="sm:fluid-2xl fluid-xl text-balance text-center font-bold">
-						{title}
-					</h2>
-					<h3 className="text-balance pt-5 text-center font-sans text-base font-normal opacity-90 sm:text-lg lg:text-xl">
-						{byline}
-					</h3>
+					{title && (
+						<h2 className='before:opacity-50 before:content-["##_"]'>
+							{title}
+						</h2>
+					)}
+					{byline && <p>{byline}</p>}
 				</div>
 			)}
 
-			<div className="not-prose relative flex w-full items-center justify-center">
+			<div className="relative flex w-full items-center justify-center py-5">
 				{subscriber && (
-					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
-						<p className="text-lg font-semibold sm:text-xl lg:text-2xl">
+					<div className="absolute z-10 flex flex-col text-center">
+						<p className="font-semibold">
 							{subscribedTitle || "You're subscribed, thanks!"}
 						</p>
-						<p className="[&_a]:text-primary pt-3 text-center font-sans text-lg font-normal">
-							{subscribedSubtitle ||
-								(session?.user
-									? common['newsletter-subscribed-logged-in']({
-											resource,
-										})
-									: common['newsletter-subscribed-logged-out']({
-											resource,
-										}))}
-						</p>
+						{resource && (
+							<p className="[&_a]:text-primary text-center font-sans font-normal">
+								{subscribedSubtitle ||
+									(session?.user
+										? common['newsletter-subscribed-logged-in']({
+												resource,
+											})
+										: common['newsletter-subscribed-logged-out']({
+												resource,
+											}))}
+							</p>
+						)}
 					</div>
 				)}
 				<div
-					className={cn('flex w-full max-w-sm flex-col items-center', {
+					className={cn('flex w-full flex-col items-center', {
 						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
 							subscriber && !formId,
 					})}

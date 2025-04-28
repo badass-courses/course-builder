@@ -6,11 +6,13 @@ import { cn } from '@/utils/cn'
 
 import { CldImage } from './cld-image'
 
-export const Contributor: React.FC<{ className?: string }> = ({
-	className,
-}) => {
+export const Contributor: React.FC<{
+	className?: string
+	children?: React.ReactNode
+}> = ({ className, children }) => {
 	return (
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
+			{children}
 			<ContributorImage />
 			<span className="text-foreground">{config.author}</span>
 		</div>

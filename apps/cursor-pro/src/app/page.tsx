@@ -84,7 +84,7 @@ const Home = async (props: Props) => {
 			highlightedResource={firstPageResource}
 			withContainer
 		>
-			<main className="flex w-full flex-col items-center justify-center">
+			<main className="w-full">
 				{firstPageResource && (
 					<Link
 						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
@@ -97,12 +97,14 @@ const Home = async (props: Props) => {
 						</span>
 					</Link>
 				)}
-				<header className="flex flex-col items-center justify-center pb-16">
-					<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full max-w-lg pt-10 text-center font-bold dark:text-white">
+				<header className="">
+					<h1 className="bg-foreground text-background relative inline-flex w-auto px-1 text-lg font-bold">
 						{page?.fields?.title || 'Title'}
 					</h1>
-					<Contributor className="[&_span]:text-foreground/80 mx-auto flex items-center justify-center" />
-					{page?.fields?.image && (
+					{/* <Contributor className="mt-1 flex items-center [&_img]:size-6 [&_img]:rounded-sm [&_span]:text-base">
+						with
+					</Contributor> */}
+					{/* {page?.fields?.image && (
 						<CldImage
 							src={page.fields.image}
 							alt={page.fields.title}
@@ -111,12 +113,11 @@ const Home = async (props: Props) => {
 							className="mx-auto mt-16 w-full rounded-2xl shadow-2xl"
 							priority
 						/>
-					)}
+					)} */}
 				</header>
-
 				<article
 					className={cn(
-						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',
+						'prose sm:prose-IDE prose-hr:overflow-hidden dark:prose-invert mx-auo prose-hr:my-3 prose-hr:relative prose-hr:border-0 prose-hr:h-5 prose-hr:opacity-50 prose-hr:before:content-["..................................................................................................................."] w-full max-w-none pb-10',
 					)}
 				>
 					{page?.fields?.body ? (
@@ -135,7 +136,7 @@ const Home = async (props: Props) => {
 								PrimaryNewsletterCta: (props) => (
 									<PrimaryNewsletterCta
 										resource={firstPageResource}
-										className={cn('not-prose pb-10 sm:pb-16', props.className)}
+										className={cn('pb-10 sm:pb-16', props.className)}
 										trackProps={{
 											event: 'subscribed',
 											params: {

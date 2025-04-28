@@ -195,9 +195,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="">
-			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
-				{content}
-			</article>
+			<article className="prose prose-IDE max-w-none">{content}</article>
 		</div>
 	)
 }

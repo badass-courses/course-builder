@@ -29,7 +29,7 @@ export default function LayoutClient({
 			className={cn(
 				'',
 				{
-					'mx-auto w-full max-w-[1200px] px-8 sm:px-10': withContainer,
+					'mx-auto w-full max-w-4xl px-8 sm:px-10': withContainer,
 				},
 				className,
 			)}
