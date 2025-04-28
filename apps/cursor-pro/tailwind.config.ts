@@ -157,7 +157,14 @@ module.exports = {
 							lineHeight: '1.75',
 							marginBottom: '0',
 							marginTop: '0',
+							'@media (min-width: 640px)': {
+								fontSize: '1rem',
+							},
+							'@media (max-width: 639px)': {
+								fontSize: '0.875rem',
+							},
 						},
+
 						ul: {
 							margin: '1em 0 0 0',
 							padding: '0 !important',

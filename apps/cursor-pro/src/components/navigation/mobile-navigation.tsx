@@ -59,10 +59,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	)
 
 	return (
-		<div className="fixed right-8 top-[33px] flex items-stretch md:hidden">
+		<div className="fixed right-8 top-5 flex items-stretch sm:top-[33px] md:hidden">
 			<Button
 				variant="ghost"
-				className="bg-background flex h-10 items-center justify-center rounded-full border px-3"
+				className="bg-background flex h-10 items-center justify-center rounded-md border px-3"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
