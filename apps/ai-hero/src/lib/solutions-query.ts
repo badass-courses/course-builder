@@ -75,9 +75,17 @@ export async function getSolutionForLesson(lessonId: string) {
 			},
 		})
 
-		if (!solution) return null
+		const parsedSolution = SolutionSchema.safeParse(solution)
 
-		return SolutionSchema.parse(solution)
+		if (!parsedSolution.success) {
+			log.error('solution.getForLesson.error', {
+				lessonId,
+				error: parsedSolution.error,
+			})
+			return null
+		}
+
+		return parsedSolution.data
 	} catch (error) {
 		log.error('solution.getForLesson.error', {
 			error,
@@ -213,9 +221,13 @@ export async function updateSolution(input: Partial<Solution>) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
+	console.log('🔍 user', user)
+
 	if (!user || !ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
+
+	console.log('🔍 input', input)
 
 	// Ensure we have an ID to look up
 	const id = input.id
@@ -229,6 +241,8 @@ export async function updateSolution(input: Partial<Solution>) {
 		throw new Error(`Solution with id ${id} not found.`)
 	}
 
+	console.log('🔍 currentSolution', currentSolution)
+
 	let solutionSlug = currentSolution.fields.slug
 
 	// Handle title changes for slug updates
@@ -240,6 +254,8 @@ export async function updateSolution(input: Partial<Solution>) {
 		solutionSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
+	console.log('🔍 solutionSlug', solutionSlug)
+
 	try {
 		const updatedResource =
 			await courseBuilderAdapter.updateContentResourceFields({
@@ -250,6 +266,8 @@ export async function updateSolution(input: Partial<Solution>) {
 					slug: solutionSlug,
 				},
 			})
+
+		console.log('🔍 updatedResource', updatedResource)
 
 		try {
 			await upsertPostToTypeSense(
@@ -274,6 +292,7 @@ export async function updateSolution(input: Partial<Solution>) {
 				stack: error instanceof Error ? error.stack : undefined,
 				userId: user.id,
 			})
+			console.log('🔍 solution.update.typesense.failed', error)
 		}
 
 		log.info('solution.updated', {
@@ -281,7 +300,10 @@ export async function updateSolution(input: Partial<Solution>) {
 			userId: user.id,
 		})
 
+		console.log('🔍 revalidating solution')
+
 		revalidateTag('solution')
+		console.log('🔍 solution.update.success', updatedResource)
 		return updatedResource
 	} catch (error) {
 		log.error('solution.update.error', {
@@ -289,6 +311,7 @@ export async function updateSolution(input: Partial<Solution>) {
 			solutionId: currentSolution.id,
 			userId: user.id,
 		})
+		console.log('🔍 solution.update.error', error)
 		throw error
 	}
 }
