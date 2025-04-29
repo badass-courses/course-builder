@@ -10,6 +10,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { getProductPurchaseData } from '@/lib/products/products.service'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
@@ -17,6 +18,8 @@ import { count, eq } from 'drizzle-orm'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
+
+import ProductPurchasesTable from './_components/product-purchase-table'
 
 export async function generateMetadata(
 	props: {
@@ -67,6 +70,32 @@ async function ProductActionBar({
 	)
 }
 
+async function ProductPurchaseDetails({
+	productLoader,
+}: {
+	productLoader: Promise<Product | null>
+}) {
+	const { ability } = await getServerAuthSession()
+
+	const product = await productLoader
+
+	if (!product) return null
+
+	const purchaseDataLoader = getProductPurchaseData({
+		productIds: [product?.id],
+	})
+
+	return (
+		<>
+			{product && ability.can('update', 'Content') ? (
+				<ProductPurchasesTable purchaseDataLoader={purchaseDataLoader} />
+			) : (
+				<div className="flex h-9 w-full items-center justify-between px-1" />
+			)}
+		</>
+	)
+}
+
 async function ProductTitle({
 	productLoader,
 }: {
@@ -102,6 +131,7 @@ export default async function ProductPage(props: {
 						searchParams={searchParams}
 					/>
 				</article>
+				<ProductPurchaseDetails productLoader={productLoader} />
 			</div>
 		</LayoutClient>
 	)
