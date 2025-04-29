@@ -14,7 +14,7 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply text-primary h-16 w-full bg-transparent text-base font-semibold underline sm:w-auto;
+		@apply bg-primary text-primary-foreground mt-4 h-16 w-full rounded-none text-base font-semibold sm:mt-0 sm:w-auto;
 	}
 }
 

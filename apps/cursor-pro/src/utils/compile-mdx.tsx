@@ -1,23 +1,35 @@
-import Link from 'next/link'
-import {
-	SubscribeForm,
-	Testimonial,
-} from '@/app/admin/pages/_components/page-builder-mdx-components'
+import dynamic from 'next/dynamic'
 import { ThemeImage } from '@/components/cld-image'
-import { Code } from '@/components/codehike/code'
-import Scrollycoding from '@/components/codehike/scrollycoding'
-import MDXVideo from '@/components/content/mdx-video'
 import { Heading } from '@/components/mdx/heading'
 import { TrackLink } from '@/components/mdx/mdx-components'
-import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import type { RawCode } from 'codehike/code'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
-import { Mermaid } from '@coursebuilder/mdx-mermaid/client'
 import { Button } from '@coursebuilder/ui'
+
+const Code = dynamic(() =>
+	import('@/components/codehike/code').then((mod) => mod.Code),
+)
+const MDXVideo = dynamic(() => import('@/components/content/mdx-video'))
+const PrimaryNewsletterCta = dynamic(() =>
+	import('@/components/primary-newsletter-cta').then(
+		(mod) => mod.PrimaryNewsletterCta,
+	),
+)
+const SubscribeForm = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.SubscribeForm,
+	),
+)
+const Testimonial = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.Testimonial,
+	),
+)
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -33,20 +45,9 @@ export async function compileMDX(
 		source: source,
 		components: {
 			...components,
-			// @ts-expect-error
-			Code,
-			Scrollycoding,
-			Mermaid: (props) => (
-				<Mermaid
-					{...props}
-					className="flex w-full max-w-4xl items-center justify-center rounded-lg border bg-white py-10 dark:bg-transparent"
-					config={{
-						theme: 'base',
-						themeVariables: {
-							fontSize: '16px',
-						},
-					}}
-				/>
+			// Use dynamic components
+			Code: ({ codeblock }: { codeblock: RawCode }) => (
+				<Code codeblock={codeblock} />
 			),
 			Video: ({ resourceId }: { resourceId: string }) => (
 				<MDXVideo resourceId={resourceId} />

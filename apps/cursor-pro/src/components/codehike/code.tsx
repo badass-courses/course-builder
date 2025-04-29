@@ -9,12 +9,13 @@ import { callout, diff, focus, fold, link, mark } from './handlers'
 export async function Code({ codeblock }: { codeblock: RawCode }) {
 	const highlighted = await highlight(codeblock, 'github-from-css')
 	const isTerminalCode = highlighted.lang === 'shellscript'
+
 	return (
-		<div data-pre="" className="group relative w-auto">
+		<div data-pre="" className="group relative mt-5 w-auto">
 			{isTerminalCode && (
 				<div
 					aria-hidden="true"
-					className="bg-background mt-8 flex w-full items-center gap-1 rounded-t-[0.5rem] border-x border-b border-t p-3"
+					className="bg-background flex w-full items-center gap-1 rounded-t-[0.5rem] border-x border-b border-t p-3"
 				>
 					{new Array(3).fill({}).map((_, index) => (
 						<div
