@@ -967,6 +967,7 @@ export function mySqlDrizzleAdapter(
 					name,
 					emailVerified: null,
 				})
+				console.log('newUser', { newUser })
 				if (!newUser) {
 					throw new Error('Could not create user')
 				}
