@@ -107,9 +107,10 @@ export const sendVerificationRequest = async (
 
 	let user: any
 	try {
-		user = process.env.CREATE_USER_ON_LOGIN
-			? await findOrCreateUser(email, name)
-			: await getUserByEmail?.(email)
+		user =
+			process.env.CREATE_USER_ON_LOGIN !== 'false'
+				? await findOrCreateUser(email, name)
+				: await getUserByEmail?.(email)
 
 		if (!user) {
 			console.warn(
@@ -130,7 +131,7 @@ export const sendVerificationRequest = async (
 
 	if (process.env.LOG_VERIFICATION_URL) {
 		console.log(`
-[sendVerificationRequest] 👋 MAGIC LINK URL ******************
+👋 MAGIC LINK URL ******************
 `)
 		console.log(url)
 		console.log(`
