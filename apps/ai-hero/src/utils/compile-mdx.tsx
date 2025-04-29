@@ -1,19 +1,29 @@
-import Link from 'next/link'
-import { Testimonial } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import dynamic from 'next/dynamic'
 import { ThemeImage } from '@/components/cld-image'
 import { Code } from '@/components/codehike/code'
-import Scrollycoding from '@/components/codehike/scrollycoding'
 import MDXVideo from '@/components/content/mdx-video'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
+import type { RawCode } from 'codehike/code'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
-import { Mermaid } from '@coursebuilder/mdx-mermaid/client'
 import { Button } from '@coursebuilder/ui'
+
+const Scrollycoding = dynamic(
+	() => import('@/components/codehike/scrollycoding'),
+)
+const Mermaid = dynamic(() =>
+	import('@coursebuilder/mdx-mermaid/client').then((mod) => mod.Mermaid),
+)
+const Testimonial = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.Testimonial,
+	),
+)
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -25,9 +35,10 @@ export async function compileMDX(source: string) {
 	return await _compileMDX({
 		source: source,
 		components: {
-			// @ts-expect-error
-			Code,
-			Scrollycoding,
+			Code: ({ codeblock }: { codeblock: RawCode }) => (
+				<Code codeblock={codeblock} />
+			),
+			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
 			Mermaid: (props) => (
 				<Mermaid
