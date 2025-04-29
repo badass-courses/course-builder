@@ -8,6 +8,7 @@ export const emailProvider = Postmark({
 	apiKey: env.POSTMARK_API_KEY,
 	from: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 	sendVerificationRequest: (params) => {
+		console.log('sendVerificationRequest', { params })
 		return sendVerificationRequest(params, courseBuilderAdapter)
 	},
 })

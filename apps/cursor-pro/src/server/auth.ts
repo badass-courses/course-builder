@@ -139,6 +139,7 @@ export const authOptions: NextAuthConfig = {
 					user_id: user.email || user.id,
 				})
 				track('user-created', { userId: user.email })
+				console.log('user-created', { userId: user.email })
 			}
 
 			await inngest.send({ name: USER_CREATED_EVENT, user, data: {} })
@@ -151,6 +152,10 @@ export const authOptions: NextAuthConfig = {
 					user_id: user.email || user.id,
 				})
 				track('account-linked', { account: account.provider })
+				console.log('account-linked', {
+					account: account.provider,
+					userId: user.email,
+				})
 			}
 			await inngest.send({
 				name: OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT,
