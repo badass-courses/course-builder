@@ -56,12 +56,16 @@ export const sendVerificationRequest = async (
 		theme,
 		expires,
 		merchantChargeId,
+		type = 'login',
 	} = params
+
+	const { host } = new URL(url)
+	console.log(
+		`[sendVerificationRequest] Initiated. Type: ${type}, Email: ${email}, Host: ${host}${merchantChargeId ? `, MerchantChargeId: ${merchantChargeId}` : ''}`,
+	)
 
 	let text = params.text || defaultText
 	let html = params.html || defaultHtml
-
-	const { host } = new URL(url)
 
 	const { server, from } = provider.options ? provider.options : provider
 
@@ -69,7 +73,7 @@ export const sendVerificationRequest = async (
 
 	let subject
 
-	switch (params.type) {
+	switch (type) {
 		case 'purchase':
 			subject = `Thank you for Purchasing ${
 				process.env.NEXT_PUBLIC_PRODUCT_NAME ||
@@ -97,22 +101,70 @@ export const sendVerificationRequest = async (
 			} (${host})`
 	}
 
-	const user = process.env.CREATE_USER_ON_LOGIN
-		? await findOrCreateUser(email, name)
-		: await getUserByEmail?.(email)
+	console.log(
+		`[sendVerificationRequest] Determined email subject: "${subject}"`,
+	)
 
-	if (!user) return
+	let user: any
+	try {
+		user = process.env.CREATE_USER_ON_LOGIN
+			? await findOrCreateUser(email, name)
+			: await getUserByEmail?.(email)
 
-	if (process.env.LOG_VERIFICATION_URL) {
-		console.log(`\n👋 MAGIC LINK URL ******************\n`)
-		console.log(url)
-		console.log(`\n************************************\n`)
+		if (!user) {
+			console.warn(
+				`[sendVerificationRequest] User not found and creation disabled/failed for email: ${email}. Aborting.`,
+			)
+			return
+		}
+		console.log(
+			`[sendVerificationRequest] User found or created for email: ${email}, ID: ${user.id || user?.user?.id || 'unknown'}`,
+		)
+	} catch (error: any) {
+		console.error(
+			`[sendVerificationRequest] Error during user lookup/creation for email: ${email}`,
+			error,
+		)
+		throw error
 	}
 
-	if (process.env.SKIP_EMAIL !== 'true') {
-		if (!process.env.POSTMARK_API_TOKEN! && !process.env.POSTMARK_KEY!) {
-			throw new Error('Missing Postmark API Key')
-		}
+	if (process.env.LOG_VERIFICATION_URL) {
+		console.log(`
+[sendVerificationRequest] 👋 MAGIC LINK URL ******************
+`)
+		console.log(url)
+		console.log(`
+************************************
+`)
+	}
+
+	if (process.env.SKIP_EMAIL === 'true') {
+		console.warn(
+			`[sendVerificationRequest] 🚫 Email sending is disabled via SKIP_EMAIL.`,
+		)
+		return
+	}
+
+	if (!process.env.POSTMARK_API_TOKEN && !process.env.POSTMARK_KEY) {
+		console.error(
+			'[sendVerificationRequest] 🚫 Missing Postmark API Key (POSTMARK_API_TOKEN or POSTMARK_KEY). Cannot send email.',
+		)
+		throw new Error('Missing Postmark API Key')
+	}
+
+	try {
+		const textBody = await text(
+			{ url, host, email, expires, merchantChargeId },
+			theme,
+		)
+		const htmlBody = await html(
+			{ url, host, email, expires, merchantChargeId },
+			theme,
+		)
+
+		console.log(
+			`[sendVerificationRequest] Attempting to send email via Postmark to ${email} from ${from}`,
+		)
 
 		const res = await fetch('https://api.postmarkapp.com/email', {
 			method: 'POST',
@@ -126,27 +178,32 @@ export const sendVerificationRequest = async (
 				From: from,
 				To: email,
 				Subject: subject,
-				TextBody: await text(
-					{ url, host, email, expires, merchantChargeId },
-					theme,
-				),
-				HtmlBody: await html(
-					{ url, host, email, expires, merchantChargeId },
-					theme,
-				),
+				TextBody: textBody,
+				HtmlBody: htmlBody,
 				MessageStream: 'outbound',
 			}),
 		})
 
-		if (!res.ok)
-			throw new Error('Postmark error: ' + JSON.stringify(await res.json()))
-		console.debug(`📧 Email sent to ${email}! [${res.status}]`)
-	} else if (process.env.SKIP_EMAIL === 'true') {
-		console.warn(`🚫 email sending is disabled.`)
-	} else {
-		console.warn(
-			`🚫 Invalid email server config. Do you need a POSTMARK_KEY env var?`,
+		if (!res.ok) {
+			const errorBody = await res.json()
+			console.error(
+				`[sendVerificationRequest] Postmark error sending email to ${email}. Status: ${res.status}`,
+				errorBody,
+			)
+			throw new Error(
+				`Postmark error: ${res.status} ${JSON.stringify(errorBody)}`,
+			)
+		}
+
+		console.log(
+			`[sendVerificationRequest] ✅ Email successfully sent to ${email} via Postmark. Status: ${res.status}`,
 		)
+	} catch (error: any) {
+		console.error(
+			`[sendVerificationRequest] 💥 Failed to send email to ${email}. Error:`,
+			error,
+		)
+		throw error
 	}
 }
 
