@@ -21,11 +21,13 @@ import { Button } from '@coursebuilder/ui'
 
 import ProductPurchasesTable from './_components/product-purchase-table'
 
+type MetadataProps = {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
 export async function generateMetadata(
-	props: {
-		params: Promise<{ slug: string }>
-		searchParams: Promise<ParsedUrlQuery>
-	},
+	props: MetadataProps,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
