@@ -112,7 +112,17 @@ export default function ProductPurchasesTable({
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 
-	if (!purchaseDataResult) return null
+	if (!purchaseDataResult) {
+		return (
+			<div className="m-4 space-y-4 sm:my-12">
+				<div className="bg-card text-card-foreground rounded-lg border p-8 text-center shadow-sm">
+					<h2 className="mb-2 text-xl font-medium">
+						No purchase data available
+					</h2>
+				</div>
+			</div>
+		)
+	}
 
 	const { data: purchaseData, totalCount } = purchaseDataResult
 	const totalPages = Math.ceil(totalCount / pageSize)
