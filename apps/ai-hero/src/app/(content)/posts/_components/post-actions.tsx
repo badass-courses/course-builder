@@ -104,7 +104,7 @@ export function PostActions({
 										allLists &&
 										allLists.filter((list) =>
 											list.resources.some(
-												({ resource }) => resource.id === post.id,
+												({ resource }) => resource?.id === post?.id,
 											),
 										)
 
