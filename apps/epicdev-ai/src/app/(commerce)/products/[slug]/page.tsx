@@ -126,9 +126,10 @@ export default async function ProductPage({
 	searchParams: pageSearchParams,
 }: {
 	params: Promise<{ slug: string }>
-	searchParams: { [key: string]: string | string[] | undefined }
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
 	const params = await pageParams
+	const searchParams = await pageSearchParams
 	const productLoader = getProduct(params.slug)
 
 	return (
@@ -138,19 +139,19 @@ export default async function ProductPage({
 					<ProductTitle productLoader={productLoader} />
 					<Suspense
 						fallback={<div className="h-9 w-full" />}
-						key={JSON.stringify(pageSearchParams)}
+						key={JSON.stringify(searchParams)}
 					>
 						<ProductActionBar productLoader={productLoader} />
 					</Suspense>
 					<ProductCommerce
 						productLoader={productLoader}
-						searchParams={pageSearchParams}
+						searchParams={searchParams}
 					/>
 				</article>
 				<Suspense fallback={<div>Loading purchases...</div>}>
 					<ProductPurchaseDetails
 						productLoader={productLoader}
-						searchParams={pageSearchParams}
+						searchParams={searchParams}
 					/>
 				</Suspense>
 			</div>
