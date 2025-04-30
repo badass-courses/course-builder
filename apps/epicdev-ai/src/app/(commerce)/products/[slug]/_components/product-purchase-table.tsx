@@ -173,7 +173,7 @@ export default function ProductPurchasesTable({
 						</>
 					) : (
 						<>
-							<Copy className="h-4 w-4" /> Copy All Emails
+							<Copy className="h-4 w-4" /> Copy Emails to Clipboard
 						</>
 					)}
 				</button>
