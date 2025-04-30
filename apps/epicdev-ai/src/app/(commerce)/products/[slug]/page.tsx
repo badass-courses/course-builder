@@ -125,10 +125,11 @@ export default async function ProductPage({
 	params: pageParams,
 	searchParams: pageSearchParams,
 }: {
-	params: { slug: string }
+	params: Promise<{ slug: string }>
 	searchParams: { [key: string]: string | string[] | undefined }
 }) {
-	const productLoader = getProduct(pageParams.slug)
+	const params = await pageParams
+	const productLoader = getProduct(params.slug)
 
 	return (
 		<LayoutClient>
