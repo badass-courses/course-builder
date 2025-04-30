@@ -72,23 +72,36 @@ async function ProductActionBar({
 
 async function ProductPurchaseDetails({
 	productLoader,
+	searchParams,
 }: {
 	productLoader: Promise<Product | null>
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
 	const { ability } = await getServerAuthSession()
-
 	const product = await productLoader
 
 	if (!product) return null
 
+	const page = searchParams?.page ? parseInt(String(searchParams.page), 10) : 1
+	const limit = searchParams?.limit
+		? parseInt(String(searchParams.limit), 10)
+		: 50
+	const offset = (page - 1) * limit
+
 	const purchaseDataLoader = getProductPurchaseData({
-		productIds: [product?.id],
+		productIds: [product.id],
+		limit,
+		offset,
 	})
 
 	return (
 		<>
 			{product && ability.can('update', 'Content') ? (
-				<ProductPurchasesTable purchaseDataLoader={purchaseDataLoader} />
+				<ProductPurchasesTable
+					purchaseDataResultLoader={purchaseDataLoader}
+					currentPage={page}
+					pageSize={limit}
+				/>
 			) : (
 				<div className="flex h-9 w-full items-center justify-between px-1" />
 			)}
@@ -106,32 +119,37 @@ async function ProductTitle({
 	return <h1 className="text-3xl font-bold sm:text-4xl">{product?.name}</h1>
 }
 
-export default async function ProductPage(props: {
-	params: Promise<{ slug: string }>
-	//arbitrary search params or query string
-	searchParams: Promise<ParsedUrlQuery>
+export default async function ProductPage({
+	params: pageParams,
+	searchParams: pageSearchParams,
+}: {
+	params: { slug: string }
+	searchParams: { [key: string]: string | string[] | undefined }
 }) {
-	const searchParams = await props.searchParams
-	const params = await props.params
-	const productLoader = getProduct(params.slug)
+	const productLoader = getProduct(pageParams.slug)
 
 	return (
-		<LayoutClient withContainer>
-			<div>
-				<Suspense
-					fallback={
-						<div className="flex h-9 w-full items-center justify-between px-1" />
-					}
-				>
-					<ProductActionBar productLoader={productLoader} />
-				</Suspense>
-				<article className="mx-auto flex w-full flex-col px-5 py-10 md:py-16">
+		<LayoutClient>
+			<div className="container flex flex-col">
+				<article className="prose dark:prose-invert mx-auto w-full pt-16">
+					<ProductTitle productLoader={productLoader} />
+					<Suspense
+						fallback={<div className="h-9 w-full" />}
+						key={JSON.stringify(pageSearchParams)}
+					>
+						<ProductActionBar productLoader={productLoader} />
+					</Suspense>
 					<ProductCommerce
 						productLoader={productLoader}
-						searchParams={searchParams}
+						searchParams={pageSearchParams}
 					/>
 				</article>
-				<ProductPurchaseDetails productLoader={productLoader} />
+				<Suspense fallback={<div>Loading purchases...</div>}>
+					<ProductPurchaseDetails
+						productLoader={productLoader}
+						searchParams={pageSearchParams}
+					/>
+				</Suspense>
 			</div>
 		</LayoutClient>
 	)

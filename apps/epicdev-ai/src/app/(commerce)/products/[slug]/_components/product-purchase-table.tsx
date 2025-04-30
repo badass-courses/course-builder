@@ -1,10 +1,26 @@
 'use client'
 
 import { use, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Check, Copy, Search } from 'lucide-react'
 import { z } from 'zod'
 
 import { Input } from '@coursebuilder/ui/primitives/input'
+import {
+	Pagination,
+	PaginationContent,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from '@coursebuilder/ui/primitives/pagination'
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@coursebuilder/ui/primitives/select'
 import {
 	Table,
 	TableBody,
@@ -24,6 +40,11 @@ const PurchaseDataSchema = z.object({
 	purchase_date: z.string(),
 })
 type PurchaseData = z.infer<typeof PurchaseDataSchema>
+const PurchaseDataResultSchema = z.object({
+	data: z.array(PurchaseDataSchema),
+	totalCount: z.number(),
+})
+type PurchaseDataResult = z.infer<typeof PurchaseDataResultSchema>
 
 const formatDate = (dateString: string) => {
 	const date = new Date(dateString)
@@ -50,7 +71,7 @@ function PurchaseCard({ item }: { item: PurchaseData }) {
 			<div className="text-sm">
 				<p>
 					<span className="text-muted-foreground font-medium">Product:</span>{' '}
-					{item.product_name} ({item.productId})
+					{item.product_name}
 				</p>
 				<p>
 					<span className="text-muted-foreground font-medium">Purchased:</span>{' '}
@@ -62,15 +83,26 @@ function PurchaseCard({ item }: { item: PurchaseData }) {
 }
 
 export default function ProductPurchasesTable({
-	purchaseDataLoader,
+	purchaseDataResultLoader,
+	currentPage,
+	pageSize,
 }: {
-	purchaseDataLoader: Promise<PurchaseData[] | null>
+	purchaseDataResultLoader: Promise<PurchaseDataResult | null>
+	currentPage: number
+	pageSize: number
 }) {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [copiedAll, setCopiedAll] = useState(false)
-	const purchaseData = use(purchaseDataLoader)
+	const purchaseDataResult = use(purchaseDataResultLoader)
+	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
 
-	if (!purchaseData) return null
+	if (!purchaseDataResult) return null
+
+	const { data: purchaseData, totalCount } = purchaseDataResult
+	const totalPages = Math.ceil(totalCount / pageSize)
+
 	const filteredData = purchaseData.filter(
 		(item) =>
 			item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -84,17 +116,35 @@ export default function ProductPurchasesTable({
 			.writeText(emails)
 			.then(() => {
 				setCopiedAll(true)
-				setTimeout(() => setCopiedAll(false), 1500) // Reset icon after 1.5 seconds
+				setTimeout(() => setCopiedAll(false), 1500)
 			})
 			.catch((err) => {
 				console.error('Failed to copy emails: ', err)
 			})
 	}
 
-	const caption = `Showing ${filteredData.length} of ${purchaseData.length} valid purchases for selected products`
+	const createPageURL = (pageNumber: number | string, limit?: number) => {
+		const params = new URLSearchParams(searchParams)
+		params.set('page', pageNumber.toString())
+		params.set('limit', (limit || pageSize).toString())
+		return `${pathname}?${params.toString()}`
+	}
+
+	const handlePageSizeChange = (value: string) => {
+		const newPageSize = parseInt(value, 10)
+		router.push(createPageURL(1, newPageSize))
+	}
+
+	const startItem = (currentPage - 1) * pageSize + 1
+	const endItem = Math.min(currentPage * pageSize, totalCount)
+	const caption = `Showing ${
+		filteredData.length > 0
+			? `${startItem}-${Math.min(startItem + filteredData.length - 1, endItem)}`
+			: '0'
+	} of ${totalCount} total purchases.${searchTerm ? ` (${filteredData.length} matches current search)` : ''}`
 
 	return (
-		<div className="m-4 space-y-4">
+		<div className="m-4 space-y-4 sm:my-12">
 			<div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
 				<h2 className="text-2xl font-bold">Product Purchases</h2>
 				<div className="flex-1" />
@@ -102,7 +152,7 @@ export default function ProductPurchasesTable({
 					<Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
 					<Input
 						type="search"
-						placeholder="Search by name, email or product..."
+						placeholder="Search this page..."
 						className="pl-8"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
@@ -110,6 +160,7 @@ export default function ProductPurchasesTable({
 				</div>
 			</div>
 
+			{/* Desktop Table View */}
 			<div className="hidden rounded-md border pb-4 md:block">
 				<Table>
 					<TableCaption>{caption}</TableCaption>
@@ -140,7 +191,7 @@ export default function ProductPurchasesTable({
 					<TableBody>
 						{filteredData.length > 0 ? (
 							filteredData.map((item, index) => (
-								<TableRow key={index}>
+								<TableRow key={`${item.user_id}-${item.productId}-${index}`}>
 									<TableCell className="font-medium">
 										{item.name || 'N/A'}
 									</TableCell>
@@ -155,7 +206,9 @@ export default function ProductPurchasesTable({
 						) : (
 							<TableRow>
 								<TableCell colSpan={5} className="h-24 text-center">
-									No results found.
+									{searchTerm
+										? 'No results match your search on this page.'
+										: 'No purchases found for this page.'}
 								</TableCell>
 							</TableRow>
 						)}
@@ -163,20 +216,92 @@ export default function ProductPurchasesTable({
 				</Table>
 			</div>
 
+			{/* Mobile Card View */}
 			<div className="md:hidden">
 				{filteredData.length > 0 ? (
 					filteredData.map((item, index) => (
-						<PurchaseCard key={index} item={item} />
+						<PurchaseCard
+							key={`${item.user_id}-${item.productId}-${index}`}
+							item={item}
+						/>
 					))
 				) : (
 					<div className="bg-card text-card-foreground rounded-lg border p-4 text-center shadow-sm">
-						No results found.
+						{searchTerm
+							? 'No results match your search on this page.'
+							: 'No purchases found for this page.'}
 					</div>
 				)}
 				<p className="text-muted-foreground pt-2 text-center text-sm">
 					{caption}
 				</p>
 			</div>
+
+			{/* Pagination Controls */}
+			{totalPages > 1 && (
+				<div className="flex items-center justify-between pt-4">
+					<div className="flex items-center space-x-2">
+						<span className="text-sm text-gray-700 dark:text-gray-400">
+							Rows per page:
+						</span>
+						<Select
+							value={pageSize.toString()}
+							onValueChange={handlePageSizeChange}
+						>
+							<SelectTrigger className="h-8 w-[70px]">
+								<SelectValue placeholder={pageSize} />
+							</SelectTrigger>
+							<SelectContent side="top">
+								{[50, 100, 200].map((size) => (
+									<SelectItem key={size} value={`${size}`}>
+										{size}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+					<Pagination>
+						<PaginationContent>
+							<PaginationItem>
+								<PaginationPrevious
+									href={createPageURL(currentPage - 1)}
+									aria-disabled={currentPage <= 1}
+									tabIndex={currentPage <= 1 ? -1 : undefined}
+									className={
+										currentPage <= 1
+											? 'pointer-events-none opacity-50'
+											: undefined
+									}
+								/>
+							</PaginationItem>
+							{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+								(page) => (
+									<PaginationItem key={page}>
+										<PaginationLink
+											href={createPageURL(page)}
+											isActive={currentPage === page}
+										>
+											{page}
+										</PaginationLink>
+									</PaginationItem>
+								),
+							)}
+							<PaginationItem>
+								<PaginationNext
+									href={createPageURL(currentPage + 1)}
+									aria-disabled={currentPage >= totalPages}
+									tabIndex={currentPage >= totalPages ? -1 : undefined}
+									className={
+										currentPage >= totalPages
+											? 'pointer-events-none opacity-50'
+											: undefined
+									}
+								/>
+							</PaginationItem>
+						</PaginationContent>
+					</Pagination>
+				</div>
+			)}
 		</div>
 	)
 }

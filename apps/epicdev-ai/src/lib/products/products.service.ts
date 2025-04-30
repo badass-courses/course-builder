@@ -1,20 +1,31 @@
 import { db } from '@/db'
 import { products, purchases, users } from '@/db/schema'
-import { and, eq, inArray, sql, StringChunk } from 'drizzle-orm'
+import { and, count, eq, inArray, sql, StringChunk } from 'drizzle-orm'
 
 /**
- * Fetches purchase details, including user and product information, for a list of product IDs.
+ * Fetches paginated purchase details, including user and product information, for a list of product IDs.
  * Only returns purchases with a 'Valid' status.
  *
  * @param productIds - An array of product IDs to fetch purchase data for.
- * @returns A promise that resolves to an array of purchase details.
+ * @param limit - The maximum number of records to return.
+ * @param offset - The number of records to skip.
+ * @returns A promise that resolves to an object containing the paginated data and the total count.
  */
 export async function getProductPurchaseData({
 	productIds,
+	limit = 50,
+	offset = 0,
 }: {
 	productIds: string[]
+	limit?: number
+	offset?: number
 }) {
-	const purchaseDetails = await db
+	const whereClause = and(
+		inArray(purchases.productId, productIds),
+		eq(purchases.status, 'Valid'),
+	)
+
+	const purchaseDetailsQuery = db
 		.select({
 			user_id: users.id,
 			email: users.email,
@@ -26,12 +37,22 @@ export async function getProductPurchaseData({
 		.from(purchases)
 		.innerJoin(users, eq(purchases.userId, users.id))
 		.innerJoin(products, eq(purchases.productId, products.id))
-		.where(
-			and(
-				inArray(purchases.productId, productIds),
-				eq(purchases.status, 'Valid'),
-			),
-		)
+		.where(whereClause)
+		.limit(limit)
+		.offset(offset)
+		.orderBy(purchases.createdAt) // Ensure consistent ordering for pagination
 
-	return purchaseDetails
+	const totalCountQuery = db
+		.select({ count: count() })
+		.from(purchases)
+		.where(whereClause)
+
+	const [data, totalResult] = await Promise.all([
+		purchaseDetailsQuery,
+		totalCountQuery,
+	])
+
+	const totalCount = totalResult[0]?.count || 0
+
+	return { data, totalCount }
 }
