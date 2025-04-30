@@ -6,32 +6,57 @@ import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
 import ReactMarkdown from 'react-markdown'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@coursebuilder/ui'
+import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 export function Transcript({
 	transcriptLoader,
+	abilityLoader,
 }: {
 	transcriptLoader: Promise<string | null | undefined>
+	abilityLoader: Promise<AbilityForResource>
 }) {
-	let transcript = use(transcriptLoader)
-
+	const ability = use(abilityLoader)
+	const canView = ability?.canView
 	const { muxPlayerRef } = useMuxPlayer()
 
-	const canShowVideo = true // TODO: Determine if video is available
+	if (!canView) {
+		return null
+	}
+	let transcript = use(transcriptLoader)
+
+	if (!transcript) {
+		return null
+	}
 
 	return (
-		<ReactMarkdown
-			components={{
-				p: ({ children }) =>
-					paragraphWithTimestampButtons({
-						children,
-						canShowVideo,
-						muxPlayerRef,
-					}),
-			}}
-			className="prose dark:prose-invert max-w-none"
-		>
-			{transcript}
-		</ReactMarkdown>
+		<Accordion type="single" collapsible className="mt-8">
+			<AccordionItem value="transcript">
+				<AccordionTrigger className="flex w-full items-center font-medium">
+					Transcript
+				</AccordionTrigger>
+				<AccordionContent>
+					<ReactMarkdown
+						components={{
+							p: ({ children }) =>
+								paragraphWithTimestampButtons({
+									children,
+									canShowVideo: canView,
+									muxPlayerRef,
+								}),
+						}}
+						className="prose dark:prose-invert max-w-none"
+					>
+						{transcript}
+					</ReactMarkdown>
+				</AccordionContent>
+			</AccordionItem>
+		</Accordion>
 	)
 }
 

@@ -18,7 +18,10 @@ import {
 } from '@/lib/lessons-query'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
-import { getAbilityForResource } from '@/utils/get-current-ability-rules'
+import {
+	getAbilityForResource,
+	type AbilityForResource,
+} from '@/utils/get-current-ability-rules'
 import { Github } from 'lucide-react'
 
 import {
@@ -31,6 +34,9 @@ import {
 	Skeleton,
 } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+
+import { CopyProblemPromptButton } from '../../../_components/copy-problem-prompt-button'
+import { LessonBody } from '../../../_components/lesson-body'
 
 export async function LessonPage({
 	lesson,
@@ -47,6 +53,9 @@ export async function LessonPage({
 	if (!lesson) {
 		notFound()
 	}
+
+	const abilityLoader = getAbilityForResource(params.lesson, params.module)
+	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
 
 	return (
 		<main className="w-full">
@@ -69,21 +78,21 @@ export async function LessonPage({
 					<article className="flex h-full flex-col gap-5">
 						<LessonTitle lesson={lesson} />
 						<div className="relative flex w-full items-center justify-between gap-3">
-							<LessonActionBar lesson={lesson} params={params} />
+							<LessonActionBar lesson={lesson} abilityLoader={abilityLoader} />
 							<LessonControls lesson={lesson} className="flex justify-end" />
 						</div>
-						<LessonBody lesson={lesson} />
+						<Suspense fallback={<div>Loading...</div>}>
+							<LessonBody
+								lesson={lesson}
+								abilityLoader={abilityLoader}
+								mdxContentPromise={mdxContentPromise}
+							/>
+						</Suspense>
 						<UpNext currentResourceId={lesson?.id} />
-						<Accordion type="single" collapsible className="mt-8">
-							<AccordionItem value="transcript">
-								<AccordionTrigger className="flex w-full items-center font-medium">
-									Transcript
-								</AccordionTrigger>
-								<AccordionContent>
-									<TranscriptContainer lessonId={lesson?.id} />
-								</AccordionContent>
-							</AccordionItem>
-						</Accordion>
+						<TranscriptContainer
+							lessonId={lesson?.id}
+							abilityLoader={abilityLoader}
+						/>
 						{/* <Accordion type="single" collapsible className="mt-4">
 							<AccordionItem value="contents">
 								<AccordionTrigger className="flex w-full items-center font-medium">
@@ -121,15 +130,21 @@ export async function LessonPage({
 async function TranscriptContainer({
 	lessonId,
 	className,
+	abilityLoader,
 }: {
-	lessonId: string | null | undefined
+	lessonId: string
 	className?: string
+	abilityLoader: Promise<AbilityForResource>
 }) {
 	const transcriptLoader = getLessonVideoTranscript(lessonId)
+
 	return (
 		<div className={cn('pt-4', className)}>
 			<Suspense fallback={<div className="p-5"></div>}>
-				<Transcript transcriptLoader={transcriptLoader} />
+				<Transcript
+					transcriptLoader={transcriptLoader}
+					abilityLoader={abilityLoader}
+				/>
 			</Suspense>
 		</div>
 	)
@@ -208,10 +223,12 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 
 async function LessonActionBar({
 	lesson,
-	params,
+
+	abilityLoader,
 }: {
 	lesson: Lesson | null
-	params: { module: string; lesson: string }
+
+	abilityLoader: Promise<AbilityForResource>
 }) {
 	if (!lesson) return null
 
@@ -229,6 +246,12 @@ async function LessonActionBar({
 					</Link>
 				</Button>
 			)}
+			<React.Suspense fallback={null}>
+				<CopyProblemPromptButton
+					abilityLoader={abilityLoader}
+					lesson={lesson}
+				/>
+			</React.Suspense>
 			{gitpodUrl && (
 				<Button variant="outline" asChild className="h-11 text-base">
 					<Link href={gitpodUrl} target="_blank">
@@ -254,16 +277,35 @@ async function LessonActionBar({
 	)
 }
 
-async function LessonBody({ lesson }: { lesson: Lesson | null }) {
-	if (!lesson) {
-		notFound()
-	}
+// async function LessonBody({
+// 	lesson,
+// 	params,
+// }: {
+// 	lesson: Lesson | null
+// 	params: { module: string; lesson: string }
+// }) {
+// 	if (!lesson) {
+// 		notFound()
+// 	}
 
-	const { content } = await compileMDX(lesson?.fields?.body || '')
+// 	const { content } = await compileMDX(lesson?.fields?.body || '')
+// 	const abilityLoader = await getAbilityForResource(
+// 		params.lesson,
+// 		params.module,
+// 	)
+// 	const canView = abilityLoader?.canView
 
-	return (
-		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-			{content}
-		</article>
-	)
-}
+// 	if (!canView) {
+// 		return (
+// 			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+// 				<p>This lesson is locked. Please upgrade to view it.</p>
+// 			</article>
+// 		)
+// 	}
+
+// 	return (
+// 		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+// 			{content}
+// 		</article>
+// 	)
+// }

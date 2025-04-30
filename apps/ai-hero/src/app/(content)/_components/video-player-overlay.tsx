@@ -31,6 +31,7 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
 import { useModuleProgress } from './module-progress-provider'
@@ -40,7 +41,14 @@ export const CompletedLessonOverlay: React.FC<{
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
-}> = ({ action, resource, moduleType = 'tutorial', moduleSlug }) => {
+	abilityLoader: Promise<AbilityForResource>
+}> = ({
+	action,
+	resource,
+	moduleType = 'tutorial',
+	moduleSlug,
+	abilityLoader,
+}) => {
 	const { playerRef } = action
 	const workshopNavigation = useWorkshopNavigation()
 	const nextLesson = getNextWorkshopResource(
@@ -72,7 +80,7 @@ export const CompletedLessonOverlay: React.FC<{
 			</div>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="secondary"
+					variant="ghost"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -82,6 +90,14 @@ export const CompletedLessonOverlay: React.FC<{
 				>
 					Replay
 				</Button>
+				{resource && (
+					<CopyProblemPromptButton
+						abilityLoader={abilityLoader}
+						className="dark:bg-primary/20 dark:hover:bg-primary/30 dark:text-primary h-10 bg-white/20 px-4 text-sm text-white transition hover:bg-white/30"
+						lesson={resource}
+						variant="default"
+					/>
+				)}
 				{resource && (
 					<ContinueButton
 						moduleType={moduleType}
@@ -199,6 +215,7 @@ const ContinueButton: React.FC<{
 	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
+			className="dark:bg-primary dark:hover:bg-primary/80 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
 			onClick={async () => {
 				if (!isCurrentLessonCompleted) {
 					startTransition(async () => {
@@ -397,6 +414,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 					resource={resource}
 					moduleType={moduleType}
 					moduleSlug={moduleSlug}
+					abilityLoader={abilityLoader}
 				/>
 			)
 		case 'LOADING':
