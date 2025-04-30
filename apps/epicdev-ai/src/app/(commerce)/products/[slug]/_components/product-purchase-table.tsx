@@ -236,7 +236,9 @@ export default function ProductPurchasesTable({
 					<TableBody>
 						{filteredData.length > 0 ? (
 							filteredData.map((item, index) => (
-								<TableRow key={`${item.user_id}-${item.productId}-${index}`}>
+								<TableRow
+									key={`${item.user_id}-${item.productId}-${item.purchase_date}`}
+								>
 									<TableCell className="font-medium">
 										{item.name || 'N/A'}
 									</TableCell>
@@ -266,7 +268,7 @@ export default function ProductPurchasesTable({
 				{filteredData.length > 0 ? (
 					filteredData.map((item, index) => (
 						<PurchaseCard
-							key={`${item.user_id}-${item.productId}-${index}`}
+							key={`${item.user_id}-${item.productId}-${item.purchase_date}`}
 							item={item}
 						/>
 					))
