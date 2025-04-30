@@ -68,16 +68,6 @@ export function AuthedVideoPlayer({
 	const [currentResource, setCurrentResource] =
 		React.useState<ContentResource>(resource)
 
-	// const { data: nextResource } = api.progress.getNextResource.useQuery(
-	// 	{
-	// 		lessonId: currentResource.id,
-	// 		moduleSlug: moduleSlug,
-	// 	},
-	// 	{
-	// 		enabled: Boolean(moduleSlug),
-	// 	},
-	// )
-
 	const navigation = useWorkshopNavigation()
 
 	const nextResource = getNextWorkshopResource(navigation, currentResource.id)
@@ -227,14 +217,20 @@ async function handleOnVideoEnded({
 			nextResource &&
 			playerRef?.current
 		) {
-			dispatchVideoPlayerOverlay({ type: 'LOADING' })
-			playerRef.current.playbackId = nextLessonPlaybackId
+			// dispatchVideoPlayerOverlay({ type: 'LOADING' })
+			// playerRef.current.playbackId = nextLessonPlaybackId
 			await handleSetLessonComplete({
 				currentResource,
 				moduleProgress,
 				addLessonProgress,
 			})
 			setCurrentResource(nextResource)
+			router.push(
+				getResourcePath(nextResource.type, nextResource.slug, 'view', {
+					parentType: moduleType as string,
+					parentSlug: moduleSlug as string,
+				}),
+			)
 		} else if (bingeMode) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })

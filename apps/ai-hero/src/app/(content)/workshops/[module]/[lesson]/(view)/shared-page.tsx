@@ -157,7 +157,7 @@ async function PlayerContainer({
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="mb-10 flex flex-col items-center justify-center border-b bg-black"
+				className="relative mb-10 flex flex-col items-center justify-center border-b bg-black"
 			>
 				<Suspense
 					fallback={

@@ -12,6 +12,7 @@ import { addProgress, setProgressForResource } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
+import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -41,85 +42,73 @@ export const CompletedLessonOverlay: React.FC<{
 	moduleSlug?: string
 }> = ({ action, resource, moduleType = 'tutorial', moduleSlug }) => {
 	const { playerRef } = action
-
-	const { data: nextLesson, status: nextLessonStatus } =
-		api.progress.getNextResource.useQuery({
-			lessonId: resource?.id,
-			moduleSlug: moduleSlug,
-		})
+	const workshopNavigation = useWorkshopNavigation()
+	const nextLesson = getNextWorkshopResource(
+		workshopNavigation,
+		resource?.id as string,
+	)
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
 
 	const percentCompleted = moduleProgress?.percentCompleted || 0
 
-	return nextLessonStatus === 'success' ? (
-		nextLesson ? (
-			<div
-				aria-live="polite"
-				className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
-			>
-				<div className="flex flex-col items-center text-center">
-					<p className="pb-2 opacity-80">Up Next:</p>
-					<p className="font-heading fluid-2xl font-bold">
-						{nextLesson?.fields?.title}
-					</p>
-					<div className="mt-8 flex items-center gap-3 text-sm">
-						<Progress
-							value={percentCompleted}
-							className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
-						/>
-						{moduleProgress?.completedLessonsCount || 0}/
-						{moduleProgress?.totalLessonsCount || 0} completed
-					</div>
-				</div>
-				<div className="flex w-full items-center justify-center gap-3">
-					<Button
-						variant="secondary"
-						type="button"
-						onClick={() => {
-							if (playerRef.current) {
-								playerRef.current.play()
-							}
-						}}
-					>
-						Replay
-					</Button>
-					{resource && (
-						<ContinueButton
-							moduleType={moduleType}
-							resource={resource}
-							nextResource={nextLesson}
-						/>
-					)}
-				</div>
-				<Button
-					type="button"
-					className="absolute right-5 top-5 bg-white/10"
-					variant="ghost"
-					size="icon"
-					onClick={() => {
-						dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
-					}}
-				>
-					<span className="sr-only">Dismiss</span>
-					<XMarkIcon aria-hidden="true" className="h-6 w-6" />
-				</Button>
-			</div>
-		) : (
-			<CompletedModuleOverlay
-				action={action}
-				resource={resource}
-				moduleType={moduleType}
-			/>
-		)
-	) : (
+	return nextLesson ? (
 		<div
 			aria-live="polite"
 			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
-			<Spinner />
+			<div className="flex flex-col items-center text-center">
+				<p className="pb-2 opacity-80">Up Next:</p>
+				<p className="font-heading fluid-2xl font-bold">{nextLesson?.title}</p>
+				<div className="mt-8 flex items-center gap-3 text-sm">
+					<Progress
+						value={percentCompleted}
+						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
+					/>
+					{moduleProgress?.completedLessonsCount || 0}/
+					{moduleProgress?.totalLessonsCount || 0} completed
+				</div>
+			</div>
+			<div className="flex w-full items-center justify-center gap-3">
+				<Button
+					variant="secondary"
+					type="button"
+					onClick={() => {
+						if (playerRef.current) {
+							playerRef.current.play()
+						}
+					}}
+				>
+					Replay
+				</Button>
+				{resource && (
+					<ContinueButton
+						moduleType={moduleType}
+						resource={resource}
+						nextResource={nextLesson}
+					/>
+				)}
+			</div>
+			<Button
+				type="button"
+				className="absolute right-5 top-5 bg-white/10"
+				variant="ghost"
+				size="icon"
+				onClick={() => {
+					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
+				}}
+			>
+				<span className="sr-only">Dismiss</span>
+				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
+			</Button>
 		</div>
+	) : (
+		<CompletedModuleOverlay
+			action={action}
+			resource={resource}
+			moduleType={moduleType}
+		/>
 	)
 }
 
@@ -187,7 +176,14 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: ContentResource | null
+	nextResource?: {
+		id: string
+		slug: string
+		title: string
+		type: string
+		parentId?: string | undefined
+		parentSlug?: string | undefined
+	} | null
 }> = ({ resource, nextResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
@@ -221,7 +217,7 @@ const ContinueButton: React.FC<{
 						)
 					}
 					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.slug}`,
 					)
 				}
 			}}
@@ -293,7 +289,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	moduleType = 'tutorial',
 	moduleSlug,
 }) => {
-	usePrefetchNextResource({ resource, moduleType, moduleSlug })
+	// usePrefetchNextResource({ resource, moduleType, moduleSlug })
 
 	const ability = use(abilityLoader)
 	const canView = ability.canView
@@ -302,10 +298,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const { data: session } = useSession()
-	const { data: nextResource } = api.progress.getNextResource.useQuery({
-		lessonId: resource.id,
-		moduleSlug: moduleSlug,
-	})
+
 	const purchaseForProduct = pricingProps?.purchases?.find(
 		(purchase) => purchase.productId === pricingProps?.product?.id,
 	)
