@@ -104,7 +104,7 @@ const Instructor = ({
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/johnlindquist/image/upload/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm.jpg"
+				src="https://res.cloudinary.com/jheytompkins/image/upload/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm.jpg"
 				alt={config.author}
 				width={320}
 				height={240}
