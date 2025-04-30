@@ -169,6 +169,7 @@
 
 	html {
 		/* scrollbar-gutter: stable; */
+		@apply overflow-x-hidden;
 	}
 
 	html.dark .shiki,

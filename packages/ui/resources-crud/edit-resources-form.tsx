@@ -6,7 +6,15 @@ import { Schema, z } from 'zod'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { useAutoSave } from '../hooks/use-auto-save'
-import { ResizableHandle } from '../primitives/resizable'
+import { useIsSmallScreen } from '../hooks/use-is-small-screen'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '../primitives/accordion'
+import { ResizableHandle, ResizablePanel } from '../primitives/resizable'
+import { ScrollArea } from '../primitives/scroll-area'
 import { useToast } from '../primitives/use-toast'
 import { EditResourcesActionBar } from './edit-resources-action-bar'
 import {
@@ -17,7 +25,7 @@ import { EditResourcePanelGroup } from './panels/edit-resource-panel-group'
 import { EditResourcesBodyPanel } from './panels/edit-resources-body-panel'
 import { EditResourcesMetadataPanel } from './panels/edit-resources-metadata-panel'
 
-export function EditResourcesFormDesktop({
+export function EditResourcesForm({
 	resource,
 	getResourcePath,
 	resourceSchema,
@@ -101,8 +109,79 @@ export function EditResourcesFormDesktop({
 	}
 
 	const { toast } = useToast()
+	const isSmallScreen = useIsSmallScreen()
 
-	return (
+	return isSmallScreen ? (
+		// Mobile version
+		<Accordion type="multiple" defaultValue={['body']}>
+			<EditResourcesActionBar
+				resource={resource}
+				resourcePath={getResourcePath(resource.fields?.slug)}
+				isAutoSaving={isAutoSaving}
+				onSubmit={async () => {
+					await onSubmit(form.getValues(), 'save').then(() => {
+						toast({
+							title: '✅ Saved!',
+						})
+					})
+				}}
+				onPublish={async () => {
+					form.setValue('fields.state', 'published')
+					await onSubmit(form.getValues(), 'publish')
+				}}
+				onArchive={async () => {
+					form.setValue('fields.state', 'archived')
+					await onSubmit(form.getValues(), 'archive')
+				}}
+				onUnPublish={async () => {
+					form.setValue('fields.state', 'draft')
+					await onSubmit(form.getValues(), 'unpublish')
+				}}
+			/>
+			<AccordionItem value="metadata">
+				<AccordionTrigger className="bg-card flex w-full items-center justify-between p-5">
+					Metadata
+				</AccordionTrigger>
+				<AccordionContent>
+					<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
+						{children}
+					</EditResourcesMetadataPanel>
+				</AccordionContent>
+			</AccordionItem>
+			<AccordionItem value="body">
+				<AccordionTrigger className="bg-card flex w-full items-center justify-between p-5">
+					Body
+				</AccordionTrigger>
+				<AccordionContent>
+					<EditResourcesBodyPanel
+						user={user}
+						partykitUrl={hostUrl}
+						resource={resource}
+						form={form}
+						theme={theme}
+						onResourceBodyChange={(value) => {
+							onResourceBodyChange(value)
+							triggerAutoSave()
+						}}
+						toggleMdxPreview={toggleMdxPreview}
+						isShowingMdxPreview={isShowingMdxPreview}
+						mdxPreviewComponent={mdxPreviewComponent}
+					>
+						{bodyPanelSlot}
+					</EditResourcesBodyPanel>
+				</AccordionContent>
+			</AccordionItem>
+			{/* <EditResourcesToolPanel
+				resource={{ ...resource, ...form.getValues() }}
+				availableWorkflows={availableWorkflows}
+				sendResourceChatMessage={sendResourceChatMessage}
+				hostUrl={hostUrl}
+				user={user}
+				tools={tools}
+			/> */}
+		</Accordion>
+	) : (
+		// Desktop version
 		<>
 			<EditResourcesActionBar
 				resource={resource}
@@ -129,26 +208,58 @@ export function EditResourcesFormDesktop({
 				}}
 			/>
 			<EditResourcePanelGroup>
-				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
-					{children}
-				</EditResourcesMetadataPanel>
-				<ResizableHandle />
-				<EditResourcesBodyPanel
-					user={user}
-					partykitUrl={hostUrl}
-					resource={resource}
-					form={form}
-					theme={theme}
-					onResourceBodyChange={(value) => {
-						onResourceBodyChange(value)
-						triggerAutoSave()
-					}}
-					toggleMdxPreview={toggleMdxPreview}
-					isShowingMdxPreview={isShowingMdxPreview}
-					mdxPreviewComponent={mdxPreviewComponent}
+				<ResizablePanel
+					id="edit-resources-metadata-panel"
+					order={1}
+					minSize={5}
+					defaultSize={20}
+					maxSize={35}
+					className=""
 				>
-					{bodyPanelSlot}
-				</EditResourcesBodyPanel>
+					<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
+						{children}
+					</EditResourcesMetadataPanel>
+				</ResizablePanel>
+				<ResizableHandle />
+				<>
+					{isShowingMdxPreview && (
+						<>
+							<ResizablePanel
+								id="edit-resources-body-preview-panel"
+								order={2}
+								defaultSize={20}
+							>
+								{mdxPreviewComponent}
+							</ResizablePanel>
+							<ResizableHandle />
+						</>
+					)}
+					<ResizablePanel
+						id="edit-resources-body-panel"
+						order={isShowingMdxPreview ? 3 : 2}
+						defaultSize={55}
+						className="flex min-h-full md:min-h-full"
+					>
+						<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+							<EditResourcesBodyPanel
+								user={user}
+								partykitUrl={hostUrl}
+								resource={resource}
+								form={form}
+								theme={theme}
+								onResourceBodyChange={(value) => {
+									onResourceBodyChange(value)
+									triggerAutoSave()
+								}}
+								toggleMdxPreview={toggleMdxPreview}
+								isShowingMdxPreview={isShowingMdxPreview}
+								mdxPreviewComponent={mdxPreviewComponent}
+							>
+								{bodyPanelSlot}
+							</EditResourcesBodyPanel>
+						</ScrollArea>
+					</ResizablePanel>
+				</>
 				<EditResourcesToolPanel
 					resource={{ ...resource, ...form.getValues() }}
 					availableWorkflows={availableWorkflows}

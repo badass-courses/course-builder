@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
 import { ImagePlusIcon, LayoutTemplate, VideoIcon } from 'lucide-react'
@@ -32,7 +31,6 @@ export function EditPostForm({
 	videoResource,
 	listsLoader,
 }: EditPostFormProps) {
-	const isMobile = useIsMobile()
 	const router = useRouter()
 
 	// Handle either direct videoResource or resolve from loader

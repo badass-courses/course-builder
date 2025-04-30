@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation'
 import { LessonMetadataFormFields } from '@/app/(content)/tutorials/[module]/[lesson]/edit/_components/edit-lesson-form-metadata'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, LessonSchema } from '@/lib/lessons'
 import { updateLesson } from '@/lib/lessons-query'
@@ -15,7 +14,7 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 const NewLessonFormSchema = z.object({
 	fields: z.object({
@@ -55,14 +54,13 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 
 	const initialVideoResourceId = lesson.resources?.find((resourceJoin) => {
 		return resourceJoin.resource.type === 'videoResource'
 	})?.resource.id
 
 	return (
-		<EditResourcesFormDesktop
+		<EditResourcesForm
 			resource={lesson}
 			resourceSchema={LessonSchema}
 			getResourcePath={(slug?: string) => `/tutorials/${moduleSlug}/${slug}`}
@@ -82,6 +80,6 @@ export function EditLessonForm({ lesson }: Omit<EditLessonFormProps, 'form'>) {
 				form={form}
 				lesson={lesson}
 			/>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }

@@ -3,7 +3,6 @@
 import * as React from 'react'
 import { onPromptSave } from '@/app/(content)/prompts/[slug]/edit/actions'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { PromptSchema, type Prompt } from '@/lib/prompts'
 import { updatePrompt } from '@/lib/prompts-query'
@@ -20,8 +19,7 @@ import {
 	FormMessage,
 	Input,
 } from '@coursebuilder/ui'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 
 type EditPromptFormProps = {
@@ -44,11 +42,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 		},
 	})
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	return (
 		<ResourceForm

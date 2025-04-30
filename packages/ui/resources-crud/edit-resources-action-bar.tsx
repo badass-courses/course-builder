@@ -41,7 +41,7 @@ export function EditResourcesActionBar({
 	const isDisabled = isSubmitting || isAutoSaving
 
 	return (
-		<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
+		<div className="md:bg-muted bg-muted/80 sticky top-0 z-20 flex h-20 w-full flex-col px-1 text-sm backdrop-blur-md sm:text-base md:h-9 md:flex-row md:items-center md:justify-between md:backdrop-blur-none">
 			<div className="flex items-center">
 				<Button
 					title={`View ${resource.type}`}
@@ -53,14 +53,14 @@ export function EditResourcesActionBar({
 						<ArrowLeft className="w-4" />
 					</a>
 				</Button>
-				<span className="font-medium">
-					{resource?.fields?.title} {/* ({resource.type.toUpperCase()})*/}
+				<span className="truncate overflow-ellipsis pr-3 font-medium">
+					{resource?.fields?.title}{' '}
 					<span className="hidden font-mono text-xs font-normal md:inline-block">
 						({resource.id})
 					</span>
 				</span>
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center justify-center gap-2 md:justify-start">
 				{resource.fields?.state === 'draft' && (
 					<Button
 						onClick={(e) => {

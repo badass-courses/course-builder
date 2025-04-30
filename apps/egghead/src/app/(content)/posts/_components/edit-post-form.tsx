@@ -9,7 +9,6 @@ import {
 } from '@/app/(content)/posts/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
@@ -28,7 +27,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 import PublishPostChecklist from './publish-post-checklist'
 import { ResourceResourcesList } from './resource-resources-list'
@@ -85,24 +84,9 @@ export function EditPostForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 
-	return isMobile ? (
-		<MobileEditPostForm
-			post={post}
-			form={form}
-			tagLoader={tagLoader}
-			videoResourceLoader={videoResourceLoader}
-			videoResourceId={videoResourceId}
-			availableWorkflows={[
-				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
-			]}
-			theme={theme}
-			instructorLoader={instructorLoader}
-			isAdmin={isAdmin}
-		/>
-	) : (
-		<EditResourcesFormDesktop
+	return (
+		<EditResourcesForm
 			resource={post}
 			resourceSchema={PostSchema}
 			getResourcePath={(slug) => `/${slug}`}
@@ -174,6 +158,6 @@ export function EditPostForm({
 				post={post}
 				isAdmin={isAdmin}
 			/>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }
