@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Check, Copy, Search } from 'lucide-react'
 import { z } from 'zod'
@@ -57,6 +57,20 @@ const formatDate = (dateString: string) => {
 	}).format(date)
 }
 
+const memoizedFormatDate = (() => {
+	const cache = new Map<string, string>()
+
+	return (dateString: string) => {
+		if (cache.has(dateString)) {
+			return cache.get(dateString)!
+		}
+
+		const formatted = formatDate(dateString)
+		cache.set(dateString, formatted)
+		return formatted
+	}
+})()
+
 /**
  * Renders a single purchase item in a card format, suitable for mobile views.
  * @param item - The purchase data object.
@@ -75,7 +89,7 @@ function PurchaseCard({ item }: { item: PurchaseData }) {
 				</p>
 				<p>
 					<span className="text-muted-foreground font-medium">Purchased:</span>{' '}
-					{formatDate(item.purchase_date)}
+					{memoizedFormatDate(item.purchase_date)}
 				</p>
 			</div>
 		</div>
@@ -103,12 +117,14 @@ export default function ProductPurchasesTable({
 	const { data: purchaseData, totalCount } = purchaseDataResult
 	const totalPages = Math.ceil(totalCount / pageSize)
 
-	const filteredData = purchaseData.filter(
-		(item) =>
-			item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			item?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			item?.product_name.toLowerCase().includes(searchTerm.toLowerCase()),
-	)
+	const filteredData = useMemo(() => {
+		return purchaseData.filter(
+			(item) =>
+				(item?.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+				item?.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				item?.product_name.toLowerCase().includes(searchTerm.toLowerCase()),
+		)
+	}, [purchaseData, searchTerm])
 
 	const handleCopyAllEmails = () => {
 		const emails = filteredData.map((item) => item.email).join('\n')
@@ -218,7 +234,7 @@ export default function ProductPurchasesTable({
 									<TableCell>{item.productId}</TableCell>
 									<TableCell>{item.product_name}</TableCell>
 									<TableCell className="text-right">
-										{formatDate(item.purchase_date)}
+										{memoizedFormatDate(item.purchase_date)}
 									</TableCell>
 								</TableRow>
 							))
