@@ -4,7 +4,6 @@ import * as React from 'react'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import TutorialResourcesList from '@/components/tutorial-resources-edit'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { ModuleSchema } from '@/lib/module'
 import { updateTutorial } from '@/lib/tutorials-query'
@@ -27,8 +26,7 @@ import {
 	Input,
 	Textarea,
 } from '@coursebuilder/ui'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
@@ -55,11 +53,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 	const session = useSession()
 	const { forcedTheme: theme } = useTheme()
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	return (
 		<>

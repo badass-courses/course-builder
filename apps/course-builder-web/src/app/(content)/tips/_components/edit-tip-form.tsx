@@ -16,7 +16,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 const NewTipFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -48,20 +48,9 @@ export function EditTipForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 
-	return isMobile ? (
-		<MobileEditTipForm
-			tip={tip}
-			form={form}
-			videoResourceLoader={videoResourceLoader}
-			availableWorkflows={[
-				{ value: 'tip-chat-default-okf8v', label: 'Tip Chat', default: true },
-			]}
-			theme={theme}
-		/>
-	) : (
-		<EditResourcesFormDesktop
+	return (
+		<EditResourcesForm
 			resource={tip}
 			resourceSchema={TipSchema}
 			getResourcePath={(slug) => `/tips/${slug}`}
@@ -82,6 +71,6 @@ export function EditTipForm({
 				videoResourceLoader={videoResourceLoader}
 				tip={tip}
 			/>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }

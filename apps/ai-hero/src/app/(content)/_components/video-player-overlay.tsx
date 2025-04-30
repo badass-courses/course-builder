@@ -11,6 +11,10 @@ import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'
 import { addProgress, setProgressForResource } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
+import {
+	getAdjacentWorkshopResources,
+	type AdjacentResource,
+} from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
@@ -30,6 +34,7 @@ import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
 import { useModuleProgress } from './module-progress-provider'
@@ -39,87 +44,89 @@ export const CompletedLessonOverlay: React.FC<{
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
-}> = ({ action, resource, moduleType = 'tutorial', moduleSlug }) => {
+	abilityLoader: Promise<AbilityForResource>
+}> = ({
+	action,
+	resource,
+	moduleType = 'tutorial',
+	moduleSlug,
+	abilityLoader,
+}) => {
 	const { playerRef } = action
-
-	const { data: nextLesson, status: nextLessonStatus } =
-		api.progress.getNextResource.useQuery({
-			lessonId: resource?.id,
-			moduleSlug: moduleSlug,
-		})
+	const workshopNavigation = useWorkshopNavigation()
+	const { nextResource: nextLesson, prevResource: prevLesson } =
+		getAdjacentWorkshopResources(workshopNavigation, resource?.id as string)
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
 
 	const percentCompleted = moduleProgress?.percentCompleted || 0
 
-	return nextLessonStatus === 'success' ? (
-		nextLesson ? (
-			<div
-				aria-live="polite"
-				className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
-			>
-				<div className="flex flex-col items-center text-center">
-					<p className="pb-2 opacity-80">Up Next:</p>
-					<p className="font-heading fluid-2xl font-bold">
-						{nextLesson?.fields?.title}
-					</p>
-					<div className="mt-8 flex items-center gap-3 text-sm">
-						<Progress
-							value={percentCompleted}
-							className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
-						/>
-						{moduleProgress?.completedLessonsCount || 0}/
-						{moduleProgress?.totalLessonsCount || 0} completed
-					</div>
-				</div>
-				<div className="flex w-full items-center justify-center gap-3">
-					<Button
-						variant="secondary"
-						type="button"
-						onClick={() => {
-							if (playerRef.current) {
-								playerRef.current.play()
-							}
-						}}
-					>
-						Replay
-					</Button>
-					{resource && (
-						<ContinueButton
-							moduleType={moduleType}
-							resource={resource}
-							nextResource={nextLesson}
-						/>
-					)}
-				</div>
-				<Button
-					type="button"
-					className="absolute right-5 top-5 bg-white/10"
-					variant="ghost"
-					size="icon"
-					onClick={() => {
-						dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
-					}}
-				>
-					<span className="sr-only">Dismiss</span>
-					<XMarkIcon aria-hidden="true" className="h-6 w-6" />
-				</Button>
-			</div>
-		) : (
-			<CompletedModuleOverlay
-				action={action}
-				resource={resource}
-				moduleType={moduleType}
-			/>
-		)
-	) : (
+	return nextLesson ? (
 		<div
 			aria-live="polite"
 			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
 		>
-			<Spinner />
+			<div className="flex flex-col items-center text-center">
+				<p className="pb-2 opacity-80">Up Next:</p>
+				<p className="font-heading fluid-2xl font-bold">{nextLesson?.title}</p>
+				<div className="mt-8 flex items-center gap-3 text-sm">
+					<Progress
+						value={percentCompleted}
+						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
+					/>
+					{moduleProgress?.completedLessonsCount || 0}/
+					{moduleProgress?.totalLessonsCount || 0} completed
+				</div>
+			</div>
+			<div className="flex w-full items-center justify-center gap-3">
+				<Button
+					variant="ghost"
+					type="button"
+					onClick={() => {
+						if (playerRef.current) {
+							playerRef.current.play()
+						}
+					}}
+				>
+					Replay
+				</Button>
+				{resource && (
+					<CopyProblemPromptButton
+						abilityLoader={abilityLoader}
+						className="dark:bg-primary/20 dark:hover:bg-primary/30 dark:text-primary h-10 bg-white/20 px-4 text-sm text-white transition hover:bg-white/30"
+						lesson={resource}
+						variant="default"
+					/>
+				)}
+				{resource && (
+					<ContinueButton
+						moduleType={moduleType}
+						resource={resource}
+						nextResource={nextLesson}
+						prevResource={prevLesson}
+					/>
+				)}
+			</div>
+			<Button
+				type="button"
+				className="absolute right-5 top-5 bg-white/10"
+				variant="ghost"
+				size="icon"
+				onClick={() => {
+					dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
+				}}
+			>
+				<span className="sr-only">Dismiss</span>
+				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
+			</Button>
 		</div>
+	) : (
+		<CompletedModuleOverlay
+			action={action}
+			resource={resource}
+			moduleType={moduleType}
+		/>
 	)
 }
 
@@ -187,8 +194,9 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: ContentResource | null
-}> = ({ resource, nextResource, moduleType }) => {
+	nextResource?: AdjacentResource
+	prevResource?: AdjacentResource
+}> = ({ resource, nextResource, prevResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
@@ -200,15 +208,19 @@ const ContinueButton: React.FC<{
 		),
 	)
 
+	const isProblemLesson = nextResource?.type === 'solution'
+
 	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
+			className="dark:bg-primary dark:hover:bg-primary/80 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
 			onClick={async () => {
-				if (!isCurrentLessonCompleted) {
+				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {
-						addLessonProgress(resource.id)
+						// when on solution, we want to add progress to the previous lesson (problem)
+						addLessonProgress(prevResource.id)
 						await setProgressForResource({
-							resourceId: resource.id,
+							resourceId: prevResource.id,
 							isCompleted: true,
 						})
 					})
@@ -221,7 +233,7 @@ const ContinueButton: React.FC<{
 						)
 					}
 					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.fields?.slug}`,
+						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.slug}`,
 					)
 				}
 			}}
@@ -230,7 +242,9 @@ const ContinueButton: React.FC<{
 		>
 			{isCurrentLessonCompleted && !isPending
 				? 'Continue'
-				: 'Complete & Continue'}
+				: isProblemLesson
+					? 'Continue'
+					: 'Complete & Continue'}
 			{isPending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
@@ -293,7 +307,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	moduleType = 'tutorial',
 	moduleSlug,
 }) => {
-	usePrefetchNextResource({ resource, moduleType, moduleSlug })
+	// usePrefetchNextResource({ resource, moduleType, moduleSlug })
 
 	const ability = use(abilityLoader)
 	const canView = ability.canView
@@ -302,10 +316,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 
 	const { state: overlayState, dispatch } = useVideoPlayerOverlay()
 	const { data: session } = useSession()
-	const { data: nextResource } = api.progress.getNextResource.useQuery({
-		lessonId: resource.id,
-		moduleSlug: moduleSlug,
-	})
+
 	const purchaseForProduct = pricingProps?.purchases?.find(
 		(purchase) => purchase.productId === pricingProps?.product?.id,
 	)
@@ -404,6 +415,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 					resource={resource}
 					moduleType={moduleType}
 					moduleSlug={moduleSlug}
+					abilityLoader={abilityLoader}
 				/>
 			)
 		case 'LOADING':

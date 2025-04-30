@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { PostMetadataFormFields } from '@/app/(content)/posts/_components/edit-post-form-metadata'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import type { List } from '@/lib/lists'
 import { Post, PostSchema } from '@/lib/posts'
@@ -19,7 +18,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 import { MobileEditPostForm } from './edit-post-form-mobile'
 
@@ -67,26 +66,14 @@ export function EditPostForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
+
 	const videoResource = videoResourceLoader
 		? React.use(videoResourceLoader)
 		: null
 	const router = useRouter()
 
-	return isMobile ? (
-		<MobileEditPostForm
-			listsLoader={listsLoader}
-			tagLoader={tagLoader}
-			post={post}
-			form={form}
-			videoResourceLoader={videoResourceLoader}
-			availableWorkflows={[
-				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
-			]}
-			theme={theme}
-		/>
-	) : (
-		<EditResourcesFormDesktop
+	return (
+		<EditResourcesForm
 			resource={post}
 			onSave={async () => {
 				if (form.getValues().fields.slug !== post?.fields?.slug) {
@@ -131,6 +118,6 @@ export function EditPostForm({
 					post={post}
 				/>
 			</React.Suspense>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }

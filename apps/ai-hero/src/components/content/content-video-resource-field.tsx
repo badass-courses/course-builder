@@ -268,7 +268,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											/>
 										)}
 									</div>
-									<div className="flex items-center gap-1 px-4 py-2">
+									<div className="flex items-center gap-1 overflow-x-auto px-4 py-2 md:overflow-x-visible">
 										<Button
 											variant="outline"
 											size={'sm'}

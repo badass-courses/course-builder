@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
@@ -58,8 +59,15 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		/>
 	)
 
+	const isEditRoute = usePathname().includes('/edit')
+
 	return (
-		<div className="fixed right-8 top-[33px] flex items-stretch md:hidden">
+		<div
+			className={cn('flex items-stretch md:hidden', {
+				'fixed right-8 top-[33px]': !isEditRoute,
+				'absolute -top-5 right-0': isEditRoute,
+			})}
+		>
 			<Button
 				variant="ghost"
 				className="bg-background flex h-10 items-center justify-center rounded-full border px-3"

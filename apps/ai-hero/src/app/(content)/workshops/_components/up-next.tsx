@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { getResourcePath } from '@/utils/resource-paths'
 import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -49,7 +49,10 @@ export default function UpNext({
 		return null
 	}
 
-	const nextResource = getNextWorkshopResource(navigation, currentResourceId)
+	const { nextResource } = getAdjacentWorkshopResources(
+		navigation,
+		currentResourceId,
+	)
 
 	// If there's no next resource, don't render anything
 	if (!nextResource) {

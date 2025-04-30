@@ -13,8 +13,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 
 import { ResourceProvider } from './resource-context'
@@ -228,7 +227,6 @@ export function withResourceForm<
 	return function ResourceForm({ resource }: { resource: T }) {
 		const { data: session } = useSession()
 		const { theme } = useTheme()
-		const isMobile = useIsMobile()
 
 		console.debug('withResourceForm resource:', {
 			resource,
@@ -243,10 +241,7 @@ export function withResourceForm<
 			defaultValues: config.defaultValues(resource),
 		})
 
-		// Choose form component based on device
-		const ResourceFormComponent = isMobile
-			? EditResourcesFormMobile
-			: EditResourcesFormDesktop
+		const ResourceFormComponent = EditResourcesForm
 
 		// Revert back to original processing of custom tools without resource injection
 		const tools = [

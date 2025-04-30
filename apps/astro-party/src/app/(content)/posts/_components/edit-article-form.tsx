@@ -8,7 +8,6 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import { LessonPlayer } from '@/components/resources-crud/lesson-player'
 import { NewLessonVideoForm } from '@/components/resources-crud/new-lesson-video-form'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { useTranscript } from '@/hooks/use-transcript'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { ArticleSchema, type Article } from '@/lib/articles'
@@ -33,8 +32,7 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
@@ -92,11 +90,7 @@ export function EditArticleForm({
 		},
 	})
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	// const videoResource = React.use(videoResourceLoader)
 	const [videoUploadStatus, setVideoUploadStatus] = React.useState<

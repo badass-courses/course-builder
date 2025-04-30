@@ -11,8 +11,11 @@ import {
 import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
+import {
+	getAdjacentWorkshopResources,
+	type AdjacentResource,
+} from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
-import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
 import { getResourcePath } from '@/utils/resource-paths'
 import MuxPlayer, {
 	type MuxPlayerProps,
@@ -68,19 +71,14 @@ export function AuthedVideoPlayer({
 	const [currentResource, setCurrentResource] =
 		React.useState<ContentResource>(resource)
 
-	// const { data: nextResource } = api.progress.getNextResource.useQuery(
-	// 	{
-	// 		lessonId: currentResource.id,
-	// 		moduleSlug: moduleSlug,
-	// 	},
-	// 	{
-	// 		enabled: Boolean(moduleSlug),
-	// 	},
-	// )
-
 	const navigation = useWorkshopNavigation()
 
-	const nextResource = getNextWorkshopResource(navigation, currentResource.id)
+	const { nextResource, prevResource } = getAdjacentWorkshopResources(
+		navigation,
+		currentResource.id,
+	)
+
+	const isProblemLesson = nextResource?.type === 'solution'
 
 	const { data: nextLessonPlaybackId } =
 		api.lessons.getLessonMuxPlaybackId.useQuery(
@@ -134,6 +132,7 @@ export function AuthedVideoPlayer({
 					canView,
 					resource,
 					nextResource,
+					prevResource,
 					nextLessonPlaybackId,
 					playerRef,
 					currentResource,
@@ -181,6 +180,7 @@ async function handleOnVideoEnded({
 	moduleSlug,
 	moduleType,
 	nextResource,
+	prevResource,
 	nextLessonPlaybackId,
 	currentResource,
 	canView,
@@ -198,14 +198,8 @@ async function handleOnVideoEnded({
 	bingeMode: boolean
 	moduleSlug?: string
 	moduleType?: 'tutorial' | 'workshop'
-	nextResource?: {
-		id: string
-		slug: string
-		title: string
-		type: string
-		parentId?: string
-		parentSlug?: string
-	} | null
+	nextResource?: AdjacentResource | null
+	prevResource?: AdjacentResource | null
 	nextLessonPlaybackId?: string | null
 	router: ReturnType<typeof useRouter>
 	moduleProgress: ModuleProgress | null
@@ -218,6 +212,9 @@ async function handleOnVideoEnded({
 		moduleType: moduleType,
 		bingeMode,
 	})
+	console.log({ nextResource, prevResource, currentResource })
+	const isSolution = currentResource?.type === 'solution'
+
 	if (resource?.type === 'exercise') {
 		router.push(`${resource?.fields?.slug}/exercise`)
 	} else {
@@ -227,20 +224,29 @@ async function handleOnVideoEnded({
 			nextResource &&
 			playerRef?.current
 		) {
-			dispatchVideoPlayerOverlay({ type: 'LOADING' })
-			playerRef.current.playbackId = nextLessonPlaybackId
+			// dispatchVideoPlayerOverlay({ type: 'LOADING' })
+			// playerRef.current.playbackId = nextLessonPlaybackId
+
 			await handleSetLessonComplete({
-				currentResource,
+				currentResource: (isSolution ? prevResource : currentResource) as any,
 				moduleProgress,
 				addLessonProgress,
 			})
+
 			setCurrentResource(nextResource)
+			router.push(
+				getResourcePath(nextResource.type, nextResource.slug, 'view', {
+					parentType: moduleType as string,
+					parentSlug: moduleSlug as string,
+				}),
+			)
 		} else if (bingeMode) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			}
+
 			await handleSetLessonComplete({
-				currentResource,
+				currentResource: (isSolution ? prevResource : currentResource) as any,
 				moduleProgress,
 				addLessonProgress,
 			})
@@ -250,6 +256,7 @@ async function handleOnVideoEnded({
 				moduleType,
 				currentResource.type as 'lesson' | 'exercise' | 'solution',
 			)
+
 			if (nextResource) {
 				setTimeout(() => {
 					router.push(

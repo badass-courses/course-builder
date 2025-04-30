@@ -112,66 +112,44 @@ export function EditResourcesBodyPanel({
 
 	return (
 		<>
-			{isShowingMdxPreview && (
-				<>
-					<ResizablePanel
-						id="edit-resources-body-preview-panel"
-						order={2}
-						defaultSize={20}
-					>
-						{mdxPreviewComponent}
-					</ResizablePanel>
-					<ResizableHandle />
-				</>
+			{children}
+			{hasMounted && (
+				<MarkdownEditor
+					previewProps={{
+						components: {
+							// @ts-expect-error
+							scrollycoding: ({ children }: any) => children,
+							testimonial: ({ children }: any) => children,
+							instructor: ({ children }: any) => children,
+						},
+					}}
+					height="var(--code-editor-layout-height)"
+					value={form.getValues('fields.body') || ''}
+					onChange={(value, viewUpdate) => {
+						const yDoc = Buffer.from(
+							Y.encodeStateAsUpdate(partyKitProvider.doc),
+						).toString('base64')
+						onChange(value, yDoc)
+					}}
+					enablePreview={withMdxPreview ? false : true}
+					theme={
+						(theme === 'dark'
+							? CourseBuilderEditorThemeDark
+							: CourseBuilderEditorThemeLight) || CourseBuilderEditorThemeDark
+					}
+					extensions={[
+						EditorView.lineWrapping,
+						// ...(partyKitProvider
+						// 	? [yCollab(ytext, partyKitProvider.awareness)]
+						// 	: []),
+					]}
+					toolbars={
+						withMdxPreview
+							? [previewMdxButton, ...defaultCommands]
+							: [...defaultCommands]
+					}
+				/>
 			)}
-			<ResizablePanel
-				id="edit-resources-body-panel"
-				order={3}
-				defaultSize={55}
-				className="flex min-h-[var(--pane-layout-height)] md:min-h-full"
-			>
-				<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
-					{children}
-					{hasMounted && (
-						<MarkdownEditor
-							previewProps={{
-								components: {
-									// @ts-expect-error
-									scrollycoding: ({ children }: any) => children,
-									testimonial: ({ children }: any) => children,
-									instructor: ({ children }: any) => children,
-								},
-							}}
-							height="var(--code-editor-layout-height)"
-							value={form.getValues('fields.body') || ''}
-							onChange={(value, viewUpdate) => {
-								const yDoc = Buffer.from(
-									Y.encodeStateAsUpdate(partyKitProvider.doc),
-								).toString('base64')
-								onChange(value, yDoc)
-							}}
-							enablePreview={withMdxPreview ? false : true}
-							theme={
-								(theme === 'dark'
-									? CourseBuilderEditorThemeDark
-									: CourseBuilderEditorThemeLight) ||
-								CourseBuilderEditorThemeDark
-							}
-							extensions={[
-								EditorView.lineWrapping,
-								// ...(partyKitProvider
-								// 	? [yCollab(ytext, partyKitProvider.awareness)]
-								// 	: []),
-							]}
-							toolbars={
-								withMdxPreview
-									? [previewMdxButton, ...defaultCommands]
-									: [...defaultCommands]
-							}
-						/>
-					)}
-				</ScrollArea>
-			</ResizablePanel>
 		</>
 	)
 }
