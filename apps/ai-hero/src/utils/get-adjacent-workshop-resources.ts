@@ -1,22 +1,28 @@
 import { WorkshopNavigation, type NavigationResource } from '@/lib/workshops'
 
-/**
- * Flattens all navigation resources, including nested solutions,
- * and returns the next resource after the current one
- */
-export function getNextWorkshopResource(
-	navigation: WorkshopNavigation | null,
-	currentResourceId: string,
-): {
+export type AdjacentResource = {
 	id: string
 	slug: string
 	title: string
 	type: string
 	parentId?: string
 	parentSlug?: string
-} | null {
+} | null
+
+/**
+ * Flattens all navigation resources, including nested solutions,
+ * and returns the next and previous resources relative to the current one.
+ */
+export function getAdjacentWorkshopResources(
+	navigation: WorkshopNavigation | null,
+	currentResourceId: string,
+): {
+	nextResource: AdjacentResource
+	prevResource: AdjacentResource
+} {
+	const defaultReturn = { nextResource: null, prevResource: null }
 	if (!navigation) {
-		return null
+		return defaultReturn
 	}
 
 	// Create a fully flattened array of all resources, including lessons' solutions
@@ -79,9 +85,12 @@ export function getNextWorkshopResource(
 	)
 
 	if (navIndex === -1) {
-		return null // Resource not found
+		return defaultReturn // Resource not found
 	}
 
-	// Get the next resource (if any)
-	return flattenedNavResources[navIndex + 1] || null
+	// Get the next and previous resources (if any)
+	const nextResource = flattenedNavResources[navIndex + 1] || null
+	const prevResource = flattenedNavResources[navIndex - 1] || null
+
+	return { nextResource, prevResource }
 }

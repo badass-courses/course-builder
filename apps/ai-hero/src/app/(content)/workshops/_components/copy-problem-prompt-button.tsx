@@ -3,7 +3,7 @@
 import { use, useState } from 'react'
 import type { Lesson } from '@/lib/lessons'
 import { track } from '@/utils/analytics'
-import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { Sparkle } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -42,7 +42,10 @@ export function CopyProblemPromptButton({
 	}
 
 	// Calculate the next resource dynamically
-	const nextResource = getNextWorkshopResource(workshopNavigation, lesson.id)
+	const { nextResource } = getAdjacentWorkshopResources(
+		workshopNavigation,
+		lesson.id,
+	)
 
 	const isProblemLesson = nextResource?.type === 'solution'
 

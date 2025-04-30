@@ -11,8 +11,11 @@ import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'
 import { addProgress, setProgressForResource } from '@/lib/progress'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
+import {
+	getAdjacentWorkshopResources,
+	type AdjacentResource,
+} from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
-import { getNextWorkshopResource } from '@/utils/get-next-workshop-resource'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
@@ -51,10 +54,8 @@ export const CompletedLessonOverlay: React.FC<{
 }) => {
 	const { playerRef } = action
 	const workshopNavigation = useWorkshopNavigation()
-	const nextLesson = getNextWorkshopResource(
-		workshopNavigation,
-		resource?.id as string,
-	)
+	const { nextResource: nextLesson, prevResource: prevLesson } =
+		getAdjacentWorkshopResources(workshopNavigation, resource?.id as string)
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
@@ -103,6 +104,7 @@ export const CompletedLessonOverlay: React.FC<{
 						moduleType={moduleType}
 						resource={resource}
 						nextResource={nextLesson}
+						prevResource={prevLesson}
 					/>
 				)}
 			</div>
@@ -192,15 +194,9 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: {
-		id: string
-		slug: string
-		title: string
-		type: string
-		parentId?: string | undefined
-		parentSlug?: string | undefined
-	} | null
-}> = ({ resource, nextResource, moduleType }) => {
+	nextResource?: AdjacentResource
+	prevResource?: AdjacentResource
+}> = ({ resource, nextResource, prevResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 
@@ -212,16 +208,19 @@ const ContinueButton: React.FC<{
 		),
 	)
 
+	const isProblemLesson = nextResource?.type === 'solution'
+
 	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
 			className="dark:bg-primary dark:hover:bg-primary/80 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
 			onClick={async () => {
-				if (!isCurrentLessonCompleted) {
+				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {
-						addLessonProgress(resource.id)
+						// when on solution, we want to add progress to the previous lesson (problem)
+						addLessonProgress(prevResource.id)
 						await setProgressForResource({
-							resourceId: resource.id,
+							resourceId: prevResource.id,
 							isCompleted: true,
 						})
 					})
@@ -243,7 +242,9 @@ const ContinueButton: React.FC<{
 		>
 			{isCurrentLessonCompleted && !isPending
 				? 'Continue'
-				: 'Complete & Continue'}
+				: isProblemLesson
+					? 'Continue'
+					: 'Complete & Continue'}
 			{isPending && <Spinner className="ml-2 h-4 w-4" />}
 		</Button>
 	)
