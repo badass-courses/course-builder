@@ -10,7 +10,6 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import ListResourcesEdit from '@/components/list-editor/list-resources-edit'
 import { ResourceProvider } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Page, PageSchema } from '@/lib/pages'
 import { updatePage } from '@/lib/pages-query'
@@ -35,8 +34,7 @@ import {
 	FormMessage,
 	Input,
 } from '@coursebuilder/ui'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
@@ -109,11 +107,7 @@ export function EditPagesForm({
 		},
 	})
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	const bodyText = form.getValues('fields.body')
 	const {

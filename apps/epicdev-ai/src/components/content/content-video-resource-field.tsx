@@ -250,6 +250,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 									<div className="flex items-center justify-center">
 										{thumbnailEnabled ? (
 											<SimplePostPlayer
+												className="aspect-video h-auto w-full"
 												ref={playerRef}
 												thumbnailTime={form.watch('fields.thumbnailTime') || 0}
 												handleVideoTimeUpdate={(e: Event) => {
@@ -268,7 +269,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											/>
 										)}
 									</div>
-									<div className="flex items-center gap-1 px-4 py-2">
+									<div className="flex items-center gap-1 overflow-x-auto px-4 py-2 md:overflow-x-visible">
 										<Button
 											variant="outline"
 											size={'sm'}

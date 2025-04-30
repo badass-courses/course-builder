@@ -5,7 +5,6 @@ import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/d
 import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateResource } from '@/lib/resources-query'
@@ -24,8 +23,7 @@ import {
 	FormMessage,
 	Input,
 } from '@coursebuilder/ui'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 
 export function EditEventForm({ event }: { event: Event }) {
@@ -53,11 +51,7 @@ export function EditEventForm({ event }: { event: Event }) {
 		},
 	})
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	return (
 		<ResourceForm

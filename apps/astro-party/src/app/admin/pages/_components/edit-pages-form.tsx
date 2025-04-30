@@ -4,7 +4,6 @@ import * as React from 'react'
 import { onPageSave } from '@/app/admin/pages/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { ArticleSchema, type Article } from '@/lib/articles'
 import { updateArticle } from '@/lib/articles-query'
@@ -18,8 +17,7 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
-import { EditResourcesFormMobile } from '@coursebuilder/ui/resources-crud/edit-resources-form-mobile'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { ResourceTool } from '@coursebuilder/ui/resources-crud/edit-resources-tool-panel'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
@@ -67,11 +65,7 @@ export function EditPagesForm({
 		},
 	})
 
-	const isMobile = useIsMobile()
-
-	const ResourceForm = isMobile
-		? EditResourcesFormMobile
-		: EditResourcesFormDesktop
+	const ResourceForm = EditResourcesForm
 
 	return (
 		<ResourceForm

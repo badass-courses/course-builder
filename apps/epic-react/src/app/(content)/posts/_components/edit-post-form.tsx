@@ -6,7 +6,6 @@ import { MobileEditPostForm } from '@/app/(content)/posts/_components/edit-post-
 import { onPostSave } from '@/app/(content)/posts/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Post, PostSchema } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
@@ -18,7 +17,7 @@ import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 const NewPostFormSchema = z.object({
 	title: z.string().min(2).max(90),
@@ -60,20 +59,9 @@ export function EditPostForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 
-	return isMobile ? (
-		<MobileEditPostForm
-			post={post}
-			form={form}
-			videoResourceLoader={videoResourceLoader}
-			availableWorkflows={[
-				{ value: 'post-chat-default-okf8v', label: 'Post Chat', default: true },
-			]}
-			theme={theme}
-		/>
-	) : (
-		<EditResourcesFormDesktop
+	return (
+		<EditResourcesForm
 			resource={post}
 			resourceSchema={PostSchema}
 			getResourcePath={(slug) => `/${slug}`}
@@ -107,6 +95,6 @@ export function EditPostForm({
 				videoResourceLoader={videoResourceLoader}
 				post={post}
 			/>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }

@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { List, ListSchema } from '@/lib/lists'
 import { updateList } from '@/lib/lists-query'
@@ -16,7 +15,7 @@ import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
-import { EditResourcesFormDesktop } from '@coursebuilder/ui/resources-crud/edit-resources-form-desktop'
+import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 
 import { ListMetadataFormFields } from './edit-list-form-metadata'
 import ListResoucesEdit from './list-resources-edit'
@@ -63,10 +62,9 @@ export function EditListForm({
 			},
 		},
 	})
-	const isMobile = useIsMobile()
 	const router = useRouter()
 	return (
-		<EditResourcesFormDesktop
+		<EditResourcesForm
 			resource={list}
 			onSave={async () => {
 				if (form.getValues().fields.slug !== list?.fields?.slug) {
@@ -111,6 +109,6 @@ export function EditListForm({
 			<React.Suspense fallback={<div>loading</div>}>
 				<ListMetadataFormFields tagLoader={tagLoader} form={form} list={list} />
 			</React.Suspense>
-		</EditResourcesFormDesktop>
+		</EditResourcesForm>
 	)
 }

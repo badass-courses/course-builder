@@ -20,20 +20,13 @@ export type ResourceTool = {
 
 export function EditResourcesToolPanel({
 	resource,
-	className,
-	minSize = 15,
-	maxSize = 50,
-	defaultSize = 25,
+
 	availableWorkflows,
 	sendResourceChatMessage,
 	hostUrl,
 	user,
 	tools = [],
 }: {
-	minSize?: number
-	defaultSize?: number
-	maxSize?: number
-	className?: string
 	resource: ContentResource & {
 		fields: {
 			body?: string | null
@@ -60,13 +53,12 @@ export function EditResourcesToolPanel({
 					<ResizablePanel
 						id="edit-resources-tool-panel"
 						order={4}
-						className={cn(
-							'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full',
-							className,
-						)}
-						minSize={minSize}
-						defaultSize={defaultSize}
-						maxSize={maxSize}
+						className={
+							'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full'
+						}
+						minSize={15}
+						defaultSize={50}
+						maxSize={25}
 					>
 						<EditResourcesToolPanelContents
 							resource={resource}

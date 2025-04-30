@@ -32,7 +32,6 @@ export function EditPostForm({
 	videoResource,
 	listsLoader,
 }: EditPostFormProps) {
-	const isMobile = useIsMobile()
 	const router = useRouter()
 
 	// Handle either direct videoResource or resolve from loader
