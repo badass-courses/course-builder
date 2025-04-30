@@ -1,4 +1,4 @@
-# cursor-pro
+# craft-of-ui
 
 ## 0.1.1
 

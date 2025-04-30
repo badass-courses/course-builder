@@ -58,11 +58,11 @@ export default {
 	},
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle': 'Level up your workflow with Cursor IDE',
-	'primary-newsletter-byline': `Subscribe for first-look access to workshops, tools, and ideas from Cursor Pro`,
+	'primary-newsletter-tittle': 'Level up your UI game',
+	'primary-newsletter-byline': `Subscribe for first-look access to workshops, tools, and ideas from The Craft of UI`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'Tip Newsletter Title',
-	'video-newsletter-title': 'Level up your workflow with Cursor IDE',
+	'video-newsletter-title': 'Level up your UI game',
 	'video-newsletter-subtitle': 'For builders of the AI-native future',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>

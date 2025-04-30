@@ -17,7 +17,7 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 				<path fill="currentColor" d="M.5 0H20L10 15.5v-10L.5 0Z" opacity=".5" />
 				<path fill="currentColor" d="M20 0 10 5.5.5 0H20Z" />
 			</svg>
-			Cursor Pro
+			The Craft of UI
 		</div>
 	)
 }

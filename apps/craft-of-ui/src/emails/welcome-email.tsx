@@ -69,7 +69,7 @@ export default function WelcomeEmail({
 							<Text style={bulletPoint}>
 								• Access your Invoice: Once you're logged in, you can view and
 								fully customize your invoice{' '}
-								<Link href="https://www.cursorpro.ai/invoices">here</Link>. You
+								<Link href="https://www.craftofui.dev/invoices">here</Link>. You
 								can add any required information to the "Prepared for" section
 								of the invoice and download a PDF that can be shared or
 								forwarded.

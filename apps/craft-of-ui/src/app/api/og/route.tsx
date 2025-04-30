@@ -193,7 +193,7 @@ export async function GET(request: Request) {
 								<path fill="#fff" d="M.5 0H20L10 15.5v-10L.5 0Z" opacity=".5" />
 								<path fill="#fff" d="M20 0 10 5.5.5 0H20Z" />
 							</svg>
-							<span tw="pl-4">Cursor Pro</span>
+							<span tw="pl-4">The Craft of UI</span>
 						</div>
 					</div>
 					<main tw="flex p-26 pt-28 relative z-10 flex-row w-full h-full flex-grow items-start justify-between">
@@ -230,7 +230,10 @@ export async function GET(request: Request) {
 				fonts: [
 					{
 						name: 'HeadingFont',
-						data: await loadGoogleFont('Geist Mono', `Cursor Pro ${title}`),
+						data: await loadGoogleFont(
+							'Geist Mono',
+							`The Craft of UI ${title}`,
+						),
 						style: 'normal',
 					},
 				],
