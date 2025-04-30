@@ -160,6 +160,25 @@ export default function ProductPurchasesTable({
 				</div>
 			</div>
 
+			{/* Mobile Copy Button */}
+			<div className="mt-4 md:hidden">
+				<button
+					onClick={handleCopyAllEmails}
+					className="hover:bg-primary/90 bg-primary text-primary-foreground flex w-full items-center justify-center gap-1 rounded p-2 text-sm font-medium"
+					title="Copy all visible emails"
+				>
+					{copiedAll ? (
+						<>
+							<Check className="h-4 w-4" /> Copied!
+						</>
+					) : (
+						<>
+							<Copy className="h-4 w-4" /> Copy All Emails
+						</>
+					)}
+				</button>
+			</div>
+
 			{/* Desktop Table View */}
 			<div className="hidden rounded-md border pb-4 md:block">
 				<Table>
