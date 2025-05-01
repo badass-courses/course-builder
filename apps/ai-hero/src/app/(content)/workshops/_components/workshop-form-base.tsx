@@ -54,6 +54,17 @@ export function WorkshopFormBase(
 				)}
 				name="fields.title"
 			/>
+			<FormField
+				control={form.control}
+				name="fields.slug"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<Input {...field} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
 			<FormField
