@@ -133,7 +133,7 @@ export function createWorkshopFormConfig(
 
 		// Resource path generation
 		// getResourcePath: (slug) => `/workshops/${slug}`,
-		getResourcePath: (slug?: string) => `/${slug || ''}`,
+		getResourcePath: (slug?: string) => `/workshops/${slug || ''}`,
 
 		// Resource update function
 		// updateResource: updateWorkshop as unknown as (
