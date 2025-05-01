@@ -7,6 +7,8 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { WorkshopSchema } from './workshops'
+
 /**
  * @description Schema for cohort-based learning experiences
  */
