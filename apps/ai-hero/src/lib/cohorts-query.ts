@@ -34,6 +34,7 @@ export async function getCohort(cohortIdOrSlug: string) {
 								with: {
 									resource: true,
 								},
+								orderBy: [asc(contentResourceResource.position)],
 							},
 						},
 					},
