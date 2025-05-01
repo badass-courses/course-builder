@@ -7,9 +7,8 @@ import {
 
 export const ModuleSchema = ContentResourceSchema.merge(
 	z.object({
-		type: z.enum(['tutorial', 'workshop']),
+		type: z.literal('workshop'),
 		id: z.string(),
-
 		resourceProducts: z
 			.array(
 				z.object({
@@ -21,26 +20,25 @@ export const ModuleSchema = ContentResourceSchema.merge(
 			.optional()
 			.nullable(),
 		fields: z.object({
-			slug: z.string(),
-			title: z.string().min(2).max(90),
-			body: z.string().optional().nullable(),
-			description: z.string().optional().nullable(),
-			github: z.string().optional().nullable(),
+			title: z.string().min(1, { message: 'Title is required' }),
+			subtitle: z.string().optional(),
+			description: z.string().optional(),
+			body: z.string().optional(),
 			state: z
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),
-			visibility: z.union([
-				z.literal('public'),
-				z.literal('private'),
-				z.literal('unlisted'),
-			]),
+			startsAt: z.string().datetime().optional(),
+			endsAt: z.string().datetime().optional(),
+			timezone: z.string().default('America/Los_Angeles'),
+			slug: z.string().min(1, { message: 'Slug is required' }),
+			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 			coverImage: z
 				.object({
 					url: z.string().optional(),
 					alt: z.string().optional(),
 				})
-				.optional()
-				.nullable(),
+				.optional(),
+			github: z.string().optional(),
 		}),
 		resources: z.array(
 			z.object({

@@ -3,12 +3,16 @@
 import * as React from 'react'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import { ResourceFormProps } from '@/components/resource-form/with-resource-form'
+import { Workshop, WorkshopSchema } from '@/lib/workshops'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { parseAbsolute } from '@internationalized/date'
 import { ImagePlusIcon } from 'lucide-react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
+	DateTimePicker,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -21,8 +25,6 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
-import { WorkshopResourceType, WorkshopSchema } from './workshop-form-config'
-
 /**
  * Base form component for workshop editing
  * Contains only workshop-specific form fields
@@ -30,7 +32,7 @@ import { WorkshopResourceType, WorkshopSchema } from './workshop-form-config'
  * @param props - Component props from withResourceForm HOC
  */
 export function WorkshopFormBase(
-	props: ResourceFormProps<WorkshopResourceType, typeof WorkshopSchema>,
+	props: ResourceFormProps<ContentResource, typeof WorkshopSchema>,
 ) {
 	const { resource, form } = props
 
@@ -77,6 +79,74 @@ export function WorkshopFormBase(
 					</FormItem>
 				)}
 				name="fields.description"
+			/>
+			<FormField
+				control={form.control}
+				name="fields.startsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Starts at</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name="fields.endsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Ends at</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.timezone"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
+						<Input {...field} readOnly disabled />
+						<FormMessage />
+					</FormItem>
+				)}
 			/>
 			<FormField
 				control={form.control}

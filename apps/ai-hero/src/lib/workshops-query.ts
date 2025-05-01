@@ -8,7 +8,6 @@ import {
 	contentResourceResource,
 	products as productTable,
 } from '@/db/schema'
-import { Module, ModuleSchema } from '@/lib/module'
 import {
 	NavigationLessonSchema,
 	NavigationPostSchema,
@@ -21,9 +20,11 @@ import {
 	WorkshopNavigation,
 	WorkshopNavigationSchema,
 	WorkshopRawSchema,
+	WorkshopSchema,
 	type ResourceRaw,
 	type SectionRaw,
 	type SolutionRaw,
+	type Workshop,
 	type WorkshopRaw,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
@@ -450,7 +451,7 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		},
 	})
 
-	const parsedWorkshop = ModuleSchema.safeParse(workshop)
+	const parsedWorkshop = WorkshopSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
 		return null
@@ -497,7 +498,7 @@ export async function getAllWorkshops() {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
+	const parsedWorkshops = z.array(WorkshopSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
 		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
 		throw new Error('Error parsing workshop')
@@ -570,7 +571,10 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-export async function updateWorkshop(input: Module) {
+export async function updateWorkshop(input: Partial<Workshop>) {
+	if (!input.id) {
+		throw new Error('ID is required')
+	}
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
@@ -586,8 +590,8 @@ export async function updateWorkshop(input: Module) {
 	let workshopSlug = currentWorkshop.fields.slug
 
 	if (
-		input.fields.title !== currentWorkshop.fields.title &&
-		input.fields.slug.includes('~')
+		input.fields?.title !== currentWorkshop.fields.title &&
+		input.fields?.slug?.includes('~')
 	) {
 		const splitSlug = currentWorkshop?.fields.slug.split('~') || ['', guid()]
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
@@ -597,8 +601,11 @@ export async function updateWorkshop(input: Module) {
 			newSlug: workshopSlug,
 			userId: user.id,
 		})
-	} else if (input.fields.slug !== currentWorkshop.fields.slug) {
-		workshopSlug = input.fields.slug
+	} else if (input.fields?.slug !== currentWorkshop.fields.slug) {
+		if (!input.fields?.slug) {
+			throw new Error('Slug is required')
+		}
+		workshopSlug = input.fields?.slug
 		await log.info('post.update.slug.manual', {
 			postId: input.id,
 			oldSlug: currentWorkshop.fields.slug,
