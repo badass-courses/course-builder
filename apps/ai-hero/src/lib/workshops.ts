@@ -233,8 +233,8 @@ export const WorkshopSchema = ContentResourceSchema.merge(
 			state: z
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),
-			startsAt: z.string().datetime().optional(),
-			endsAt: z.string().datetime().optional(),
+			startsAt: z.string().datetime().nullish(),
+			endsAt: z.string().datetime().nullish(),
 			timezone: z.string().default('America/Los_Angeles'),
 			slug: z.string().min(1, { message: 'Slug is required' }),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
