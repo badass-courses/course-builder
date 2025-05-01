@@ -57,7 +57,9 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
       ON top_level_lessons.id = top_level_lesson_relations.resourceId
       AND (top_level_lessons.type = 'lesson' OR top_level_lessons.type = 'exercise')
     WHERE
-      workshop.type = 'workshop' or workshop.\`type\` = 'tutorial'
+      (workshop.type = 'workshop' OR workshop.\`type\` = 'tutorial')
+      AND workshop.fields->>'$.state' = 'published'
+      AND workshop.fields->>'$.visibility' = 'public'
     ORDER BY
       COALESCE(section_relations.position, top_level_lesson_relations.position),
       lesson_relations.position
