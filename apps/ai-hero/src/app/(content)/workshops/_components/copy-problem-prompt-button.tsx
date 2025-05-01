@@ -47,7 +47,9 @@ export function CopyProblemPromptButton({
 		lesson.id,
 	)
 
-	const isProblemLesson = nextResource?.type === 'solution'
+	const isProblemLesson = Boolean(
+		lesson?.resources?.find((r) => r.resource.type === 'solution'),
+	)
 
 	if (!isProblemLesson) {
 		return null

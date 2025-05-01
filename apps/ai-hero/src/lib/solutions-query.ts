@@ -111,14 +111,14 @@ export async function getSolution(solutionSlugOrId: string) {
 			eq(contentResource.type, 'solution'),
 			isNull(contentResource.deletedAt),
 		),
-		with: {
-			resources: {
-				where: isNull(contentResourceResource.deletedAt),
-				with: {
-					resource: true,
-				},
-			},
-		},
+		// with: {
+		// 	resources: {
+		// 		where: isNull(contentResourceResource.deletedAt),
+		// 		with: {
+		// 			resource: true,
+		// 		},
+		// 	},
+		// },
 	})
 
 	if (!solution) {

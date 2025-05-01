@@ -208,6 +208,15 @@ export async function getLesson(lessonSlugOrId: string) {
 						},
 						orderBy: asc(contentResourceTag.position),
 					},
+					resources: {
+						with: {
+							resource: {
+								columns: {
+									type: true,
+								},
+							},
+						},
+					},
 				},
 			})
 
@@ -249,15 +258,7 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		with: {
 			resources: {
 				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-							},
-						},
-					},
+					resource: true,
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
