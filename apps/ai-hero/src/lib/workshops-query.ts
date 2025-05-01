@@ -40,6 +40,8 @@ import {
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
+import { upsertPostToTypeSense } from './typesense-query'
+
 /**
  * Fetches workshop navigation data with a single efficient query
  */
@@ -583,9 +585,63 @@ export async function updateWorkshop(input: Module) {
 
 	let workshopSlug = currentWorkshop.fields.slug
 
-	if (input.fields.title !== currentWorkshop.fields.title) {
+	if (
+		input.fields.title !== currentWorkshop.fields.title &&
+		input.fields.slug.includes('~')
+	) {
 		const splitSlug = currentWorkshop?.fields.slug.split('~') || ['', guid()]
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('post.update.slug.changed', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	} else if (input.fields.slug !== currentWorkshop.fields.slug) {
+		workshopSlug = input.fields.slug
+		await log.info('post.update.slug.manual', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	}
+
+	try {
+		await upsertPostToTypeSense(
+			{
+				id: currentWorkshop.id,
+				organizationId: currentWorkshop.organizationId,
+				type: currentWorkshop.type,
+				createdAt: currentWorkshop.createdAt,
+				updatedAt: new Date(),
+				deletedAt: currentWorkshop.deletedAt,
+				createdById: currentWorkshop.createdById,
+				resources: currentWorkshop.resources as any,
+				createdByOrganizationMembershipId:
+					currentWorkshop.createdByOrganizationMembershipId,
+				fields: {
+					...currentWorkshop.fields,
+					...input.fields,
+					description: input.fields.description || '',
+					slug: workshopSlug,
+				},
+			},
+			'save',
+		)
+		await log.info('post.update.typesense.success', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('🔍 Post updated in Typesense')
+	} catch (error) {
+		await log.error('post.update.typesense.failed', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('❌ Error updating post in Typesense', error)
 	}
 
 	const updatedWorkshop =
@@ -594,6 +650,7 @@ export async function updateWorkshop(input: Module) {
 			fields: {
 				...currentWorkshop.fields,
 				...input.fields,
+				updatedAt: new Date(),
 				slug: workshopSlug,
 			},
 		})
@@ -602,7 +659,7 @@ export async function updateWorkshop(input: Module) {
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')
-	revalidatePath(`/workshops/${currentWorkshop.fields.slug}`)
+	revalidatePath(`/workshops/${workshopSlug}`)
 
 	return {
 		...updatedWorkshop,
