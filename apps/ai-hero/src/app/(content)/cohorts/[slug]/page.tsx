@@ -16,6 +16,7 @@ import { getPricingData } from '@/lib/pricing-query'
 import type { Workshop } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { getResourcePath } from '@/utils/resource-paths'
 import { differenceInCalendarDays, isSameDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -50,6 +51,15 @@ export async function generateMetadata(
 	return {
 		title: cohort.fields.title,
 		description: cohort.fields.description,
+		openGraph: {
+			images: [
+				getOGImageUrlForResource({
+					fields: { slug: cohort.fields.slug },
+					id: cohort.id,
+					updatedAt: cohort.updatedAt,
+				}),
+			],
+		},
 	}
 }
 
