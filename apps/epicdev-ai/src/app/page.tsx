@@ -79,9 +79,7 @@ const Home = async (props: Props) => {
 	const firstPageResource = page?.resources?.[0] && {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
-		type:
-			page.resources[0]?.resource?.fields?.postType ||
-			page.resources[0]?.resource?.type,
+		type: page.resources[0]?.resource?.type,
 	}
 
 	return (
