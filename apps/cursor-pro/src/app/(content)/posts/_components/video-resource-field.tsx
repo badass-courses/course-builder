@@ -95,7 +95,7 @@ export const VideoResourceField: React.FC<{
 				{
 					id: resourceId,
 					fields: {
-						...post.fields,
+						...form.watch('fields'),
 						thumbnailTime: additionalFields.thumbnailTime,
 						videoResourceId, // This is added dynamically to the fields
 					} as any,
