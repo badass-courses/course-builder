@@ -8,12 +8,13 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import {
 	ResourceFormProps,
 	withResourceForm,
+	type ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
-import { updateResource as originalUpdateResource } from '@/lib/resources-query'
+import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
@@ -35,6 +36,8 @@ import {
 } from '@coursebuilder/ui'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { VideoResourceField } from './video-resource-field'
 
@@ -72,14 +75,7 @@ async function updateEventResource(
 	}
 
 	// Call the original imported function
-	const updatedEvent = await originalUpdateResource(
-		updatePayload as {
-			id: string
-			type: string
-			fields: Record<string, any>
-			createdById: string
-		},
-	)
+	const updatedEvent = await updateEvent(updatePayload)
 
 	// Handle null case: throw error as HOC expects a resource
 	if (!updatedEvent) {
@@ -91,7 +87,7 @@ async function updateEventResource(
 }
 
 // Define the configuration for the event form
-const eventFormConfig = {
+const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 	// Set resourceType back to 'event' as it's now a top-level type
 	resourceType: 'event' as const,
 	schema: EventSchema,
@@ -150,8 +146,8 @@ const eventFormConfig = {
 	// Use the wrapper function here
 	updateResource: updateEventResource,
 	onSave: onEventSave,
-	sendResourceChatMessage: sendResourceChatMessage,
-	hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
+	// sendResourceChatMessage: sendResourceChatMessage,
+	// hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 }
 
 export function EditEventForm({
@@ -172,6 +168,7 @@ export function EditEventForm({
 					router.push(`/events/${resource.fields?.slug}/edit`)
 				}
 			},
+
 			customTools: [
 				// { id: 'assistant' },
 				{
@@ -251,6 +248,8 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
 			<FormField
 				control={form.control}
 				name="fields.description"

@@ -15,6 +15,7 @@ import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
+import { getResourcePath } from '@/utils/resource-paths'
 import MuxPlayer from '@mux/mux-player-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
@@ -78,7 +79,9 @@ const Home = async (props: Props) => {
 	const firstPageResource = page?.resources?.[0] && {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
-		type: page.resources[0]?.resource?.fields?.postType,
+		type:
+			page.resources[0]?.resource?.fields?.postType ||
+			page.resources[0]?.resource?.type,
 	}
 
 	return (
@@ -91,7 +94,11 @@ const Home = async (props: Props) => {
 				{firstPageResource && (
 					<Link
 						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
-						href={firstPageResource.path}
+						href={getResourcePath(
+							firstPageResource.type,
+							firstPageResource.path,
+							'view',
+						)}
 						prefetch
 					>
 						<span className="truncate overflow-ellipsis">
