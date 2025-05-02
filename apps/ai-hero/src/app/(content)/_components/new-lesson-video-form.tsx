@@ -23,7 +23,6 @@ export function NewLessonVideoForm({
 			onVideoUploadCompleted(videoResourceId)
 			await pollVideoResource(videoResourceId).next()
 			onVideoResourceCreated(videoResourceId)
-			router.refresh()
 		} catch (error) {}
 	}
 

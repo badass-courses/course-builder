@@ -23,8 +23,6 @@ export function EditResourcesMetadataPanel({
 }) {
 	const isSmallScreen = useIsSmallScreen()
 
-	console.log({ isSmallScreen })
-
 	return (
 		<Form {...form}>
 			<form

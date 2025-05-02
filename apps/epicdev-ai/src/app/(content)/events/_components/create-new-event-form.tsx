@@ -88,6 +88,7 @@ export default function CreateNewEventForm() {
 								<FormLabel>Starts at</FormLabel>
 								<DateTimePicker
 									{...field}
+									aria-label="Starts At"
 									value={
 										!!field.value
 											? parseAbsolute(
@@ -116,6 +117,7 @@ export default function CreateNewEventForm() {
 								<FormLabel>Ends at</FormLabel>
 								<DateTimePicker
 									{...field}
+									aria-label="Ends At"
 									value={
 										!!field.value
 											? parseAbsolute(

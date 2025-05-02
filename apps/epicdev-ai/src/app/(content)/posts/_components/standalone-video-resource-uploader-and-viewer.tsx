@@ -127,7 +127,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 										/>
 									</button>
 									<div className="flex flex-col">
-										<span className="text-sm font-medium">
+										<span className="max-w-[200px] truncate text-sm font-medium">
 											{videoResource.id}
 										</span>
 										<span className="text-xs opacity-80">

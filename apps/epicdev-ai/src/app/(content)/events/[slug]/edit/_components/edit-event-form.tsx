@@ -209,13 +209,14 @@ const EventFormFields = ({
 		return null // Or a loading indicator
 	}
 	return (
-		// <EditResourcesMetadataFields form={form}>
 		<>
 			<VideoResourceField
 				form={form}
 				event={resource}
 				videoResource={videoResource}
-				initialVideoResourceId={videoResource ? videoResource.id : null}
+				initialVideoResourceId={
+					form.getValues('fields.videoResourceId' as any) || null
+				}
 			/>
 			<FormField
 				control={form.control}
@@ -250,7 +251,34 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold leading-none">
+								SEO Description
+								<br />
+								<span className="text-muted-foreground text-sm tabular-nums">
+									({`${field.value?.length ?? '0'} / 160`})
+								</span>
+							</FormLabel>
+						</div>
+						<FormDescription>
+							A short snippet that summarizes the post in under 160 characters.
+							Keywords should be included to support SEO.
+						</FormDescription>
+						<Textarea rows={4} {...field} value={field.value ?? ''} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="fields.startsAt"
@@ -258,6 +286,7 @@ const EventFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel>Starts At:</FormLabel>
 						<DateTimePicker
+							aria-label="Starts At"
 							{...field}
 							value={
 								!!field.value
@@ -286,6 +315,7 @@ const EventFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel>Ends At:</FormLabel>
 						<DateTimePicker
+							aria-label="Ends At"
 							{...field}
 							value={
 								!!field.value
@@ -332,44 +362,11 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-			<div className="px-5">
-				<FormLabel>Cover Image</FormLabel>
-				{form.watch('fields.image') && (
-					<img
-						alt="Cover image preview"
-						src={form.watch('fields.image') || ''}
-					/>
-				)}
-			</div>
-			<FormField
-				control={form.control}
-				name="fields.image"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel>Image URL</FormLabel>
-						<Input
-							{...field}
-							onDrop={(e) => {
-								console.log(e)
-								const result = e.dataTransfer.getData('text/plain')
-								const urlMatch = result.match(/\\(([^)]+)\\)/)
-								if (urlMatch) {
-									field.onChange(urlMatch[1])
-								}
-							}}
-							value={field.value || ''}
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-
 			<MetadataFieldSocialImage
 				form={form}
 				// Ensure form.getValues() is safe to call
 				currentSocialImage={getOGImageUrlForResource(form.getValues() as Event)}
 			/>
 		</>
-		// </EditResourcesMetadataFields>
 	)
 }

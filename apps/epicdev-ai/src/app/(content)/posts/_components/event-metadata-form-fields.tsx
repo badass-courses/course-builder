@@ -183,6 +183,7 @@ export const EventMetadataFormFields: React.FC<{
 						<FormLabel className="text-lg font-bold">Starts At</FormLabel>
 						<DateTimePicker
 							{...field}
+							aria-label="Starts At"
 							value={
 								!!field.value
 									? parseAbsolute(
@@ -212,6 +213,7 @@ export const EventMetadataFormFields: React.FC<{
 						<FormLabel className="text-lg font-bold">Ends At</FormLabel>
 						<DateTimePicker
 							{...field}
+							aria-label="Ends At"
 							value={
 								!!field.value
 									? parseAbsolute(

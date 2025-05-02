@@ -119,13 +119,20 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	onVideoUpdate,
 }: ContentVideoResourceFieldProps<T>) => {
 	const router = useRouter()
+	const [videoResourceId, setVideoResourceId] = React.useState(
+		initialVideoResource?.id,
+	)
+
+	React.useEffect(() => {
+		setVideoResourceId(initialVideoResource?.id)
+	}, [initialVideoResource?.id])
 
 	const { data: videoResource, refetch } = api.videoResources.get.useQuery(
 		{
-			videoResourceId: initialVideoResource?.id,
+			videoResourceId: videoResourceId,
 		},
 		{
-			enabled: !!initialVideoResource?.id,
+			enabled: Boolean(videoResourceId),
 		},
 	)
 
@@ -174,9 +181,12 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 						refetch()
 						break
 					case 'video.asset.attached':
+						console.log('video.asset.attached', data.body)
+						setVideoResourceId(data.body.videoResourceId)
 						refetch()
 						break
 					case 'video.asset.detached':
+						setVideoResourceId(undefined)
 						refetch()
 						break
 					default:
@@ -207,18 +217,26 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 
 	const handleDetachVideo = async () => {
 		if (videoResource?.id) {
-			await detachFromPost({
-				postId: resource.id,
-				videoResourceId: videoResource.id,
-			})
-			setShowDetachConfirmation(false)
+			try {
+				await detachFromPost({
+					postId: resource.id,
+					videoResourceId: videoResource.id,
+				})
+
+				setVideoResourceId(undefined)
+				form.setValue('fields.videoResourceId', undefined)
+			} catch (error) {
+				console.error('Failed to detach video:', error)
+			} finally {
+				setShowDetachConfirmation(false)
+			}
 		}
 	}
 
 	return (
 		<TooltipProvider>
 			<div className={className}>
-				{videoResource?.id || initialVideoResource?.id ? (
+				{videoResource?.id || videoResourceId ? (
 					replacingVideo ? (
 						<div className="-mt-7">
 							<NewLessonVideoForm
@@ -229,6 +247,8 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 									refetch()
 								}}
 								onVideoResourceCreated={(videoResourceId) => {
+									setVideoResourceId(videoResourceId)
+									form.setValue('fields.videoResourceId', videoResourceId)
 									refetch()
 								}}
 							/>
@@ -404,6 +424,8 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 								refetch()
 							}}
 							onVideoResourceCreated={(videoResourceId) => {
+								setVideoResourceId(videoResourceId)
+								form.setValue('fields.videoResourceId', videoResourceId)
 								refetch()
 							}}
 						/>
