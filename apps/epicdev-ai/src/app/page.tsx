@@ -80,6 +80,7 @@ const Home = async (props: Props) => {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
 		type: page.resources[0]?.resource?.type,
+		postType: page.resources[0]?.resource?.fields?.postType,
 	}
 
 	return (
@@ -100,7 +101,7 @@ const Home = async (props: Props) => {
 						prefetch
 					>
 						<span className="truncate overflow-ellipsis">
-							New {firstPageResource.type}:{' '}
+							New {firstPageResource.postType || firstPageResource.type}:{' '}
 							<span className="underline">{firstPageResource?.title}</span>
 						</span>
 					</Link>
