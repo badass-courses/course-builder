@@ -22,9 +22,11 @@ export function CopyProblemPromptButton({
 	lesson,
 	abilityLoader,
 	className,
+	problem,
 	...rest
 }: {
 	lesson: Lesson | ContentResource
+	problem?: Lesson | null
 	className?: string
 	abilityLoader: Promise<AbilityForResource>
 } & ButtonProps) {
@@ -45,14 +47,17 @@ export function CopyProblemPromptButton({
 		lesson?.resources?.find((r) => r.resource.type === 'solution'),
 	)
 
-	if (!isProblemLesson) {
-		return null
-	}
+	const isSolutionLesson = lesson?.type === 'solution'
+
+	// if (!isProblemLesson || !isSolutionLesson) {
+	// 	return null
+	// }
+	const body = isSolutionLesson ? problem?.fields?.body : lesson.fields?.body
 
 	const handleCopy = async () => {
 		// Access body via lesson.fields.body
-		if (lesson.fields?.body) {
-			await navigator.clipboard.writeText(lesson.fields.body)
+		if (body) {
+			await navigator.clipboard.writeText(body)
 			track('Problem Prompt Copied', { lessonId: lesson.id })
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds

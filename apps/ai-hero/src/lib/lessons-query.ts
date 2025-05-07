@@ -281,7 +281,7 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		console.error('Error parsing solution', solution)
 		return null
 	}
-	return parsedSolution.data
+	return { solution: parsedSolution.data, lesson: parsedLesson.data }
 }
 
 export async function updateLesson(input: LessonUpdate, revalidate = true) {

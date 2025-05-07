@@ -47,12 +47,34 @@ export const NavigationResourceSchema = z.discriminatedUnion('type', [
 	NavigationPostSchema,
 ])
 
+export const CohortResourceSchema = z.object({
+	id: z.string(),
+	slug: z.string(),
+	title: z.string(),
+	position: z.number(),
+	type: z.enum(['workshop', 'tutorial']),
+	startsAt: z.string().datetime().nullable(),
+})
+
+export const CohortInfoSchema = z.object({
+	id: z.string(),
+	slug: z.string(),
+	title: z.string(),
+	startsAt: z.string().datetime().nullable(),
+	endsAt: z.string().datetime().nullable(),
+	timezone: z.string(),
+	cohortTier: z.enum(['standard', 'premium', 'vip']).nullable(),
+	maxSeats: z.number().int().positive().nullable(),
+	resources: z.array(CohortResourceSchema).optional().default([]),
+})
+
 export const WorkshopNavigationSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
 	coverImage: z.string().optional().nullable(),
 	resources: z.array(NavigationResourceSchema),
+	cohorts: z.array(CohortInfoSchema).optional().default([]),
 })
 
 export function findSectionIdForLessonSlug(
@@ -168,6 +190,16 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			position: z.null(),
 			sectionId: z.null(),
 			resourceId: z.null(),
+			cohortId: z.null(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.null(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
 		}),
 	// Section row
 	z
@@ -179,6 +211,16 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(), // Sections don't have coverImage
 			sectionId: z.null(),
 			resourceId: z.null(),
+			cohortId: z.null(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.null(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
 		}),
 	// Resource row (lesson/post)
 	z
@@ -194,6 +236,16 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(), // Resources don't have coverImage
 			sectionId: z.string().nullable(),
 			resourceId: z.null(),
+			cohortId: z.null(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.null(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
 		}),
 	// Solution row
 	z
@@ -205,6 +257,64 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(), // Solutions don't have coverImage
 			position: z.null(),
 			sectionId: z.null(),
+			cohortId: z.null(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.null(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
+		}),
+	// Cohort row
+	z
+		.object({
+			type: z.literal('cohort'),
+		})
+		.extend({
+			id: z.null(),
+			slug: z.null(),
+			title: z.null(),
+			coverImage: z.null(),
+			position: z.null(),
+			sectionId: z.null(),
+			resourceId: z.null(),
+			cohortId: z.string(),
+			cohortSlug: z.string(),
+			cohortTitle: z.string(),
+			startsAt: z.string().datetime().nullable(),
+			endsAt: z.string().datetime().nullable(),
+			timezone: z.string(),
+			cohortTier: z.enum(['standard', 'premium', 'vip']).nullable(),
+			maxSeats: z.number().int().positive().nullable(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
+		}),
+	// Cohort resource row
+	z
+		.object({
+			type: z.literal('cohort_resource'),
+		})
+		.extend({
+			id: z.string(),
+			slug: z.string(),
+			title: z.string(),
+			coverImage: z.null(),
+			position: z.number(),
+			sectionId: z.null(),
+			resourceId: z.null(),
+			cohortId: z.string(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.string().datetime().nullable(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.enum(['workshop', 'tutorial']),
+			resourcePosition: z.number(),
 		}),
 ])
 
@@ -274,42 +384,17 @@ export const WorkshopSchema = ContentResourceSchema.merge(
 		// 						resourceOfId: z.string(),
 		// 						resource: z.object({
 		// 							id: z.string(),
-		// 							type: z.enum([
-		// 								'lesson',
-		// 								'videoResource',
-		// 								'exercise',
-		// 								'solution',
-		// 								'post',
-		// 							]),
+		// 							type: z.enum(['solution', 'videoResource']),
 		// 							fields: z.object({
 		// 								slug: z.string().optional().nullable(),
-		// 								title: z.string().min(2).max(90).optional().nullable(),
+		// 								title: z
+		// 									.string()
+		// 									.min(2)
+		// 									.max(90)
+		// 									.optional()
+		// 									.nullable(),
 		// 								body: z.string().optional().nullable(),
 		// 							}),
-		// 							resources: z
-		// 								.array(
-		// 									z.object({
-		// 										position: z.number(),
-		// 										resourceId: z.string(),
-		// 										resourceOfId: z.string(),
-		// 										resource: z.object({
-		// 											id: z.string(),
-		// 											type: z.enum(['solution', 'videoResource']),
-		// 											fields: z.object({
-		// 												slug: z.string().optional().nullable(),
-		// 												title: z
-		// 													.string()
-		// 													.min(2)
-		// 													.max(90)
-		// 													.optional()
-		// 													.nullable(),
-		// 												body: z.string().optional().nullable(),
-		// 											}),
-		// 										}),
-		// 									}),
-		// 								)
-		// 								.optional()
-		// 								.nullable(),
 		// 						}),
 		// 					}),
 		// 				),
@@ -324,3 +409,6 @@ export const WorkshopSchema = ContentResourceSchema.merge(
  * Workshop resource type definition
  */
 export type Workshop = z.infer<typeof WorkshopSchema>
+
+export type CohortResource = z.infer<typeof CohortResourceSchema>
+export type CohortInfo = z.infer<typeof CohortInfoSchema>

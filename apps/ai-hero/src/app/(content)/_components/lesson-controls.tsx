@@ -12,12 +12,12 @@ import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
 
 export const LessonControls = async ({
 	lesson,
-	exercise,
+	problem,
 	className,
 	moduleType = 'workshop',
 }: {
 	lesson: Lesson | null
-	exercise?: Lesson | null
+	problem?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
 }) => {
@@ -29,6 +29,12 @@ export const LessonControls = async ({
 		return null
 	}
 
+	const hasSolution = lesson.resources?.some(
+		(resource) => resource.resource.type === 'solution',
+	)
+
+	const isProblemLesson = lesson.type === 'lesson' && hasSolution
+
 	return (
 		<div
 			className={cn(
@@ -38,13 +44,14 @@ export const LessonControls = async ({
 		>
 			<AutoPlayToggle />
 			{(session?.user || ckSubscriber) &&
-			(lesson.type === 'lesson' || lesson.type === 'solution') ? (
+			((lesson.type === 'lesson' && !isProblemLesson) ||
+				lesson.type === 'solution') ? (
 				<ModuleLessonProgressToggle
 					// if we are on solution, pass in exercise as lesson for completing
-					lesson={lesson.type === 'solution' && exercise ? exercise : lesson}
+					lesson={lesson.type === 'solution' && problem ? problem : lesson}
 					moduleType={moduleType}
 					lessonType={
-						lesson.type === 'solution' && exercise ? 'solution' : lesson.type
+						lesson.type === 'solution' && problem ? 'solution' : lesson.type
 					}
 				/>
 			) : null}
