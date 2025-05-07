@@ -17,7 +17,10 @@ import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-import { RESOURCE_CREATED_EVENT } from '../inngest/events/resource-management'
+import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+} from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
 import { upsertPostToTypeSense } from './typesense-query'
 
@@ -226,14 +229,21 @@ export async function updateEvent(
 	}
 
 	try {
-		const result = await courseBuilderAdapter.updateContentResourceFields({
-			id: currentEvent.id,
-			fields: {
-				...currentEvent.fields,
-				...input.fields,
-				slug: eventSlug,
+		const updatedEvent = await courseBuilderAdapter.updateContentResourceFields(
+			{
+				id: currentEvent.id,
+				fields: {
+					...currentEvent.fields,
+					...input.fields,
+					slug: eventSlug,
+				},
 			},
-		})
+		)
+
+		if (!updatedEvent) {
+			console.error(`Failed to fetch updated event: ${currentEvent.id}`)
+			return null
+		}
 
 		await log.info('event.update.success', {
 			eventId: input.id,
@@ -243,7 +253,25 @@ export async function updateEvent(
 		})
 
 		revalidate && revalidateTag('events')
-		return result
+		try {
+			console.log(
+				`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+			)
+			const result = await inngest.send({
+				name: RESOURCE_UPDATED_EVENT,
+				data: {
+					id: updatedEvent.id,
+					type: updatedEvent.type,
+				},
+			})
+			console.log(
+				`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+				result,
+			)
+		} catch (error) {
+			console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
+		}
+		return updatedEvent
 	} catch (error) {
 		await log.error('event.update.failed', {
 			eventId: input.id,

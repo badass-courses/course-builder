@@ -28,7 +28,7 @@ import { useToast } from '@coursebuilder/ui'
  * Wraps the generic ContentVideoResourceField with post-specific functionality
  */
 export const VideoResourceField: React.FC<{
-	form: UseFormReturn<any>
+	form: UseFormReturn<Event>
 	event: Event
 	videoResource?: VideoResource | null
 	initialVideoResourceId?: string | null
@@ -97,7 +97,7 @@ export const VideoResourceField: React.FC<{
 			await updateEvent({
 				id: event.id,
 				fields: {
-					...event.fields,
+					...form.watch('fields'),
 					thumbnailTime: additionalFields.thumbnailTime,
 					videoResourceId, // This is added dynamically to the fields
 				} as any,

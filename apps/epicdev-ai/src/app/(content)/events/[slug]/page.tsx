@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
+import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -21,10 +22,18 @@ import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
+import {
+	Product,
+	productSchema,
+	Purchase,
+	type ContentResourceResource,
+} from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
+import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { PostPlayer } from '../../posts/_components/post-player'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
@@ -185,9 +194,14 @@ export default async function EventPage(props: {
 			'h:mm a',
 		)}`
 
+	const hasVideo = event?.resources?.find(
+		({ resource }: ContentResourceResource) =>
+			resource.type === 'videoResource',
+	)
+
 	return (
 		<LayoutClient withContainer>
-			<div className="relative flex flex-col">
+			<main className="relative flex w-full flex-col">
 				<EventMetadata
 					event={event}
 					quantityAvailable={eventProps.quantityAvailable}
@@ -211,21 +225,21 @@ export default async function EventPage(props: {
 					</div>
 				)}
 				{eventProps.hasPurchasedCurrentProduct ? (
-					<div className="flex w-full items-center border-b-2 px-5 py-5 text-left">
+					<div className="flex w-full items-center border-b py-3 text-left font-medium">
 						You have purchased a ticket to this event. See you on {eventDate}.{' '}
 						<span role="img" aria-label="Waving hand">
 							👋
 						</span>
 					</div>
 				) : null}
-				<div className="flex w-full flex-col-reverse items-center justify-between py-8 md:flex-row">
+				<div className="flex w-full flex-col-reverse items-center justify-between py-5 md:flex-row md:items-start">
 					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 							<Link
-								href="/events"
-								className="text-primary w-full hover:underline sm:w-auto"
+								href="/posts"
+								className="text-primary w-full font-medium hover:underline sm:w-auto"
 							>
-								Live Workshop
+								Live Event
 							</Link>
 							<span className="hidden opacity-50 sm:inline-block">・</span>
 							{eventDate ? (
@@ -242,20 +256,13 @@ export default async function EventPage(props: {
 							{fields.title}
 						</h1>
 						{fields.description && (
-							<h2 className="mt-5 text-balance text-xl">
+							<h2 className="mt-5 text-balance text-xl font-normal">
 								{fields.description}
 							</h2>
 						)}
 						<Contributor className="mt-5" />
 					</div>
-					{product?.fields?.image?.url && (
-						<CldImage
-							width={400}
-							height={400}
-							src={product?.fields.image.url}
-							alt={fields?.title}
-						/>
-					)}
+					{hasVideo && <PlayerContainer event={event} />}
 				</div>
 				<div className="flex h-full flex-grow flex-col-reverse md:flex-row">
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
@@ -268,9 +275,44 @@ export default async function EventPage(props: {
 						<EventDetails event={event} />
 					</EventSidebar>
 				</div>
-			</div>
+			</main>
 		</LayoutClient>
 	)
+}
+
+async function PlayerContainer({ event }: { event: Event | null }) {
+	if (!event) {
+		notFound()
+	}
+
+	const resource = event.resources?.[0]?.resource.id
+
+	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
+
+	return videoResource ? (
+		<VideoPlayerOverlayProvider>
+			<React.Suspense
+				fallback={
+					<PlayerContainerSkeleton className="aspect-video h-full max-h-[75vh] w-full bg-black" />
+				}
+			>
+				<section
+					aria-label="video"
+					className="flex w-full flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
+				>
+					<PostPlayer
+						title={event.fields?.title}
+						thumbnailTime={event.fields?.thumbnailTime || 0}
+						postId={event.id}
+						className={cn(
+							'aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-md',
+						)}
+						videoResource={videoResource}
+					/>
+				</section>
+			</React.Suspense>
+		</VideoPlayerOverlayProvider>
+	) : null
 }
 
 const EventMetadata: React.FC<{ event: Event; quantityAvailable: number }> = ({

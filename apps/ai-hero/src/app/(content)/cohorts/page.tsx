@@ -8,6 +8,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { CohortSchema } from '@/lib/cohort'
 import { getServerAuthSession } from '@/server/auth'
+import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { formatInTimeZone } from 'date-fns-tz'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
@@ -94,16 +95,12 @@ async function CohortsList() {
 				const { fields } = cohort
 				const { startsAt, endsAt } = fields
 				const PT = fields.timezone || 'America/Los_Angeles'
-				const cohortDate =
-					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
-				const eventTime =
-					startsAt &&
-					endsAt &&
-					`${formatInTimeZone(new Date(startsAt), PT, 'h:mm a')} — ${formatInTimeZone(
-						new Date(endsAt),
-						PT,
-						'h:mm a',
-					)}`
+
+				const { dateString: cohortDateString } = formatCohortDateRange(
+					startsAt,
+					endsAt,
+					PT,
+				)
 
 				return (
 					<li key={cohort.id}>
@@ -133,8 +130,7 @@ async function CohortsList() {
 										</Link>
 									</CardTitle>
 									<div className="flex items-center gap-1 text-sm">
-										<p>{cohortDate}</p>
-										<span className="opacity-50">・</span>
+										{cohortDateString && <p>{cohortDateString}</p>}
 									</div>
 								</CardHeader>
 								{cohort?.fields?.description && (

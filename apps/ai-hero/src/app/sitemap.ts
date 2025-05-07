@@ -57,7 +57,9 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
       ON top_level_lessons.id = top_level_lesson_relations.resourceId
       AND (top_level_lessons.type = 'lesson' OR top_level_lessons.type = 'exercise')
     WHERE
-      workshop.type = 'workshop' or workshop.\`type\` = 'tutorial'
+      (workshop.type = 'workshop' OR workshop.\`type\` = 'tutorial')
+      AND workshop.fields->>'$.state' = 'published'
+      AND workshop.fields->>'$.visibility' = 'public'
     ORDER BY
       COALESCE(section_relations.position, top_level_lesson_relations.position),
       lesson_relations.position
@@ -71,7 +73,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 		if (!workshopsAndTutorials.has(item.workshop_id)) {
 			workshopsAndTutorials.add(item.workshop_id)
 			sitemapEntries.push({
-				url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}`,
+				url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}`,
 				title: item.workshop_title,
 				description: item.workshop_description || '',
 				lastModified: new Date(),
@@ -87,7 +89,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 			const slug = item.lesson_slug || item.section_or_lesson_slug
 			if (slug) {
 				sitemapEntries.push({
-					url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}/${slug}`,
+					url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}/${slug}`,
 					title: item.lesson_title || item.section_or_lesson_title,
 					description: item.lesson_description || '',
 					lastModified: new Date(),

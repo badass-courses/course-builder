@@ -6,6 +6,7 @@ import {
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
 import { PostStateSchema, PostTagsSchema, PostVisibilitySchema } from './posts'
+import { SolutionSchema } from './solution'
 
 export const LessonSchema = ContentResourceSchema.merge(
 	z.object({

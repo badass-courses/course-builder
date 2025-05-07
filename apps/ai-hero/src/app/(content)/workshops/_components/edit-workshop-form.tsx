@@ -1,40 +1,41 @@
 'use client'
 
 import * as React from 'react'
+import { useRouter } from 'next/navigation'
+import { withResourceForm } from '@/components/resource-form/with-resource-form'
+import type { Workshop, WorkshopRaw, WorkshopSchema } from '@/lib/workshops'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
+import { WorkshopFormBase } from './workshop-form-base'
+import { workshopFormConfig } from './workshop-form-config'
 
-import { WithWorkshopForm } from './with-workshop-form'
-import {
-	isWorkshopResource,
-	parseWorkshopResource,
-	WorkshopResourceType,
-} from './workshop-form-config'
+export type EditWorkshopFormProps = {
+	workshop: Workshop // Assuming WorkshopRaw is the correct type for the raw resource
+	// Add other props if needed, similar to EditPostFormProps
+}
 
 /**
- * EditWorkshopForm component using the withResourceForm HOC
- * This is a thin wrapper around the WithWorkshopForm component
- *
- * @param props Workshop resource to edit
+ * Enhanced workshop form with common resource form functionality.
  */
-export function EditWorkshopForm({ workshop }: { workshop: ContentResource }) {
-	// Use type guard instead of type assertion for better type safety
-	if (!isWorkshopResource(workshop)) {
-		console.warn('Resource is not a workshop, but attempting to render as one')
+export function EditWorkshopForm({ workshop }: { workshop: Workshop }) {
+	const router = useRouter()
 
-		try {
-			// Try to parse and validate the workshop schema
-			const validatedWorkshop = parseWorkshopResource(workshop)
-			return <WithWorkshopForm resource={validatedWorkshop} />
-		} catch (error) {
-			console.error('Failed to parse workshop resource', error)
-			return (
-				<div className="p-5">
-					Unable to load workshop resource. Invalid data format.
-				</div>
-			)
-		}
-	}
+	const WorkshopForm = withResourceForm<Workshop, typeof WorkshopSchema>(
+		WorkshopFormBase, // The base component rendering the fields
+		{
+			...workshopFormConfig, // Spread the base config
+			onSave: async (resource, hasNewSlug) => {
+				if (hasNewSlug) {
+					// Use the workshop slug and path
+					router.push(`/workshops/${resource.fields?.slug}/edit`)
+				}
+			},
+			// You might need to re-define or adjust customTools here if they were
+			// dependent on props passed to EditWorkshopForm, though in this case
+			// the tools defined in workshopFormConfig seem self-contained.
+		},
+	)
 
-	return <WithWorkshopForm resource={workshop} />
+	// Type assertion might be needed if WorkshopRaw doesn't perfectly match ContentResource
+	// Adjust as necessary based on your actual types.
+	return <WorkshopForm resource={workshop as unknown as Workshop} />
 }

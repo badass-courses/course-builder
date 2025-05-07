@@ -16,6 +16,7 @@ import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+import { getResourcePath } from '@/utils/resource-paths'
 import { formatInTimeZone } from 'date-fns-tz'
 import { desc, inArray, sql } from 'drizzle-orm'
 import { Book, Calendar, ChevronRight } from 'lucide-react'
@@ -212,7 +213,7 @@ const PostTeaser: React.FC<{
 		<li className={cn('relative flex h-full', className)}>
 			<Link
 				prefetch
-				href={`/${post.fields.slug}`}
+				href={getResourcePath(post.type, post.fields.slug, 'view')}
 				passHref
 				className="flex w-full"
 			>

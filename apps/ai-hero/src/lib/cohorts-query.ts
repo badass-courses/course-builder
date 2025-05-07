@@ -28,7 +28,16 @@ export async function getCohort(cohortIdOrSlug: string) {
 		with: {
 			resources: {
 				with: {
-					resource: true,
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: [asc(contentResourceResource.position)],
+							},
+						},
+					},
 				},
 				orderBy: [asc(contentResourceResource.position)],
 			},

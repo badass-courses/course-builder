@@ -8,7 +8,6 @@ import {
 	contentResourceResource,
 	products as productTable,
 } from '@/db/schema'
-import { Module, ModuleSchema } from '@/lib/module'
 import {
 	NavigationLessonSchema,
 	NavigationPostSchema,
@@ -21,9 +20,11 @@ import {
 	WorkshopNavigation,
 	WorkshopNavigationSchema,
 	WorkshopRawSchema,
+	WorkshopSchema,
 	type ResourceRaw,
 	type SectionRaw,
 	type SolutionRaw,
+	type Workshop,
 	type WorkshopRaw,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
@@ -39,6 +40,8 @@ import {
 	productSchema,
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
+
+import { upsertPostToTypeSense } from './typesense-query'
 
 /**
  * Fetches workshop navigation data with a single efficient query
@@ -448,7 +451,7 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		},
 	})
 
-	const parsedWorkshop = ModuleSchema.safeParse(workshop)
+	const parsedWorkshop = WorkshopSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
 		return null
@@ -495,7 +498,7 @@ export async function getAllWorkshops() {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
+	const parsedWorkshops = z.array(WorkshopSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
 		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
 		throw new Error('Error parsing workshop')
@@ -568,7 +571,10 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-export async function updateWorkshop(input: Module) {
+export async function updateWorkshop(input: Partial<Workshop>) {
+	if (!input.id) {
+		throw new Error('ID is required')
+	}
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
@@ -583,9 +589,66 @@ export async function updateWorkshop(input: Module) {
 
 	let workshopSlug = currentWorkshop.fields.slug
 
-	if (input.fields.title !== currentWorkshop.fields.title) {
+	if (
+		input.fields?.title !== currentWorkshop.fields.title &&
+		input.fields?.slug?.includes('~')
+	) {
 		const splitSlug = currentWorkshop?.fields.slug.split('~') || ['', guid()]
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('post.update.slug.changed', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	} else if (input.fields?.slug !== currentWorkshop.fields.slug) {
+		if (!input.fields?.slug) {
+			throw new Error('Slug is required')
+		}
+		workshopSlug = input.fields?.slug
+		await log.info('post.update.slug.manual', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	}
+
+	try {
+		await upsertPostToTypeSense(
+			{
+				id: currentWorkshop.id,
+				organizationId: currentWorkshop.organizationId,
+				type: currentWorkshop.type,
+				createdAt: currentWorkshop.createdAt,
+				updatedAt: new Date(),
+				deletedAt: currentWorkshop.deletedAt,
+				createdById: currentWorkshop.createdById,
+				resources: currentWorkshop.resources as any,
+				createdByOrganizationMembershipId:
+					currentWorkshop.createdByOrganizationMembershipId,
+				fields: {
+					...currentWorkshop.fields,
+					...input.fields,
+					description: input.fields.description || '',
+					slug: workshopSlug,
+				},
+			},
+			'save',
+		)
+		await log.info('post.update.typesense.success', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('🔍 Post updated in Typesense')
+	} catch (error) {
+		await log.error('post.update.typesense.failed', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('❌ Error updating post in Typesense', error)
 	}
 
 	const updatedWorkshop =
@@ -594,6 +657,7 @@ export async function updateWorkshop(input: Module) {
 			fields: {
 				...currentWorkshop.fields,
 				...input.fields,
+				updatedAt: new Date(),
 				slug: workshopSlug,
 			},
 		})
@@ -602,7 +666,7 @@ export async function updateWorkshop(input: Module) {
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')
-	revalidatePath(`/workshops/${currentWorkshop.fields.slug}`)
+	revalidatePath(`/workshops/${workshopSlug}`)
 
 	return {
 		...updatedWorkshop,

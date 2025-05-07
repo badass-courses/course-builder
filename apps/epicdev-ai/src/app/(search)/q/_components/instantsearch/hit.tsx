@@ -3,11 +3,10 @@
 import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
+import { getResourcePath } from '@/utils/resource-paths'
 import { format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Highlight } from 'react-instantsearch'
-
-import { Badge } from '@coursebuilder/ui'
 
 export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
@@ -15,7 +14,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 			<Link
 				prefetch
 				className="group flex flex-col items-baseline justify-between gap-2 py-5 transition ease-in-out sm:py-5 md:flex-row"
-				href={`/${hit.slug}`}
+				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
 				<div className="flex flex-col gap-2 ">
 					<span className="fluid-lg group-hover:text-primary pr-5 font-bold transition sm:truncate">

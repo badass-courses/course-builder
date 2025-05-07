@@ -302,9 +302,9 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	if (canViewTutorial(viewerAbilityInput)) {
-		can('read', 'Content')
-	}
+	// if (canViewTutorial(viewerAbilityInput)) {
+	// 	can('read', 'Content')
+	// }
 
 	if (user?.roles?.map((role) => role.name).includes('admin')) {
 		can('manage', 'all')
@@ -315,14 +315,14 @@ export function defineRulesForPurchases(
 	return rules
 }
 
-const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
-	const contentIsTutorial = module?.type === 'tutorial'
-	const viewer = user || subscriber
-	const emailIsNotRequiredToWatch =
-		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
+// const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
+// 	const contentIsTutorial = module?.type === 'tutorial'
+// 	const viewer = user || subscriber
+// 	const emailIsNotRequiredToWatch =
+// 		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
 
-	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
-}
+// 	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
+// }
 
 const canViewTip = ({ lesson }: ViewerAbilityInput) => {
 	return lesson?.type === 'tip'

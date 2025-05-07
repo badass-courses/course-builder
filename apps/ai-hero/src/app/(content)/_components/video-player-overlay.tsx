@@ -208,7 +208,9 @@ const ContinueButton: React.FC<{
 		),
 	)
 
-	const isProblemLesson = nextResource?.type === 'solution'
+	const isProblemLesson = Boolean(
+		resource?.resources?.find((r) => r.resource.type === 'solution'),
+	)
 
 	const [isPending, startTransition] = React.useTransition()
 	return (

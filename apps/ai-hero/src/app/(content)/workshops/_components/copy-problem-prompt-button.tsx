@@ -41,13 +41,9 @@ export function CopyProblemPromptButton({
 		return null // Don't render if context is null
 	}
 
-	// Calculate the next resource dynamically
-	const { nextResource } = getAdjacentWorkshopResources(
-		workshopNavigation,
-		lesson.id,
+	const isProblemLesson = Boolean(
+		lesson?.resources?.find((r) => r.resource.type === 'solution'),
 	)
-
-	const isProblemLesson = nextResource?.type === 'solution'
 
 	if (!isProblemLesson) {
 		return null
