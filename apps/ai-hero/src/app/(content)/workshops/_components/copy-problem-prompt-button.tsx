@@ -49,9 +49,6 @@ export function CopyProblemPromptButton({
 
 	const isSolutionLesson = lesson?.type === 'solution'
 
-	// if (!isProblemLesson || !isSolutionLesson) {
-	// 	return null
-	// }
 	const body = isSolutionLesson ? problem?.fields?.body : lesson.fields?.body
 
 	const handleCopy = async () => {

@@ -79,7 +79,7 @@ export async function LessonPage({
 				)}
 				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16">
 					<div className="relative z-10">
-						<article className="flex h-full flex-col">
+						<article className="">
 							<LessonTitle lesson={lesson} />
 							<div className="relative mb-10 flex w-full items-center justify-between gap-3">
 								<LessonActionBar
@@ -115,32 +115,32 @@ export async function LessonPage({
 							/>
 							<UpNext currentResourceId={lesson?.id} />
 							{/* <Accordion type="single" collapsible className="mt-4">
-							<AccordionItem value="contents">
-								<AccordionTrigger className="flex w-full items-center font-medium">
-									Workshop Contents
-								</AccordionTrigger>
-								<AccordionContent>
-									<Suspense
-										fallback={
-											<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
-												<Skeleton className="h-24 w-full bg-gray-100" />
-												{new Array(10).fill(null).map((_, i) => (
-													<Skeleton
-														key={i}
-														className="h-8 w-full bg-gray-100"
-													/>
-												))}
-											</div>
-										}
-									>
-										<WorkshopResourceList
-											currentLessonSlug={params.lesson}
-											className="max-w-none"
-										/>
-									</Suspense>
-								</AccordionContent>
-							</AccordionItem>
-						</Accordion> */}
+								<AccordionItem value="contents">
+									<AccordionTrigger className="flex w-full items-center font-medium">
+										Workshop Contents
+									</AccordionTrigger>
+									<AccordionContent>
+										<Suspense
+											fallback={
+												<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
+													<Skeleton className="h-24 w-full bg-gray-100" />
+													{new Array(10).fill(null).map((_, i) => (
+														<Skeleton
+															key={i}
+															className="h-8 w-full bg-gray-100"
+														/>
+													))}
+												</div>
+											}
+										>
+											<WorkshopResourceList
+												currentLessonSlug={params.lesson}
+												className="max-w-none"
+											/>
+										</Suspense>
+									</AccordionContent>
+								</AccordionItem>
+							</Accordion> */}
 						</article>
 					</div>
 				</div>
@@ -302,36 +302,3 @@ async function LessonActionBar({
 		</div>
 	)
 }
-
-// async function LessonBody({
-// 	lesson,
-// 	params,
-// }: {
-// 	lesson: Lesson | null
-// 	params: { module: string; lesson: string }
-// }) {
-// 	if (!lesson) {
-// 		notFound()
-// 	}
-
-// 	const { content } = await compileMDX(lesson?.fields?.body || '')
-// 	const abilityLoader = await getAbilityForResource(
-// 		params.lesson,
-// 		params.module,
-// 	)
-// 	const canView = abilityLoader?.canView
-
-// 	if (!canView) {
-// 		return (
-// 			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-// 				<p>This lesson is locked. Please upgrade to view it.</p>
-// 			</article>
-// 		)
-// 	}
-
-// 	return (
-// 		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-// 			{content}
-// 		</article>
-// 	)
-// }
