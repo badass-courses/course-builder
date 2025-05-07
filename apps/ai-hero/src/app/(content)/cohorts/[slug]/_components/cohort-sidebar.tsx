@@ -36,7 +36,7 @@ export const CohortSidebar = ({ children }: { children: React.ReactNode }) => {
 			<div
 				ref={sidebarRef}
 				className={cn('', {
-					'md:sticky md:top-0': windowHeight > sidebarHeight,
+					'md:sticky md:top-[var(--nav-height)]': windowHeight > sidebarHeight,
 				})}
 			>
 				{children}
