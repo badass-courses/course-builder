@@ -10,6 +10,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { getProductPurchaseData } from '@/lib/products/products.service'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
@@ -18,11 +19,15 @@ import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
+import ProductPurchasesTable from './_components/product-purchase-table'
+
+type MetadataProps = {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
 export async function generateMetadata(
-	props: {
-		params: Promise<{ slug: string }>
-		searchParams: Promise<ParsedUrlQuery>
-	},
+	props: MetadataProps,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
@@ -67,6 +72,45 @@ async function ProductActionBar({
 	)
 }
 
+async function ProductPurchaseDetails({
+	productLoader,
+	searchParams,
+}: {
+	productLoader: Promise<Product | null>
+	searchParams: { [key: string]: string | string[] | undefined }
+}) {
+	const { ability } = await getServerAuthSession()
+	const product = await productLoader
+
+	if (!product) return null
+
+	const page = searchParams?.page ? parseInt(String(searchParams.page), 10) : 1
+	const limit = searchParams?.limit
+		? parseInt(String(searchParams.limit), 10)
+		: 50
+	const offset = (page - 1) * limit
+
+	const purchaseDataLoader = getProductPurchaseData({
+		productIds: [product.id],
+		limit,
+		offset,
+	})
+
+	return (
+		<>
+			{product && ability.can('update', 'Content') ? (
+				<ProductPurchasesTable
+					purchaseDataResultLoader={purchaseDataLoader}
+					currentPage={page}
+					pageSize={limit}
+				/>
+			) : (
+				<div className="flex h-9 w-full items-center justify-between px-1" />
+			)}
+		</>
+	)
+}
+
 async function ProductTitle({
 	productLoader,
 }: {
@@ -77,31 +121,39 @@ async function ProductTitle({
 	return <h1 className="text-3xl font-bold sm:text-4xl">{product?.name}</h1>
 }
 
-export default async function ProductPage(props: {
+export default async function ProductPage({
+	params: pageParams,
+	searchParams: pageSearchParams,
+}: {
 	params: Promise<{ slug: string }>
-	//arbitrary search params or query string
-	searchParams: Promise<ParsedUrlQuery>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-	const searchParams = await props.searchParams
-	const params = await props.params
+	const params = await pageParams
+	const searchParams = await pageSearchParams
 	const productLoader = getProduct(params.slug)
 
 	return (
-		<LayoutClient withContainer>
-			<div>
-				<Suspense
-					fallback={
-						<div className="flex h-9 w-full items-center justify-between px-1" />
-					}
-				>
-					<ProductActionBar productLoader={productLoader} />
-				</Suspense>
-				<article className="mx-auto flex w-full flex-col px-5 py-10 md:py-16">
+		<LayoutClient>
+			<div className="container flex flex-col">
+				<article className="prose dark:prose-invert mx-auto w-full pt-16">
+					<ProductTitle productLoader={productLoader} />
+					<Suspense
+						fallback={<div className="h-9 w-full" />}
+						key={JSON.stringify(searchParams)}
+					>
+						<ProductActionBar productLoader={productLoader} />
+					</Suspense>
 					<ProductCommerce
 						productLoader={productLoader}
 						searchParams={searchParams}
 					/>
 				</article>
+				<Suspense fallback={<div>Loading purchases...</div>}>
+					<ProductPurchaseDetails
+						productLoader={productLoader}
+						searchParams={searchParams}
+					/>
+				</Suspense>
 			</div>
 		</LayoutClient>
 	)
