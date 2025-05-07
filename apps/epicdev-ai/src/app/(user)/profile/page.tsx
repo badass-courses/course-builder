@@ -39,6 +39,11 @@ export default async function ProfilePage() {
 		user.accounts.find((account: any) => account.provider === 'discord'),
 	)
 
+	const githubProvider = providers?.github
+	const githubConnected = Boolean(
+		user?.accounts.find((account: any) => account.provider === 'github'),
+	)
+
 	if (ability.can('read', 'User', session?.user?.id)) {
 		return (
 			<LayoutClient withContainer>
@@ -53,6 +58,8 @@ export default async function ProfilePage() {
 							user={session.user}
 							discordConnected={discordConnected}
 							discordProvider={discordProvider}
+							githubConnected={githubConnected}
+							githubProvider={githubProvider}
 						/>
 					</main>
 				</div>
