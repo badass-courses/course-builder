@@ -27,6 +27,8 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 
+import { AutoPlayToggle } from '../../_components/autoplay-toggle'
+
 type Props = {
 	currentLessonSlug?: string | null
 	currentSectionSlug?: string | null
@@ -89,6 +91,8 @@ export function WorkshopResourceList(props: Props) {
 	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
 		workshopNavigation
 
+	const cohort = workshopNavigation.cohorts?.[0]
+
 	return (
 		<nav
 			className={cn('relative w-full max-w-sm flex-shrink-0', className, {
@@ -102,7 +106,7 @@ export function WorkshopResourceList(props: Props) {
 						ref={ref as any}
 						className={cn('relative z-10 w-full border-b pl-2')}
 					>
-						<div className="flex w-full flex-row items-center gap-3 p-3">
+						<div className="flex w-full flex-row items-center gap-3 px-3 py-4">
 							{workshopNavigation.coverImage && (
 								<CldImage
 									width={48}
@@ -114,12 +118,12 @@ export function WorkshopResourceList(props: Props) {
 							<div className="flex flex-col leading-tight">
 								<div className="flex items-center gap-0.5">
 									<Link
-										href="/workshops"
-										className="font-heading text-primary text-sm font-medium hover:underline"
+										href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
+										className="text-primary text-base font-medium hover:underline"
 									>
-										Workshops
+										{cohort ? cohort.title : 'Workshops'}
 									</Link>
-									<span className="opacity-50">/</span>
+									<span className="px-1 font-mono opacity-50">/</span>
 								</div>
 								<Link
 									className="font-heading text-balance text-lg font-semibold leading-tight hover:underline"
@@ -127,6 +131,7 @@ export function WorkshopResourceList(props: Props) {
 								>
 									{workshopNavigation.title}
 								</Link>
+								<AutoPlayToggle className="text-muted-foreground [&_label]:hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 							</div>
 						</div>
 					</div>

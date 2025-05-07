@@ -1,6 +1,7 @@
 'use client'
 
 import React, { use } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
@@ -150,6 +151,13 @@ export const CompletedModuleOverlay: React.FC<{
 			run()
 		}
 	}, [resource, session])
+	const cohort = moduleNavigation?.cohorts?.[0]
+
+	const currentWorkshopIndexInCohort =
+		cohort?.resources?.findIndex(
+			(workshop) => workshop.id === moduleNavigation?.id,
+		) || 0
+	const nextWorkshop = cohort?.resources[currentWorkshopIndexInCohort + 1]
 
 	return (
 		<div
@@ -164,7 +172,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="default"
+					variant="outline"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -174,6 +182,13 @@ export const CompletedModuleOverlay: React.FC<{
 				>
 					Replay
 				</Button>
+				{nextWorkshop && (
+					<Button asChild variant="default">
+						<Link href={`/workshops/${nextWorkshop?.slug}`}>
+							Continue to {nextWorkshop?.title}
+						</Link>
+					</Button>
+				)}
 			</div>
 			<Button
 				type="button"

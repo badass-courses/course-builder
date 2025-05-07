@@ -301,7 +301,7 @@ export default async function CohortPage(props: {
 								return (
 									<li key={workshop.id}>
 										<Link
-											className="text-foreground"
+											className="text-foreground hover:text-primary text-xl"
 											href={getResourcePath(
 												'workshop',
 												workshop.fields.slug,
@@ -327,7 +327,7 @@ export default async function CohortPage(props: {
 												return (
 													<li key={resource?.id}>
 														<Link
-															className="text-foreground"
+															className="text-foreground hover:text-primary"
 															href={getResourcePath(
 																resource.type,
 																resource.fields.slug,

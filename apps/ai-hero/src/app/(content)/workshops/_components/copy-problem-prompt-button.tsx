@@ -22,9 +22,11 @@ export function CopyProblemPromptButton({
 	lesson,
 	abilityLoader,
 	className,
+	problem,
 	...rest
 }: {
 	lesson: Lesson | ContentResource
+	problem?: Lesson | null
 	className?: string
 	abilityLoader: Promise<AbilityForResource>
 } & ButtonProps) {
@@ -45,14 +47,14 @@ export function CopyProblemPromptButton({
 		lesson?.resources?.find((r) => r.resource.type === 'solution'),
 	)
 
-	if (!isProblemLesson) {
-		return null
-	}
+	const isSolutionLesson = lesson?.type === 'solution'
+
+	const body = isSolutionLesson ? problem?.fields?.body : lesson.fields?.body
 
 	const handleCopy = async () => {
 		// Access body via lesson.fields.body
-		if (lesson.fields?.body) {
-			await navigator.clipboard.writeText(lesson.fields.body)
+		if (body) {
+			await navigator.clipboard.writeText(body)
 			track('Problem Prompt Copied', { lessonId: lesson.id })
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds
@@ -64,7 +66,7 @@ export function CopyProblemPromptButton({
 			onClick={handleCopy}
 			variant="outline"
 			size="sm"
-			className={cn('h-11 text-base', className)}
+			className={cn('h-11 px-5 text-base', className)}
 			type="button"
 			{...rest}
 		>
@@ -75,7 +77,8 @@ export function CopyProblemPromptButton({
 						'opacity-0': copied,
 					})}
 				>
-					<Sparkle className="size-4" /> Copy Prompt
+					<Sparkle className="dark:text-primary size-4 text-orange-600" /> Copy
+					Prompt
 				</span>
 				<span
 					aria-hidden={!copied}
