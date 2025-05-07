@@ -27,6 +27,8 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 
+import { AutoPlayToggle } from '../../_components/autoplay-toggle'
+
 type Props = {
 	currentLessonSlug?: string | null
 	currentSectionSlug?: string | null
@@ -129,6 +131,7 @@ export function WorkshopResourceList(props: Props) {
 								>
 									{workshopNavigation.title}
 								</Link>
+								<AutoPlayToggle className="text-muted-foreground [&_label]:hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 							</div>
 						</div>
 					</div>

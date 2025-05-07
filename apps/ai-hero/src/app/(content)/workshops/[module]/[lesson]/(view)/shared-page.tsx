@@ -79,9 +79,9 @@ export async function LessonPage({
 				)}
 				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16">
 					<div className="relative z-10">
-						<article className="flex h-full flex-col gap-5">
+						<article className="flex h-full flex-col">
 							<LessonTitle lesson={lesson} />
-							<div className="relative flex w-full items-center justify-between gap-3">
+							<div className="relative mb-10 flex w-full items-center justify-between gap-3">
 								<LessonActionBar
 									lesson={lesson}
 									problem={problem}
@@ -93,18 +93,27 @@ export async function LessonPage({
 									className="flex justify-end"
 								/>
 							</div>
-							<Suspense fallback={<div>Loading...</div>}>
+
+							<Suspense
+								fallback={
+									<div className="flex flex-col gap-3">
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-12 w-full rounded" />
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-2/3 rounded" />
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-1/2 rounded" />
+									</div>
+								}
+							>
 								<LessonBody
 									lesson={lesson}
 									abilityLoader={abilityLoader}
 									mdxContentPromise={mdxContentPromise}
 								/>
 							</Suspense>
-							<UpNext currentResourceId={lesson?.id} />
 							<TranscriptContainer
 								lessonId={lesson?.id}
 								abilityLoader={abilityLoader}
 							/>
+							<UpNext currentResourceId={lesson?.id} />
 							{/* <Accordion type="single" collapsible className="mt-4">
 							<AccordionItem value="contents">
 								<AccordionTrigger className="flex w-full items-center font-medium">
@@ -225,8 +234,11 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 	if (!lesson) return null
 
 	return (
-		<div className="mt-2">
-			<Badge className="mb-3 text-xs uppercase" variant="outline">
+		<div>
+			<Badge
+				className="mb-1 border-none bg-transparent px-0 text-xs uppercase opacity-75"
+				variant="outline"
+			>
 				{lesson.type}
 			</Badge>
 			<h1 className="fluid-3xl mb-4 font-bold">{lesson.fields?.title}</h1>

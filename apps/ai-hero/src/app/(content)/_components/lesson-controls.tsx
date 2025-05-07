@@ -42,7 +42,7 @@ export const LessonControls = async ({
 				className,
 			)}
 		>
-			<AutoPlayToggle />
+			{/* <AutoPlayToggle /> */}
 			{(session?.user || ckSubscriber) &&
 			((lesson.type === 'lesson' && !isProblemLesson) ||
 				lesson.type === 'solution') ? (

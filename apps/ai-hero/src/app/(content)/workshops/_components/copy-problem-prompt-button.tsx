@@ -69,7 +69,7 @@ export function CopyProblemPromptButton({
 			onClick={handleCopy}
 			variant="outline"
 			size="sm"
-			className={cn('h-11 text-base', className)}
+			className={cn('h-11 px-5 text-base', className)}
 			type="button"
 			{...rest}
 		>
@@ -80,7 +80,8 @@ export function CopyProblemPromptButton({
 						'opacity-0': copied,
 					})}
 				>
-					<Sparkle className="size-4" /> Copy Prompt
+					<Sparkle className="dark:text-primary size-4 text-orange-600" /> Copy
+					Prompt
 				</span>
 				<span
 					aria-hidden={!copied}
