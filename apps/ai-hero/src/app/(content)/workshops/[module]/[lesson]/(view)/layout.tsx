@@ -40,7 +40,7 @@ const LessonLayout = async (props: {
 							className="hidden lg:block"
 						/>
 						<Sheet>
-							<SheetTrigger className="bg-card/80 fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded border p-3 backdrop-blur-md">
+							<SheetTrigger className="bg-card/80 fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded border p-3 backdrop-blur-md lg:hidden">
 								<MenuIcon className="size-4" /> Lessons
 							</SheetTrigger>
 							<SheetContent className="px-0">
