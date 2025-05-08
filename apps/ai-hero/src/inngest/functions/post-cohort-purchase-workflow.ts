@@ -1,5 +1,9 @@
 import { db } from '@/db'
-import { contentResourceResource, entitlementTypes } from '@/db/schema'
+import {
+	contentResourceResource,
+	entitlements,
+	entitlementTypes,
+} from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { and, eq } from 'drizzle-orm'
@@ -95,6 +99,26 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 
 					return orgMembership
 				})
+
+				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
+					await step.run(`add user to cohort via entitlement`, async () => {
+						for (const resource of cohortResource.resources || []) {
+							const entitlementId = `${cohortContentAccessEntitlementType.id}-${resource.resource.id}`
+							await db.insert(entitlements).values({
+								id: entitlementId,
+								entitlementType: cohortContentAccessEntitlementType.id,
+								sourceType: 'cohort',
+								sourceId: resource.resource.id,
+								userId: user.id,
+								organizationId: purchase.organizationId,
+								organizationMembershipId: orgMembership.id,
+								metadata: {
+									contentIds: [resource.resource.id],
+								},
+							})
+						}
+					})
+				}
 			} else {
 				// send a slack message or something because it seems broken
 			}

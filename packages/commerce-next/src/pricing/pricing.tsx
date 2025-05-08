@@ -661,7 +661,7 @@ const LiveQuantity = ({
 		isSoldOut,
 	} = usePricing()
 
-	return isLiveEvent
+	return isLiveEvent && quantityAvailable > 0
 		? children || (
 				<div
 					className={cn(
