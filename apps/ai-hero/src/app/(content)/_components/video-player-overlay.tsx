@@ -128,6 +128,7 @@ export const CompletedLessonOverlay: React.FC<{
 			action={action}
 			resource={resource}
 			moduleType={moduleType}
+			prevResource={prevLesson}
 		/>
 	)
 }
@@ -136,7 +137,8 @@ export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
-}> = ({ action, resource, moduleType = 'tutorial' }) => {
+	prevResource?: any
+}> = ({ action, resource, moduleType = 'tutorial', prevResource }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
@@ -154,7 +156,10 @@ export const CompletedModuleOverlay: React.FC<{
 
 		startTransition(() => {
 			handleSetLessonComplete({
-				currentResource: resource,
+				currentResource:
+					resource.type === 'solution' && prevResource
+						? prevResource
+						: resource,
 				moduleProgress: moduleProgress,
 				addLessonProgress: addLessonProgress,
 			})

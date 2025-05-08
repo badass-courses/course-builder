@@ -112,7 +112,7 @@ export function AuthedVideoPlayer({
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
-			setMuxPlayerRef(playerRef)
+			// setMuxPlayerRef(playerRef)
 
 			if (bingeMode) {
 				playerRef?.current?.play()
@@ -172,7 +172,6 @@ async function handleOnVideoEnded({
 	moduleType,
 	nextResource,
 	prevResource,
-
 	currentResource,
 	canView,
 	router,
@@ -209,16 +208,27 @@ async function handleOnVideoEnded({
 		router.push(`${resource?.fields?.slug}/exercise`)
 	} else {
 		if (bingeMode && nextResource && playerRef?.current) {
-			// dispatchVideoPlayerOverlay({ type: 'LOADING' })
+			dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			// playerRef.current.playbackId = nextLessonPlaybackId
+			if (nextResource.type !== 'solution') {
+				console.log(
+					'setting lesson complete',
+					isSolution ? prevResource : currentResource,
+				)
+				await handleSetLessonComplete({
+					currentResource: (isSolution ? prevResource : currentResource) as any,
+					moduleProgress,
+					addLessonProgress,
+				})
+			}
 
-			await handleSetLessonComplete({
-				currentResource: (isSolution ? prevResource : currentResource) as any,
-				moduleProgress,
-				addLessonProgress,
-			})
+			await revalidateModuleLesson(
+				moduleSlug as string,
+				currentResource.fields?.slug as string,
+				moduleType,
+				currentResource.type as 'lesson' | 'exercise' | 'solution',
+			)
 
-			setCurrentResource(nextResource)
 			router.push(
 				getResourcePath(nextResource.type, nextResource.slug, 'view', {
 					parentType: moduleType as string,
@@ -243,14 +253,14 @@ async function handleOnVideoEnded({
 			)
 
 			if (nextResource) {
-				setTimeout(() => {
-					router.push(
-						getResourcePath(nextResource.type, nextResource.slug, 'view', {
-							parentType: moduleType as string,
-							parentSlug: moduleSlug as string,
-						}),
-					)
-				}, 250)
+				// setTimeout(() => {
+				router.push(
+					getResourcePath(nextResource.type, nextResource.slug, 'view', {
+						parentType: moduleType as string,
+						parentSlug: moduleSlug as string,
+					}),
+				)
+				// }, 250)
 			} else {
 				dispatchVideoPlayerOverlay({
 					type: 'COMPLETED',

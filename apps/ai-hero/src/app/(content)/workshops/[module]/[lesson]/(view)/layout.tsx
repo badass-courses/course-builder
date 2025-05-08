@@ -24,7 +24,7 @@ const LessonLayout = async (props: {
 	return (
 		<ActiveHeadingProvider>
 			<LayoutClient>
-				<div className="flex">
+				<div className="flex min-w-0">
 					<React.Suspense
 						fallback={
 							<div className="flex w-full max-w-sm flex-shrink-0 flex-col gap-2 border-l p-5">
@@ -54,7 +54,7 @@ const LessonLayout = async (props: {
 							</SheetContent>
 						</Sheet>
 					</React.Suspense>
-					{children}
+					<div className="min-w-0 flex-1">{children}</div>
 				</div>
 			</LayoutClient>
 		</ActiveHeadingProvider>

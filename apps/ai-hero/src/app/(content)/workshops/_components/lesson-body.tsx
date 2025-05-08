@@ -19,17 +19,17 @@ export function LessonBody({
 
 	if (!canView) {
 		return (
-			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
+			<div className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
 				<p>This lesson is locked. Please upgrade to view it.</p>
-			</article>
+			</div>
 		)
 	}
 
 	const { content } = use(mdxContentPromise)
 
 	return (
-		<article className="prose-img:rounded-lg prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
+		<div className="prose-img:rounded-lg prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
 			{content}
-		</article>
+		</div>
 	)
 }
