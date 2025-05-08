@@ -1,5 +1,6 @@
 import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
+import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
 	createMongoAbility,
@@ -204,7 +205,7 @@ type ViewerAbilityInput = {
 	user?: User | null
 	subscriber?: any
 	lesson?: Lesson
-	module?: Module
+	module?: Workshop
 	section?: ContentResource
 	isSolution?: boolean
 	country?: string

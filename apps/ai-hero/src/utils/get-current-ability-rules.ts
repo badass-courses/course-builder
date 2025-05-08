@@ -5,6 +5,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
 import { getModule } from '@/lib/modules-query'
+import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
@@ -37,7 +38,7 @@ export async function getCurrentAbilityRules({
 	const { session } = await getServerAuthSession()
 
 	const lessonResource = lessonId && (await getLesson(lessonId))
-	const moduleResource = moduleId ? await getModule(moduleId) : null
+	const moduleResource = moduleId ? await getWorkshop(moduleId) : null
 
 	const sectionResource =
 		lessonResource &&

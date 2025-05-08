@@ -115,7 +115,7 @@ export function AuthedVideoPlayer({
 			// setMuxPlayerRef(playerRef)
 
 			if (bingeMode) {
-				playerRef?.current?.play()
+				playerRef?.current?.play().catch(console.warn)
 			}
 		},
 		onEnded: () => {
