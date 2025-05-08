@@ -1,3 +1,4 @@
+import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
@@ -65,9 +66,11 @@ export async function generateMetadata(
 
 export default async function CohortPage(props: {
 	params: Promise<{ slug: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+	searchParams: Promise<ParsedUrlQuery>
 }) {
 	const searchParams = await props.searchParams
+	const { allowPurchase } = await props.searchParams
+
 	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -99,7 +102,6 @@ export default async function CohortPage(props: {
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
-					allowPurchase: 'true',
 					...searchParams,
 				},
 				userId: user?.id,
@@ -194,6 +196,10 @@ export default async function CohortPage(props: {
 
 	// Parse cohort start date once for day calculation
 	const cohortStartDate = startsAt ? new Date(startsAt) : null
+
+	const ALLOW_PURCHASE =
+		allowPurchase === 'true' ||
+		cohortProps?.product?.fields.state === 'published'
 
 	return (
 		<LayoutClient withContainer>
@@ -350,7 +356,11 @@ export default async function CohortPage(props: {
 						</ul>
 					</article>
 					<CohortSidebar>
-						<CohortPricingWidgetContainer {...cohortProps} />
+						{ALLOW_PURCHASE && (
+							<div className="border-b px-5 pb-5">
+								<CohortPricingWidgetContainer {...cohortProps} />
+							</div>
+						)}
 						<CohortDetails cohort={cohort} />
 					</CohortSidebar>
 				</div>

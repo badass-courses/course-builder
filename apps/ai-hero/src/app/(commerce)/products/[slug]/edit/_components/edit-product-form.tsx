@@ -5,6 +5,7 @@ import { useReducer } from 'react'
 import { useRouter } from 'next/navigation'
 import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import LayoutClient from '@/components/layout-client'
 import {
 	getInitialTreeState,
 	treeStateReducer,
@@ -42,6 +43,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 	ResizableHandle,
+	ResizablePanel,
+	ScrollArea,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -76,7 +79,7 @@ function ComboboxDemo({
 	const [open, setOpen] = React.useState(false)
 
 	const { data = [] } = api.contentResources.getAll.useQuery({
-		contentTypes: ['event', 'workshop', 'cohort'],
+		contentTypes: ['post', 'event', 'workshop', 'cohort'],
 	})
 
 	const filteredResources = data
@@ -125,7 +128,7 @@ function ComboboxDemo({
 								{/*		value === resource.id ? 'opacity-100' : 'opacity-0',*/}
 								{/*	)}*/}
 								{/*/>*/}
-								{resource.fields?.title}
+								{resource.fields?.title} ({resource.type})
 							</CommandItem>
 						))}
 					</CommandGroup>
@@ -283,6 +286,59 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
+				name="quantityAvailable"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">
+								Quantity Available
+							</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The number of items that can be purchased at one time.
+							</FormDescription>
+							<FormControl>
+								<Input type="number" min={-1} {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<FormField
+				control={form.control}
+				name="price.unitAmount"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Price</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The price of the product in USD.
+							</FormDescription>
+							<FormControl>
+								<Input type="number" {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<div className="flex flex-col gap-3 px-5">
+				<div className="text-lg font-bold">Product Resources</div>
+				<ComboboxDemo
+					onSelect={(value) => {
+						handleResourceAdded(value)
+					}}
+					currentResources={product.resources || []}
+				/>
+			</div>
+			<Tree
+				rootResource={product}
+				rootResourceId={product.id}
+				state={state}
+				updateState={updateState}
+			/>
+			<FormField
+				control={form.control}
 				name="fields.description"
 				render={({ field }) => {
 					return (
@@ -335,59 +391,6 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
-			<FormField
-				control={form.control}
-				name="quantityAvailable"
-				render={({ field }) => {
-					return (
-						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">
-								Quantity Available
-							</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The number of items that can be purchased at one time.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" min={-1} {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)
-				}}
-			/>
-			<FormField
-				control={form.control}
-				name="price.unitAmount"
-				render={({ field }) => {
-					return (
-						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Price</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								The price of the product in USD.
-							</FormDescription>
-							<FormControl>
-								<Input type="number" {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)
-				}}
-			/>
-			<div className="flex flex-col gap-3 px-5">
-				<div className="text-lg font-bold">Product Resources</div>
-				<ComboboxDemo
-					onSelect={(value) => {
-						handleResourceAdded(value)
-					}}
-					currentResources={product.resources || []}
-				/>
-			</div>
-			<Tree
-				rootResource={product}
-				rootResourceId={product.id}
-				state={state}
-				updateState={updateState}
-			/>
 		</EditProductFormDesktop>
 	)
 }
@@ -445,7 +448,7 @@ function EditProductFormDesktop({
 	}
 
 	return (
-		<>
+		<LayoutClient withContainer={false}>
 			<EditProductActionBar
 				resource={product}
 				resourcePath={getResourcePath(product.fields?.slug)}
@@ -466,18 +469,37 @@ function EditProductFormDesktop({
 				}}
 			/>
 			<EditResourcePanelGroup>
-				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
-					{children}
-				</EditResourcesMetadataPanel>
+				<ResizablePanel
+					id="edit-resources-metadata-panel"
+					order={1}
+					minSize={5}
+					defaultSize={20}
+					maxSize={35}
+					className=""
+				>
+					<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
+						{children}
+					</EditResourcesMetadataPanel>
+				</ResizablePanel>
 				<ResizableHandle />
-				<EditResourcesBodyPanel
-					user={user}
-					partykitUrl={hostUrl}
-					resource={product}
-					form={form}
-					theme={theme}
-				/>
-				<ResizableHandle />
+				<ResizablePanel
+					id="edit-resources-body-panel"
+					// order={isShowingMdxPreview ? 3 : 2}
+					order={2}
+					defaultSize={55}
+					className="flex min-h-full md:min-h-full"
+				>
+					<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+						<EditResourcesBodyPanel
+							user={user}
+							partykitUrl={hostUrl}
+							resource={product}
+							form={form}
+							theme={theme}
+						/>
+					</ScrollArea>
+				</ResizablePanel>
+				{/* <ResizableHandle /> */}
 				<EditResourcesToolPanel
 					resource={{ ...product, ...form.getValues() }}
 					availableWorkflows={availableWorkflows}
@@ -487,7 +509,7 @@ function EditProductFormDesktop({
 					tools={tools}
 				/>
 			</EditResourcePanelGroup>
-		</>
+		</LayoutClient>
 	)
 }
 
