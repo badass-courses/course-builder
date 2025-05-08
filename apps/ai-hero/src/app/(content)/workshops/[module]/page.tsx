@@ -80,6 +80,7 @@ export default async function ModulePage(props: Props) {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const workshop = await getCachedMinimalWorkshop(params.module)
+	const { allowPurchase } = await props.searchParams
 
 	if (!workshop) {
 		notFound()
@@ -180,45 +181,55 @@ export default async function ModulePage(props: Props) {
 				</header>
 
 				<WorkshopPricing searchParams={searchParams} moduleSlug={params.module}>
-					{(pricingProps) => (
-						<>
-							<Links>
-								<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
-									Content
-								</div>
-							</Links>
-							<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
-								<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
-									{workshop.fields?.body ? (
-										<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-									) : (
-										<p>No description found.</p>
+					{(pricingProps) => {
+						const ALLOW_PURCHASE =
+							allowPurchase === 'true' ||
+							pricingProps.product?.fields.state === 'published'
+						return (
+							<>
+								<Links>
+									{!ALLOW_PURCHASE && (
+										<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
+											Content
+										</div>
 									)}
-								</article>
-								<div className="col-span-2 flex flex-col gap-3">
-									{pricingProps.hasPurchasedCurrentProduct ? (
-										<NextLessonButton
-											moduleType="workshop"
-											moduleSlug={params.module}
+								</Links>
+								<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
+									<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+										{workshop.fields?.body ? (
+											<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+										) : (
+											<p>No description found.</p>
+										)}
+									</article>
+									<div className="col-span-2 flex flex-col">
+										{pricingProps.hasPurchasedCurrentProduct ? (
+											<NextLessonButton
+												moduleType="workshop"
+												moduleSlug={params.module}
+											/>
+										) : ALLOW_PURCHASE ? (
+											<>
+												{/* <StartLearningWorkshopButton  moduleSlug={params.module} /> */}
+												<WorkshopPricingClient {...pricingProps} />
+												<div className="col-span-2 hidden h-14 items-center border-b border-l pl-5 text-base font-medium md:flex">
+													Content
+												</div>
+											</>
+										) : null}
+										<WorkshopResourceList
+											isCollapsible={false}
+											className="w-full max-w-none"
+											withHeader={false}
+											maxHeight="h-auto"
+											wrapperClassName="border-l overflow-hidden pb-0"
 										/>
-									) : (
-										<>
-											{/* <StartLearningWorkshopButton  moduleSlug={params.module} /> */}
-											<WorkshopPricingClient {...pricingProps} />
-										</>
-									)}
-									<WorkshopResourceList
-										isCollapsible={false}
-										className="w-full max-w-none"
-										withHeader={false}
-										maxHeight="h-auto"
-										wrapperClassName="border-l overflow-hidden pb-0"
-									/>
+									</div>
 								</div>
-							</div>
-							<Links />
-						</>
-					)}
+								<Links />
+							</>
+						)
+					}}
 				</WorkshopPricing>
 			</main>
 		</LayoutClient>

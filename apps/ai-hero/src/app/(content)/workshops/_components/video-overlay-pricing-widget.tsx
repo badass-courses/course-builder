@@ -38,9 +38,11 @@ export function VideoOverlayWorkshopPricing({
 				couponId={couponId}
 				country={country}
 				options={{
-					withImage: true,
-					withGuaranteeBadge: true,
-					isLiveEvent: false,
+					withImage: false,
+					withTitle: true,
+					withGuaranteeBadge: false,
+					isLiveEvent: product.type === 'cohort',
+					isCohort: product.type === 'cohort',
 					teamQuantityLimit,
 					isPPPEnabled: true,
 					cancelUrl: cancelUrl,
@@ -51,7 +53,7 @@ export function VideoOverlayWorkshopPricing({
 				<Pricing.Product className="w-full">
 					<Pricing.ProductImage />
 					<Pricing.Details className="px-0">
-						<Pricing.Name />
+						<Pricing.Name className="mb-5" />
 						<Pricing.LiveQuantity />
 						<Pricing.Price />
 						<Pricing.TeamToggle />

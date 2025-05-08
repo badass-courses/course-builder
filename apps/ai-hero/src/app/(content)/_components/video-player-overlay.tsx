@@ -432,7 +432,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
+				className="bg-background relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
