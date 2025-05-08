@@ -38,6 +38,7 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import { handleSetLessonComplete } from './authed-video-player'
 import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
@@ -140,17 +141,26 @@ export const CompletedModuleOverlay: React.FC<{
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const moduleNavigation = useWorkshopNavigation()
-
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
+	const [isPending, startTransition] = React.useTransition()
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.resourceId === resource?.id && p.completedAt,
+		),
+	)
 	React.useEffect(() => {
-		if (resource) {
-			const run = async () => {
-				await addProgress({
-					resourceId: resource.id,
-				})
-			}
-			run()
-		}
-	}, [resource, session])
+		if (!resource) return
+		if (isCurrentLessonCompleted) return
+
+		startTransition(() => {
+			handleSetLessonComplete({
+				currentResource: resource,
+				moduleProgress: moduleProgress,
+				addLessonProgress: addLessonProgress,
+			})
+		})
+	}, []) // Empty deps array to only run once on mount
+
 	const cohort = moduleNavigation?.cohorts?.[0]
 
 	const currentWorkshopIndexInCohort =

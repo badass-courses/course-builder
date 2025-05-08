@@ -125,7 +125,6 @@ export function AuthedVideoPlayer({
 					resource,
 					nextResource,
 					prevResource,
-
 					playerRef,
 					currentResource,
 					dispatchVideoPlayerOverlay,
@@ -273,7 +272,7 @@ type handleSetLessonCompleteProps = {
 	addLessonProgress: (lessonId: string) => void
 }
 
-async function handleSetLessonComplete({
+export async function handleSetLessonComplete({
 	currentResource,
 	moduleProgress,
 	addLessonProgress,
