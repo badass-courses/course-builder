@@ -318,11 +318,11 @@ export default async function CohortPage(props: {
 										</Link>
 										{/* Display formatted workshop date/time */}
 										<div className="text-muted-foreground text-sm">
-											{dayNumber !== null && (
+											{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
-											)}
+											)} */}
 											{workshopDateString && (
-												<span>Available {workshopDateString}</span>
+												<span>Available from {workshopDateString}</span>
 											)}
 											{workshopTimeString && (
 												<span> at {workshopTimeString}</span>
