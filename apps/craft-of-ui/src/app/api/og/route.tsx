@@ -183,16 +183,8 @@ export async function GET(request: Request) {
 					</div>
 					<div tw="flex items-center absolute right-24 bottom-24 justify-center text-5xl font-bold">
 						<div tw="text-foreground flex items-end gap-1.5 font-bold tracking-tight">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width={20 * 2.3}
-								height={16 * 2.3}
-								fill="none"
-								viewBox="0 0 20 16"
-							>
-								<path fill="#fff" d="M.5 0H20L10 15.5v-10L.5 0Z" opacity=".5" />
-								<path fill="#fff" d="M20 0 10 5.5.5 0H20Z" />
-							</svg>
+							<img src="/favicon.svg" tw="w-10 h-10" />
+
 							<span tw="pl-4">The Craft of UI</span>
 						</div>
 					</div>

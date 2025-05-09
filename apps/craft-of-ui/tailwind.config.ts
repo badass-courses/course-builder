@@ -76,9 +76,9 @@ module.exports = {
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-geist-mono)', ...fontFamily.mono],
-				heading: ['var(--font-geist-mono)', ...fontFamily.mono],
-				mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+				sans: ['var(--font-sans)', ...fontFamily.sans],
+				heading: ['var(--font-serif)', ...fontFamily.serif],
+				serif: ['var(--font-serif)', ...fontFamily.serif],
 			},
 			keyframes: {
 				'accordion-down': {

@@ -1,13 +1,14 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import {
 	SubscribeForm,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
+// import headshot from '@/assets/headshot.jpeg'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
-import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -52,7 +53,10 @@ export async function generateMetadata(
 	}
 
 	return {
-		title: page?.fields?.title,
+		title: {
+			template: '%s | The Craft of UI',
+			default: `The Craft of UI`,
+		},
 		description: page?.fields?.description,
 		openGraph: {
 			images: [
@@ -84,80 +88,105 @@ const Home = async (props: Props) => {
 			highlightedResource={firstPageResource}
 			withContainer
 		>
-			<main className="w-full">
-				{firstPageResource && (
-					<Link
-						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
-						href={firstPageResource.path}
-						prefetch
+			<div className="min-h-screen overflow-auto pb-16">
+				<div className="mx-auto max-w-3xl px-4 pb-16 pt-16">
+					<header className="text-gray-900 dark:text-gray-100">
+						<h1 className="mb-4 flex items-center text-sm font-extralight text-gray-800 dark:text-gray-200">
+							The Craft of UI — by&nbsp;
+							<Link
+								aria-label="Jhey Tompkins"
+								className="flex items-center gap-x-2 text-gray-600 outline-red-500 transition-colors hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400"
+								href="https://twitter.com/intent/follow?screen_name=jh3yy"
+								target="_blank"
+							>
+								Jhey Tompkins
+								{/* <Image
+									className="aspect-square w-7 rounded-full bg-gray-500"
+									// src={headshot}
+									alt=""
+									width={42}
+									height={42}
+								/> */}
+							</Link>
+						</h1>
+						<p className="mb-6 font-serif text-4xl leading-none sm:text-5xl md:text-6xl">
+							What if you could build{' '}
+							<span className="text-red-500">anything</span>?
+						</p>
+					</header>
+
+					<main
+						className={cn(
+							'prose prose-lg dark:prose-invert',
+							'[&>p:not(:has(+ul))]:mb-8 [&_p]:text-gray-600 [&_p]:dark:text-gray-300',
+							'[&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6',
+							'[&_h2]:font-serif [&_h2]:text-3xl [&_h2]:font-normal [&_h2]:leading-none',
+							'[&_h2]:mb-4 [&_h2]:mt-20',
+						)}
 					>
-						<span className="truncate overflow-ellipsis">
-							New {firstPageResource.type}:{' '}
-							<span className="underline">{firstPageResource?.title}</span>
-						</span>
-					</Link>
-				)}
-				<header className="">
-					<h1 className="bg-foreground text-background relative inline-flex w-auto px-1 text-lg font-bold">
-						{page?.fields?.title || 'Title'}
-					</h1>
-					{/* <Contributor className="mt-1 flex items-center [&_img]:size-6 [&_img]:rounded-sm [&_span]:text-base">
-						with
-					</Contributor> */}
-					{/* {page?.fields?.image && (
-						<CldImage
-							src={page.fields.image}
-							alt={page.fields.title}
-							width={1955 / 2}
-							height={811 / 2}
-							className="mx-auto mt-16 w-full rounded-2xl shadow-2xl"
-							priority
-						/>
-					)} */}
-				</header>
-				<article
-					className={cn(
-						'prose prose-IDE prose-hr:overflow-hidden dark:prose-invert mx-auo prose-hr:my-3 prose-hr:relative prose-hr:border-0 prose-hr:h-5 prose-hr:opacity-50 prose-hr:before:content-["..................................................................................................................."] w-full max-w-none pb-10',
-					)}
-				>
-					{page?.fields?.body ? (
-						<MDXRemote
-							source={page?.fields?.body}
-							components={{
-								CenteredTitle,
-								Instructor,
-								Spacer,
-								Section,
-								CheckList,
-								Testimonial,
-								CldImage: (props) => <CldImage {...props} />,
-								SubscribeForm,
-								ThemeImage: (props) => <ThemeImage {...props} />,
-								PrimaryNewsletterCta: (props) => (
-									<PrimaryNewsletterCta
-										resource={firstPageResource}
-										className={cn('pb-10 sm:pb-16', props.className)}
-										trackProps={{
-											event: 'subscribed',
-											params: {
-												location: 'home',
-											},
-										}}
-										{...props}
-									/>
-								),
-								// @ts-expect-error
-								MuxPlayer,
-								Video: ({ resourceId }: { resourceId: string }) => (
-									<MDXVideo resourceId={resourceId} />
-								),
-							}}
-						/>
-					) : (
-						<p>Page body not found</p>
-					)}
-				</article>
-			</main>
+						{firstPageResource && (
+							<Link
+								className="mx-auto mb-8 flex max-w-full items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium text-violet-700 shadow-md shadow-violet-600/10 dark:border-violet-500/20 dark:bg-violet-500/20 dark:text-violet-200 dark:shadow-none"
+								href={firstPageResource.path}
+								prefetch
+							>
+								<span className="truncate overflow-ellipsis">
+									New {firstPageResource.type}:{' '}
+									<span className="underline">{firstPageResource?.title}</span>
+								</span>
+							</Link>
+						)}
+
+						<article className="mx-auto w-full max-w-3xl pb-10">
+							{page?.fields?.body ? (
+								<MDXRemote
+									source={page?.fields?.body}
+									components={{
+										CenteredTitle,
+										Instructor,
+										Spacer,
+										Section,
+										CheckList,
+										Testimonial,
+										CldImage: (props) => <CldImage {...props} />,
+										SubscribeForm,
+										ThemeImage: (props) => <ThemeImage {...props} />,
+										PrimaryNewsletterCta: (props) => (
+											<PrimaryNewsletterCta
+												resource={firstPageResource}
+												className={cn(
+													'not-prose pb-10 sm:pb-16',
+													props.className,
+												)}
+												trackProps={{
+													event: 'subscribed',
+													params: {
+														location: 'home',
+													},
+												}}
+												{...props}
+											/>
+										),
+										MuxPlayer: (props) => <MuxPlayer {...props} />,
+										Video: ({ resourceId }: { resourceId: string }) => (
+											<MDXVideo resourceId={resourceId} />
+										),
+									}}
+								/>
+							) : (
+								<p>Page body not found</p>
+							)}
+						</article>
+
+						<div className="relative flex flex-col gap-y-4">
+							<div className="font-semibold">– Jhey, the Craft of UI</div>
+						</div>
+					</main>
+					<footer className="mt-16 text-center text-xs text-gray-500 dark:text-gray-400">
+						ʕ•ᴥ•ʔ&nbsp;&copy; Jhey Tompkins&nbsp;{new Date().getFullYear()}
+					</footer>
+				</div>
+			</div>
 		</LayoutClient>
 	)
 }

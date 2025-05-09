@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { DM_Serif_Text, Inter } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import LayoutClient from '@/components/layout-client'
 import Navigation from '@/components/navigation'
@@ -50,16 +50,17 @@ export const metadata: Metadata = {
 const isGoogleAnalyticsAvailable =
 	env.NODE_ENV !== 'development' && env.NEXT_PUBLIC_GOOGLE_ANALYTICS
 
-const geist = Geist({
+const inter = Inter({
 	subsets: ['latin'],
 	display: 'swap',
-	variable: '--font-geist',
+	variable: '--font-sans',
 })
 
-const geistMono = Geist_Mono({
+const dmSerifText = DM_Serif_Text({
 	subsets: ['latin'],
 	display: 'swap',
-	variable: '--font-geist-mono',
+	variable: '--font-serif',
+	weight: '400',
 })
 
 export default function RootLayout({
@@ -73,7 +74,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
+					className={`relative ${inter.variable} ${dmSerifText.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
