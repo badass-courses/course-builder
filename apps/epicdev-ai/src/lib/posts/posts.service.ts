@@ -167,6 +167,7 @@ export async function getPosts({
 			throw new PostError('Post not found', 404)
 		}
 
+		// posts are publicly readable by anyone
 		if (ability.cannot('read', subject('Content', post))) {
 			console.log('❌ User lacks permission to read post:', slug)
 			throw new PostError('Unauthorized', 401)
