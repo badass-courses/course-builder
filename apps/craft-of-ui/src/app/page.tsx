@@ -6,7 +6,6 @@ import {
 	SubscribeForm,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
-// import headshot from '@/assets/headshot.jpeg'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
 import LayoutClient from '@/components/layout-client'
@@ -88,7 +87,7 @@ const Home = async (props: Props) => {
 			highlightedResource={firstPageResource}
 			withContainer
 		>
-			<div className="min-h-screen overflow-auto pb-16">
+			<div className="bg-grid min-h-screen overflow-auto pb-16">
 				<div className="mx-auto max-w-3xl px-4 pb-16 pt-16">
 					<header className="text-gray-900 dark:text-gray-100">
 						<h1 className="mb-4 flex items-center text-sm font-extralight text-gray-800 dark:text-gray-200">
@@ -100,13 +99,13 @@ const Home = async (props: Props) => {
 								target="_blank"
 							>
 								Jhey Tompkins
-								{/* <Image
+								<Image
 									className="aspect-square w-7 rounded-full bg-gray-500"
-									// src={headshot}
-									alt=""
+									src="/headshot.jpeg"
+									alt="Jhey Tompkins"
 									width={42}
 									height={42}
-								/> */}
+								/>
 							</Link>
 						</h1>
 						<p className="mb-6 font-serif text-4xl leading-none sm:text-5xl md:text-6xl">
@@ -182,9 +181,6 @@ const Home = async (props: Props) => {
 							<div className="font-semibold">– Jhey, the Craft of UI</div>
 						</div>
 					</main>
-					<footer className="mt-16 text-center text-xs text-gray-500 dark:text-gray-400">
-						ʕ•ᴥ•ʔ&nbsp;&copy; Jhey Tompkins&nbsp;{new Date().getFullYear()}
-					</footer>
 				</div>
 			</div>
 		</LayoutClient>

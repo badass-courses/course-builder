@@ -169,6 +169,25 @@
 			'calt' 1;
 	}
 
+	body::before {
+		--size: 40px;
+		--line: color-mix(in hsl, canvasText, transparent 90%);
+		content: '';
+		height: 100dvh;
+		width: 100vw;
+		position: fixed;
+		background:
+			linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 17px
+				50% / var(--size) var(--size),
+			linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 19px /
+				var(--size) var(--size);
+		mask: linear-gradient(-30deg, transparent 70%, white);
+		top: 0;
+		transform-style: flat;
+		pointer-events: none;
+		z-index: -1;
+	}
+
 	html {
 		/* scrollbar-gutter: stable; */
 	}
