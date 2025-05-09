@@ -35,6 +35,13 @@ const DynamicCallout = dynamic(() =>
 		(mod) => mod.Callout,
 	),
 )
+
+const DynamicYouTubeVideo = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.YouTubeVideo,
+	),
+)
+
 const DynamicSubscribeForm = dynamic(() =>
 	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
 		(mod) => mod.SubscribeForm,
@@ -76,6 +83,9 @@ export async function compileMDX(
 			),
 			Video: ({ resourceId }: { resourceId: string }) => (
 				<DynamicMDXVideo resourceId={resourceId} />
+			),
+			YouTubeVideo: ({ videoId }: { videoId: string }) => (
+				<DynamicYouTubeVideo videoId={videoId} />
 			),
 			ThemeImage: ({
 				urls,

@@ -4,14 +4,15 @@ import { db } from '@/db'
 import { resourceProgress } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
-import { and, desc, eq, isNotNull } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
 import { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import type { Post, PostAction } from './posts'
+import { getSoldOutOrPastEventIds } from './events-query'
+import type { PostAction } from './posts'
 import { getPostTags } from './posts-query'
 import { getLessonForSolution } from './solutions-query'
 import { TypesenseResourceSchema } from './typesense'
@@ -382,6 +383,13 @@ export async function getNearestNeighbour(
 			? ` && id:!=[${completedItemIds.join(',')}]`
 			: ''
 
+	const excludedEventIds = await getSoldOutOrPastEventIds()
+
+	const eventsFilter =
+		excludedEventIds.length > 0
+			? ` && id:!=[${excludedEventIds.join(',')}]`
+			: ''
+
 	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
 		searches: [
 			{
@@ -389,7 +397,7 @@ export async function getNearestNeighbour(
 				q: '*',
 				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
 				exclude_fields: 'embedding',
-				filter_by: `id:!=${documentId} && state:=published && type:=[article,post,event,list]${completedFilter}`,
+				filter_by: `id:!=${documentId} && state:=published && type:=[article,post,event,list]${completedFilter}${eventsFilter}`,
 			},
 		],
 	}
