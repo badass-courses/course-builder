@@ -30,20 +30,52 @@ export async function getPricingData(
 	})
 
 	const product = await courseBuilderAdapter.getProduct(options.productId)
+
 	const totalPurchases = await db.query.purchases.findMany({
 		where: eq(purchases.productId, options.productId),
+		with: {
+			bulkCoupon: true,
+		},
 	})
+
+	let totalSeats = 0
+	let individualPurchases = 0
+	let redeemedTeamSeats = 0
+	let reservedTeamSeats = 0
+
+	for (const purchase of totalPurchases) {
+		if (purchase.status !== 'Valid') {
+			continue
+		}
+
+		if (purchase.redeemedBulkCouponId) {
+			redeemedTeamSeats += 1
+			continue
+		}
+
+		if (purchase.bulkCouponId && purchase.bulkCoupon) {
+			const maxUses = purchase.bulkCoupon.maxUses
+			const usedCount = purchase.bulkCoupon.usedCount
+			const unredeemed = Math.max(0, maxUses - usedCount)
+			reservedTeamSeats += unredeemed
+			continue
+		}
+
+		individualPurchases += 1
+	}
+
+	totalSeats = individualPurchases + redeemedTeamSeats + reservedTeamSeats
 
 	const purchaseToUpgrade = formattedPrice.upgradeFromPurchaseId
 		? await courseBuilderAdapter.getPurchase(
 				formattedPrice.upgradeFromPurchaseId,
 			)
 		: null
+
 	return {
 		formattedPrice,
 		purchaseToUpgrade,
-		quantityAvailable:
-			(product?.quantityAvailable || 0) - totalPurchases.length,
+		quantityAvailable: (product?.quantityAvailable || 0) - totalSeats,
 	}
 }
 
