@@ -12,6 +12,35 @@ import { GripVertical } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+const YouTubeVideo = ({ videoId }: { videoId: string }) => {
+	return (
+		<div
+			style={{
+				position: 'relative',
+				paddingBottom: '56.25%',
+				height: 0,
+				overflow: 'hidden',
+				maxWidth: '100%',
+			}}
+		>
+			<iframe
+				style={{
+					position: 'absolute',
+					top: 0,
+					left: 0,
+					width: '100%',
+					height: '100%',
+				}}
+				src={`https://www.youtube.com/embed/${videoId}`}
+				title="YouTube video player"
+				frameBorder="0"
+				allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+				allowFullScreen
+			></iframe>
+		</div>
+	)
+}
+
 const CenteredTitle = ({
 	as: Component = 'h2',
 	children,
@@ -260,6 +289,13 @@ const data = {
 			component: MDXVideo,
 			props: {},
 		},
+		{
+			name: 'YouTubeVideo',
+			component: YouTubeVideo,
+			props: {
+				videoId: 'YOUTUBE_VIDEO_ID',
+			},
+		},
 	],
 	callouts: [
 		{
@@ -359,7 +395,7 @@ const PageBlocks = () => {
 									e.dataTransfer.setData(
 										'text/plain',
 										`
-<${item.name} resourceId="RESOURCE_ID_FROM_DATABASE" />
+<${item.name} ${item.name === 'YouTubeVideo' ? 'videoId="YOUTUBE_VIDEO_ID"' : 'resourceId="RESOURCE_ID_FROM_DATABASE"'} />
 `,
 									)
 								}
@@ -450,6 +486,7 @@ const allMdxPageBuilderComponents = {
 	MuxPlayer,
 	Testimonial,
 	Callout,
+	YouTubeVideo,
 }
 
 export {
@@ -463,4 +500,5 @@ export {
 	Testimonial,
 	SubscribeForm,
 	Callout,
+	YouTubeVideo,
 }
