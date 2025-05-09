@@ -1,5 +1,18 @@
 # @coursebuilder/ui
 
+## 2.0.6
+
+### Patch Changes
+
+- [#467](https://github.com/badass-courses/course-builder/pull/467)
+  [`b1907df`](https://github.com/badass-courses/course-builder/commit/b1907dfdebc4f7bca7ede2532695c0375b437ebe)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix video uploads
+  causing data loss
+
+- [#464](https://github.com/badass-courses/course-builder/pull/464)
+  [`8096127`](https://github.com/badass-courses/course-builder/commit/8096127e361879f5ef768c74d95fd8aef85bfbac)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - refactor edit form
+
 ## 2.0.5
 
 ### Patch Changes
