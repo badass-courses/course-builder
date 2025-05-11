@@ -9,6 +9,7 @@ import { getCohort } from '@/lib/cohorts-query'
 import { and, eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
 
 export const postCohortPurchaseWorkflow = inngest.createFunction(
@@ -104,8 +105,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
 					await step.run(`add user to cohort via entitlement`, async () => {
 						for (const resource of cohortResource.resources || []) {
-							const randomId = uuidv4()
-							const entitlementId = `${randomId}-${resource.resource.id}`
+							const entitlementId = `${resource.resource.id}-${guid()}`
 							await db.insert(entitlements).values({
 								id: entitlementId,
 								entitlementType: cohortContentAccessEntitlementType.id,
