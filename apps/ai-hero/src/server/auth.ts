@@ -231,7 +231,6 @@ export const authOptions: NextAuthConfig = {
 
 			const headersList = await headers()
 			const organizationId = headersList.get('x-organization-id')
-
 			const role = dbUser?.role || 'user'
 
 			const organizationRoles =

@@ -78,6 +78,8 @@ export type AbilityForResource = {
 	canInviteTeam: boolean
 	/** Whether the resource is restricted based on the user's region */
 	isRegionRestricted: boolean
+	/** Whether the user can create the resource */
+	canCreate: boolean
 }
 
 /**
