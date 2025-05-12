@@ -334,7 +334,7 @@ export function defineRulesForPurchases(
 	if (user?.entitlements && lessonModule) {
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === cohortEntitlementType?.id) {
-				can('read', 'Content', { id: { $eq: entitlement.metadata.contentIds } })
+				can('read', 'Content', { id: { $in: entitlement.metadata.contentIds } })
 			}
 		})
 	}
