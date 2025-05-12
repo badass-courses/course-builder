@@ -72,16 +72,9 @@ export const abilityRouter = createTRPCRouter({
 				.optional(),
 		)
 		.query(async ({ ctx, input }) => {
-			const { session } = await getServerAuthSession()
-			const cookieStore = await cookies()
-			const organizationId = cookieStore.get('organizationId')?.value
-
 			const abilityRules = await getCurrentAbilityRules({
 				lessonId: input?.lessonId,
 				moduleId: input?.moduleId,
-				...(organizationId && {
-					organizationId,
-				}),
 			})
 
 			return abilityRules
