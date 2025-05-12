@@ -179,10 +179,10 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 		}
 	}
 
-	can('read', 'Content', {
-		createdAt: { $lte: new Date() },
-		status: { $in: ['review', 'published'] },
-	})
+	// can('read', 'Content', {
+	// 	createdAt: { $lte: new Date() },
+	// 	status: { $in: ['review', 'published'] },
+	// })
 
 	return rules
 }
@@ -263,9 +263,10 @@ export function defineRulesForPurchases(
 			return { valid: false, reason: 'unknown' }
 		})
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content')
-		}
+		// LEGACY: non-entitlement based access
+		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+		// 	can('read', 'Content')
+		// }
 
 		if (
 			userHasPurchaseWithAccess.some(

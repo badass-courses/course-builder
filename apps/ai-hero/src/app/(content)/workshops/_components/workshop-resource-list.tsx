@@ -10,6 +10,7 @@ import { CldImage } from '@/components/cld-image'
 import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
+import { subject } from '@casl/ability'
 import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
 import { useMeasure } from 'react-use'
 
@@ -186,6 +187,7 @@ export function WorkshopResourceList(props: Props) {
 															return (
 																<LessonResource
 																	lesson={item}
+																	moduleId={workshopNavigation.id}
 																	index={index}
 																	moduleProgress={moduleProgress}
 																	ability={ability}
@@ -206,6 +208,7 @@ export function WorkshopResourceList(props: Props) {
 										lesson={resource}
 										index={i}
 										moduleProgress={moduleProgress}
+										moduleId={workshopNavigation.id}
 										ability={ability}
 										abilityStatus={abilityStatus}
 										key={resource.id}
@@ -252,6 +255,7 @@ const LessonResource = ({
 	ability,
 	abilityStatus,
 	className,
+	moduleId,
 }: {
 	lesson: NavigationResource
 	moduleProgress?: ModuleProgress | null
@@ -259,6 +263,7 @@ const LessonResource = ({
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
 	className?: string
+	moduleId: string
 }) => {
 	const params = useParams()
 	const pathname = usePathname()
@@ -280,7 +285,7 @@ const LessonResource = ({
 		(progress) => progress.resourceId === lesson.id && progress.completedAt,
 	)
 	// if solution of a resource is active, or resource of a section is active
-	const canView = ability.can('read', 'Content')
+	const canView = ability.can('read', subject('Content', { id: moduleId }))
 	const canCreate = ability.can('create', 'Content')
 
 	return (

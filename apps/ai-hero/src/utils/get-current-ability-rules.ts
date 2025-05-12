@@ -7,6 +7,7 @@ import { getLesson } from '@/lib/lessons-query'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
+import { subject } from '@casl/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 // Import type without implementation
@@ -104,7 +105,7 @@ export async function getAbilityForResource(
 		moduleId,
 	})
 	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
+	const canView = ability.can('read', subject('Content', { id: moduleId }))
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
 	const canCreate = ability.can('create', 'Content')
