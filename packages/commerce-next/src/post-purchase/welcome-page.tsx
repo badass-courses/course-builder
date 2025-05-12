@@ -248,6 +248,15 @@ const Header = ({
 											</Link>
 										</Button>
 									)}
+									{product?.type === 'cohort' && (
+										<Button asChild>
+											<Link
+												href={`/${pluralize(product.type)}/${productResources?.[0]?.fields?.slug}`}
+											>
+												View Cohort
+											</Link>
+										</Button>
+									)}
 								</>
 							)}
 							{discordProvider && !isDiscordConnected ? (
