@@ -11,6 +11,7 @@ import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
+import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import type { Lesson } from '@/lib/lessons'
 import {
@@ -189,13 +190,25 @@ async function PlayerContainer({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
+	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
+		return resource.type === 'videoResource'
+	})
+	const thumbnailUrl =
+		videoResource &&
+		`${env.NEXT_PUBLIC_URL}/api/thumbnails/${videoResource.resourceId}`
 
 	return (
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="relative mb-10 flex flex-col items-center justify-center border-b bg-black"
+				className="dark relative mb-10 flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
 			>
+				<div
+					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
+					style={{
+						backgroundImage: `url(${thumbnailUrl})`,
+					}}
+				/>
 				<Suspense
 					fallback={
 						<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />

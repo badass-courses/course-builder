@@ -293,7 +293,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/90 z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
+			className="z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleNavigation?.title}
@@ -432,7 +432,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="bg-background relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
+				className="relative z-40 flex aspect-video h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -454,7 +454,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg"
 				>
 					<Spinner className="text-white" />
 				</div>
