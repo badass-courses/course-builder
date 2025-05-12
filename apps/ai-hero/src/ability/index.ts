@@ -177,26 +177,12 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 				}
 			})
 		}
-
-		// Entitlement-based permissions
-		options.user.entitlements?.forEach((entitlement) => {
-			if (entitlement.type === 'cohort_content_access') {
-				can('read', 'Content', {
-					id: { $in: entitlement.metadata.contentIds },
-					status: 'published',
-				})
-			}
-
-			if (entitlement.type === 'cohort_discord_role') {
-				can('invite', 'Discord')
-			}
-		})
 	}
 
-	can('read', 'Content', {
-		createdAt: { $lte: new Date() },
-		status: { $in: ['review', 'published'] },
-	})
+	// can('read', 'Content', {
+	// 	createdAt: { $lte: new Date() },
+	// 	status: { $in: ['review', 'published'] },
+	// })
 
 	return rules
 }
@@ -210,13 +196,24 @@ type ViewerAbilityInput = {
 	isSolution?: boolean
 	country?: string
 	purchases?: Purchase[]
+	entitlementTypes?: {
+		id: string
+		name: string
+	}[]
 }
 
 export function defineRulesForPurchases(
 	viewerAbilityInput: ViewerAbilityInput,
 ) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
-	const { user, country, purchases = [], module } = viewerAbilityInput
+	const {
+		user,
+		country,
+		purchases = [],
+		module,
+		lesson,
+		entitlementTypes,
+	} = viewerAbilityInput
 
 	if (user) {
 		can('update', 'User', {
@@ -266,9 +263,10 @@ export function defineRulesForPurchases(
 			return { valid: false, reason: 'unknown' }
 		})
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content')
-		}
+		// LEGACY: non-entitlement based access
+		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+		// 	can('read', 'Content')
+		// }
 
 		if (
 			userHasPurchaseWithAccess.some(
@@ -311,6 +309,34 @@ export function defineRulesForPurchases(
 		can('manage', 'all')
 		can('create', 'Content')
 		can('read', 'Content')
+	}
+
+	const cohortEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'cohort_content_access',
+	)
+
+	// check workshop in cohort
+	if (user?.entitlements && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id) {
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+				})
+			}
+		})
+	}
+
+	// lesson check
+	// TODO: validate
+	const lessonModule = module?.resources?.find(
+		(resource) => resource.resourceId === lesson?.id,
+	)
+	if (user?.entitlements && lessonModule) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id) {
+				can('read', 'Content', { id: { $in: entitlement.metadata.contentIds } })
+			}
+		})
 	}
 
 	return rules

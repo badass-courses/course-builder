@@ -4,10 +4,10 @@ import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
-import { getModule } from '@/lib/modules-query'
-import { getWorkshop } from '@/lib/workshops-query'
+import { getCachedMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
+import { subject } from '@casl/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 // Import type without implementation
@@ -49,6 +49,8 @@ export async function getCurrentAbilityRules({
 		session?.user?.id,
 	)
 
+	const entitlementTypes = await db.query.entitlementTypes.findMany()
+
 	const currentMembership =
 		session?.user && organizationId
 			? await db.query.organizationMemberships.findFirst({
@@ -82,6 +84,7 @@ export async function getCurrentAbilityRules({
 			})),
 		},
 		country,
+		entitlementTypes,
 		isSolution: false,
 		...(convertkitSubscriber && {
 			subscriber: convertkitSubscriber,
@@ -93,19 +96,6 @@ export async function getCurrentAbilityRules({
 	})
 }
 
-export async function getViewingAbilityForResource(
-	lessonId: string,
-	moduleId: string,
-) {
-	const abilityRules = await getCurrentAbilityRules({
-		lessonId,
-		moduleId,
-	})
-	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
-	return canView
-}
-
 export async function getAbilityForResource(
 	lessonId: string,
 	moduleId: string,
@@ -114,15 +104,21 @@ export async function getAbilityForResource(
 		lessonId,
 		moduleId,
 	})
+	const workshop = await getCachedMinimalWorkshop(moduleId)
+
 	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
+	const canView = workshop
+		? ability.can('read', subject('Content', { id: workshop.id }))
+		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+	const canCreate = ability.can('create', 'Content')
 
 	return {
 		canView,
 		canInviteTeam,
 		isRegionRestricted,
+		canCreate,
 	}
 }
 

@@ -1,15 +1,11 @@
-import { cookies, headers } from 'next/headers'
-import { defineRulesForPurchases, getAbilityRules } from '@/ability'
-import { courseBuilderAdapter } from '@/db'
+import { cookies } from 'next/headers'
 import { env } from '@/env.mjs'
-import { getLesson } from '@/lib/lessons-query'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { getCurrentAbilityRules } from '@/utils/get-current-ability-rules'
 import { z } from 'zod'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
 import { isEmpty } from '@coursebuilder/nodash'
 
 const convertkitBaseUrl =
@@ -76,10 +72,19 @@ export const abilityRouter = createTRPCRouter({
 				.optional(),
 		)
 		.query(async ({ ctx, input }) => {
-			return getCurrentAbilityRules({
+			const { session } = await getServerAuthSession()
+			const cookieStore = await cookies()
+			const organizationId = cookieStore.get('organizationId')?.value
+
+			const abilityRules = await getCurrentAbilityRules({
 				lessonId: input?.lessonId,
 				moduleId: input?.moduleId,
+				...(organizationId && {
+					organizationId,
+				}),
 			})
+
+			return abilityRules
 		}),
 	getCurrentSubscriberFromCookie: publicProcedure.query(async ({ ctx }) => {
 		return getSubscriberFromCookie()

@@ -244,14 +244,9 @@ async function getAllWorkshopLessonsWithSectionInfo(
 		)
 
 	const cohortRows = validatedRows.filter((row) => row.type === 'cohort')
-	console.debug('Found cohort rows:', cohortRows)
 
 	const cohortResourceRows = validatedRows.filter(
 		(row) => row.type === 'cohort_resource',
-	)
-	console.debug(
-		'Found cohort resource rows:',
-		JSON.stringify(cohortResourceRows, null, 2),
 	)
 
 	// Group cohort resources by cohort ID
@@ -267,10 +262,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			type: row.resourceType!,
 			startsAt: row.startsAt || null,
 		}
-		console.debug(
-			'Creating cohort resource:',
-			JSON.stringify(resource, null, 2),
-		)
+
 		acc.get(row.cohortId!)!.push(resource)
 		return acc
 	}, new Map<string, CohortResource[]>())
@@ -524,6 +516,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 			eq(contentResource.type, 'workshop'),
 		),
 		columns: {
+			id: true,
 			type: true,
 			fields: true,
 		},

@@ -52,13 +52,13 @@ export function VideoOverlayWorkshopPricing({
 			>
 				<Pricing.Product className="w-full">
 					<Pricing.ProductImage />
-					<Pricing.Details className="px-0">
+					<Pricing.Details className="px-0 pt-0">
 						<Pricing.Name className="mb-5" />
 						<Pricing.LiveQuantity />
 						<Pricing.Price />
 						<Pricing.TeamToggle />
 						<Pricing.TeamQuantityInput />
-						<Pricing.BuyButton />
+						<Pricing.BuyButton>Enroll Now</Pricing.BuyButton>
 						<Pricing.GuaranteeBadge />
 						<Pricing.LiveRefundPolicy />
 						<Pricing.SaleCountdown className="py-4" />

@@ -10,6 +10,7 @@ import { CldImage } from '@/components/cld-image'
 import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
+import { subject } from '@casl/ability'
 import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
 import { useMeasure } from 'react-use'
 
@@ -30,7 +31,7 @@ import {
 import { AutoPlayToggle } from '../../_components/autoplay-toggle'
 
 type Props = {
-	currentLessonSlug?: string | null
+	currentLessonSlug?: string
 	currentSectionSlug?: string | null
 	className?: string
 	wrapperClassName?: string
@@ -40,7 +41,6 @@ type Props = {
 }
 
 export function WorkshopResourceList(props: Props) {
-	const params = useParams()
 	const wrapperClassName =
 		'wrapperClassName' in props ? props.wrapperClassName : ''
 	const className = 'className' in props ? props.className : ''
@@ -53,16 +53,22 @@ export function WorkshopResourceList(props: Props) {
 	const { moduleProgress } = useModuleProgress()
 
 	const { data: abilityRules, status: abilityStatus } =
-		api.ability.getCurrentAbilityRules.useQuery({
-			moduleId: workshopNavigation?.id,
-		})
+		api.ability.getCurrentAbilityRules.useQuery(
+			{
+				moduleId: workshopNavigation?.id,
+				lessonId: props.currentLessonSlug,
+			},
+			{
+				enabled: !!workshopNavigation?.id,
+			},
+		)
+
+	const ability = createAppAbility(abilityRules || [])
 
 	const sectionId = findSectionIdForLessonSlug(
 		workshopNavigation,
 		props.currentLessonSlug,
 	)
-
-	const ability = createAppAbility(abilityRules || [])
 
 	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
@@ -155,7 +161,9 @@ export function WorkshopResourceList(props: Props) {
 							{resources.map((resource: NavigationResource, i: number) => {
 								const isActiveGroup =
 									(resource.type === 'section' || resource.type === 'lesson') &&
-									resource.resources.some((item) => params.lesson === item.slug)
+									resource.resources.some(
+										(item) => props.currentLessonSlug === item.slug,
+									)
 
 								return resource.type === 'section' ? (
 									// sections
@@ -179,6 +187,7 @@ export function WorkshopResourceList(props: Props) {
 															return (
 																<LessonResource
 																	lesson={item}
+																	moduleId={workshopNavigation.id}
 																	index={index}
 																	moduleProgress={moduleProgress}
 																	ability={ability}
@@ -199,6 +208,7 @@ export function WorkshopResourceList(props: Props) {
 										lesson={resource}
 										index={i}
 										moduleProgress={moduleProgress}
+										moduleId={workshopNavigation.id}
 										ability={ability}
 										abilityStatus={abilityStatus}
 										key={resource.id}
@@ -245,6 +255,7 @@ const LessonResource = ({
 	ability,
 	abilityStatus,
 	className,
+	moduleId,
 }: {
 	lesson: NavigationResource
 	moduleProgress?: ModuleProgress | null
@@ -252,6 +263,7 @@ const LessonResource = ({
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
 	className?: string
+	moduleId: string
 }) => {
 	const params = useParams()
 	const pathname = usePathname()
@@ -273,6 +285,8 @@ const LessonResource = ({
 		(progress) => progress.resourceId === lesson.id && progress.completedAt,
 	)
 	// if solution of a resource is active, or resource of a section is active
+	const canView = ability.can('read', subject('Content', { id: moduleId }))
+	const canCreate = ability.can('create', 'Content')
 
 	return (
 		<li
@@ -322,7 +336,7 @@ const LessonResource = ({
 						<span className="w-full text-base">{lesson.title}</span>
 						{abilityStatus === 'success' && (
 							<>
-								{ability.can('read', 'Content') || index === 0 ? null : (
+								{canView || index === 0 ? null : (
 									<Lock
 										className="absolute right-5 w-3 text-gray-500"
 										aria-label="locked"
@@ -332,7 +346,7 @@ const LessonResource = ({
 						)}
 					</Link>
 
-					{ability.can('create', 'Content') ? (
+					{canCreate ? (
 						<Button
 							asChild
 							variant="outline"
