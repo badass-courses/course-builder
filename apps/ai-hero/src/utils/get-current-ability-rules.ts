@@ -104,11 +104,11 @@ export async function getAbilityForResource(
 		lessonId,
 		moduleId,
 	})
-	const module = await getCachedMinimalWorkshop(moduleId)
+	const workshop = await getCachedMinimalWorkshop(moduleId)
 
 	const ability = createAppAbility(abilityRules || [])
-	const canView = module
-		? ability.can('read', subject('Content', { id: module.id }))
+	const canView = workshop
+		? ability.can('read', subject('Content', { id: workshop.id }))
 		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
