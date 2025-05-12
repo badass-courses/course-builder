@@ -4,7 +4,7 @@ import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
-import { getWorkshop } from '@/lib/workshops-query'
+import { getCachedMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { subject } from '@casl/ability'
@@ -104,8 +104,12 @@ export async function getAbilityForResource(
 		lessonId,
 		moduleId,
 	})
+	const module = await getCachedMinimalWorkshop(moduleId)
+
 	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', subject('Content', { id: moduleId }))
+	const canView = module
+		? ability.can('read', subject('Content', { id: module.id }))
+		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
 	const canCreate = ability.can('create', 'Content')

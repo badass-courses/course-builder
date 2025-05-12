@@ -516,6 +516,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 			eq(contentResource.type, 'workshop'),
 		),
 		columns: {
+			id: true,
 			type: true,
 			fields: true,
 		},
