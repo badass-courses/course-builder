@@ -8,6 +8,7 @@ import {
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
+import { JheyProfile } from '@/components/jhey-profile'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -176,10 +177,7 @@ const Home = async (props: Props) => {
 								<p>Page body not found</p>
 							)}
 						</article>
-
-						<div className="relative flex flex-col gap-y-4">
-							<div className="font-semibold">– Jhey, the Craft of UI</div>
-						</div>
+						<JheyProfile />
 					</main>
 				</div>
 			</div>
