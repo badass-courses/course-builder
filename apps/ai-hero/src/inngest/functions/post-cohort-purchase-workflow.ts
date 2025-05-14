@@ -7,9 +7,9 @@ import {
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { and, eq } from 'drizzle-orm'
-import { v4 as uuidv4 } from 'uuid'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
+import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
 
 export const postCohortPurchaseWorkflow = inngest.createFunction(
@@ -17,10 +17,16 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 		id: `post-cohort-purchase-workflow`,
 		name: `Post Cohort Purchase Followup Workflow`,
 	},
-	{
-		event: NEW_PURCHASE_CREATED_EVENT,
-		if: 'event.data.productType == "cohort"',
-	},
+	[
+		{
+			event: NEW_PURCHASE_CREATED_EVENT,
+			if: 'event.data.productType == "cohort"',
+		},
+		{
+			event: FULL_PRICE_COUPON_REDEEMED_EVENT,
+			if: 'event.data.productType == "cohort"',
+		},
+	],
 	async ({ event, step, db: adapter }) => {
 		const purchase = await step.run(`get purchase`, async () => {
 			return adapter.getPurchase(event.data.purchaseId)

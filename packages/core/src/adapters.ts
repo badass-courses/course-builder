@@ -52,6 +52,7 @@ export interface CourseBuilderAdapter<
 		redeemedBulkCouponId?: string | null
 		status?: string
 		metadata?: Record<string, any>
+		organizationId?: string
 	}): Promise<Purchase>
 	addResourceToResource(options: {
 		childResourceId: string
