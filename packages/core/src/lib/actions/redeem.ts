@@ -41,8 +41,6 @@ export async function redeem(
 		redeemingProductId: productIds?.[0],
 	})
 
-	console.log('createdPurchase', createdPurchase)
-
 	if (createdPurchase) {
 		const { purchase, redeemingForCurrentUser } = createdPurchase
 

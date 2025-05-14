@@ -40,8 +40,6 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			return adapter.getProduct(purchase.productId as string)
 		})
 
-		console.log(`product`, product)
-
 		if (!product) {
 			throw new Error(`product not found`)
 		}
