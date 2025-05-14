@@ -169,7 +169,7 @@
 			'calt' 1;
 	}
 
-	body::before {
+	.home-page-grid::before {
 		--size: 40px;
 		--line: color-mix(in hsl, canvasText, transparent 90%);
 		content: '';
