@@ -3,6 +3,10 @@ import {
 	resourceChat,
 	ResourceChat,
 } from './co-gardener/resource-chat'
+import type {
+	FULL_PRICE_COUPON_REDEEMED_EVENT,
+	FullPriceCouponRedeemed,
+} from './commerce/event-full-price-coupon-redeemed'
 import {
 	NEW_PURCHASE_CREATED_EVENT,
 	NewPurchaseCreated,
@@ -79,6 +83,7 @@ export type CourseBuilderCoreEvents = {
 	[PURCHASE_STATUS_UPDATED_EVENT]: PurchaseStatusUpdated
 	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
+	[FULL_PRICE_COUPON_REDEEMED_EVENT]: FullPriceCouponRedeemed
 }
 
 export const courseBuilderCoreFunctions = [
