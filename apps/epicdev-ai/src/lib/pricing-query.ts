@@ -39,11 +39,22 @@ export async function getPricingData(
 				formattedPrice.upgradeFromPurchaseId,
 			)
 		: null
+
+	let resolvedQuantityAvailable: number
+	const dbProductQuantityAvailable = product?.quantityAvailable
+
+	if (dbProductQuantityAvailable === -1) {
+		resolvedQuantityAvailable = -1 // Product is unlimited
+	} else {
+		// Product has a finite quantity, subtract purchases
+		resolvedQuantityAvailable =
+			(dbProductQuantityAvailable || 0) - totalPurchases.length
+	}
+
 	return {
 		formattedPrice,
 		purchaseToUpgrade,
-		quantityAvailable:
-			(product?.quantityAvailable || 0) - totalPurchases.length,
+		quantityAvailable: resolvedQuantityAvailable,
 	}
 }
 

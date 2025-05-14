@@ -273,12 +273,29 @@ export const pricingMachine = setup({
 							isPPPActive: false,
 							isTeamPurchaseActive: ({ context }) =>
 								!context.isTeamPurchaseActive,
-							quantity: ({ context }) =>
-								context.isTeamPurchaseActive
-									? 1
-									: context.options.isLiveEvent
-										? Math.min(context.pricingData.quantityAvailable, 5)
-										: Math.min(context.options.teamQuantityLimit, 5),
+							quantity: ({ context }) => {
+								if (context.isTeamPurchaseActive) {
+									return 1
+								} else {
+									const defaultTeamSize = 5
+
+									if (context.options.isLiveEvent) {
+										if (context.pricingData.quantityAvailable === -1) {
+											return defaultTeamSize
+										} else {
+											return Math.min(
+												context.pricingData.quantityAvailable,
+												defaultTeamSize,
+											)
+										}
+									} else {
+										return Math.min(
+											context.options.teamQuantityLimit,
+											defaultTeamSize,
+										)
+									}
+								}
+							},
 						}),
 					],
 					guard: {
