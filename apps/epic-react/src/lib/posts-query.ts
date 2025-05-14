@@ -134,7 +134,7 @@ export async function createPost(input: NewPost) {
 		fields: {
 			title: input.title,
 			state: 'draft',
-			visibility: 'unlisted',
+			visibility: 'public',
 			slug: slugify(`${input.title}~${postGuid}`),
 		},
 	}

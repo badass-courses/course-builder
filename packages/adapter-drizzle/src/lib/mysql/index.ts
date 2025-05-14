@@ -2737,6 +2737,10 @@ export function mySqlDrizzleAdapter(
 						),
 						eq(organizationMembershipTable.userId, options.userId),
 					),
+					with: {
+						organization: true,
+						user: true,
+					},
 				})
 
 			if (currentMembership) {

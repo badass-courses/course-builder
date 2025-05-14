@@ -3,6 +3,7 @@ import { Cohort, CohortSchema } from '@/lib/cohort'
 import { updateResource } from '@/lib/resources-query'
 
 import { onCohortSave } from '../actions'
+import SearchConfig from './cohort-list-editor-search-config'
 
 export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 	{
@@ -76,12 +77,13 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 			listEditorConfig: {
 				title: (
 					<div>
-						<span className="flex text-lg font-bold">Lessons</span>
+						<span className="flex text-lg font-bold">Workshops</span>
 						<span className="text-muted-foreground mt-2 font-normal">
-							Add and organize lessons in this cohort.
+							Add and organize workshops in this cohort.
 						</span>
 					</div>
 				),
+				searchConfig: <SearchConfig />,
 				showTierSelector: true,
 			},
 		},

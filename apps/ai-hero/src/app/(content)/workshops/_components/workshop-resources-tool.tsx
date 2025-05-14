@@ -3,8 +3,7 @@
 import * as React from 'react'
 import { useResource } from '@/components/resource-form/resource-context'
 import WorkshopResourcesEdit from '@/components/resources-crud/workshop-resources-edit'
-
-import { WorkshopResourceType } from './workshop-form-config'
+import type { Workshop } from '@/lib/workshops'
 
 /**
  * Workshop Resources Tool component that uses the ResourceContext
@@ -12,7 +11,7 @@ import { WorkshopResourceType } from './workshop-form-config'
  * being edited without requiring direct prop passing or HOC injection.
  */
 export function WorkshopResourcesTool() {
-	const { resource } = useResource<WorkshopResourceType>()
+	const { resource } = useResource<Workshop>()
 
 	// Add null check to prevent errors if resource is unavailable
 	if (!resource) {

@@ -7,18 +7,22 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { WorkshopSchema } from './workshops'
+
 /**
  * @description Schema for cohort-based learning experiences
  */
 export const CohortSchema = ContentResourceSchema.merge(
 	z.object({
-		resourceProducts: z.array(
-			z.object({
-				resourceId: z.string(),
-				productId: z.string(),
-				product: productSchema,
-			}),
-		),
+		resourceProducts: z
+			.array(
+				z.object({
+					resourceId: z.string(),
+					productId: z.string(),
+					product: productSchema,
+				}),
+			)
+			.default([]),
 		fields: z.object({
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
@@ -32,7 +36,7 @@ export const CohortSchema = ContentResourceSchema.merge(
 			cohortTier: z.enum(['standard', 'premium', 'vip']).optional(),
 			maxSeats: z.number().int().positive().optional(),
 			discordRoleId: z.string().optional(),
-			image: z.string().url().optional(),
+			image: z.string().optional(),
 			socialImage: z
 				.object({
 					type: z.string(),

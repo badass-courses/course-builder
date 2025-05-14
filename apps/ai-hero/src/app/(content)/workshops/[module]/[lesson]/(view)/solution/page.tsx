@@ -1,5 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { notFound } from 'next/navigation'
 import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
 import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
@@ -38,11 +39,22 @@ export default async function LessonSolutionPage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const params = await props.params
-	const lesson = await getExerciseSolution(params.lesson)
+	const data = await getExerciseSolution(params.lesson)
+
+	if (!data) {
+		notFound()
+	}
+
+	const { solution, lesson } = data
 
 	return (
-		<LessonProvider lesson={lesson}>
-			<LessonPage searchParams={searchParams} lesson={lesson} params={params} />
+		<LessonProvider lesson={solution}>
+			<LessonPage
+				searchParams={searchParams}
+				lesson={solution}
+				problem={lesson}
+				params={params}
+			/>
 		</LessonProvider>
 	)
 }

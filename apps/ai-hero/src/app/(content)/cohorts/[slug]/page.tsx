@@ -1,3 +1,4 @@
+import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
@@ -13,7 +14,12 @@ import { env } from '@/env.mjs'
 import { Cohort } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
+import type { Workshop } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
+import { formatCohortDateRange } from '@/utils/format-cohort-date'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { getResourcePath } from '@/utils/resource-paths'
+import { differenceInCalendarDays, isSameDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
 import ReactMarkdown from 'react-markdown'
@@ -46,14 +52,25 @@ export async function generateMetadata(
 	return {
 		title: cohort.fields.title,
 		description: cohort.fields.description,
+		openGraph: {
+			images: [
+				getOGImageUrlForResource({
+					fields: { slug: cohort.fields.slug },
+					id: cohort.id,
+					updatedAt: cohort.updatedAt,
+				}),
+			],
+		},
 	}
 }
 
 export default async function CohortPage(props: {
 	params: Promise<{ slug: string }>
-	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+	searchParams: Promise<ParsedUrlQuery>
 }) {
 	const searchParams = await props.searchParams
+	const { allowPurchase } = await props.searchParams
+
 	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -85,7 +102,6 @@ export default async function CohortPage(props: {
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
-					allowPurchase: 'true',
 					...searchParams,
 				},
 				userId: user?.id,
@@ -172,20 +188,22 @@ export default async function CohortPage(props: {
 
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
-	const eventDate =
-		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
-	const eventTime =
-		startsAt &&
-		endsAt &&
-		`${formatInTimeZone(new Date(startsAt), PT, 'h:mm a')} — ${formatInTimeZone(
-			new Date(endsAt),
-			PT,
-			'h:mm a',
-		)}`
+
+	const { dateString: eventDateString, timeString: eventTimeString } =
+		formatCohortDateRange(startsAt, endsAt, PT)
+	const workshops: Workshop[] =
+		cohort.resources?.map((resource) => resource.resource) ?? []
+
+	// Parse cohort start date once for day calculation
+	const cohortStartDate = startsAt ? new Date(startsAt) : null
+
+	const ALLOW_PURCHASE =
+		allowPurchase === 'true' ||
+		cohortProps?.product?.fields.state === 'published'
 
 	return (
 		<LayoutClient withContainer>
-			<main className="container relative border-x px-0">
+			<main className="relative">
 				<CohortMetadata
 					cohort={cohort}
 					quantityAvailable={cohortProps.quantityAvailable}
@@ -210,7 +228,8 @@ export default async function CohortPage(props: {
 				)}
 				{cohortProps.hasPurchasedCurrentProduct ? (
 					<div className="flex w-full items-center border-b px-5 py-5 text-left">
-						You have purchased a ticket to this event. See you on {eventDate}.{' '}
+						You have purchased a ticket to this event. See you{' '}
+						{eventDateString ? `on ${eventDateString}` : 'soon'}.{' '}
 						<span role="img" aria-label="Waving hand">
 							👋
 						</span>
@@ -219,18 +238,19 @@ export default async function CohortPage(props: {
 				<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
 					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-							<Link
-								href="/events"
-								className="text-primary w-full hover:underline sm:w-auto"
-							>
-								Live Workshop
+							<Link href="/cohorts" className="">
+								Cohort
 							</Link>
 							<span className="hidden opacity-50 sm:inline-block">・</span>
-							<p>{eventDate}</p>
-							<span className="opacity-50">・</span>
-							<p>{eventTime} (PT)</p>
+							{eventDateString && <p>{eventDateString}</p>}
+							{eventTimeString && (
+								<>
+									<span className="opacity-50">・</span>
+									<p>{eventTimeString}</p>
+								</>
+							)}
 						</div>
-						<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
+						<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
 							{fields.title}
 						</h1>
 						{fields.description && (
@@ -254,9 +274,93 @@ export default async function CohortPage(props: {
 						{cohort.fields.body && (
 							<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
 						)}
+						<ul className="flex flex-col gap-3">
+							{workshops.map((workshop, index) => {
+								// Determine end date and timezone for the workshop
+								// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+								const workshopTimezone = workshop.fields.timezone || PT
+
+								// Format workshop date/time range (only start)
+								const {
+									dateString: workshopDateString,
+									timeString: workshopTimeString,
+								} = formatCohortDateRange(
+									workshop.fields.startsAt,
+									null, // Pass null for end date
+									workshopTimezone,
+								)
+
+								// Calculate Day number
+								let dayNumber: number | null = null
+								if (cohortStartDate && workshop.fields.startsAt) {
+									const workshopStartDate = new Date(workshop.fields.startsAt)
+									// Calculate difference, add 1, and ensure it's at least 1
+									dayNumber = Math.max(
+										1,
+										differenceInCalendarDays(
+											workshopStartDate,
+											cohortStartDate,
+										) + 1,
+									)
+								}
+
+								return (
+									<li key={workshop.id}>
+										<Link
+											className="text-foreground hover:text-primary text-xl"
+											href={getResourcePath(
+												'workshop',
+												workshop.fields.slug,
+												'view',
+											)}
+										>
+											{workshop.fields.title}
+										</Link>
+										{/* Display formatted workshop date/time */}
+										<div className="text-muted-foreground text-sm">
+											{/* {dayNumber !== null && (
+												<span className="font-semibold">Day {dayNumber}: </span>
+											)} */}
+											{workshopDateString && (
+												<span>Available from {workshopDateString}</span>
+											)}
+											{workshopTimeString && (
+												<span> at {workshopTimeString}</span>
+											)}
+										</div>
+										<ol className="list-decimal pl-5">
+											{workshop.resources?.map(({ resource }) => {
+												return (
+													<li key={resource?.id}>
+														<Link
+															className="text-foreground hover:text-primary"
+															href={getResourcePath(
+																resource.type,
+																resource.fields.slug,
+																'view',
+																{
+																	parentSlug: workshop.fields.slug,
+																	parentType: 'workshop',
+																},
+															)}
+														>
+															{resource?.fields?.title}
+														</Link>
+													</li>
+												)
+											})}
+										</ol>
+									</li>
+								)
+							})}
+						</ul>
 					</article>
 					<CohortSidebar>
-						<CohortPricingWidgetContainer {...cohortProps} />
+						{ALLOW_PURCHASE && (
+							<div className="border-b px-5 pb-5">
+								<CohortPricingWidgetContainer {...cohortProps} />
+							</div>
+						)}
 						<CohortDetails cohort={cohort} />
 					</CohortSidebar>
 				</div>

@@ -14,11 +14,16 @@ import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, eq, or, sql } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-import { RESOURCE_CREATED_EVENT } from '../inngest/events/resource-management'
+import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+} from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
+import { getProductForPost } from './posts-query'
 import { upsertPostToTypeSense } from './typesense-query'
 
 export async function getEvent(eventIdOrSlug: string) {
@@ -65,6 +70,21 @@ export async function getEvent(eventIdOrSlug: string) {
 	}
 
 	return parsedEvent.data
+}
+
+export async function getAllEvents() {
+	const events = await db.query.contentResource.findMany({
+		where: eq(contentResource.type, 'event'),
+	})
+
+	const parsedEvents = z.array(EventSchema).safeParse(events)
+
+	if (!parsedEvents.success) {
+		console.error('Error parsing events', events)
+		return []
+	}
+
+	return parsedEvents.data
 }
 
 export async function createEvent(input: NewEvent) {
@@ -226,14 +246,21 @@ export async function updateEvent(
 	}
 
 	try {
-		const result = await courseBuilderAdapter.updateContentResourceFields({
-			id: currentEvent.id,
-			fields: {
-				...currentEvent.fields,
-				...input.fields,
-				slug: eventSlug,
+		const updatedEvent = await courseBuilderAdapter.updateContentResourceFields(
+			{
+				id: currentEvent.id,
+				fields: {
+					...currentEvent.fields,
+					...input.fields,
+					slug: eventSlug,
+				},
 			},
-		})
+		)
+
+		if (!updatedEvent) {
+			console.error(`Failed to fetch updated event: ${currentEvent.id}`)
+			return null
+		}
 
 		await log.info('event.update.success', {
 			eventId: input.id,
@@ -243,7 +270,25 @@ export async function updateEvent(
 		})
 
 		revalidate && revalidateTag('events')
-		return result
+		try {
+			console.log(
+				`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+			)
+			const result = await inngest.send({
+				name: RESOURCE_UPDATED_EVENT,
+				data: {
+					id: updatedEvent.id,
+					type: updatedEvent.type,
+				},
+			})
+			console.log(
+				`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+				result,
+			)
+		} catch (error) {
+			console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
+		}
+		return updatedEvent
 	} catch (error) {
 		await log.error('event.update.failed', {
 			eventId: input.id,
@@ -254,6 +299,62 @@ export async function updateEvent(
 		})
 		throw error
 	}
+}
+
+/**
+ * Retrieves a list of event and event-like post IDs that are either past or sold out.
+ * This is used to filter these items from search results or recommendations.
+ * It checks:
+ *  - `fields.endsAt` to determine if an event has concluded.
+ *  - `fields.startsAt` (if `endsAt` is not present) for past all-day or multi-day events.
+ *  - Product availability via `getProductForPost` to identify sold-out events.
+ * @returns {Promise<string[]>} A promise that resolves to an array of excluded event/post IDs.
+ */
+export async function getSoldOutOrPastEventIds(): Promise<string[]> {
+	const actualEvents = await getAllEvents()
+
+	const postsAsEvents = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'post'),
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'event'),
+		),
+	})
+
+	const allEventLikeItems = [...actualEvents, ...postsAsEvents]
+	const excludedEventIds: string[] = []
+	const now = new Date()
+
+	for (const item of allEventLikeItems) {
+		// Ensure fields is not null, which it shouldn't be based on schema defaults
+		const fields = item.fields || {}
+		if (fields.endsAt && new Date(fields.endsAt) < now) {
+			excludedEventIds.push(item.id)
+			continue
+		}
+
+		// If there's no endsAt, check startsAt for past events (e.g., all-day events that have passed)
+		if (!fields.endsAt && fields.startsAt && new Date(fields.startsAt) < now) {
+			excludedEventIds.push(item.id)
+			continue
+		}
+
+		const productInfo = await getProductForPost(item.id)
+
+		// we can sell more seats than we have available via coupons or team seats,
+		// so we need to check if the total quantity is -1 (which means unlimited)
+		if (
+			productInfo &&
+			productInfo.quantityAvailable <= 0 &&
+			productInfo.totalQuantity !== -1
+		) {
+			excludedEventIds.push(item.id)
+		}
+	}
+	console.log(
+		'getExcludedSoldOutOrPastEventIds: found excluded event IDs',
+		excludedEventIds,
+	)
+	return excludedEventIds
 }
 
 function getErrorMessage(error: unknown) {

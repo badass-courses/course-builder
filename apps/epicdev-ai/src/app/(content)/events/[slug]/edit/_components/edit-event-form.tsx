@@ -8,12 +8,13 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import {
 	ResourceFormProps,
 	withResourceForm,
+	type ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
 import { env } from '@/env.mjs'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
-import { updateResource as originalUpdateResource } from '@/lib/resources-query'
+import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
@@ -35,6 +36,8 @@ import {
 } from '@coursebuilder/ui'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
+import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
+import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { VideoResourceField } from './video-resource-field'
 
@@ -72,14 +75,7 @@ async function updateEventResource(
 	}
 
 	// Call the original imported function
-	const updatedEvent = await originalUpdateResource(
-		updatePayload as {
-			id: string
-			type: string
-			fields: Record<string, any>
-			createdById: string
-		},
-	)
+	const updatedEvent = await updateEvent(updatePayload)
 
 	// Handle null case: throw error as HOC expects a resource
 	if (!updatedEvent) {
@@ -91,7 +87,7 @@ async function updateEventResource(
 }
 
 // Define the configuration for the event form
-const eventFormConfig = {
+const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 	// Set resourceType back to 'event' as it's now a top-level type
 	resourceType: 'event' as const,
 	schema: EventSchema,
@@ -150,8 +146,8 @@ const eventFormConfig = {
 	// Use the wrapper function here
 	updateResource: updateEventResource,
 	onSave: onEventSave,
-	sendResourceChatMessage: sendResourceChatMessage,
-	hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
+	// sendResourceChatMessage: sendResourceChatMessage,
+	// hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 }
 
 export function EditEventForm({
@@ -172,6 +168,7 @@ export function EditEventForm({
 					router.push(`/events/${resource.fields?.slug}/edit`)
 				}
 			},
+
 			customTools: [
 				// { id: 'assistant' },
 				{
@@ -209,13 +206,14 @@ const EventFormFields = ({
 		return null // Or a loading indicator
 	}
 	return (
-		// <EditResourcesMetadataFields form={form}>
 		<>
 			<VideoResourceField
 				form={form}
 				event={resource}
 				videoResource={videoResource}
-				initialVideoResourceId={videoResource ? videoResource.id : null}
+				initialVideoResourceId={
+					form.getValues('fields.videoResourceId' as any) || null
+				}
 			/>
 			<FormField
 				control={form.control}
@@ -250,7 +248,36 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-
+			<MetadataFieldVisibility form={form} />
+			<MetadataFieldState form={form} />
+			<FormField
+				control={form.control}
+				name="fields.description"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold leading-none">
+								SEO Description
+								<br />
+								<span className="text-muted-foreground text-sm tabular-nums">
+									({`${field.value?.length ?? '0'} / 160`})
+								</span>
+							</FormLabel>
+						</div>
+						<FormDescription>
+							A short snippet that summarizes the post in under 160 characters.
+							Keywords should be included to support SEO.
+						</FormDescription>
+						<Textarea rows={4} {...field} value={field.value ?? ''} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="fields.startsAt"
@@ -258,6 +285,7 @@ const EventFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel>Starts At:</FormLabel>
 						<DateTimePicker
+							aria-label="Starts At"
 							{...field}
 							value={
 								!!field.value
@@ -286,6 +314,7 @@ const EventFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel>Ends At:</FormLabel>
 						<DateTimePicker
+							aria-label="Ends At"
 							{...field}
 							value={
 								!!field.value
@@ -332,44 +361,11 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-			<div className="px-5">
-				<FormLabel>Cover Image</FormLabel>
-				{form.watch('fields.image') && (
-					<img
-						alt="Cover image preview"
-						src={form.watch('fields.image') || ''}
-					/>
-				)}
-			</div>
-			<FormField
-				control={form.control}
-				name="fields.image"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel>Image URL</FormLabel>
-						<Input
-							{...field}
-							onDrop={(e) => {
-								console.log(e)
-								const result = e.dataTransfer.getData('text/plain')
-								const urlMatch = result.match(/\\(([^)]+)\\)/)
-								if (urlMatch) {
-									field.onChange(urlMatch[1])
-								}
-							}}
-							value={field.value || ''}
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-
 			<MetadataFieldSocialImage
 				form={form}
 				// Ensure form.getValues() is safe to call
 				currentSocialImage={getOGImageUrlForResource(form.getValues() as Event)}
 			/>
 		</>
-		// </EditResourcesMetadataFields>
 	)
 }

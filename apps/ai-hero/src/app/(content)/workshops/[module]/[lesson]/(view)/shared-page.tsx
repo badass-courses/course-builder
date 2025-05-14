@@ -11,6 +11,8 @@ import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
+import { env } from '@/env.mjs'
+import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import type { Lesson } from '@/lib/lessons'
 import {
 	getLessonMuxPlaybackId,
@@ -40,6 +42,7 @@ import { LessonBody } from '../../../_components/lesson-body'
 
 export async function LessonPage({
 	lesson,
+	problem,
 	searchParams,
 	params,
 	lessonType = 'lesson',
@@ -47,6 +50,7 @@ export async function LessonPage({
 	params: { module: string; lesson: string }
 	exerciseLoader?: Promise<Lesson | null> | null | undefined
 	lesson: Lesson | null
+	problem?: Lesson | null
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 }) {
@@ -58,72 +62,91 @@ export async function LessonPage({
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
 
 	return (
-		<main className="w-full">
-			{lessonType === 'exercise' ? (
-				<Exercise
-					moduleType="workshop"
-					moduleSlug={params.module}
-					lesson={lesson}
-				/>
-			) : (
-				<PlayerContainer
-					lesson={lesson}
-					searchParams={searchParams}
-					params={params}
-					lessonType={lessonType}
-				/>
-			)}
-			<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16">
-				<div className="relative z-10">
-					<article className="flex h-full flex-col gap-5">
-						<LessonTitle lesson={lesson} />
-						<div className="relative flex w-full items-center justify-between gap-3">
-							<LessonActionBar lesson={lesson} abilityLoader={abilityLoader} />
-							<LessonControls lesson={lesson} className="flex justify-end" />
-						</div>
-						<Suspense fallback={<div>Loading...</div>}>
-							<LessonBody
-								lesson={lesson}
+		<ActiveHeadingProvider>
+			<main className="w-full">
+				{lessonType === 'exercise' ? (
+					<Exercise
+						moduleType="workshop"
+						moduleSlug={params.module}
+						lesson={lesson}
+					/>
+				) : (
+					<PlayerContainer
+						lesson={lesson}
+						searchParams={searchParams}
+						params={params}
+						lessonType={lessonType}
+					/>
+				)}
+				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16">
+					<div className="relative z-10">
+						<article className="">
+							<LessonTitle lesson={lesson} />
+							<div className="relative mb-10 flex w-full items-center justify-between gap-3">
+								<LessonActionBar
+									lesson={lesson}
+									problem={problem}
+									abilityLoader={abilityLoader}
+								/>
+								<LessonControls
+									lesson={lesson}
+									problem={problem}
+									className="flex justify-end"
+								/>
+							</div>
+
+							<Suspense
+								fallback={
+									<div className="flex flex-col gap-3">
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-12 w-full rounded" />
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-2/3 rounded" />
+										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-1/2 rounded" />
+									</div>
+								}
+							>
+								<LessonBody
+									lesson={lesson}
+									abilityLoader={abilityLoader}
+									mdxContentPromise={mdxContentPromise}
+								/>
+							</Suspense>
+							<TranscriptContainer
+								lessonId={lesson?.id}
 								abilityLoader={abilityLoader}
-								mdxContentPromise={mdxContentPromise}
 							/>
-						</Suspense>
-						<UpNext currentResourceId={lesson?.id} />
-						<TranscriptContainer
-							lessonId={lesson?.id}
-							abilityLoader={abilityLoader}
-						/>
-						{/* <Accordion type="single" collapsible className="mt-4">
-							<AccordionItem value="contents">
-								<AccordionTrigger className="flex w-full items-center font-medium">
-									Workshop Contents
-								</AccordionTrigger>
-								<AccordionContent>
-									<Suspense
-										fallback={
-											<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
-												<Skeleton className="h-24 w-full bg-gray-100" />
-												{new Array(10).fill(null).map((_, i) => (
-													<Skeleton
-														key={i}
-														className="h-8 w-full bg-gray-100"
-													/>
-												))}
-											</div>
-										}
-									>
-										<WorkshopResourceList
-											currentLessonSlug={params.lesson}
-											className="max-w-none"
-										/>
-									</Suspense>
-								</AccordionContent>
-							</AccordionItem>
-						</Accordion> */}
-					</article>
+							<UpNext currentResourceId={lesson?.id} />
+							{/* <Accordion type="single" collapsible className="mt-4">
+								<AccordionItem value="contents">
+									<AccordionTrigger className="flex w-full items-center font-medium">
+										Workshop Contents
+									</AccordionTrigger>
+									<AccordionContent>
+										<Suspense
+											fallback={
+												<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
+													<Skeleton className="h-24 w-full bg-gray-100" />
+													{new Array(10).fill(null).map((_, i) => (
+														<Skeleton
+															key={i}
+															className="h-8 w-full bg-gray-100"
+														/>
+													))}
+												</div>
+											}
+										>
+											<WorkshopResourceList
+												currentLessonSlug={params.lesson}
+												className="max-w-none"
+											/>
+										</Suspense>
+									</AccordionContent>
+								</AccordionItem>
+							</Accordion> */}
+						</article>
+					</div>
 				</div>
-			</div>
-		</main>
+			</main>
+		</ActiveHeadingProvider>
 	)
 }
 
@@ -167,13 +190,25 @@ async function PlayerContainer({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
+	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
+		return resource.type === 'videoResource'
+	})
+	const thumbnailUrl =
+		videoResource &&
+		`${env.NEXT_PUBLIC_URL}/api/thumbnails/${videoResource.resourceId}`
 
 	return (
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="relative mb-10 flex flex-col items-center justify-center border-b bg-black"
+				className="dark relative mb-10 flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
 			>
+				<div
+					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
+					style={{
+						backgroundImage: `url(${thumbnailUrl})`,
+					}}
+				/>
 				<Suspense
 					fallback={
 						<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />
@@ -212,8 +247,11 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 	if (!lesson) return null
 
 	return (
-		<div className="mt-10">
-			<Badge className="mb-3 text-xs uppercase" variant="outline">
+		<div>
+			<Badge
+				className="mb-1 border-none bg-transparent px-0 text-xs uppercase opacity-75"
+				variant="outline"
+			>
 				{lesson.type}
 			</Badge>
 			<h1 className="fluid-3xl mb-4 font-bold">{lesson.fields?.title}</h1>
@@ -223,11 +261,11 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 
 async function LessonActionBar({
 	lesson,
-
+	problem,
 	abilityLoader,
 }: {
 	lesson: Lesson | null
-
+	problem?: Lesson | null
 	abilityLoader: Promise<AbilityForResource>
 }) {
 	if (!lesson) return null
@@ -237,7 +275,7 @@ async function LessonActionBar({
 
 	return (
 		<div className="flex items-center gap-8">
-			<Contributor className="flex [&_img]:w-8" />
+			{/* <Contributor className="flex [&_img]:w-8" /> */}
 			{githubUrl && (
 				<Button asChild variant="outline" className="h-11 text-base">
 					<Link href={githubUrl} target="_blank">
@@ -250,6 +288,7 @@ async function LessonActionBar({
 				<CopyProblemPromptButton
 					abilityLoader={abilityLoader}
 					lesson={lesson}
+					problem={problem}
 				/>
 			</React.Suspense>
 			{gitpodUrl && (
@@ -276,36 +315,3 @@ async function LessonActionBar({
 		</div>
 	)
 }
-
-// async function LessonBody({
-// 	lesson,
-// 	params,
-// }: {
-// 	lesson: Lesson | null
-// 	params: { module: string; lesson: string }
-// }) {
-// 	if (!lesson) {
-// 		notFound()
-// 	}
-
-// 	const { content } = await compileMDX(lesson?.fields?.body || '')
-// 	const abilityLoader = await getAbilityForResource(
-// 		params.lesson,
-// 		params.module,
-// 	)
-// 	const canView = abilityLoader?.canView
-
-// 	if (!canView) {
-// 		return (
-// 			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-// 				<p>This lesson is locked. Please upgrade to view it.</p>
-// 			</article>
-// 		)
-// 	}
-
-// 	return (
-// 		<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
-// 			{content}
-// 		</article>
-// 	)
-// }

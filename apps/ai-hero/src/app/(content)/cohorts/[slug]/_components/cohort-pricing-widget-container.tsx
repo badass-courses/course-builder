@@ -45,10 +45,12 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 						quantityAvailable={quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
+							isCohort: true,
+							isLiveEvent: true,
+
 							withTitle: false,
 							withImage: false,
 							withGuaranteeBadge: false,
-							isLiveEvent: true,
 							teamQuantityLimit:
 								quantityAvailable >= 0 && quantityAvailable > 5
 									? 5

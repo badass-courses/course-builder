@@ -89,7 +89,7 @@ export const UserMenu = () => {
 						<DropdownMenuLabel>
 							{sessionData.user.email || 'Account'}
 						</DropdownMenuLabel>
-						<DropdownMenuSeparator />
+						<DropdownMenuSeparator className="bg-border" />
 						<ul className="flex flex-col">
 							{canCreateContent && (
 								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
@@ -97,7 +97,7 @@ export const UserMenu = () => {
 							{canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
 							)}
-							{/* <NavLinkItem variant="menu" href="/profile" label="Profile" /> */}
+							<NavLinkItem variant="menu" href="/profile" label="Profile" />
 							<hr className="my-1" />
 							<NavLinkItem
 								variant="menu"

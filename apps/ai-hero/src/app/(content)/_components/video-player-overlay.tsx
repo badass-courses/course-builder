@@ -1,6 +1,7 @@
 'use client'
 
 import React, { use } from 'react'
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { revalidateTutorialLesson } from '@/app/(content)/tutorials/actions'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
@@ -37,6 +38,7 @@ import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-o
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
+import { handleSetLessonComplete } from './authed-video-player'
 import { useModuleProgress } from './module-progress-provider'
 
 export const CompletedLessonOverlay: React.FC<{
@@ -126,6 +128,7 @@ export const CompletedLessonOverlay: React.FC<{
 			action={action}
 			resource={resource}
 			moduleType={moduleType}
+			prevResource={prevLesson}
 		/>
 	)
 }
@@ -134,22 +137,42 @@ export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
-}> = ({ action, resource, moduleType = 'tutorial' }) => {
+	prevResource?: any
+}> = ({ action, resource, moduleType = 'tutorial', prevResource }) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const moduleNavigation = useWorkshopNavigation()
-
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
+	const [isPending, startTransition] = React.useTransition()
+	const isCurrentLessonCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) => p.resourceId === resource?.id && p.completedAt,
+		),
+	)
 	React.useEffect(() => {
-		if (resource) {
-			const run = async () => {
-				await addProgress({
-					resourceId: resource.id,
-				})
-			}
-			run()
-		}
-	}, [resource, session])
+		if (!resource) return
+		if (isCurrentLessonCompleted) return
+
+		startTransition(() => {
+			handleSetLessonComplete({
+				currentResource:
+					resource.type === 'solution' && prevResource
+						? prevResource
+						: resource,
+				moduleProgress: moduleProgress,
+				addLessonProgress: addLessonProgress,
+			})
+		})
+	}, []) // Empty deps array to only run once on mount
+
+	const cohort = moduleNavigation?.cohorts?.[0]
+
+	const currentWorkshopIndexInCohort =
+		cohort?.resources?.findIndex(
+			(workshop) => workshop.id === moduleNavigation?.id,
+		) || 0
+	const nextWorkshop = cohort?.resources[currentWorkshopIndexInCohort + 1]
 
 	return (
 		<div
@@ -164,7 +187,7 @@ export const CompletedModuleOverlay: React.FC<{
 			</p>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
-					variant="default"
+					variant="outline"
 					type="button"
 					onClick={() => {
 						if (playerRef.current) {
@@ -174,6 +197,13 @@ export const CompletedModuleOverlay: React.FC<{
 				>
 					Replay
 				</Button>
+				{nextWorkshop && (
+					<Button asChild variant="default">
+						<Link href={`/workshops/${nextWorkshop?.slug}`}>
+							Continue to {nextWorkshop?.title}
+						</Link>
+					</Button>
+				)}
 			</div>
 			<Button
 				type="button"
@@ -208,7 +238,9 @@ const ContinueButton: React.FC<{
 		),
 	)
 
-	const isProblemLesson = nextResource?.type === 'solution'
+	const isProblemLesson = Boolean(
+		resource?.resources?.find((r) => r.resource.type === 'solution'),
+	)
 
 	const [isPending, startTransition] = React.useTransition()
 	return (
@@ -261,7 +293,7 @@ export const SoftBlockOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="bg-background/90 z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg backdrop-blur-md sm:p-10 sm:py-10 lg:p-16"
+			className="z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
 				moduleTitle={moduleNavigation?.title}
@@ -400,7 +432,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg"
+				className="relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg xl:aspect-video"
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>
@@ -422,7 +454,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			return (
 				<div
 					aria-live="polite"
-					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-black/80 p-5 text-lg backdrop-blur-md"
+					className="text-foreground absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg"
 				>
 					<Spinner className="text-white" />
 				</div>

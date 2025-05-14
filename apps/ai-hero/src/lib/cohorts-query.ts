@@ -4,6 +4,7 @@ import {
 	contentResource,
 	contentResourceResource,
 	entitlements as entitlementsTable,
+	entitlementTypes,
 	organizationMemberships,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -28,7 +29,16 @@ export async function getCohort(cohortIdOrSlug: string) {
 		with: {
 			resources: {
 				with: {
-					resource: true,
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: [asc(contentResourceResource.position)],
+							},
+						},
+					},
 				},
 				orderBy: [asc(contentResourceResource.position)],
 			},
@@ -79,10 +89,19 @@ export async function checkCohortAccess(
 	if (!membership) {
 		return null // User is not a member of the organization
 	}
+
+	const cohortEntitlementType = await db.query.entitlementTypes.findFirst({
+		where: eq(entitlementTypes.name, 'cohort_content_access'),
+	})
+
+	if (!cohortEntitlementType) {
+		return null // Cohort entitlement type not found
+	}
+
 	const validEntitlements = await db.query.entitlements.findMany({
 		where: and(
 			eq(entitlementsTable.organizationMembershipId, membership.id), // Use membershipId
-			eq(entitlementsTable.entitlementType, 'cohort_content_access'),
+			eq(entitlementsTable.entitlementType, cohortEntitlementType.id),
 			or(
 				isNull(entitlementsTable.expiresAt),
 				gt(entitlementsTable.expiresAt, sql`CURRENT_TIMESTAMP`),
@@ -92,7 +111,7 @@ export async function checkCohortAccess(
 	})
 
 	const cohortEntitlement = validEntitlements.find(
-		(e) => e.metadata?.cohortSlug === cohortSlug,
+		(e) => e.sourceType === 'cohort',
 	)
 
 	if (!cohortEntitlement || !cohortEntitlement.metadata) return null

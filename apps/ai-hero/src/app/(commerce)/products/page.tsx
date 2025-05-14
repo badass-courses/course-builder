@@ -1,6 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getActiveSelfPacedProducts } from '@/lib/products-query'
+import { getProducts } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import {
@@ -13,7 +13,7 @@ import {
 
 export default async function EventIndexPage() {
 	const { ability } = await getServerAuthSession()
-	const products = await getActiveSelfPacedProducts()
+	const products = await getProducts()
 
 	return (
 		<div>

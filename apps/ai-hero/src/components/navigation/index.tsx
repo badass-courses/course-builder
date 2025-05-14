@@ -40,9 +40,6 @@ const Navigation = () => {
 		setIsMobileMenuOpen(false)
 	}, [pathname])
 
-	const { data: abilityRules, status: abilityStatus } =
-		api.ability.getCurrentAbilityRules.useQuery()
-
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()

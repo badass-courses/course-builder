@@ -101,6 +101,15 @@ import {
 } from './primitives/form'
 import { Input } from './primitives/input'
 import { Label } from './primitives/label'
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from './primitives/pagination'
 import { Popover, PopoverContent, PopoverTrigger } from './primitives/popover'
 import { Progress } from './primitives/progress'
 import { RadioGroup, RadioGroupItem } from './primitives/radio-group'
@@ -302,4 +311,11 @@ export {
 	ContextMenuSubTrigger,
 	ContextMenuRadioGroup,
 	DateTimePicker,
+	Pagination,
+	PaginationContent,
+	PaginationLink,
+	PaginationItem,
+	PaginationPrevious,
+	PaginationNext,
+	PaginationEllipsis,
 }

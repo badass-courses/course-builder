@@ -113,6 +113,7 @@ export async function upsertPostToTypeSense(
 			visibility: post.fields?.visibility,
 			state: post.fields?.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
+			updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
 			...(tags.length > 0 && { tags: tags.map((tag) => tag) }),
 			...(parentResources && {
 				parentResources: parentResources.map((resource) => {

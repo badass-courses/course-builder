@@ -1,9 +1,12 @@
+'use client'
+
 import * as React from 'react'
 import {
 	BaseTool,
 	ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
 import { updateListItemFields } from '@/lib/lists-query'
+import { WorkshopSchema, type Workshop } from '@/lib/workshops'
 import { updateWorkshop } from '@/lib/workshops-query'
 import { ImagePlusIcon, ListOrderedIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
@@ -19,38 +22,6 @@ import { WorkshopMediaTool } from './workshop-media-tool'
 import { WorkshopResourcesTool } from './workshop-resources-tool'
 
 /**
- * Define the workshop schema by extending ContentResourceSchema
- */
-export const WorkshopSchema = ContentResourceSchema.merge(
-	z.object({
-		type: z.literal('workshop'),
-		fields: z.object({
-			title: z.string().min(1, { message: 'Title is required' }),
-			subtitle: z.string().optional(),
-			description: z.string().optional(),
-			body: z.string().optional(),
-			state: z
-				.enum(['draft', 'published', 'archived', 'deleted'])
-				.default('draft'),
-			slug: z.string().min(1, { message: 'Slug is required' }),
-			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
-			coverImage: z
-				.object({
-					url: z.string().optional(),
-					alt: z.string().optional(),
-				})
-				.optional(),
-			github: z.string().optional(),
-		}),
-	}),
-)
-
-/**
- * Workshop resource type definition
- */
-export type WorkshopResourceType = z.infer<typeof WorkshopSchema>
-
-/**
  * Type guard to check if a resource is a workshop
  *
  * @param resource The resource to check
@@ -58,7 +29,7 @@ export type WorkshopResourceType = z.infer<typeof WorkshopSchema>
  */
 export function isWorkshopResource(
 	resource: ContentResource,
-): resource is WorkshopResourceType {
+): resource is ContentResource {
 	return resource.type === 'workshop'
 }
 
@@ -69,9 +40,7 @@ export function isWorkshopResource(
  * @returns The validated WorkshopResourceType
  * @throws {Error} If the resource is not a valid WorkshopResourceType
  */
-export function parseWorkshopResource(
-	resource: ContentResource,
-): WorkshopResourceType {
+export function parseWorkshopResource(resource: ContentResource): Workshop {
 	try {
 		return WorkshopSchema.parse(resource)
 	} catch (error) {
@@ -114,11 +83,11 @@ const resourcesTool: BaseTool = {
 export function createWorkshopFormConfig(
 	customConfig?: Partial<
 		Omit<
-			ResourceFormConfig<WorkshopResourceType, typeof WorkshopSchema>,
+			ResourceFormConfig<Workshop, typeof WorkshopSchema>,
 			'resourceType' | 'schema'
 		>
 	>,
-): ResourceFormConfig<WorkshopResourceType, typeof WorkshopSchema> {
+): ResourceFormConfig<Workshop, typeof WorkshopSchema> {
 	return {
 		resourceType: 'workshop',
 		schema: WorkshopSchema,
@@ -152,17 +121,31 @@ export function createWorkshopFormConfig(
 					| 'unlisted',
 				coverImage: workshop?.fields?.coverImage || { url: '', alt: '' },
 				github: workshop?.fields?.github || '',
+				timezone: workshop?.fields?.timezone || 'America/Los_Angeles',
+				startsAt: workshop?.fields?.startsAt
+					? new Date(workshop.fields.startsAt).toISOString()
+					: undefined,
+				endsAt: workshop?.fields?.endsAt
+					? new Date(workshop.fields.endsAt).toISOString()
+					: undefined,
 			},
 		}),
 
 		// Resource path generation
-		getResourcePath: (slug) => `/workshops/${slug}`,
+		// getResourcePath: (slug) => `/workshops/${slug}`,
+		getResourcePath: (slug?: string) => `/workshops/${slug || ''}`,
 
 		// Resource update function
-		updateResource: updateWorkshop as unknown as (
-			resource: Partial<WorkshopResourceType>,
-		) => Promise<WorkshopResourceType>,
-
+		// updateResource: updateWorkshop as unknown as (
+		// 	resource: Partial<WorkshopResourceType>,
+		// ) => Promise<WorkshopResourceType>,
+		updateResource: async (resource: Partial<Workshop>) => {
+			if (!resource.id || !resource.fields) {
+				throw new Error('Invalid resource data')
+			}
+			await updateWorkshop(resource)
+			return resource as Workshop
+		},
 		// Custom tools
 		customTools: [
 			mediaUploadTool,

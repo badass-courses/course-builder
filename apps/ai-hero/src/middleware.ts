@@ -43,6 +43,6 @@ export default auth(async function middleware(req) {
 
 export const config = {
 	matcher: [
-		'/((?!api|_next/static|_next/image|favicon.ico|_axiom/web-vitals|sitemap.xml|robots.txt).*)',
+		'/((?!_next/static|_next/image|favicon.ico|_axiom/web-vitals|sitemap.xml|robots.txt).*)',
 	],
 }

@@ -1,5 +1,6 @@
 import { Lesson } from '@/lib/lessons'
 import { Module } from '@/lib/module'
+import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
 	createMongoAbility,
@@ -176,26 +177,12 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 				}
 			})
 		}
-
-		// Entitlement-based permissions
-		options.user.entitlements?.forEach((entitlement) => {
-			if (entitlement.type === 'cohort_content_access') {
-				can('read', 'Content', {
-					id: { $in: entitlement.metadata.contentIds },
-					status: 'published',
-				})
-			}
-
-			if (entitlement.type === 'cohort_discord_role') {
-				can('invite', 'Discord')
-			}
-		})
 	}
 
-	can('read', 'Content', {
-		createdAt: { $lte: new Date() },
-		status: { $in: ['review', 'published'] },
-	})
+	// can('read', 'Content', {
+	// 	createdAt: { $lte: new Date() },
+	// 	status: { $in: ['review', 'published'] },
+	// })
 
 	return rules
 }
@@ -204,18 +191,29 @@ type ViewerAbilityInput = {
 	user?: User | null
 	subscriber?: any
 	lesson?: Lesson
-	module?: Module
+	module?: Workshop
 	section?: ContentResource
 	isSolution?: boolean
 	country?: string
 	purchases?: Purchase[]
+	entitlementTypes?: {
+		id: string
+		name: string
+	}[]
 }
 
 export function defineRulesForPurchases(
 	viewerAbilityInput: ViewerAbilityInput,
 ) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
-	const { user, country, purchases = [], module } = viewerAbilityInput
+	const {
+		user,
+		country,
+		purchases = [],
+		module,
+		lesson,
+		entitlementTypes,
+	} = viewerAbilityInput
 
 	if (user) {
 		can('update', 'User', {
@@ -265,9 +263,10 @@ export function defineRulesForPurchases(
 			return { valid: false, reason: 'unknown' }
 		})
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content')
-		}
+		// LEGACY: non-entitlement based access
+		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+		// 	can('read', 'Content')
+		// }
 
 		if (
 			userHasPurchaseWithAccess.some(
@@ -302,9 +301,9 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	if (canViewTutorial(viewerAbilityInput)) {
-		can('read', 'Content')
-	}
+	// if (canViewTutorial(viewerAbilityInput)) {
+	// 	can('read', 'Content')
+	// }
 
 	if (user?.roles?.map((role) => role.name).includes('admin')) {
 		can('manage', 'all')
@@ -312,17 +311,45 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
+	const cohortEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'cohort_content_access',
+	)
+
+	// check workshop in cohort
+	if (user?.entitlements && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id) {
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+				})
+			}
+		})
+	}
+
+	// lesson check
+	// TODO: validate
+	const lessonModule = module?.resources?.find(
+		(resource) => resource.resourceId === lesson?.id,
+	)
+	if (user?.entitlements && lessonModule) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id) {
+				can('read', 'Content', { id: { $in: entitlement.metadata.contentIds } })
+			}
+		})
+	}
+
 	return rules
 }
 
-const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
-	const contentIsTutorial = module?.type === 'tutorial'
-	const viewer = user || subscriber
-	const emailIsNotRequiredToWatch =
-		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
+// const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
+// 	const contentIsTutorial = module?.type === 'tutorial'
+// 	const viewer = user || subscriber
+// 	const emailIsNotRequiredToWatch =
+// 		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
 
-	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
-}
+// 	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
+// }
 
 const canViewTip = ({ lesson }: ViewerAbilityInput) => {
 	return lesson?.type === 'tip'

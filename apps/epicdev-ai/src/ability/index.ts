@@ -192,9 +192,12 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 		})
 	}
 
+	//  Publicly visible and published posts are readable by anyone.
 	can('read', 'Content', {
+		type: 'post',
+		'fields.state': 'published',
+		'fields.visibility': { $in: ['public', 'unlisted'] },
 		createdAt: { $lte: new Date() },
-		status: { $in: ['review', 'published'] },
 	})
 
 	return rules

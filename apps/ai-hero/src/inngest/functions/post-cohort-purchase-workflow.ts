@@ -1,9 +1,15 @@
 import { db } from '@/db'
-import { contentResourceResource, entitlementTypes } from '@/db/schema'
+import {
+	contentResourceResource,
+	entitlements,
+	entitlementTypes,
+} from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { and, eq } from 'drizzle-orm'
+import { v4 as uuidv4 } from 'uuid'
 
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
 
 export const postCohortPurchaseWorkflow = inngest.createFunction(
@@ -95,6 +101,26 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 
 					return orgMembership
 				})
+
+				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
+					await step.run(`add user to cohort via entitlement`, async () => {
+						for (const resource of cohortResource.resources || []) {
+							const entitlementId = `${resource.resource.id}-${guid()}`
+							await db.insert(entitlements).values({
+								id: entitlementId,
+								entitlementType: cohortContentAccessEntitlementType.id,
+								sourceType: 'cohort',
+								sourceId: resource.resource.id,
+								userId: user.id,
+								organizationId: purchase.organizationId,
+								organizationMembershipId: orgMembership.id,
+								metadata: {
+									contentIds: [resource.resource.id],
+								},
+							})
+						}
+					})
+				}
 			} else {
 				// send a slack message or something because it seems broken
 			}

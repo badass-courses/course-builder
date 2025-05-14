@@ -33,15 +33,18 @@ export function VideoOverlayWorkshopPricing({
 	return product ? (
 		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 			<Pricing.Root
-				className="mx-auto w-full max-w-md"
+				className=""
 				product={product}
 				couponId={couponId}
 				country={country}
 				options={{
-					withImage: true,
-					withGuaranteeBadge: true,
-					isLiveEvent: false,
+					withImage: false,
+					withTitle: true,
+					withGuaranteeBadge: false,
+					isLiveEvent: product.type === 'cohort',
+					isCohort: product.type === 'cohort',
 					teamQuantityLimit,
+					allowTeamPurchase: true,
 					isPPPEnabled: true,
 					cancelUrl: cancelUrl,
 				}}
@@ -50,17 +53,21 @@ export function VideoOverlayWorkshopPricing({
 			>
 				<Pricing.Product className="w-full">
 					<Pricing.ProductImage />
-					<Pricing.Details className="px-0">
-						<Pricing.Name />
-						<Pricing.LiveQuantity />
-						<Pricing.Price />
-						<Pricing.TeamToggle />
-						<Pricing.TeamQuantityInput />
-						<Pricing.BuyButton />
-						<Pricing.GuaranteeBadge />
-						<Pricing.LiveRefundPolicy />
-						<Pricing.SaleCountdown className="py-4" />
-						<Pricing.PPPToggle />
+					<Pricing.Details className="px-0 pt-0">
+						<div className="mx-auto flex w-full max-w-xs flex-col items-center justify-center">
+							<Pricing.Name className="font-medium" />
+							<Pricing.LiveQuantity />
+							<Pricing.Price className="mb-2 [&_div]:text-white" />
+							<Pricing.TeamToggle className="mb-2" />
+							<Pricing.TeamQuantityInput />
+							<Pricing.BuyButton className="text-lg font-semibold">
+								Enroll Now
+							</Pricing.BuyButton>
+							<Pricing.GuaranteeBadge />
+							<Pricing.LiveRefundPolicy className="max-w-none text-center" />
+							<Pricing.SaleCountdown className="py-4" />
+						</div>
+						<Pricing.PPPToggle className="mx-auto mt-3 w-full max-w-lg" />
 					</Pricing.Details>
 				</Pricing.Product>
 			</Pricing.Root>

@@ -3,6 +3,7 @@
 import React, { use } from 'react'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
+import { FileText, TextIcon, VideoIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -35,10 +36,13 @@ export function Transcript({
 	}
 
 	return (
-		<Accordion type="single" collapsible className="mt-8">
-			<AccordionItem value="transcript">
-				<AccordionTrigger className="flex w-full items-center font-medium">
-					Transcript
+		<Accordion type="single" collapsible className="">
+			<AccordionItem
+				value="transcript"
+				className="rounded border bg-transparent p-5"
+			>
+				<AccordionTrigger className="flex w-full items-center justify-start gap-2 text-lg font-medium sm:text-xl">
+					<FileText className="size-4 opacity-75" /> Video Transcript
 				</AccordionTrigger>
 				<AccordionContent>
 					<ReactMarkdown
@@ -50,7 +54,7 @@ export function Transcript({
 									muxPlayerRef,
 								}),
 						}}
-						className="prose dark:prose-invert max-w-none"
+						className="prose dark:prose-invert max-w-none pt-3 opacity-80"
 					>
 						{transcript}
 					</ReactMarkdown>
