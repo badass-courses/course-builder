@@ -5,7 +5,8 @@
 		@apply mb-0;
 	}
 	input {
-		@apply placeholder:text-muted-foreground text-foreground focus-within:border-primary bg-card relative flex rounded-none border-x-0 border-b border-t-0 border-dashed p-3 text-base ring-0 placeholder:opacity-75;
+		@apply placeholder:text-muted-foreground text-foreground relative flex p-5 text-base placeholder:opacity-75;
+		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
 	}
 	[data-sr-input-label] {
 		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal after:content-[':'];
@@ -14,7 +15,7 @@
 		@apply opacity-50;
 	}
 	[data-sr-button] {
-		@apply bg-primary text-primary-foreground mt-4 h-16 w-full rounded-none text-base font-semibold sm:mt-0 sm:w-auto;
+		@apply bg-primary text-primary-foreground mt-4 h-16 w-full text-base font-semibold sm:mt-0 sm:w-auto;
 	}
 }
 

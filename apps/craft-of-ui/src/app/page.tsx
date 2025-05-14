@@ -139,45 +139,52 @@ const Home = async (props: Props) => {
 
 						<article className="mx-auto w-full max-w-3xl pb-10">
 							{page?.fields?.body ? (
-								<MDXRemote
-									source={page?.fields?.body}
-									components={{
-										CenteredTitle,
-										Instructor,
-										Spacer,
-										Section,
-										CheckList,
-										Testimonial,
-										CldImage: (props) => <CldImage {...props} />,
-										SubscribeForm,
-										ThemeImage: (props) => <ThemeImage {...props} />,
-										PrimaryNewsletterCta: (props) => (
-											<PrimaryNewsletterCta
-												resource={firstPageResource}
-												className={cn(
-													'not-prose pb-10 sm:pb-16',
-													props.className,
-												)}
-												trackProps={{
-													event: 'subscribed',
-													params: {
-														location: 'home',
-													},
-												}}
-												{...props}
-											/>
-										),
-										MuxPlayer: (props) => <MuxPlayer {...props} />,
-										Video: ({ resourceId }: { resourceId: string }) => (
-											<MDXVideo resourceId={resourceId} />
-										),
-									}}
-								/>
+								<>
+									<MDXRemote
+										source={page?.fields?.body}
+										components={{
+											CenteredTitle,
+											Instructor,
+											Spacer,
+											Section,
+											CheckList,
+											Testimonial,
+											CldImage: (props) => <CldImage {...props} />,
+											SubscribeForm,
+											ThemeImage: (props) => <ThemeImage {...props} />,
+											PrimaryNewsletterCta: (props) => (
+												<PrimaryNewsletterCta
+													resource={firstPageResource}
+													className={cn(
+														'not-prose pb-10 sm:pb-16',
+														props.className,
+													)}
+													trackProps={{
+														event: 'subscribed',
+														params: {
+															location: 'home',
+														},
+													}}
+													{...props}
+												/>
+											),
+											MuxPlayer: (props) => <MuxPlayer {...props} />,
+											Video: ({ resourceId }: { resourceId: string }) => (
+												<MDXVideo resourceId={resourceId} />
+											),
+										}}
+									/>
+									<JheyProfile />
+									<PrimaryNewsletterCta
+										title="You want to build exceptional user interfaces, I want to empower you to do so."
+										byline="Join the waitlist to learn more and get course launch updates."
+										actionLabel="Subscribe"
+									/>
+								</>
 							) : (
 								<p>Page body not found</p>
 							)}
 						</article>
-						<JheyProfile />
 					</main>
 				</div>
 			</div>
