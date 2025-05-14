@@ -47,3 +47,5 @@ apps/*/public/robots.txt
 
 # test results
 apps/*/test-results
+.vercel
+.env*.local
