@@ -433,7 +433,10 @@ export function mySqlDrizzleAdapter(
 
 				const purchaseId = `purchase-${v4()}`
 				const userMemberships = await adapter.getMembershipsForUser(user.id)
-				const organizationId = userMemberships[0].organizationId
+				const organizationId =
+					coupon.organizationId ||
+					userMemberships.find((m) => m.organization.name?.includes(user.email))
+						?.organizationId // safer way to make sure we are using personal organization
 
 				await adapter.createPurchase({
 					id: purchaseId,
