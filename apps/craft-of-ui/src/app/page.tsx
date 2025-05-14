@@ -83,11 +83,11 @@ const Home = async (props: Props) => {
 	}
 
 	return (
-		// <div className="home-page-grid">
 		<LayoutClient
 			className="static"
 			highlightedResource={firstPageResource}
 			withContainer
+			withGrid
 		>
 			<div className="min-h-screen overflow-auto pb-16">
 				<div className="mx-auto max-w-3xl px-4 pb-16 pt-16">
@@ -190,7 +190,6 @@ const Home = async (props: Props) => {
 				</div>
 			</div>
 		</LayoutClient>
-		// </div>
 	)
 }
 

@@ -15,6 +15,7 @@ export default function LayoutClient({
 	withContainer = false,
 	highlightedResource,
 	className,
+	withGrid,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
@@ -23,24 +24,27 @@ export default function LayoutClient({
 		path: string
 		title: string
 	}
+	withGrid?: boolean
 }) {
 	return (
-		<div
-			className={cn(
-				'',
-				{
-					'mx-auto w-full max-w-4xl px-8 sm:px-10': withContainer,
-				},
-				className,
-			)}
-		>
-			<div className="">
-				<Navigation
-					highlightedResource={highlightedResource}
-					withContainer={withContainer}
-				/>
-				{children}
-				<Footer />
+		<div className={cn(withGrid && 'home-page-grid')}>
+			<div
+				className={cn(
+					'',
+					{
+						'mx-auto w-full max-w-4xl px-8 sm:px-10': withContainer,
+					},
+					className,
+				)}
+			>
+				<div className="">
+					<Navigation
+						highlightedResource={highlightedResource}
+						withContainer={withContainer}
+					/>
+					{children}
+					<Footer />
+				</div>
 			</div>
 		</div>
 	)
