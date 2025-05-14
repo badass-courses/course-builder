@@ -6,7 +6,7 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 export const metadata: Metadata = {
 	title: 'Newsletter',
 	description:
-		'Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.',
+		'Subscribe to be the first to learn about The Craft of UI releases, updates, and special discounts for UI Engineers.',
 }
 
 export default async function NewsletterPage() {

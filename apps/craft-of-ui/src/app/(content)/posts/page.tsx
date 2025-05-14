@@ -35,11 +35,11 @@ import { PostActions } from './_components/post-actions'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-	title: `AI Engineering Posts by ${config.author}`,
+	title: `The Craft of UI Posts by ${config.author}`,
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Engineering Posts by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`The Craft of UI Posts by ${config.author}`)}`,
 			},
 		],
 	},

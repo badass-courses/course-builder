@@ -208,7 +208,7 @@ const data = {
 			name: 'Instructor',
 			component: Instructor,
 			props: {
-				title: 'John Lindquist',
+				title: 'Jhey Tompkins',
 			},
 		},
 	],
@@ -313,9 +313,9 @@ const PageBlocks = () => {
 									e.dataTransfer.setData(
 										'text/plain',
 										`
-<${item.name} title="John Lindquist">
+<${item.name} title="Jhey Tompkins">
 
-ohn Lindquist is a co-founder of egghead.io John has spent the majority of his career developing Rich Web Applications. Before starting egghead.io, John worked at JetBrains as a WebStorm evangelist, and before that he was a Technical Architect at Isobar leading large teams in building the latest and greatest in web apps for the Air Force, HBO, and Bloomberg.
+TODO: Add instructor bio
 
 </${item.name}>
 `,

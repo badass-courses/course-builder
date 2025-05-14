@@ -9,11 +9,11 @@ import { CreateListForm } from './_components/create-list-form'
 import { ListsTable } from './_components/lists-table'
 
 export const metadata: Metadata = {
-	title: `AI Engineering Lists by ${config.author}`,
+	title: `The Craft of UI Lists by ${config.author}`,
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Engineering Posts by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`The Craft of UI Posts by ${config.author}`)}`,
 			},
 		],
 	},
