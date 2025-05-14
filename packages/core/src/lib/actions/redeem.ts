@@ -1,4 +1,5 @@
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import { FULL_PRICE_COUPON_REDEEMED_EVENT } from 'src/inngest/commerce/event-full-price-coupon-redeemed'
 import { z } from 'zod'
 
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
@@ -40,6 +41,8 @@ export async function redeem(
 		redeemingProductId: productIds?.[0],
 	})
 
+	console.log('createdPurchase', createdPurchase)
+
 	if (createdPurchase) {
 		const { purchase, redeemingForCurrentUser } = createdPurchase
 
@@ -50,7 +53,22 @@ export async function redeem(
 			const user = await options.adapter.getUserById(purchase.userId)
 			if (!user) throw new Error(`unable-to-find-user-with-id-${purchase.id}`)
 			const emailProvider = options.providers.find((p) => p.type === 'email')
-
+			const product = await options.adapter.getProduct(purchase.productId)
+			if (product) {
+				try {
+					await options.inngest.send({
+						name: FULL_PRICE_COUPON_REDEEMED_EVENT,
+						data: {
+							purchaseId: purchase.id,
+							productType: product.type || 'self-paced',
+						},
+						user,
+					})
+				} catch (e) {
+					console.log('error', e)
+					throw new Error('unable-to-send-inngest-event')
+				}
+			}
 			try {
 				await sendServerEmail({
 					email: user.email as string,
