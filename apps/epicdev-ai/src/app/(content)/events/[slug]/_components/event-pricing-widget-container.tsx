@@ -41,21 +41,6 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 		<div className="py-5">
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-					{/* <EventPricingWidget
-						commerceProps={{ ...commerceProps, products: [product] }}
-						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
-						product={product}
-						quantityAvailable={quantityAvailable}
-						pricingDataLoader={pricingDataLoader}
-						pricingWidgetOptions={{
-							withImage: product.type !== 'live',
-							withGuaranteeBadge: product.type !== 'live',
-							isLiveEvent: product.type === 'live',
-							teamQuantityLimit: quantityAvailable,
-							isPPPEnabled: product.type !== 'live',
-							cancelUrl: cancelUrl,
-						}}
-					/> */}
 					<PricingWidget
 						commerceProps={{ ...commerceProps, products: [product] }}
 						ctaLabel="Reserve Your Spot"
@@ -65,7 +50,6 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
 							withTitle: false,
-
 							withImage: false,
 							withGuaranteeBadge: false,
 							isLiveEvent: true,

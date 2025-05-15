@@ -19,7 +19,7 @@ import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar, Check, CheckCircle, Clock } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
@@ -244,14 +244,6 @@ export default async function EventPage(props: {
 					</Button>
 				</div>
 			)}
-			{eventProps.hasPurchasedCurrentProduct ? (
-				<div className="flex w-full items-center border-b py-3 text-left font-medium">
-					You have purchased a ticket to this event. See you on {eventDate}.{' '}
-					<span role="img" aria-label="Waving hand">
-						👋
-					</span>
-				</div>
-			) : null}
 			<header className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 				<Link
 					href="/events"
@@ -291,6 +283,15 @@ export default async function EventPage(props: {
 					</article>
 				</div>
 				<EventSidebar>
+					{eventProps.hasPurchasedCurrentProduct ? (
+						<div className="border-b p-6 text-left font-medium">
+							<CheckCircle className="text-primary inline-block size-4" /> You
+							have purchased a ticket to this event. See you on {eventDate}.{' '}
+							<span role="img" aria-label="Waving hand">
+								👋
+							</span>
+						</div>
+					) : null}
 					<EventDetails event={event} />
 					<EventPricingWidgetContainer {...eventProps} />
 				</EventSidebar>
