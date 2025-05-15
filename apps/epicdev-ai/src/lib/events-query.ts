@@ -24,6 +24,7 @@ import {
 } from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
 import { getProductForPost } from './posts-query'
+import { addResourceToProduct, createProduct } from './products-query'
 import { upsertPostToTypeSense } from './typesense-query'
 
 export async function getEvent(eventIdOrSlug: string) {
@@ -138,6 +139,32 @@ export async function createEvent(input: NewEvent) {
 	if (!parsedResource.success) {
 		console.error('Error parsing resource', resource)
 		throw new Error('Error parsing resource')
+	}
+
+	// if we provide a price, we need to create a product and associate it with the event
+	if (input.fields.price && input.fields.price > 0) {
+		try {
+			const product = await createProduct({
+				name: input.fields.title,
+				price: input.fields.price,
+				quantityAvailable: -1,
+				type: 'live',
+			})
+			if (product) {
+				await addResourceToProduct({
+					resource: parsedResource.data,
+					productId: product.id,
+				})
+			} else {
+				await log.error('event.create.product.failed', {
+					eventId: newResourceId,
+					userId: user.id,
+					price: input.fields.price,
+				})
+			}
+		} catch (error) {
+			console.error('Error creating and associating product', error)
+		}
 	}
 
 	try {

@@ -32,6 +32,7 @@ export default function CreateNewEventForm() {
 				title: '',
 				startsAt: undefined,
 				endsAt: undefined,
+				price: 0,
 			},
 		},
 	})
@@ -134,6 +135,32 @@ export default function CreateNewEventForm() {
 									shouldCloseOnSelect={false}
 									granularity="minute"
 								/>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="fields.price"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Price</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										{...field}
+										value={
+											field.value === null || field.value === undefined
+												? ''
+												: String(field.value)
+										}
+										onChange={(e) => {
+											const value = e.target.value
+											const parsedValue = parseFloat(value)
+											field.onChange(isNaN(parsedValue) ? null : parsedValue)
+										}}
+									/>
+								</FormControl>
 								<FormMessage />
 							</FormItem>
 						)}

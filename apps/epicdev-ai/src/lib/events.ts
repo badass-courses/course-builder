@@ -57,6 +57,7 @@ export const NewEventSchema = z.object({
 		title: z.string().min(2).max(90),
 		startsAt: z.date().nullish(),
 		endsAt: z.date().nullish(),
+		price: z.number().min(0).nullish(),
 	}),
 })
 

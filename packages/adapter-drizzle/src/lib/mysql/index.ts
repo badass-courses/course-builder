@@ -1550,7 +1550,7 @@ export function mySqlDrizzleAdapter(
 				id: newProductId,
 				name: input.name,
 				status: 1,
-				type: 'self-paced',
+				type: input.type || 'self-paced',
 				quantityAvailable: input.quantityAvailable,
 				fields: {
 					state: 'draft',

@@ -11,6 +11,9 @@ export const NewProductSchema = z.object({
 	name: z.string().min(2).max(90),
 	quantityAvailable: z.coerce.number().default(-1),
 	price: z.coerce.number().gte(0).default(0),
+	type: z
+		.enum(['live', 'self-paced', 'membership', 'cohort'])
+		.default('self-paced'),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>
@@ -27,7 +30,7 @@ export const ProductContentSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
-			type: z.enum(['live', 'self-paced', 'membership']),
+			type: z.enum(['live', 'self-paced', 'membership', 'cohort']),
 		}),
 	}),
 )

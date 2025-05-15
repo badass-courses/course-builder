@@ -10,18 +10,11 @@ import {
 	withResourceForm,
 	type ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
-import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
-import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
-import { ImagePlusIcon } from 'lucide-react'
-import { useSession } from 'next-auth/react'
-import { useTheme } from 'next-themes'
-import { type UseFormReturn } from 'react-hook-form'
+import { Calendar, ImagePlusIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
@@ -248,32 +241,20 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
+			<MetadataFieldVisibility form={form} />
 			<FormField
 				control={form.control}
-				name="fields.description"
+				name="fields.details"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<div className="flex items-center justify-between">
-							<FormLabel className="text-lg font-bold leading-none">
-								SEO Description
-								<br />
-								<span className="text-muted-foreground text-sm tabular-nums">
-									({`${field.value?.length ?? '0'} / 160`})
-								</span>
-							</FormLabel>
-						</div>
+						<FormLabel className="inline-flex items-center text-lg font-bold">
+							<Calendar className="mr-1 size-4" /> Event Details
+						</FormLabel>
 						<FormDescription>
-							A short snippet that summarizes the post in under 160 characters.
-							Keywords should be included to support SEO.
+							Details to be used in Google calendar for this event.
 						</FormDescription>
-						<Textarea rows={4} {...field} value={field.value ?? ''} />
-						{field.value && field.value.length > 160 && (
-							<FormMessage>
-								Your description is longer than 160 characters
-							</FormMessage>
-						)}
+						<Textarea {...field} value={field.value?.toString()} />
 						<FormMessage />
 					</FormItem>
 				)}
@@ -283,7 +264,7 @@ const EventFormFields = ({
 				name="fields.startsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Starts At:</FormLabel>
+						<FormLabel className="text-lg font-bold">Starts At:</FormLabel>
 						<DateTimePicker
 							aria-label="Starts At"
 							{...field}
@@ -312,7 +293,7 @@ const EventFormFields = ({
 				name="fields.endsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Ends At:</FormLabel>
+						<FormLabel className="text-lg font-bold">Ends At:</FormLabel>
 						<DateTimePicker
 							aria-label="Ends At"
 							{...field}
@@ -341,7 +322,7 @@ const EventFormFields = ({
 				name="fields.timezone"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Timezone:</FormLabel>
+						<FormLabel className="text-lg font-bold">Timezone:</FormLabel>
 						<Input {...field} readOnly disabled value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
@@ -349,14 +330,28 @@ const EventFormFields = ({
 			/>
 			<FormField
 				control={form.control}
-				name="fields.details"
+				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel>Event Details</FormLabel>
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold leading-none">
+								SEO Description
+								<br />
+								<span className="text-muted-foreground text-sm tabular-nums">
+									({`${field.value?.length ?? '0'} / 160`})
+								</span>
+							</FormLabel>
+						</div>
 						<FormDescription>
-							Details to be used in Google calendar for this event.
+							A short snippet that summarizes the post in under 160 characters.
+							Keywords should be included to support SEO.
 						</FormDescription>
-						<Textarea {...field} value={field.value?.toString()} />
+						<Textarea rows={4} {...field} value={field.value ?? ''} />
+						{field.value && field.value.length > 160 && (
+							<FormMessage>
+								Your description is longer than 160 characters
+							</FormMessage>
+						)}
 						<FormMessage />
 					</FormItem>
 				)}
