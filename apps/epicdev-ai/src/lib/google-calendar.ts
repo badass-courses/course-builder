@@ -156,6 +156,7 @@ export async function updateGoogleCalendarEvent(
 			calendarId: 'primary',
 			eventId: calendarEventId,
 			requestBody: eventDetails,
+			sendNotifications: false,
 		})
 
 		if (!response.data) {
@@ -230,4 +231,29 @@ export async function getGoogleCalendarEvent(
 			throw new Error(`Failed to get calendar event: ${error.message}`)
 		}
 	}
+}
+
+export async function addUserToGoogleCalendarEvent(
+	calendarEventId: string,
+	userEmail: string,
+) {
+	const authClient = getAuthClient()
+	const calendar = google.calendar({ version: 'v3', auth: authClient })
+
+	const response = await calendar.events.get({
+		calendarId: 'primary',
+		eventId: calendarEventId,
+	})
+
+	const event = response.data
+
+	if (!event) {
+		throw new Error('Event not found')
+	}
+
+	event.attendees?.push({
+		email: userEmail,
+	})
+
+	return updateGoogleCalendarEvent(calendarEventId, event)
 }
