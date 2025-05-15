@@ -165,6 +165,7 @@ export const BuyTicketButton: React.FC<
 	pricingWidgetOptions,
 	hasPurchasedCurrentProduct,
 	centered,
+	className,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -179,6 +180,7 @@ export const BuyTicketButton: React.FC<
 			className={cn(
 				'mt-4 items-start justify-start',
 				centered && 'flex items-center justify-center',
+				className,
 			)}
 			product={product}
 			couponId={couponId}
@@ -458,6 +460,7 @@ export const withEventPricing = (
 					className={cn(
 						'text-muted-foreground flex items-center gap-1 py-5 text-base',
 						centered && 'flex items-center justify-center',
+						className,
 					)}
 				>
 					<Spinner className="w-5" /> Loading ticket...

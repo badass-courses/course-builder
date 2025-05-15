@@ -15,9 +15,11 @@ import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
+import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
+import { Calendar, Clock } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
@@ -33,6 +35,10 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import {
+	EventPricing,
+	EventPricingButton,
+} from '../../[post]/_components/event-pricing'
 import { PostPlayer } from '../../posts/_components/post-player'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
@@ -199,82 +205,95 @@ export default async function EventPage(props: {
 			resource.type === 'videoResource',
 	)
 
-	return (
-		<LayoutClient withContainer>
-			<main className="relative flex w-full flex-col">
-				<EventMetadata
-					event={event}
-					quantityAvailable={eventProps.quantityAvailable}
+	const { content: eventBody } = await compileMDX(
+		event.fields.body || '',
+
+		{
+			EventPricing: (props) => <EventPricing post={event} {...props} />,
+			BuyTicketButton: (props) => (
+				<EventPricingButton
+					post={event}
+					{...props}
+					className="hidden sm:flex"
 				/>
-				{event && ability.can('update', 'Content') && (
-					<div className="absolute right-5 top-20 flex items-center gap-2">
-						{product && (
-							<Button asChild variant="secondary">
-								<Link
-									href={`/products/${product?.fields?.slug || product?.id}/edit`}
-								>
-									Edit Product
-								</Link>
-							</Button>
-						)}
-						<Button asChild variant="secondary">
-							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-								Edit Event
+			),
+		},
+	)
+
+	return (
+		<LayoutClient className="relative" withContainer>
+			<EventMetadata
+				event={event}
+				quantityAvailable={eventProps.quantityAvailable}
+			/>
+			{event && ability.can('update', 'Content') && (
+				<div className="right-10 top-20 flex items-center gap-2 lg:absolute">
+					{product && (
+						<Button asChild size="sm" variant="outline">
+							<Link
+								href={`/products/${product?.fields?.slug || product?.id}/edit`}
+							>
+								Edit Product
 							</Link>
 						</Button>
-					</div>
-				)}
-				{eventProps.hasPurchasedCurrentProduct ? (
-					<div className="flex w-full items-center border-b py-3 text-left font-medium">
-						You have purchased a ticket to this event. See you on {eventDate}.{' '}
-						<span role="img" aria-label="Waving hand">
-							👋
-						</span>
-					</div>
-				) : null}
-				<div className="flex w-full flex-col-reverse items-center justify-between py-5 md:flex-row md:items-start">
-					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-							<Link
-								href="/posts"
-								className="text-primary w-full font-medium hover:underline sm:w-auto"
-							>
-								Live Event
-							</Link>
-							<span className="hidden opacity-50 sm:inline-block">・</span>
-							{eventDate ? (
-								<>
+					)}
+					<Button asChild size="sm" variant="secondary">
+						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+							Edit Event
+						</Link>
+					</Button>
+				</div>
+			)}
+			{eventProps.hasPurchasedCurrentProduct ? (
+				<div className="flex w-full items-center border-b py-3 text-left font-medium">
+					You have purchased a ticket to this event. See you on {eventDate}.{' '}
+					<span role="img" aria-label="Waving hand">
+						👋
+					</span>
+				</div>
+			) : null}
+			<header className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+				<Link
+					href="/events"
+					className="bg-primary/20 text-primary mb-2 inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-sm font-semibold"
+				>
+					<span>Event</span>
+				</Link>
+
+				{/* {eventDate ? (
+								<div className="flex items-center gap-2">
+									<Calendar className="size-4" />
 									<p>{eventDate}</p>
-									<span className="opacity-50">・</span>
+									<Clock className="ml-3 size-4" />
 									<p>{eventTime} (PT)</p>
-								</>
+								</div>
 							) : (
 								'Date TBD'
-							)}
-						</div>
-						<h1 className="font-heading fluid-3xl text-balance font-bold">
-							{fields.title}
-						</h1>
-						{fields.description && (
-							<h2 className="mt-5 text-balance text-xl font-normal">
-								{fields.description}
-							</h2>
-						)}
-						<Contributor className="mt-5" />
-					</div>
+							)} */}
+
+				<div className="flex flex-col items-center gap-2 pb-8">
+					<h1 className="font-heading fluid-3xl text-balance font-bold">
+						{fields.title}
+					</h1>
+					{fields.description && (
+						<h2 className="mt-5 text-balance text-xl font-normal">
+							{fields.description}
+						</h2>
+					)}
+				</div>
+			</header>
+			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
+				<div className="col-span-8 flex w-full flex-col">
 					{hasVideo && <PlayerContainer event={event} />}
-				</div>
-				<div className="flex h-full flex-grow flex-col-reverse md:flex-row">
+					<Contributor className="mt-5" />
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
-						{event.fields.body && (
-							<ReactMarkdown>{event.fields.body}</ReactMarkdown>
-						)}
+						{eventBody}
 					</article>
-					<EventSidebar>
-						<EventPricingWidgetContainer {...eventProps} />
-						<EventDetails event={event} />
-					</EventSidebar>
 				</div>
+				<EventSidebar>
+					<EventDetails event={event} />
+					<EventPricingWidgetContainer {...eventProps} />
+				</EventSidebar>
 			</main>
 		</LayoutClient>
 	)
@@ -305,7 +324,7 @@ async function PlayerContainer({ event }: { event: Event | null }) {
 						thumbnailTime={event.fields?.thumbnailTime || 0}
 						postId={event.id}
 						className={cn(
-							'aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-md',
+							'aspect-video h-full w-full overflow-hidden rounded-md',
 						)}
 						videoResource={videoResource}
 					/>

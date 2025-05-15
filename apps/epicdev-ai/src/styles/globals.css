@@ -173,11 +173,6 @@
 			'calt' 1;
 	}
 
-	html {
-		/* scrollbar-gutter: stable; */
-		@apply overflow-x-hidden;
-	}
-
 	html.dark .shiki,
 	html.dark .shiki span {
 		color: var(--shiki-dark) !important;

@@ -4,6 +4,8 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
+import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
 	ResourceFormProps,
@@ -14,7 +16,12 @@ import { Event, EventSchema } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { parseAbsolute } from '@internationalized/date'
-import { Calendar, ImagePlusIcon } from 'lucide-react'
+import {
+	Calendar,
+	ImagePlusIcon,
+	LayoutTemplate,
+	VideoIcon,
+} from 'lucide-react'
 import { z } from 'zod'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
@@ -164,6 +171,33 @@ export function EditEventForm({
 
 			customTools: [
 				// { id: 'assistant' },
+				{
+					id: 'MDX Components',
+					label: 'MDX Components',
+					icon: () => (
+						<LayoutTemplate
+							strokeWidth={1.5}
+							size={24}
+							width={18}
+							height={18}
+						/>
+					),
+					toolComponent: (
+						<div className="mt-3 px-5">
+							<h3 className="mb-3 inline-flex text-xl font-bold">
+								MDX Components
+							</h3>
+							<PageBlocks />
+						</div>
+					),
+				},
+				{
+					id: 'videos',
+					icon: () => (
+						<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+				},
 				{
 					id: 'media',
 					label: 'Media',
