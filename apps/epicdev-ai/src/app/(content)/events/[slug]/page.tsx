@@ -214,7 +214,7 @@ export default async function EventPage(props: {
 				<EventPricingButton
 					post={event}
 					{...props}
-					className="hidden sm:flex"
+					className="hidden lg:flex"
 				/>
 			),
 		},
