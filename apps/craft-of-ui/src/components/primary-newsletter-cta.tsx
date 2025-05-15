@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -70,6 +71,18 @@ export const PrimaryNewsletterCta: React.FC<
 		}
 	}
 	const { data: session } = useSession()
+
+	const [emailFocused, setEmailFocused] = useState(false)
+
+	const handleEmailFocus = useCallback(() => {
+		setEmailFocused(true)
+	}, [])
+
+	const handleEmailBlur = useCallback(() => {
+		setEmailFocused(false)
+	}, [])
+
+	const showMascot = emailFocused
 
 	if (isHiddenForSubscribers && subscriber) {
 		return null
@@ -142,6 +155,9 @@ export const PrimaryNewsletterCta: React.FC<
 						actionLabel={actionLabel}
 						formId={formId}
 						className="[&_input]:border-foreground/40 relative z-10 [&_input]:h-16"
+						onEmailFocus={handleEmailFocus}
+						onEmailBlur={handleEmailBlur}
+						showMascot={showMascot}
 					/>
 					{!formId && (
 						<p
