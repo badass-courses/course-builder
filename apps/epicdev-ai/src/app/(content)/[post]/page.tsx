@@ -21,7 +21,10 @@ import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { ChevronLeft, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
-import { ContentResourceResource } from '@coursebuilder/core/schemas'
+import {
+	ContentResourceResource,
+	type VideoResource,
+} from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
@@ -35,6 +38,7 @@ import {
 	EventPricingButton,
 	EventPricingInline,
 } from './_components/event-pricing'
+import PostTranscript from './_components/post-transcript'
 
 export const experimental_ppr = true
 
@@ -62,17 +66,24 @@ export default async function PostPage(props: {
 		list = await getCachedListForPost(params.post)
 	}
 
-	const hasVideo = post?.resources?.find(
+	const primaryVideo = post?.resources?.find(
 		({ resource }: ContentResourceResource) =>
 			resource.type === 'videoResource',
 	)
 
+	const primaryVideoId = primaryVideo?.resource.id
+
+	const videoDetails =
+		await courseBuilderAdapter.getVideoResource(primaryVideoId)
+
 	return (
 		<main className="w-full">
-			{hasVideo && <PlayerContainer post={post} />}
+			{primaryVideo && (
+				<PlayerContainer videoDetails={videoDetails} post={post} />
+			)}
 			<div
 				className={cn('relative w-full', {
-					'pt-6 sm:pt-10': !hasVideo,
+					'pt-6 sm:pt-10': !primaryVideo,
 				})}
 			>
 				<Suspense fallback={null}>
@@ -83,7 +94,7 @@ export default async function PostPage(props: {
 						{!list ? (
 							<Link
 								href="/posts"
-								className="hover:text-primary mb-3 inline-flex items-center text-sm font-medium transition ease-in-out"
+								className="hover:text-primary mb-3 inline-flex items-center text-base font-medium transition ease-in-out"
 							>
 								<ChevronLeft className="mr-1 size-3" /> All Posts
 							</Link>
@@ -125,7 +136,7 @@ export default async function PostPage(props: {
 										postId={post.id}
 									/>
 								)} */}
-						{!hasVideo && post?.fields?.postType !== 'event' && (
+						{!primaryVideo && post?.fields?.postType !== 'event' && (
 							<PrimaryNewsletterCta
 								isHiddenForSubscribers
 								className="pt-5 sm:pt-10"
@@ -145,6 +156,10 @@ export default async function PostPage(props: {
 								title={post?.fields.title}
 							/>
 						</div>
+						<div className="mx-auto w-full max-w-3xl pb-10">
+							<PostTranscript transcript={videoDetails?.transcript} />
+						</div>
+
 						{post?.fields?.postType !== 'event' && (
 							<PostNextUpFromListPagination postId={post.id} />
 						)}
@@ -221,41 +236,49 @@ async function PostTitle({ post }: { post: Post | null }) {
 	)
 }
 
-async function PlayerContainer({ post }: { post: Post | null }) {
+async function PlayerContainer({
+	post,
+	videoDetails,
+}: {
+	post: Post | null
+	videoDetails: VideoResource | null
+}) {
 	if (!post) {
 		notFound()
 	}
 
-	const resource = post.resources?.[0]?.resource.id
-
-	const videoResource = await courseBuilderAdapter.getVideoResource(resource)
 	const showNewsletterCta = post.fields?.postType !== 'event'
 
-	return videoResource ? (
+	return videoDetails ? (
 		<VideoPlayerOverlayProvider>
 			<Suspense
 				fallback={
 					<PlayerContainerSkeleton className="aspect-video h-full max-h-[75vh] w-full bg-black" />
 				}
 			>
-				<section
-					aria-label="video"
-					className="mb-6 flex flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
-				>
-					<PostPlayer
-						title={post.fields?.title}
-						thumbnailTime={post.fields?.thumbnailTime || 0}
-						postId={post.id}
+				<>
+					<section
+						aria-label="video"
 						className={cn(
-							'aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-t-md',
+							'flex flex-col items-center justify-center rounded-md bg-black shadow-md',
 							{
-								'rounded-b-md': !showNewsletterCta,
+								'mb-6 sm:mb-10': !showNewsletterCta,
 							},
 						)}
-						videoResource={videoResource}
-					/>
+					>
+						<PostPlayer
+							title={post.fields?.title}
+							thumbnailTime={post.fields?.thumbnailTime || 0}
+							postId={post.id}
+							className={cn(
+								'aspect-video h-full max-h-[75vh] w-full overflow-hidden rounded-md',
+							)}
+							videoResource={videoDetails}
+						/>
+					</section>
 					{showNewsletterCta && (
 						<PostNewsletterCta
+							className="mb-8"
 							trackProps={{
 								event: 'subscribed',
 								params: {
@@ -265,7 +288,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 							}}
 						/>
 					)}
-				</section>
+				</>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
 	) : null

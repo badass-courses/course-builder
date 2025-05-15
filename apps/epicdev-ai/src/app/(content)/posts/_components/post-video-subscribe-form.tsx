@@ -8,6 +8,7 @@ import common from '@/text/common'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
+import { Mail } from 'lucide-react'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
@@ -68,18 +69,19 @@ export const PostNewsletterCta: React.FC<
 		<section
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-background dark:border-border relative flex w-full flex-row items-center overflow-hidden rounded-b-md border-x border-b border-transparent',
+				'dark:bg-card relative mt-2 flex w-full flex-row items-center overflow-hidden rounded-md border bg-gray-50',
 				className,
 			)}
 		>
 			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
 				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left lg:flex-col lg:items-start lg:pt-0">
-					<div className="flex items-center">
+					<div className="flex items-center gap-2">
+						<Mail className="text-primary size-4" />
 						<div className="font-heading flex-shrink-0 text-xl font-semibold lg:text-base">
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary lg:fluid-sm fluid-base font-heading text-gray-600">
+					<div className="dark:text-primary lg:fluid-sm fluid-base font-heading text-gray-600 lg:pl-6">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>
@@ -87,7 +89,7 @@ export const PostNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="[&_input]:border-0 [&_input]:text-base"
+						className="dark:[&_input]:bg-card dark:hover:[&_input]:bg-background [&_input]:border-0 [&_input]:bg-gray-50 [&_input]:text-base hover:[&_input]:bg-gray-100"
 					/>
 				</div>
 			</div>
