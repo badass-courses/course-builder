@@ -81,11 +81,7 @@ export default async function PostPage(props: {
 			{primaryVideo && (
 				<PlayerContainer videoDetails={videoDetails} post={post} />
 			)}
-			<div
-				className={cn('relative w-full', {
-					'pt-6 sm:pt-10': !primaryVideo,
-				})}
-			>
+			<div className={cn('relative w-full pt-6 sm:pt-10')}>
 				<Suspense fallback={null}>
 					<PostActionBar post={post} />
 				</Suspense>
@@ -278,7 +274,6 @@ async function PlayerContainer({
 					</section>
 					{showNewsletterCta && (
 						<PostNewsletterCta
-							className="mb-8"
 							trackProps={{
 								event: 'subscribed',
 								params: {
