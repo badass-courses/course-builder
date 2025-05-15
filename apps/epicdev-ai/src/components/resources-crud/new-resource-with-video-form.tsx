@@ -261,6 +261,8 @@ export function NewResourceWithVideoForm({
 			})
 
 			await onResourceCreated(resource, form.watch('title'))
+
+			form.reset()
 		} catch (error) {
 			let errorMessage = 'Error creating resource'
 			let errorType = 'unknown_error'

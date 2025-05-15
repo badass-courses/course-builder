@@ -140,7 +140,7 @@ export function PostActions({
 				</Accordion>
 			) : null}
 			<CreatePostModal
-				availableResourceTypes={['article', 'event']}
+				availableResourceTypes={['article']}
 				defaultResourceType="article"
 				topLevelResourceTypes={['post']}
 			/>

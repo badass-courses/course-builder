@@ -97,9 +97,15 @@ export function CreatePostModal({
 
 	const handleResourceCreated = async (resource: ContentResource) => {
 		setIsProcessing(true)
-		if (onResourceCreated) {
-			await onResourceCreated(resource)
+		try {
+			if (onResourceCreated) {
+				await onResourceCreated(resource)
+			}
+		} finally {
 			setIsProcessing(false)
+			// Optionally, also close the modal after successful creation if desired
+			// setIsOpen(false)
+			// if (onOpenChange) onOpenChange(false)
 		}
 	}
 
@@ -131,7 +137,7 @@ export function CreatePostModal({
 					<DialogHeader className="">
 						<DialogTitle className="font-heading mb-3 flex items-center gap-2 text-2xl font-semibold">
 							{isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-							{isProcessing ? 'Creating...' : title}
+							{isProcessing ? 'Processing...' : title}
 						</DialogTitle>
 					</DialogHeader>
 				)}
