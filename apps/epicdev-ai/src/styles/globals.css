@@ -79,6 +79,12 @@
 			color-scheme: light;
 			@apply scrollbar-thin;
 		}
+		.cm-gutterElement {
+			@apply flex items-center justify-center font-mono text-xs;
+		}
+		.cm-gutters {
+			@apply border-border border-r;
+		}
 	}
 
 	.dark {
