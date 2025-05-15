@@ -48,8 +48,8 @@ export const NewProductSchema = z.object({
 	price: z.coerce.number().gte(0).default(0),
 	type: z
 		.enum(['live', 'self-paced', 'membership', 'cohort'])
-		.optional()
-		.default('self-paced'),
+		.default('self-paced')
+		.optional(),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>
