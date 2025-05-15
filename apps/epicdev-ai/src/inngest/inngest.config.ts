@@ -18,6 +18,7 @@ import { calendarSync } from './functions/calendar-sync'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
+import { postEventPurchase } from './functions/post-event-purchase'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -51,5 +52,6 @@ export const inngestConfig = {
 		videoResourceDetached,
 		sendWelcomeEmail,
 		calendarSync,
+		postEventPurchase,
 	],
 }

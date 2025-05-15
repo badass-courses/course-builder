@@ -5,7 +5,7 @@ import { addUserToGoogleCalendarEvent } from '@/lib/google-calendar'
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
 
-export const postCohortPurchaseWorkflow = inngest.createFunction(
+export const postEventPurchase = inngest.createFunction(
 	{
 		id: `post-event-purchase-calendar-sync`,
 		name: `Add to Google Calendar Event`,
@@ -13,11 +13,11 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 	[
 		{
 			event: NEW_PURCHASE_CREATED_EVENT,
-			if: 'event.data.productType == "event"',
+			if: 'event.data.productType == "live"',
 		},
 		{
 			event: FULL_PRICE_COUPON_REDEEMED_EVENT,
-			if: 'event.data.productType == "event"',
+			if: 'event.data.productType == "live"',
 		},
 	],
 	async ({ event, step, db: adapter }) => {
@@ -85,7 +85,10 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 
 					return orgMembership
 				})
-
+				console.log(
+					'eventResource?.fields.calendarId',
+					eventResource?.fields.calendarId,
+				)
 				if (eventResource?.fields.calendarId) {
 					gCalEvent = await step.run(`add user to calendar event`, async () => {
 						if (!user.email) {
