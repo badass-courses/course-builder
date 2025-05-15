@@ -10,6 +10,7 @@ import {
 import { format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
+import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
@@ -49,7 +50,8 @@ export const EventDetails: React.FC<{
 	return (
 		<div
 			className={cn('flex flex-col p-6', {
-				'border-b': event.resourceProducts.length > 0,
+				'dark:border-b-foreground/10 border-b':
+					event.resourceProducts.length > 0,
 			})}
 		>
 			{/* <h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3> */}
@@ -86,6 +88,50 @@ export const EventDetails: React.FC<{
 					event in your confirmation email.
 				</div>
 			</div>
+		</div>
+	)
+}
+
+export const EventDetailsMobile: React.FC<{
+	event: Event
+}> = ({ event }) => {
+	const { startsAt, endsAt, timezone } = event.fields
+	const PT = 'America/Los_Angeles'
+	const eventDate =
+		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do, yyyy')}`
+	console.log({ startsAt, endsAt, timezone })
+	const eventTime =
+		startsAt &&
+		endsAt &&
+		`${formatInTimeZone(new Date(startsAt), PT, 'h:mm a')} — ${formatInTimeZone(
+			new Date(endsAt),
+			PT,
+			'h:mm a',
+		)}`
+
+	// startsAt includes the date and time
+	const pacificDateString =
+		startsAt && formatInTimeZone(startsAt, PT, 'MMMM do, yyyy')
+	const pacificTimeString = startsAt && formatInTimeZone(startsAt, PT, 'h:mm a')
+	const everyTimeZoneLink =
+		pacificDateString &&
+		pacificTimeString &&
+		buildEtzLink(pacificDateString, pacificTimeString)
+
+	return (
+		<div
+			className={cn('flex w-full flex-row justify-between gap-2 text-sm', {})}
+		>
+			<div className="flex flex-col gap-1">
+				<div className="flex flex-row items-center gap-1">
+					<CalendarIcon className="text-primary h-5 w-5 flex-shrink-0" />
+					{eventDate}
+				</div>
+				<div className="">{eventTime} (PT) </div>
+			</div>
+			<Button variant="secondary" asChild>
+				<Link href="#buy">Buy Ticket</Link>
+			</Button>
 		</div>
 	)
 }

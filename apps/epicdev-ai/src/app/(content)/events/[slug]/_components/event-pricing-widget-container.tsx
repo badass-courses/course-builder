@@ -3,9 +3,12 @@
 import * as React from 'react'
 import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import { env } from '@/env.mjs'
+import { useInView } from 'framer-motion'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
+import { cn } from '@coursebuilder/utils-ui/cn'
 
+import { EventDetailsMobile } from './event-details'
 import type { EventPageProps } from './event-page-props'
 import { EventPricingWidget } from './event-pricing-widget'
 
@@ -36,9 +39,11 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 			: true
 
 	const cancelUrl = `${env.NEXT_PUBLIC_URL}/events/${fields?.slug}`
+	const ref = React.useRef<HTMLDivElement>(null)
+	const isInView = useInView(ref, { margin: '0px 0px 0% 0px' })
 
 	return (
-		<div className="py-5">
+		<div ref={ref} className="py-5">
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 					<PricingWidget
@@ -64,6 +69,17 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 							cancelUrl: cancelUrl,
 						}}
 					/>
+
+					<div
+						className={cn(
+							'bg-background/80 fixed bottom-5 left-5 right-5 z-50 flex gap-2 rounded-lg border p-4 shadow-xl backdrop-blur-sm transition duration-150 ease-in-out lg:hidden',
+							{
+								'opacity-0': isInView,
+							},
+						)}
+					>
+						<EventDetailsMobile event={event} />
+					</div>
 				</PriceCheckProvider>
 			)}
 		</div>

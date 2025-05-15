@@ -40,6 +40,7 @@ export const EventSidebar = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div
 			data-event=""
+			id="buy"
 			className="col-span-4 pt-0" // This parent might need to be scrollable or allow overflow
 		>
 			{/* The direct child is now the sticky element */}

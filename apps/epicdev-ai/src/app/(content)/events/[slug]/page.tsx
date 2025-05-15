@@ -40,7 +40,7 @@ import {
 	EventPricingButton,
 } from '../../[post]/_components/event-pricing'
 import { PostPlayer } from '../../posts/_components/post-player'
-import { EventDetails } from './_components/event-details'
+import { EventDetails, EventDetailsMobile } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
 import { EventSidebar } from './_components/event-sidebar'
@@ -264,7 +264,7 @@ export default async function EventPage(props: {
 							)} */}
 
 				<div className="flex flex-col items-center gap-2 pb-8">
-					<h1 className="font-heading fluid-3xl text-balance font-bold">
+					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
 						{fields.title}
 					</h1>
 					{fields.description && (
@@ -277,7 +277,7 @@ export default async function EventPage(props: {
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
 				<div className="col-span-8 flex w-full flex-col">
 					{hasVideo && <PlayerContainer event={event} />}
-					<Contributor className="mt-5" />
+					<Contributor className="justify-center sm:justify-start" />
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
 						{eventBody}
 					</article>
@@ -318,7 +318,7 @@ async function PlayerContainer({ event }: { event: Event | null }) {
 			>
 				<section
 					aria-label="video"
-					className="flex w-full flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
+					className="mb-5 flex w-full flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
 				>
 					<PostPlayer
 						title={event.fields?.title}
