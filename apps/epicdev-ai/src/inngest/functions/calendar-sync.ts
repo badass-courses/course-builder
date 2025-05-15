@@ -12,8 +12,6 @@ import { GetFunctionInput, NonRetriableError } from 'inngest'
 import {
 	RESOURCE_CREATED_EVENT,
 	RESOURCE_UPDATED_EVENT,
-	type ResourceCreated,
-	type ResourceUpdated,
 } from '../events/resource-management'
 import { inngest } from '../inngest.server'
 
@@ -58,6 +56,8 @@ function mapResourceToGoogleEvent(
 			dateTime: fields.endsAt,
 			timeZone: timezone,
 		},
+		guestsCanInviteOthers: false,
+		guestsCanSeeOtherGuests: false,
 		// Consider adding other fields like location if available/needed
 	}
 }
