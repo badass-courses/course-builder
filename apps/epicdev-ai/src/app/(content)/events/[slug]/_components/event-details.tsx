@@ -84,8 +84,7 @@ export const EventDetails: React.FC<{
 						<MapPinIcon className="text-primary h-5 w-5 flex-shrink-0" />{' '}
 						Location
 					</span>{' '}
-					Online (remote) - You'll receive a calendar invite with a link to the
-					event in your confirmation email.
+					Online (remote) - You'll receive a calendar invite after purchase.
 				</div>
 			</div>
 		</div>

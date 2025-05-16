@@ -251,7 +251,11 @@ export async function addUserToGoogleCalendarEvent(
 		throw new Error('Event not found')
 	}
 
-	event.attendees?.push({
+	if (!event.attendees) {
+		event.attendees = []
+	}
+
+	event.attendees.push({
 		email: userEmail,
 	})
 
