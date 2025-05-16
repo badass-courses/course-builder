@@ -38,10 +38,10 @@ export const sendWelcomeEmail = inngest.createFunction(
 			throw new NonRetriableError('Product not found')
 		}
 
-		if (product.id !== 'product-bxkqx') {
+		if (product.type !== 'live') {
 			return {
 				skipped: true,
-				reason: 'Product is not product-bxkqx',
+				reason: 'Product is not an event',
 			}
 		}
 
@@ -51,6 +51,10 @@ export const sendWelcomeEmail = inngest.createFunction(
 			}
 			return db.query.users.findFirst({
 				where: eq(users.id, purchase.userId),
+				columns: {
+					email: true,
+					name: true,
+				},
 			})
 		})
 
@@ -58,13 +62,20 @@ export const sendWelcomeEmail = inngest.createFunction(
 			throw new NonRetriableError('User not found')
 		}
 
+		const userFirstName = user.name?.split(' ')[0]
+
 		return await step.run('send welcome email', async () => {
 			return await sendAnEmail({
 				Component: WelcomeEmail,
 				componentProps: {
 					productName: product.name,
+					startDate: product.fields?.startDate,
+					startTime: product.fields?.startTime,
+					endTime: product.fields?.endTime,
+					userFirstName: userFirstName,
+					supportEmail: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 				},
-				Subject: `Welcome to ${product.name} 🎉`,
+				Subject: `You're in! Get Ready for ${product.name}! 🎉`,
 				To: user.email,
 				ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 				From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
