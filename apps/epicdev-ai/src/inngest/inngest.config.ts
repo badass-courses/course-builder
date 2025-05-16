@@ -14,7 +14,10 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
-import { calendarSync } from './functions/calendar-sync'
+import {
+	calendarSync,
+	handleRefundAndRemoveFromCalendar,
+} from './functions/calendar-sync'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
@@ -53,5 +56,6 @@ export const inngestConfig = {
 		sendWelcomeEmail,
 		calendarSync,
 		postEventPurchase,
+		handleRefundAndRemoveFromCalendar,
 	],
 }

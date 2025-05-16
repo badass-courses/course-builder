@@ -1,13 +1,17 @@
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
+import { getEvent } from '@/lib/events-query'
 import {
 	createGoogleCalendarEvent,
 	getGoogleCalendarEvent,
+	removeUserFromGoogleCalendarEvent,
 	updateGoogleCalendarEvent,
 } from '@/lib/google-calendar'
 import { calendar_v3 } from 'googleapis'
 import { GetFunctionInput, NonRetriableError } from 'inngest'
+
+import { REFUND_PROCESSED_EVENT } from '@coursebuilder/core/inngest/commerce/event-refund-processed'
 
 import {
 	RESOURCE_CREATED_EVENT,
@@ -263,5 +267,281 @@ export const calendarSync = inngest.createFunction(
 		}
 
 		return { outcome: outcome, calendarId: finalCalendarId }
+	},
+)
+
+export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
+	{
+		id: 'refund-remove-calendar-attendee',
+		name: 'Handle Refund and Remove Calendar Attendee',
+		// TODO: Define a more specific type for the event data if available
+		// type RefundProcessedEvent = GetFunctionInput<typeof REFUND_PROCESSED_EVENT>['data']
+	},
+	{ event: REFUND_PROCESSED_EVENT },
+	async ({ event, step, logger }) => {
+		const { merchantChargeId } = event.data
+
+		if (!merchantChargeId) {
+			logger.error('No merchantChargeId found in the event data.', { event })
+			throw new NonRetriableError(
+				'Refund processed event is missing merchantChargeId.',
+			)
+		}
+
+		logger.info(`Processing refund for merchantChargeId: ${merchantChargeId}`)
+
+		// Step 0: Verify adapter methods exist
+		if (
+			!courseBuilderAdapter.getMerchantCharge ||
+			!courseBuilderAdapter.getPurchaseForStripeCharge ||
+			!courseBuilderAdapter.getUser ||
+			!courseBuilderAdapter.getProduct ||
+			!courseBuilderAdapter.getContentResource
+		) {
+			logger.error(
+				'One or more required CourseBuilderAdapter methods are missing.',
+			)
+			throw new NonRetriableError(
+				'Adapter methods missing, cannot process refund for calendar removal.',
+			)
+		}
+
+		// Step 1: Fetch Merchant Charge to get Stripe Charge ID
+		const merchantCharge = await step.run('fetch-merchant-charge', async () => {
+			const mc = await courseBuilderAdapter.getMerchantCharge!(merchantChargeId)
+			if (!mc) {
+				throw new NonRetriableError(
+					`MerchantCharge not found for merchantChargeId: ${merchantChargeId}`,
+				)
+			}
+			if (!mc.identifier) {
+				throw new NonRetriableError(
+					`MerchantCharge for merchantChargeId: ${merchantChargeId} is missing the Stripe charge identifier.`,
+				)
+			}
+			return mc
+		})
+
+		if (!merchantCharge?.identifier) {
+			logger.error(
+				`MerchantCharge or its identifier not found for merchantChargeId: ${merchantChargeId}, stopping.`,
+			)
+			return {
+				outcome: 'error',
+				reason: 'MerchantCharge or identifier not found',
+				merchantChargeId,
+			}
+		}
+
+		const stripeChargeId = merchantCharge.identifier
+
+		// Step 2: Fetch Purchase by Stripe Charge ID
+		const purchase = await step.run(
+			'fetch-purchase-by-stripe-charge-id',
+			async () => {
+				const result =
+					await courseBuilderAdapter.getPurchaseForStripeCharge!(stripeChargeId)
+				if (!result) {
+					throw new NonRetriableError(
+						`Purchase not found for Stripe charge ID: ${stripeChargeId} (derived from merchantChargeId: ${merchantChargeId})`,
+					)
+				}
+				if (!result.userId || !result.productId) {
+					throw new NonRetriableError(
+						`Purchase for Stripe charge ID: ${stripeChargeId} is missing userId or productId.`,
+					)
+				}
+				return { userId: result.userId, productId: result.productId }
+			},
+		)
+
+		if (!purchase) {
+			logger.error(
+				`Purchase not found for stripeChargeId: ${stripeChargeId}, stopping.`,
+			)
+			return {
+				outcome: 'error',
+				reason: 'Purchase not found',
+				merchantChargeId,
+				stripeChargeId,
+			}
+		}
+
+		const { userId, productId: purchasedProductId } = purchase
+
+		logger.info(
+			`Found purchase: userId=${userId}, purchasedProductId=${purchasedProductId}`,
+		)
+
+		// Step 3: Fetch Product details to check its type
+		const purchasedProduct = await step.run(
+			'fetch-purchased-product-details',
+			async () => {
+				const p = await courseBuilderAdapter.getProduct!(purchasedProductId)
+				if (!p) {
+					throw new NonRetriableError(
+						`Product not found: ${purchasedProductId} (from purchase related to merchantChargeId: ${merchantChargeId})`,
+					)
+				}
+				return p
+			},
+		)
+
+		if (!purchasedProduct) {
+			logger.error(`Product ${purchasedProductId} not found, stopping.`)
+			return {
+				outcome: 'error',
+				reason: 'Purchased product not found',
+				purchasedProductId,
+			}
+		}
+
+		const productType = purchasedProduct.type
+		logger.info(
+			`Purchased product ${purchasedProductId} has type: ${productType}`,
+		)
+
+		if (productType !== 'live') {
+			logger.info(
+				`Purchased product ${purchasedProductId} is not of type 'live' (type is '${productType}'). Skipping calendar removal.`,
+			)
+			return {
+				outcome: 'skipped',
+				reason: 'Purchased product not a live event',
+				purchasedProductId: purchasedProductId,
+				productType: productType,
+			}
+		}
+
+		// Step 4: Find the 'event' type ContentResource associated with the 'live' product
+		const eventResourceId = await step.run(
+			'find-event-resource-id-for-product',
+			async () => {
+				const resources = purchasedProduct.resources
+
+				if (!Array.isArray(resources)) {
+					logger.warn(
+						`Product ${purchasedProductId} does not have a 'resources' array or it's not an array. Cannot find event resource.`,
+					)
+					return null
+				}
+
+				// Use .find() as seen in post-event-purchase.ts
+				const foundEventResource = resources.find(
+					(item) => item.resource?.type === 'event',
+				)?.resource
+
+				return foundEventResource?.id || null
+			},
+		)
+
+		if (!eventResourceId) {
+			logger.warn(
+				`No 'event' type resource ID found linked to 'live' product ${purchasedProductId}. Skipping calendar removal.`,
+			)
+			return {
+				outcome: 'skipped',
+				reason: 'No event resource ID linked to the live product',
+				purchasedProductId,
+			}
+		}
+
+		logger.info(
+			`Found event resource ID ${eventResourceId} linked to product ${purchasedProductId}`,
+		)
+
+		// Step 5: Fetch User by User ID to get email
+		const user = await step.run('fetch-user-by-id', async () => {
+			const usr = await courseBuilderAdapter.getUser!(userId)
+			if (!usr) {
+				throw new NonRetriableError(`User not found: ${userId}`)
+			}
+			if (!usr.email) {
+				throw new NonRetriableError(`User email not found for user: ${userId}`)
+			}
+			return { email: usr.email }
+		})
+
+		if (!user?.email) {
+			logger.error(`User or user email not found for userId: ${userId}`)
+			return {
+				outcome: 'error',
+				reason: 'User or user email not found',
+				userId,
+			}
+		}
+
+		logger.info(`Found user email: ${user.email} for userId: ${userId}`)
+
+		// Step 6: Fetch and validate Event Resource using getEvent (was Step 5)
+		const validEventResource = await step.run(
+			'fetch-and-validate-event-resource',
+			async () => {
+				const ev = await getEvent(eventResourceId) // Use getEvent
+				if (!ev) {
+					// getEvent returns null if not found or parsing fails, throw NonRetriableError
+					throw new NonRetriableError(
+						`Event resource ${eventResourceId} not found or failed validation via getEvent.getProduct`,
+					)
+				}
+				return ev
+			},
+		)
+
+		// No need for explicit safeParse here, getEvent handles it.
+		// validEventResource is already the successfully parsed event data.
+
+		if (!validEventResource) {
+			// This case should ideally be caught by the NonRetriableError in the step above
+			logger.error(
+				`Event resource ${eventResourceId} could not be fetched or validated. This should not happen if getEvent threw an error.`,
+			)
+			return {
+				outcome: 'error',
+				reason: 'Event resource fetch/validation failed unexpectedly',
+				eventResourceId,
+			}
+		}
+
+		const calendarId = validEventResource.fields?.calendarId
+		if (!calendarId) {
+			logger.warn(
+				`Event resource ${eventResourceId} does not have a calendarId. Cannot remove user.`,
+			)
+			return {
+				outcome: 'skipped',
+				reason: 'calendarId missing from event resource',
+				eventResourceId,
+			}
+		}
+
+		logger.info(
+			`Found calendarId: ${calendarId} for eventResource: ${eventResourceId}`,
+		)
+
+		// Step 7: Remove User from Google Calendar Event
+		try {
+			await step.run('remove-user-from-google-event', async () => {
+				await removeUserFromGoogleCalendarEvent(calendarId, user.email)
+			})
+			logger.info(
+				`Successfully removed user ${user.email} from calendar event ${calendarId}`,
+			)
+			return {
+				outcome: 'success',
+				userId,
+				email: user.email,
+				calendarId,
+				eventResourceId,
+			}
+		} catch (error: any) {
+			logger.error(
+				`Failed to remove user ${user.email} from calendar event ${calendarId}: ${error.message}`,
+				{ error },
+			)
+			// Depending on the error, you might want to retry.
+			// For now, assume most GCal API errors might be retriable if not handled by removeUserFromGoogleCalendarEvent itself.
+			throw error
+		}
 	},
 )
