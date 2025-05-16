@@ -1779,6 +1779,7 @@ export function mySqlDrizzleAdapter(
 						sourceUser: userSchema,
 						targetUser: userSchema.nullable(),
 						purchase: purchaseSchema,
+						organizationId: z.string().nullable(),
 					}),
 				)
 				.nullable()

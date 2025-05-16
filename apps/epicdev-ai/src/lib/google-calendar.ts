@@ -261,3 +261,60 @@ export async function addUserToGoogleCalendarEvent(
 
 	return updateGoogleCalendarEvent(calendarEventId, event)
 }
+
+export async function removeUserFromGoogleCalendarEvent(
+	calendarEventId: string,
+	userEmail: string,
+) {
+	const authClient = getAuthClient()
+	const calendar = google.calendar({ version: 'v3', auth: authClient })
+
+	const response = await calendar.events.get({
+		calendarId: 'primary',
+		eventId: calendarEventId,
+	})
+
+	const event = response.data
+
+	if (!event) {
+		// Event not found, so nothing to remove the user from.
+		// Optionally, log this, but for now, we'll just return null or handle as appropriate.
+		console.warn(
+			`Event not found (ID: ${calendarEventId}) when trying to remove user ${userEmail}.`,
+		)
+		return null
+	}
+
+	if (!event.attendees) {
+		// No attendees on the event, so the user isn't there to be removed.
+		console.warn(
+			`No attendees found on event (ID: ${calendarEventId}) when trying to remove user ${userEmail}.`,
+		)
+		return event // Return the event as is, or null if preferred
+	}
+
+	const initialAttendeesCount = event.attendees.length
+	event.attendees = event.attendees.filter(
+		(attendee) => attendee.email !== userEmail,
+	)
+
+	if (event.attendees.length === initialAttendeesCount) {
+		// User was not found in the attendees list.
+		console.warn(
+			`User ${userEmail} not found in attendees for event (ID: ${calendarEventId}). No changes made to attendees.`,
+		)
+		// Decide if an update is still necessary or if we can return early.
+		// For safety, one might proceed with an update if other event properties could have changed,
+		// but if only attendees are managed here, and no change was made, we could return.
+		// However, the updateGoogleCalendarEvent itself handles `sendNotifications: false`
+		// and might have other idempotent properties.
+		// For now, let's proceed to update, as it's generally safe.
+	}
+
+	// Setting sendNotifications to false is important here to avoid spamming
+	// remaining attendees every time someone is removed.
+	return updateGoogleCalendarEvent(calendarEventId, {
+		...event,
+		attendees: event.attendees,
+	})
+}
