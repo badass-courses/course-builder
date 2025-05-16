@@ -20,6 +20,10 @@ import {
 	PurchaseStatusUpdated,
 	updatePurchaseStatus,
 } from './commerce/event-purchase-status-updated'
+import {
+	REFUND_PROCESSED_EVENT,
+	RefundProcessed,
+} from './commerce/event-refund-processed'
 import { sendCreatorSlackNotification } from './commerce/send-creator-slack-notification'
 import { sendPostPurchaseEmail } from './commerce/send-post-purchase-email'
 import {
@@ -84,6 +88,7 @@ export type CourseBuilderCoreEvents = {
 	[NEW_PURCHASE_CREATED_EVENT]: NewPurchaseCreated
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[FULL_PRICE_COUPON_REDEEMED_EVENT]: FullPriceCouponRedeemed
+	[REFUND_PROCESSED_EVENT]: RefundProcessed
 }
 
 export const courseBuilderCoreFunctions = [

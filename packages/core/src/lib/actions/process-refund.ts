@@ -1,3 +1,5 @@
+import { REFUND_PROCESSED_EVENT } from 'src/inngest/commerce/event-refund-processed'
+
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
 
@@ -29,6 +31,17 @@ export async function processRefund(
 			refund = options.provider.refundCharge(merchantChargeId)
 		} else {
 			refund = options.provider.refundCharge(merchantCharge.identifier)
+		}
+
+		try {
+			await options.inngest.send({
+				name: REFUND_PROCESSED_EVENT,
+				data: {
+					merchantChargeId,
+				},
+			})
+		} catch (e) {
+			console.log('error', e)
 		}
 
 		// internally we handle this via stripe webhook for a refund
