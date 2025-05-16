@@ -66,7 +66,9 @@ export const UserMenu = () => {
 
 	return (
 		<>
-			{/* {canViewTeam && <NavLinkItem label="Invite Team" href="/team" />} */}
+			{canViewTeam && (
+				<NavLinkItem label="Invite Team" className="sm:px-2" href="/team" />
+			)}
 			<li className="hidden items-stretch sm:flex">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
