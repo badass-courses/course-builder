@@ -43,7 +43,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 	const isInView = useInView(ref, { margin: '0px 0px 0% 0px' })
 
 	return (
-		<div ref={ref} className="py-5">
+		<div ref={ref} className="dark:border-t-foreground/10 border-t py-5">
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 					<PricingWidget

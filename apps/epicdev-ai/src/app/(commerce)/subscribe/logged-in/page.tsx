@@ -15,7 +15,6 @@ export default async function LoginPage({
 }: {
 	searchParams: Promise<ParsedUrlQuery>
 }) {
-	await headers()
 	const checkoutParams = CheckoutParamsSchema.parse(await searchParams)
 	const { session } = await getServerAuthSession()
 	const user = session?.user
