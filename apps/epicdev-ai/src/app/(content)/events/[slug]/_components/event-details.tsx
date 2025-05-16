@@ -48,19 +48,16 @@ export const EventDetails: React.FC<{
 		buildEtzLink(pacificDateString, pacificTimeString)
 
 	return (
-		<div
-			className={cn('flex flex-col p-6', {
-				'dark:border-b-foreground/10 border-b':
-					event.resourceProducts.length > 0,
-			})}
-		>
+		<div className={cn('flex flex-col p-6')}>
 			{/* <h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3> */}
 			<div className="flex flex-col gap-3 text-base font-normal">
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-semibold opacity-90 dark:text-white">
 						<CalendarIcon className="text-primary h-5 w-5 flex-shrink-0" /> Date
 					</span>{' '}
-					{eventDate}
+					<div className="dark:text-foreground text-foreground/90">
+						{eventDate}
+					</div>
 				</div>
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-semibold opacity-90 dark:text-white">
@@ -77,14 +74,19 @@ export const EventDetails: React.FC<{
 							</Link>
 						)}
 					</span>
-					<div>{eventTime} (Pacific time) </div>
+					<div className="dark:text-foreground text-foreground/90">
+						{eventTime} (Pacific time){' '}
+					</div>
 				</div>
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-semibold opacity-90 dark:text-white">
 						<MapPinIcon className="text-primary h-5 w-5 flex-shrink-0" />{' '}
 						Location
 					</span>{' '}
-					Online (remote) - You'll receive a calendar invite after purchase.
+					<p className="dark:text-foreground text-foreground/90">
+						Online (remote) - A calendar invite will be sent to your email when
+						you purchase.
+					</p>
 				</div>
 			</div>
 		</div>

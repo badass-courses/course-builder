@@ -19,8 +19,7 @@ import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
-import { Calendar, Check, CheckCircle, Clock } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
+import { CheckCircle, File } from 'lucide-react'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -166,7 +165,7 @@ export default async function EventPage(props: {
 				eventProps = {
 					...baseProps,
 					hasPurchasedCurrentProduct: Boolean(purchase),
-					existingPurchase,
+					existingPurchase: purchaseForProduct,
 				}
 			}
 		}
@@ -282,18 +281,35 @@ export default async function EventPage(props: {
 						{eventBody}
 					</article>
 				</div>
+
 				<EventSidebar>
 					{eventProps.hasPurchasedCurrentProduct ? (
-						<div className="border-b p-6 text-left font-medium">
-							<CheckCircle className="text-primary inline-block size-4" /> You
-							have purchased a ticket to this event. See you on {eventDate}.{' '}
-							<span role="img" aria-label="Waving hand">
-								👋
-							</span>
+						<div className="dark:border-b-foreground/10 flex flex-col gap-1 border-b p-6 text-left font-medium">
+							<p>
+								<CheckCircle className="inline-block size-4 text-teal-600 dark:text-teal-400" />{' '}
+								You have purchased a ticket to this event. See you on{' '}
+								{eventDate}.{' '}
+								<span role="img" aria-label="Waving hand">
+									👋
+								</span>
+							</p>
+							{eventProps?.existingPurchase?.merchantChargeId && (
+								<p>
+									<File className="text-primary inline-block size-4" />{' '}
+									<Link
+										className="text-primary underline underline-offset-2"
+										href={`/invoices/${eventProps.existingPurchase?.merchantChargeId}`}
+									>
+										Invoice
+									</Link>
+								</p>
+							)}
 						</div>
 					) : null}
 					<EventDetails event={event} />
-					<EventPricingWidgetContainer {...eventProps} />
+					{!eventProps.hasPurchasedCurrentProduct && (
+						<EventPricingWidgetContainer {...eventProps} />
+					)}
 				</EventSidebar>
 			</main>
 		</LayoutClient>
