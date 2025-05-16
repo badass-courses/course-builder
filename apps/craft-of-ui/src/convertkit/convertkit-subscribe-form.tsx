@@ -27,6 +27,9 @@ export type SubscribeFormProps = {
 	className?: string
 	validationSchema?: Yup.ObjectSchema<any>
 	validateOnChange?: boolean
+	onEmailFocus?: () => void
+	onEmailBlur?: () => void
+	showMascot?: boolean
 	[rest: string]: any
 }
 
@@ -67,6 +70,9 @@ export type SubscribeFormProps = {
  * @param className
  * @param validationSchema
  * @param validateOnChange
+ * @param onEmailFocus
+ * @param onEmailBlur
+ * @param showMascot
  * @param rest anything else!
  * @constructor
  */
@@ -86,6 +92,9 @@ export const SubscribeToConvertkitForm: React.FC<
 	className,
 	validationSchema,
 	validateOnChange,
+	onEmailFocus,
+	onEmailBlur,
+	showMascot,
 	...rest
 }) => {
 	const {
@@ -140,17 +149,81 @@ export const SubscribeToConvertkitForm: React.FC<
 				<Label data-sr-input-label="" htmlFor={id ? `email_${id}` : 'email'}>
 					Email*
 				</Label>
-				<Input
-					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto"
-					name="email"
-					id={id ? `email_${id}` : 'email'}
-					onChange={handleChange}
-					placeholder="you@example.com"
-					type="email"
-					required
-					defaultValue={values.email}
-				/>
+				<div className="relative">
+					{showMascot && (
+						<svg
+							className="pointer-events-none absolute -top-12 left-1/2 z-0 w-12 -translate-x-1/2"
+							viewBox="0 0 240 333"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+							aria-hidden="true"
+						>
+							<path
+								d="M213.17 108.419c0 5.314.127 11.574.269 18.56.618 30.513 1.518 74.863-6.657 114.572-5.019 24.378-13.419 46.767-27.227 63.031C165.817 320.764 146.633 331 119.678 331c-26.9555 0-46.1392-10.236-59.8774-26.418-13.8078-16.264-22.2078-38.653-27.2266-63.031-8.175-39.709-7.2757-84.059-6.6569-114.572.1417-6.986.2686-13.246.2686-18.56 0-55.6867 41.9903-100.5811 93.4923-100.5811S213.17 52.7323 213.17 108.419Z"
+								fill="#AF7128"
+								stroke="#000"
+								strokeWidth="4"
+							></path>
+							<circle
+								cx="36.8416"
+								cy="36.8416"
+								r="34.8416"
+								fill="#AF7128"
+								stroke="#000"
+								strokeWidth="4"
+							></circle>
+							<circle
+								cx="202.952"
+								cy="36.8416"
+								r="34.8416"
+								fill="#AF7128"
+								stroke="#000"
+								strokeWidth="4"
+							></circle>
+							<circle
+								className="origin-center animate-[blink_8s_infinite] [transform-box:fill-box]"
+								cx="174.19"
+								cy="105.677"
+								r="8.0793"
+								fill="#000"
+							></circle>
+							<circle
+								className="origin-center animate-[blink_8s_infinite] [transform-box:fill-box]"
+								cx="65.604"
+								cy="105.677"
+								r="8.0793"
+								fill="#000"
+							></circle>
+							<path
+								d="M140.689 120.281c0 8.21-9.868 17.451-20.844 17.451-10.977 0-20.845-9.241-20.845-17.451C99 112.07 108.868 108 119.845 108c10.976 0 20.844 4.07 20.844 12.281Z"
+								fill="#000"
+							></path>
+							<path
+								fill="#FF1E1E"
+								d="M75.2366 69.8052h88.3706v13.25H75.2366z"
+							></path>
+							<path
+								fillRule="evenodd"
+								clipRule="evenodd"
+								d="M187.215 28.6207c17.939 14.394 28.018 37.1482 28.018 57.5045h-61.648c-.087-13.6688-11.194-24.7227-24.883-24.7227h-18.56c-13.6891 0-24.7966 11.0539-24.8835 24.7227H23.9148c0-20.3563 10.0783-43.1105 28.0178-57.5045C69.8722 14.2266 94.2034 6.1401 119.574 6.1401c25.37 0 49.701 8.0865 67.641 22.4806Z"
+								fill="#000"
+							></path>
+						</svg>
+					)}
+					<Input
+						data-input-with-error={Boolean(touched.email && errors.email)}
+						className="relative z-10 h-auto"
+						name="email"
+						id={id ? `email_${id}` : 'email'}
+						onChange={handleChange}
+						placeholder="you@example.com"
+						type="email"
+						required
+						defaultValue={values.email}
+						onFocus={onEmailFocus}
+						onBlur={onEmailBlur}
+					/>
+				</div>
 				{validationSchema && touched.email && errors.email && (
 					<p data-input-error-message>{errors.email}</p>
 				)}

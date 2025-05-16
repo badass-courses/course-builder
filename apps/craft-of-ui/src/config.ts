@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `${process.env.NEXT_PUBLIC_URL}/api/og?resource=root`,
+				url: `https://res.cloudinary.com/badass-courses/image/upload/v1747344126/og-images/ogImage-thcoui_ukkbxq.png`,
 				width: 1200,
 				height: 630,
 			},

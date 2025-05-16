@@ -13,24 +13,40 @@ export const runtime = 'edge'
 export const revalidate = 60
 // export const contentType = 'image/png'
 
-async function loadGoogleFont(font: string, text: string) {
-	const url = `https://fonts.googleapis.com/css2?family=${font}:wght@600&text=${encodeURIComponent(text)}`
-	const css = await (await fetch(url)).text()
-	const resource = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/)
+async function loadFonts() {
+	try {
+		const interFont = await fetch(
+			'https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap',
+		).then((res) => res.text())
+		const interUrl = interFont.match(
+			/src: url\((.+)\) format\('(opentype|truetype)'\)/,
+		)?.[1]
+		if (!interUrl) throw new Error('Could not find Inter font URL')
+		const interData = await fetch(interUrl).then((res) => res.arrayBuffer())
 
-	if (resource) {
-		const response = await fetch(resource[1] as any)
-		if (response.status == 200) {
-			return await response.arrayBuffer()
+		const dmSerifFont = await fetch(
+			'https://fonts.googleapis.com/css2?family=DM+Serif+Text:wght@400&display=swap',
+		).then((res) => res.text())
+		const dmSerifUrl = dmSerifFont.match(
+			/src: url\((.+)\) format\('(opentype|truetype)'\)/,
+		)?.[1]
+		if (!dmSerifUrl) throw new Error('Could not find DM Serif Text font URL')
+		const dmSerifData = await fetch(dmSerifUrl).then((res) => res.arrayBuffer())
+
+		return {
+			inter: interData,
+			dmSerif: dmSerifData,
 		}
+	} catch (e) {
+		console.error('Failed to load fonts:', e)
+		throw e
 	}
-
-	throw new Error('failed to load font data')
 }
 
 export async function GET(request: Request) {
 	try {
-		const { searchParams } = new URL(request.url)
+		const { searchParams, origin } = new URL(request.url)
+
 		const resourceTypesWithImages = [
 			'post',
 			'list',
@@ -85,6 +101,7 @@ export async function GET(request: Request) {
 
 			let product
 			if (!resource) {
+				console.log('🔍 Looking up product:', resourceSlugOrID)
 				product = await db.query.products.findFirst({
 					where: and(
 						or(
@@ -101,12 +118,22 @@ export async function GET(request: Request) {
 			title = resource?.fields?.title || product?.name
 
 			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image =
-					resource?.fields?.coverImage?.url ||
-					resource.fields?.image ||
-					product?.fields?.image?.url ||
-					(muxPlaybackId &&
-						`https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${resource?.fields.thumbnailTime || 0}&width=1200`)
+				// Ensure image URLs are absolute
+				const coverImageUrl = resource?.fields?.coverImage?.url
+				const imageUrl = resource.fields?.image
+				const productImageUrl = product?.fields?.image?.url
+				const muxImageUrl = muxPlaybackId
+					? `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${
+							resource?.fields.thumbnailTime || 0
+						}&width=1200`
+					: null
+
+				image = coverImageUrl || imageUrl || productImageUrl || muxImageUrl
+
+				// Make sure the image URL is absolute
+				if (image && !image.startsWith('http')) {
+					image = `${origin}${image}`
+				}
 			}
 		} else {
 			if (hasTitle) {
@@ -123,31 +150,123 @@ export async function GET(request: Request) {
 				? `${title?.slice(0, titleLengthLimit)}...`
 				: title
 
+		const fonts = await loadFonts()
+
 		return new ImageResponse(
 			(
 				<div
-					tw="flex h-full w-full bg-white flex-col text-white"
+					tw="relative flex w-[1200px] h-[630px] text-white"
 					style={{
-						fontFamily: 'HeadingFont',
-						background: '#1F1F22',
-						width: 1200,
-						height: 630,
-						// backgroundImage:
-						// 	resource && resource.type === 'post' && image
-						// 		? `url(${image})`
-						// 		: '',
-						backgroundSize: 'contain',
-						backgroundPosition: 'center',
+						backgroundColor: '#1F1F22',
+						fontFamily: 'Inter',
+						overflow: 'hidden',
 					}}
 				>
+					{/* Grid background (inline style, not possible with Tailwind) */}
+					<div
+						style={{
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							width: '100%',
+							height: '100%',
+							zIndex: 0,
+							pointerEvents: 'none',
+							backgroundImage:
+								'linear-gradient(90deg, rgba(255,255,255,0.20) 1px, transparent 1px 128px), ' +
+								'linear-gradient(rgba(255,255,255,0.20) 1px, transparent 1px 128px)',
+							backgroundSize: '64px 64px',
+							backgroundPosition: '17px 0, 0 19px',
+							maskImage: 'linear-gradient(-30deg, transparent 50%, white)',
+							WebkitMaskImage:
+								'linear-gradient(-30deg, transparent 50%, white)',
+						}}
+					/>
+
+					{/* Favicon in top-left corner */}
+					<div tw="absolute left-6 top-6 flex">
+						<svg
+							width={48}
+							height={48}
+							viewBox="0 0 512 512"
+							fill="none"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="M84.5613 436.898L59.5937 471.223M54.9146 441.577L89.2403 466.544"
+								stroke="white"
+								strokeWidth="21.2228"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<path
+								d="M469.937 15.5007L438.936 44.4928M439.941 14.4961L468.933 45.4974"
+								stroke="white"
+								strokeWidth="21.2228"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<path
+								d="M82.9431 393.821L70.3031 395.363C70.9828 400.936 75.2318 405.406 80.7628 406.367L82.9431 393.821ZM437.21 89.6969L445.505 99.3587C449.068 96.2995 450.659 91.527 449.642 86.9416C448.626 82.3562 445.168 78.7025 440.646 77.4354L437.21 89.6969ZM449.994 89.5047C449.854 82.4735 444.041 76.887 437.009 77.027C429.978 77.167 424.392 82.9804 424.532 90.0117L449.994 89.5047ZM444.568 456.668L442.388 469.214C446.134 469.865 449.976 468.808 452.861 466.331C455.747 463.854 457.375 460.217 457.299 456.415L444.568 456.668ZM64.4122 241.908L56.1179 232.246C52.8875 235.019 51.2567 239.223 51.7722 243.45L64.4122 241.908ZM293.333 36.1625C286.562 34.2653 279.534 38.2169 277.637 44.9887C275.739 51.7606 279.691 58.7883 286.463 60.6856L293.333 36.1625ZM91.2374 403.483L445.505 99.3587L428.916 80.0351L74.6488 384.16L91.2374 403.483ZM424.532 90.0117L431.837 456.922L457.299 456.415L449.994 89.5047L424.532 90.0117ZM80.7628 406.367L442.388 469.214L446.748 444.123L85.1234 381.276L80.7628 406.367ZM72.7065 251.57L298.149 58.0358L281.561 38.7121L56.1179 232.246L72.7065 251.57ZM95.5831 392.28L77.0522 240.366L51.7722 243.45L70.3031 395.363L95.5831 392.28ZM440.646 77.4354L293.333 36.1625L286.463 60.6856L433.775 101.958L440.646 77.4354Z"
+								fill="white"
+							/>
+							<path
+								d="M333.699 164.516L439.806 451.026"
+								stroke="white"
+								strokeWidth="25.4674"
+							/>
+							<path
+								d="M172.664 302.797L439.801 451.069"
+								stroke="white"
+								strokeWidth="25.4674"
+							/>
+							<path
+								d="M149.965 176.218C147.587 169.6 140.293 166.163 133.675 168.542C127.057 170.92 123.62 178.214 125.999 184.832L149.965 176.218ZM193.581 297.566L149.965 176.218L125.999 184.832L169.615 306.181L193.581 297.566Z"
+								fill="white"
+							/>
+							<path
+								d="M331.336 173.352L222.769 116.846"
+								stroke="white"
+								strokeWidth="25.4674"
+								strokeLinecap="round"
+							/>
+						</svg>
+					</div>
+
 					{resource && resource.type === 'post' && image && (
-						<img src={image} tw="object-contain absolute w-full h-full" />
+						<img
+							src={image}
+							alt={title || ''}
+							width={1200}
+							height={630}
+							style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+								objectFit: 'contain',
+							}}
+						/>
 					)}
 					{resource && resource.type === 'post' && image && (
-						<div tw="absolute w-full h-full bg-white/80" />
+						<div
+							style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+								backgroundColor: 'rgba(255, 255, 255, 0.8)',
+							}}
+						/>
 					)}
 					{resource && resource.type === 'post' && image && (
-						<div tw="absolute right-40 top-26 z-10 flex">
+						<div
+							style={{
+								position: 'absolute',
+								right: 160,
+								top: 104,
+								zIndex: 10,
+								display: 'flex',
+							}}
+						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								width={48}
@@ -163,41 +282,93 @@ export async function GET(request: Request) {
 							</svg>
 						</div>
 					)}
-					<div tw="w-full absolute left-24 bottom-28 flex">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							width="621"
-							height="2"
-							fill="none"
-							viewBox="0 0 621 2"
-						>
-							<path
-								stroke="#fff"
-								stroke-dasharray="1 23"
-								stroke-linecap="round"
-								stroke-width="2"
-								d="M1 1h619"
-								opacity=".5"
-							/>
-						</svg>
-					</div>
-					<div tw="flex items-center absolute right-24 bottom-24 justify-center text-5xl font-bold">
-						<div tw="text-foreground flex items-end gap-1.5 font-bold tracking-tight">
-							<img src="/favicon.svg" tw="w-10 h-10" />
 
-							<span tw="pl-4">The Craft of UI</span>
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							position: 'absolute',
+							right: 96,
+							bottom: 96,
+							justifyContent: 'center',
+							fontSize: '32px',
+							fontWeight: 'bold',
+							fontFamily: 'DM Serif Text',
+							color: '#ef4444',
+						}}
+					>
+						<div
+							style={{
+								display: 'flex',
+								alignItems: 'flex-end',
+								gap: '6px',
+								fontWeight: 'bold',
+							}}
+						>
+							<span style={{ paddingLeft: '12px' }}>The Craft of UI</span>
 						</div>
 					</div>
-					<main tw="flex p-26 pt-28 relative z-10 flex-row w-full h-full flex-grow items-start justify-between">
-						<div tw={`text-[64px] min-w-[500px] leading-tight pr-24 flex`}>
-							<span tw="flex pr-8 text-[#EE762F]"># </span>
+					<main
+						style={{
+							display: 'flex',
+							padding: '104px',
+							paddingTop: '112px',
+							position: 'relative',
+							zIndex: 10,
+							flexDirection: 'row',
+							width: '100%',
+							height: '100%',
+							flexGrow: 1,
+							alignItems: 'flex-start',
+							justifyContent: 'space-between',
+						}}
+					>
+						<div
+							style={{
+								fontSize: '64px',
+								minWidth: '500px',
+								lineHeight: 1.2,
+								paddingRight: '96px',
+								display: 'flex',
+								fontFamily: 'DM Serif Text',
+							}}
+						>
 							<span>{titleTruncated}</span>
 						</div>
 						{image && resource && resource?.type !== 'post' && (
-							<div tw={`flex items-start -mr-32 justify-start h-full`}>
-								<div tw="relative flex items-center justify-center">
-									<img src={image} width={700} />
-									<div tw="absolute z-10 flex">
+							<div
+								style={{
+									display: 'flex',
+									alignItems: 'flex-start',
+									marginRight: '-128px',
+									justifyContent: 'flex-start',
+									height: '100%',
+								}}
+							>
+								<div
+									style={{
+										position: 'relative',
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+									}}
+								>
+									<img
+										src={image}
+										alt={title || ''}
+										width={700}
+										height={394}
+										style={{
+											objectFit: 'cover',
+										}}
+									/>
+									<div
+										style={{
+											position: 'absolute',
+											zIndex: 10,
+											display: 'flex',
+										}}
+									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											width={80}
@@ -221,11 +392,13 @@ export async function GET(request: Request) {
 			{
 				fonts: [
 					{
-						name: 'HeadingFont',
-						data: await loadGoogleFont(
-							'Geist Mono',
-							`The Craft of UI ${title}`,
-						),
+						name: 'Inter',
+						data: fonts.inter,
+						style: 'normal',
+					},
+					{
+						name: 'DM Serif Text',
+						data: fonts.dmSerif,
 						style: 'normal',
 					},
 				],
