@@ -110,7 +110,7 @@ export function NewResourceWithVideoForm({
 				await pollVideoResource(values.videoResourceId).next()
 			}
 			const resource = await createResource(values as any)
-			console.log({ resource })
+
 			if (!resource) {
 				// Handle edge case, e.g., toast an error message
 				console.log('no resource in onSubmit')

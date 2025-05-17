@@ -203,9 +203,9 @@ const Invoice = async (props: {
 										className="border-primary mb-1 h-8 border-2 p-2 text-base leading-none print:hidden"
 										defaultValue={customer.name as string}
 									/> */}
-										{customer.name}
+										{charge.billing_details.name}
 										<br />
-										{customer.email}
+										{charge.billing_details.email}
 										{/* <br />
                   {charge.billing_details.address?.city}
                   <br />

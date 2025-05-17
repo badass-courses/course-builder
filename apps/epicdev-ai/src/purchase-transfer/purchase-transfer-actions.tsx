@@ -11,7 +11,14 @@ import {
 	purchaseUserTransfer as purchaseUserTransferTable,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { getEvent } from '@/lib/events-query'
+import {
+	addUserToGoogleCalendarEvent,
+	removeUserFromGoogleCalendarEvent,
+} from '@/lib/google-calendar'
+import { getProduct } from '@/lib/products-query'
 import { authOptions, getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { Theme } from '@auth/core/types'
 import { render } from '@react-email/render'
 import { and, eq, gte } from 'drizzle-orm'
@@ -92,7 +99,7 @@ export async function acceptPurchaseTransfer(input: {
 		? await getUserById(token.session.user.id)
 		: null
 
-	if (!user) {
+	if (!user || !user.email) {
 		throw new Error('No user found')
 	}
 
@@ -172,6 +179,106 @@ export async function acceptPurchaseTransfer(input: {
 			completedAt: new Date(),
 		})
 		.where(eq(purchaseUserTransferTable.id, purchaseUserTransfer.id))
+
+	// START CALENDAR LOGIC
+	try {
+		if (purchase.productId && purchaseUserTransfer.sourceUserId) {
+			const product = await getProduct(purchase.productId)
+			const sourceUser = await getUserById(purchaseUserTransfer.sourceUserId)
+
+			if (
+				product &&
+				product.type === 'live' &&
+				sourceUser &&
+				sourceUser.email &&
+				user.email
+			) {
+				log.debug('Live product transfer, attempting calendar updates', {
+					productId: product.id,
+					sourceUserId: sourceUser.id,
+					targetUserId: user.id,
+				})
+
+				const eventResourceMeta = product.resources?.find(
+					(resource: any) => resource.resource.type === 'event',
+				)
+
+				if (eventResourceMeta && eventResourceMeta.resourceId) {
+					const eventResource = await getEvent(eventResourceMeta.resourceId)
+					const calendarId = eventResource?.fields?.calendarId
+
+					if (calendarId) {
+						log.debug('Found calendarId, proceeding with updates', {
+							calendarId,
+							eventResourceId: eventResource.id,
+						})
+						// Remove original owner
+						try {
+							await removeUserFromGoogleCalendarEvent(
+								calendarId,
+								sourceUser.email,
+							)
+							log.info('Successfully removed source user from calendar event', {
+								calendarId,
+								userId: sourceUser.id,
+								email: sourceUser.email,
+							})
+						} catch (calendarError: any) {
+							log.error(
+								'Failed to remove source user from calendar event during transfer',
+								{
+									calendarId,
+									userId: sourceUser.id,
+									email: sourceUser.email,
+									error: calendarError.message,
+									transferId: purchaseUserTransfer.id,
+								},
+							)
+						}
+
+						// Add new owner
+						try {
+							await addUserToGoogleCalendarEvent(calendarId, user.email)
+							log.info('Successfully added target user to calendar event', {
+								calendarId,
+								userId: user.id,
+								email: user.email,
+							})
+						} catch (calendarError: any) {
+							log.error(
+								'Failed to add target user to calendar event during transfer',
+								{
+									calendarId,
+									userId: user.id,
+									email: user.email,
+									error: calendarError.message,
+									transferId: purchaseUserTransfer.id,
+								},
+							)
+						}
+					} else {
+						log.warn(
+							'No calendarId found for live event product, skipping calendar updates.',
+							{ productId: product.id, eventResourceId: eventResource?.id },
+						)
+					}
+				} else {
+					log.warn(
+						'No event resource found for live product, skipping calendar updates.',
+						{ productId: product.id },
+					)
+				}
+			}
+		}
+	} catch (error: any) {
+		log.error('Error during calendar invite logic in purchase transfer', {
+			error: error.message,
+			purchaseId: purchase.id,
+			transferId: purchaseUserTransfer.id,
+		})
+		// Do not re-throw, as the core transfer was successful.
+	}
+	// END CALENDAR LOGIC
 
 	if (process.env.INNGEST_EVENT_KEY) {
 		const inngest = new Inngest({
