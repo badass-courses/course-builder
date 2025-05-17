@@ -61,6 +61,7 @@ export const postEventPurchase = inngest.createFunction(
 		if (isTeamPurchase) {
 			// send an email to the purchaser explaining next steps
 			// this might happen in welcome email already?
+			//                                      👆 yes it does
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
 				const orgMembership = await step.run(`get org membership`, async () => {
