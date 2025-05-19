@@ -32,7 +32,7 @@ export function WorkshopPricing({
 				pricingWidgetOptions={{
 					withImage: false,
 					withGuaranteeBadge: true,
-					isLiveEvent: product.type === 'cohort',
+					isLiveEvent: false,
 					isCohort: product.type === 'cohort',
 					teamQuantityLimit,
 					isPPPEnabled: true,

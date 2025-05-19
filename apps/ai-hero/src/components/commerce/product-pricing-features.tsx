@@ -1,3 +1,4 @@
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import {
 	BadgeCheck,
 	Check,
@@ -10,6 +11,9 @@ import {
 import { Product } from '@coursebuilder/core/schemas'
 
 export const ProductPricingFeatures = ({ product }: { product: Product }) => {
+	const workshopNavigation = useWorkshopNavigation()
+	const cohort = workshopNavigation?.cohorts?.[0]
+
 	return (
 		<div className="relative mt-5 flex w-full flex-col items-center">
 			<strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
@@ -19,17 +23,17 @@ export const ProductPricingFeatures = ({ product }: { product: Product }) => {
 					className="bg-border absolute left-0 z-0 h-px w-full"
 				/>
 			</strong>
-			{product.resources && (
+			{cohort && (
 				<strong className="mb-2 inline-flex w-full text-left font-medium">
-					{product.resources?.length} Complete Workshops
+					{cohort.resources?.length} Workshops
 				</strong>
 			)}
 			<ul className="mb-5 flex w-full flex-col gap-2">
-				{product.resources?.map((resource) => {
+				{cohort?.resources?.map((resource) => {
 					return (
-						<li className="flex items-center gap-2" key={resource.resourceId}>
-							<Check className="h-4 w-4" />
-							{resource.resource?.fields?.title}
+						<li className="flex items-baseline gap-2" key={resource.id}>
+							<Check className="text-foreground/50 relative h-4 w-4 flex-shrink-0 translate-y-1" />
+							{resource.title}
 						</li>
 					)
 				})}
@@ -38,14 +42,14 @@ export const ProductPricingFeatures = ({ product }: { product: Product }) => {
 				Features
 			</strong>
 			<ul className="flex w-full flex-col gap-2">
-				<li className="flex items-center gap-2">
+				{/* <li className="flex items-center gap-2">
 					<ListVideo className="h-4 w-4" />
 					Over 90 Lessons
-				</li>
-				<li className="flex items-center gap-2">
+				</li> */}
+				{/* <li className="flex items-center gap-2">
 					<Infinity className="h-4 w-4" />
 					Lifetime Access
-				</li>
+				</li> */}
 				<li className="flex items-center gap-2">
 					<FileCheck2 className="h-4 w-4" />
 					Customizable Invoice

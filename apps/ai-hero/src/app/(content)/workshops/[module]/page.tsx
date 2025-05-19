@@ -30,6 +30,7 @@ import {
 	DialogTrigger,
 } from '@coursebuilder/ui'
 
+import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
@@ -123,7 +124,7 @@ export default async function ModulePage(props: Props) {
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
-					<div className="bg-muted flex w-full items-center justify-center gap-2 border-b p-3 text-center">
+					<div className="flex w-full items-center justify-center gap-2 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat p-3 text-center dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]">
 						<Construction className="h-4 w-4" />{' '}
 						<p className="text-sm font-medium capitalize">
 							{workshop.fields?.visibility} {workshop.type}
@@ -138,9 +139,10 @@ export default async function ModulePage(props: Props) {
 				/>
 				<header className="relative flex items-center justify-center md:px-8 lg:px-10">
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
-						<div className="col-span-3 flex flex-shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
+						<div className="col-span-3 flex flex-shrink-0 flex-col items-center px-5 md:items-start md:px-0">
+							<WorkshopBreadcrumb />
 							{/* <p className="text-primary mb-2 text-base">Pro Workshop</p> */}
-							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
@@ -148,7 +150,7 @@ export default async function ModulePage(props: Props) {
 									<p>{workshop.fields?.description}</p>
 								</div>
 							)}
-							<div className="flex items-center gap-2">
+							<div className="mt-5 flex items-center gap-2">
 								<Contributor />
 							</div>
 						</div>
@@ -188,13 +190,14 @@ export default async function ModulePage(props: Props) {
 						return (
 							<>
 								<Links>
-									{!ALLOW_PURCHASE && (
+									{(!ALLOW_PURCHASE ||
+										pricingProps.hasPurchasedCurrentProduct) && (
 										<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
 											Content
 										</div>
 									)}
 								</Links>
-								<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
+								<div className="mx-auto flex w-full flex-grow grid-cols-6 flex-col md:grid">
 									<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
 										{workshop.fields?.body ? (
 											<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
@@ -202,15 +205,9 @@ export default async function ModulePage(props: Props) {
 											<p>No description found.</p>
 										)}
 									</article>
-									<div className="col-span-2 flex flex-col">
-										{pricingProps.hasPurchasedCurrentProduct ? (
-											<NextLessonButton
-												moduleType="workshop"
-												moduleSlug={params.module}
-											/>
-										) : ALLOW_PURCHASE ? (
+									<div className="col-span-2 flex flex-col border-l">
+										{pricingProps.hasPurchasedCurrentProduct ? null : ALLOW_PURCHASE ? (
 											<>
-												{/* <StartLearningWorkshopButton  moduleSlug={params.module} /> */}
 												<WorkshopPricingClient {...pricingProps} />
 												<div className="col-span-2 hidden h-14 items-center border-b border-l pl-5 text-base font-medium md:flex">
 													Content
@@ -219,14 +216,14 @@ export default async function ModulePage(props: Props) {
 										) : null}
 										<WorkshopResourceList
 											isCollapsible={false}
-											className="w-full max-w-none"
+											className="w-full max-w-none !border-r-0"
 											withHeader={false}
 											maxHeight="h-auto"
-											wrapperClassName="border-l overflow-hidden pb-0"
+											wrapperClassName="overflow-hidden pb-0"
 										/>
 									</div>
 								</div>
-								<Links />
+								{workshop?.fields?.body && <Links />}
 							</>
 						)
 					}}
