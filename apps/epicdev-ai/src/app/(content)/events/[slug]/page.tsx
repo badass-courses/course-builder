@@ -220,30 +220,30 @@ export default async function EventPage(props: {
 	)
 
 	return (
-		<LayoutClient className="relative" withContainer>
+		<LayoutClient withContainer>
 			<EventMetadata
 				event={event}
 				quantityAvailable={eventProps.quantityAvailable}
 			/>
-			{event && ability.can('update', 'Content') && (
-				<div className="top-30 right-10 z-40 flex items-center gap-2 lg:absolute">
-					{product && (
-						<Button asChild size="sm" variant="outline">
-							<Link
-								href={`/products/${product?.fields?.slug || product?.id}/edit`}
-							>
-								Edit Product
+			<header className="relative mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+				{event && ability.can('update', 'Content') && (
+					<div className="top-30 right-0 z-40 flex items-center gap-2 lg:absolute">
+						{product && (
+							<Button asChild size="sm" variant="outline">
+								<Link
+									href={`/products/${product?.fields?.slug || product?.id}/edit`}
+								>
+									Edit Product
+								</Link>
+							</Button>
+						)}
+						<Button asChild size="sm" variant="secondary">
+							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+								Edit Event
 							</Link>
 						</Button>
-					)}
-					<Button asChild size="sm" variant="secondary">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit Event
-						</Link>
-					</Button>
-				</div>
-			)}
-			<header className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+					</div>
+				)}
 				<Link
 					href="/events"
 					className="bg-primary/20 text-primary mb-2 inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-sm font-semibold"

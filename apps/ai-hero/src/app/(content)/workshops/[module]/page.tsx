@@ -3,18 +3,24 @@ import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
-import { NextLessonButton } from '@/app/(content)/workshops/_components/next-lesson-button'
-import { StartLearningWorkshopButton } from '@/app/(content)/workshops/_components/start-learning-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
+import {
+	ContentTitle,
+	StartLearningWorkshopButton,
+	StartLearningWorkshopButtonSkeleton,
+	WorkshopGitHubRepoLink,
+} from '@/app/(content)/workshops/_components/workshop-user-actions'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
+import Spinner from '@/components/spinner'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 import { Construction, Github, Share2 } from 'lucide-react'
@@ -28,6 +34,7 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
+	Skeleton,
 } from '@coursebuilder/ui'
 
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
@@ -81,7 +88,8 @@ export default async function ModulePage(props: Props) {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const workshop = await getCachedMinimalWorkshop(params.module)
-	const { allowPurchase } = await props.searchParams
+
+	const abilityLoader = getAbilityForResource(undefined, params.module)
 
 	if (!workshop) {
 		notFound()
@@ -96,8 +104,14 @@ export default async function ModulePage(props: Props) {
 				/>
 				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
 					<div className="h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat sm:w-8 lg:w-10  dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]" />
-					<StartLearningWorkshopButton moduleSlug={params.module} />
+					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
+						<StartLearningWorkshopButton
+							abilityLoader={abilityLoader}
+							moduleSlug={params.module}
+						/>
+					</React.Suspense>
 					<div className="w-full items-center sm:flex sm:w-auto">
+						<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />
 						<Dialog>
 							<DialogTrigger asChild>
 								<Button
@@ -182,52 +196,65 @@ export default async function ModulePage(props: Props) {
 					</div>
 				</header>
 
-				<WorkshopPricing searchParams={searchParams} moduleSlug={params.module}>
-					{(pricingProps) => {
-						const ALLOW_PURCHASE =
-							allowPurchase === 'true' ||
-							pricingProps.product?.fields.state === 'published'
-						return (
-							<>
-								<Links>
-									{(!ALLOW_PURCHASE ||
-										pricingProps.hasPurchasedCurrentProduct) && (
-										<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
-											Content
-										</div>
-									)}
-								</Links>
-								<div className="mx-auto flex w-full flex-grow grid-cols-6 flex-col md:grid">
-									<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
-										{workshop.fields?.body ? (
-											<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-										) : (
-											<p>No description found.</p>
-										)}
-									</article>
-									<div className="col-span-2 flex flex-col border-l">
-										{pricingProps.hasPurchasedCurrentProduct ? null : ALLOW_PURCHASE ? (
+				<>
+					<Links>
+						<React.Suspense fallback={null}>
+							<ContentTitle abilityLoader={abilityLoader} />
+						</React.Suspense>
+					</Links>
+					<div className="mx-auto flex w-full flex-grow grid-cols-6 flex-col md:grid">
+						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+							{workshop.fields?.body ? (
+								<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+							) : (
+								<p>No description found.</p>
+							)}
+						</article>
+						<div className="col-span-2 flex flex-col border-l">
+							<React.Suspense
+								fallback={
+									<div className="flex flex-col gap-2">
+										{new Array(1).fill(null).map((_, i) => (
+											<Skeleton
+												key={`skeleton-${i}`}
+												className="flex h-80 w-full items-center justify-center"
+											>
+												<Spinner className="size-4" />
+											</Skeleton>
+										))}
+									</div>
+								}
+							>
+								<WorkshopPricing
+									searchParams={searchParams}
+									moduleSlug={params.module}
+								>
+									{(pricingProps) => {
+										return pricingProps.hasPurchasedCurrentProduct ? null : (
 											<>
-												<WorkshopPricingClient {...pricingProps} />
+												<WorkshopPricingClient
+													{...pricingProps}
+													searchParams={props.searchParams}
+												/>
 												<div className="col-span-2 hidden h-14 items-center border-b pl-5 text-base font-medium md:flex">
 													Content
 												</div>
 											</>
-										) : null}
-										<WorkshopResourceList
-											isCollapsible={false}
-											className="w-full max-w-none !border-r-0"
-											withHeader={false}
-											maxHeight="h-auto"
-											wrapperClassName="overflow-hidden pb-0"
-										/>
-									</div>
-								</div>
-								{workshop?.fields?.body && <Links />}
-							</>
-						)
-					}}
-				</WorkshopPricing>
+										)
+									}}
+								</WorkshopPricing>
+							</React.Suspense>
+							<WorkshopResourceList
+								isCollapsible={false}
+								className="w-full max-w-none !border-r-0"
+								withHeader={false}
+								maxHeight="h-auto"
+								wrapperClassName="overflow-hidden pb-0"
+							/>
+						</div>
+					</div>
+					{workshop?.fields?.body && <Links />}
+				</>
 			</main>
 		</LayoutClient>
 	)

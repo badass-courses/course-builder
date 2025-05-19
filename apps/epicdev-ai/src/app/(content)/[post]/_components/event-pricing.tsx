@@ -505,19 +505,29 @@ export const withEventPricing = (
 			cancelUrl: `${env.NEXT_PUBLIC_URL}/${post.fields?.slug || post.id}`,
 			...pricingOptions,
 		}
+		const isPastEvent =
+			product.type === 'live' &&
+			post.fields?.startsAt &&
+			new Date(post.fields?.startsAt) < new Date()
 
 		return (
 			<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-				<PricingComponent
-					centered={centered}
-					hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
-					commerceProps={commerceProps}
-					product={product}
-					quantityAvailable={quantityAvailable}
-					pricingDataLoader={pricingDataLoader}
-					pricingWidgetOptions={defaultPricingOptions}
-					className={className}
-				/>
+				{isPastEvent ? (
+					<div className="flex w-full items-center justify-center py-5">
+						Not Available
+					</div>
+				) : (
+					<PricingComponent
+						centered={centered}
+						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+						commerceProps={commerceProps}
+						product={product}
+						quantityAvailable={quantityAvailable}
+						pricingDataLoader={pricingDataLoader}
+						pricingWidgetOptions={defaultPricingOptions}
+						className={className}
+					/>
+				)}
 			</PriceCheckProvider>
 		)
 	}

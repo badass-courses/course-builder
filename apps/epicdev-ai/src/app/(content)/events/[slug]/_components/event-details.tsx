@@ -100,7 +100,7 @@ export const EventDetailsMobile: React.FC<{
 	const PT = 'America/Los_Angeles'
 	const eventDate =
 		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do, yyyy')}`
-	console.log({ startsAt, endsAt, timezone })
+
 	const eventTime =
 		startsAt &&
 		endsAt &&
@@ -114,6 +114,7 @@ export const EventDetailsMobile: React.FC<{
 	const pacificDateString =
 		startsAt && formatInTimeZone(startsAt, PT, 'MMMM do, yyyy')
 	const pacificTimeString = startsAt && formatInTimeZone(startsAt, PT, 'h:mm a')
+
 	const everyTimeZoneLink =
 		pacificDateString &&
 		pacificTimeString &&

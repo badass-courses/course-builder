@@ -97,7 +97,7 @@ export async function getCurrentAbilityRules({
 }
 
 export async function getAbilityForResource(
-	lessonId: string,
+	lessonId: string | undefined,
 	moduleId: string,
 ): Promise<AbilityForResource> {
 	const abilityRules = await getCurrentAbilityRules({

@@ -9,6 +9,7 @@ import type {
 	FormattedPrice,
 	PricingOptions,
 } from '@coursebuilder/core/types'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 export type PricingData = {
 	formattedPrice?: FormattedPrice | null
@@ -23,12 +24,19 @@ export const PricingWidget: React.FC<{
 	pricingDataLoader: Promise<PricingData>
 	hasPurchasedCurrentProduct?: boolean
 	pricingWidgetOptions?: Partial<PricingOptions>
+	workshops?: {
+		title: string
+		slug: string
+	}[]
+	className?: string
 }> = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
 	quantityAvailable,
+	workshops,
+	className,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -38,7 +46,7 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className="relative w-full border-b px-5 pb-5"
+			className={cn('relative w-full border-b pb-5', className)}
 			product={product}
 			couponId={couponId}
 			country={commerceProps.country}
@@ -62,7 +70,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
-			<ProductPricingFeatures product={product} />
+			<ProductPricingFeatures workshops={workshops ?? []} />
 		</Pricing.Root>
 	)
 }
