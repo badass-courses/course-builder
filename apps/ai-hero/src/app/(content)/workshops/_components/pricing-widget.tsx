@@ -38,7 +38,7 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className="relative w-full border-b border-l px-5 pb-5"
+			className="relative w-full border-b px-5 pb-5"
 			product={product}
 			couponId={couponId}
 			country={commerceProps.country}

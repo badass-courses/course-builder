@@ -209,7 +209,7 @@ export default async function ModulePage(props: Props) {
 										{pricingProps.hasPurchasedCurrentProduct ? null : ALLOW_PURCHASE ? (
 											<>
 												<WorkshopPricingClient {...pricingProps} />
-												<div className="col-span-2 hidden h-14 items-center border-b border-l pl-5 text-base font-medium md:flex">
+												<div className="col-span-2 hidden h-14 items-center border-b pl-5 text-base font-medium md:flex">
 													Content
 												</div>
 											</>
