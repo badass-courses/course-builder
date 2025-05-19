@@ -2,6 +2,7 @@ import * as React from 'react'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { EditProductForm } from '@/app/(commerce)/products/[slug]/edit/_components/edit-product-form'
+import LayoutClient from '@/components/layout-client'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -19,5 +20,9 @@ export default async function PromptEditPage(props: {
 		notFound()
 	}
 
-	return <EditProductForm key={product.fields?.slug} product={product} />
+	return (
+		<LayoutClient>
+			<EditProductForm key={product.fields?.slug} product={product} />
+		</LayoutClient>
+	)
 }

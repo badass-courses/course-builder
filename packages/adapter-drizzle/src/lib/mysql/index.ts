@@ -1553,8 +1553,8 @@ export function mySqlDrizzleAdapter(
 				type: input.type || 'self-paced',
 				quantityAvailable: input.quantityAvailable,
 				fields: {
-					state: 'draft',
-					visibility: 'unlisted',
+					state: input.state || 'draft',
+					visibility: input.visibility || 'unlisted',
 					slug: slugify(`${input.name}-${hash}`),
 				},
 			}

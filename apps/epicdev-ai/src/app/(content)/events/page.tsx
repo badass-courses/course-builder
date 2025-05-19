@@ -31,17 +31,19 @@ export const metadata: Metadata = {
 export default async function EventIndexPage() {
 	return (
 		<LayoutClient withContainer>
-			<main className="">
-				<div className=" w-fullpb-10 mx-auto pt-16">
+			<main className="pb-16">
+				<div className="mx-auto w-full pb-10 pt-16">
 					<h1 className="font-heading fluid-3xl text-center font-bold">
 						Epic AI Events & Live Workshops
 					</h1>
 				</div>
 				<React.Suspense fallback={<div>Loading...</div>}>
-					<EventsList />
+					<div className="flex w-full items-center justify-center">
+						<EventActions />
+					</div>
 				</React.Suspense>
 				<React.Suspense fallback={<div>Loading...</div>}>
-					<EventActions />
+					<EventsList />
 				</React.Suspense>
 			</main>
 		</LayoutClient>

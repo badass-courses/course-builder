@@ -42,6 +42,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 	ResizableHandle,
+	ResizablePanel,
+	ScrollArea,
 	Select,
 	SelectContent,
 	SelectItem,
@@ -466,17 +468,35 @@ function EditProductFormDesktop({
 				}}
 			/>
 			<EditResourcePanelGroup>
-				<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
-					{children}
-				</EditResourcesMetadataPanel>
+				<ResizablePanel
+					id="edit-resources-metadata-panel"
+					order={1}
+					minSize={5}
+					defaultSize={20}
+					maxSize={35}
+					className=""
+				>
+					<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>
+						{children}
+					</EditResourcesMetadataPanel>
+				</ResizablePanel>
 				<ResizableHandle />
-				<EditResourcesBodyPanel
-					user={user}
-					partykitUrl={hostUrl}
-					resource={product}
-					form={form}
-					theme={theme}
-				/>
+				<ResizablePanel
+					id="edit-resources-body-panel"
+					order={2}
+					defaultSize={55}
+					className="flex min-h-full md:min-h-full"
+				>
+					<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+						<EditResourcesBodyPanel
+							user={user}
+							partykitUrl={hostUrl}
+							resource={product}
+							form={form}
+							theme={theme}
+						/>
+					</ScrollArea>
+				</ResizablePanel>
 				<ResizableHandle />
 				<EditResourcesToolPanel
 					resource={{ ...product, ...form.getValues() }}

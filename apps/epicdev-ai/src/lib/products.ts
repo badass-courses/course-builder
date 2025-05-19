@@ -15,6 +15,8 @@ export const NewProductSchema = z.object({
 		.enum(['live', 'self-paced', 'membership', 'cohort'])
 		.default('self-paced')
 		.optional(),
+	state: ResourceStateSchema.default('draft').optional(),
+	visibility: ResourceVisibilitySchema.default('unlisted').optional(),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>

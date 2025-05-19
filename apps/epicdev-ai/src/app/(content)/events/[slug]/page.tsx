@@ -226,7 +226,7 @@ export default async function EventPage(props: {
 				quantityAvailable={eventProps.quantityAvailable}
 			/>
 			{event && ability.can('update', 'Content') && (
-				<div className="right-10 top-20 flex items-center gap-2 lg:absolute">
+				<div className="top-30 right-10 z-40 flex items-center gap-2 lg:absolute">
 					{product && (
 						<Button asChild size="sm" variant="outline">
 							<Link

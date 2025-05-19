@@ -149,6 +149,8 @@ export async function createEvent(input: NewEvent) {
 				price: input.fields.price,
 				quantityAvailable: -1,
 				type: 'live',
+				state: 'published',
+				visibility: 'public',
 			})
 			if (product) {
 				await addResourceToProduct({

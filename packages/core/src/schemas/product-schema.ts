@@ -50,6 +50,14 @@ export const NewProductSchema = z.object({
 		.enum(['live', 'self-paced', 'membership', 'cohort'])
 		.default('self-paced')
 		.optional(),
+	state: z
+		.enum(['draft', 'published', 'archived', 'deleted'])
+		.default('draft')
+		.optional(),
+	visibility: z
+		.enum(['public', 'private', 'unlisted'])
+		.default('unlisted')
+		.optional(),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>
