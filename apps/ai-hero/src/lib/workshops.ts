@@ -244,7 +244,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			timezone: z.null(),
 			cohortTier: z.null(),
 			maxSeats: z.null(),
-			resourceType: z.null(),
+			resourceType: z.enum(['lesson', 'post']),
 			resourcePosition: z.null(),
 		}),
 	// Solution row

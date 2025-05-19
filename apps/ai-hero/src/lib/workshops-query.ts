@@ -163,7 +163,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 		UNION ALL
 		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			NULL as resourceType, NULL as resourcePosition
+			type as resourceType, NULL as resourcePosition
 		FROM resources
 		UNION ALL
 		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
@@ -226,8 +226,8 @@ async function getAllWorkshopLessonsWithSectionInfo(
 				slug: row.slug || '',
 				title: row.title,
 				position: row.position,
-				// We need to determine if it's a post or lesson
-				type: (row.slug || '').includes('post') ? 'post' : 'lesson',
+				// Use the real resource type from the DB
+				type: row.resourceType,
 				sectionId: row.sectionId,
 			}),
 		)
@@ -250,22 +250,25 @@ async function getAllWorkshopLessonsWithSectionInfo(
 	)
 
 	// Group cohort resources by cohort ID
-	const cohortResourcesByCohortId = cohortResourceRows.reduce((acc, row) => {
-		if (!acc.has(row.cohortId!)) {
-			acc.set(row.cohortId!, [])
-		}
-		const resource = {
-			id: row.id!,
-			slug: row.slug!,
-			title: row.title!,
-			position: row.resourcePosition!,
-			type: row.resourceType!,
-			startsAt: row.startsAt || null,
-		}
-
-		acc.get(row.cohortId!)!.push(resource)
-		return acc
-	}, new Map<string, CohortResource[]>())
+	const cohortResourcesByCohortId: Map<string, CohortResource[]> =
+		cohortResourceRows.reduce((acc, row) => {
+			// Only allow 'workshop' or 'tutorial' for cohort resources
+			if (row.resourceType === 'workshop' || row.resourceType === 'tutorial') {
+				if (!acc.has(row.cohortId!)) {
+					acc.set(row.cohortId!, [])
+				}
+				const resource = {
+					id: row.id!,
+					slug: row.slug!,
+					title: row.title!,
+					position: row.resourcePosition!,
+					type: row.resourceType,
+					startsAt: row.startsAt || null,
+				}
+				acc.get(row.cohortId!)!.push(resource)
+			}
+			return acc
+		}, new Map<string, CohortResource[]>())
 
 	// Sort resources within each cohort by position
 	cohortResourcesByCohortId.forEach((resources) => {
