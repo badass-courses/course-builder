@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
-import { ListOrderedIcon, Pencil } from 'lucide-react'
+import { ListOrderedIcon, Pencil, PlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 
@@ -14,6 +14,7 @@ import {
 	AccordionTrigger,
 } from '@coursebuilder/ui'
 
+import CreateNewEventDialog from '../../events/_components/create-new-event-dialog'
 import { CreatePostModal } from './create-post-modal'
 
 export function PostActions({
@@ -143,6 +144,15 @@ export function PostActions({
 				availableResourceTypes={['article']}
 				defaultResourceType="article"
 				topLevelResourceTypes={['post']}
+			/>
+			<CreateNewEventDialog
+				className="mt-1 w-full"
+				variant="outline"
+				buttonLabel={
+					<>
+						<PlusIcon className="mr-0.5 size-4" /> New event
+					</>
+				}
 			/>
 		</aside>
 	)

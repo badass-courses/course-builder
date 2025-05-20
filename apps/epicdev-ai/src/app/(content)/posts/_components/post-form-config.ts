@@ -26,9 +26,6 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 					slug: '',
 					summary: null,
 					yDoc: null,
-					startsAt: null,
-					endsAt: null,
-					timezone: null,
 				},
 				id: '',
 				organizationId: null,
@@ -58,9 +55,6 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 				postType: post.fields?.postType || 'article',
 				summary: post.fields?.summary ?? null,
 				yDoc: post.fields?.yDoc ?? null,
-				startsAt: post.fields?.startsAt ?? null,
-				endsAt: post.fields?.endsAt ?? null,
-				timezone: post.fields?.timezone ?? null,
 			},
 		}
 	},
@@ -81,8 +75,6 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 				github: resource.fields.github || '',
 				thumbnailTime: resource.fields.thumbnailTime || 0,
 				postType: resource.fields.postType || 'article',
-				startsAt: resource.fields.startsAt || null,
-				endsAt: resource.fields.endsAt || null,
 			},
 			tags: resource.tags || [],
 		}

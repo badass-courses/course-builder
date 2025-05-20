@@ -3,11 +3,7 @@ import { z } from 'zod'
 /**
  * Schema for post subtypes that can be used within the 'post' resource type
  */
-export const PostTypeSchema = z.union([
-	z.literal('article'),
-
-	z.literal('event'),
-])
+export const PostTypeSchema = z.literal('article')
 
 /**
  * Type representing post subtypes

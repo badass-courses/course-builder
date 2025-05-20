@@ -82,12 +82,6 @@ export const FeaturedSchema = z.object({
 	layout: FeaturedLayoutSchema,
 })
 
-export const EventFieldsSchema = z.object({
-	startsAt: z.string().nullish(),
-	endsAt: z.string().nullish(),
-	timezone: z.string().nullish(),
-})
-
 export const PostSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
@@ -104,7 +98,6 @@ export const PostSchema = ContentResourceSchema.merge(
 			gitpod: z.string().nullish(),
 			thumbnailTime: z.number().nullish(),
 			featured: FeaturedSchema.optional(),
-			...EventFieldsSchema.shape,
 		}),
 		tags: PostTagsSchema,
 	}),
@@ -124,7 +117,6 @@ export const PostUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
-		...EventFieldsSchema.shape,
 	}),
 	tags: PostTagsSchema,
 	videoResourceId: z.string().optional().nullable(),

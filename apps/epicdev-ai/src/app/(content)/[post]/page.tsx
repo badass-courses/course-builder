@@ -33,11 +33,6 @@ import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
-import {
-	EventPricing,
-	EventPricingButton,
-	EventPricingInline,
-} from './_components/event-pricing'
 import PostTranscript from './_components/post-transcript'
 
 export const experimental_ppr = true
@@ -85,20 +80,19 @@ export default async function PostPage(props: {
 				<Suspense fallback={null}>
 					<PostActionBar post={post} />
 				</Suspense>
-				{post?.fields?.postType !== 'event' && (
-					<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
-						{!list ? (
-							<Link
-								href="/posts"
-								className="hover:text-primary mb-3 inline-flex items-center text-base font-medium transition ease-in-out"
-							>
-								<ChevronLeft className="mr-1 size-3" /> All Posts
-							</Link>
-						) : (
-							<div />
-						)}
-					</div>
-				)}
+
+				<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
+					{!list ? (
+						<Link
+							href="/posts"
+							className="hover:text-primary mb-3 inline-flex items-center text-base font-medium transition ease-in-out"
+						>
+							<ChevronLeft className="mr-1 size-3" /> All Posts
+						</Link>
+					) : (
+						<div />
+					)}
+				</div>
 
 				<div className="relative z-10">
 					<article className="relative flex h-full flex-col">
@@ -132,7 +126,7 @@ export default async function PostPage(props: {
 										postId={post.id}
 									/>
 								)} */}
-						{!primaryVideo && post?.fields?.postType !== 'event' && (
+						{!primaryVideo && (
 							<PrimaryNewsletterCta
 								isHiddenForSubscribers
 								className="pt-5 sm:pt-10"
@@ -156,9 +150,7 @@ export default async function PostPage(props: {
 							<PostTranscript transcript={videoDetails?.transcript} />
 						</div>
 
-						{post?.fields?.postType !== 'event' && (
-							<PostNextUpFromListPagination postId={post.id} />
-						)}
+						<PostNextUpFromListPagination postId={post.id} />
 					</article>
 				</div>
 			</div>
@@ -192,17 +184,7 @@ async function PostBody({ post }: { post: Post | null }) {
 		return null
 	}
 
-	const { content } = await compileMDX(
-		post.fields.body,
-		post.fields.postType === 'event'
-			? {
-					EventPricing: (props) => <EventPricing post={post} {...props} />,
-					BuyTicketButton: (props) => (
-						<EventPricingButton post={post} {...props} />
-					),
-				}
-			: {},
-	)
+	const { content } = await compileMDX(post.fields.body)
 
 	return (
 		<div className="">
@@ -243,7 +225,7 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	const showNewsletterCta = post.fields?.postType !== 'event'
+	const showNewsletterCta = true
 
 	return videoDetails ? (
 		<VideoPlayerOverlayProvider>

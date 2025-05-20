@@ -12,16 +12,28 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
+import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { CreatePostModal } from '../../posts/_components/create-post-modal'
 import CreateNewEventForm from './create-new-event-form'
 
-export default function CreateNewEventDialog() {
+export default function CreateNewEventDialog({
+	buttonLabel = 'Create a new event',
+	variant = 'default',
+	className,
+}: {
+	buttonLabel?: string | React.ReactNode
+	className?: string
+	variant?: ButtonProps['variant']
+}) {
 	return (
 		<div>
 			<Dialog>
 				<DialogTrigger asChild>
-					<Button>Create a new event</Button>
+					<Button className={cn(className)} variant={variant}>
+						{buttonLabel}
+					</Button>
 				</DialogTrigger>
 				<DialogContent>
 					<DialogHeader>

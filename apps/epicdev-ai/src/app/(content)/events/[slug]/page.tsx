@@ -34,15 +34,15 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import {
-	EventPricing,
-	EventPricingButton,
-} from '../../[post]/_components/event-pricing'
 import { PostPlayer } from '../../posts/_components/post-player'
 import { EventDetails, EventDetailsMobile } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
 import { EventSidebar } from './_components/event-sidebar'
+import {
+	EventPricing,
+	EventPricingButton,
+} from './_components/inline-event-pricing'
 
 export async function generateMetadata(
 	props: {

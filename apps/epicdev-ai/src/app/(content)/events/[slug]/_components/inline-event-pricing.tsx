@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
-import type { Post, ProductForPostProps } from '@/lib/posts'
+import type { Event } from '@/lib/events'
 import { api } from '@/trpc/react'
-import { BadgeCheck, ExternalLink, Shield } from 'lucide-react'
-import Countdown, { type CountdownRenderProps } from 'react-countdown'
+import { BadgeCheck, ExternalLink } from 'lucide-react'
+import { type CountdownRenderProps } from 'react-countdown'
 
 import { CouponContext } from '@coursebuilder/commerce-next/coupons/coupon-context'
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
@@ -21,9 +21,7 @@ import type {
 	FormattedPrice,
 	PricingOptions,
 } from '@coursebuilder/core/types'
-// import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import { formatUsd } from '@coursebuilder/core/utils/format-usd'
-import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export type PricingData = {
@@ -431,12 +429,12 @@ export const withEventPricing = (
 	PricingComponent: React.ComponentType<PricingComponentProps>,
 ) => {
 	return function WithEventPricing({
-		post,
+		event,
 		pricingOptions,
 		centered = false,
 		className,
 	}: {
-		post: Post
+		event: Event
 		pricingOptions?: Partial<PricingOptions>
 		centered?: boolean
 		className?: string
@@ -446,7 +444,7 @@ export const withEventPricing = (
 		const { data: pricingProps, status } =
 			api.pricing.getPostProductPricing.useQuery(
 				{
-					postSlugOrId: post.id,
+					postSlugOrId: event.id,
 				},
 				{
 					refetchOnWindowFocus: false,
@@ -502,13 +500,13 @@ export const withEventPricing = (
 						? 100
 						: quantityAvailable,
 			isPPPEnabled: true,
-			cancelUrl: `${env.NEXT_PUBLIC_URL}/${post.fields?.slug || post.id}`,
+			cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
 			...pricingOptions,
 		}
 		const isPastEvent =
 			product.type === 'live' &&
-			post.fields?.startsAt &&
-			new Date(post.fields?.startsAt) < new Date()
+			event.fields?.startsAt &&
+			new Date(event.fields?.startsAt) < new Date()
 
 		return (
 			<PriceCheckProvider purchasedProductIds={purchasedProductIds}>

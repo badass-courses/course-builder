@@ -1,6 +1,6 @@
 import * as z from 'zod'
 
-import { EventFieldsSchema } from './posts'
+import { EventFieldsSchema } from './events'
 import { TagSchema } from './tags'
 
 export const TypesenseResourceSchema = z.object({

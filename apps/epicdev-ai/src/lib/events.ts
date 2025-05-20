@@ -7,7 +7,13 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
-import { PostTagsSchema } from './posts'
+import { FeaturedSchema, PostTagsSchema } from './posts'
+
+export const EventFieldsSchema = z.object({
+	startsAt: z.string().datetime().nullable().optional(),
+	endsAt: z.string().datetime().nullable().optional(),
+	timezone: z.string().default('America/Los_Angeles').nullish(),
+})
 
 /**
  * @description Schema for time-bound events like workshops, webinars, and live sessions
@@ -33,9 +39,7 @@ export const EventSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
-			startsAt: z.string().datetime().nullable().optional(),
-			endsAt: z.string().datetime().nullable().optional(),
-			timezone: z.string().default('America/Los_Angeles'),
+			...EventFieldsSchema.shape,
 			image: z.string().optional(),
 			socialImage: z
 				.object({
@@ -45,6 +49,7 @@ export const EventSchema = ContentResourceSchema.merge(
 				.optional(),
 			calendarId: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
+			featured: FeaturedSchema.optional(),
 		}),
 	}),
 )
