@@ -5,9 +5,8 @@ import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { createCoupon } from '@/lib/coupons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { motion } from 'framer-motion'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarDate } from '@internationalized/date'
+import { formatInTimeZone } from 'date-fns-tz'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { z } from 'zod'
@@ -17,6 +16,7 @@ import {
 	Button,
 	Calendar,
 	Checkbox,
+	DateTimePicker,
 	Form,
 	FormControl,
 	FormDescription,
@@ -44,6 +44,8 @@ const formSchema = z.object({
 	restrictedToProductId: z.string().optional(),
 	percentOff: z.string(),
 	bypassSoldOut: z.boolean().default(false),
+	status: z.number().default(1),
+	default: z.boolean().default(false),
 })
 
 const CouponGeneratorForm = ({
@@ -61,28 +63,49 @@ const CouponGeneratorForm = ({
 			percentOff: '20',
 			expires: undefined,
 			bypassSoldOut: false,
+			status: 1,
+			default: false,
 		},
 	})
 	const [codes, setCodes] = React.useState<string[]>([])
 
 	const products = use(productsLoader)
 
-	const expiresAtDateTime = form.watch('expires')?.setHours(23, 59, 0, 0)
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		form.reset()
 
-		// Extract bypassSoldOut from the form and put it in fields
-		const { bypassSoldOut, ...rest } = values
+		const { bypassSoldOut, ...couponDataFromForm } = values
+
+		let finalExpires = couponDataFromForm.expires
+		if (finalExpires instanceof Date) {
+			// Create a new Date object for 23:59:59 UTC on the date part of finalExpires
+			// finalExpires from the form should be a JS Date representing 00:00:00 LA time for the chosen day.
+			// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
+			finalExpires = new Date(
+				Date.UTC(
+					finalExpires.getUTCFullYear(),
+					finalExpires.getUTCMonth(), // 0-indexed
+					finalExpires.getUTCDate(),
+					23, // hours
+					59, // minutes
+					59, // seconds
+					0, // milliseconds
+				),
+			)
+		}
 
 		const codes = await createCoupon({
-			...rest,
-			quantity: values.quantity,
-			maxUses: Number(values.maxUses),
-			expires: values.expires,
-			restrictedToProductId: values.restrictedToProductId,
-			percentageDiscount: (Number(values.percentOff) / 100).toString(),
+			quantity: couponDataFromForm.quantity,
+			maxUses: Number(couponDataFromForm.maxUses),
+			expires: finalExpires,
+			restrictedToProductId: couponDataFromForm.restrictedToProductId,
+			percentageDiscount: (
+				Number(couponDataFromForm.percentOff) / 100
+			).toString(),
+			status: Number(couponDataFromForm.status),
+			default: couponDataFromForm.default,
 			fields: {
-				bypassSoldOut: values.bypassSoldOut,
+				bypassSoldOut: bypassSoldOut,
 			},
 		})
 		setCodes(codes)
@@ -126,10 +149,6 @@ const CouponGeneratorForm = ({
 										id="enableRestrictedToProductId"
 										checked={Boolean(form.watch('restrictedToProductId'))}
 										onCheckedChange={() => {
-											console.log(
-												'checked',
-												form.watch('restrictedToProductId'),
-											)
 											return Boolean(form.watch('restrictedToProductId'))
 												? form.setValue('restrictedToProductId', undefined)
 												: form.setValue(
@@ -169,27 +188,6 @@ const CouponGeneratorForm = ({
 						)}
 					/>
 					<FormField
-						name="bypassSoldOut"
-						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel
-									htmlFor="bypassSoldOut"
-									className="mb-0.5 mt-1.5 flex items-center gap-1.5"
-								>
-									<Checkbox
-										id="bypassSoldOut"
-										checked={field.value}
-										onCheckedChange={field.onChange}
-									/>
-									Bypass Sold Out
-								</FormLabel>
-								<FormDescription>
-									Allow purchasing even when a product is sold out
-								</FormDescription>
-							</FormItem>
-						)}
-					/>
-					<FormField
 						name="expires"
 						render={({ field }) => (
 							<FormItem className="flex flex-col">
@@ -208,42 +206,64 @@ const CouponGeneratorForm = ({
 									/>
 									Expiration date
 								</FormLabel>
-								<Popover>
-									<PopoverTrigger asChild>
-										<FormControl>
-											<Button
-												variant={'outline'}
-												className={cn(
-													'w-[240px] pl-3 text-left font-normal',
-													!field.value && 'text-muted-foreground',
-												)}
-											>
-												{field.value ? (
-													format(field.value, 'PPP')
-												) : (
-													<span>Pick a date</span>
-												)}
-												<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-											</Button>
-										</FormControl>
-									</PopoverTrigger>
-									<PopoverContent className="w-auto p-0" align="start">
-										<Calendar
-											mode="single"
-											selected={field.value}
-											onSelect={(date) => {
-												return field.onChange(date)
-											}}
-											disabled={(date) =>
-												date < new Date() || date < new Date('1900-01-01')
-											}
-										/>
-									</PopoverContent>
-								</Popover>
+								<DateTimePicker
+									aria-label="Expiration date"
+									value={(() => {
+										const jsDateValue = field.value
+										if (jsDateValue instanceof Date) {
+											const year = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'yyyy',
+												),
+												10,
+											)
+											const month = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'MM',
+												),
+												10,
+											)
+											const day = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'dd',
+												),
+												10,
+											)
+											return new CalendarDate(year, month, day)
+										} else {
+											return null
+										}
+									})()}
+									onChange={(dateValue) => {
+										// dateValue is CalendarDate | null from the picker
+										field.onChange(
+											dateValue
+												? dateValue.toDate('America/Los_Angeles')
+												: null,
+										)
+									}}
+									shouldCloseOnSelect={true}
+									granularity="day"
+								/>
 								<FormDescription>
-									{/* {form.watch('expires')?.toUTCString()} */}
-									{expiresAtDateTime &&
-										new Date(expiresAtDateTime).toISOString()}
+									{(() => {
+										const expiresDate = form.watch('expires')
+										if (expiresDate) {
+											return `${formatInTimeZone(
+												new Date(expiresDate),
+												'America/Los_Angeles',
+												'yyyy-MM-dd',
+											)} (Expires at 23:59:59 PT)`
+										} else {
+											return 'No expiration date set'
+										}
+									})()}
 								</FormDescription>
 								<FormMessage />
 							</FormItem>
@@ -302,6 +322,57 @@ const CouponGeneratorForm = ({
 							</FormItem>
 						)}
 					/>
+					<FormField
+						name="default"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<FormLabel
+										className="mt-1.5 flex items-center gap-1.5 peer-disabled:cursor-not-allowed"
+										htmlFor="default"
+									>
+										<Checkbox
+											disabled={form.watch('maxUses') !== '-1'}
+											id="default"
+											checked={field.value}
+											onCheckedChange={(value) => {
+												form.setValue('bypassSoldOut', false)
+												field.onChange(value)
+											}}
+										/>
+										Auto Apply
+									</FormLabel>
+								</FormControl>
+								<FormDescription>
+									When enabled, this coupon gets applied automatically (sets{' '}
+									<code>default</code> flag)
+								</FormDescription>
+							</FormItem>
+						)}
+					/>
+					{!form.watch('default') && (
+						<FormField
+							name="bypassSoldOut"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel
+										htmlFor="bypassSoldOut"
+										className="mt-1.5 flex items-center gap-1.5"
+									>
+										<Checkbox
+											id="bypassSoldOut"
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+										Bypass Sold Out
+									</FormLabel>
+									<FormDescription>
+										Allow purchasing even when a product is sold out.
+									</FormDescription>
+								</FormItem>
+							)}
+						/>
+					)}
 				</fieldset>
 				<div className="mt-8 flex items-end gap-5">
 					<div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-end">

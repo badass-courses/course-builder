@@ -15,6 +15,8 @@ const CouponInputSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentageDiscount: z.string(),
+	status: z.number().default(1),
+	default: z.boolean().default(false),
 	fields: z.record(z.any()).default({}),
 })
 

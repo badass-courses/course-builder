@@ -81,7 +81,7 @@ export const PricingWidget: React.FC<{
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
-					<Pricing.SaleCountdown className="[&_p]:pb-0" />
+					<Pricing.SaleCountdown className="mt-5 [&_p]:pb-3" />
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
