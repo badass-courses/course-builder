@@ -19,6 +19,7 @@ export async function GET(request: Request) {
 		const resourceTypesWithImages = [
 			'post',
 			'list',
+			'event',
 			'workshop',
 			'tutorial',
 			'self-paced',
@@ -97,7 +98,7 @@ export async function GET(request: Request) {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
 			} else {
-				title = 'From Zero to AI Hero'
+				title = 'Become Epic AI Pro'
 			}
 		}
 
@@ -113,30 +114,27 @@ export async function GET(request: Request) {
 		return new ImageResponse(
 			(
 				<div
-					tw="flex h-full w-full bg-white flex-col"
+					tw="flex h-full w-full bg-gradient-to-tr from-purple-200 to-white flex-col"
 					style={{
 						fontFamily: 'HeadingFont',
-						background: '#fff',
+						// background: '#fff',
 						width: 1200,
 						height: 630,
-						backgroundImage:
-							resource && resource.type === 'post' && image
-								? `url(${image})`
-								: '',
+						backgroundImage: resource && image ? `url(${image})` : '',
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 					}}
 				>
-					{resource && resource.type === 'post' && image && (
+					{resource && image && (
 						<div
 							tw="absolute w-full h-full"
 							style={{
 								backgroundImage:
-									'linear-gradient(to bottom left, rgba(255,255,255,0.2), rgba(255,255,255,0.6), rgba(255,255,255,0.8))',
+									'linear-gradient(to bottom left, rgba(255,255,255,0.3), rgba(255,255,255,0.7), rgba(255,255,255,0.9))',
 							}}
 						/>
 					)}
-					{resource && resource.type === 'post' && image && (
+					{resource && image && (
 						<div tw="absolute right-40 top-26 z-10 flex">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +187,7 @@ export async function GET(request: Request) {
 						{image && resource && resource?.type !== 'post' && (
 							<div tw={`flex items-start -mr-32 justify-start h-full`}>
 								<div tw="relative flex items-center justify-center">
-									<img src={image} width={700} />
+									{/* <img src={image} width={700} /> */}
 									<div tw="absolute z-10 flex">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
