@@ -20,6 +20,9 @@ import {
 } from '../events/resource-management'
 import { inngest } from '../inngest.server'
 
+const EVENT_HOST_EMAIL = 'me@kentcdodds.com'
+const EVENT_HOST_DISPLAY_NAME = 'Kent C. Dodds'
+
 /**
  * Maps the fields from our Event resource to the Google Calendar API format.
  *
@@ -50,11 +53,15 @@ async function mapResourceToGoogleEvent(
 
 	const timezone = fields.timezone || 'America/Los_Angeles' // Default timezone if not set
 	const description = fields.details || fields.body || fields.description || '' // Use details, body, fallback to description
-	const htmlDescription = await marked(description)
+
+	const htmlDescription = await marked(description, {
+		gfm: true,
+		breaks: false,
+	})
 
 	return {
 		summary: fields.title,
-		description: htmlDescription,
+		description: htmlDescription.replace(/\n/g, ''), // Remove all newlines for nice formatting in Google Calendar
 		start: {
 			dateTime: fields.startsAt,
 			timeZone: timezone,
@@ -216,13 +223,26 @@ export const calendarSync = inngest.createFunction(
 					`Mapped payload is missing essential fields (summary, start, end) for resource ${resourceId}`,
 				)
 			}
-			const googleEventPayload =
-				partialGoogleEventPayload as calendar_v3.Schema$Event
+
+			const payloadForCreation: calendar_v3.Schema$Event = {
+				...partialGoogleEventPayload,
+				organizer: {
+					email: EVENT_HOST_EMAIL,
+					displayName: EVENT_HOST_DISPLAY_NAME,
+				},
+				attendees: [
+					{
+						email: EVENT_HOST_EMAIL,
+						displayName: EVENT_HOST_DISPLAY_NAME,
+						responseStatus: 'accepted',
+					},
+				],
+			}
 
 			let createdGoogleEvent: calendar_v3.Schema$Event | null = null
 			try {
 				createdGoogleEvent = await step.run('create-google-event', async () => {
-					return await createGoogleCalendarEvent(googleEventPayload)
+					return await createGoogleCalendarEvent(payloadForCreation)
 				})
 
 				if (createdGoogleEvent?.id) {
