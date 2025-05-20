@@ -7,7 +7,7 @@ import {
 	GlobeAmericasIcon,
 	MapPinIcon,
 } from '@heroicons/react/24/outline'
-import { format } from 'date-fns'
+import { addDays, format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 import { Button } from '@coursebuilder/ui'
@@ -42,10 +42,20 @@ export const EventDetails: React.FC<{
 	const pacificDateString =
 		startsAt && formatInTimeZone(startsAt, PT, 'MMMM do, yyyy')
 	const pacificTimeString = startsAt && formatInTimeZone(startsAt, PT, 'h:mm a')
+	const originalStartDate = startsAt && new Date(startsAt)
+	const startDateOneDayLater =
+		originalStartDate && format(addDays(originalStartDate, 1), 'MMMM do, yyyy')
+
 	const everyTimeZoneLink =
 		pacificDateString &&
 		pacificTimeString &&
-		buildEtzLink(pacificDateString, pacificTimeString)
+		startDateOneDayLater &&
+		buildEtzLink(
+			process.env.NEXT_PUBLIC_TEMPORARY_TIMEZONE_OFFSET === 'true'
+				? startDateOneDayLater
+				: pacificDateString,
+			pacificTimeString,
+		)
 
 	return (
 		<div className={cn('flex flex-col p-6')}>

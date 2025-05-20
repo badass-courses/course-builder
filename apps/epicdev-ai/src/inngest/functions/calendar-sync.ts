@@ -10,6 +10,7 @@ import {
 } from '@/lib/google-calendar'
 import { calendar_v3 } from 'googleapis'
 import { GetFunctionInput, NonRetriableError } from 'inngest'
+import { marked } from 'marked'
 
 import { REFUND_PROCESSED_EVENT } from '@coursebuilder/core/inngest/commerce/event-refund-processed'
 
@@ -25,9 +26,9 @@ import { inngest } from '../inngest.server'
  * @param {Event} eventResource The event resource from our database.
  * @returns {calendar_v3.Schema$Event | null} Google Calendar event payload or null if required fields are missing.
  */
-function mapResourceToGoogleEvent(
+async function mapResourceToGoogleEvent(
 	eventResource: Event,
-): Partial<calendar_v3.Schema$Event> | null {
+): Promise<Partial<calendar_v3.Schema$Event> | null> {
 	const fields = eventResource.fields
 
 	if (!fields.startsAt) {
@@ -48,10 +49,12 @@ function mapResourceToGoogleEvent(
 	}
 
 	const timezone = fields.timezone || 'America/Los_Angeles' // Default timezone if not set
+	const description = fields.details || fields.body || fields.description || '' // Use details, body, fallback to description
+	const htmlDescription = await marked(description)
 
 	return {
 		summary: fields.title,
-		description: fields.details || fields.body || fields.description || '', // Use details, body, fallback to description
+		description: htmlDescription,
 		start: {
 			dateTime: fields.startsAt,
 			timeZone: timezone,
@@ -62,6 +65,7 @@ function mapResourceToGoogleEvent(
 		},
 		guestsCanInviteOthers: false,
 		guestsCanSeeOtherGuests: false,
+
 		// Consider adding other fields like location if available/needed
 	}
 }
@@ -114,7 +118,7 @@ export const calendarSync = inngest.createFunction(
 
 		// Step 4: Map resource fields to Google Calendar Event payload
 		const partialGoogleEventPayload =
-			mapResourceToGoogleEvent(validEventResource)
+			await mapResourceToGoogleEvent(validEventResource)
 
 		if (!partialGoogleEventPayload) {
 			// Required fields (like startsAt) were missing.

@@ -15,17 +15,26 @@ import {
 import { Event, EventSchema } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { EditorView } from '@codemirror/view'
 import { parseAbsolute } from '@internationalized/date'
+import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import {
 	Calendar,
 	ImagePlusIcon,
 	LayoutTemplate,
 	VideoIcon,
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { z } from 'zod'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -34,6 +43,10 @@ import {
 	Input,
 	Textarea,
 } from '@coursebuilder/ui'
+import {
+	CourseBuilderEditorThemeDark,
+	CourseBuilderEditorThemeLight,
+} from '@coursebuilder/ui/codemirror/editor'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
@@ -227,11 +240,13 @@ const EventFormFields = ({
 }: ResourceFormProps<Event, typeof EventSchema> & {
 	videoResource: VideoResource | null
 }) => {
+	const { theme } = useTheme()
 	// Provide both generic arguments
 	// Handle potential undefined form prop
 	if (!form) {
 		return null // Or a loading indicator
 	}
+
 	return (
 		<>
 			<VideoResourceField
@@ -277,22 +292,56 @@ const EventFormFields = ({
 			/>
 			<MetadataFieldState form={form} />
 			<MetadataFieldVisibility form={form} />
-			<FormField
-				control={form.control}
-				name="fields.details"
-				render={({ field }) => (
-					<FormItem className="px-5">
+			<Dialog>
+				<DialogTrigger asChild>
+					<div className="px-5">
 						<FormLabel className="inline-flex items-center text-lg font-bold">
 							<Calendar className="mr-1 size-4" /> Event Details
 						</FormLabel>
 						<FormDescription>
 							Details to be used in Google calendar for this event.
 						</FormDescription>
-						<Textarea {...field} value={field.value?.toString()} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+						<Textarea readOnly value={form.watch('fields.details')} />
+					</div>
+				</DialogTrigger>
+				<DialogContent className="scrollbar-thin max-h-[500px] max-w-screen-md">
+					<DialogHeader>
+						<DialogTitle className=" inline-flex items-center text-lg font-bold">
+							<Calendar className="mr-1 size-4" /> Event Details
+						</DialogTitle>
+						<DialogDescription>
+							Details to be used in Google calendar for this event. Markdown is
+							supported.
+						</DialogDescription>
+					</DialogHeader>
+					<FormField
+						control={form.control}
+						name="fields.details"
+						render={({ field }) => (
+							<FormItem>
+								<MarkdownEditor
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+									height="300px"
+									maxHeight="500px"
+									onChange={(value) => {
+										form.setValue('fields.details', value)
+									}}
+									value={field.value?.toString()}
+								/>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</DialogContent>
+			</Dialog>
+
 			<FormField
 				control={form.control}
 				name="fields.startsAt"

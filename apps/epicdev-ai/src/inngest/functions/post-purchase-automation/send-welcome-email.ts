@@ -5,6 +5,7 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { type AuthConfig } from '@auth/core'
+import { addDays, format } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 
@@ -105,11 +106,21 @@ export const sendWelcomeEmail = inngest.createFunction(
 		}
 
 		return await step.run('send welcome email', async () => {
+			const startDate = product.fields?.startDate
+			const originalStartDate = new Date(startDate)
+			const startDateOneDayLater = format(
+				addDays(originalStartDate, 1),
+				'MMMM do, yyyy',
+			)
+
 			return await sendAnEmail({
 				Component: pickEmail(),
 				componentProps: {
 					productName: product.name,
-					startDate: product.fields?.startDate,
+					startDate:
+						process.env.NEXT_PUBLIC_TEMPORARY_TIMEZONE_OFFSET === 'true'
+							? startDateOneDayLater
+							: product.fields?.startDate,
 					startTime: product.fields?.startTime,
 					endTime: product.fields?.endTime,
 					userFirstName: userFirstName,
