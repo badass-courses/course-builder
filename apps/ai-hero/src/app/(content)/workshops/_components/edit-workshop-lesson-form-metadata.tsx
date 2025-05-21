@@ -32,6 +32,7 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { TagField } from '../../posts/_components/tag-field'
+import { LessonVideoResourceField } from './lesson-video-resource-field'
 
 export const LessonMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof LessonSchema>>
@@ -74,16 +75,23 @@ export const LessonMetadataFormFields: React.FC<{
 	return (
 		<>
 			{/* Video Section */}
-			<ContentVideoResourceField
+			<LessonVideoResourceField
+				form={form}
+				lesson={lesson}
+				videoResource={videoResource}
+				initialVideoResourceId={videoResource?.id}
+			/>
+			{/* <ContentVideoResourceField
 				resource={lesson}
 				form={form}
+				thumbnailEnabled={true}
 				videoResource={videoResource}
 				onVideoUpdate={async (resourceId, videoResourceId) => {
 					// Just updates the form value, actual saving happens on form submit
 					form.setValue('fields.videoResourceId' as any, videoResourceId)
 				}}
 				showTranscript={true}
-			/>
+			/> */}
 
 			<FormField
 				control={form.control}

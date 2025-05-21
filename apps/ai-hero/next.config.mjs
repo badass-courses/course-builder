@@ -6,6 +6,8 @@ import createMDX from '@next/mdx'
 import { withSentryConfig } from '@sentry/nextjs'
 import { withAxiom } from 'next-axiom'
 
+import { env } from './src/env.mjs'
+
 await import('./src/env.mjs')
 
 const withMDX = createMDX({
@@ -34,6 +36,11 @@ const config = {
 			{
 				protocol: 'https',
 				hostname: 'avatars.githubusercontent.com',
+				port: '',
+			},
+			{
+				protocol: 'https',
+				hostname: env.NEXT_PUBLIC_URL.replace('https://', ''),
 				port: '',
 			},
 		],

@@ -29,8 +29,8 @@ export const SolutionSchema = ContentResourceSchema.merge(
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
-
 			videoResourceId: z.string().nullish(),
+			thumbnailTime: z.number().nullish(),
 		}),
 		resources: z.array(z.any()).default([]).nullable(),
 	}),

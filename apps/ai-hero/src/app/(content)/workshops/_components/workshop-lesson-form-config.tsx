@@ -55,6 +55,7 @@ export const createWorkshopLessonFormConfig = (
 			description: lesson?.fields?.description || '',
 			github: lesson?.fields?.github || '',
 			gitpod: lesson?.fields?.gitpod || '',
+			thumbnailTime: lesson?.fields?.thumbnailTime || 0,
 		},
 		tags: lesson?.tags || [],
 	}),

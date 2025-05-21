@@ -26,6 +26,8 @@ import {
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { LessonVideoResourceField } from './lesson-video-resource-field'
+
 // Define a simpler interface for what we actually use in the form
 interface SolutionFormData extends Solution {
 	fields: {
@@ -35,6 +37,7 @@ interface SolutionFormData extends Solution {
 		description?: string
 		state: 'draft' | 'published' | 'archived' | 'deleted'
 		visibility: 'public' | 'private' | 'unlisted'
+		thumbnailTime?: number
 	}
 }
 
@@ -61,38 +64,26 @@ const BaseSolutionForm = ({
 
 	return (
 		<>
-			<div className="mb-6 px-5">
+			<div className="-mt-4">
 				<Button
 					type="button"
-					variant="outline"
-					className="gap-2"
+					variant="ghost"
+					className="mb-1 h-8 gap-2"
 					onClick={() =>
 						router.push(`/workshops/${moduleId}/${lessonSlug}/edit`)
 					}
 				>
-					<ArrowLeft className="h-4 w-4" />
+					<ArrowLeft className="mr-1 h-4 w-4" />
 					Back to Lesson
 				</Button>
 			</div>
 
 			{/* Video Section */}
-			<ContentVideoResourceField
-				resource={resource}
+			<LessonVideoResourceField
 				form={form}
+				lesson={resource}
 				videoResource={videoResource}
-				label="Solution Video"
-				onVideoUpdate={async (resourceId, videoResourceId) => {
-					// When a video is added, connect it to the solution
-					const { addVideoResourceToSolution } = await import(
-						'@/lib/solutions-query'
-					)
-					await addVideoResourceToSolution({
-						solutionId: resourceId,
-						videoResourceId,
-					})
-				}}
-				showTranscript={true}
-				className="mb-6 px-5"
+				initialVideoResourceId={videoResource?.id}
 			/>
 
 			<FormField
@@ -183,6 +174,7 @@ export function EditSolutionForm({
 						description: resource?.fields?.description || '',
 						state: resource?.fields?.state || 'draft',
 						visibility: resource?.fields?.visibility || 'unlisted',
+						thumbnailTime: resource?.fields?.thumbnailTime || 0,
 					},
 					resources: resource?.resources || [],
 				}

@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import * as React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
@@ -24,17 +25,8 @@ import {
 	getAbilityForResource,
 	type AbilityForResource,
 } from '@/utils/get-current-ability-rules'
-import { Github } from 'lucide-react'
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-	Badge,
-	Button,
-	Skeleton,
-} from '@coursebuilder/ui'
+import { Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { CopyProblemPromptButton } from '../../../_components/copy-problem-prompt-button'
@@ -188,7 +180,7 @@ async function PlayerContainer({
 	})
 	const thumbnailUrl =
 		videoResource &&
-		`${env.NEXT_PUBLIC_URL}/api/thumbnails/${videoResource.resourceId}`
+		`${env.NEXT_PUBLIC_URL}/api/thumbnails?videoResourceId=${videoResource.resourceId}&time=${lesson.fields?.thumbnailTime || 0}`
 
 	return (
 		<VideoPlayerOverlayProvider>
@@ -196,12 +188,21 @@ async function PlayerContainer({
 				aria-label="video"
 				className="dark relative flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
 			>
-				<div
+				{thumbnailUrl && (
+					<Image
+						src={thumbnailUrl}
+						alt="thumbnail"
+						fill
+						className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
+						priority
+					/>
+				)}
+				{/* <div
 					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
 					style={{
 						backgroundImage: `url(${thumbnailUrl})`,
 					}}
-				/>
+				/> */}
 				<Suspense
 					fallback={
 						<PlayerContainerSkeleton className="h-full max-h-[75vh] w-full bg-black" />

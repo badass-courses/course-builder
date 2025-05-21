@@ -31,6 +31,8 @@ import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { last } from '@coursebuilder/nodash'
 
 import { Lesson } from './lessons'
+import { SolutionSchema } from './solution'
+import { getCachedSolution, getSolution } from './solutions-query'
 
 const redis = Redis.fromEnv()
 
@@ -176,7 +178,7 @@ export const getCachedLesson = unstable_cache(
 )
 
 export async function getLesson(lessonSlugOrId: string) {
-	const start = new Date().getTime()
+	// const start = new Date().getTime()
 
 	const cachedLesson = await redis.get(
 		`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
@@ -234,10 +236,16 @@ export async function getLesson(lessonSlugOrId: string) {
 		)
 	}
 
-	console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
+	// console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
 	return parsedLesson.data
 }
+
+export const getCachedExerciseSolution = unstable_cache(
+	async (slug: string) => getExerciseSolution(slug),
+	['solution'],
+	{ revalidate: 3600, tags: ['solution'] },
+)
 
 export async function getExerciseSolution(lessonSlugOrId: string) {
 	const lesson = await db.query.contentResource.findFirst({
@@ -258,7 +266,12 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		with: {
 			resources: {
 				with: {
-					resource: true,
+					resource: {
+						columns: {
+							type: true,
+							id: true,
+						},
+					},
 				},
 				orderBy: asc(contentResourceResource.position),
 			},
@@ -271,12 +284,14 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		return null
 	}
 
-	const solution = parsedLesson.data?.resources?.find(
+	const partialSolution = parsedLesson.data?.resources?.find(
 		(resource: ContentResourceResource) =>
 			resource.resource.type === 'solution',
 	)?.resource
 
-	const parsedSolution = LessonSchema.safeParse(solution)
+	const solution = await getCachedSolution(partialSolution.id)
+
+	const parsedSolution = SolutionSchema.safeParse(solution)
 	if (!parsedSolution.success) {
 		console.error('Error parsing solution', solution)
 		return null

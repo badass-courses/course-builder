@@ -19,7 +19,12 @@ export async function GET(
 	props: { params: Promise<{ videoResourceId: string }> },
 ) {
 	try {
-		const params = await props.params
+		// const params = await props.params
+		const { searchParams } = new URL(request.url)
+		// const searchParams = request.nextUrl.searchParams
+		const videoResourceId = searchParams.get('videoResourceId')
+		const time = searchParams.get('time')
+		const params = { videoResourceId }
 		if (!params.videoResourceId) {
 			return NextResponse.json(
 				{ error: 'Missing videoResourceId' },
@@ -44,8 +49,8 @@ export async function GET(
 				{ status: 404, headers: corsHeaders },
 			)
 		}
-		const thumbnailTime = fields.thumbnailTime || 0
-		const thumbnailUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${thumbnailTime}&width=480`
+		const thumbnailTime = time || fields.thumbnailTime || 0
+		const thumbnailUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${thumbnailTime}&width=320`
 
 		const thumbnailResponse = await fetch(thumbnailUrl)
 		if (!thumbnailResponse.ok) {

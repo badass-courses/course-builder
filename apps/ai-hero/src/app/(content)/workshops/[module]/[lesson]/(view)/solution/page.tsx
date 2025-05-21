@@ -3,7 +3,11 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
-import { getExerciseSolution, getLesson } from '@/lib/lessons-query'
+import {
+	getCachedExerciseSolution,
+	getExerciseSolution,
+	getLesson,
+} from '@/lib/lessons-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
 export async function generateMetadata(
@@ -39,7 +43,7 @@ export default async function LessonSolutionPage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const params = await props.params
-	const data = await getExerciseSolution(params.lesson)
+	const data = await getCachedExerciseSolution(params.lesson)
 
 	if (!data) {
 		notFound()
