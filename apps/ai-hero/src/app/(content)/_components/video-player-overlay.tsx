@@ -19,6 +19,7 @@ import {
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
+import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
 
@@ -34,6 +35,7 @@ import { formatUsd } from '@coursebuilder/core/utils/format-usd'
 import { Button, Progress, useToast } from '@coursebuilder/ui'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
@@ -67,7 +69,7 @@ export const CompletedLessonOverlay: React.FC<{
 	return nextLesson ? (
 		<div
 			aria-live="polite"
-			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			className="bg-background/80 absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
 				<p className="pb-2 opacity-80">Up Next:</p>
@@ -75,10 +77,12 @@ export const CompletedLessonOverlay: React.FC<{
 				<div className="mt-8 flex items-center gap-3 text-sm">
 					<Progress
 						value={percentCompleted}
-						className="bg-background/20 h-1 w-[150px] sm:w-[200px]"
+						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
 					/>
-					{moduleProgress?.completedLessonsCount || 0}/
-					{moduleProgress?.totalLessonsCount || 0} completed
+					<div className="opacity-85">
+						{moduleProgress?.completedLessonsCount || 0}/
+						{moduleProgress?.totalLessonsCount || 0} completed
+					</div>
 				</div>
 			</div>
 			<div className="flex w-full items-center justify-center gap-3">
@@ -93,7 +97,7 @@ export const CompletedLessonOverlay: React.FC<{
 				>
 					Replay
 				</Button>
-				{resource && (
+				{resource && resource.type !== 'solution' && (
 					<CopyProblemPromptButton
 						abilityLoader={abilityLoader}
 						className="dark:bg-primary/20 dark:hover:bg-primary/30 dark:text-primary h-10 bg-white/20 px-4 text-sm text-white transition hover:bg-white/30"
@@ -245,7 +249,7 @@ const ContinueButton: React.FC<{
 	const [isPending, startTransition] = React.useTransition()
 	return (
 		<Button
-			className="dark:bg-primary dark:hover:bg-primary/80 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
+			className="dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
 			onClick={async () => {
 				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {
@@ -277,7 +281,11 @@ const ContinueButton: React.FC<{
 				: isProblemLesson
 					? 'Continue'
 					: 'Complete & Continue'}
-			{isPending && <Spinner className="ml-2 h-4 w-4" />}
+			{isPending ? (
+				<Spinner className="ml-2 size-4" />
+			) : (
+				<ArrowRight className="ml-2 size-4" />
+			)}
 		</Button>
 	)
 }
@@ -432,7 +440,12 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg xl:aspect-video"
+				className={cn(
+					'relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg xl:aspect-video',
+					{
+						'xl:aspect-auto': pricingProps?.country !== 'US',
+					},
+				)}
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
 			</div>

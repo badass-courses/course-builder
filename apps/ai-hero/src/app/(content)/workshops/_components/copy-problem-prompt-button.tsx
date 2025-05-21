@@ -72,7 +72,7 @@ export function CopyProblemPromptButton({
 			onClick={handleCopy}
 			variant="outline"
 			size="sm"
-			className={cn('h-11 px-5 text-base', className)}
+			className={cn('group h-11 px-5 text-base', className)}
 			type="button"
 			{...rest}
 		>
@@ -83,8 +83,23 @@ export function CopyProblemPromptButton({
 						'opacity-0': copied,
 					})}
 				>
-					<Sparkle className="dark:text-primary size-4 text-orange-600" /> Copy
-					Prompt
+					<svg
+						className="dark:text-primary mr-1 size-4 text-amber-500"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 15 15"
+					>
+						<path
+							stroke="currentColor"
+							strokeLinecap="round"
+							className="transition ease-in-out"
+							fill="currentColor"
+							strokeLinejoin="round"
+							d="M1 7.75A6.75 6.75 0 0 0 7.75 1a6.75 6.75 0 0 0 6.75 6.75 6.75 6.75 0 0 0-6.75 6.75A6.75 6.75 0 0 0 1 7.75Z"
+						/>
+					</svg>
+					{/* <Sparkle className="dark:text-primary size-4 text-orange-600" /> */}
+					Copy Prompt
 				</span>
 				<span
 					aria-hidden={!copied}

@@ -78,22 +78,15 @@ export async function LessonPage({
 						lessonType={lessonType}
 					/>
 				)}
-				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-16">
+				<LessonControls
+					abilityLoader={abilityLoader}
+					lesson={lesson}
+					problem={problem}
+				/>
+				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-14">
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
-							<div className="relative mb-10 flex w-full items-center justify-between gap-3">
-								<LessonActionBar
-									lesson={lesson}
-									problem={problem}
-									abilityLoader={abilityLoader}
-								/>
-								<LessonControls
-									lesson={lesson}
-									problem={problem}
-									className="flex justify-end"
-								/>
-							</div>
 
 							<Suspense
 								fallback={
@@ -201,7 +194,7 @@ async function PlayerContainer({
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="dark relative mb-10 flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
+				className="dark relative flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
 			>
 				<div
 					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
@@ -248,70 +241,15 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 
 	return (
 		<div>
-			<Badge
+			{/* <Badge
 				className="mb-1 border-none bg-transparent px-0 text-xs uppercase opacity-75"
 				variant="outline"
 			>
 				{lesson.type}
-			</Badge>
-			<h1 className="fluid-3xl mb-4 font-bold">{lesson.fields?.title}</h1>
-		</div>
-	)
-}
-
-async function LessonActionBar({
-	lesson,
-	problem,
-	abilityLoader,
-}: {
-	lesson: Lesson | null
-	problem?: Lesson | null
-	abilityLoader: Promise<AbilityForResource>
-}) {
-	if (!lesson) return null
-
-	const githubUrl = lesson.fields?.github
-	const gitpodUrl = lesson.fields?.gitpod
-
-	return (
-		<div className="flex items-center gap-8">
-			{/* <Contributor className="flex [&_img]:w-8" /> */}
-			{githubUrl && (
-				<Button asChild variant="outline" className="h-11 text-base">
-					<Link href={githubUrl} target="_blank">
-						<Github className="text-muted-foreground mr-2 h-4 w-4" />
-						Source Code
-					</Link>
-				</Button>
-			)}
-			<React.Suspense fallback={null}>
-				<CopyProblemPromptButton
-					abilityLoader={abilityLoader}
-					lesson={lesson}
-					problem={problem}
-				/>
-			</React.Suspense>
-			{gitpodUrl && (
-				<Button variant="outline" asChild className="h-11 text-base">
-					<Link href={gitpodUrl} target="_blank">
-						<svg
-							width={16}
-							height={16}
-							viewBox={'0 0 16 16'}
-							aria-hidden="true"
-							role={'img'}
-							xmlns="http://www.w3.org/2000/svg"
-							className="text-muted-foreground mr-2 h-4 w-4"
-						>
-							<path
-								fill="currentColor"
-								d="M9.355.797a1.591 1.591 0 0 1-.58 2.156L4.122 5.647a.401.401 0 0 0-.2.348v4.228a.4.4 0 0 0 .2.347l3.683 2.133a.39.39 0 0 0 .39 0l3.685-2.133a.4.4 0 0 0 .2-.347v-2.63L8.766 9.485a1.55 1.55 0 0 1-2.127-.6 1.592 1.592 0 0 1 .593-2.153l4.739-2.708c1.443-.824 3.228.232 3.228 1.91v4.61a3.015 3.015 0 0 1-1.497 2.612l-4.23 2.448a2.937 2.937 0 0 1-2.948 0l-4.229-2.448A3.016 3.016 0 0 1 .8 10.544v-4.87A3.016 3.016 0 0 1 2.297 3.06L7.225.208a1.55 1.55 0 0 1 2.13.589Z"
-							/>
-						</svg>
-						Gitpod
-					</Link>
-				</Button>
-			)}
+			</Badge> */}
+			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-bold dark:text-white">
+				{lesson.fields?.title}
+			</h1>
 		</div>
 	)
 }

@@ -7,6 +7,8 @@ import type { Lesson } from '@/lib/lessons'
 import { setProgressForResource } from '@/lib/progress'
 
 import { Label, Switch } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
+import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { revalidateModuleLesson } from '../actions'
 
@@ -14,12 +16,16 @@ export function ModuleLessonProgressToggle({
 	lesson,
 	moduleType = 'tutorial',
 	lessonType,
+	abilityLoader,
 }: {
 	lesson: Lesson
 	moduleType?: string
 	lessonType?: 'lesson' | 'exercise' | 'solution'
+	abilityLoader: Promise<AbilityForResource>
 }) {
 	const params = useParams()
+	const ability = React.use(abilityLoader)
+	const canView = ability?.canView
 
 	const { moduleProgress, addLessonProgress, removeLessonProgress } =
 		useModuleProgress()
@@ -31,38 +37,46 @@ export function ModuleLessonProgressToggle({
 	)
 
 	const [isPending, startTransition] = React.useTransition()
-
+	const disabled = isPending || !canView
 	return lesson ? (
-		<div className="flex items-center gap-2">
-			<Label htmlFor="lesson-progress-toggle">Mark as complete</Label>
-			<Switch
-				disabled={isPending}
-				aria-label={`Mark lesson as ${isCompleted ? 'incomplete' : 'completed'}`}
-				id="lesson-progress-toggle"
-				checked={isCompleted}
-				onCheckedChange={async (checked) => {
-					if (checked) {
-						startTransition(() => {
-							addLessonProgress(lesson.id)
+		<>
+			<Label
+				htmlFor="lesson-progress-toggle"
+				className={cn(
+					'hover:bg-muted/50 flex h-full items-center gap-0.5 border-l pl-2 transition hover:cursor-pointer',
+				)}
+			>
+				<Switch
+					disabled={disabled}
+					className="scale-75 disabled:cursor-auto"
+					aria-label={`Mark lesson as ${isCompleted ? 'incomplete' : 'completed'}`}
+					id="lesson-progress-toggle"
+					checked={isCompleted}
+					onCheckedChange={async (checked) => {
+						if (checked) {
+							startTransition(() => {
+								addLessonProgress(lesson.id)
+							})
+						} else {
+							startTransition(() => {
+								removeLessonProgress(lesson.id)
+							})
+						}
+						await setProgressForResource({
+							resourceId: lesson.id,
+							isCompleted: checked,
 						})
-					} else {
-						startTransition(() => {
-							removeLessonProgress(lesson.id)
-						})
-					}
-					await setProgressForResource({
-						resourceId: lesson.id,
-						isCompleted: checked,
-					})
-					await revalidateModuleLesson(
-						params.module as string,
-						params.lesson as string,
-						moduleType,
-						lessonType,
-					)
-				}}
-			/>
-		</div>
+						await revalidateModuleLesson(
+							params.module as string,
+							params.lesson as string,
+							moduleType,
+							lessonType,
+						)
+					}}
+				/>
+				<div className="w-[9ch]">{isCompleted ? 'Completed' : 'Complete'}</div>
+			</Label>
+		</>
 	) : null
 }
 

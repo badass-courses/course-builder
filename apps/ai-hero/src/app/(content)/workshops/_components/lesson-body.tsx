@@ -2,6 +2,7 @@
 
 import { use } from 'react'
 import type { Lesson } from '@/lib/lessons'
+import { Lock } from 'lucide-react'
 
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
@@ -20,7 +21,10 @@ export function LessonBody({
 	if (!canView) {
 		return (
 			<div className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
-				<p>This lesson is locked. Please upgrade to view it.</p>
+				<p>
+					<Lock className="mr-1 inline-block size-5 opacity-75" /> You need to
+					be a member to access this lesson.
+				</p>
 			</div>
 		)
 	}

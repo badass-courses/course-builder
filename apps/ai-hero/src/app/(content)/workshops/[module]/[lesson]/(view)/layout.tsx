@@ -24,7 +24,7 @@ const LessonLayout = async (props: {
 
 	return (
 		<ActiveHeadingProvider>
-			<LayoutClient>
+			<LayoutClient withContainer>
 				<div className="flex min-w-0">
 					<WorkshopResourceList
 						currentLessonSlug={params.lesson}
@@ -34,13 +34,14 @@ const LessonLayout = async (props: {
 						<SheetTrigger className="bg-card/80 fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded border p-3 backdrop-blur-md lg:hidden">
 							<MenuIcon className="size-4" /> Lessons
 						</SheetTrigger>
-						<SheetContent className="px-0">
+						<SheetContent className="px-0 pt-0">
 							<SheetHeader>
 								<SheetTitle className="sr-only">Workshop Contents</SheetTitle>
 							</SheetHeader>
 							<WorkshopResourceList
+								isCollapsible={false}
 								currentLessonSlug={params.lesson}
-								className="border-r-0 border-t-0"
+								className="max-w-full border-r-0 border-t-0"
 							/>
 						</SheetContent>
 					</Sheet>

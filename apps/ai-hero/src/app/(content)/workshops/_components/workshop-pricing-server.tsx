@@ -32,6 +32,7 @@ export async function WorkshopPricing({
 		const pricingDataLoader = getPricingData({
 			productId: product.id,
 		})
+
 		const countryCode =
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
