@@ -262,12 +262,12 @@ export default async function EventPage(props: {
 								'Date TBD'
 							)} */}
 
-				<div className="flex flex-col items-center gap-2 pb-8">
+				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
 					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
 						{fields.title}
 					</h1>
 					{fields.description && (
-						<h2 className="mt-5 text-balance text-xl font-normal">
+						<h2 className="mt-5 text-balance text-lg font-normal text-purple-950 lg:text-xl dark:text-purple-200">
 							{fields.description}
 						</h2>
 					)}
