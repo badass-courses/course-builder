@@ -79,7 +79,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.Name />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
-					<Pricing.TeamToggle className="mt-3" />
+					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-3' />
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton className="via-primary bg-gradient-to-b from-blue-500 to-blue-700 shadow" />
 					<Pricing.GuaranteeBadge />

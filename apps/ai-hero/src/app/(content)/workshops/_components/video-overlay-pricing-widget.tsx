@@ -58,7 +58,7 @@ export function VideoOverlayWorkshopPricing({
 							<Pricing.Name className="font-medium" />
 							<Pricing.LiveQuantity />
 							<Pricing.Price className="mb-2 [&_div]:text-white" />
-							<Pricing.TeamToggle className="mb-2" />
+							<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mb-2' />
 							<Pricing.TeamQuantityInput />
 							<Pricing.BuyButton className="text-lg font-semibold">
 								Enroll Now

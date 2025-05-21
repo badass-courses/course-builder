@@ -4,8 +4,6 @@ import { Slot } from '@radix-ui/react-slot'
 import * as Switch from '@radix-ui/react-switch'
 import pluralize from 'pluralize'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
-import { useForm } from 'react-hook-form'
-import Balancer from 'react-wrap-balancer'
 
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
 import { Product } from '@coursebuilder/core/schemas'
@@ -161,11 +159,11 @@ const Name = ({
 	return withTitle ? (
 		<div
 			className={cn(
-				'mt-3 px-5 text-center text-xl font-bold sm:text-2xl',
+				'mt-3 text-balance px-5 text-center text-xl font-bold sm:text-2xl',
 				className,
 			)}
 		>
-			<Balancer>{children || product.name}</Balancer>
+			{children || product.name}
 		</div>
 	) : null
 }

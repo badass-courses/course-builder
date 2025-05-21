@@ -57,7 +57,7 @@ export const PricingWidget: React.FC<{
 					</div>
 					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>
-							<Pricing.TeamToggle />
+							<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary' />
 							<Pricing.TeamQuantityInput />
 						</>
 					)}

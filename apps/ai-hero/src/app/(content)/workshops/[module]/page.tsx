@@ -210,7 +210,7 @@ export default async function ModulePage(props: Props) {
 								<p>No description found.</p>
 							)}
 						</article>
-						<div className="col-span-2 flex flex-col border-l">
+						<div className="bg-muted/50 col-span-2 flex flex-col border-l">
 							<React.Suspense
 								fallback={
 									<div className="flex flex-col gap-2">

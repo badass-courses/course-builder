@@ -22,7 +22,9 @@ export const ProductPricingFeatures = ({
 	return (
 		<div className="relative mt-5 flex w-full flex-col items-center">
 			<strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
-				<span className="bg-background py-1\ relative z-10 px-3">Includes</span>
+				<span className="relative z-10 bg-[#F7F7F7] px-3 py-1 dark:bg-[#0F0F0F]">
+					Includes
+				</span>
 				<div
 					aria-hidden="true"
 					className="bg-border absolute left-0 z-0 h-px w-full"

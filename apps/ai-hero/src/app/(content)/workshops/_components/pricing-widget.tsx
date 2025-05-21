@@ -58,12 +58,12 @@ export const PricingWidget: React.FC<{
 			<Pricing.Product className="w-full">
 				<Pricing.ProductImage />
 				<Pricing.Details className="px-0">
-					<Pricing.Name className="mb-2" />
+					<Pricing.Name className="mb-2 font-medium sm:text-xl" />
 					<Pricing.LiveQuantity />
 					<Pricing.Price />
-					<Pricing.TeamToggle />
+					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-3' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton />
+					<Pricing.BuyButton>Enroll Now</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="py-4" />
