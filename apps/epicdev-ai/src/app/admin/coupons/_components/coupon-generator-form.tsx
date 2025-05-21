@@ -140,15 +140,7 @@ const CouponGeneratorForm = ({
 			form.reset()
 			return
 		}
-		// codes is an array of coupon ids
-		// we need to set not only the codes, but also correct urls with code param
-		// to generate full urls, we need to use {getResourcePath} from @/utils/resource-paths and pass in the type, slug, and view mode
-		// in order to do this, we need to get the product's resource
-		// we can do this by getting the product from the products array
-		// then we can get the resource from the product's resources array
-		// then we can generate the url using getResourcePath
-		// then we can add the url to the codes array
-		// finally, we can set the codes array to the state
+
 		const codesWithUrls = codes.map((code) => {
 			const product = products.find(
 				(product) => product.id === couponDataFromForm.restrictedToProductId,
@@ -169,14 +161,14 @@ const CouponGeneratorForm = ({
 			return `${env.NEXT_PUBLIC_URL}${url}?coupon=${code}`
 		})
 		setCodes(codesWithUrls)
-		// router.refresh()
 		form.reset()
+		// router.refresh()
 	}
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)}>
-				<fieldset className="grid-cols-3 gap-5 space-y-5 md:grid md:space-y-0">
+			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
+				<fieldset className="flex grid-cols-2 flex-col gap-5 space-y-5 lg:grid lg:space-y-0 xl:grid-cols-3">
 					<FormField
 						name="percentOff"
 						render={({ field }) => (
