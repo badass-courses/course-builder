@@ -1,14 +1,16 @@
 'use client'
 
 import React, { use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
+import { env } from '@/env.mjs'
 import { createCoupon } from '@/lib/coupons-query'
+import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarDate } from '@internationalized/date'
 import { formatInTimeZone } from 'date-fns-tz'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { z } from 'zod'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -33,6 +35,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	useToast,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -70,10 +73,8 @@ const CouponGeneratorForm = ({
 	const [codes, setCodes] = React.useState<string[]>([])
 
 	const products = use(productsLoader)
-
+	const { toast } = useToast()
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		form.reset()
-
 		const { bypassSoldOut, ...couponDataFromForm } = values
 
 		let finalExpires = couponDataFromForm.expires
@@ -108,14 +109,74 @@ const CouponGeneratorForm = ({
 				bypassSoldOut: bypassSoldOut,
 			},
 		})
-		setCodes(codes)
-		router.refresh()
+
+		if (Boolean(couponDataFromForm.default)) {
+			// TODO: toast notification about the default coupon being applied to product
+			const product = products.find(
+				(product) => product.id === couponDataFromForm.restrictedToProductId,
+			)
+			const resource = product?.resources?.[0]
+			if (!product) {
+				return
+			}
+			toast({
+				duration: 10000,
+				title: `Default coupon applied to ${resource?.resource?.fields?.title}`,
+				description: (
+					<>
+						<Link
+							className="text-primary underline"
+							href={getResourcePath(
+								resource?.resource.type,
+								resource?.resource?.fields?.slug,
+								'view',
+							)}
+						>
+							View
+						</Link>
+					</>
+				),
+			})
+			form.reset()
+			return
+		}
+		// codes is an array of coupon ids
+		// we need to set not only the codes, but also correct urls with code param
+		// to generate full urls, we need to use {getResourcePath} from @/utils/resource-paths and pass in the type, slug, and view mode
+		// in order to do this, we need to get the product's resource
+		// we can do this by getting the product from the products array
+		// then we can get the resource from the product's resources array
+		// then we can generate the url using getResourcePath
+		// then we can add the url to the codes array
+		// finally, we can set the codes array to the state
+		const codesWithUrls = codes.map((code) => {
+			const product = products.find(
+				(product) => product.id === couponDataFromForm.restrictedToProductId,
+			)
+			if (!product) {
+				return code
+			}
+			const resource = product.resources?.[0]
+			if (!resource) {
+				return code
+			}
+			console.log(resource)
+			const url = getResourcePath(
+				resource.resource.type,
+				resource.resource.fields.slug,
+				'view',
+			)
+			return `${env.NEXT_PUBLIC_URL}${url}?coupon=${code}`
+		})
+		setCodes(codesWithUrls)
+		// router.refresh()
+		form.reset()
 	}
 
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)}>
-				<fieldset className="grid-cols-4 gap-5 space-y-5 md:grid md:space-y-0">
+				<fieldset className="grid-cols-3 gap-5 space-y-5 md:grid md:space-y-0">
 					<FormField
 						name="percentOff"
 						render={({ field }) => (
@@ -129,7 +190,6 @@ const CouponGeneratorForm = ({
 										id="percentOff"
 										{...field}
 										required
-										onChange={field.onChange}
 										placeholder={'20'}
 									/>
 								</FormControl>
@@ -166,7 +226,7 @@ const CouponGeneratorForm = ({
 										disabled={!Boolean(form.watch('restrictedToProductId'))}
 										onValueChange={field.onChange}
 									>
-										<SelectTrigger>
+										<SelectTrigger className="truncate overflow-ellipsis pr-5 text-left">
 											<SelectValue
 												placeholder={
 													Boolean(form.watch('restrictedToProductId'))
@@ -390,8 +450,6 @@ const CouponGeneratorForm = ({
 												required
 												min={1}
 												max={100}
-												onChange={field.onChange}
-												defaultValue={1}
 											/>
 										</FormControl>
 									</FormItem>
@@ -408,7 +466,7 @@ const CouponGeneratorForm = ({
 							key={codes.join('\n')}
 							className="flex w-full items-end gap-2 sm:justify-end"
 						>
-							{form.formState.isSubmitted && codes && (
+							{codes.length > 0 && !form.formState.isDirty && (
 								<>
 									<Button
 										disabled={form.formState.isSubmitting}
@@ -422,7 +480,7 @@ const CouponGeneratorForm = ({
 										disabled={form.formState.isSubmitting}
 										type="button"
 										onClick={() => {
-											toast.success('Copied to clipboard')
+											toast({ title: 'Copied to clipboard' })
 											return navigator.clipboard.writeText(codes.join('\n'))
 										}}
 										variant="secondary"

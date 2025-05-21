@@ -4,11 +4,30 @@ import CouponDataTable from '@/app/admin/coupons/_components/coupon-data-table'
 import CouponGeneratorForm from '@/app/admin/coupons/_components/coupon-generator-form'
 import { db } from '@/db'
 import { coupon } from '@/db/schema'
+import { getSoldOutOrPastEventIds } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import { desc } from 'drizzle-orm'
 import z from 'zod'
 
 import { couponSchema, productSchema } from '@coursebuilder/core/schemas'
+
+const getActiveProducts = async () => {
+	const products = await db.query.products.findMany({
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+			},
+		},
+	})
+	const soldOutOrPastEventIds = await getSoldOutOrPastEventIds()
+	return products.filter((product) =>
+		product.resources.every(
+			(resource) => !soldOutOrPastEventIds.includes(resource.resource.id),
+		),
+	)
+}
 
 export default async function AdminCouponPage() {
 	const { ability } = await getServerAuthSession()
@@ -24,7 +43,7 @@ export default async function AdminCouponPage() {
 		}),
 	)
 
-	const productsLoader = db.query.products.findMany().then((products) => {
+	const productsLoader = getActiveProducts().then((products) => {
 		return z.array(productSchema).parse(products)
 	})
 
@@ -35,8 +54,8 @@ export default async function AdminCouponPage() {
 				<h2 className="fluid-xl font-heading mb-8 font-bold">Create new</h2>
 				<CouponGeneratorForm productsLoader={productsLoader} />
 			</section>
-			<section>
-				<h2 className="fluid-xl font-heading mb-5 font-bold">History</h2>
+			<section className="mt-5 border-t pt-10">
+				<h2 className="fluid-xl font-heading mb-5 font-bold">Browse</h2>
 				<CouponDataTable coupons={coupons} />
 			</section>
 		</main>

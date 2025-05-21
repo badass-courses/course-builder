@@ -68,7 +68,7 @@ export async function createCoupon(input: CouponInput) {
 					merchantCouponId: merchantCoupon?.id,
 					id,
 				})
-				codesArray.push(`${env.COURSEBUILDER_URL}/?coupon=${id}`)
+				codesArray.push(id)
 			}
 		})
 
