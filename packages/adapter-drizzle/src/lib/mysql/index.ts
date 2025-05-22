@@ -1001,6 +1001,18 @@ export function mySqlDrizzleAdapter(
 
 			return couponSchema.nullable().parse(loadedCoupon)
 		},
+		async getPurchasesForBulkCouponId(
+			bulkCouponId: string,
+		): Promise<(Purchase & { user: User })[]> {
+			return z.array(purchaseSchema.extend({ user: userSchema })).parse(
+				await client.query.purchases.findMany({
+					where: eq(purchaseTable.bulkCouponId, bulkCouponId),
+					with: {
+						user: true,
+					},
+				}),
+			)
+		},
 		async getCouponWithBulkPurchases(couponId: string): Promise<
 			| (Coupon & {
 					bulkPurchases?: Purchase[] | null

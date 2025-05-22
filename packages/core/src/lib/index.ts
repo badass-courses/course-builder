@@ -2,6 +2,7 @@ import { CourseBuilderConfig } from '../index'
 import { RequestInternal, ResponseInternal } from '../types'
 import * as actions from './actions'
 import { checkout } from './actions/checkout'
+import { claimed } from './actions/claimed'
 import { createMagicLink } from './actions/create-magic-link'
 import { getPricesFormatted } from './actions/prices-formatted'
 import { processRefund } from './actions/process-refund'
@@ -56,6 +57,8 @@ export async function CourseBuilderInternal(
 				return await processRefund(request, cookies, options)
 			case 'checkout':
 				return await checkout(request, cookies, options)
+			case 'claimed':
+				return await claimed(request, cookies, options)
 			case 'webhook':
 				return await actions.webhook(request, cookies, options)
 			case 'subscribe-to-list':

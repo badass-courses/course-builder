@@ -144,6 +144,9 @@ export interface CourseBuilderAdapter<
 	getSubscriptionForStripeId(
 		stripeSubscriptionId: string,
 	): Promise<Subscription | null>
+	getPurchasesForBulkCouponId(
+		bulkCouponId: string,
+	): Promise<(Purchase & { user: User })[]>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -436,6 +439,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	createMerchantSession: async () => Promise.resolve({} as MerchantSession),
 	createSubscription: async () => null,
 	getSubscriptionForStripeId: async () => null,
+	getPurchasesForBulkCouponId: async () => [],
 }
 
 interface SkillProductsCommerceSdk {
