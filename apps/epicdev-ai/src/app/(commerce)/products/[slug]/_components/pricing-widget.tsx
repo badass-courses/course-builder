@@ -85,8 +85,8 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
-			<Pricing.Waitlist className="w-full">
-				<p className="!mb-3 text-center font-medium">
+			<Pricing.Waitlist className="border-foreground/5 mt-5 w-full border-t px-5">
+				<p className="!mb-3 text-balance pt-5 text-center text-lg font-medium leading-tight">
 					Get notified when the next cohort opens
 				</p>
 				<SubscribeToConvertkitForm
