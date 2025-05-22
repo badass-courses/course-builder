@@ -36,7 +36,12 @@ async function getBody(
 
 	const contentType = req.headers.get('content-type')
 	if (contentType?.includes('application/json')) {
-		return await req.json()
+		try {
+			return await req.json()
+		} catch (e) {
+			logger.error(e as Error)
+			return undefined
+		}
 	} else if (contentType?.includes('application/x-www-form-urlencoded')) {
 		const params = new URLSearchParams(await req.text())
 		return Object.fromEntries(params)
