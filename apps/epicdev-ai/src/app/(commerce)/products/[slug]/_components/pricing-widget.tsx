@@ -87,12 +87,12 @@ export const PricingWidget: React.FC<{
 			</Pricing.Product>
 			<Pricing.Waitlist className="border-foreground/5 mt-5 w-full border-t px-5">
 				<p className="!mb-3 text-balance pt-5 text-center text-lg font-medium leading-tight">
-					Get notified when the next cohort opens
+					Sold out. Get notified when the next date is announced.
 				</p>
 				<SubscribeToConvertkitForm
 					fields={waitlistCkFields}
 					actionLabel="Join Waitlist"
-					className="w-ful relative z-10 flex flex-col items-center justify-center [&_button]:mt-5 [&_button]:h-12 [&_button]:w-full [&_button]:text-lg [&_input]:h-12 [&_input]:text-lg"
+					className="w-ful relative z-10 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:text-base [&_input]:h-12 [&_input]:text-lg"
 					successMessage={
 						<p className="inline-flex items-center text-center text-lg font-medium">
 							<CheckCircle className="text-primary mr-2 size-5" /> You are on

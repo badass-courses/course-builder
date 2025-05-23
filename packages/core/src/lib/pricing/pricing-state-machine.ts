@@ -283,9 +283,12 @@ export const pricingMachine = setup({
 										if (context.pricingData.quantityAvailable === -1) {
 											return defaultTeamSize
 										} else {
-											return Math.min(
-												context.pricingData.quantityAvailable,
-												defaultTeamSize,
+											return Math.max(
+												1,
+												Math.min(
+													context.pricingData.quantityAvailable,
+													defaultTeamSize,
+												),
 											)
 										}
 									} else {

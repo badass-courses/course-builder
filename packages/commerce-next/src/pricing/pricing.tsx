@@ -299,6 +299,10 @@ const TeamToggle = ({
 	children?: React.ReactNode
 }) => {
 	const { isTeamPurchaseActive, toggleTeamPurchase } = usePricing()
+	const isSoldOut = usePricing().isSoldOut
+
+	if (isSoldOut) return null
+
 	return (
 		<div
 			className={cn(
@@ -369,6 +373,9 @@ const TeamQuantityInput = ({
 				className,
 			)}
 		>
+			{teamQuantityLimit}
+			{quantity}
+
 			{children || (
 				<>
 					<div className="flex items-center gap-1 text-sm font-medium">
