@@ -62,7 +62,7 @@ export enum ChatCompletionRequestMessageRoleEnum {
 	System = 'system',
 	User = 'user',
 	Assistant = 'assistant',
-	Function = 'function',
+	Tool = 'tool',
 }
 
 /**
@@ -222,8 +222,7 @@ Post Title: {{title}}
 {% if transcript %}Post Transcript: {{transcript}}{% endif %}
 
 Post Body: {{body}}
-
-Reply in a markdown code fence.`,
+`,
 		},
 	}
 
@@ -252,7 +251,7 @@ Reply in a markdown code fence.`,
 						ChatCompletionRequestMessageRoleEnum.System,
 						ChatCompletionRequestMessageRoleEnum.User,
 						ChatCompletionRequestMessageRoleEnum.Assistant,
-						ChatCompletionRequestMessageRoleEnum.Function,
+						ChatCompletionRequestMessageRoleEnum.Tool,
 					]),
 					content: z.string(),
 				}),
@@ -268,7 +267,11 @@ Reply in a markdown code fence.`,
 				'parse json content',
 				async () => {
 					const engine = new Liquid()
-					return await engine.parseAndRender(actionMessage.content, {
+					const contentString =
+						typeof actionMessage.content === 'string'
+							? actionMessage.content
+							: JSON.stringify(actionMessage.content)
+					return await engine.parseAndRender(contentString, {
 						...resource,
 					})
 				},
@@ -293,12 +296,14 @@ Reply in a markdown code fence.`,
 		systemPrompt = await step.run(`parse system prompt`, async () => {
 			try {
 				const engine = new Liquid()
+				const originalSystemPrompt = systemPrompt // Store reference before reassignment
+				const contentString =
+					typeof originalSystemPrompt.content === 'string'
+						? originalSystemPrompt.content
+						: JSON.stringify(originalSystemPrompt.content)
 				return {
-					role: systemPrompt.role,
-					content: await engine.parseAndRender(
-						systemPrompt.content || '',
-						resource,
-					),
+					role: originalSystemPrompt.role,
+					content: await engine.parseAndRender(contentString || '', resource),
 				}
 			} catch (e: any) {
 				console.error(e.message)
@@ -321,17 +326,29 @@ Reply in a markdown code fence.`,
 		if (!currentUserMessage) {
 			throw new Error('No user message')
 		}
+
 		const engine = new Liquid()
+		const currentUserContentString =
+			typeof currentUserMessage.content === 'string'
+				? currentUserMessage.content
+				: JSON.stringify(currentUserMessage.content)
+
 		currentUserMessage.content = await engine.parseAndRender(
-			currentUserMessage.content ?? '',
+			currentUserContentString ?? '',
 			resource,
 		)
+
 		if (currentResourceMetadata) {
+			const metadataContentString =
+				typeof currentResourceMetadata.content === 'string'
+					? currentResourceMetadata.content
+					: JSON.stringify(currentResourceMetadata.content)
 			currentResourceMetadata.content = await engine.parseAndRender(
-				currentResourceMetadata.content ?? '',
+				metadataContentString ?? '',
 				resource,
 			)
 		}
+
 		return streamingChatPromptExecutor({
 			requestId: resourceId,
 			promptMessages: messages,

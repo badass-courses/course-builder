@@ -125,8 +125,9 @@ export function ResourceChatResponse({
 		>
 			{messages.length === 0 && user ? (
 				<div className="prose prose-sm dark:prose-invert p-5">
-					{`Hi ${user.name?.split(' ')[0]}, I’m your assistant and I’m here to help you get things done
-          faster.`}
+					{user.name
+						? `Hi ${user.name?.split(' ')[0]}, I’m your assistant and I’m here to help you get things done faster.`
+						: 'Hi, I’m your assistant and I’m here to help you get things done faster.'}
 				</div>
 			) : null}
 			{messages.map((message, index) => (

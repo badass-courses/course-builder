@@ -1,8 +1,8 @@
 import { AuthConfig } from '@auth/core'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import { type CoreMessage } from 'ai'
 import { CookieSerializeOptions } from 'cookie'
 import { Inngest } from 'inngest'
-import { type ChatCompletionRequestMessage } from 'openai-edge'
 import Stripe from 'stripe'
 
 import { CourseBuilderAdapter } from './adapters'
@@ -239,8 +239,7 @@ export type FunctionCall = {
 	name: string // function name.
 }
 
-export type AIMessage = ChatCompletionRequestMessage & {
-	content: null | string
+export type AIMessage = CoreMessage & {
 	createdAt?: Date
 	id?: string
 }
