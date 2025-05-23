@@ -127,7 +127,7 @@ export async function upsertPostToTypeSense(
 					}
 				}),
 			}),
-			...(post.fields?.postType === 'event' && {
+			...(post.fields?.startsAt && {
 				startsAt: post.fields?.startsAt ?? null,
 				endsAt: post.fields?.endsAt ?? null,
 				timezone: post.fields?.timezone ?? 'America/Los_Angeles',

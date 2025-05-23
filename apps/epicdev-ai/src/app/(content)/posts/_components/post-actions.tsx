@@ -50,7 +50,7 @@ export function PostActions({
 	)
 
 	return (
-		<aside className="divide-border bg-card bottom-5 right-5 z-20 my-5 w-full gap-3 divide-y border lg:fixed lg:my-0 lg:w-64">
+		<aside className="divide-border dark:bg-card bottom-5 right-5 z-20 my-5 w-full gap-3 divide-y rounded border bg-white shadow-md lg:fixed lg:my-0 lg:w-64">
 			<div className="p-5 py-3">
 				<p className="font-semibold">
 					Hey {session?.user?.name?.split(' ')[0] || 'there'}!
@@ -140,20 +140,22 @@ export function PostActions({
 					</AccordionItem>
 				</Accordion>
 			) : null}
-			<CreatePostModal
-				availableResourceTypes={['article']}
-				defaultResourceType="article"
-				topLevelResourceTypes={['post']}
-			/>
-			<CreateNewEventDialog
-				className="mt-1 w-full"
-				variant="outline"
-				buttonLabel={
-					<>
-						<PlusIcon className="mr-0.5 size-4" /> New event
-					</>
-				}
-			/>
+			<div className="px-5 py-4">
+				<CreatePostModal
+					availableResourceTypes={['article']}
+					defaultResourceType="article"
+					topLevelResourceTypes={['post']}
+				/>
+				<CreateNewEventDialog
+					className="mt-1 w-full"
+					variant="outline"
+					buttonLabel={
+						<>
+							<PlusIcon className="mr-0.5 size-4" /> New event
+						</>
+					}
+				/>
+			</div>
 		</aside>
 	)
 }

@@ -345,7 +345,7 @@ export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 	const postsAsEvents = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'post'),
-			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'event'),
+			// eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'event'),
 		),
 	})
 
