@@ -123,9 +123,7 @@ export function ResourceChatAssistant({
 						}}
 						availableWorkflows={availableWorkflows}
 					/>
-				) : (
-					<div>{selectedWorkflow}</div>
-				)}
+				) : null}
 			</div>
 			<ResizablePanelGroup direction="vertical">
 				<ResizablePanel defaultSize={85} className="none">

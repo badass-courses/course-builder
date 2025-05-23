@@ -57,7 +57,7 @@ export function EditResourcesToolPanel({
 							'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full'
 						}
 						minSize={15}
-						defaultSize={50}
+						defaultSize={25}
 						maxSize={25}
 					>
 						<EditResourcesToolPanelContents

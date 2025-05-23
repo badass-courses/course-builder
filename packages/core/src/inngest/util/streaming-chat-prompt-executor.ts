@@ -1,17 +1,13 @@
-// Removed import of ChatCompletionRequestMessage from '@ai-sdk/openai'
+import { type CoreMessage } from 'ai'
 
 import { LlmProviderConfig } from '../../providers/openai'
-import { AIError, AIMessage, type AIOutput } from '../../types'
+import { AIMessage, type AIOutput } from '../../types'
 
-// Define ChatCompletionRequestMessage type
-export type ChatCompletionRequestMessage = {
-	role: 'system' | 'user' | 'assistant' | 'function'
-	content: string | undefined
-}
+export type ChatCompletionRequestMessage = CoreMessage
 
 type PromptStepOptions = {
 	requestId: string
-	promptMessages: ChatCompletionRequestMessage[]
+	promptMessages: CoreMessage[]
 	model: string
 	provider: LlmProviderConfig
 }
@@ -42,6 +38,6 @@ export async function streamingChatPromptExecutor({
 		{
 			role: 'assistant',
 			content: message.content,
-		} as ChatCompletionRequestMessage,
+		} as CoreMessage,
 	]
 }

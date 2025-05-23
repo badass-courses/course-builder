@@ -1,11 +1,82 @@
-import {
-	ChatCompletionRequestMessage,
-	Configuration,
-	OpenAIApi,
-} from 'openai-edge'
+import { createOpenAI } from '@ai-sdk/openai'
+import { streamText, type CoreMessage } from 'ai'
 
-import { OpenAIStreamingDataPartykitChunkPublisher } from '../inngest/util/streaming-chunk-publisher'
-import { AIOutput, ProgressWriter } from '../types'
+import { AIOutput } from '../types'
+
+export const STREAM_COMPLETE = `\\ok`
+
+/**
+ * PartyKit chunk publisher that buffers and sends chunks at intervals
+ * to maintain the expected streaming behavior for the UI
+ */
+class PartyKitChunkPublisher {
+	requestId: string
+	interval = 250
+	buffer: {
+		contents: string
+		signal?: Promise<unknown>
+	}
+	partyUrl: string
+
+	constructor(requestId: string, partyUrlBase: string) {
+		this.requestId = requestId
+		this.buffer = {
+			contents: '',
+		}
+		this.partyUrl = `${partyUrlBase}/party/${requestId}`
+	}
+
+	async publishMessage(message: string) {
+		await this.sendToPartyKit(message, this.requestId, this.partyUrl)
+	}
+
+	async appendToBufferAndPublish(text: string) {
+		let resolve = (_val?: any) => {}
+		this.buffer.contents += text
+
+		if (this.buffer.signal) {
+			// Already enqueued.
+			return
+		}
+
+		this.buffer.signal = new Promise((r) => {
+			resolve = r
+		})
+
+		setTimeout(() => {
+			if (this.buffer.contents.length === 0) {
+				resolve()
+				return
+			}
+			this.sendToPartyKit(this.buffer.contents, this.requestId, this.partyUrl)
+			resolve()
+			this.buffer = {
+				contents: '',
+			}
+		}, this.interval)
+	}
+
+	async waitForBuffer() {
+		await this.buffer.signal
+	}
+
+	private async sendToPartyKit(
+		body: string,
+		requestId: string,
+		partyUrl: string,
+	) {
+		return await fetch(partyUrl, {
+			method: 'POST',
+			body: JSON.stringify({
+				body,
+				requestId,
+				name: 'ai.message',
+			}),
+		}).catch((e) => {
+			console.error('Failed to send chunk to PartyKit:', e)
+		})
+	}
+}
 
 export interface LlmProviderConfig {
 	id: string
@@ -32,7 +103,7 @@ export type LlmProviderConsumerConfig = Omit<
 }
 
 export type CreateChatCompletionOptions = {
-	messages: ChatCompletionRequestMessage[]
+	messages: CoreMessage[]
 	chatId: string
 	model: string
 }
@@ -40,13 +111,13 @@ export type CreateChatCompletionOptions = {
 export default function OpenAIProvider(
 	options: LlmProviderConsumerConfig,
 ): LlmProviderConfig {
-	const config = new Configuration({
+	const client = createOpenAI({
 		apiKey: options.apiKey,
 		...(options.baseUrl && {
-			baseUrl: options.baseUrl,
+			baseURL: options.baseUrl,
 		}),
 	})
-	const openai = new OpenAIApi(config)
+
 	return {
 		id: 'openai',
 		name: 'OpenAI',
@@ -56,36 +127,48 @@ export default function OpenAIProvider(
 		createChatCompletion: async (
 			createChatOptions: CreateChatCompletionOptions,
 		) => {
-			const writer: ProgressWriter =
-				new OpenAIStreamingDataPartykitChunkPublisher(
+			try {
+				const modelName =
+					createChatOptions.model || options.defaultModel || 'gpt-4o'
+
+				// Create PartyKit publisher with buffering behavior
+				const publisher = new PartyKitChunkPublisher(
 					createChatOptions.chatId,
 					options.partyUrlBase,
 				)
-			let result
-			const response = await openai.createChatCompletion({
-				messages: createChatOptions.messages,
-				stream: true,
-				model: createChatOptions.model || options.defaultModel || 'gpt-4o',
-			})
-			if (response.status >= 400) {
-				result = await response.json()
-				throw new Error(
-					result?.error?.message
-						? (result.error.message as string)
-						: 'There was an error with openAI',
-					{
-						cause: result,
+
+				const result = await streamText({
+					model: client(modelName),
+					messages: createChatOptions.messages,
+					onChunk: async ({ chunk }) => {
+						if (chunk.type === 'text-delta') {
+							// Use the buffered publisher to maintain expected streaming behavior
+							await publisher.appendToBufferAndPublish(chunk.textDelta)
+						}
 					},
-				)
+				})
+
+				// We need to consume the stream to make result.text resolve
+				// Since we're already handling chunks in onChunk, we can consume textStream to completion
+				let fullText = ''
+				for await (const textPart of result.textStream) {
+					fullText += textPart
+				}
+
+				// Wait for any remaining buffered content to be sent
+				await publisher.waitForBuffer()
+
+				// Send completion signal using the expected format
+				await publisher.publishMessage(STREAM_COMPLETE)
+
+				return {
+					role: 'assistant',
+					content: fullText,
+				}
+			} catch (error) {
+				console.error('OpenAI streaming error:', error)
+				throw error
 			}
-			try {
-				result = await writer.writeResponseInChunks(response)
-			} catch (e) {
-				console.warn((e as Error).message, e)
-			} finally {
-				await writer.publishMessage(`\n\n`)
-			}
-			return result || null
 		},
 	} as const
 }
