@@ -34,8 +34,8 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 						y2="107.844"
 						gradientUnits="userSpaceOnUse"
 					>
-						<stop stop-color="#8D63E9" />
-						<stop offset="1" stop-color="#9D9CF9" />
+						<stop stopColor="#8D63E9" />
+						<stop offset="1" stopColor="#9D9CF9" />
 					</linearGradient>
 				</defs>
 			</svg>
