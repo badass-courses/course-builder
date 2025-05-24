@@ -12,6 +12,9 @@ import {
 	withResourceForm,
 	type ResourceFormConfig,
 } from '@/components/resource-form/with-resource-form'
+import Spinner from '@/components/spinner'
+import { env } from '@/env.mjs'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -22,6 +25,7 @@ import {
 	Calendar,
 	ImagePlusIcon,
 	LayoutTemplate,
+	Sparkles,
 	VideoIcon,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -29,6 +33,7 @@ import { z } from 'zod'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
 import {
+	Button,
 	Dialog,
 	DialogContent,
 	DialogDescription,
@@ -47,6 +52,7 @@ import {
 	CourseBuilderEditorThemeDark,
 	CourseBuilderEditorThemeLight,
 } from '@coursebuilder/ui/codemirror/editor'
+import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
@@ -241,6 +247,52 @@ const EventFormFields = ({
 	videoResource: VideoResource | null
 }) => {
 	const { theme } = useTheme()
+	const [isGeneratingDescription, setIsGeneratingDescription] =
+		React.useState(false)
+
+	useSocket({
+		room: resource.id,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
+
+				if (
+					data.name === 'resource.chat.completed' &&
+					data.requestId === resource.id &&
+					data.metadata?.workflow === 'prompt-1ixsd'
+				) {
+					const lastMessage = data.body[data.body.length - 1]
+					if (lastMessage?.content) {
+						const description = lastMessage.content.replace(
+							/```.*\n(.*)\n```/s,
+							'$1',
+						)
+						form && form.setValue('fields.description', description)
+					}
+					setIsGeneratingDescription(false)
+				}
+			} catch (error) {
+				setIsGeneratingDescription(false)
+			}
+		},
+	})
+
+	const handleGenerateDescription = async () => {
+		setIsGeneratingDescription(true)
+
+		await sendResourceChatMessage({
+			resourceId: resource.id,
+			messages: [
+				{
+					role: 'user',
+					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+				},
+			],
+			selectedWorkflow: 'prompt-1ixsd',
+		})
+	}
+
 	// Provide both generic arguments
 	// Handle potential undefined form prop
 	if (!form) {
@@ -424,6 +476,21 @@ const EventFormFields = ({
 									({`${field.value?.length ?? '0'} / 160`})
 								</span>
 							</FormLabel>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="flex items-center gap-1"
+								disabled={isGeneratingDescription}
+								onClick={handleGenerateDescription}
+							>
+								{isGeneratingDescription ? (
+									<Spinner className="h-4 w-4" />
+								) : (
+									<Sparkles className="h-4 w-4" />
+								)}
+								Generate
+							</Button>
 						</div>
 						<FormDescription>
 							A short snippet that summarizes the post in under 160 characters.
