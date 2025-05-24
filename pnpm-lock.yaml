@@ -841,13 +841,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.12
+        specifier: ^0.0.13
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.5
@@ -859,13 +859,13 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
         version: link:../../packages/utils-ai
       '@coursebuilder/utils-auth':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:../../packages/utils-auth
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
@@ -886,7 +886,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/utils-media
       '@coursebuilder/utils-resource':
-        specifier: 1.0.1
+        specifier: 1.0.2
         version: link:../../packages/utils-resource
       '@coursebuilder/utils-seo':
         specifier: 1.0.0
@@ -1524,13 +1524,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.12
+        specifier: ^0.0.13
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.5
@@ -1542,7 +1542,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3381,10 +3381,10 @@ importers:
         specifier: ^6.5.0
         version: 6.7.3
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -3393,7 +3393,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3739,10 +3739,10 @@ importers:
         specifier: ^6.5.0
         version: 6.7.3
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -3751,7 +3751,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -5437,13 +5437,13 @@ importers:
         specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/adapter-drizzle':
-        specifier: 1.0.3
+        specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.12
+        specifier: ^0.0.13
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.5
@@ -5455,13 +5455,13 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
         version: link:../../packages/utils-ai
       '@coursebuilder/utils-auth':
-        specifier: 1.0.0
+        specifier: 1.0.1
         version: link:../../packages/utils-auth
       '@coursebuilder/utils-aws':
         specifier: 1.0.0
@@ -5482,7 +5482,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/utils-media
       '@coursebuilder/utils-resource':
-        specifier: 1.0.1
+        specifier: 1.0.2
         version: link:../../packages/utils-resource
       '@coursebuilder/utils-search':
         specifier: 1.0.0
@@ -6202,7 +6202,7 @@ importers:
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.10.0)
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../core
       '@libsql/client':
         specifier: 0.5.6
@@ -6300,7 +6300,7 @@ importers:
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.10.0)
       '@coursebuilder/core':
-        specifier: ^1.0.4
+        specifier: ^1.0.5
         version: link:../core
       '@coursebuilder/email-templates':
         specifier: ^1.0.5
@@ -6309,7 +6309,7 @@ importers:
         specifier: workspace:*
         version: link:../nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.5
+        specifier: ^2.0.6
         version: link:../ui
       '@heroicons/react':
         specifier: ^2.0.18
@@ -6673,7 +6673,7 @@ importers:
   packages/next:
     dependencies:
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../core
       inngest:
         specifier: 3.35.0
@@ -6734,7 +6734,7 @@ importers:
         specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/core':
-        specifier: 1.0.4
+        specifier: 1.0.5
         version: link:../core
       '@hookform/resolvers':
         specifier: ^3.3.2
