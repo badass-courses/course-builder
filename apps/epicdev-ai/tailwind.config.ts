@@ -122,8 +122,11 @@ module.exports = {
 							color: theme('colors.foreground'),
 						},
 						blockquote: {
-							borderLeftColor: theme('colors.muted.DEFAULT'),
+							borderLeftColor: theme('colors.border'),
 							color: theme('colors.foreground'),
+						},
+						hr: {
+							borderColor: theme('colors.border'),
 						},
 						'ul, ol, li, strong': {
 							color: theme('colors.foreground'),
