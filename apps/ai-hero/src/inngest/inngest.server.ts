@@ -52,6 +52,10 @@ import {
 	NewSubscriptionCreated,
 } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
+import type {
+	PURCHASE_TRANSFERRED_EVENT,
+	PurchaseTransferred,
+} from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 	StripeCheckoutSessionCompleted,
@@ -99,6 +103,7 @@ export type Events = {
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
+	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
 }
 
 const callbackBase =
