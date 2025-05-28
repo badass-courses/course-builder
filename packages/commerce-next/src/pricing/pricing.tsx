@@ -373,9 +373,6 @@ const TeamQuantityInput = ({
 				className,
 			)}
 		>
-			{teamQuantityLimit}
-			{quantity}
-
 			{children || (
 				<>
 					<div className="flex items-center gap-1 text-sm font-medium">
