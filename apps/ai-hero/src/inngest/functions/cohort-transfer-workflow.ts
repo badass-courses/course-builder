@@ -2,6 +2,7 @@ import { db } from '@/db'
 import { entitlements, entitlementTypes, purchases } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
+import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 import { and, eq, sql } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
@@ -121,30 +122,8 @@ export const cohortTransferWorkflow = inngest.createFunction(
 			const targetUserOrganization = await step.run(
 				`get target user personal organization`,
 				async () => {
-					const targetMemberships = await adapter.getMembershipsForUser(
-						targetUser.id,
-					)
-
-					if (targetMemberships.length === 0) {
-						throw new Error('Target user has no personal organization')
-					}
-
-					// Find their personal organization
-					const expectedOrgName = `Personal (${targetUser.email})`
-					const personalOrg = targetMemberships.find(
-						(membership) => membership.organization.name === expectedOrgName,
-					)?.organization
-
-					if (!personalOrg) {
-						// Use the first organization as fallback (should be personal)
-						const firstOrg = targetMemberships[0]?.organization
-						if (!firstOrg) {
-							throw new Error('Target user has no valid organization')
-						}
-						return firstOrg
-					}
-
-					return personalOrg
+					const result = await ensurePersonalOrganization(targetUser, adapter)
+					return result.organization
 				},
 			)
 
@@ -165,60 +144,11 @@ export const cohortTransferWorkflow = inngest.createFunction(
 
 			// Ensure source user still has a valid personal organization
 			await step.run(`ensure source user organization integrity`, async () => {
-				const sourceMemberships = await adapter.getMembershipsForUser(
-					sourceUser.id,
-				)
-
-				// Check if source user still has their personal organization
-				const expectedSourceOrgName = `Personal (${sourceUser.email})`
-				const hasPersonalOrg = sourceMemberships.some(
-					(membership) =>
-						membership.organization.name === expectedSourceOrgName,
-				)
-
-				if (!hasPersonalOrg) {
-					// Create a new personal organization for source user
-					console.log('Creating new personal organization for source user')
-					const newPersonalOrg = await adapter.createOrganization({
-						name: `Personal (${sourceUser.email})`,
-					})
-
-					if (!newPersonalOrg) {
-						throw new Error(
-							'Failed to create personal organization for source user',
-						)
-					}
-
-					// Add source user to their new personal organization as owner
-					const membership = await adapter.addMemberToOrganization({
-						organizationId: newPersonalOrg.id,
-						userId: sourceUser.id,
-						invitedById: sourceUser.id,
-					})
-
-					if (!membership) {
-						throw new Error(
-							'Failed to add source user to their personal organization',
-						)
-					}
-
-					await adapter.addRoleForMember({
-						organizationId: newPersonalOrg.id,
-						memberId: membership.id,
-						role: 'owner',
-					})
-
-					console.log(
-						'Created new personal organization for source user:',
-						newPersonalOrg.id,
-					)
-				} else {
-					console.log('Source user personal organization is intact')
-				}
+				await ensurePersonalOrganization(sourceUser, adapter)
 			})
 
 			// Get target user's membership in their personal org
-			const orgMembership = await step.run(
+			const targetUserOrgMembership = await step.run(
 				`get target user org membership`,
 				async () => {
 					const targetMemberships = await adapter.getMembershipsForUser(
@@ -267,20 +197,33 @@ export const cohortTransferWorkflow = inngest.createFunction(
 					return
 				}
 
-				const resourceIds = cohortResource.resources.map((r) => r.resource.id)
-				await db
-					.delete(entitlements)
-					.where(
-						and(
-							eq(entitlements.userId, sourceUser.id),
-							eq(
-								entitlements.entitlementType,
-								cohortContentAccessEntitlementType.id,
-							),
-							eq(entitlements.sourceType, 'cohort'),
-							sql`${entitlements.sourceId} IN (${sql.join(resourceIds, sql`, `)})`,
-						),
-					)
+				for (const resource of cohortResource.resources) {
+					await db.insert(entitlements).values({
+						id: guid(),
+						userId: targetUser.id,
+						entitlementType: cohortContentAccessEntitlementType.id,
+						sourceType: 'cohort',
+						sourceId: resource.resource.id,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					})
+				}
+
+				for (const resource of cohortResource.resources || []) {
+					const entitlementId = `${resource.resource.id}-${guid()}`
+					await db.insert(entitlements).values({
+						id: entitlementId,
+						entitlementType: cohortContentAccessEntitlementType.id,
+						sourceType: 'cohort',
+						sourceId: resource.resource.id,
+						userId: targetUser.id,
+						organizationId: targetUserOrganization.id,
+						organizationMembershipId: targetUserOrgMembership.id,
+						metadata: {
+							contentIds: [resource.resource.id],
+						},
+					})
+				}
 
 				console.log(
 					'Added entitlements to target user in their personal organization',

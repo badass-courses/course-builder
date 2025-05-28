@@ -8,6 +8,10 @@ import {
 	EmailSendBroadcast,
 } from '@/inngest/events/email-send-broadcast'
 import {
+	ENSURE_PERSONAL_ORGANIZATION_EVENT,
+	EnsurePersonalOrganization,
+} from '@/inngest/events/ensure-personal-organization'
+import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
@@ -104,6 +108,7 @@ export type Events = {
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
 	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
+	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 }
 
 const callbackBase =

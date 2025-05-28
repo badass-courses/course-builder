@@ -4,6 +4,7 @@ import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purc
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
+import { ensurePersonalOrganizationWorkflow } from '@/inngest/functions/ensure-personal-organization'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
@@ -47,6 +48,7 @@ export const inngestConfig = {
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
+		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,
 		videoResourceDetached,
 	],
