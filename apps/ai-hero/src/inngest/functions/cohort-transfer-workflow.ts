@@ -65,7 +65,13 @@ export const cohortTransferWorkflow = inngest.createFunction(
 
 		if (!cohortResourceId) {
 			// Not a cohort product, nothing to do
-			return { purchase, product, sourceUser, targetUser }
+			return {
+				purchase,
+				product,
+				sourceUser,
+				targetUser,
+				isTeamPurchase: false,
+			}
 		}
 
 		const cohortResource = await step.run(`get cohort resource`, async () => {
