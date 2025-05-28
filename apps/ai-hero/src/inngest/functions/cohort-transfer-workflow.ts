@@ -2,7 +2,7 @@ import { db } from '@/db'
 import { entitlements, entitlementTypes, purchases } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { PURCHASE_TRANSFERRED_EVENT } from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
@@ -51,6 +51,10 @@ export const cohortTransferWorkflow = inngest.createFunction(
 
 		if (!sourceUser || !targetUser) {
 			throw new Error('Source or target user not found')
+		}
+
+		if (sourceUser.id === targetUser.id) {
+			throw new Error('Source and target users cannot be the same')
 		}
 
 		// Check if this is a cohort product
@@ -126,10 +130,9 @@ export const cohortTransferWorkflow = inngest.createFunction(
 					}
 
 					// Find their personal organization
-					const personalOrg = targetMemberships.find((membership) =>
-						membership.organization.name?.includes(
-							`Personal (${targetUser.email})`,
-						),
+					const expectedOrgName = `Personal (${targetUser.email})`
+					const personalOrg = targetMemberships.find(
+						(membership) => membership.organization.name === expectedOrgName,
 					)?.organization
 
 					if (!personalOrg) {
@@ -167,10 +170,10 @@ export const cohortTransferWorkflow = inngest.createFunction(
 				)
 
 				// Check if source user still has their personal organization
-				const hasPersonalOrg = sourceMemberships.some((membership) =>
-					membership.organization.name?.includes(
-						`Personal (${sourceUser.email})`,
-					),
+				const expectedSourceOrgName = `Personal (${sourceUser.email})`
+				const hasPersonalOrg = sourceMemberships.some(
+					(membership) =>
+						membership.organization.name === expectedSourceOrgName,
 				)
 
 				if (!hasPersonalOrg) {
@@ -241,8 +244,17 @@ export const cohortTransferWorkflow = inngest.createFunction(
 							role: 'learner',
 						})
 						console.log('Added learner role to target user')
-					} catch (error) {
-						console.log('Role may already exist or error adding role:', error)
+					} catch (error: any) {
+						if (
+							error.message?.includes('duplicate') ||
+							error.code === 'P2002'
+						) {
+							console.log('Learner role already exists for target user')
+						} else {
+							// Re-throw unexpected errors
+							console.error('Failed to add learner role:', error)
+							throw new Error(`Failed to add learner role: ${error.message}`)
+						}
 					}
 
 					return membership
@@ -255,21 +267,20 @@ export const cohortTransferWorkflow = inngest.createFunction(
 					return
 				}
 
-				for (const resource of cohortResource.resources) {
-					const entitlementId = `${resource.resource.id}-${guid()}`
-					await db.insert(entitlements).values({
-						id: entitlementId,
-						entitlementType: cohortContentAccessEntitlementType.id,
-						sourceType: 'cohort',
-						sourceId: resource.resource.id,
-						userId: targetUser.id,
-						organizationId: targetUserOrganization.id,
-						organizationMembershipId: orgMembership.id,
-						metadata: {
-							contentIds: [resource.resource.id],
-						},
-					})
-				}
+				const resourceIds = cohortResource.resources.map((r) => r.resource.id)
+				await db
+					.delete(entitlements)
+					.where(
+						and(
+							eq(entitlements.userId, sourceUser.id),
+							eq(
+								entitlements.entitlementType,
+								cohortContentAccessEntitlementType.id,
+							),
+							eq(entitlements.sourceType, 'cohort'),
+							sql`${entitlements.sourceId} IN (${sql.join(resourceIds, sql`, `)})`,
+						),
+					)
 
 				console.log(
 					'Added entitlements to target user in their personal organization',
