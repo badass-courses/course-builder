@@ -197,18 +197,6 @@ export const cohortTransferWorkflow = inngest.createFunction(
 					return
 				}
 
-				for (const resource of cohortResource.resources) {
-					await db.insert(entitlements).values({
-						id: guid(),
-						userId: targetUser.id,
-						entitlementType: cohortContentAccessEntitlementType.id,
-						sourceType: 'cohort',
-						sourceId: resource.resource.id,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					})
-				}
-
 				for (const resource of cohortResource.resources || []) {
 					const entitlementId = `${resource.resource.id}-${guid()}`
 					await db.insert(entitlements).values({
