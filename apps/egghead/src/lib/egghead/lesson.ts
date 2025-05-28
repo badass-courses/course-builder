@@ -4,8 +4,6 @@ import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { EggheadApiError } from '@/errors/egghead-api-error'
 import { EGGHEAD_LESSON_CREATED_EVENT } from '@/inngest/events/egghead/lesson-created'
 import { inngest } from '@/inngest/inngest.server'
-import { PostAction, PostState, PostVisibility } from '@/lib/posts'
-// Import these functions here to avoid circular dependencies
 import { getPost } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 
@@ -97,6 +95,7 @@ export async function updateEggheadLesson(input: {
 	title: string
 	slug: string
 	guid: string
+	published: boolean
 	state: string
 	visibilityState: string
 	access: boolean
@@ -106,6 +105,7 @@ export async function updateEggheadLesson(input: {
 }) {
 	const {
 		eggheadLessonId,
+		published,
 		state,
 		visibilityState,
 		access,
@@ -128,7 +128,8 @@ export async function updateEggheadLesson(input: {
 			guid = $7,
 			summary = $8,
       is_pro_content = $10,
-      free_forever = NOT $10
+      free_forever = NOT $10,
+      published = $11
 		WHERE id = $9`,
 		[
 			state,
@@ -141,6 +142,7 @@ export async function updateEggheadLesson(input: {
 			body,
 			eggheadLessonId,
 			access,
+			published,
 		],
 	)
 }
@@ -252,4 +254,51 @@ export async function getEggheadLesson(eggheadLessonId: number) {
 	}
 
 	return response.json()
+}
+
+/**
+ * Creates a new version of an Egghead lesson
+ * @param eggheadLessonId - The Egghead lesson ID
+ * @param versionNote - The version note
+ */
+export async function createEggheadLessonVersion(
+	eggheadLessonId: number,
+	versionNote: string,
+) {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!session?.user?.id || ability.cannot('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	const eggheadUser = await getEggheadUserProfile(session?.user?.id)
+
+	const columns = ['lesson_id', 'notes', 'user_id', 'created_at']
+
+	const values = [eggheadLessonId, versionNote, eggheadUser.id, new Date()]
+
+	const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+
+	const query = `
+		INSERT INTO lesson_versions (${columns.join(', ')})
+		VALUES (${placeholders})
+		RETURNING id
+	`
+	const eggheadLessonVersionResult = await eggheadPgQuery(query, values)
+
+	const eggheadLessonVersionId = eggheadLessonVersionResult.rows[0].id
+
+	console.log('[createEggheadLessonVersion]', {
+		eggheadLessonVersionId,
+		eggheadLessonId,
+	})
+
+	await eggheadPgQuery(
+		`UPDATE lessons SET
+			current_lesson_version_id = $1
+		WHERE id = $2`,
+		[eggheadLessonVersionId, eggheadLessonId],
+	)
+
+	return eggheadLessonVersionId
 }
