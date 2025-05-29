@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
@@ -20,6 +21,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
+import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
@@ -36,8 +38,10 @@ import {
 	DialogTrigger,
 	Skeleton,
 } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
+import WorkshopImage from '../_components/workshop-image'
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
@@ -133,7 +137,13 @@ export default async function ModulePage(props: Props) {
 			</div>
 		)
 	}
-
+	const squareGridPattern = generateGridPattern(
+		workshop.fields?.title || '',
+		1000,
+		800,
+		0.8,
+		true,
+	)
 	return (
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
@@ -156,7 +166,7 @@ export default async function ModulePage(props: Props) {
 						<div className="col-span-3 flex flex-shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
 							{/* <p className="text-primary mb-2 text-base">Pro Workshop</p> */}
-							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
@@ -170,20 +180,7 @@ export default async function ModulePage(props: Props) {
 						</div>
 						<div className="col-span-2">
 							{workshop.fields?.coverImage?.url && (
-								<div className="group relative flex items-center justify-center">
-									<CldImage
-										width={480}
-										height={270}
-										src={workshop.fields.coverImage.url}
-										alt={
-											workshop.fields.coverImage?.alt ||
-											workshop.fields?.title ||
-											''
-										}
-										className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
-										sizes="(max-width: 768px) 100vw, 480px"
-									/>
-								</div>
+								<WorkshopImage imageUrl={workshop.fields.coverImage.url} />
 							)}
 						</div>
 						<Suspense fallback={null}>
@@ -193,6 +190,18 @@ export default async function ModulePage(props: Props) {
 								moduleSlug={params.module}
 							/>
 						</Suspense>
+					</div>
+					<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
+						<img
+							src={squareGridPattern}
+							alt=""
+							aria-hidden="true"
+							className="hidden h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
+						/>
+						<div
+							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+							aria-hidden="true"
+						/>
 					</div>
 				</header>
 
@@ -243,14 +252,14 @@ export default async function ModulePage(props: Props) {
 										)
 									}}
 								</WorkshopPricing>
+								<WorkshopResourceList
+									isCollapsible={false}
+									className="w-full max-w-none !border-r-0"
+									withHeader={false}
+									maxHeight="h-auto"
+									wrapperClassName="overflow-hidden pb-0"
+								/>
 							</React.Suspense>
-							<WorkshopResourceList
-								isCollapsible={false}
-								className="w-full max-w-none !border-r-0"
-								withHeader={false}
-								maxHeight="h-auto"
-								wrapperClassName="overflow-hidden pb-0"
-							/>
 						</div>
 					</div>
 					{workshop?.fields?.body && <Links />}
