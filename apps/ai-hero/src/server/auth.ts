@@ -7,12 +7,11 @@ import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
-import { getAllUserEntitlements } from '@/lib/entitlements-query'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
 import { userSchema } from '@coursebuilder/core/schemas'
@@ -230,15 +229,36 @@ export const authOptions: NextAuthConfig = {
 				},
 			})
 
+			const headersList = await headers()
+			const organizationId = headersList.get('x-organization-id')
+			const role = dbUser?.role || 'user'
+
 			const organizationRoles =
 				dbUser?.organizationMemberships.flatMap((membership) =>
 					membership.organizationMembershipRoles.map((role) => role.role),
 				) || []
 
-			// Load entitlements from ALL user organizations, not just the current one
-			const activeEntitlements = await getAllUserEntitlements(user.id)
+			const currentMembership = organizationId
+				? await db.query.organizationMemberships.findFirst({
+						where: and(
+							eq(organizationMemberships.organizationId, organizationId),
+							eq(organizationMemberships.userId, user.id),
+						),
+						orderBy: (om, { asc }) => [asc(om.createdAt)],
+					})
+				: null
 
-			const role = dbUser?.role || 'user'
+			const activeEntitlements = currentMembership
+				? await db.query.entitlements.findMany({
+						where: and(
+							eq(entitlements.organizationMembershipId, currentMembership.id),
+							or(
+								isNull(entitlements.expiresAt),
+								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+							),
+						),
+					})
+				: []
 
 			return {
 				...session,

@@ -3,13 +3,12 @@ import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
-import { getAllUserEntitlements } from '@/lib/entitlements-query'
 import { getLesson } from '@/lib/lessons-query'
 import { getCachedMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { subject } from '@casl/ability'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 // Import type without implementation
 import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
@@ -62,9 +61,16 @@ export async function getCurrentAbilityRules({
 				})
 			: null
 
-	// Load entitlements from ALL user organizations using shared utility
-	const activeEntitlements = session?.user?.id
-		? await getAllUserEntitlements(session.user.id)
+	const activeEntitlements = currentMembership
+		? await db.query.entitlements.findMany({
+				where: and(
+					eq(entitlements.organizationMembershipId, currentMembership.id),
+					or(
+						isNull(entitlements.expiresAt),
+						gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+					),
+				),
+			})
 		: []
 
 	return defineRulesForPurchases({
