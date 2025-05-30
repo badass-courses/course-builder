@@ -73,6 +73,7 @@
 		"@coursebuilder/utils-search": "workspace:*",
 		"@coursebuilder/utils-seo": "workspace:*",
 		"@coursebuilder/utils-string": "workspace:*",
+		"@coursebuilder/utils-timezones": "workspace:*",
 		"@coursebuilder/utils-ui": "workspace:*",
 		"@fontsource/inter": "^5.0.16",
 		"@headlessui/react": "^1.6.1",

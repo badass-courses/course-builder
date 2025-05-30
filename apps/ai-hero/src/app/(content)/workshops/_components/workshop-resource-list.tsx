@@ -165,14 +165,14 @@ export function WorkshopResourceList(props: Props) {
 								</Tooltip>
 							)}
 							<div className="relative z-10 flex w-full flex-row items-center gap-3 px-3 py-4">
-								{workshopNavigation.coverImage && (
+								{/* {workshopNavigation.coverImage && (
 									<CldImage
 										width={48}
 										height={48}
 										src={workshopNavigation.coverImage}
 										alt={workshopNavigation.title}
 									/>
-								)}
+								)} */}
 								<div className="flex flex-col leading-tight">
 									<div className="flex items-center gap-0.5">
 										<Link

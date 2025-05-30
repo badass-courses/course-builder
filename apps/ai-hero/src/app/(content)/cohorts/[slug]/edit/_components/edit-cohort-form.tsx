@@ -2,12 +2,15 @@
 
 import * as React from 'react'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
+import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
 	ResourceFormProps,
 	withResourceForm,
 } from '@/components/resource-form/with-resource-form'
 import { Cohort, CohortSchema } from '@/lib/cohort'
 import { parseAbsolute } from '@internationalized/date'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import {
@@ -133,7 +136,32 @@ function CohortFormFields({
 /**
  * Enhanced cohort form with common resource form functionality
  */
-export const EditCohortForm = withResourceForm(
-	CohortFormFields,
-	cohortFormConfig,
-)
+export const EditCohortForm = ({ resource }: { resource: Cohort }) => {
+	const CohortForm = withResourceForm(CohortFormFields, {
+		...cohortFormConfig,
+		customTools: [
+			{
+				id: 'images',
+				icon: () => (
+					<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: (
+					<ImageResourceUploader
+						key={'image-uploader'}
+						belongsToResourceId={resource.id}
+						uploadDirectory={`cohorts`}
+					/>
+				),
+			},
+			{
+				id: 'videos',
+				icon: () => (
+					<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+			},
+		],
+	})
+
+	return <CohortForm resource={resource} />
+}

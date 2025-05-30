@@ -1,11 +1,13 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import {
 	ContentTitle,
+	GetAccessButton,
 	StartLearningWorkshopButton,
 	StartLearningWorkshopButtonSkeleton,
 	WorkshopGitHubRepoLink,
@@ -20,6 +22,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
+import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
@@ -36,8 +39,10 @@ import {
 	DialogTrigger,
 	Skeleton,
 } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
+import WorkshopImage from '../_components/workshop-image'
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
@@ -104,36 +109,44 @@ export default async function ModulePage(props: Props) {
 				/>
 				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
 					<div className="h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat sm:w-8 lg:w-10  dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]" />
+
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
+						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
 							abilityLoader={abilityLoader}
 							moduleSlug={params.module}
 						/>
+						<div className="w-full items-center sm:flex sm:w-auto">
+							<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />
+							<Dialog>
+								<DialogTrigger asChild>
+									<Button
+										className="h-14 w-full rounded-none px-5 md:w-auto md:border-r"
+										variant="ghost"
+										size="lg"
+									>
+										<Share2 className="mr-2 w-3" /> Share
+									</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogTitle>Share {workshop.fields?.title}</DialogTitle>
+									<Share />
+								</DialogContent>
+							</Dialog>
+						</div>
 					</React.Suspense>
-					<div className="w-full items-center sm:flex sm:w-auto">
-						<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />
-						<Dialog>
-							<DialogTrigger asChild>
-								<Button
-									className="h-14 w-full rounded-none px-5 md:w-auto md:border-r"
-									variant="ghost"
-									size="lg"
-								>
-									<Share2 className="mr-2 w-3" /> Share
-								</Button>
-							</DialogTrigger>
-							<DialogContent>
-								<DialogTitle>Share {workshop.fields?.title}</DialogTitle>
-								<Share />
-							</DialogContent>
-						</Dialog>
-					</div>
 				</div>
 				{children}
 			</div>
 		)
 	}
-
+	const squareGridPattern = generateGridPattern(
+		workshop.fields?.title || '',
+		1000,
+		800,
+		0.8,
+		true,
+	)
 	return (
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
@@ -151,12 +164,12 @@ export default async function ModulePage(props: Props) {
 					imageUrl={workshop.fields?.coverImage?.url}
 					slug={params.module}
 				/>
-				<header className="relative flex items-center justify-center md:px-8 lg:px-10">
+				<header className="relative flex items-center justify-center overflow-hidden md:px-8 lg:px-10">
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
 						<div className="col-span-3 flex flex-shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
 							{/* <p className="text-primary mb-2 text-base">Pro Workshop</p> */}
-							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
@@ -170,20 +183,7 @@ export default async function ModulePage(props: Props) {
 						</div>
 						<div className="col-span-2">
 							{workshop.fields?.coverImage?.url && (
-								<div className="group relative flex items-center justify-center">
-									<CldImage
-										width={480}
-										height={270}
-										src={workshop.fields.coverImage.url}
-										alt={
-											workshop.fields.coverImage?.alt ||
-											workshop.fields?.title ||
-											''
-										}
-										className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
-										sizes="(max-width: 768px) 100vw, 480px"
-									/>
-								</div>
+								<WorkshopImage imageUrl={workshop.fields.coverImage.url} />
 							)}
 						</div>
 						<Suspense fallback={null}>
@@ -194,13 +194,27 @@ export default async function ModulePage(props: Props) {
 							/>
 						</Suspense>
 					</div>
+					<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
+						<img
+							src={squareGridPattern}
+							alt=""
+							aria-hidden="true"
+							className="hidden h-[320px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
+						/>
+						<div
+							className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+							aria-hidden="true"
+						/>
+					</div>
 				</header>
 
 				<>
 					<Links>
-						<React.Suspense fallback={null}>
-							<ContentTitle abilityLoader={abilityLoader} />
-						</React.Suspense>
+						{/* <React.Suspense fallback={null}> */}
+						<ContentTitle
+						// abilityLoader={abilityLoader}
+						/>
+						{/* </React.Suspense> */}
 					</Links>
 					<div className="mx-auto flex w-full flex-grow grid-cols-6 flex-col md:grid">
 						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
@@ -211,7 +225,7 @@ export default async function ModulePage(props: Props) {
 							)}
 						</article>
 						<div className="bg-muted/50 col-span-2 flex flex-col border-l">
-							<React.Suspense
+							{/* <React.Suspense
 								fallback={
 									<div className="flex flex-col gap-2">
 										{new Array(1).fill(null).map((_, i) => (
@@ -243,7 +257,7 @@ export default async function ModulePage(props: Props) {
 										)
 									}}
 								</WorkshopPricing>
-							</React.Suspense>
+								</React.Suspense> */}
 							<WorkshopResourceList
 								isCollapsible={false}
 								className="w-full max-w-none !border-r-0"
@@ -251,6 +265,9 @@ export default async function ModulePage(props: Props) {
 								maxHeight="h-auto"
 								wrapperClassName="overflow-hidden pb-0"
 							/>
+							{/* <React.Suspense fallback={null}>
+								<SmallCohortBanner abilityLoader={abilityLoader} />
+							</React.Suspense> */}
 						</div>
 					</div>
 					{workshop?.fields?.body && <Links />}
