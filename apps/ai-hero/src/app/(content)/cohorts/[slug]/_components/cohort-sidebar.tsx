@@ -67,7 +67,6 @@ export const CohortSidebar = ({
 					'pointer-events-none opacity-0': isInView,
 				})}
 				cohort={cohort}
-				onScrollToBuy={handleScrollToBuy}
 			/>
 		</>
 	)
@@ -76,17 +75,24 @@ export const CohortSidebar = ({
 export const CohortSidebarMobile = ({
 	cohort,
 	className,
-	onScrollToBuy,
 }: {
 	cohort: Cohort
 	className?: string
-	onScrollToBuy: (e: React.MouseEvent<HTMLAnchorElement>) => void
 }) => {
 	const { fields } = cohort
 	const { startsAt, endsAt, timezone } = fields
 
 	const { dateString: eventDateString, timeString: eventTimeString } =
 		formatCohortDateRange(startsAt, endsAt, timezone)
+
+	const handleScrollToBuy = (e: React.MouseEvent<HTMLAnchorElement>) => {
+		e.preventDefault()
+		const buySection = document.getElementById('buy')
+		buySection?.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+		})
+	}
 
 	return (
 		<div
@@ -97,7 +103,7 @@ export const CohortSidebarMobile = ({
 		>
 			<p>{eventDateString}</p>
 			<Button asChild>
-				<Link href="#buy" onClick={onScrollToBuy}>
+				<Link href="#buy" onClick={handleScrollToBuy}>
 					Enroll today
 				</Link>
 			</Button>
