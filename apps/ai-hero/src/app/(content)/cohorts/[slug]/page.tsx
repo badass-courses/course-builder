@@ -14,6 +14,7 @@ import { env } from '@/env.mjs'
 import { Cohort } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
+import { getModuleProgressForUser } from '@/lib/progress'
 import type { Workshop } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
@@ -22,15 +23,24 @@ import { getResourcePath } from '@/utils/resource-paths'
 import { differenceInCalendarDays, isSameDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
+import { Check, CheckCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
-import { Button } from '@coursebuilder/ui'
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+	Button,
+} from '@coursebuilder/ui'
 
+import { ModuleProgressProvider } from '../../_components/module-progress-provider'
 import { CohortDetails } from './_components/cohort-details'
+import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
@@ -209,9 +219,9 @@ export default async function CohortPage(props: {
 					quantityAvailable={cohortProps.quantityAvailable}
 				/>
 				{cohort && ability.can('update', 'Content') && (
-					<div className="absolute right-5 top-5 flex items-center gap-2">
+					<div className="absolute right-3 top-3 flex items-center gap-2">
 						{product && (
-							<Button asChild variant="secondary">
+							<Button asChild size="sm" variant="secondary">
 								<Link
 									href={`/products/${product?.fields?.slug || product?.id}/edit`}
 								>
@@ -219,7 +229,7 @@ export default async function CohortPage(props: {
 								</Link>
 							</Button>
 						)}
-						<Button asChild variant="secondary">
+						<Button asChild size="sm" variant="secondary">
 							<Link href={`/cohorts/${cohort.fields?.slug || cohort.id}/edit`}>
 								Edit Cohort
 							</Link>
@@ -228,15 +238,17 @@ export default async function CohortPage(props: {
 				)}
 				{cohortProps.hasPurchasedCurrentProduct ? (
 					<div className="flex w-full items-center border-b px-5 py-5 text-left">
-						You have purchased a ticket to this event. See you{' '}
+						<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
+						You have purchased a ticket to this cohort.
+						{/* starting{' '}
 						{eventDateString ? `on ${eventDateString}` : 'soon'}.{' '}
 						<span role="img" aria-label="Waving hand">
 							👋
-						</span>
+						</span> */}
 					</div>
 				) : null}
-				<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
-					<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+				<header className="flex w-full flex-col-reverse items-center justify-between pl-5 md:flex-row md:pl-8 lg:pl-16">
+					<div className="mt-5 flex w-full flex-col items-center py-8 text-center md:mt-0 md:items-start md:text-left">
 						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 							<Link href="/cohorts" className="">
 								Cohort
@@ -260,21 +272,22 @@ export default async function CohortPage(props: {
 						)}
 						<Contributor className="mt-5" />
 					</div>
-					{product?.fields?.image?.url && (
+
+					{fields?.image && (
 						<CldImage
-							width={400}
-							height={400}
-							src={product?.fields.image.url}
+							width={384}
+							height={280}
+							src={fields?.image}
 							alt={fields?.title}
 						/>
 					)}
-				</div>
+				</header>
 				<div className="flex flex-col-reverse border-t md:flex-row">
 					<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
 						{cohort.fields.body && (
 							<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
 						)}
-						<ul className="flex flex-col gap-3">
+						<ul className="not-prose flex flex-col gap-3">
 							{workshops.map((workshop, index) => {
 								// Determine end date and timezone for the workshop
 								// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
@@ -303,65 +316,143 @@ export default async function CohortPage(props: {
 										) + 1,
 									)
 								}
-
+								const moduleProgressLoader = getModuleProgressForUser(
+									workshop.fields.slug,
+								)
 								return (
 									<li key={workshop.id}>
-										<Link
-											className="text-foreground hover:text-primary text-xl"
-											href={getResourcePath(
-												'workshop',
-												workshop.fields.slug,
-												'view',
-											)}
+										<ModuleProgressProvider
+											moduleProgressLoader={moduleProgressLoader}
 										>
-											{workshop.fields.title}
-										</Link>
-										{/* Display formatted workshop date/time */}
-										<div className="text-muted-foreground text-sm">
-											{/* {dayNumber !== null && (
+											<Link
+												className="text-foreground hover:text-primary text-xl"
+												href={getResourcePath(
+													'workshop',
+													workshop.fields.slug,
+													'view',
+												)}
+											>
+												{workshop.fields.title}
+											</Link>
+											{/* Display formatted workshop date/time */}
+											<div className="text-muted-foreground text-sm">
+												{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-											{workshopDateString && (
-												<span>Available from {workshopDateString}</span>
-											)}
-											{workshopTimeString && (
-												<span> at {workshopTimeString}</span>
-											)}
-										</div>
-										<ol className="list-decimal pl-5">
-											{workshop.resources?.map(({ resource }) => {
-												return (
-													<li key={resource?.id}>
-														<Link
-															className="text-foreground hover:text-primary"
-															href={getResourcePath(
-																resource.type,
-																resource.fields.slug,
-																'view',
-																{
-																	parentSlug: workshop.fields.slug,
-																	parentType: 'workshop',
-																},
-															)}
-														>
-															{resource?.fields?.title}
-														</Link>
-													</li>
-												)
-											})}
-										</ol>
+												{workshopDateString && (
+													<span>Available from {workshopDateString}</span>
+												)}
+												{workshopTimeString && (
+													<span> at {workshopTimeString}</span>
+												)}
+											</div>
+											<ol className="list-inside list-none pl-5">
+												{workshop.resources?.map(({ resource }) => {
+													return (
+														<WorkshopLessonItem
+															key={resource.id}
+															resource={resource}
+															workshopSlug={workshop.fields.slug}
+														/>
+													)
+												})}
+											</ol>
+										</ModuleProgressProvider>
 									</li>
 								)
 							})}
 						</ul>
 					</article>
-					<CohortSidebar>
-						{ALLOW_PURCHASE && (
-							<div className="border-b px-5 pb-5">
-								<CohortPricingWidgetContainer {...cohortProps} />
+					<CohortSidebar sticky={!cohortProps.hasPurchasedCurrentProduct}>
+						{/* <CohortDetails cohort={cohort} /> */}
+						{cohortProps.hasPurchasedCurrentProduct ? (
+							<div>
+								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
+									Workshops
+								</div>
+								<ol className="flex flex-col">
+									{workshops.map((workshop, index) => {
+										// Determine end date and timezone for the workshop
+										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+										const workshopTimezone = workshop.fields.timezone || PT
+
+										// Format workshop date/time range (only start)
+										const {
+											dateString: workshopDateString,
+											timeString: workshopTimeString,
+										} = formatCohortDateRange(
+											workshop.fields.startsAt,
+											null, // Pass null for end date
+											workshopTimezone,
+										)
+
+										// Calculate Day number
+										let dayNumber: number | null = null
+										if (cohortStartDate && workshop.fields.startsAt) {
+											const workshopStartDate = new Date(
+												workshop.fields.startsAt,
+											)
+											// Calculate difference, add 1, and ensure it's at least 1
+											dayNumber = Math.max(
+												1,
+												differenceInCalendarDays(
+													workshopStartDate,
+													cohortStartDate,
+												) + 1,
+											)
+										}
+										const moduleProgressLoader = getModuleProgressForUser(
+											workshop.fields.slug,
+										)
+										return (
+											<li key={workshop.id}>
+												<ModuleProgressProvider
+													moduleProgressLoader={moduleProgressLoader}
+												>
+													<Accordion type="multiple">
+														<AccordionItem value={workshop.id}>
+															<div className="relative flex items-center justify-between">
+																<Link
+																	className="text-foreground/90 hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium transition ease-in-out"
+																	href={getResourcePath(
+																		'workshop',
+																		workshop.fields.slug,
+																		'view',
+																	)}
+																>
+																	{workshop.fields.title.includes(':')
+																		? workshop.fields.title.split(':')[1]
+																		: workshop.fields.title}
+																</Link>
+																<AccordionTrigger
+																	aria-label="Toggle lessons"
+																	className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+																/>
+															</div>
+															<AccordionContent>
+																<ol className="divide-border list-inside list-none divide-y">
+																	{workshop.resources?.map(({ resource }) => {
+																		return (
+																			<WorkshopLessonItem
+																				key={resource.id}
+																				resource={resource}
+																				workshopSlug={workshop.fields.slug}
+																			/>
+																		)
+																	})}
+																</ol>
+															</AccordionContent>
+														</AccordionItem>
+													</Accordion>
+												</ModuleProgressProvider>
+											</li>
+										)
+									})}
+								</ol>
 							</div>
-						)}
-						<CohortDetails cohort={cohort} />
+						) : ALLOW_PURCHASE ? (
+							<CohortPricingWidgetContainer {...cohortProps} />
+						) : null}
 					</CohortSidebar>
 				</div>
 			</main>

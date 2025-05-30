@@ -3,7 +3,13 @@
 import React from 'react'
 import { cn } from '@/utils/cn'
 
-export const CohortSidebar = ({ children }: { children: React.ReactNode }) => {
+export const CohortSidebar = ({
+	children,
+	sticky = true,
+}: {
+	children: React.ReactNode
+	sticky?: boolean
+}) => {
 	const sidebarRef = React.useRef<HTMLDivElement>(null)
 
 	// get sidebar height
@@ -29,11 +35,12 @@ export const CohortSidebar = ({ children }: { children: React.ReactNode }) => {
 	}, [])
 
 	return (
-		<div className="relative flex w-full flex-col gap-3 border-l md:max-w-sm">
+		<div className="bg-muted/50 relative flex w-full flex-col gap-3 md:max-w-sm md:border-l">
 			<div
 				ref={sidebarRef}
 				className={cn('', {
-					'md:sticky md:top-[var(--nav-height)]': windowHeight > sidebarHeight,
+					'md:sticky md:top-[var(--nav-height)]':
+						sticky && windowHeight > sidebarHeight,
 				})}
 			>
 				{children}

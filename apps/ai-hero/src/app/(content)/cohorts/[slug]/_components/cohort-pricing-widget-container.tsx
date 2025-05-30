@@ -22,9 +22,6 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 	const { fields } = cohort
 	const { startsAt } = fields
 	const product = products && products[0]
-	const purchasedProductIds =
-		commerceProps?.purchases?.map((purchase) => purchase.productId) || []
-	const hasPurchase = purchasedProductIds.length > 0
 	const isUpcoming = startsAt
 		? new Date(startsAt) > new Date()
 		: startsAt
@@ -37,21 +34,24 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 
 	return (
 		<>
-			{product && product.status === 1 && isUpcoming && (
-				<PricingWidget
-					className="border-b-0"
-					workshops={workshops}
-					product={product}
-					quantityAvailable={quantityAvailable}
-					commerceProps={commerceProps}
-					pricingDataLoader={pricingDataLoader}
-					pricingWidgetOptions={{
-						isCohort: true,
-						isLiveEvent: false,
-						withImage: false,
-						withTitle: false,
-					}}
-				/>
+			{/* isUpcoming && */}
+			{product && product.status === 1 && (
+				<div className="border-b px-5 pb-5">
+					<PricingWidget
+						className="border-b-0"
+						workshops={workshops}
+						product={product}
+						quantityAvailable={quantityAvailable}
+						commerceProps={commerceProps}
+						pricingDataLoader={pricingDataLoader}
+						pricingWidgetOptions={{
+							isCohort: true,
+							isLiveEvent: false,
+							withImage: false,
+							withTitle: false,
+						}}
+					/>
+				</div>
 			)}
 		</>
 	)
