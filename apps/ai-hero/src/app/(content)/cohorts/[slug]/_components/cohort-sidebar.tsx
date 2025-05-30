@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { cn } from '@/utils/cn'
+import { useMeasure } from 'react-use'
 
 export const CohortSidebar = ({
 	children,
@@ -10,16 +11,8 @@ export const CohortSidebar = ({
 	children: React.ReactNode
 	sticky?: boolean
 }) => {
-	const sidebarRef = React.useRef<HTMLDivElement>(null)
-
-	// get sidebar height
-	const [sidebarHeight, setSidebarHeight] = React.useState(0)
-	React.useEffect(() => {
-		if (sidebarRef.current) {
-			setSidebarHeight(sidebarRef.current.clientHeight)
-		}
-	}, [sidebarRef.current])
-
+	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
+	console.log(height)
 	// get window height
 	const [windowHeight, setWindowHeight] = React.useState(0)
 	React.useEffect(() => {
@@ -35,12 +28,12 @@ export const CohortSidebar = ({
 	}, [])
 
 	return (
-		<div className="bg-muted/50 relative flex w-full flex-col gap-3 md:max-w-sm md:border-l">
+		<div className="dark:bg-muted/50 relative flex w-full flex-col gap-3 bg-white md:max-w-sm md:border-l">
 			<div
 				ref={sidebarRef}
 				className={cn('', {
 					'md:sticky md:top-[var(--nav-height)]':
-						sticky && windowHeight > sidebarHeight,
+						sticky && windowHeight - 63 > height,
 				})}
 			>
 				{children}

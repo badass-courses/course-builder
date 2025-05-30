@@ -249,7 +249,7 @@ export default async function CohortPage(props: {
 				) : null}
 				<header className="flex w-full flex-col-reverse items-center justify-between pl-5 md:flex-row md:pl-8 lg:pl-16">
 					<div className="mt-5 flex w-full flex-col items-center py-8 text-center md:mt-0 md:items-start md:text-left">
-						<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
+						<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 							<Link href="/cohorts" className="">
 								Cohort
 							</Link>
@@ -283,7 +283,7 @@ export default async function CohortPage(props: {
 					)}
 				</header>
 				<div className="flex flex-col-reverse border-t md:flex-row">
-					<article className="prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
+					<article className="dark:bg-background bg-muted/50 prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
 						{cohort.fields.body && (
 							<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
 						)}

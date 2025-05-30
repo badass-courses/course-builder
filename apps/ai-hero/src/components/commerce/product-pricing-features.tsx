@@ -22,7 +22,7 @@ export const ProductPricingFeatures = ({
 	return (
 		<div className="relative mt-5 flex w-full flex-col items-center">
 			<strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
-				<span className="relative z-10 bg-[#F7F7F7] px-3 py-1 dark:bg-[#0F0F0F]">
+				<span className="relative z-10 bg-white px-3 py-1 dark:bg-[#0F0F0F]">
 					Includes
 				</span>
 				<div
@@ -53,10 +53,10 @@ export const ProductPricingFeatures = ({
 					<ListVideo className="h-4 w-4" />
 					Over 90 Lessons
 				</li> */}
-				{/* <li className="flex items-center gap-2">
+				<li className="flex items-center gap-2">
 					<Infinity className="h-4 w-4" />
 					Lifetime Access
-				</li> */}
+				</li>
 				<li className="flex items-center gap-2">
 					<FileCheck2 className="h-4 w-4" />
 					Customizable Invoice
