@@ -172,17 +172,17 @@ const Home = async (props: Props) => {
 				{isCommerceEnabled && (
 					<section
 						id="buy"
-						className="container mx-auto flex w-full flex-wrap justify-center gap-16 rounded py-16 sm:border"
+						className="container mx-auto flex w-full items-center justify-center gap-16 border-t py-16"
 					>
 						<div className="w-full max-w-sm">
 							<PricingWidgetServer
-								productId="ai-hero-pro-membership-7564c"
+								productId="product-3vfob"
 								searchParams={await props.searchParams}
 							/>
 						</div>
-						<div className="w-full max-w-sm">
+						{/* <div className="w-full max-w-sm">
 							<TeamPricingWidget />
-						</div>
+						</div> */}
 					</section>
 				)}
 			</main>
