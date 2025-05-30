@@ -12,7 +12,7 @@ export const CohortSidebar = ({
 	sticky?: boolean
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
-	console.log(height)
+
 	// get window height
 	const [windowHeight, setWindowHeight] = React.useState(0)
 	React.useEffect(() => {

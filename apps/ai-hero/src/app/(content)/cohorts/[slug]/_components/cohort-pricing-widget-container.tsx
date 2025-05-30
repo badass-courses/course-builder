@@ -58,7 +58,7 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
 							isCohort: true,
-							isLiveEvent: false,
+							isLiveEvent: true,
 							withImage: false,
 							withTitle: false,
 						}}

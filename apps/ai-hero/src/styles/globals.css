@@ -244,3 +244,7 @@
 [data-every-hero-needs-a-guide] {
 	@apply relative w-80 translate-y-5 sm:w-auto;
 }
+
+[data-discord-button] {
+	@apply bg-[#5A65EA];
+}

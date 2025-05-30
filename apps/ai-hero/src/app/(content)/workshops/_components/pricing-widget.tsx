@@ -65,7 +65,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton>Enroll Now</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
-					<Pricing.LiveRefundPolicy />
+					{/* <Pricing.LiveRefundPolicy /> */}
 					<Pricing.SaleCountdown className="py-4" />
 					<Pricing.PPPToggle />
 				</Pricing.Details>
