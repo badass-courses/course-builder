@@ -88,7 +88,7 @@ export const LessonMetadataFormFields: React.FC<{
 		React.useState(false)
 
 	useSocket({
-		room: lesson.id,
+		room: lesson.id || null,
 		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		onMessage: async (messageEvent) => {
 			try {
