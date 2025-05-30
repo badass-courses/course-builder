@@ -364,7 +364,7 @@ export default async function CohortPage(props: {
 						</ul>
 					</article>
 					<CohortSidebar sticky={!cohortProps.hasPurchasedCurrentProduct}>
-						{/* <CohortDetails cohort={cohort} /> */}
+						<CohortDetails cohort={cohort} />
 						{cohortProps.hasPurchasedCurrentProduct ? (
 							<div>
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
