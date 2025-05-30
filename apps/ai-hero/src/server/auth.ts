@@ -244,6 +244,7 @@ export const authOptions: NextAuthConfig = {
 							eq(organizationMemberships.organizationId, organizationId),
 							eq(organizationMemberships.userId, user.id),
 						),
+						orderBy: (om, { asc }) => [asc(om.createdAt)],
 					})
 				: null
 

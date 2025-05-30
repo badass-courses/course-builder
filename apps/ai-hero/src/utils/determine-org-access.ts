@@ -17,28 +17,34 @@ export function determineOrgAccess(
 	roles: OrganizationRole[],
 	currentOrgId?: string,
 ): OrgAuthResult {
-	const { ownerRole, hasValidCurrentOrgRole } = roles.reduce(
+	const { learnerRole, ownerRole, hasValidCurrentOrgRole } = roles.reduce(
 		(acc, role) => {
 			if (!role.active) return acc
-			if (role.name === 'owner') acc.ownerRole = role
+			if (role.name === 'learner' && !acc.learnerRole) acc.learnerRole = role
+			if (role.name === 'owner' && !acc.ownerRole) acc.ownerRole = role
 			if (currentOrgId && role.organizationId === currentOrgId)
 				acc.hasValidCurrentOrgRole = true
 			return acc
 		},
 		{
+			learnerRole: null as OrganizationRole | null,
 			ownerRole: null as OrganizationRole | null,
 			hasValidCurrentOrgRole: false,
 		},
 	)
 
-	if (!hasValidCurrentOrgRole && !ownerRole) {
+	if (!hasValidCurrentOrgRole && !learnerRole && !ownerRole) {
 		return { action: 'REDIRECT_TO_ORG_LIST' }
 	}
 
-	if (!hasValidCurrentOrgRole && ownerRole) {
-		return {
-			action: 'SET_OWNER_ORG',
-			organizationId: ownerRole.organizationId,
+	if (!hasValidCurrentOrgRole) {
+		// Prioritize learner role first, then fall back to owner role
+		const defaultRole = learnerRole || ownerRole
+		if (defaultRole) {
+			return {
+				action: 'SET_OWNER_ORG',
+				organizationId: defaultRole.organizationId,
+			}
 		}
 	}
 

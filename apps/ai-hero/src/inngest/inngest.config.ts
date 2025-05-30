@@ -4,6 +4,7 @@ import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purc
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
+import { ensurePersonalOrganizationWorkflow } from '@/inngest/functions/ensure-personal-organization'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
@@ -13,6 +14,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { cohortTransferWorkflow } from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
@@ -41,10 +43,12 @@ export const inngestConfig = {
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
+		cohortTransferWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
+		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,
 		videoResourceDetached,
 	],

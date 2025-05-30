@@ -29,9 +29,7 @@ export async function redeem(
 
 	if (!baseEmail) throw new Error(`invalid-email-${baseEmail}`)
 
-	const currentUser = options.getCurrentUser
-		? await options.getCurrentUser()
-		: null
+	const currentUser = await options.adapter.getUserByEmail(baseEmail)
 
 	const createdPurchase = await options.adapter.redeemFullPriceCoupon({
 		email: baseEmail,
@@ -46,7 +44,32 @@ export async function redeem(
 
 		// if it's redeemed for the current user we don't need to send a login email
 		if (redeemingForCurrentUser) {
-			// send an appropriate email
+			// send an appropriate email - but still need to trigger the workflow for entitlements
+
+			if (purchase) {
+				const product = await options.adapter.getProduct(purchase.productId)
+				if (product) {
+					try {
+						await options.inngest.send({
+							name: FULL_PRICE_COUPON_REDEEMED_EVENT,
+							data: {
+								purchaseId: purchase.id,
+								productType: product.type || 'self-paced',
+							},
+							user: {
+								id: purchase.userId,
+								email: baseEmail,
+							},
+						})
+					} catch (e) {
+						console.log(
+							'error sending inngest event for current user redemption',
+							e,
+						)
+						throw new Error('unable-to-send-inngest-event')
+					}
+				}
+			}
 		} else if (purchase?.userId && sendEmail) {
 			const user = await options.adapter.getUserById(purchase.userId)
 			if (!user) throw new Error(`unable-to-find-user-with-id-${purchase.id}`)

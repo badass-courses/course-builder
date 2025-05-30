@@ -69,10 +69,10 @@ export default async function VerifyLoginPage({
 	return (
 		<LayoutClient withContainer>
 			<Login
-				title="Login to Subscribe"
+				title="Log in to join"
 				csrfToken={csrfToken}
 				providers={providers}
-				subtitle={`to ${config.defaultTitle}`}
+				subtitle={`We'll create your account if you don't have one yet.`}
 				callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
 			/>
 		</LayoutClient>

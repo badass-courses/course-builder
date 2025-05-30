@@ -25,14 +25,36 @@ describe('determineOrgAccess', () => {
 		})
 	})
 
-	it('redirects when no matching org role and no owner role', () => {
+	it('redirects when no matching org role and no learner/owner role', () => {
 		const roles = [createRole({ organizationId: 'org-2' })]
 		expect(determineOrgAccess(roles, 'org-1')).toEqual({
 			action: 'REDIRECT_TO_ORG_LIST',
 		})
 	})
 
-	it('uses owner org when no valid current role exists', () => {
+	it('uses learner org when no valid current role exists', () => {
+		const roles = [
+			createRole({ name: 'learner', organizationId: 'learner-org' }),
+			createRole({ organizationId: 'org-2' }),
+		]
+		expect(determineOrgAccess(roles, 'org-1')).toEqual({
+			action: 'SET_OWNER_ORG',
+			organizationId: 'learner-org',
+		})
+	})
+
+	it('prioritizes learner role over owner role', () => {
+		const roles = [
+			createRole({ name: 'owner', organizationId: 'owner-org' }),
+			createRole({ name: 'learner', organizationId: 'learner-org' }),
+		]
+		expect(determineOrgAccess(roles, 'org-different')).toEqual({
+			action: 'SET_OWNER_ORG',
+			organizationId: 'learner-org',
+		})
+	})
+
+	it('falls back to owner org when no learner role exists', () => {
 		const roles = [
 			createRole({ name: 'owner', organizationId: 'owner-org' }),
 			createRole({ organizationId: 'org-2' }),
@@ -51,9 +73,10 @@ describe('determineOrgAccess', () => {
 		})
 	})
 
-	it('prefers current org over owner org when both exist', () => {
+	it('prefers current org over learner/owner org when both exist', () => {
 		const roles = [
 			createRole(),
+			createRole({ name: 'learner', organizationId: 'learner-org' }),
 			createRole({ name: 'owner', organizationId: 'owner-org' }),
 		]
 		expect(determineOrgAccess(roles, 'org-1')).toEqual({
@@ -62,7 +85,18 @@ describe('determineOrgAccess', () => {
 		})
 	})
 
-	it('handles undefined currentOrgId', () => {
+	it('handles undefined currentOrgId with learner role', () => {
+		const roles = [
+			createRole({ name: 'learner', organizationId: 'learner-org' }),
+			createRole({ name: 'owner', organizationId: 'owner-org' }),
+		]
+		expect(determineOrgAccess(roles, undefined)).toEqual({
+			action: 'SET_OWNER_ORG',
+			organizationId: 'learner-org',
+		})
+	})
+
+	it('handles undefined currentOrgId with only owner role', () => {
 		const roles = [createRole({ name: 'owner', organizationId: 'owner-org' })]
 		expect(determineOrgAccess(roles, undefined)).toEqual({
 			action: 'SET_OWNER_ORG',

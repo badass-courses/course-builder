@@ -1,6 +1,7 @@
 import { courseBuilderAdapter, db } from '@/db'
 import { NonRetriableError } from 'inngest'
 
+import { ENSURE_PERSONAL_ORGANIZATION_EVENT } from '../events/ensure-personal-organization'
 import { inngest } from '../inngest.server'
 
 export const CREATE_USER_ORGANIZATIONS_EVENT = 'create-user-organizations'
@@ -36,48 +37,14 @@ export const createUserOrganizations = inngest.createFunction(
 		})
 
 		for (const user of users) {
-			const organization = await step.run(
-				'create user organization',
-				async () => {
-					// creating a personal organization for the user
-					// every user gets an organization of their very own
-					const personalOrganization =
-						await courseBuilderAdapter.createOrganization({
-							name: `Personal (${user.email})`,
-						})
-
-					if (!personalOrganization) {
-						throw new Error('Failed to create personal organization')
-					}
-
-					return personalOrganization
-				},
-			)
-
-			const membership = await step.run(
-				'add user to organization',
-				async () => {
-					const membership = await courseBuilderAdapter.addMemberToOrganization(
-						{
-							organizationId: organization.id,
-							userId: user.id,
-							invitedById: user.id,
-						},
-					)
-
-					if (!membership) {
-						throw new Error('Failed to add user to personal organization')
-					}
-
-					return membership
-				},
-			)
-
-			await step.run('add role to user', async () => {
-				await courseBuilderAdapter.addRoleForMember({
-					organizationId: organization.id,
-					memberId: membership.id,
-					role: 'owner',
+			await step.run(`create organization for user ${user.id}`, async () => {
+				await step.sendEvent(ENSURE_PERSONAL_ORGANIZATION_EVENT, {
+					name: ENSURE_PERSONAL_ORGANIZATION_EVENT,
+					data: {
+						userId: user.id,
+						createIfMissing: true,
+					},
+					user,
 				})
 			})
 		}
