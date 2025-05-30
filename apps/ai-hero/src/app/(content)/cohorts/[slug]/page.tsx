@@ -43,7 +43,10 @@ import { CohortDetails } from './_components/cohort-details'
 import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
-import { CohortSidebar } from './_components/cohort-sidebar'
+import {
+	CohortSidebar,
+	CohortSidebarMobile,
+} from './_components/cohort-sidebar'
 
 export async function generateMetadata(
 	props: {
@@ -247,124 +250,144 @@ export default async function CohortPage(props: {
 						</span> */}
 					</div>
 				) : null}
-				<header className="flex w-full flex-col-reverse items-center justify-between pl-5 md:flex-row md:pl-8 lg:pl-16">
-					<div className="mt-5 flex w-full flex-col items-center py-8 text-center md:mt-0 md:items-start md:text-left">
-						<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-							<Link href="/cohorts" className="">
-								Cohort
-							</Link>
-							<span className="hidden opacity-50 sm:inline-block">・</span>
+
+				<div className="flex flex-col lg:flex-row">
+					<div>
+						<header className="flex w-full flex-col items-center justify-between pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
+							{fields?.image && (
+								<CldImage
+									className="flex w-full lg:hidden"
+									width={383}
+									height={204}
+									src={fields?.image}
+									alt={fields?.title}
+								/>
+							)}
+							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
+									<span className="text-xs font-medium uppercase tracking-wider">
+										Cohort-based Course
+									</span>
+									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
 							{eventDateString && <p>{eventDateString}</p>}
 							{eventTimeString && (
 								<>
 									<span className="opacity-50">・</span>
 									<p>{eventTimeString}</p>
 								</>
+							)} */}
+								</div>
+
+								<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
+									{fields.title}
+								</h1>
+								{fields.description && (
+									<h2 className="sm:fluid-xl fluid-lg mt-5 text-balance font-light">
+										{fields.description}
+									</h2>
+								)}
+								<Contributor
+									imageSize={60}
+									className="mt-8 [&_div]:text-left"
+									withBio
+								/>
+							</div>
+						</header>
+						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+							{cohort.fields.body && (
+								<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
 							)}
-						</div>
-						<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
-							{fields.title}
-						</h1>
-						{fields.description && (
-							<h2 className="mt-5 text-balance text-xl">
-								{fields.description}
-							</h2>
-						)}
-						<Contributor className="mt-5" />
-					</div>
+							<ul className="not-prose flex flex-col gap-3">
+								{workshops.map((workshop, index) => {
+									// Determine end date and timezone for the workshop
+									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+									const workshopTimezone = workshop.fields.timezone || PT
 
-					{fields?.image && (
-						<CldImage
-							width={384}
-							height={280}
-							src={fields?.image}
-							alt={fields?.title}
-						/>
-					)}
-				</header>
-				<div className="flex flex-col-reverse border-t md:flex-row">
-					<article className="dark:bg-background bg-muted/50 prose sm:prose-lg prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
-						{cohort.fields.body && (
-							<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
-						)}
-						<ul className="not-prose flex flex-col gap-3">
-							{workshops.map((workshop, index) => {
-								// Determine end date and timezone for the workshop
-								// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-								const workshopTimezone = workshop.fields.timezone || PT
-
-								// Format workshop date/time range (only start)
-								const {
-									dateString: workshopDateString,
-									timeString: workshopTimeString,
-								} = formatCohortDateRange(
-									workshop.fields.startsAt,
-									null, // Pass null for end date
-									workshopTimezone,
-								)
-
-								// Calculate Day number
-								let dayNumber: number | null = null
-								if (cohortStartDate && workshop.fields.startsAt) {
-									const workshopStartDate = new Date(workshop.fields.startsAt)
-									// Calculate difference, add 1, and ensure it's at least 1
-									dayNumber = Math.max(
-										1,
-										differenceInCalendarDays(
-											workshopStartDate,
-											cohortStartDate,
-										) + 1,
+									// Format workshop date/time range (only start)
+									const {
+										dateString: workshopDateString,
+										timeString: workshopTimeString,
+									} = formatCohortDateRange(
+										workshop.fields.startsAt,
+										null, // Pass null for end date
+										workshopTimezone,
 									)
-								}
-								const moduleProgressLoader = getModuleProgressForUser(
-									workshop.fields.slug,
-								)
-								return (
-									<li key={workshop.id}>
-										<ModuleProgressProvider
-											moduleProgressLoader={moduleProgressLoader}
-										>
-											<Link
-												className="text-foreground hover:text-primary text-xl"
-												href={getResourcePath(
-													'workshop',
-													workshop.fields.slug,
-													'view',
-												)}
+
+									// Calculate Day number
+									let dayNumber: number | null = null
+									if (cohortStartDate && workshop.fields.startsAt) {
+										const workshopStartDate = new Date(workshop.fields.startsAt)
+										// Calculate difference, add 1, and ensure it's at least 1
+										dayNumber = Math.max(
+											1,
+											differenceInCalendarDays(
+												workshopStartDate,
+												cohortStartDate,
+											) + 1,
+										)
+									}
+									const moduleProgressLoader = getModuleProgressForUser(
+										workshop.fields.slug,
+									)
+									return (
+										<li key={workshop.id}>
+											<ModuleProgressProvider
+												moduleProgressLoader={moduleProgressLoader}
 											>
-												{workshop.fields.title}
-											</Link>
-											{/* Display formatted workshop date/time */}
-											<div className="text-muted-foreground text-sm">
-												{/* {dayNumber !== null && (
+												<Link
+													className="text-foreground hover:text-primary text-xl"
+													href={getResourcePath(
+														'workshop',
+														workshop.fields.slug,
+														'view',
+													)}
+												>
+													{workshop.fields.title}
+												</Link>
+												{/* Display formatted workshop date/time */}
+												<div className="text-muted-foreground text-sm">
+													{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-												{workshopDateString && (
-													<span>Available from {workshopDateString}</span>
-												)}
-												{workshopTimeString && (
-													<span> at {workshopTimeString}</span>
-												)}
-											</div>
-											<ol className="list-inside list-none pl-5">
-												{workshop.resources?.map(({ resource }) => {
-													return (
-														<WorkshopLessonItem
-															key={resource.id}
-															resource={resource}
-															workshopSlug={workshop.fields.slug}
-														/>
-													)
-												})}
-											</ol>
-										</ModuleProgressProvider>
-									</li>
-								)
-							})}
-						</ul>
-					</article>
-					<CohortSidebar sticky={!cohortProps.hasPurchasedCurrentProduct}>
-						<CohortDetails cohort={cohort} />
+													{workshopDateString && (
+														<span>Available from {workshopDateString}</span>
+													)}
+													{workshopTimeString && (
+														<span> at {workshopTimeString}</span>
+													)}
+												</div>
+												<ol className="list-inside list-none pl-5">
+													{workshop.resources?.map(({ resource }) => {
+														return (
+															<WorkshopLessonItem
+																key={resource.id}
+																resource={resource}
+																workshopSlug={workshop.fields.slug}
+															/>
+														)
+													})}
+												</ol>
+											</ModuleProgressProvider>
+										</li>
+									)
+								})}
+							</ul>
+						</article>
+					</div>
+					<CohortSidebar
+						cohort={cohort}
+						sticky={!cohortProps.hasPurchasedCurrentProduct}
+					>
+						{fields?.image && (
+							<CldImage
+								className="hidden lg:flex"
+								width={383}
+								height={204}
+								src={fields?.image}
+								alt={fields?.title}
+							/>
+						)}
+						{/* <CohortDetails cohort={cohort} /> */}
 						{cohortProps.hasPurchasedCurrentProduct ? (
 							<div>
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
@@ -455,6 +478,7 @@ export default async function CohortPage(props: {
 						) : null}
 					</CohortSidebar>
 				</div>
+				{/* <CohortSidebarMobile cohort={cohort} /> */}
 			</main>
 		</LayoutClient>
 	)

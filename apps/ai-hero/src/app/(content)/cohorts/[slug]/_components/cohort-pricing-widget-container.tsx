@@ -4,6 +4,7 @@ import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { track } from '@/utils/analytics'
+import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { formatInTimeZone } from 'date-fns-tz'
 import { toSnakeCase } from 'drizzle-orm/casing'
 import { CheckCircle } from 'lucide-react'
@@ -25,7 +26,7 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 		...commerceProps
 	} = props
 	const { fields } = cohort
-	const { startsAt, timezone } = fields
+	const { startsAt, endsAt, timezone } = fields
 	const product = products && products[0]
 
 	// Properly handle timezone comparison - get current time in PT to compare with PT stored date
@@ -45,10 +46,17 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 			.toISOString()
 			.slice(0, 10),
 	}
+
+	const { dateString: eventDateString, timeString: eventTimeString } =
+		formatCohortDateRange(startsAt, endsAt, timezone)
+
 	return (
 		<>
 			{product && product.status === 1 && isUpcoming && (
 				<div className="border-b px-5 pb-5">
+					<p className="-mb-8 flex w-full items-center justify-center pt-5 text-center">
+						{eventDateString}
+					</p>
 					<PricingWidget
 						className="border-b-0"
 						workshops={workshops}

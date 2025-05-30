@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 
 import { Product } from '@coursebuilder/core/schemas'
+import { Accordion } from '@coursebuilder/ui'
 
 export const ProductPricingFeatures = ({
 	workshops,
@@ -21,7 +22,7 @@ export const ProductPricingFeatures = ({
 }) => {
 	return (
 		<div className="relative mt-5 flex w-full flex-col items-center">
-			<strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
+			{/* <strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
 				<span className="relative z-10 bg-white px-3 py-1 dark:bg-[#0F0F0F]">
 					Includes
 				</span>
@@ -29,30 +30,33 @@ export const ProductPricingFeatures = ({
 					aria-hidden="true"
 					className="bg-border absolute left-0 z-0 h-px w-full"
 				/>
-			</strong>
-			{workshops && (
-				<strong className="mb-2 inline-flex w-full text-left font-medium">
-					{workshops.length} Workshops
-				</strong>
-			)}
-			<ul className="mb-5 flex w-full flex-col gap-2">
-				{workshops.map((workshop) => {
-					return (
-						<li className="flex items-baseline gap-2" key={workshop.slug}>
-							<Check className="text-foreground/50 relative h-4 w-4 flex-shrink-0 translate-y-1" />
-							{workshop.title}
-						</li>
-					)
-				})}
-			</ul>
+			</strong> */}
+			{/* {workshops && (
+				<>
+					<strong className="mb-2 inline-flex w-full text-left font-medium">
+						{workshops.length} Workshops
+					</strong>
+
+					<ul className="mb-5 flex w-full flex-col gap-2">
+						{workshops.map((workshop) => {
+							return (
+								<li className="flex items-baseline gap-2" key={workshop.slug}>
+									<Check className="text-foreground/50 relative h-4 w-4 flex-shrink-0 translate-y-1" />
+									{workshop.title}
+								</li>
+							)
+						})}
+					</ul>
+				</>
+			)} */}
 			<strong className="mb-2 inline-flex w-full text-left font-medium">
-				Features
+				Includes {/* Features */}
 			</strong>
 			<ul className="flex w-full flex-col gap-2">
-				{/* <li className="flex items-center gap-2">
+				<li className="flex items-center gap-2">
 					<ListVideo className="h-4 w-4" />
-					Over 90 Lessons
-				</li> */}
+					{workshops.length} Workshops
+				</li>
 				<li className="flex items-center gap-2">
 					<Infinity className="h-4 w-4" />
 					Lifetime Access

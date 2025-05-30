@@ -58,14 +58,18 @@ export const CohortDetails: React.FC<{
 							<ClockIcon className="text-primary relative h-5 w-5 flex-shrink-0" />{' '}
 							Time{' '}
 							{everyTimeZoneLink && (
-								<Link
-									href={everyTimeZoneLink}
-									target="_blank"
-									className="text-primary underline underline-offset-2"
-									rel="noopener noreferrer"
-								>
-									(Timezones)
-								</Link>
+								<>
+									(
+									<Link
+										href={everyTimeZoneLink}
+										target="_blank"
+										className="text-primary underline underline-offset-2"
+										rel="noopener noreferrer"
+									>
+										Timezones
+									</Link>
+									)
+								</>
 							)}
 						</span>
 						<div className="opacity-90">{eventTimeString}</div>

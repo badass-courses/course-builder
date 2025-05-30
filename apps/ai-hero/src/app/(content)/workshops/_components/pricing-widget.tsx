@@ -60,10 +60,23 @@ export const PricingWidget: React.FC<{
 				<Pricing.Details className="px-0">
 					<Pricing.Name className="mb-2 font-medium sm:text-xl" />
 					<Pricing.LiveQuantity />
-					<Pricing.Price />
+					<Pricing.Price className="[&_[aria-live='polite']]:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-3' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton>Enroll Now</Pricing.BuyButton>
+					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative bg-blue-600 hover:bg-blue-700">
+						<span className="relative z-10">Enroll</span>
+						<div
+							style={{
+								backgroundSize: '200% 100%',
+								animationDuration: '2s',
+								animationIterationCount: 'infinite',
+								animationTimingFunction: 'linear',
+								animationFillMode: 'forwards',
+								animationDelay: '2s',
+							}}
+							className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+						/>
+					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					{/* <Pricing.LiveRefundPolicy /> */}
 					<Pricing.SaleCountdown className="py-4" />
