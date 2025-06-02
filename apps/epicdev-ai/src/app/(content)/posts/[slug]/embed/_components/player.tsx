@@ -70,6 +70,60 @@ export function EmbedPlayer({
 		setPrefs(getEmbedPlayerPrefs())
 	}, [])
 
+	// Text tracks event listener management
+	useEffect(() => {
+		const handleTextTracksChange = () => {
+			if (!playerRef.current?.textTracks) return
+
+			const tracks = Array.from(playerRef.current.textTracks)
+			const activeTrack = tracks.find((track) => track.mode === 'showing')
+
+			if (activeTrack) {
+				const subtitle: Subtitle = {
+					id: activeTrack.id,
+					kind: activeTrack.kind,
+					label: activeTrack.label,
+					language: activeTrack.language,
+					mode: activeTrack.mode,
+				}
+				setPrefs((prev) => ({ ...prev, subtitle }))
+				saveEmbedPlayerPrefs({ subtitle })
+			} else {
+				// No active track
+				const subtitle: Subtitle = {
+					...defaultSubtitlePreference,
+					mode: 'disabled',
+				}
+				setPrefs((prev) => ({ ...prev, subtitle }))
+				saveEmbedPlayerPrefs({ subtitle })
+			}
+		}
+
+		const setupTextTracksListener = () => {
+			if (playerRef.current?.textTracks) {
+				playerRef.current.textTracks.addEventListener(
+					'change',
+					handleTextTracksChange,
+				)
+				return () => {
+					if (playerRef.current?.textTracks) {
+						playerRef.current.textTracks.removeEventListener(
+							'change',
+							handleTextTracksChange,
+						)
+					}
+				}
+			}
+			return undefined
+		}
+
+		// Set up listener when player is loaded
+		const cleanup = setupTextTracksListener()
+
+		// Return cleanup function
+		return cleanup
+	}, []) // Empty dependency array since we want this to run once
+
 	const handleRateChange = (evt: Event) => {
 		const target = evt.target as HTMLVideoElement
 		const value = target.playbackRate || 1
@@ -85,33 +139,8 @@ export function EmbedPlayer({
 	}
 
 	const handleLoadedData = () => {
-		// Set up text track change listener
-		if (playerRef.current?.textTracks) {
-			playerRef.current.textTracks.addEventListener('change', () => {
-				const tracks = Array.from(playerRef.current?.textTracks || [])
-				const activeTrack = tracks.find((track) => track.mode === 'showing')
-
-				if (activeTrack) {
-					const subtitle: Subtitle = {
-						id: activeTrack.id,
-						kind: activeTrack.kind,
-						label: activeTrack.label,
-						language: activeTrack.language,
-						mode: activeTrack.mode,
-					}
-					setPrefs((prev) => ({ ...prev, subtitle }))
-					saveEmbedPlayerPrefs({ subtitle })
-				} else {
-					// No active track
-					const subtitle: Subtitle = {
-						...defaultSubtitlePreference,
-						mode: 'disabled',
-					}
-					setPrefs((prev) => ({ ...prev, subtitle }))
-					saveEmbedPlayerPrefs({ subtitle })
-				}
-			})
-		}
+		// Text tracks listener is now managed by useEffect above
+		// This is just here for any future loaded data handling
 	}
 
 	return (
