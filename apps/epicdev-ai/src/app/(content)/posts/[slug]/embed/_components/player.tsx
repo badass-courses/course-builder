@@ -65,64 +65,21 @@ export function EmbedPlayer({
 }) {
 	const playerRef = useRef<MuxPlayerRefAttributes>(null)
 	const [prefs, setPrefs] = useState<EmbedPlayerPrefs>(defaultEmbedPrefs)
+	const textTracksListenerRef = useRef<(() => void) | null>(null)
 
 	useEffect(() => {
 		setPrefs(getEmbedPlayerPrefs())
 	}, [])
 
-	// Text tracks event listener management
+	// Cleanup text tracks listener on unmount
 	useEffect(() => {
-		const handleTextTracksChange = () => {
-			if (!playerRef.current?.textTracks) return
-
-			const tracks = Array.from(playerRef.current.textTracks)
-			const activeTrack = tracks.find((track) => track.mode === 'showing')
-
-			if (activeTrack) {
-				const subtitle: Subtitle = {
-					id: activeTrack.id,
-					kind: activeTrack.kind,
-					label: activeTrack.label,
-					language: activeTrack.language,
-					mode: activeTrack.mode,
-				}
-				setPrefs((prev) => ({ ...prev, subtitle }))
-				saveEmbedPlayerPrefs({ subtitle })
-			} else {
-				// No active track
-				const subtitle: Subtitle = {
-					...defaultSubtitlePreference,
-					mode: 'disabled',
-				}
-				setPrefs((prev) => ({ ...prev, subtitle }))
-				saveEmbedPlayerPrefs({ subtitle })
+		return () => {
+			if (textTracksListenerRef.current) {
+				textTracksListenerRef.current()
+				textTracksListenerRef.current = null
 			}
 		}
-
-		const setupTextTracksListener = () => {
-			if (playerRef.current?.textTracks) {
-				playerRef.current.textTracks.addEventListener(
-					'change',
-					handleTextTracksChange,
-				)
-				return () => {
-					if (playerRef.current?.textTracks) {
-						playerRef.current.textTracks.removeEventListener(
-							'change',
-							handleTextTracksChange,
-						)
-					}
-				}
-			}
-			return undefined
-		}
-
-		// Set up listener when player is loaded
-		const cleanup = setupTextTracksListener()
-
-		// Return cleanup function
-		return cleanup
-	}, []) // Empty dependency array since we want this to run once
+	}, [])
 
 	const handleRateChange = (evt: Event) => {
 		const target = evt.target as HTMLVideoElement
@@ -138,9 +95,104 @@ export function EmbedPlayer({
 		saveEmbedPlayerPrefs({ volume: value })
 	}
 
+	const restoreSubtitlePreferences = () => {
+		if (!playerRef.current?.textTracks) return
+
+		// Read directly from storage instead of relying on state
+		const storedPrefs = getEmbedPlayerPrefs()
+		const savedSubtitle = storedPrefs.subtitle
+
+		console.log('Restoring subtitle preferences:', savedSubtitle)
+
+		if (savedSubtitle.mode === 'showing') {
+			// Find the matching track and enable it
+			const tracks = Array.from(playerRef.current.textTracks)
+			console.log(
+				'Available tracks:',
+				tracks.map((t) => ({ id: t.id, language: t.language, label: t.label })),
+			)
+
+			const targetTrack = tracks.find((track) => {
+				// Try multiple matching strategies
+				return (
+					track.id === savedSubtitle.id ||
+					track.language === savedSubtitle.language ||
+					track.label === savedSubtitle.label
+				)
+			})
+
+			console.log('Target track found:', targetTrack)
+
+			if (targetTrack) {
+				// Disable all tracks first
+				tracks.forEach((track) => (track.mode = 'disabled'))
+				// Enable the target track
+				targetTrack.mode = 'showing'
+				console.log(
+					'Enabled subtitle track:',
+					targetTrack.label || targetTrack.language,
+				)
+			}
+		}
+	}
+
+	const handleTextTracksChange = () => {
+		if (!playerRef.current?.textTracks) return
+
+		const tracks = Array.from(playerRef.current.textTracks)
+		const activeTrack = tracks.find((track) => track.mode === 'showing')
+
+		if (activeTrack) {
+			const subtitle: Subtitle = {
+				id: activeTrack.id,
+				kind: activeTrack.kind,
+				label: activeTrack.label,
+				language: activeTrack.language,
+				mode: activeTrack.mode,
+			}
+			console.log('Saving subtitle preference:', subtitle)
+			setPrefs((prev) => ({ ...prev, subtitle }))
+			saveEmbedPlayerPrefs({ subtitle })
+		} else {
+			// No active track
+			const subtitle: Subtitle = {
+				...defaultSubtitlePreference,
+				mode: 'disabled',
+			}
+			console.log('Saving disabled subtitle preference')
+			setPrefs((prev) => ({ ...prev, subtitle }))
+			saveEmbedPlayerPrefs({ subtitle })
+		}
+	}
+
 	const handleLoadedData = () => {
-		// Text tracks listener is now managed by useEffect above
-		// This is just here for any future loaded data handling
+		// Clean up any existing listener
+		if (textTracksListenerRef.current) {
+			textTracksListenerRef.current()
+		}
+
+		// Set up text tracks listener first
+		if (playerRef.current?.textTracks) {
+			playerRef.current.textTracks.addEventListener(
+				'change',
+				handleTextTracksChange,
+			)
+
+			// Store cleanup function
+			textTracksListenerRef.current = () => {
+				if (playerRef.current?.textTracks) {
+					playerRef.current.textTracks.removeEventListener(
+						'change',
+						handleTextTracksChange,
+					)
+				}
+			}
+		}
+
+		// Delay subtitle restoration to ensure tracks are fully loaded
+		setTimeout(() => {
+			restoreSubtitlePreferences()
+		}, 100)
 	}
 
 	return (
