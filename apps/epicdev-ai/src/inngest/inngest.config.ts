@@ -9,6 +9,7 @@ import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extracto
 import { sendWelcomeEmail } from '@/inngest/functions/post-purchase-automation/send-welcome-email'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
+import { unlistPastEvents } from '@/inngest/functions/unlist-past-events'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -57,5 +58,6 @@ export const inngestConfig = {
 		calendarSync,
 		postEventPurchase,
 		handleRefundAndRemoveFromCalendar,
+		unlistPastEvents,
 	],
 }
