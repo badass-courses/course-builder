@@ -8,13 +8,88 @@ import {
 } from '@/inngest/events/video-attachment'
 import { inngest } from '@/inngest/inngest.server'
 import { log } from '@/server/logger'
-import { and, desc, eq, notExists, notInArray, or, sql } from 'drizzle-orm'
+import { and, desc, eq, lt, notExists, notInArray, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export async function getVideoResource(id: string | null | undefined) {
 	return courseBuilderAdapter.getVideoResource(id)
+}
+
+/**
+ * Get paginated video resources with cursor-based pagination
+ * @param limit - Number of items to return (default: 20)
+ * @param cursor - Cursor for pagination (ISO date string)
+ * @returns Object with video resources, hasNextPage, and nextCursor
+ */
+export async function getPaginatedVideoResources(
+	limit: number = 20,
+	cursor?: string,
+) {
+	try {
+		const conditions = [eq(contentResource.type, 'videoResource')]
+
+		if (cursor) {
+			conditions.push(lt(contentResource.createdAt, new Date(cursor)))
+		}
+
+		const videoResources = await db.query.contentResource.findMany({
+			where: and(...conditions),
+			with: {
+				resources: {
+					with: {
+						resource: true,
+					},
+				},
+			},
+			orderBy: [desc(contentResource.createdAt)],
+			limit: limit + 1, // Fetch one extra to check if there's a next page
+		})
+
+		const hasNextPage = videoResources.length > limit
+		const items = hasNextPage ? videoResources.slice(0, limit) : videoResources
+		const lastItem = items[items.length - 1]
+		const nextCursor =
+			hasNextPage && items.length > 0 && lastItem?.createdAt
+				? lastItem.createdAt.toISOString()
+				: null
+
+		await log.info('video-resources.paginated.fetch.success', {
+			count: items.length,
+			hasNextPage,
+			cursor,
+		})
+
+		const validatedResults = z.array(ContentResourceSchema).safeParse(items)
+
+		if (!validatedResults.success) {
+			await log.error('video-resources.paginated.validation.failed', {
+				error: validatedResults.error.format(),
+			})
+			return {
+				items: [],
+				hasNextPage: false,
+				nextCursor: null,
+			}
+		}
+
+		return {
+			items: validatedResults.data,
+			hasNextPage,
+			nextCursor,
+		}
+	} catch (error) {
+		await log.error('video-resources.paginated.fetch.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		return {
+			items: [],
+			hasNextPage: false,
+			nextCursor: null,
+		}
+	}
 }
 
 export async function getAllVideoResources() {
