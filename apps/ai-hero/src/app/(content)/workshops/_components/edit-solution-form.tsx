@@ -68,7 +68,7 @@ const BaseSolutionForm = ({
 		React.useState(false)
 
 	useSocket({
-		room: resource.id,
+		room: resource.id || null,
 		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		onMessage: async (messageEvent) => {
 			try {
@@ -96,6 +96,11 @@ const BaseSolutionForm = ({
 	})
 
 	const handleGenerateDescription = async () => {
+		// Don't attempt to generate description for new resources without an ID
+		if (!resource.id) {
+			return
+		}
+
 		setIsGeneratingDescription(true)
 
 		await sendResourceChatMessage({
@@ -166,7 +171,7 @@ const BaseSolutionForm = ({
 								variant="outline"
 								size="sm"
 								className="flex items-center gap-1"
-								disabled={isGeneratingDescription}
+								disabled={isGeneratingDescription || !resource.id}
 								onClick={handleGenerateDescription}
 							>
 								{isGeneratingDescription ? (
