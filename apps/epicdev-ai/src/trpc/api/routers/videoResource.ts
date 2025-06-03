@@ -3,6 +3,7 @@ import {
 	attachVideoResourceToPost,
 	detachVideoResourceFromPost,
 	getAllVideoResources,
+	getPaginatedVideoResources,
 } from '@/lib/video-resource-query'
 import {
 	createTRPCRouter,
@@ -24,6 +25,19 @@ export const videoResourceRouter = createTRPCRouter({
 	getAll: protectedProcedure.query(async () => {
 		return await getAllVideoResources()
 	}),
+	getPaginated: protectedProcedure
+		.input(
+			z
+				.object({
+					limit: z.number().min(1).max(100).default(20),
+					cursor: z.string().optional(),
+				})
+				.optional()
+				.default({}),
+		)
+		.query(async ({ input }) => {
+			return await getPaginatedVideoResources(input.limit, input.cursor)
+		}),
 	attachToPost: protectedProcedure
 		.input(
 			z.object({
