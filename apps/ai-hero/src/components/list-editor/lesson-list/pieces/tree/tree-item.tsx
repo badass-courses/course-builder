@@ -581,6 +581,13 @@ const TreeItem = memo(function TreeItem({
 						>
 							Remove from list
 						</ContextMenuItem>
+						<ContextMenuItem
+							onClick={() => {
+								navigator.clipboard.writeText(item.id)
+							}}
+						>
+							Copy resource id
+						</ContextMenuItem>
 					</ContextMenuContent>
 				</ContextMenu>
 				{instruction ? (
