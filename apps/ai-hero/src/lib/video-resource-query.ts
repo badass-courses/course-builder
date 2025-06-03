@@ -17,6 +17,13 @@ export async function getVideoResource(id: string | null | undefined) {
 	return courseBuilderAdapter.getVideoResource(id)
 }
 
+export type PaginatedVideoResourcesResponse = {
+	items: z.infer<typeof ContentResourceSchema>[]
+	hasNextPage: boolean
+	nextCursor: string | null
+	error?: string
+}
+
 /**
  * Get paginated video resources with cursor-based pagination
  * @param limit - Number of items to return (default: 20)
@@ -26,12 +33,48 @@ export async function getVideoResource(id: string | null | undefined) {
 export async function getPaginatedVideoResources(
 	limit: number = 20,
 	cursor?: string,
-) {
+): Promise<PaginatedVideoResourcesResponse> {
 	try {
+		// Validate limit parameter
+		if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+			await log.warn('video-resources.paginated.invalid-limit', {
+				providedLimit: limit,
+				defaultingTo: 20,
+			})
+			limit = 20 // Default to safe value
+		}
+
+		// Validate cursor parameter if provided
+		let cursorDate: Date | null = null
+		if (cursor) {
+			if (typeof cursor !== 'string' || cursor.trim() === '') {
+				throw new Error(
+					`Invalid cursor format: cursor must be a non-empty string`,
+				)
+			}
+
+			// Validate ISO date string format and create Date object
+			cursorDate = new Date(cursor)
+			if (isNaN(cursorDate.getTime())) {
+				throw new Error(
+					`Invalid cursor date: "${cursor}" is not a valid ISO date string`,
+				)
+			}
+
+			// Additional validation: ensure date is not in the future (with some tolerance)
+			const now = new Date()
+			const maxFutureDate = new Date(now.getTime() + 1000 * 60 * 60) // 1 hour tolerance
+			if (cursorDate > maxFutureDate) {
+				throw new Error(
+					`Invalid cursor date: "${cursor}" is too far in the future`,
+				)
+			}
+		}
+
 		const conditions = [eq(contentResource.type, 'videoResource')]
 
-		if (cursor) {
-			conditions.push(lt(contentResource.createdAt, new Date(cursor)))
+		if (cursorDate) {
+			conditions.push(lt(contentResource.createdAt, cursorDate))
 		}
 
 		const videoResources = await db.query.contentResource.findMany({
@@ -59,6 +102,7 @@ export async function getPaginatedVideoResources(
 			count: items.length,
 			hasNextPage,
 			cursor,
+			validatedLimit: limit,
 		})
 
 		const validatedResults = z.array(ContentResourceSchema).safeParse(items)
@@ -83,11 +127,16 @@ export async function getPaginatedVideoResources(
 		await log.error('video-resources.paginated.fetch.failed', {
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
+			providedCursor: cursor,
+			providedLimit: limit,
 		})
+
+		// Return empty result with descriptive error for client
 		return {
 			items: [],
 			hasNextPage: false,
 			nextCursor: null,
+			error: error instanceof Error ? error.message : 'Unknown error occurred',
 		}
 	}
 }
