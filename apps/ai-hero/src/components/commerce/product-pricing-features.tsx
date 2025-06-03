@@ -12,6 +12,8 @@ import {
 import { Product } from '@coursebuilder/core/schemas'
 import { Accordion } from '@coursebuilder/ui'
 
+import { Icon } from '../brand/icons'
+
 export const ProductPricingFeatures = ({
 	workshops,
 }: {
@@ -95,9 +97,13 @@ export const ProductPricingFeatures = ({
 					Progress Tracking
 				</li>
 				<li className="flex items-center gap-2">
+					<Icon name="Discord" className="h-4 w-4" />
+					Access to Discord Community
+				</li>
+				{/* <li className="flex items-center gap-2">
 					<BadgeCheck className="h-4 w-4" />
 					Completion Certificate
-				</li>
+				</li> */}
 			</ul>
 		</div>
 	)

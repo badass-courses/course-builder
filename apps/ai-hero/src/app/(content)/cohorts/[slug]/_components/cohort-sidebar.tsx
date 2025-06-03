@@ -20,9 +20,10 @@ export const CohortSidebar = ({
 	cohort: Cohort
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
-	const buySectionRef = useRef<HTMLDivElement>(null)
-	// get window height
 	const [windowHeight, setWindowHeight] = React.useState(0)
+	const buySectionRef = useRef<HTMLDivElement>(null)
+	const isInView = useInView(buySectionRef, { margin: '0px 0px 0% 0px' })
+
 	React.useEffect(() => {
 		const handleResize = () => {
 			setWindowHeight(window.innerHeight)
@@ -34,15 +35,6 @@ export const CohortSidebar = ({
 			window.removeEventListener('resize', handleResize)
 		}
 	}, [])
-	const isInView = useInView(buySectionRef, { margin: '0px 0px 0% 0px' })
-
-	const handleScrollToBuy = (e: React.MouseEvent<HTMLAnchorElement>) => {
-		e.preventDefault()
-		buySectionRef.current?.scrollIntoView({
-			behavior: 'smooth',
-			block: 'start',
-		})
-	}
 
 	return (
 		<>

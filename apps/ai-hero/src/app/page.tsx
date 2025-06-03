@@ -77,12 +77,15 @@ const Home = async (props: Props) => {
 	// const searchParams = await props.searchParams
 	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
 	// 	await getPricingProps({ searchParams })
-	const page = await getPage('home-6z2ir')
 	const isCommerceEnabled = await commerceEnabled()
+	const page = await getPage(
+		isCommerceEnabled ? 'home-selling-live~i7ni0' : 'home-6z2ir',
+	)
 	const firstPageResource = page?.resources?.[0] && {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
 	}
+	const searchParams = await props.searchParams
 
 	return (
 		<LayoutClient className="max-w-[1030px]" withContainer>
@@ -161,6 +164,21 @@ const Home = async (props: Props) => {
 										}}
 									/>
 								),
+								Pricing: (props) => (
+									<React.Suspense
+										fallback={
+											<div className="flex h-full w-full items-center justify-center p-10 text-center">
+												Loading pricing...
+											</div>
+										}
+									>
+										<PricingWidgetServer
+											productId="product-3vfob"
+											searchParams={searchParams}
+											{...props}
+										/>
+									</React.Suspense>
+								),
 								// @ts-expect-error
 								MuxPlayer,
 							}}
@@ -169,7 +187,7 @@ const Home = async (props: Props) => {
 						<>Page body not found</>
 					)}
 				</article>
-				{isCommerceEnabled && (
+				{/* {isCommerceEnabled && (
 					<section
 						id="buy"
 						className="container mx-auto flex w-full items-center justify-center gap-16 border-t py-16"
@@ -180,11 +198,11 @@ const Home = async (props: Props) => {
 								searchParams={await props.searchParams}
 							/>
 						</div>
-						{/* <div className="w-full max-w-sm">
+						<div className="w-full max-w-sm">
 							<TeamPricingWidget />
-						</div> */}
+						</div>
 					</section>
-				)}
+				)} */}
 			</main>
 		</LayoutClient>
 	)

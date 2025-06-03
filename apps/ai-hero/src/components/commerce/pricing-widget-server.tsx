@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -23,8 +24,12 @@ export async function PricingWidgetServer({
 	const user = session?.user
 
 	const product = await getProduct(productId)
+	const cohort = await getCohort(
+		product?.resources?.[0]?.resource?.fields?.slug,
+	)
 
 	if (!product) return null
+
 	const pricingDataLoader = getPricingData({ productId: product?.id })
 	let productProps: any
 
@@ -32,6 +37,7 @@ export async function PricingWidgetServer({
 		(await headers()).get('x-vercel-ip-country') ||
 		process.env.DEFAULT_COUNTRY ||
 		'US'
+
 	let commerceProps = await propsForCommerce(
 		{
 			query: {
@@ -98,7 +104,7 @@ export async function PricingWidgetServer({
 			hasPurchasedCurrentProduct: Boolean(purchase),
 			...(Boolean(existingPurchase)
 				? {
-						purchasedProductIds: [existingPurchase?.productId, '72', 69],
+						purchasedProductIds: [existingPurchase?.productId],
 						existingPurchase: existingPurchase,
 					}
 				: {}),
