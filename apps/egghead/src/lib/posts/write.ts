@@ -37,6 +37,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	clearLessonPublishedAt,
 	clearPlaylistPublishedAt,
+	createEggheadLessonVersion,
 	determineEggheadAccess,
 	determineEggheadLessonState,
 	determineEggheadVisibilityState,
@@ -354,6 +355,8 @@ export async function writePostUpdateToDatabase(input: {
 		postUpdate.fields.state,
 	)
 
+	const isPublished = postUpdate.fields.state === 'published'
+
 	const access = await determineEggheadAccess(postUpdate?.fields?.access)
 
 	const duration = await getVideoDuration(currentPost.resources)
@@ -385,6 +388,7 @@ export async function writePostUpdateToDatabase(input: {
 			...(videoResource?.muxPlaybackId && {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
 			}),
+			published: isPublished,
 		})
 
 		if (action === 'publish') {
@@ -464,6 +468,12 @@ export async function writePostUpdateToDatabase(input: {
 
 	if (newContentHash !== currentContentHash) {
 		await createNewPostVersion(updatedPost, updatedById)
+		if (updatedPost.fields.eggheadLessonId) {
+			await createEggheadLessonVersion(
+				updatedPost.fields.eggheadLessonId,
+				'Post metadata updated',
+			)
+		}
 	}
 
 	try {

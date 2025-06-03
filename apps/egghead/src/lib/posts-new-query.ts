@@ -12,7 +12,11 @@ import slugify from '@sindresorhus/slugify'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { createEggheadCourse, createEggheadLesson } from './egghead'
+import {
+	createEggheadCourse,
+	createEggheadLesson,
+	createEggheadLessonVersion,
+} from './egghead'
 import {
 	DatabaseError,
 	ExternalServiceError,
@@ -128,6 +132,9 @@ export async function writeNewPostToDatabase(
 
 			// Step 6: Create version
 			await createNewPostVersion(post)
+			if (eggheadLessonId) {
+				await createEggheadLessonVersion(eggheadLessonId, 'Initial version')
+			}
 
 			return post
 		} catch (error) {
