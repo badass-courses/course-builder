@@ -251,6 +251,9 @@ importers:
       '@coursebuilder/utils-string':
         specifier: workspace:*
         version: link:../../packages/utils-string
+      '@coursebuilder/utils-timezones':
+        specifier: workspace:*
+        version: link:../../packages/utils-timezones
       '@coursebuilder/utils-ui':
         specifier: workspace:*
         version: link:../../packages/utils-ui

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import config from '@/config'
+import { getResourcePath } from '@/utils/resource-paths'
 
 export default {
 	'newsletter-subscribed-logged-in': ({
@@ -8,18 +9,24 @@ export default {
 		resource?: {
 			path: string
 			title: string
+			type: string
 		}
 	}) => {
 		const defaultResource = {
 			path: '/the-game-changing-potential-of-model-context-protocol',
 			title: 'The game-changing potential of Model Context Protocol',
+			type: 'post',
 		}
 		return (
 			<>
 				Ready to learn? Check out{' '}
 				<Link
 					className="underline underline-offset-2"
-					href={resource?.path || defaultResource.path}
+					href={getResourcePath(
+						resource?.type || 'post',
+						resource?.path || defaultResource.path,
+						'view',
+					)}
 				>
 					{resource?.title || defaultResource.title}
 				</Link>

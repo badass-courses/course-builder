@@ -477,7 +477,7 @@ body {
 							@apply font-heading -mt-3 text-base font-semibold opacity-60;
 						}
 						[data-price] {
-							@apply text-foreground font-heading flex text-6xl font-bold;
+							@apply text-foreground font-heading flex text-4xl font-bold;
 						}
 						span {
 							@apply font-heading mt-1 pl-0.5 align-sub text-base opacity-60;

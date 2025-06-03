@@ -36,12 +36,25 @@ export function formatCohortDateRange(
 					'h:mm a',
 				)} — ${formatInTimeZone(endDate, tz, 'h:mm a zzz')}`
 			} else {
-				// Multi-day event: "Start Month Day, Year - End Month Day, Year" | "Start Time (Timezone)"
-				dateString = `${formatInTimeZone(
-					startDate,
-					tz,
-					'MMMM d, yyyy',
-				)} - ${formatInTimeZone(endDate, tz, 'MMMM d, yyyy')}`
+				// Multi-day event: check if same year for formatting
+				const startYear = formatInTimeZone(startDate, tz, 'yyyy')
+				const endYear = formatInTimeZone(endDate, tz, 'yyyy')
+
+				if (startYear === endYear) {
+					// Same year: "Start Month Day—End Month Day, Year"
+					dateString = `${formatInTimeZone(
+						startDate,
+						tz,
+						'MMMM d',
+					)}—${formatInTimeZone(endDate, tz, 'MMMM d, yyyy')}`
+				} else {
+					// Different years: "Start Month Day, Year—End Month Day, Year"
+					dateString = `${formatInTimeZone(
+						startDate,
+						tz,
+						'MMMM d, yyyy',
+					)}—${formatInTimeZone(endDate, tz, 'MMMM d, yyyy')}`
+				}
 				timeString = `${formatInTimeZone(startDate, tz, 'h:mm a zzz')}`
 			}
 		} else {

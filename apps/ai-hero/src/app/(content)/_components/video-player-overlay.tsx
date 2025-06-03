@@ -416,10 +416,10 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 		return (
 			<div
 				aria-live="polite"
-				className="relative z-40 flex h-full w-full flex-col items-center justify-center bg-gray-100 p-5 sm:aspect-video sm:text-lg"
+				className="bg-background relative z-40 flex h-full w-full flex-col items-center justify-center p-5 sm:aspect-video sm:text-lg"
 			>
 				<div className="mx-auto flex w-full max-w-lg flex-col gap-5">
-					<p className="w-full border-b border-gray-300 pb-5 font-semibold">
+					<p className="border-border w-full border-b pb-5 font-semibold">
 						You've purchased a team license. Invite your team or claim a seat
 						for yourself.
 					</p>

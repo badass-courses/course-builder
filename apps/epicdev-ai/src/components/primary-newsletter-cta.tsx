@@ -35,6 +35,7 @@ type PrimaryNewsletterCtaProps = {
 	resource?: {
 		path: string
 		title: string
+		type: string
 	}
 	isHiddenForSubscribers?: boolean
 }

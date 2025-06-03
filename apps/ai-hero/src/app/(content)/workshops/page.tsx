@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { PricingWidget } from '@/components/commerce/home-pricing-widget'
@@ -133,6 +134,7 @@ async function WorkshopsList() {
 	const allWorkshops = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'workshop'),
 		limit: 50,
+		orderBy: asc(contentResource.createdAt),
 	})
 
 	// @ts-expect-error
@@ -146,21 +148,22 @@ async function WorkshopsList() {
 			{workshops.map((workshop) => (
 				<li key={workshop.id} className="flex">
 					<Card className="divide-border bg-background -mt-px flex w-full flex-col items-center divide-y rounded-none border-x-0 shadow-none md:flex-row md:gap-3 md:divide-x md:divide-y-0">
-						{workshop?.fields?.coverImage?.url && (
+						{/* {workshop?.fields?.coverImage?.url && (
 							<Link
-								className="flex flex-shrink-0 items-center justify-center p-5 md:aspect-square"
+								className="relative flex items-center justify-center p-5 md:aspect-square md:w-1/4"
 								href={`/workshops/${workshop.fields.slug || workshop.id}`}
 								prefetch={true}
 							>
-								<CldImage
-									className="flex-shrink-0"
-									width={240}
-									height={240}
+								<Image
+									className=" object-cover"
+									fill
+									// width={960 / 4}
+									// height={540 / 4}
 									src={workshop.fields.coverImage.url}
 									alt={workshop.fields.coverImage?.alt || workshop.fields.title}
 								/>
 							</Link>
-						)}
+						)} */}
 						<div className="flex h-full w-full flex-col justify-between p-5 md:pl-8">
 							<div className="flex h-full flex-col pt-2 md:pt-5">
 								<CardHeader className="p-0">

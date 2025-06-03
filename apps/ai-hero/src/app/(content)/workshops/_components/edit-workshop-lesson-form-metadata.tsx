@@ -2,10 +2,20 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { ContentVideoResourceField } from '@/components/content/content-video-resource-field'
+import Spinner from '@/components/spinner'
+import { env } from '@/env.mjs'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { Pencil, Plus, PlusCircle, Trash } from 'lucide-react'
+import {
+	Pencil,
+	PencilIcon,
+	Plus,
+	PlusCircle,
+	Sparkles,
+	Trash,
+} from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -25,8 +35,10 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	ScrollArea,
 	Textarea,
 } from '@coursebuilder/ui'
+import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
@@ -71,6 +83,52 @@ export const LessonMetadataFormFields: React.FC<{
 			refetchSolution()
 		},
 	})
+
+	const [isGeneratingDescription, setIsGeneratingDescription] =
+		React.useState(false)
+
+	useSocket({
+		room: lesson.id || null,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
+
+				if (
+					data.name === 'resource.chat.completed' &&
+					data.requestId === lesson.id &&
+					data.metadata?.workflow === 'prompt-0541t'
+				) {
+					const lastMessage = data.body[data.body.length - 1]
+					if (lastMessage?.content) {
+						const description = lastMessage.content.replace(
+							/```.*\n(.*)\n```/s,
+							'$1',
+						)
+						form && form.setValue('fields.description', description)
+					}
+					setIsGeneratingDescription(false)
+				}
+			} catch (error) {
+				setIsGeneratingDescription(false)
+			}
+		},
+	})
+
+	const handleGenerateDescription = async () => {
+		setIsGeneratingDescription(true)
+
+		await sendResourceChatMessage({
+			resourceId: lesson.id,
+			messages: [
+				{
+					role: 'user',
+					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+				},
+			],
+			selectedWorkflow: 'prompt-0541t',
+		})
+	}
 
 	return (
 		<>
@@ -149,48 +207,55 @@ export const LessonMetadataFormFields: React.FC<{
 						</div>
 					</div>
 				) : solutionResource ? (
-					<div className="mt-4 space-y-4">
-						<div className="flex items-center justify-between">
-							<h3 className="font-medium">{solutionResource.fields.title}</h3>
-							<div className="space-x-2">
-								<Button variant="outline" asChild>
+					<div className="">
+						<div className="flex flex-col items-start gap-2">
+							<Link
+								href={`/workshops/${module}/${lessonSlug}/solution/edit`}
+								className="font-medium underline"
+							>
+								{solutionResource.fields.title}
+							</Link>
+							<div className="mb-2 flex items-center space-x-2">
+								<Button variant="secondary" size="sm" asChild>
 									<Link
 										href={`/workshops/${module}/${lessonSlug}/solution/edit`}
 									>
+										<PencilIcon className="mr-1 size-3" />
 										Edit Solution
 									</Link>
 								</Button>
-								<Button
-									variant="destructive"
-									size="sm"
-									onClick={() => {
-										if (
-											confirm('Are you sure you want to delete this solution?')
-										) {
-											deleteSolutionMutation.mutate({
-												solutionId: solutionResource.id,
-											})
-										}
-									}}
-								>
-									<Trash className="mr-2 h-4 w-4" />
-									Delete Solution
-								</Button>
 							</div>
 						</div>
-						<div className="bg-muted rounded-md p-4">
-							<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-								{solutionResource.fields.body || 'No solution content yet.'}
-							</ReactMarkdown>
+						<div className="bg-muted mb-2 rounded-md p-4">
+							<ScrollArea className="h-[300px]">
+								<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+									{solutionResource.fields.body || 'No solution content yet.'}
+								</ReactMarkdown>
+							</ScrollArea>
 						</div>
+
 						{solutionResource.fields.description && (
-							<div className="prose prose-sm dark:prose-invert text-muted-foreground max-w-none">
+							<div className="prose prose-sm dark:prose-invert text-muted-foreground mb-2 max-w-none">
 								<p className="text-xs font-medium uppercase">Explanation:</p>
 								<ReactMarkdown>
 									{solutionResource.fields.description}
 								</ReactMarkdown>
 							</div>
 						)}
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => {
+								if (confirm('Are you sure you want to delete this solution?')) {
+									deleteSolutionMutation.mutate({
+										solutionId: solutionResource.id,
+									})
+								}
+							}}
+						>
+							<Trash className="mr-1 size-3" />
+							Remove
+						</Button>
 					</div>
 				) : (
 					<div className="mt-1">
@@ -210,7 +275,26 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold">
+								SEO Description
+							</FormLabel>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="flex items-center gap-1"
+								disabled={isGeneratingDescription}
+								onClick={handleGenerateDescription}
+							>
+								{isGeneratingDescription ? (
+									<Spinner className="h-4 w-4" />
+								) : (
+									<Sparkles className="h-4 w-4" />
+								)}
+								Generate
+							</Button>
+						</div>
 						<FormDescription>
 							A short snippet that summarizes the lesson.
 						</FormDescription>

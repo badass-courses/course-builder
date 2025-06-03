@@ -373,9 +373,6 @@ const TeamQuantityInput = ({
 				className,
 			)}
 		>
-			{teamQuantityLimit}
-			{quantity}
-
 			{children || (
 				<>
 					<div className="flex items-center gap-1 text-sm font-medium">
@@ -666,7 +663,7 @@ const LiveQuantity = ({
 		isSoldOut,
 	} = usePricing()
 
-	return isLiveEvent
+	return isLiveEvent && !isSoldOut && quantityAvailable !== -1
 		? children || (
 				<div
 					className={cn(

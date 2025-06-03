@@ -117,7 +117,7 @@ export async function GET(request: Request) {
 					tw="flex h-full w-full bg-gradient-to-tr from-purple-200 to-white flex-col"
 					style={{
 						fontFamily: 'HeadingFont',
-						// background: '#fff',
+						background: '#EFEFFD',
 						color: '#1D0F42',
 						width: 1200,
 						height: 630,
@@ -131,7 +131,7 @@ export async function GET(request: Request) {
 							tw="absolute w-full h-full"
 							style={{
 								backgroundImage:
-									'linear-gradient(to center left, rgba(220,221,247,0.3), rgba(220,221,247,0.7), rgba(220,221,247,0.9))',
+									'linear-gradient(to bottom left, rgba(239,239,253,0.3), rgba(239,239,253,0.7), rgba(239,239,253,0.9))',
 							}}
 						/>
 					)}

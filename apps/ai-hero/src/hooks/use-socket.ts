@@ -11,6 +11,6 @@ export function useSocket(options: {
 	return usePartySocket({
 		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		...options,
-		room: options.room ?? env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
+		room: options.room || env.NEXT_PUBLIC_PARTYKIT_ROOM_NAME,
 	})
 }

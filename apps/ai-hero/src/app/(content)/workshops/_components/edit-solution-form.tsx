@@ -7,9 +7,12 @@ import {
 	ResourceFormProps,
 	withResourceForm,
 } from '@/components/resource-form/with-resource-form'
+import Spinner from '@/components/spinner'
+import { env } from '@/env.mjs'
+import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Solution, SolutionSchema } from '@/lib/solution'
 import { createSolution, updateSolution } from '@/lib/solutions-query'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Sparkles } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
@@ -23,6 +26,7 @@ import {
 	Input,
 	Textarea,
 } from '@coursebuilder/ui'
+import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
@@ -60,6 +64,56 @@ const BaseSolutionForm = ({
 	const moduleId = params?.module as string
 	const lessonSlug = params?.lesson as string
 
+	const [isGeneratingDescription, setIsGeneratingDescription] =
+		React.useState(false)
+
+	useSocket({
+		room: resource.id || null,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
+		onMessage: async (messageEvent) => {
+			try {
+				const data = JSON.parse(messageEvent.data)
+
+				if (
+					data.name === 'resource.chat.completed' &&
+					data.requestId === resource.id &&
+					data.metadata?.workflow === 'prompt-0541t'
+				) {
+					const lastMessage = data.body[data.body.length - 1]
+					if (lastMessage?.content) {
+						const description = lastMessage.content.replace(
+							/```.*\n(.*)\n```/s,
+							'$1',
+						)
+						form && form.setValue('fields.description', description)
+					}
+					setIsGeneratingDescription(false)
+				}
+			} catch (error) {
+				setIsGeneratingDescription(false)
+			}
+		},
+	})
+
+	const handleGenerateDescription = async () => {
+		// Don't attempt to generate description for new resources without an ID
+		if (!resource.id) {
+			return
+		}
+
+		setIsGeneratingDescription(true)
+
+		await sendResourceChatMessage({
+			resourceId: resource.id,
+			messages: [
+				{
+					role: 'user',
+					content: `Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+				},
+			],
+			selectedWorkflow: 'prompt-0541t',
+		})
+	}
 	if (!form) return null
 
 	return (
@@ -108,7 +162,26 @@ const BaseSolutionForm = ({
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<div className="flex items-center justify-between">
+							<FormLabel className="text-lg font-bold">
+								SEO Description
+							</FormLabel>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="flex items-center gap-1"
+								disabled={isGeneratingDescription || !resource.id}
+								onClick={handleGenerateDescription}
+							>
+								{isGeneratingDescription ? (
+									<Spinner className="h-4 w-4" />
+								) : (
+									<Sparkles className="h-4 w-4" />
+								)}
+								Generate
+							</Button>
+						</div>
 						<FormDescription>
 							A brief explanation of the approach used in this solution.
 						</FormDescription>

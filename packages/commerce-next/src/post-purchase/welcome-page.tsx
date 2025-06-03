@@ -253,7 +253,7 @@ const Header = ({
 											<Link
 												href={`/${pluralize(product.type)}/${productResources?.[0]?.fields?.slug}`}
 											>
-												View Cohort
+												Start Learning
 											</Link>
 										</Button>
 									)}
@@ -261,6 +261,7 @@ const Header = ({
 							)}
 							{discordProvider && !isDiscordConnected ? (
 								<button
+									data-discord-button=""
 									onClick={() => signIn(discordProvider.id)}
 									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-1 text-sm text-white transition hover:brightness-110 sm:w-auto"
 								>
