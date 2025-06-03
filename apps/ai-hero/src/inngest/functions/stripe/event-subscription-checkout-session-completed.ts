@@ -1,4 +1,5 @@
 import { inngest } from '@/inngest/inngest.server'
+import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
@@ -85,31 +86,8 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 					)
 				}
 
-				const personalOrganization = await db.createOrganization({
-					name: `Personal (${user.email})`,
-				})
-
-				if (!personalOrganization) {
-					throw new Error('Failed to create personal organization')
-				}
-
-				const membership = await db.addMemberToOrganization({
-					organizationId: personalOrganization.id,
-					userId: user.id,
-					invitedById: user.id,
-				})
-
-				if (!membership) {
-					throw new Error('Failed to add user to personal organization')
-				}
-
-				await db.addRoleForMember({
-					organizationId: personalOrganization.id,
-					memberId: membership.id,
-					role: 'owner',
-				})
-
-				return personalOrganization
+				const result = await ensurePersonalOrganization(user, db)
+				return result.organization
 			})
 
 			if (!organization) {

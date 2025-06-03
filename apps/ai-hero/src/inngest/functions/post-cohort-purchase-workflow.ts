@@ -6,6 +6,7 @@ import {
 } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
+import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { and, eq } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
@@ -53,6 +54,26 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 		}
 
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
+		const isFullPriceCouponRedemption = Boolean(purchase.redeemedBulkCouponId)
+
+		// Get information about the original bulk purchase if this is a coupon redemption
+		const bulkCouponData = await step.run(`get bulk coupon data`, async () => {
+			if (isFullPriceCouponRedemption && purchase.redeemedBulkCouponId) {
+				const couponWithBulkPurchases =
+					await adapter.getCouponWithBulkPurchases(
+						purchase.redeemedBulkCouponId,
+					)
+
+				// The original bulk purchase should be in the bulkPurchases array
+				const originalBulkPurchase = couponWithBulkPurchases?.bulkPurchases?.[0]
+
+				return {
+					coupon: couponWithBulkPurchases,
+					originalBulkPurchase,
+				}
+			}
+			return null
+		})
 
 		// the cohort should be part of the product resources
 		const cohortResourceId = product.resources?.find(
@@ -85,45 +106,88 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					},
 				)
 
-				const orgMembership = await step.run(`get org membership`, async () => {
-					if (!purchase.organizationId) {
-						throw new Error(`purchase.organizationId is required`)
-					}
-					const orgMembership = await adapter.addMemberToOrganization({
-						organizationId: purchase.organizationId,
-						userId: user.id,
-						invitedById: user.id,
-					})
+				// Ensure user has organization membership - either from purchase org or personal org
+				const { organizationId, orgMembership } = await step.run(
+					`ensure org membership`,
+					async () => {
+						// Determine who invited this user - for full price coupon redemptions,
+						// it should be the original bulk purchaser
+						const invitedById =
+							isFullPriceCouponRedemption &&
+							bulkCouponData?.originalBulkPurchase?.userId
+								? bulkCouponData.originalBulkPurchase.userId
+								: user.id
 
-					if (!orgMembership) {
-						throw new Error(`orgMembership is required`)
-					}
+						// Use the organization from purchase if available, otherwise ensure personal org
+						if (purchase.organizationId) {
+							const orgMembership = await adapter.addMemberToOrganization({
+								organizationId: purchase.organizationId,
+								userId: user.id,
+								invitedById,
+							})
 
-					await adapter.addRoleForMember({
-						organizationId: purchase.organizationId,
-						memberId: orgMembership.id,
-						role: 'learner',
-					})
+							if (!orgMembership) {
+								throw new Error(`orgMembership is required`)
+							}
 
-					return orgMembership
-				})
+							await adapter.addRoleForMember({
+								organizationId: purchase.organizationId,
+								memberId: orgMembership.id,
+								role: 'learner',
+							})
+
+							return {
+								organizationId: purchase.organizationId,
+								orgMembership,
+							}
+						} else {
+							// No organizationId on purchase - ensure user has personal org
+							const personalOrgResult =
+								await ensurePersonalOrganizationWithLearnerRole(user, adapter)
+
+							return {
+								organizationId: personalOrgResult.organization.id,
+								orgMembership: personalOrgResult.membership,
+							}
+						}
+					},
+				)
 
 				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
 					await step.run(`add user to cohort via entitlement`, async () => {
+						const createdEntitlements = []
+
 						for (const resource of cohortResource.resources || []) {
 							const entitlementId = `${resource.resource.id}-${guid()}`
-							await db.insert(entitlements).values({
+							const entitlementData = {
 								id: entitlementId,
 								entitlementType: cohortContentAccessEntitlementType.id,
 								sourceType: 'cohort',
 								sourceId: resource.resource.id,
 								userId: user.id,
-								organizationId: purchase.organizationId,
+								organizationId,
 								organizationMembershipId: orgMembership.id,
 								metadata: {
 									contentIds: [resource.resource.id],
 								},
+							}
+
+							await db.insert(entitlements).values(entitlementData)
+
+							createdEntitlements.push({
+								entitlementId,
+								resourceId: resource.resource.id,
+								resourceType: resource.resource.type,
+								resourceTitle: resource.resource.fields?.title,
 							})
+						}
+
+						return {
+							entitlementsCreated: createdEntitlements.length,
+							entitlements: createdEntitlements,
+							organizationId,
+							organizationMembershipId: orgMembership.id,
+							userId: user.id,
 						}
 					})
 				}
@@ -138,6 +202,8 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			user,
 			cohortResource,
 			isTeamPurchase,
+			isFullPriceCouponRedemption,
+			bulkCouponData,
 		}
 	},
 )
