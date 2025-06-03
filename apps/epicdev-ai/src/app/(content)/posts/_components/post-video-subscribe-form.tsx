@@ -89,7 +89,7 @@ export const PostNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="dark:[&_input]:bg-card dark:hover:[&_input]:bg-background [&_input]:border-0 [&_input]:bg-gray-50 [&_input]:text-base hover:[&_input]:bg-gray-100"
+						className="dark:[&_input]:bg-card [&_button]:from-primary dark:hover:[&_input]:bg-background [&_button]:bg-gradient-to-b [&_button]:to-indigo-800 [&_input]:border-0 [&_input]:bg-gray-50 [&_input]:text-base hover:[&_input]:bg-gray-100"
 					/>
 				</div>
 			</div>

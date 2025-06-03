@@ -30,17 +30,15 @@ export function ThemeToggle({ className }: { className?: string }) {
 				<Button
 					variant="link"
 					className={cn(
-						'text-foreground flex h-full items-stretch gap-2 py-3',
+						'text-foreground flex h-full items-center gap-2 py-3',
 						className,
 					)}
 				>
 					<div className="text-muted-foreground flex h-full w-full items-center justify-center">
-						<Sun className="h-3.5 w-3.5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-						<Moon className="absolute h-3.5 w-3.5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+						<Sun className="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+						<Moon className="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 					</div>
-					<span className="capitalize sm:sr-only">
-						{mounted && theme} Theme
-					</span>
+					<span className="capitalize">{mounted && theme} Theme</span>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end">

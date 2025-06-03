@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
+import { ActiveEventButton } from '@/app/(content)/events/_components/active-event'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
@@ -143,7 +144,8 @@ const Navigation = ({
 							/>
 						)} */}
 						<UserMenu />
-						<ThemeToggle className="" />
+						<ActiveEventButton className="" />
+						{/* <ThemeToggle className="" /> */}
 					</ul>
 				</nav>
 				<MobileNavigation

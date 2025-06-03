@@ -29,6 +29,7 @@ import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
+import { ActiveEventBanner } from '../events/_components/active-event'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
@@ -126,6 +127,7 @@ export default async function PostPage(props: {
 										postId={post.id}
 									/>
 								)} */}
+						<ActiveEventBanner className="mx-auto mt-16 w-full max-w-3xl" />
 						{!primaryVideo && (
 							<PrimaryNewsletterCta
 								isHiddenForSubscribers

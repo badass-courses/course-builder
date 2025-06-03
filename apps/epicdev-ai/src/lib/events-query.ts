@@ -379,10 +379,7 @@ export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 			excludedEventIds.push(item.id)
 		}
 	}
-	console.log(
-		'getExcludedSoldOutOrPastEventIds: found excluded event IDs',
-		excludedEventIds,
-	)
+
 	return excludedEventIds
 }
 
@@ -412,4 +409,50 @@ function isErrorWithStack(error: unknown): error is { stack: string } {
 		'stack' in error &&
 		typeof (error as { stack: string }).stack === 'string'
 	)
+}
+
+export async function getActiveEvents() {
+	const excludedEventIds = await getSoldOutOrPastEventIds()
+
+	const events = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'event'),
+			excludedEventIds.length > 0
+				? sql`${contentResource.id} NOT IN ${excludedEventIds}`
+				: undefined,
+		),
+		orderBy: asc(sql`JSON_EXTRACT (${contentResource.fields}, "$.startsAt")`),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTag.position),
+			},
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const parsedEvents = z.array(EventSchema).safeParse(events)
+
+	if (!parsedEvents.success) {
+		console.error('Error parsing active events', events)
+		return []
+	}
+
+	return parsedEvents.data
 }

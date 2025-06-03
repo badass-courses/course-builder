@@ -292,8 +292,12 @@ const PostTeaser: React.FC<{
 							</div>
 							<div className="flex items-center gap-2">
 								{isHighlighted && (
-									<Button className="" variant="default">
-										Learn More <ChevronRight className="ml-2 w-3" />
+									<Button
+										className="from-primary bg-gradient-to-b to-indigo-800 shadow-lg shadow-indigo-800/20 dark:bg-gradient-to-b dark:to-indigo-600"
+										variant="default"
+									>
+										{post.type === 'event' ? 'Get Your Ticket' : 'Learn More'}{' '}
+										<ChevronRight className="ml-2 w-3" />
 									</Button>
 								)}
 							</div>

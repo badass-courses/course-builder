@@ -1,7 +1,10 @@
 import { env } from '@/env.mjs'
 import { cn } from '@/utils/cn'
 
-export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
+	className = '',
+	withSubtitle = false,
+}) => {
 	return (
 		<div
 			className={cn(
@@ -40,8 +43,15 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 				</defs>
 			</svg>
 
-			<span className="text-[#251356] dark:text-[#DCDDF7]">
-				Epic <span className="font-mono">AI</span>
+			<span className="flex flex-col leading-tight text-[#251356] dark:text-[#DCDDF7]">
+				<div>
+					Epic <span className="font-mono">AI</span>
+				</div>
+				{withSubtitle && (
+					<span className="text-muted-foreground text-xs font-normal opacity-80">
+						by Kent C. Dodds
+					</span>
+				)}
 			</span>
 			{/* <span className="text-background bg-primary relative ml-0.5 translate-y-[-1px] rotate-[-2deg] rounded px-1 py-0.5 pl-0.5">
 				Ai
