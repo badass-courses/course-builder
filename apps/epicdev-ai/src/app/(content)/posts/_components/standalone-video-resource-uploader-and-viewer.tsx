@@ -4,7 +4,7 @@ import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
 import { api } from '@/trpc/react'
 import MuxPlayer from '@mux/mux-player-react'
-import { MoreVertical, Play } from 'lucide-react'
+import { Loader2, MoreVertical, Play } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
@@ -18,6 +18,7 @@ import {
 	DropdownMenuTrigger,
 	ScrollArea,
 	Skeleton,
+	useToast,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
@@ -26,16 +27,35 @@ type VideoPreviewModalState = {
 	videoResource?: ContentResource
 }
 
+/**
+ * Standalone video resource uploader and viewer component with pagination.
+ * Displays a library of video resources with infinite scroll loading,
+ * drag-and-drop support, and preview functionality.
+ */
 export default function StandaloneVideoResourceUploaderAndViewer() {
 	const [videoResourceId, setVideoResourceId] = React.useState<string | null>(
 		null,
 	)
 
 	const {
-		data: standaloneVideoResources,
+		data: paginatedVideoResources,
 		status,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
 		refetch,
-	} = api.videoResources.getAll.useQuery()
+	} = api.videoResources.getPaginated.useInfiniteQuery(
+		{ limit: 10 },
+		{
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			staleTime: 1000 * 60 * 5, // 5 minutes
+		},
+	)
+
+	// Flatten the paginated results
+	const standaloneVideoResources = React.useMemo(() => {
+		return paginatedVideoResources?.pages.flatMap((page) => page.items) ?? []
+	}, [paginatedVideoResources])
 
 	useSocket({
 		room: videoResourceId,
@@ -70,6 +90,8 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 			videoResource: undefined,
 		})
 
+	const { toast } = useToast()
+
 	return (
 		<ScrollArea className="h-[var(--pane-layout-height)]">
 			<div className="mb-3 px-3">
@@ -91,10 +113,25 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 					))}
 				</>
 			)}
-			{standaloneVideoResources && (
+			{standaloneVideoResources.length > 0 && (
 				<ul className="flex flex-col">
 					{standaloneVideoResources.map((videoResource) => (
-						<li key={videoResource.id} className="group/item">
+						<li
+							key={videoResource.id}
+							className="group/item"
+							onClick={(e) => {
+								if (e.metaKey || e.ctrlKey) {
+									e.preventDefault()
+									navigator.clipboard.writeText(
+										`<Video resourceId="${videoResource.id}" />`,
+									)
+									toast({
+										title: 'Copied to clipboard',
+										description: 'Video component code copied',
+									})
+								}
+							}}
+						>
 							<div
 								onDragStart={(e) => {
 									e.dataTransfer.setData(
@@ -105,7 +142,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 								draggable
 								className="flex items-center justify-between gap-2 px-3 py-1 leading-tight group-even/item:bg-gray-100 dark:group-even/item:bg-gray-950"
 							>
-								<div className="flex items-center gap-3">
+								<div className="flex min-w-0 flex-1 items-center gap-3">
 									<button
 										className="group relative flex flex-shrink-0 items-center justify-center"
 										type="button"
@@ -126,8 +163,11 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 											className="aspect-video h-7 rounded-sm transition group-hover:bg-black/50 group-hover:opacity-75"
 										/>
 									</button>
-									<div className="flex flex-col">
-										<span className="max-w-[200px] truncate text-sm font-medium">
+									<div className="flex min-w-0 flex-1 flex-col">
+										<span
+											className="truncate text-sm font-medium"
+											title={videoResource.id}
+										>
 											{videoResource.id}
 										</span>
 										<span className="text-xs opacity-80">
@@ -137,7 +177,11 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 								</div>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
-										<Button size="icon" variant="ghost" className="h-8 w-8">
+										<Button
+											size="icon"
+											variant="ghost"
+											className="h-8 w-8 flex-shrink-0"
+										>
 											<MoreVertical className="h-4 w-4" />
 											<span className="sr-only">Open menu</span>
 										</Button>
@@ -181,6 +225,39 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 					))}
 				</ul>
 			)}
+
+			{/* Load More Button */}
+			{hasNextPage && (
+				<div className="flex justify-center p-4">
+					<Button
+						onClick={() => fetchNextPage()}
+						disabled={isFetchingNextPage}
+						variant="outline"
+						className="w-full"
+					>
+						{isFetchingNextPage ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Loading more...
+							</>
+						) : (
+							'Load more videos'
+						)}
+					</Button>
+				</div>
+			)}
+
+			{/* No videos state */}
+			{status === 'success' && standaloneVideoResources.length === 0 && (
+				<div className="text-muted-foreground flex flex-col items-center justify-center p-8 text-center">
+					<Play className="mb-4 h-12 w-12 opacity-50" />
+					<p className="text-lg font-medium">No videos yet</p>
+					<p className="text-sm">
+						Upload your first video above to get started
+					</p>
+				</div>
+			)}
+
 			<VideoPreviewModal
 				videoResource={videoPreviewModal.videoResource}
 				isOpen={videoPreviewModal.isOpen}
@@ -195,6 +272,12 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 	)
 }
 
+/**
+ * Modal component for previewing video resources using MuxPlayer
+ * @param videoResource - The video resource to preview
+ * @param isOpen - Whether the modal is open
+ * @param onOpenChange - Callback for when modal open state changes
+ */
 function VideoPreviewModal({
 	videoResource,
 	isOpen = false,
