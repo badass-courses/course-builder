@@ -45,6 +45,7 @@ import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
 import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
+import { Certificate } from '../../_components/module-certificate-container'
 
 type Props = {
 	params: Promise<{ module: string }>
@@ -259,13 +260,16 @@ export default async function ModulePage(props: Props) {
 									}}
 								</WorkshopPricing>
 								</React.Suspense> */}
-							<WorkshopResourceList
-								isCollapsible={false}
-								className="w-full max-w-none !border-r-0"
-								withHeader={false}
-								maxHeight="h-auto"
-								wrapperClassName="overflow-hidden pb-0"
-							/>
+							<div className="flex flex-col gap-2">
+								<WorkshopResourceList
+									isCollapsible={false}
+									className="w-full max-w-none !border-r-0"
+									withHeader={false}
+									maxHeight="h-auto"
+									wrapperClassName="overflow-hidden pb-0"
+								/>
+								<Certificate resourceSlugOrId={workshop.fields?.slug} />
+							</div>
 							{/* <React.Suspense fallback={null}>
 								<SmallCohortBanner abilityLoader={abilityLoader} />
 							</React.Suspense> */}
