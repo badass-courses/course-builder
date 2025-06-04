@@ -1,5 +1,4 @@
 import { Lesson } from '@/lib/lessons'
-import { Module } from '@/lib/module'
 import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
@@ -117,7 +116,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 
 	if (options.user) {
 		if (options.user.roles?.map((role) => role.name).includes('admin')) {
-			// can('manage', 'all')
+			can('manage', 'all')
 		}
 
 		if (options.user.roles?.map((role) => role.name).includes('contributor')) {
@@ -226,7 +225,7 @@ export function defineRulesForPurchases(
 
 	if (user) {
 		if (user.roles?.map((role) => role.name).includes('admin')) {
-			// can('manage', 'all')
+			can('manage', 'all')
 		}
 
 		if (user.roles?.map((role) => role.name).includes('contributor')) {
@@ -304,9 +303,9 @@ export function defineRulesForPurchases(
 	// }
 
 	if (user?.roles?.map((role) => role.name).includes('admin')) {
-		// can('manage', 'all')
-		// can('create', 'Content')
-		// can('read', 'Content')
+		can('manage', 'all')
+		can('create', 'Content')
+		can('read', 'Content')
 	}
 
 	const cohortEntitlementType = entitlementTypes?.find(
