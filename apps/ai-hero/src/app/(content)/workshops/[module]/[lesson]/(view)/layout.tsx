@@ -2,7 +2,6 @@ import React from 'react'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import LayoutClient from '@/components/layout-client'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
-import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { MenuIcon } from 'lucide-react'
 
 import {
@@ -11,7 +10,6 @@ import {
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-	Skeleton,
 } from '@coursebuilder/ui'
 
 const LessonLayout = async (props: {

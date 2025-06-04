@@ -122,9 +122,9 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN workshop ON workshop.id = crr.resourceOfId
 			WHERE (cr.type = 'lesson' OR cr.type = 'post')
-			
+
 			UNION ALL
-			
+
 			-- Get resources within sections
 			SELECT
 				cr.id,
@@ -151,7 +151,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			WHERE cr.type = 'solution'
 		)
 		-- Get all data in separate result sets without complex ordering
-		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId, 
+		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM workshop
@@ -176,7 +176,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			NULL as resourceType, NULL as resourcePosition
 		FROM cohorts
 		UNION ALL
-		SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position, 
+		SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position,
 			NULL as sectionId, NULL as resourceId,
 			cohortId, NULL as cohortSlug, NULL as cohortTitle, startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			resourceType, resourcePosition
@@ -454,13 +454,13 @@ export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	const query = sql`
 WITH ProductCandidates AS (
     -- Directly associated product
-    SELECT 
-        p.*, 
+    SELECT
+        p.*,
         1 as priority
     FROM ${contentResource} cr
     LEFT JOIN ${contentResourceProduct} crp ON cr.id = crp.resourceId
     LEFT JOIN ${productTable} p ON crp.productId = p.id
-    WHERE 
+    WHERE
         (cr.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug})
         AND cr.type = 'workshop'
         AND p.id IS NOT NULL
@@ -468,8 +468,8 @@ WITH ProductCandidates AS (
     UNION ALL
 
     -- Product associated via a cohort
-    SELECT 
-        p_cohort.*, 
+    SELECT
+        p_cohort.*,
         2 as priority
     FROM ${contentResource} cr_workshop -- The workshop itself
     -- Link workshop to its parent resource (which we'll check is a cohort)
@@ -479,7 +479,7 @@ WITH ProductCandidates AS (
     -- Link cohort to product
     LEFT JOIN ${contentResourceProduct} crp_cohort ON cr_cohort.id = crp_cohort.resourceId
     LEFT JOIN ${productTable} p_cohort ON crp_cohort.productId = p_cohort.id
-    WHERE 
+    WHERE
         (cr_workshop.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_workshop.fields, '$.slug')) = ${workshopIdOrSlug})
         AND cr_workshop.type = 'workshop' -- Ensure the initial resource is a workshop
         AND p_cohort.id IS NOT NULL
@@ -532,7 +532,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 		return null
 	}
 
-	return workshop
+	return WorkshopSchema.parse(workshop)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
@@ -859,7 +859,7 @@ export async function getWorkshopsForLesson(lessonId: string) {
 				AND section.type = 'section'
 				AND crr_lesson.resourceId = ${lessonId}
 		)
-		SELECT 
+		SELECT
 			id,
 			type,
 			fields,

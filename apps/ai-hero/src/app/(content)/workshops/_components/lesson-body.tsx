@@ -2,28 +2,40 @@
 
 import { use } from 'react'
 import type { Lesson } from '@/lib/lessons'
+import { Workshop } from '@/lib/workshops'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Lock } from 'lucide-react'
 
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 export function LessonBody({
 	lesson,
+	workshop,
 	abilityLoader,
 	mdxContentPromise,
 }: {
 	lesson: Lesson | null
-	abilityLoader: Promise<AbilityForResource>
+	workshop: Workshop | null
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	mdxContentPromise: Promise<{ content: React.ReactNode }>
 }) {
 	const ability = use(abilityLoader)
-	const canView = ability?.canView
+	const canView = ability?.canViewLesson
 
 	if (!canView) {
 		return (
 			<div className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
 				<p>
-					<Lock className="mr-1 inline-block size-5 opacity-75" /> You need to
-					be a member to access this lesson.
+					<Lock className="mr-1 inline-block size-5 opacity-75" />{' '}
+					{ability.isPendingOpenAccess
+						? `This lesson is not available yet. Please check back on ${formatInTimeZone(new Date(workshop?.fields?.startsAt || ''), 'America/Los_Angeles', `MMM d, yyyy 'at' h:mm a z`)}`
+						: 'You need to be a member to access this lesson.'}
 				</p>
 			</div>
 		)

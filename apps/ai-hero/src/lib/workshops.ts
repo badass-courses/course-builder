@@ -318,6 +318,26 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 		}),
 ])
 
+export const WorkshopFieldsSchema = z.object({
+	title: z.string().min(1, { message: 'Title is required' }),
+	subtitle: z.string().optional(),
+	description: z.string().optional(),
+	body: z.string().optional(),
+	state: z.enum(['draft', 'published', 'archived', 'deleted']).default('draft'),
+	startsAt: z.string().datetime().nullish(),
+	endsAt: z.string().datetime().nullish(),
+	timezone: z.string().default('America/Los_Angeles'),
+	slug: z.string().min(1, { message: 'Slug is required' }),
+	visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
+	coverImage: z
+		.object({
+			url: z.string().optional(),
+			alt: z.string().optional(),
+		})
+		.optional(),
+	github: z.string().optional(),
+})
+
 /**
  * Define the workshop schema by extending ContentResourceSchema
  */
@@ -335,27 +355,7 @@ export const WorkshopSchema = ContentResourceSchema.merge(
 			)
 			.optional()
 			.nullable(),
-		fields: z.object({
-			title: z.string().min(1, { message: 'Title is required' }),
-			subtitle: z.string().optional(),
-			description: z.string().optional(),
-			body: z.string().optional(),
-			state: z
-				.enum(['draft', 'published', 'archived', 'deleted'])
-				.default('draft'),
-			startsAt: z.string().datetime().nullish(),
-			endsAt: z.string().datetime().nullish(),
-			timezone: z.string().default('America/Los_Angeles'),
-			slug: z.string().min(1, { message: 'Slug is required' }),
-			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
-			coverImage: z
-				.object({
-					url: z.string().optional(),
-					alt: z.string().optional(),
-				})
-				.optional(),
-			github: z.string().optional(),
-		}),
+		fields: WorkshopFieldsSchema,
 		// resources: z
 		// 	.array(
 		// 		z.object({

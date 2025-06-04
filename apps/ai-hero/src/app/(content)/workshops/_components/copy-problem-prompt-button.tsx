@@ -28,10 +28,16 @@ export function CopyProblemPromptButton({
 	lesson: Lesson | ContentResource
 	problem?: Lesson | null
 	className?: string
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 } & ButtonProps) {
 	const ability = use(abilityLoader)
-	const canView = ability?.canView
+	const canView = ability?.canViewLesson
 	const workshopNavigation = useWorkshopNavigation()
 	const [copied, setCopied] = useState(false)
 

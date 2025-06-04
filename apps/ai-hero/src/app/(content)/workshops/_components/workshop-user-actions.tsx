@@ -19,7 +19,13 @@ export function StartLearningWorkshopButton({
 	moduleSlug,
 	className,
 }: {
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	moduleSlug: string
 	className?: string
 }) {
@@ -33,7 +39,7 @@ export function StartLearningWorkshopButton({
 	const url = isWorkshopInProgress
 		? `/workshops/${moduleSlug}/${moduleProgress?.nextResource?.fields?.slug}`
 		: `/workshops/${moduleSlug}/${firstLessonSlug}`
-	const { canView } = React.use(abilityLoader)
+	const { canViewWorkshop: canView } = React.use(abilityLoader)
 
 	return (
 		<>
@@ -74,10 +80,16 @@ export function GetAccessButton({
 	abilityLoader,
 	className,
 }: {
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	className?: string
 }) {
-	const { canView } = React.use(abilityLoader)
+	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
 	const cohort = workshopNavigation?.cohorts[0]
 	if (canView) return null

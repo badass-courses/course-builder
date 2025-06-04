@@ -5,7 +5,10 @@ import LayoutClient from '@/components/layout-client'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getCachedLesson } from '@/lib/lessons-query'
-import { getWorkshopNavigation } from '@/lib/workshops-query'
+import {
+	getCachedMinimalWorkshop,
+	getWorkshopNavigation,
+} from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
@@ -74,8 +77,14 @@ export default async function LessonPageWrapper(props: Props) {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const lesson = await getCachedLesson(params.lesson)
+	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	return (
-		<LessonPage searchParams={searchParams} lesson={lesson} params={params} />
+		<LessonPage
+			searchParams={searchParams}
+			lesson={lesson}
+			params={params}
+			workshop={workshop}
+		/>
 	)
 }

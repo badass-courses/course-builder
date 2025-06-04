@@ -83,6 +83,7 @@ type Actions =
 
 type Subjects =
 	| 'RegionRestriction'
+	| 'PendingOpenAccess'
 	| 'Team'
 	| 'Content'
 	| 'User'
@@ -116,7 +117,7 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 
 	if (options.user) {
 		if (options.user.roles?.map((role) => role.name).includes('admin')) {
-			can('manage', 'all')
+			// can('manage', 'all')
 		}
 
 		if (options.user.roles?.map((role) => role.name).includes('contributor')) {
@@ -223,7 +224,7 @@ export function defineRulesForPurchases(
 
 	if (user) {
 		if (user.roles?.map((role) => role.name).includes('admin')) {
-			can('manage', 'all')
+			// can('manage', 'all')
 		}
 
 		if (user.roles?.map((role) => role.name).includes('contributor')) {
@@ -263,11 +264,6 @@ export function defineRulesForPurchases(
 			return { valid: false, reason: 'unknown' }
 		})
 
-		// LEGACY: non-entitlement based access
-		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-		// 	can('read', 'Content')
-		// }
-
 		if (
 			userHasPurchaseWithAccess.some(
 				(purchase) => purchase.reason === 'region_restricted',
@@ -306,9 +302,9 @@ export function defineRulesForPurchases(
 	// }
 
 	if (user?.roles?.map((role) => role.name).includes('admin')) {
-		can('manage', 'all')
+		// can('manage', 'all')
 		can('create', 'Content')
-		can('read', 'Content')
+		// can('read', 'Content')
 	}
 
 	const cohortEntitlementType = entitlementTypes?.find(
@@ -332,9 +328,20 @@ export function defineRulesForPurchases(
 		(resource) => resource.resourceId === lesson?.id,
 	)
 	if (user?.entitlements && lessonModule) {
+		const moduleStartsAt = module?.fields?.startsAt
+		const moduleStarted =
+			moduleStartsAt && new Date(moduleStartsAt) < new Date()
+
 		user.entitlements.forEach((entitlement) => {
-			if (entitlement.type === cohortEntitlementType?.id) {
-				can('read', 'Content', { id: { $in: entitlement.metadata.contentIds } })
+			if (entitlement.type === cohortEntitlementType?.id && moduleStarted) {
+				can('read', 'Content', {
+					id: { $eq: lesson?.id },
+				})
+			} else if (
+				entitlement.type === cohortEntitlementType?.id &&
+				!moduleStarted
+			) {
+				can('read', 'PendingOpenAccess')
 			}
 		})
 	}
@@ -382,7 +389,7 @@ const isFreelyVisible = ({
 			lesson?.type === 'lesson') &&
 		lesson.id === lessons?.[0]?.resourceId
 
-	return isFirstLesson && lesson && !isSolution
+	return false //isFirstLesson && lesson && !isSolution
 }
 
 /**

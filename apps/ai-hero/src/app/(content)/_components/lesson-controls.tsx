@@ -1,6 +1,6 @@
 'use server'
 
-import React from 'react'
+import React, { use } from 'react'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import type { Lesson } from '@/lib/lessons'
@@ -27,7 +27,13 @@ export const LessonControls = async ({
 	problem?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) => {
 	const { session } = await getServerAuthSession()
 	const cookieStore = await cookies()
@@ -36,7 +42,6 @@ export const LessonControls = async ({
 	if (!lesson) {
 		return null
 	}
-
 	const githubUrl = lesson.fields?.github || problem?.fields?.github
 
 	const hasSolution = lesson.resources?.some(

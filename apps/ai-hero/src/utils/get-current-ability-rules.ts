@@ -99,25 +99,40 @@ export async function getCurrentAbilityRules({
 export async function getAbilityForResource(
 	lessonId: string | undefined,
 	moduleId: string,
-): Promise<AbilityForResource> {
+): Promise<
+	Omit<AbilityForResource, 'canView'> & {
+		canViewWorkshop: boolean
+		canViewLesson: boolean
+		isPendingOpenAccess: boolean
+	}
+> {
 	const abilityRules = await getCurrentAbilityRules({
 		lessonId,
 		moduleId,
 	})
 	const workshop = await getCachedMinimalWorkshop(moduleId)
+	const lesson = lessonId ? await getLesson(lessonId) : null
 
 	const ability = createAppAbility(abilityRules || [])
-	const canView = workshop
+
+	const canViewWorkshop = workshop
 		? ability.can('read', subject('Content', { id: workshop.id }))
+		: false
+
+	const canViewLesson = lesson?.id
+		? ability.can('read', subject('Content', { id: lesson.id }))
 		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+	const isPendingOpenAccess = ability.can('read', 'PendingOpenAccess')
 	const canCreate = ability.can('create', 'Content')
 
 	return {
-		canView,
+		canViewWorkshop,
+		canViewLesson,
 		canInviteTeam,
 		isRegionRestricted,
+		isPendingOpenAccess,
 		canCreate,
 	}
 }
