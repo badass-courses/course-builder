@@ -336,6 +336,7 @@ export const WorkshopFieldsSchema = z.object({
 		})
 		.optional(),
 	github: z.string().optional(),
+	githubUrl: z.string().optional(),
 })
 
 /**
@@ -412,3 +413,11 @@ export type Workshop = z.infer<typeof WorkshopSchema>
 
 export type CohortResource = z.infer<typeof CohortResourceSchema>
 export type CohortInfo = z.infer<typeof CohortInfoSchema>
+
+export const MinimalWorkshopSchema = z.object({
+	id: z.string(),
+	type: z.literal('workshop'),
+	fields: WorkshopFieldsSchema,
+})
+
+export type MinimalWorkshop = z.infer<typeof MinimalWorkshopSchema>

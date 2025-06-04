@@ -1,8 +1,6 @@
 import { Suspense } from 'react'
-import * as React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
@@ -10,7 +8,6 @@ import { Transcript } from '@/app/(content)/_components/video-transcript-rendere
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
-import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -19,7 +16,7 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
-import { Workshop } from '@/lib/workshops'
+import { MinimalWorkshop } from '@/lib/workshops'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import {
@@ -46,7 +43,7 @@ export async function LessonPage({
 	problem?: Lesson | null
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
-	workshop: Workshop | null
+	workshop: MinimalWorkshop | null
 }) {
 	if (!lesson) {
 		notFound()
@@ -54,6 +51,12 @@ export async function LessonPage({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
+
+	const ability = await abilityLoader
+
+	if (!ability.canViewLesson) {
+		redirect(`/workshops/${params.module}`)
+	}
 
 	return (
 		<ActiveHeadingProvider>
@@ -179,7 +182,7 @@ async function PlayerContainer({
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	searchParams: { [key: string]: string | string[] | undefined }
 	params: { module: string; lesson: string }
-	workshop: Workshop | null
+	workshop: MinimalWorkshop | null
 }) {
 	if (!lesson) {
 		notFound()

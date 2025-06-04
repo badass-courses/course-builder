@@ -2,7 +2,7 @@
 
 import { use } from 'react'
 import type { Lesson } from '@/lib/lessons'
-import { Workshop } from '@/lib/workshops'
+import { MinimalWorkshop } from '@/lib/workshops'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Lock } from 'lucide-react'
 
@@ -15,7 +15,7 @@ export function LessonBody({
 	mdxContentPromise,
 }: {
 	lesson: Lesson | null
-	workshop: Workshop | null
+	workshop: MinimalWorkshop | null
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean

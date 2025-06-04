@@ -9,7 +9,7 @@ import { CldImage } from '@/components/cld-image'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
 import { setProgressForResource } from '@/lib/progress'
-import { Workshop } from '@/lib/workshops'
+import { MinimalWorkshop } from '@/lib/workshops'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import {
@@ -19,7 +19,7 @@ import {
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
-import { format, formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone } from 'date-fns-tz'
 import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
@@ -351,7 +351,7 @@ type VideoPlayerOverlayProps = {
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
-	workshop: Workshop | null
+	workshop: MinimalWorkshop | null
 }
 
 const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({

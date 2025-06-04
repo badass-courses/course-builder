@@ -201,6 +201,7 @@ type ViewerAbilityInput = {
 		id: string
 		name: string
 	}[]
+	allModuleResourceIds?: string[]
 }
 
 export function defineRulesForPurchases(
@@ -214,6 +215,7 @@ export function defineRulesForPurchases(
 		module,
 		lesson,
 		entitlementTypes,
+		allModuleResourceIds,
 	} = viewerAbilityInput
 
 	if (user) {
@@ -303,7 +305,7 @@ export function defineRulesForPurchases(
 
 	if (user?.roles?.map((role) => role.name).includes('admin')) {
 		// can('manage', 'all')
-		can('create', 'Content')
+		// can('create', 'Content')
 		// can('read', 'Content')
 	}
 
@@ -318,6 +320,13 @@ export function defineRulesForPurchases(
 				can('read', 'Content', {
 					id: { $in: entitlement.metadata.contentIds },
 				})
+				const moduleStartsAt = module?.fields?.startsAt
+				const moduleStarted =
+					!moduleStartsAt || new Date(moduleStartsAt) < new Date()
+
+				if (!moduleStarted) {
+					can('read', 'PendingOpenAccess')
+				}
 			}
 		})
 	}
@@ -335,7 +344,7 @@ export function defineRulesForPurchases(
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === cohortEntitlementType?.id && moduleStarted) {
 				can('read', 'Content', {
-					id: { $eq: lesson?.id },
+					id: { $in: allModuleResourceIds },
 				})
 			} else if (
 				entitlement.type === cohortEntitlementType?.id &&

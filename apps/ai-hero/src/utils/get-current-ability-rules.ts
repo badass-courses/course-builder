@@ -14,6 +14,7 @@ import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { getResourceSection } from './get-resource-section'
+import { getWorkshopResourceIds } from './get-workshop-resource-ids'
 
 // Provide the actual implementation directly
 export async function getCurrentAbilityRules({
@@ -48,6 +49,10 @@ export async function getCurrentAbilityRules({
 	const purchases = await courseBuilderAdapter.getPurchasesForUser(
 		session?.user?.id,
 	)
+
+	const allModuleResourceIds = moduleResource
+		? getWorkshopResourceIds(moduleResource)
+		: []
 
 	const entitlementTypes = await db.query.entitlementTypes.findMany()
 
@@ -93,6 +98,7 @@ export async function getCurrentAbilityRules({
 		...(moduleResource && { module: moduleResource }),
 		...(sectionResource ? { section: sectionResource } : {}),
 		...(purchases && { purchases: purchases }),
+		allModuleResourceIds,
 	})
 }
 

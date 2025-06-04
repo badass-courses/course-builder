@@ -10,9 +10,9 @@ import {
 } from '@/db/schema'
 import {
 	CohortResource,
+	MinimalWorkshopSchema,
 	NavigationLessonSchema,
 	NavigationPostSchema,
-	NavigationResource,
 	NavigationSectionSchema,
 	QueryResultRowSchema,
 	ResourceRawSchema,
@@ -532,7 +532,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 		return null
 	}
 
-	return WorkshopSchema.parse(workshop)
+	return MinimalWorkshopSchema.parse(workshop)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
