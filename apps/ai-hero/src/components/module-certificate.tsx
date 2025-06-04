@@ -129,7 +129,7 @@ const Root: React.FC<React.PropsWithChildren<RootProps>> = ({
 			const url = window.URL.createObjectURL(blob)
 			const a = document.createElement('a')
 			a.href = url
-			a.download = 'certificate.png'
+			a.download = `certificate-${props.resourceIdOrSlug}.png`
 			document.body.appendChild(a)
 			a.click()
 			window.URL.revokeObjectURL(url)
