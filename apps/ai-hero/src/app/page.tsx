@@ -12,15 +12,19 @@ import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server
 import { TeamPricingWidget } from '@/components/commerce/team-pricing-widget'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
+import { eq } from 'drizzle-orm'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { Badge } from '@coursebuilder/ui/primitives/badge'
 
 import {
 	AIPracticesGrid,
@@ -86,20 +90,94 @@ const Home = async (props: Props) => {
 		title: page.resources[0]?.resource?.fields?.title,
 	}
 	const searchParams = await props.searchParams
+	const couponCodeOrId = searchParams?.code || searchParams?.coupon
+	let validCoupon = null
+	let coupon = null
+	if (couponCodeOrId) {
+		coupon = await getCouponForCode(couponCodeOrId, [], courseBuilderAdapter)
+		if (coupon && coupon.isValid) {
+			validCoupon = coupon
+		}
+	}
+
+	const allProducts = await db.select().from(products)
+	const productIds = allProducts.map((p) => p.id)
+
+	let defaultCoupon: any = null
+	if (productIds.length > 0) {
+		const defaultCoupons =
+			await courseBuilderAdapter.getDefaultCoupon(productIds)
+		if (defaultCoupons && defaultCoupons.defaultCoupon) {
+			defaultCoupon = defaultCoupons.defaultCoupon
+		}
+	}
+
+	const SaleBanner = async () => {
+		if (!defaultCoupon) return null
+		const percentOff = Math.floor(
+			Number(defaultCoupon.percentageDiscount) * 100,
+		)
+
+		const restrictedProductId = defaultCoupon.restrictedToProductId
+		if (!restrictedProductId) return null
+
+		const rows = await db
+			.select({
+				product: products,
+				resource: contentResource,
+			})
+			.from(products)
+			.innerJoin(
+				contentResourceProduct,
+				eq(contentResourceProduct.productId, products.id),
+			)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceProduct.resourceId),
+			)
+			.where(eq(products.id, restrictedProductId))
+			.limit(1)
+
+		const result = rows[0]
+		if (!result?.resource?.fields?.slug) return null
+
+		const productPath =
+			result.product.type === 'cohort'
+				? `/cohorts/${result.resource.fields.slug}`
+				: `/products/${result.resource.fields.slug}`
+
+		return (
+			<div className="flex flex-col items-center p-2">
+				<Link
+					className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
+					href={productPath}
+					prefetch
+				>
+					<Badge variant="default" className="mb-1 px-4 py-2 text-base">
+						Save {percentOff}% on {result.product.name}!
+					</Badge>
+				</Link>
+			</div>
+		)
+	}
 
 	return (
 		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
 				{firstPageResource && (
 					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
-						<Link
-							className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
-							href={firstPageResource.path}
-							prefetch
-						>
-							New: <span className="underline">{firstPageResource?.title}</span>{' '}
-							▸
-						</Link>
+						{defaultCoupon ? (
+							<>{await SaleBanner()}</>
+						) : (
+							<Link
+								className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
+								href={firstPageResource.path}
+								prefetch
+							>
+								New:{' '}
+								<span className="underline">{firstPageResource?.title}</span> ▸
+							</Link>
+						)}
 					</div>
 				)}
 				<header className="relative flex w-full flex-col items-center justify-center px-3 pb-10 pt-10 sm:pb-20 sm:pt-16">
