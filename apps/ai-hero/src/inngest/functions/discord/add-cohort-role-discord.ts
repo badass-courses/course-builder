@@ -18,7 +18,7 @@ export type UserAddedToCohort = {
 export const UserAddedToCohortEventSchema = z.object({
 	cohortId: z.string(),
 	userId: z.string(),
-	discordRoleId: z.string(),
+	discordRoleId: z.string().optional(),
 })
 
 export type UserAddedToCohortEvent = z.infer<
@@ -32,6 +32,10 @@ export const addCohortRoleDiscord = inngest.createFunction(
 	},
 	{ event: USER_ADDED_TO_COHORT_EVENT },
 	async ({ event, step }) => {
+		if (!event.data.discordRoleId) {
+			return 'No discord role id found'
+		}
+
 		const user = await step.run('get user', async () => {
 			return db.query.users.findFirst({
 				where: eq(users.id, event.data.userId),

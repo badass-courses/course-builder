@@ -78,7 +78,7 @@ export const env = createEnv({
 		DISCORD_MEMBER_ROLE_ID: z.string().optional(),
 		DISCORD_SUBSCRIBER_ROLE_ID: z.string().optional(),
 		DISCORD_PURCHASER_ROLE_ID: z.string().optional(),
-		DISCORD_COHORT_001_ROLE_ID: z.string(),
+		DISCORD_COHORT_001_ROLE_ID: z.string().optional(),
 		DISCORD_CLIENT_ID: z.string().optional(),
 		CLOUDINARY_API_KEY: z.string(),
 		CLOUDINARY_API_SECRET: z.string(),
