@@ -73,22 +73,34 @@ export async function getCohort(cohortIdOrSlug: string) {
  * @returns An array of modules
  */
 export async function getAllWorkshopsInCohort(cohortId: string) {
-	const results = await db
-		.select()
-		.from(contentResourceResource)
-		.innerJoin(
-			contentResource,
-			eq(contentResource.id, contentResourceResource.resourceId),
-		)
-		.where(
-			and(
-				eq(contentResource.type, 'workshop'),
-				eq(contentResourceResource.resourceOfId, cohortId),
-			),
-		)
-		.orderBy(asc(contentResourceResource.position))
+	try {
+		const results = await db
+			.select()
+			.from(contentResourceResource)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceResource.resourceId),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'workshop'),
+					eq(contentResourceResource.resourceOfId, cohortId),
+				),
+			)
+			.orderBy(asc(contentResourceResource.position))
 
-	return results.map((r) => WorkshopSchema.parse(r.ContentResource))
+		return results.map((r) => {
+			const parsed = WorkshopSchema.safeParse(r.ContentResource)
+			if (!parsed.success) {
+				console.error('Failed to parse workshop:', parsed.error, r.ContentResource)
+				throw new Error(`Invalid workshop data for cohort ${cohortId}`)
+			}
+			return parsed.data
+		})
+	} catch (error) {
+		console.error('Failed to get workshops in cohort:', error)
+		throw error
+	}
 }
 /**
  * Check if a user has access to a cohort
