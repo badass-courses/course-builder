@@ -132,11 +132,12 @@ export function EditPagesForm({
 							</div>
 						),
 						selection: {
-							availableResourceTypes: ['article'],
+							availableResourceTypes: ['article', 'cohort'],
 							defaultResourceType: 'article',
 							createResourceTitle: 'Create a Resource',
 							showTierSelector: false,
 							searchConfig: <SearchConfig />,
+							topLevelResourceTypes: ['article', 'post', 'cohort'],
 						},
 					}}
 				/>
