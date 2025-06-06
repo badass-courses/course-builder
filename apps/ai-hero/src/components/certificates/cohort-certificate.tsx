@@ -213,7 +213,7 @@ const Dialog: React.FC<React.PropsWithChildren<{ className?: string }>> = ({
 			<DialogHeader>
 				<DialogTitle>Certificate</DialogTitle>
 				<DialogDescription>
-					You have successfully completed this module. Get your certificate
+					You have successfully completed the Cohort. Get your certificate
 					below.
 				</DialogDescription>
 			</DialogHeader>
@@ -276,6 +276,7 @@ const DownloadButton: React.FC<
 		<Button
 			disabled={!session?.user.id || form.formState.isSubmitting}
 			type="submit"
+			className="h-fit"
 		>
 			{form.formState.isSubmitting
 				? 'Downloading...'

@@ -6,6 +6,8 @@ import {
 } from '@/db/schema'
 import { sql } from 'drizzle-orm'
 
+import { getAllWorkshopsInCohort } from './cohorts-query'
+
 export async function checkCertificateEligibility(
 	resourceId: string,
 	userId: string,
@@ -18,6 +20,54 @@ export async function checkCertificateEligibility(
 		await hasUserCompletedAllLessons(userId, resourceId)
 
 	return { hasCompletedModule, date: lastCompletedDate }
+}
+
+export async function checkCohortCertificateEligibility(
+	cohortId: string,
+	userId?: string,
+) {
+	if (!userId) {
+		return { hasCompletedCohort: false, date: null }
+	}
+
+	const modules = await getAllWorkshopsInCohort(cohortId)
+
+	if (!modules || modules.length === 0) {
+		return { hasCompletedCohort: false, date: null }
+	}
+
+	if (modules.length === 0) {
+		return { hasCompletedCohort: false, date: null }
+	}
+
+	const moduleCompletionPromises = modules.map((module) =>
+		hasUserCompletedAllLessons(userId, module.id),
+	)
+
+	const moduleCompletionResults = await Promise.all(moduleCompletionPromises)
+	const allModulesCompleted = moduleCompletionResults.every(
+		(result) => result.completed,
+	)
+
+	if (!allModulesCompleted) {
+		return { hasCompletedCohort: false, date: null }
+	}
+
+	const completionDates = moduleCompletionResults
+		.map((result) => result.lastCompletedDate)
+		.filter((date): date is Date => date !== null)
+
+	let latestCompletionDate: Date | null = null
+	if (completionDates.length > 0) {
+		latestCompletionDate = new Date(
+			Math.max(...completionDates.map((date) => date.getTime())),
+		)
+	}
+
+	return {
+		hasCompletedCohort: allModulesCompleted,
+		date: latestCompletionDate,
+	}
 }
 
 async function hasUserCompletedAllLessons(
