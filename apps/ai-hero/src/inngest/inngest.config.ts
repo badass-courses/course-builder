@@ -17,6 +17,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 import { cohortTransferWorkflow } from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { addCohortRoleDiscord } from './functions/discord/add-cohort-role-discord'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
@@ -51,5 +52,6 @@ export const inngestConfig = {
 		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,
 		videoResourceDetached,
+		addCohortRoleDiscord,
 	],
 }

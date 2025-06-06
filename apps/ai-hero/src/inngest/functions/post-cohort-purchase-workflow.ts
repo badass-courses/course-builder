@@ -4,6 +4,7 @@ import {
 	entitlements,
 	entitlementTypes,
 } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
@@ -12,6 +13,8 @@ import { and, eq } from 'drizzle-orm'
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
+
+import { USER_ADDED_TO_COHORT_EVENT } from './discord/add-cohort-role-discord'
 
 export const postCohortPurchaseWorkflow = inngest.createFunction(
 	{
@@ -84,6 +87,10 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			return getCohort(cohortResourceId)
 		})
 
+		if (!cohortResource) {
+			throw new Error(`cohort resource not found`)
+		}
+
 		if (isTeamPurchase) {
 			// send an email to the purchaser explaining next steps
 		} else {
@@ -154,6 +161,41 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 				)
 
 				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
+					await step.sendEvent('send-discord-role-event', {
+						name: USER_ADDED_TO_COHORT_EVENT,
+						data: {
+							cohortId: cohortResource.id,
+							userId: user.id,
+							discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
+						},
+					})
+
+					await step.run(`add cohort discord entitlement`, async () => {
+						if (!cohortDiscordRoleEntitlementType) {
+							return 'no cohort discord role entitlement type found'
+						}
+
+						const entitlementId = `${cohortResource.id}-discord-${guid()}`
+						const entitlementData = {
+							id: entitlementId,
+							entitlementType: cohortDiscordRoleEntitlementType.id,
+							sourceType: 'cohort',
+							sourceId: cohortResource.id,
+							userId: user.id,
+							organizationId,
+							organizationMembershipId: orgMembership.id,
+							metadata: {
+								discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
+							},
+						}
+
+						await db.insert(entitlements).values(entitlementData)
+
+						return {
+							entitlementId,
+						}
+					})
+
 					await step.run(`add user to cohort via entitlement`, async () => {
 						const createdEntitlements = []
 
@@ -163,7 +205,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 								id: entitlementId,
 								entitlementType: cohortContentAccessEntitlementType.id,
 								sourceType: 'cohort',
-								sourceId: resource.resource.id,
+								sourceId: cohortResource.id,
 								userId: user.id,
 								organizationId,
 								organizationMembershipId: orgMembership.id,

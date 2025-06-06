@@ -85,6 +85,10 @@ import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
 } from './functions/create-user-organization'
+import {
+	USER_ADDED_TO_COHORT_EVENT,
+	UserAddedToCohort,
+} from './functions/discord/add-cohort-role-discord'
 
 // Create a client to send and receive events
 export type Events = {
@@ -109,6 +113,7 @@ export type Events = {
 	[VIDEO_DETACHED_EVENT]: VideoDetached
 	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
+	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 }
 
 const callbackBase =
