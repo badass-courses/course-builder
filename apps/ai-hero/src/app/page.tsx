@@ -16,6 +16,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -103,72 +104,38 @@ const Home = async (props: Props) => {
 	const allProducts = await db.select().from(products)
 	const productIds = allProducts.map((p) => p.id)
 
-	let defaultCoupon: any = null
+	let defaultCoupon = null
 	if (productIds.length > 0) {
-		const defaultCoupons =
-			await courseBuilderAdapter.getDefaultCoupon(productIds)
-		if (defaultCoupons && defaultCoupons.defaultCoupon) {
-			defaultCoupon = defaultCoupons.defaultCoupon
+		const coupons = await courseBuilderAdapter.getDefaultCoupon(productIds)
+		if (coupons?.defaultCoupon) {
+			defaultCoupon = coupons.defaultCoupon
 		}
 	}
 
-	const SaleBanner = async () => {
-		if (!defaultCoupon) return null
-		const percentOff = Math.floor(
-			Number(defaultCoupon.percentageDiscount) * 100,
-		)
-
-		const restrictedProductId = defaultCoupon.restrictedToProductId
-		if (!restrictedProductId) return null
-
-		const rows = await db
-			.select({
-				product: products,
-				resource: contentResource,
-			})
-			.from(products)
-			.innerJoin(
-				contentResourceProduct,
-				eq(contentResourceProduct.productId, products.id),
-			)
-			.innerJoin(
-				contentResource,
-				eq(contentResource.id, contentResourceProduct.resourceId),
-			)
-			.where(eq(products.id, restrictedProductId))
-			.limit(1)
-
-		const result = rows[0]
-		if (!result?.resource?.fields?.slug) return null
-
-		const productPath =
-			result.product.type === 'cohort'
-				? `/cohorts/${result.resource.fields.slug}`
-				: `/products/${result.resource.fields.slug}`
-
-		return (
-			<div className="flex flex-col items-center p-2">
-				<Link
-					className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
-					href={productPath}
-					prefetch
-				>
-					<Badge variant="default" className="mb-1 px-4 py-2 text-base">
-						Save {percentOff}% on {result.product.name}!
-					</Badge>
-				</Link>
-			</div>
-		)
-	}
+	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
 	return (
 		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
-				{firstPageResource && (
-					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
-						{defaultCoupon ? (
-							<>{await SaleBanner()}</>
-						) : (
+				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+					<div className="">
+						<Link
+							className="bg-background group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]"
+							href={saleBannerData.productPath}
+							prefetch
+						>
+							<span className="font-bold">
+								Save {saleBannerData.percentOff}%
+							</span>{' '}
+							on {saleBannerData.productName}.{' '}
+							<div className="bg-primary text-primary-foreground ml-1 rounded px-1.5 py-0.5 transition ease-in-out group-hover:underline">
+								Get Your Ticket
+							</div>
+						</Link>
+					</div>
+				) : (
+					firstPageResource && (
+						<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
 							<Link
 								className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
 								href={firstPageResource.path}
@@ -177,9 +144,10 @@ const Home = async (props: Props) => {
 								New:{' '}
 								<span className="underline">{firstPageResource?.title}</span> ▸
 							</Link>
-						)}
-					</div>
+						</div>
+					)
 				)}
+
 				<header className="relative flex w-full flex-col items-center justify-center px-3 pb-10 pt-10 sm:pb-20 sm:pt-16">
 					<div className="absolute -top-16 left-1/3 h-80 w-16 -rotate-12 bg-[#F7ADBC] opacity-50 blur-3xl dark:bg-white dark:opacity-30" />
 					<div
