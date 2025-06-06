@@ -92,7 +92,11 @@ export async function getAllWorkshopsInCohort(cohortId: string) {
 		return results.map((r) => {
 			const parsed = WorkshopSchema.safeParse(r.ContentResource)
 			if (!parsed.success) {
-				console.error('Failed to parse workshop:', parsed.error, r.ContentResource)
+				console.error(
+					'Failed to parse workshop:',
+					parsed.error,
+					r.ContentResource,
+				)
 				throw new Error(`Invalid workshop data for cohort ${cohortId}`)
 			}
 			return parsed.data
