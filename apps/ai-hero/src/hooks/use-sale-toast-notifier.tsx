@@ -8,6 +8,7 @@ import {
 } from 'next/navigation'
 import { api } from '@/trpc/react'
 import cookieUtil from '@/utils/cookies'
+import { getResourcePath } from '@/utils/resource-paths'
 import { isBefore, subDays } from 'date-fns'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
@@ -31,6 +32,14 @@ export const useSaleToastNotifier = () => {
 	const dismissedButThresholdExceeded = lastDismissed
 		? isBefore(new Date(lastDismissed), thresholdDays)
 		: true
+
+	const productPath =
+		defaultCoupon?.product?.type && defaultCoupon?.product?.fields?.slug
+			? getResourcePath(
+					defaultCoupon?.product?.type,
+					defaultCoupon?.product?.fields?.slug,
+				)
+			: null
 
 	React.useEffect(() => {
 		if (
@@ -85,9 +94,9 @@ export const useSaleToastNotifier = () => {
 					<ToastAction
 						altText="Buy Now"
 						asChild
-						className="bg-primary text-primary-foreground"
+						className="bg-primary hover:bg-primary/90 text-primary-foreground"
 					>
-						<Link href={`/#buy`}>Buy Now</Link>
+						<Link href={productPath || '/#buy'}>Buy Now</Link>
 					</ToastAction>
 				),
 			})
