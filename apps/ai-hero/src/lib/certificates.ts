@@ -29,44 +29,48 @@ export async function checkCohortCertificateEligibility(
 	if (!userId) {
 		return { hasCompletedCohort: false, date: null }
 	}
+	try {
+		const modules = await getAllWorkshopsInCohort(cohortId)
 
-	const modules = await getAllWorkshopsInCohort(cohortId)
+		if (!modules || modules.length === 0) {
+			return { hasCompletedCohort: false, date: null }
+		}
 
-	if (!modules || modules.length === 0) {
-		return { hasCompletedCohort: false, date: null }
-	}
+		if (modules.length === 0) {
+			return { hasCompletedCohort: false, date: null }
+		}
 
-	if (modules.length === 0) {
-		return { hasCompletedCohort: false, date: null }
-	}
-
-	const moduleCompletionPromises = modules.map((module) =>
-		hasUserCompletedAllLessons(userId, module.id),
-	)
-
-	const moduleCompletionResults = await Promise.all(moduleCompletionPromises)
-	const allModulesCompleted = moduleCompletionResults.every(
-		(result) => result.completed,
-	)
-
-	if (!allModulesCompleted) {
-		return { hasCompletedCohort: false, date: null }
-	}
-
-	const completionDates = moduleCompletionResults
-		.map((result) => result.lastCompletedDate)
-		.filter((date): date is Date => date !== null)
-
-	let latestCompletionDate: Date | null = null
-	if (completionDates.length > 0) {
-		latestCompletionDate = new Date(
-			Math.max(...completionDates.map((date) => date.getTime())),
+		const moduleCompletionPromises = modules.map((module) =>
+			hasUserCompletedAllLessons(userId, module.id),
 		)
-	}
 
-	return {
-		hasCompletedCohort: allModulesCompleted,
-		date: latestCompletionDate,
+		const moduleCompletionResults = await Promise.all(moduleCompletionPromises)
+		const allModulesCompleted = moduleCompletionResults.every(
+			(result) => result.completed,
+		)
+
+		if (!allModulesCompleted) {
+			return { hasCompletedCohort: false, date: null }
+		}
+
+		const completionDates = moduleCompletionResults
+			.map((result) => result.lastCompletedDate)
+			.filter((date): date is Date => date !== null)
+
+		let latestCompletionDate: Date | null = null
+		if (completionDates.length > 0) {
+			latestCompletionDate = new Date(
+				Math.max(...completionDates.map((date) => date.getTime())),
+			)
+		}
+
+		return {
+			hasCompletedCohort: allModulesCompleted,
+			date: latestCompletionDate,
+		}
+	} catch (error) {
+		console.error(error)
+		return { hasCompletedCohort: false, date: null }
 	}
 }
 
