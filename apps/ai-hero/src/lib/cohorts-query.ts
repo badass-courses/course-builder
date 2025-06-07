@@ -13,6 +13,7 @@ import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import type { User } from '@coursebuilder/core/schemas'
 
 import { CohortAccess, CohortSchema } from './cohort'
+import { WorkshopSchema } from './workshops'
 
 export async function getCohort(cohortIdOrSlug: string) {
 	const cohortData = await db.query.contentResource.findFirst({
@@ -66,6 +67,45 @@ export async function getCohort(cohortIdOrSlug: string) {
 	return parsedCohort.data
 }
 
+/**
+ * Get all modules in a cohort
+ * @param cohortId - The ID of the cohort to get modules for
+ * @returns An array of modules
+ */
+export async function getAllWorkshopsInCohort(cohortId: string) {
+	try {
+		const results = await db
+			.select()
+			.from(contentResourceResource)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceResource.resourceId),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'workshop'),
+					eq(contentResourceResource.resourceOfId, cohortId),
+				),
+			)
+			.orderBy(asc(contentResourceResource.position))
+
+		return results.map((r) => {
+			const parsed = WorkshopSchema.safeParse(r.ContentResource)
+			if (!parsed.success) {
+				console.error(
+					'Failed to parse workshop:',
+					parsed.error,
+					r.ContentResource,
+				)
+				throw new Error(`Invalid workshop data for cohort ${cohortId}`)
+			}
+			return parsed.data
+		})
+	} catch (error) {
+		console.error('Failed to get workshops in cohort:', error)
+		throw error
+	}
+}
 /**
  * Check if a user has access to a cohort
  * @param organizationId - The ID of the organization to check cohort access for

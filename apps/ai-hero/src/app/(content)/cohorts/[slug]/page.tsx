@@ -11,6 +11,7 @@ import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { checkCohortCertificateEligibility } from '@/lib/certificates'
 import { Cohort } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
@@ -38,6 +39,7 @@ import {
 	Button,
 } from '@coursebuilder/ui'
 
+import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
 import { CohortDetails } from './_components/cohort-details'
 import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
@@ -93,6 +95,11 @@ export default async function CohortPage(props: {
 	if (!cohort) {
 		notFound()
 	}
+
+	const { hasCompletedCohort } = await checkCohortCertificateEligibility(
+		cohort.id,
+		user?.id,
+	)
 
 	const productParsed = productSchema.safeParse(
 		first(cohort.resourceProducts)?.product,
@@ -502,6 +509,10 @@ export default async function CohortPage(props: {
 						) : ALLOW_PURCHASE ? (
 							<CohortPricingWidgetContainer {...cohortProps} />
 						) : null}
+						<Certificate
+							isCompleted={hasCompletedCohort}
+							resourceSlugOrId={cohort.fields?.slug}
+						/>
 					</CohortSidebar>
 				</div>
 				{/* <CohortSidebarMobile cohort={cohort} /> */}

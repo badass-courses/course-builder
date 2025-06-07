@@ -1,23 +1,20 @@
 'use client'
 
-import * as ModuleCertificate from '@/components/certificates/module-certificate'
+import * as CohortCertificate from '@/components/certificates/cohort-certificate'
 import { Lock, LockKeyhole } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 
-import { useModuleProgress } from './module-progress-provider'
-
 export const Certificate = ({
 	resourceSlugOrId,
+	isCompleted,
 }: {
 	resourceSlugOrId: string
+	isCompleted: boolean
 }) => {
-	const { moduleProgress } = useModuleProgress()
-	const isCompleted = moduleProgress?.percentCompleted === 100
-
 	return isCompleted ? (
-		<ModuleCertificate.Root resourceIdOrSlug={resourceSlugOrId}>
-			<ModuleCertificate.Trigger className="text-foreground hover:bg-muted bg-background relative flex aspect-[842/595] h-full w-full flex-col items-center justify-center gap-2 rounded border">
+		<CohortCertificate.Root resourceIdOrSlug={resourceSlugOrId}>
+			<CohortCertificate.Trigger className="text-foreground hover:bg-muted bg-background relative flex aspect-[842/595] h-fit w-full flex-col gap-2 rounded border">
 				<div className="text-primary text-sm uppercase tracking-wide">
 					Now Available
 				</div>
@@ -26,30 +23,30 @@ export const Certificate = ({
 					<div>Get Certificate</div>
 				</Button>
 				<Bg />
-			</ModuleCertificate.Trigger>
-			<ModuleCertificate.Dialog>
-				<ModuleCertificate.NameInput />
-				<ModuleCertificate.DownloadButton />
+			</CohortCertificate.Trigger>
+			<CohortCertificate.Dialog>
+				<CohortCertificate.NameInput />
+				<CohortCertificate.DownloadButton />
 				<div>
 					<p className="pb-1 text-sm font-medium">
 						Share URL (can be used on LinkedIn, etc.)
 					</p>
 					<div className="flex items-center">
-						<ModuleCertificate.GenerateShareUrlButton />
-						<ModuleCertificate.ShareUrl />
+						<CohortCertificate.GenerateShareUrlButton />
+						<CohortCertificate.ShareUrl />
 					</div>
 				</div>
-			</ModuleCertificate.Dialog>
-		</ModuleCertificate.Root>
+			</CohortCertificate.Dialog>
+		</CohortCertificate.Root>
 	) : (
-		<div className="bg-background relative flex aspect-[842/595] h-full w-full flex-col items-center justify-center rounded border text-sm">
+		<div className="bg-background relative flex aspect-[842/595] h-fit w-full flex-col items-center justify-center rounded border text-sm">
 			<div className="bg-muted rounded-full p-3">
 				<Lock className="h-4 w-4" />
 			</div>
 			<div className="mt-2 text-lg font-semibold">
 				Certificate of Completion
 			</div>
-			<span className="opacity-75">Complete all lessons to unlock.</span>
+			<span className="opacity-75">Complete all workshops to unlock.</span>
 			<Bg />
 		</div>
 	)
@@ -58,7 +55,7 @@ export const Certificate = ({
 const Bg = () => {
 	return (
 		<svg
-			className="absolute left-0 top-0 h-full w-full"
+			className="absolute left-0 top-0 h-fit w-full"
 			// width="842"
 			// height="595"
 			xmlns="http://www.w3.org/2000/svg"

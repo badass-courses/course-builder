@@ -259,13 +259,15 @@ export default async function ModulePage(props: Props) {
 									}}
 								</WorkshopPricing>
 								</React.Suspense> */}
-							<WorkshopResourceList
-								isCollapsible={false}
-								className="w-full max-w-none !border-r-0"
-								withHeader={false}
-								maxHeight="h-auto"
-								wrapperClassName="overflow-hidden pb-0"
-							/>
+							<div className="flex flex-col gap-2">
+								<WorkshopResourceList
+									isCollapsible={false}
+									className="w-full max-w-none !border-r-0"
+									withHeader={false}
+									maxHeight="h-auto"
+									wrapperClassName="overflow-hidden pb-0"
+								/>
+							</div>
 							{/* <React.Suspense fallback={null}>
 								<SmallCohortBanner abilityLoader={abilityLoader} />
 							</React.Suspense> */}
