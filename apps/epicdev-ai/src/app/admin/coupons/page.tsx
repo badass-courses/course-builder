@@ -4,7 +4,7 @@ import CouponDataTable from '@/app/admin/coupons/_components/coupon-data-table'
 import CouponGeneratorForm from '@/app/admin/coupons/_components/coupon-generator-form'
 import { db } from '@/db'
 import { coupon } from '@/db/schema'
-import { getSoldOutOrPastEventIds } from '@/lib/events-query'
+import { getPastEventIds } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import { desc } from 'drizzle-orm'
 import z from 'zod'
@@ -21,10 +21,10 @@ const getActiveProducts = async () => {
 			},
 		},
 	})
-	const soldOutOrPastEventIds = await getSoldOutOrPastEventIds()
+	const pastEventIds = await getPastEventIds()
 	return products.filter((product) =>
 		product.resources.every(
-			(resource) => !soldOutOrPastEventIds.includes(resource.resource.id),
+			(resource) => !pastEventIds.includes(resource.resource.id),
 		),
 	)
 }

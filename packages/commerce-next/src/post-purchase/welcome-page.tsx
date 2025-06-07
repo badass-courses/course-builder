@@ -262,7 +262,11 @@ const Header = ({
 							{discordProvider && !isDiscordConnected ? (
 								<button
 									data-discord-button=""
-									onClick={() => signIn(discordProvider.id)}
+									onClick={() =>
+										signIn(discordProvider.id, {
+											callbackUrl: `${process.env.NEXT_PUBLIC_URL}/discord/redirect`,
+										})
+									}
 									className="flex w-full items-center justify-center gap-2 rounded bg-gray-800 px-5 py-1 text-sm text-white transition hover:brightness-110 sm:w-auto"
 								>
 									<Icon name="Discord" size="20" />

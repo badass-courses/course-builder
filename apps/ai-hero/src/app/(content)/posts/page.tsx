@@ -16,8 +16,9 @@ import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+import { getResourcePath } from '@/utils/resource-paths'
 import { desc, inArray, sql } from 'drizzle-orm'
-import { Book, ChevronRight } from 'lucide-react'
+import { Book, Calendar, ChevronRight } from 'lucide-react'
 
 import {
 	Badge,
@@ -225,7 +226,7 @@ const PostTeaser: React.FC<{
 			)}
 			<Link
 				prefetch
-				href={`/${post.fields.slug}`}
+				href={getResourcePath(post.type, post.fields.slug, 'view')}
 				passHref
 				className="flex w-full"
 			>
@@ -247,6 +248,11 @@ const PostTeaser: React.FC<{
 										<Book className="w-3" /> Free Tutorial
 									</p>
 								)}
+							{post.type === 'cohort' && (
+								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+									<Calendar className="w-3" /> Cohort-based Course
+								</p>
+							)}
 							<CardTitle
 								data-title=""
 								className="fluid-xl font-semibold leading-tight"
