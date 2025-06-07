@@ -1,5 +1,39 @@
 # @coursebuilder/core
 
+## 1.0.5
+
+### Patch Changes
+
+- [#472](https://github.com/badass-courses/course-builder/pull/472)
+  [`ed6b124`](https://github.com/badass-courses/course-builder/commit/ed6b1246b35b40f30cdf27b5507407c26d310424)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix team quantity logic
+
+- [#474](https://github.com/badass-courses/course-builder/pull/474)
+  [`aa77733`](https://github.com/badass-courses/course-builder/commit/aa77733d0965710f849be83cffe7374ad3e1edf3)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - include live products in
+  checkout flow
+
+- [#479](https://github.com/badass-courses/course-builder/pull/479)
+  [`60e8113`](https://github.com/badass-courses/course-builder/commit/60e811310faab346e385669c9a4ef5a25849ce07)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - refactor assistant
+
+- [`4e29da7`](https://github.com/badass-courses/course-builder/commit/4e29da74a433635089bb2796abbe1339fd8f4dbd)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add ability to pass
+  state to NewProduct
+
+- [`639af6d`](https://github.com/badass-courses/course-builder/commit/639af6d499410198e322df38a74b4fa8ec8310df)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - update sold out
+  handling in pricing widget and team toggle, improve waitlist styling
+
+- [#471](https://github.com/badass-courses/course-builder/pull/471)
+  [`1edb931`](https://github.com/badass-courses/course-builder/commit/1edb9318a1af4869e1685606bf4dae9da5dfb031)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - create
+  FullPriceCouponRedeemed event,pass orgId
+
+- [`a34b701`](https://github.com/badass-courses/course-builder/commit/a34b701f70d9ba66d7c291f51db8e63ff81c660a)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add ability to init
+  product with a type, fix waitlist logic
+
 ## 1.0.4
 
 ### Patch Changes
