@@ -33,8 +33,14 @@ export function LessonBody({
 			<div className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
 				<p>
 					<Lock className="mr-1 inline-block size-5 opacity-75" />{' '}
-					{ability.isPendingOpenAccess
-						? `This lesson is not available yet. Please check back on ${formatInTimeZone(new Date(workshop?.fields?.startsAt || ''), 'America/Los_Angeles', `MMM d, yyyy 'at' h:mm a z`)}`
+					{ability.isPendingOpenAccess && workshop?.fields?.startsAt
+						? `This lesson is not available yet. Please check back on ${formatInTimeZone(
+								new Date(workshop.fields.startsAt),
+								workshop?.fields?.timezone || 'America/Los_Angeles',
+								`MMM d, yyyy 'at' h:mm a z`
+						  )}`
+						: ability.isPendingOpenAccess
+						? 'This lesson is not available yet.'
 						: 'You need to be a member to access this lesson.'}
 				</p>
 			</div>
