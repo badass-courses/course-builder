@@ -105,8 +105,8 @@ type GetAbilityOptions = {
 	user?: User
 }
 
-const hasRole = ({ user, role }: { user: User; role: string }) => {
-	return user.roles?.map((role) => role.name).includes(role)
+const hasRole = ({ user, role }: { user?: User; role: string }) => {
+	return Boolean(user?.roles?.map((role) => role.name).includes(role))
 }
 
 /**
