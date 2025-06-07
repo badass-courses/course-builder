@@ -105,6 +105,10 @@ type GetAbilityOptions = {
 	user?: User
 }
 
+const hasRole = ({ user, role }: { user: User; role: string }) => {
+	return user.roles?.map((role) => role.name).includes(role)
+}
+
 /**
  * serializable CASL rules object
  *
@@ -115,17 +119,21 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
 	if (options.user) {
-		if (options.user.roles?.map((role) => role.name).includes('admin')) {
+		if (hasRole({ user: options.user, role: 'admin' })) {
 			can('manage', 'all')
 		}
 
-		if (options.user.roles?.map((role) => role.name).includes('contributor')) {
+		if (hasRole({ user: options.user, role: 'contributor' })) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: options.user.id } })
 			can('save', 'Content', { createdById: { $eq: options.user.id } })
 			can('publish', 'Content', { createdById: { $eq: options.user.id } })
 			can('archive', 'Content', { createdById: { $eq: options.user.id } })
 			can('unpublish', 'Content', { createdById: { $eq: options.user.id } })
+		}
+
+		if (hasRole({ user: options.user, role: 'reviewer' })) {
+			can('read', 'Content')
 		}
 
 		can(['read', 'update'], 'User', { id: options.user.id })
@@ -222,13 +230,17 @@ export function defineRulesForPurchases(
 	}
 
 	if (user) {
-		if (user.roles?.map((role) => role.name).includes('admin')) {
+		if (hasRole({ user, role: 'admin' })) {
 			can('manage', 'all')
 		}
 
-		if (user.roles?.map((role) => role.name).includes('contributor')) {
+		if (hasRole({ user, role: 'contributor' })) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: user.id } })
+		}
+
+		if (hasRole({ user, role: 'reviewer' })) {
+			can('read', 'Content')
 		}
 
 		can(['read', 'update'], 'User', { id: user.id })
@@ -305,7 +317,7 @@ export function defineRulesForPurchases(
 	// 	can('read', 'Content')
 	// }
 
-	if (user?.roles?.map((role) => role.name).includes('admin')) {
+	if (hasRole({ user, role: 'admin' })) {
 		can('manage', 'all')
 		can('create', 'Content')
 		can('read', 'Content')
