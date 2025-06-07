@@ -4,7 +4,6 @@ import * as React from 'react'
 import { use } from 'react'
 import { SessionProvider } from 'next-auth/react'
 
-import { CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import { Product } from '@coursebuilder/core/schemas'
 
 import RedeemDialog from '../pricing/redeem-dialog'

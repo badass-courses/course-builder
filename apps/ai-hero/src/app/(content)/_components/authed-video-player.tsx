@@ -9,7 +9,6 @@ import {
 	setPreferredTextTrack,
 } from '@/hooks/use-mux-player-prefs'
 import { setProgressForResource } from '@/lib/progress'
-import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import {
 	getAdjacentWorkshopResources,
@@ -21,7 +20,6 @@ import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
-import pluralize from 'pluralize'
 
 import type {
 	ContentResource,
@@ -52,13 +50,20 @@ export function AuthedVideoPlayer({
 	title?: string
 	playbackIdLoader: Promise<string | null | undefined>
 	className?: string
-	abilityLoader?: Promise<AbilityForResource>
+	abilityLoader?: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	resource: ContentResource
 	moduleSlug?: string
 	moduleType?: 'workshop' | 'tutorial'
 } & MuxPlayerProps) {
 	const ability = abilityLoader ? use(abilityLoader) : null
-	const canView = ability?.canView
+	const canView = ability?.canViewLesson
+
 	const playbackId = canView ? use(playbackIdLoader) : muxPlaybackId
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()

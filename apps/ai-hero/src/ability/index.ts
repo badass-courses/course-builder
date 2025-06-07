@@ -1,5 +1,4 @@
 import { Lesson } from '@/lib/lessons'
-import { Module } from '@/lib/module'
 import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
@@ -83,6 +82,7 @@ type Actions =
 
 type Subjects =
 	| 'RegionRestriction'
+	| 'PendingOpenAccess'
 	| 'Team'
 	| 'Content'
 	| 'User'
@@ -208,6 +208,7 @@ type ViewerAbilityInput = {
 		id: string
 		name: string
 	}[]
+	allModuleResourceIds?: string[]
 }
 
 export function defineRulesForPurchases(
@@ -221,6 +222,7 @@ export function defineRulesForPurchases(
 		module,
 		lesson,
 		entitlementTypes,
+		allModuleResourceIds,
 	} = viewerAbilityInput
 
 	if (user) {
@@ -274,11 +276,6 @@ export function defineRulesForPurchases(
 			}
 			return { valid: false, reason: 'unknown' }
 		})
-
-		// LEGACY: non-entitlement based access
-		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-		// 	can('read', 'Content')
-		// }
 
 		if (
 			userHasPurchaseWithAccess.some(
@@ -334,6 +331,13 @@ export function defineRulesForPurchases(
 				can('read', 'Content', {
 					id: { $in: entitlement.metadata.contentIds },
 				})
+				const moduleStartsAt = module?.fields?.startsAt
+				const moduleStarted =
+					!moduleStartsAt || new Date(moduleStartsAt) < new Date()
+
+				if (!moduleStarted) {
+					can('read', 'PendingOpenAccess')
+				}
 			}
 		})
 	}
@@ -344,9 +348,20 @@ export function defineRulesForPurchases(
 		(resource) => resource.resourceId === lesson?.id,
 	)
 	if (user?.entitlements && lessonModule) {
+		const moduleStartsAt = module?.fields?.startsAt
+		const moduleStarted =
+			moduleStartsAt && new Date(moduleStartsAt) < new Date()
+
 		user.entitlements.forEach((entitlement) => {
-			if (entitlement.type === cohortEntitlementType?.id) {
-				can('read', 'Content', { id: { $in: entitlement.metadata.contentIds } })
+			if (entitlement.type === cohortEntitlementType?.id && moduleStarted) {
+				can('read', 'Content', {
+					id: { $in: allModuleResourceIds },
+				})
+			} else if (
+				entitlement.type === cohortEntitlementType?.id &&
+				!moduleStarted
+			) {
+				can('read', 'PendingOpenAccess')
 			}
 		})
 	}
@@ -394,7 +409,7 @@ const isFreelyVisible = ({
 			lesson?.type === 'lesson') &&
 		lesson.id === lessons?.[0]?.resourceId
 
-	return isFirstLesson && lesson && !isSolution
+	return false //isFirstLesson && lesson && !isSolution
 }
 
 /**

@@ -14,6 +14,7 @@ import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { getResourceSection } from './get-resource-section'
+import { getWorkshopResourceIds } from './get-workshop-resource-ids'
 
 // Provide the actual implementation directly
 export async function getCurrentAbilityRules({
@@ -48,6 +49,10 @@ export async function getCurrentAbilityRules({
 	const purchases = await courseBuilderAdapter.getPurchasesForUser(
 		session?.user?.id,
 	)
+
+	const allModuleResourceIds = moduleResource
+		? getWorkshopResourceIds(moduleResource)
+		: []
 
 	const entitlementTypes = await db.query.entitlementTypes.findMany()
 
@@ -93,31 +98,47 @@ export async function getCurrentAbilityRules({
 		...(moduleResource && { module: moduleResource }),
 		...(sectionResource ? { section: sectionResource } : {}),
 		...(purchases && { purchases: purchases }),
+		allModuleResourceIds,
 	})
 }
 
 export async function getAbilityForResource(
 	lessonId: string | undefined,
 	moduleId: string,
-): Promise<AbilityForResource> {
+): Promise<
+	Omit<AbilityForResource, 'canView'> & {
+		canViewWorkshop: boolean
+		canViewLesson: boolean
+		isPendingOpenAccess: boolean
+	}
+> {
 	const abilityRules = await getCurrentAbilityRules({
 		lessonId,
 		moduleId,
 	})
 	const workshop = await getCachedMinimalWorkshop(moduleId)
+	const lesson = lessonId ? await getLesson(lessonId) : null
 
 	const ability = createAppAbility(abilityRules || [])
-	const canView = workshop
+
+	const canViewWorkshop = workshop
 		? ability.can('read', subject('Content', { id: workshop.id }))
+		: false
+
+	const canViewLesson = lesson?.id
+		? ability.can('read', subject('Content', { id: lesson.id }))
 		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+	const isPendingOpenAccess = ability.can('read', 'PendingOpenAccess')
 	const canCreate = ability.can('create', 'Content')
 
 	return {
-		canView,
+		canViewWorkshop,
+		canViewLesson,
 		canInviteTeam,
 		isRegionRestricted,
+		isPendingOpenAccess,
 		canCreate,
 	}
 }

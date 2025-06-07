@@ -1,8 +1,6 @@
 import { Suspense } from 'react'
-import * as React from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
@@ -10,7 +8,6 @@ import { Transcript } from '@/app/(content)/_components/video-transcript-rendere
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
 import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
-import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -19,6 +16,7 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
+import { MinimalWorkshop } from '@/lib/workshops'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import {
@@ -29,7 +27,6 @@ import {
 import { Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
-import { CopyProblemPromptButton } from '../../../_components/copy-problem-prompt-button'
 import { LessonBody } from '../../../_components/lesson-body'
 
 export async function LessonPage({
@@ -38,6 +35,7 @@ export async function LessonPage({
 	searchParams,
 	params,
 	lessonType = 'lesson',
+	workshop,
 }: {
 	params: { module: string; lesson: string }
 	exerciseLoader?: Promise<Lesson | null> | null | undefined
@@ -45,6 +43,7 @@ export async function LessonPage({
 	problem?: Lesson | null
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
+	workshop: MinimalWorkshop | null
 }) {
 	if (!lesson) {
 		notFound()
@@ -52,6 +51,12 @@ export async function LessonPage({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
+
+	const ability = await abilityLoader
+
+	if (!ability.canViewLesson) {
+		redirect(`/workshops/${params.module}`)
+	}
 
 	return (
 		<ActiveHeadingProvider>
@@ -68,6 +73,7 @@ export async function LessonPage({
 						searchParams={searchParams}
 						params={params}
 						lessonType={lessonType}
+						workshop={workshop}
 					/>
 				)}
 				<LessonControls
@@ -93,6 +99,7 @@ export async function LessonPage({
 									lesson={lesson}
 									abilityLoader={abilityLoader}
 									mdxContentPromise={mdxContentPromise}
+									workshop={workshop}
 								/>
 							</Suspense>
 							<TranscriptContainer
@@ -142,7 +149,13 @@ async function TranscriptContainer({
 }: {
 	lessonId: string
 	className?: string
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) {
 	const transcriptLoader = getLessonVideoTranscript(lessonId)
 
@@ -163,11 +176,13 @@ async function PlayerContainer({
 	lessonType = 'lesson',
 	searchParams,
 	params,
+	workshop,
 }: {
 	lesson: Lesson | null
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	searchParams: { [key: string]: string | string[] | undefined }
 	params: { module: string; lesson: string }
+	workshop: MinimalWorkshop | null
 }) {
 	if (!lesson) {
 		notFound()
@@ -219,6 +234,7 @@ async function PlayerContainer({
 								pricingProps={pricingProps}
 								moduleType="workshop"
 								moduleSlug={params.module}
+								workshop={workshop}
 							/>
 						)}
 					</WorkshopPricing>
