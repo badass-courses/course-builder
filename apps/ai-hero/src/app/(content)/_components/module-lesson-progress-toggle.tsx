@@ -44,7 +44,7 @@ export function ModuleLessonProgressToggle({
 
 	const [isPending, startTransition] = React.useTransition()
 	const disabled = isPending || !canView
-	return !ability.isPendingOpenAccess && lesson ? (
+	return lesson ? (
 		<>
 			<Label
 				htmlFor="lesson-progress-toggle"

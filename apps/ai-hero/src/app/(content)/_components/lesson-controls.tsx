@@ -50,6 +50,8 @@ export const LessonControls = async ({
 
 	const isProblemLesson = lesson.type === 'lesson' && hasSolution
 
+	console.log('lesson', { lesson, session, ckSubscriber })
+
 	return (
 		<div
 			className={cn(
