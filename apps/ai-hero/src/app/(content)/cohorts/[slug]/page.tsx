@@ -221,6 +221,8 @@ export default async function CohortPage(props: {
 		allowPurchase === 'true' ||
 		cohortProps?.product?.fields.state === 'published'
 
+	const hasPurchasedCurrentProduct = cohortProps.hasPurchasedCurrentProduct
+
 	return (
 		<LayoutClient withContainer>
 			<main className="relative">
@@ -246,7 +248,7 @@ export default async function CohortPage(props: {
 						</Button>
 					</div>
 				)}
-				{cohortProps.hasPurchasedCurrentProduct ? (
+				{hasPurchasedCurrentProduct ? (
 					<div className="flex w-full items-center border-b px-5 py-5 text-left">
 						<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
 						You have purchased a ticket to this cohort.
@@ -305,7 +307,7 @@ export default async function CohortPage(props: {
 								<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
 							)}
 						</article>
-						{!cohortProps.hasPurchasedCurrentProduct && (
+						{!hasPurchasedCurrentProduct && (
 							<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
 								<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
 								<ul className="flex flex-col gap-3">
@@ -404,10 +406,7 @@ export default async function CohortPage(props: {
 							</div>
 						)}
 					</div>
-					<CohortSidebar
-						cohort={cohort}
-						sticky={!cohortProps.hasPurchasedCurrentProduct}
-					>
+					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
 						{fields?.image && (
 							<CldImage
 								className="hidden lg:flex"
@@ -418,7 +417,7 @@ export default async function CohortPage(props: {
 							/>
 						)}
 						{/* <CohortDetails cohort={cohort} /> */}
-						{cohortProps.hasPurchasedCurrentProduct ? (
+						{hasPurchasedCurrentProduct ? (
 							<div>
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
 									Workshops
@@ -505,14 +504,14 @@ export default async function CohortPage(props: {
 										)
 									})}
 								</ol>
+								<Certificate
+									isCompleted={hasCompletedCohort}
+									resourceSlugOrId={cohort.fields?.slug}
+								/>
 							</div>
 						) : ALLOW_PURCHASE ? (
 							<CohortPricingWidgetContainer {...cohortProps} />
 						) : null}
-						<Certificate
-							isCompleted={hasCompletedCohort}
-							resourceSlugOrId={cohort.fields?.slug}
-						/>
 					</CohortSidebar>
 				</div>
 				{/* <CohortSidebarMobile cohort={cohort} /> */}
