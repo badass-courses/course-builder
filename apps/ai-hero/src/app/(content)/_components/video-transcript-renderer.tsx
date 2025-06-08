@@ -20,10 +20,16 @@ export function Transcript({
 	abilityLoader,
 }: {
 	transcriptLoader: Promise<string | null | undefined>
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) {
 	const ability = use(abilityLoader)
-	const canView = ability?.canView
+	const canView = ability?.canViewLesson
 	const { muxPlayerRef } = useMuxPlayer()
 
 	if (!canView) {

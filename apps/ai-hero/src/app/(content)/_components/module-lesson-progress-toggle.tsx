@@ -21,11 +21,17 @@ export function ModuleLessonProgressToggle({
 	lesson: Lesson
 	moduleType?: string
 	lessonType?: 'lesson' | 'exercise' | 'solution'
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) {
 	const params = useParams()
 	const ability = React.use(abilityLoader)
-	const canView = ability?.canView
+	const canView = ability?.canViewLesson
 
 	const { moduleProgress, addLessonProgress, removeLessonProgress } =
 		useModuleProgress()

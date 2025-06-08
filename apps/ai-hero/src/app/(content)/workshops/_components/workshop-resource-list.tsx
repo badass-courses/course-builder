@@ -339,8 +339,12 @@ const LessonResource = ({
 	const isCompleted = moduleProgress?.completedLessons?.some(
 		(progress) => progress.resourceId === lesson.id && progress.completedAt,
 	)
-	// if solution of a resource is active, or resource of a section is active
-	const canView = ability.can('read', subject('Content', { id: moduleId }))
+
+	const canViewLesson = ability.can(
+		'read',
+		subject('Content', { id: lesson.id }),
+	)
+
 	const canCreate = ability.can('create', 'Content')
 
 	return (
@@ -357,49 +361,64 @@ const LessonResource = ({
 		>
 			<div>
 				<div className="relative flex w-full items-center">
-					<Link
-						className={cn(
-							'hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+					{(() => {
+						// Base styles shared by both link and non-link variants
+						const baseStyles = cn(
+							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 							{
+								// Active state
 								'bg-muted text-primary border-gray-200':
 									isActiveLesson && !isActiveGroup,
-								'hover:text-primary': !isActiveLesson && !isActiveGroup,
-								'hover:bg-foreground/10': isActiveGroup,
+								// Only add hover styles when the row is actually clickable
+								'hover:bg-muted hover:text-primary':
+									canViewLesson && !isActiveLesson && !isActiveGroup,
+								'hover:bg-foreground/10': canViewLesson && isActiveGroup,
 							},
-						)}
-						href={`/workshops/${params.module}/${lesson.slug}`}
-						prefetch={true}
-					>
-						{isCompleted ? (
-							<div
-								aria-label="Completed"
-								className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
-							>
-								<Check
-									aria-hidden="true"
-									className="text-primary relative h-4 w-4 translate-y-1"
-								/>
-							</div>
-						) : (
-							<span
-								className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
-								aria-hidden="true"
-							>
-								{index + 1}
-							</span>
-						)}
-						<span className="w-full text-base">{lesson.title}</span>
-						{abilityStatus === 'success' && (
+						)
+
+						// Shared inner content
+						const rowContent = (
 							<>
-								{canView || index === 0 ? null : (
+								{isCompleted ? (
+									<div
+										aria-label="Completed"
+										className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
+									>
+										<Check
+											aria-hidden="true"
+											className="text-primary relative h-4 w-4 translate-y-1"
+										/>
+									</div>
+								) : (
+									<span
+										className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
+										aria-hidden="true"
+									>
+										{index + 1}
+									</span>
+								)}
+								<span className="w-full text-base">{lesson.title}</span>
+								{abilityStatus === 'success' && !canViewLesson && (
 									<Lock
 										className="absolute right-5 w-3 text-gray-500"
 										aria-label="locked"
 									/>
 								)}
 							</>
-						)}
-					</Link>
+						)
+
+						return canViewLesson ? (
+							<Link
+								className={cn('hover:bg-muted', baseStyles)}
+								href={`/workshops/${params.module}/${lesson.slug}`}
+								prefetch
+							>
+								{rowContent}
+							</Link>
+						) : (
+							<div className={baseStyles}>{rowContent}</div>
+						)
+					})()}
 
 					{canCreate ? (
 						<Button

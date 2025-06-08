@@ -8,6 +8,7 @@ import {
 	getExerciseSolution,
 	getLesson,
 } from '@/lib/lessons-query'
+import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 
 export async function generateMetadata(
@@ -44,6 +45,9 @@ export default async function LessonSolutionPage(props: {
 	const searchParams = await props.searchParams
 	const params = await props.params
 	const data = await getCachedExerciseSolution(params.lesson)
+	const workshop = await getCachedMinimalWorkshop(params.module)
+
+	console.log('workshop', workshop)
 
 	if (!data) {
 		notFound()
@@ -58,6 +62,7 @@ export default async function LessonSolutionPage(props: {
 				lesson={solution}
 				problem={lesson}
 				params={params}
+				workshop={workshop}
 			/>
 		</LessonProvider>
 	)

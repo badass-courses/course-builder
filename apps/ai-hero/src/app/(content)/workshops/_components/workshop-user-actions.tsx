@@ -4,8 +4,8 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
-import { getFirstLessonSlug } from '@/lib/workshops'
-import { track } from '@/utils/analytics'
+import { getFirstLessonSlug, MinimalWorkshop } from '@/lib/workshops'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Github } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
@@ -18,10 +18,18 @@ export function StartLearningWorkshopButton({
 	abilityLoader,
 	moduleSlug,
 	className,
+	workshop,
 }: {
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	moduleSlug: string
 	className?: string
+	workshop: MinimalWorkshop
 }) {
 	const workshopNavigation = useWorkshopNavigation()
 	const firstLessonSlug = getFirstLessonSlug(workshopNavigation)
@@ -33,7 +41,30 @@ export function StartLearningWorkshopButton({
 	const url = isWorkshopInProgress
 		? `/workshops/${moduleSlug}/${moduleProgress?.nextResource?.fields?.slug}`
 		: `/workshops/${moduleSlug}/${firstLessonSlug}`
-	const { canView } = React.use(abilityLoader)
+	const { canViewWorkshop: canView, isPendingOpenAccess } =
+		React.use(abilityLoader)
+
+	if (isPendingOpenAccess) {
+		const formattedDate = formatInTimeZone(
+			new Date(workshop?.fields?.startsAt || ''),
+			'America/Los_Angeles',
+			`MMM d, yyyy 'at' h:mm a z`,
+		)
+
+		return (
+			<Button
+				size="lg"
+				className={cn(
+					'text-foreground before:bg-primary-foreground relative h-14 w-full rounded-none text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] hover:cursor-not-allowed sm:max-w-[277px]',
+					className,
+					'border-r bg-transparent',
+				)}
+				disabled
+			>
+				Available {formattedDate}
+			</Button>
+		)
+	}
 
 	return (
 		<>
@@ -74,10 +105,16 @@ export function GetAccessButton({
 	abilityLoader,
 	className,
 }: {
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	className?: string
 }) {
-	const { canView } = React.use(abilityLoader)
+	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
 	const cohort = workshopNavigation?.cohorts[0]
 	if (canView) return null

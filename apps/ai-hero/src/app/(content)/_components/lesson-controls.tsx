@@ -1,12 +1,12 @@
 'use server'
 
-import React from 'react'
+import React, { use } from 'react'
 import { cookies } from 'next/headers'
 import Link from 'next/link'
 import type { Lesson } from '@/lib/lessons'
 import { getServerAuthSession } from '@/server/auth'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { Github } from 'lucide-react'
+import { ArrowRight, Github } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -27,7 +27,13 @@ export const LessonControls = async ({
 	problem?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) => {
 	const { session } = await getServerAuthSession()
 	const cookieStore = await cookies()
@@ -36,7 +42,6 @@ export const LessonControls = async ({
 	if (!lesson) {
 		return null
 	}
-
 	const githubUrl = lesson.fields?.github || problem?.fields?.github
 
 	const hasSolution = lesson.resources?.some(
@@ -77,6 +82,18 @@ export const LessonControls = async ({
 					</Button>
 				)}
 			</div>
+			{isProblemLesson && (
+				<Button
+					asChild
+					variant="outline"
+					className="hover:bg-muted/50 border-l-border h-full rounded-none border-0 border-l bg-transparent"
+				>
+					<Link href={`${lesson.fields.slug}/solution`} prefetch>
+						Solution
+						<ArrowRight className="text-muted-foreground ml-2 h-4 w-4" />
+					</Link>
+				</Button>
+			)}
 			<React.Suspense fallback={null}>
 				{(session?.user || ckSubscriber) &&
 				((lesson.type === 'lesson' && !isProblemLesson) ||

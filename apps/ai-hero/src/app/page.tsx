@@ -9,18 +9,22 @@ import { AnimatedTitle } from '@/components/brand/animated-word'
 import PixelatedImageCarousel from '@/components/brand/pixelated-image-carousel'
 import { CldImage } from '@/components/cld-image'
 import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server'
-import { TeamPricingWidget } from '@/components/commerce/team-pricing-widget'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
+import { eq } from 'drizzle-orm'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
+import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { Badge } from '@coursebuilder/ui/primitives/badge'
 
 import {
 	AIPracticesGrid,
@@ -86,22 +90,63 @@ const Home = async (props: Props) => {
 		title: page.resources[0]?.resource?.fields?.title,
 	}
 	const searchParams = await props.searchParams
+	const couponCodeOrId = searchParams?.code || searchParams?.coupon
+	let validCoupon = null
+	let coupon = null
+	if (couponCodeOrId) {
+		coupon = await getCouponForCode(couponCodeOrId, [], courseBuilderAdapter)
+		if (coupon && coupon.isValid) {
+			validCoupon = coupon
+		}
+	}
+
+	const allProducts = await db.select().from(products)
+	const productIds = allProducts.map((p) => p.id)
+
+	let defaultCoupon = null
+	if (productIds.length > 0) {
+		const coupons = await courseBuilderAdapter.getDefaultCoupon(productIds)
+		if (coupons?.defaultCoupon) {
+			defaultCoupon = coupons.defaultCoupon
+		}
+	}
+
+	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
 	return (
 		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="flex w-full flex-col justify-center">
-				{firstPageResource && (
-					<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
+				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+					<div className="">
 						<Link
-							className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
-							href={firstPageResource.path}
+							className="bg-background group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]"
+							href={saleBannerData.productPath}
 							prefetch
 						>
-							New: <span className="underline">{firstPageResource?.title}</span>{' '}
-							▸
+							<span className="font-bold">
+								Save {saleBannerData.percentOff}%
+							</span>{' '}
+							on {saleBannerData.productName}.{' '}
+							<div className="bg-primary text-primary-foreground ml-1 rounded px-1.5 py-0.5 transition ease-in-out group-hover:underline">
+								Get Your Ticket
+							</div>
 						</Link>
 					</div>
+				) : (
+					firstPageResource && (
+						<div className="bg-background flex w-full items-center justify-center border-b py-2 text-center">
+							<Link
+								className="mx-auto flex items-center justify-center gap-1 font-mono text-xs tracking-tight underline-offset-2"
+								href={firstPageResource.path}
+								prefetch
+							>
+								New:{' '}
+								<span className="underline">{firstPageResource?.title}</span> ▸
+							</Link>
+						</div>
+					)
 				)}
+
 				<header className="relative flex w-full flex-col items-center justify-center px-3 pb-10 pt-10 sm:pb-20 sm:pt-16">
 					<div className="absolute -top-16 left-1/3 h-80 w-16 -rotate-12 bg-[#F7ADBC] opacity-50 blur-3xl dark:bg-white dark:opacity-30" />
 					<div

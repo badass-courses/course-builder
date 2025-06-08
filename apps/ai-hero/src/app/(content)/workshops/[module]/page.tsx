@@ -115,6 +115,7 @@ export default async function ModulePage(props: Props) {
 						<StartLearningWorkshopButton
 							abilityLoader={abilityLoader}
 							moduleSlug={params.module}
+							workshop={workshop}
 						/>
 						<div className="w-full items-center sm:flex sm:w-auto">
 							<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />

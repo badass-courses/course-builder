@@ -8,8 +8,8 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import { CldImage } from '@/components/cld-image'
 import Spinner from '@/components/spinner'
 import { VideoBlockNewsletterCta } from '@/components/video-block-newsletter-cta'
-import { usePrefetchNextResource } from '@/hooks/use-prefetch-next-resource'
-import { addProgress, setProgressForResource } from '@/lib/progress'
+import { setProgressForResource } from '@/lib/progress'
+import { MinimalWorkshop } from '@/lib/workshops'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import {
@@ -19,6 +19,7 @@ import {
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
+import { formatInTimeZone } from 'date-fns-tz'
 import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
@@ -48,7 +49,13 @@ export const CompletedLessonOverlay: React.FC<{
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }> = ({
 	action,
 	resource,
@@ -233,7 +240,7 @@ const ContinueButton: React.FC<{
 }> = ({ resource, nextResource, prevResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-
+	const pathname = usePathname()
 	const { moduleProgress, addLessonProgress } = useModuleProgress()
 	const moduleNavigation = useWorkshopNavigation()
 	const isCurrentLessonCompleted = Boolean(
@@ -246,7 +253,10 @@ const ContinueButton: React.FC<{
 		resource?.resources?.find((r) => r.resource.type === 'solution'),
 	)
 
+	const isSolution = pathname.endsWith('/solution')
+
 	const [isPending, startTransition] = React.useTransition()
+
 	return (
 		<Button
 			className="dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
@@ -254,9 +264,9 @@ const ContinueButton: React.FC<{
 				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {
 						// when on solution, we want to add progress to the previous lesson (problem)
-						addLessonProgress(prevResource.id)
+						addLessonProgress(isSolution ? prevResource?.id : resource.id)
 						await setProgressForResource({
-							resourceId: prevResource.id,
+							resourceId: isSolution ? prevResource?.id : resource.id,
 							isCompleted: true,
 						})
 					})
@@ -334,10 +344,17 @@ export const SoftBlockOverlay: React.FC<{
 
 type VideoPlayerOverlayProps = {
 	resource: ContentResource
-	abilityLoader: Promise<AbilityForResource>
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 	pricingProps?: WorkshopPageProps
 	moduleType?: 'workshop' | 'tutorial'
 	moduleSlug?: string
+	workshop: MinimalWorkshop | null
 }
 
 const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
@@ -346,11 +363,12 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 	pricingProps,
 	moduleType = 'tutorial',
 	moduleSlug,
+	workshop,
 }) => {
 	// usePrefetchNextResource({ resource, moduleType, moduleSlug })
 
 	const ability = use(abilityLoader)
-	const canView = ability.canView
+	const canView = ability.canViewLesson
 	const canInviteTeam = ability.canInviteTeam
 	const isRegionRestricted = ability.isRegionRestricted
 
@@ -433,7 +451,7 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 			</div>
 		)
 	}
-	if (!canView && moduleSlug) {
+	if (!canView && !ability.isPendingOpenAccess && moduleSlug) {
 		if (moduleType === 'tutorial') {
 			return <SoftBlockOverlay resource={resource} />
 		}
@@ -448,6 +466,26 @@ const VideoPlayerOverlay: React.FC<VideoPlayerOverlayProps> = ({
 				)}
 			>
 				{pricingProps && <VideoOverlayWorkshopPricing {...pricingProps} />}
+			</div>
+		)
+	}
+
+	if (!canView && ability.isPendingOpenAccess && moduleSlug) {
+		return (
+			<div
+				aria-live="polite"
+				className={cn(
+					'relative z-40 flex h-full w-full flex-col items-center justify-center p-5 py-8 text-lg xl:aspect-video',
+				)}
+			>
+				<p>
+					This lesson is not available yet. Please check back on{' '}
+					{formatInTimeZone(
+						new Date(workshop?.fields?.startsAt || ''),
+						'America/Los_Angeles',
+						`MMM d, yyyy 'at' h:mm a z`,
+					)}
+				</p>
 			</div>
 		)
 	}
