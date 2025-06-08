@@ -240,7 +240,7 @@ const ContinueButton: React.FC<{
 }> = ({ resource, nextResource, prevResource, moduleType }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
-
+	const pathname = usePathname()
 	const { moduleProgress, addLessonProgress } = useModuleProgress()
 	const moduleNavigation = useWorkshopNavigation()
 	const isCurrentLessonCompleted = Boolean(
@@ -253,7 +253,10 @@ const ContinueButton: React.FC<{
 		resource?.resources?.find((r) => r.resource.type === 'solution'),
 	)
 
+	const isSolution = pathname.endsWith('/solution')
+
 	const [isPending, startTransition] = React.useTransition()
+
 	return (
 		<Button
 			className="dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
@@ -261,9 +264,9 @@ const ContinueButton: React.FC<{
 				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {
 						// when on solution, we want to add progress to the previous lesson (problem)
-						addLessonProgress(prevResource.id)
+						addLessonProgress(isSolution ? prevResource?.id : resource.id)
 						await setProgressForResource({
-							resourceId: prevResource.id,
+							resourceId: isSolution ? prevResource?.id : resource.id,
 							isCompleted: true,
 						})
 					})
