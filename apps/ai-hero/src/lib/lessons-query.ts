@@ -59,7 +59,6 @@ export const getLessonVideoTranscript = async (
 		return null
 	}
 
-	console.log({ parsedResult })
 	return parsedResult.data[0]?.transcript
 }
 

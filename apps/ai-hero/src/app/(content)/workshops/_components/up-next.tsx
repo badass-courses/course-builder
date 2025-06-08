@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { getResourcePath } from '@/utils/resource-paths'
 import { ArrowRight } from 'lucide-react'
@@ -10,6 +11,7 @@ import { useSession } from 'next-auth/react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { useModuleProgress } from '../../_components/module-progress-provider'
 import { useWorkshopNavigation } from './workshop-navigation-provider'
 
 // Component just for prefetching the next resource
@@ -59,8 +61,93 @@ export default function UpNext({
 		return null
 	}
 
+	// Helper function to find if current resource is a solution and get its parent lesson
+	const findParentLessonForSolution = (resourceId: string) => {
+		for (const resource of navigation.resources) {
+			if (resource.type === 'lesson' && resource.resources) {
+				const solutionResource = resource.resources.find(
+					(r) => r.id === resourceId && r.type === 'solution',
+				)
+				if (solutionResource) {
+					return resource
+				}
+			}
+		}
+		return null
+	}
+
+	// Helper function to check if a lesson has a solution
+	const lessonHasSolution = (lessonId: string) => {
+		const lesson = navigation.resources.find(
+			(r) => r.id === lessonId && r.type === 'lesson',
+		)
+		return (
+			lesson?.type === 'lesson' &&
+			lesson.resources &&
+			lesson.resources.length > 0 &&
+			lesson.resources.some((r: any) => r.type === 'solution')
+		)
+	}
+
+	// Determine what should be completed and if we should complete anything
+	const getCompletionLogic = () => {
+		const parentLesson = findParentLessonForSolution(currentResourceId)
+
+		if (parentLesson) {
+			// Current resource is a solution, complete the parent lesson
+			return {
+				shouldComplete: true,
+				resourceToComplete: parentLesson.id,
+				resourceSlugForRevalidation: parentLesson.slug,
+			}
+		}
+
+		// Current resource is not a solution, check if it's a lesson
+		const currentResource = navigation.resources.find(
+			(r) => r.id === currentResourceId,
+		)
+		if (currentResource?.type === 'lesson') {
+			if (lessonHasSolution(currentResourceId)) {
+				// Lesson has a solution, don't complete it
+				return {
+					shouldComplete: false,
+					resourceToComplete: null,
+					resourceSlugForRevalidation: null,
+				}
+			} else {
+				// Regular lesson without solution, complete normally
+				return {
+					shouldComplete: true,
+					resourceToComplete: currentResourceId,
+					resourceSlugForRevalidation: currentResource.slug,
+				}
+			}
+		}
+
+		// Fallback: don't complete
+		return {
+			shouldComplete: false,
+			resourceToComplete: null,
+			resourceSlugForRevalidation: null,
+		}
+	}
+
+	const completionLogic = getCompletionLogic()
+
 	// For solution resources, we need to use the parent lesson's slug
 	const nextResourceSlug = nextResource.slug
+	const [isPending, startTransition] = React.useTransition()
+	const { moduleProgress, addLessonProgress, removeLessonProgress } =
+		useModuleProgress()
+
+	const isCompleted = Boolean(
+		moduleProgress?.completedLessons?.some(
+			(p) =>
+				p.resourceId ===
+					(completionLogic.resourceToComplete || currentResourceId) &&
+				p.completedAt,
+		),
+	)
 
 	return (
 		<>
@@ -76,7 +163,7 @@ export default function UpNext({
 					'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
 					className,
 				)}
-				aria-label="Recommendations"
+				aria-label="Up Next"
 			>
 				<h2 className="fluid-2xl mb-3 font-semibold">Up Next</h2>
 				<ul className="w-full">
@@ -92,15 +179,21 @@ export default function UpNext({
 									parentSlug: navigation.slug,
 								},
 							)}
-							// onClick={async () => {
-							// 	if (!isCompleted) {
-							// 		addLessonProgress(postId)
-							// 		await setProgressForResource({
-							// 			resourceId: postId,
-							// 			isCompleted: true,
-							// 		})
-							// 	}
-							// }}
+							onClick={async () => {
+								if (
+									!isCompleted &&
+									completionLogic.shouldComplete &&
+									completionLogic.resourceToComplete
+								) {
+									startTransition(() => {
+										addLessonProgress(completionLogic.resourceToComplete!)
+									})
+									await setProgressForResource({
+										resourceId: completionLogic.resourceToComplete,
+										isCompleted: true,
+									})
+								}
+							}}
 						>
 							{nextResource.title}
 							<ArrowRight className="hidden w-4 sm:block" />
