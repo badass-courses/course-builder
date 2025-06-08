@@ -6,7 +6,7 @@ import Link from 'next/link'
 import type { Lesson } from '@/lib/lessons'
 import { getServerAuthSession } from '@/server/auth'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
-import { Github } from 'lucide-react'
+import { ArrowRight, Github } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -50,8 +50,6 @@ export const LessonControls = async ({
 
 	const isProblemLesson = lesson.type === 'lesson' && hasSolution
 
-	console.log('lesson', { lesson, session, ckSubscriber })
-
 	return (
 		<div
 			className={cn(
@@ -84,6 +82,18 @@ export const LessonControls = async ({
 					</Button>
 				)}
 			</div>
+			{isProblemLesson && (
+				<Button
+					asChild
+					variant="outline"
+					className="hover:bg-muted/50 border-l-border h-full rounded-none border-0 border-l bg-transparent"
+				>
+					<Link href={`${lesson.fields.slug}/solution`} prefetch>
+						Solution
+						<ArrowRight className="text-muted-foreground ml-2 h-4 w-4" />
+					</Link>
+				</Button>
+			)}
 			<React.Suspense fallback={null}>
 				{(session?.user || ckSubscriber) &&
 				((lesson.type === 'lesson' && !isProblemLesson) ||
