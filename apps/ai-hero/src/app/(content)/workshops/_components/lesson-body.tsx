@@ -37,11 +37,11 @@ export function LessonBody({
 						? `This lesson is not available yet. Please check back on ${formatInTimeZone(
 								new Date(workshop.fields.startsAt),
 								workshop?.fields?.timezone || 'America/Los_Angeles',
-								`MMM d, yyyy 'at' h:mm a z`
-						  )}`
+								`MMM d, yyyy 'at' h:mm a z`,
+							)}`
 						: ability.isPendingOpenAccess
-						? 'This lesson is not available yet.'
-						: 'You need to be a member to access this lesson.'}
+							? 'This lesson is not available yet.'
+							: 'You need to be a member to access this lesson.'}
 				</p>
 			</div>
 		)
