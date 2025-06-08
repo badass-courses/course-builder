@@ -100,10 +100,10 @@ export const ProductPricingFeatures = ({
 					<Icon name="Discord" className="h-4 w-4" />
 					Access to Discord Community
 				</li>
-				{/* <li className="flex items-center gap-2">
+				<li className="flex items-center gap-2">
 					<BadgeCheck className="h-4 w-4" />
 					Completion Certificate
-				</li> */}
+				</li>
 			</ul>
 		</div>
 	)
