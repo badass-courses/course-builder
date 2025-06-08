@@ -19,10 +19,28 @@ export function getAdjacentWorkshopResources(
 ): {
 	nextResource: AdjacentResource
 	prevResource: AdjacentResource
+	isSolutionNext: boolean
 } {
-	const defaultReturn = { nextResource: null, prevResource: null }
+	const defaultReturn = {
+		nextResource: null,
+		prevResource: null,
+		isSolutionNext: false,
+	}
 	if (!navigation) {
 		return defaultReturn
+	}
+
+	const lessonHasSolution = (lessonId: string) => {
+		if (!navigation) return false
+		const lesson = navigation.resources.find(
+			(r) => r.id === lessonId && r.type === 'lesson',
+		)
+		return (
+			lesson?.type === 'lesson' &&
+			lesson.resources &&
+			lesson.resources.length > 0 &&
+			lesson.resources.some((r: any) => r.type === 'solution')
+		)
 	}
 
 	// Create a fully flattened array of all resources, including lessons' solutions
@@ -92,5 +110,9 @@ export function getAdjacentWorkshopResources(
 	const nextResource = flattenedNavResources[navIndex + 1] || null
 	const prevResource = flattenedNavResources[navIndex - 1] || null
 
-	return { nextResource, prevResource }
+	return {
+		nextResource,
+		prevResource,
+		isSolutionNext: lessonHasSolution(currentResourceId),
+	}
 }

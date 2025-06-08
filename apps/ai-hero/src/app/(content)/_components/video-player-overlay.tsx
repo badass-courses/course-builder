@@ -65,8 +65,11 @@ export const CompletedLessonOverlay: React.FC<{
 }) => {
 	const { playerRef } = action
 	const workshopNavigation = useWorkshopNavigation()
-	const { nextResource: nextLesson, prevResource: prevLesson } =
-		getAdjacentWorkshopResources(workshopNavigation, resource?.id as string)
+	const {
+		nextResource: nextLesson,
+		prevResource: prevLesson,
+		isSolutionNext,
+	} = getAdjacentWorkshopResources(workshopNavigation, resource?.id as string)
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
@@ -79,7 +82,11 @@ export const CompletedLessonOverlay: React.FC<{
 			className="bg-background/80 absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg text-white backdrop-blur-md"
 		>
 			<div className="flex flex-col items-center text-center">
-				<p className="pb-2 opacity-80">Up Next:</p>
+				<p className="pb-2 opacity-80">
+					{isSolutionNext
+						? `Now Watch ${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME || 'Instructor'}'s Solution`
+						: 'Up Next:'}
+				</p>
 				<p className="font-heading fluid-2xl font-bold">{nextLesson?.title}</p>
 				<div className="mt-8 flex items-center gap-3 text-sm">
 					<Progress

@@ -3,6 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { env } from '@/env.mjs'
 import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { getResourcePath } from '@/utils/resource-paths'
@@ -160,6 +161,10 @@ export default function UpNext({
 		),
 	)
 
+	const upNextText = lessonHasSolution(currentResourceId)
+		? `View ${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME || 'Instructor'}'s Solution`
+		: 'Up Next'
+
 	return (
 		<>
 			<PrefetchNextResource
@@ -174,9 +179,9 @@ export default function UpNext({
 					'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
 					className,
 				)}
-				aria-label="Up Next"
+				aria-label={upNextText}
 			>
-				<h2 className="fluid-2xl mb-3 font-semibold">Up Next</h2>
+				<h2 className="fluid-2xl mb-3 font-semibold">{upNextText}:</h2>
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link
