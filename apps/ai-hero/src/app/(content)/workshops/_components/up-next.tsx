@@ -10,6 +10,7 @@ import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
+import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { useModuleProgress } from '../../_components/module-progress-provider'
 import { useWorkshopNavigation } from './workshop-navigation-provider'
@@ -41,12 +42,24 @@ function PrefetchNextResource({
 export default function UpNext({
 	currentResourceId,
 	className,
+	abilityLoader,
 }: {
 	currentResourceId: string
 	className?: string
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) {
 	const navigation = useWorkshopNavigation()
+	const [isPending, startTransition] = React.useTransition()
 	const { data: session } = useSession()
+	const ability = React.use(abilityLoader)
+	const canView = ability?.canViewLesson
+
 	if (!navigation) {
 		return null
 	}
@@ -136,7 +149,7 @@ export default function UpNext({
 
 	// For solution resources, we need to use the parent lesson's slug
 	const nextResourceSlug = nextResource.slug
-	const [isPending, startTransition] = React.useTransition()
+
 	const { moduleProgress, addLessonProgress, removeLessonProgress } =
 		useModuleProgress()
 
@@ -183,7 +196,8 @@ export default function UpNext({
 								if (
 									!isCompleted &&
 									completionLogic.shouldComplete &&
-									completionLogic.resourceToComplete
+									completionLogic.resourceToComplete &&
+									canView
 								) {
 									startTransition(() => {
 										addLessonProgress(completionLogic.resourceToComplete!)
