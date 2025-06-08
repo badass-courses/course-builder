@@ -106,10 +106,12 @@ export async function LessonPage({
 								lessonId={lesson?.id}
 								abilityLoader={abilityLoader}
 							/>
-							<UpNext
-								currentResourceId={lesson?.id}
-								abilityLoader={abilityLoader}
-							/>
+							<Suspense fallback={null}>
+								<UpNext
+									currentResourceId={lesson?.id}
+									abilityLoader={abilityLoader}
+								/>
+							</Suspense>
 							{/* <Accordion type="single" collapsible className="mt-4">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center font-medium">

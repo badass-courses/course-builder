@@ -59,6 +59,7 @@ export default function UpNext({
 	const { data: session } = useSession()
 	const ability = React.use(abilityLoader)
 	const canView = ability?.canViewLesson
+	const { moduleProgress, addLessonProgress } = useModuleProgress()
 
 	if (!navigation) {
 		return null
@@ -149,9 +150,6 @@ export default function UpNext({
 
 	// For solution resources, we need to use the parent lesson's slug
 	const nextResourceSlug = nextResource.slug
-
-	const { moduleProgress, addLessonProgress, removeLessonProgress } =
-		useModuleProgress()
 
 	const isCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
