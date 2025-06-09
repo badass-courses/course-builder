@@ -21,10 +21,9 @@ import { getServerAuthSession } from '@/server/auth'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { getResourcePath } from '@/utils/resource-paths'
-import { differenceInCalendarDays, isSameDay } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
+import { differenceInCalendarDays } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
-import { Check, CheckCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
@@ -41,14 +40,10 @@ import {
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
-import { CohortDetails } from './_components/cohort-details'
 import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
-import {
-	CohortSidebar,
-	CohortSidebarMobile,
-} from './_components/cohort-sidebar'
+import { CohortSidebar } from './_components/cohort-sidebar'
 
 export async function generateMetadata(
 	props: {
