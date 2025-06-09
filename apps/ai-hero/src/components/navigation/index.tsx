@@ -30,7 +30,7 @@ const Navigation = () => {
 	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	const isLessonRoute = params.lesson && params.module
-	const isFullWidth = Boolean(isEditRoute || isLessonRoute)
+
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
 	// useLiveEventToastNotifier()
@@ -53,11 +53,7 @@ const Navigation = () => {
 				},
 			)}
 		>
-			<div
-				className={cn('flex w-full items-stretch justify-between', {
-					// container: !isEditRoute,
-				})}
-			>
+			<div className={cn('flex w-full items-stretch justify-between', {})}>
 				<div className="flex items-stretch">
 					<span
 						onContextMenu={(e) => {
@@ -88,11 +84,13 @@ const Navigation = () => {
 							})}
 							aria-label={`Navigation header with ${links.length} links`}
 						>
-							<ul className="flex items-stretch">
-								{links.map((link) => {
+							<ul className="divide-border flex items-stretch sm:divide-x">
+								{links.map((link, i) => {
 									return (
 										<NavLinkItem
-											className="text-base font-medium"
+											className={cn('text-base font-medium', {
+												'hidden md:flex': i > 0,
+											})}
 											key={link.href || link.label}
 											{...link}
 										/>

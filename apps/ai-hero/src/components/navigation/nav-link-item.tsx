@@ -55,8 +55,10 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 			<Button
 				className={cn(
 					styles[variant],
+
 					{
-						underline: isActive,
+						'after:bg-foreground/50 after:absolute after:-bottom-px after:left-0 after:h-px after:w-full after:content-[""]':
+							isActive,
 						'bg-muted': isActive && variant === 'menu',
 					},
 					className,

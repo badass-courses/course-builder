@@ -10,8 +10,30 @@ export function useNavLinks() {
 
 	return [
 		{
+			href: '/cohorts/build-deepsearch-in-typescript',
+			label: (
+				<span className="relative -mr-2 flex items-center gap-1">
+					Course
+					<div className="bg-primary text-primary-foreground relative flex h-4 scale-90 items-center justify-center overflow-hidden rounded-full px-1 text-[10px] font-semibold leading-none">
+						New
+						<div
+							style={{
+								backgroundSize: '200% 100%',
+								animationDuration: '2s',
+								animationIterationCount: 'infinite',
+								animationTimingFunction: 'linear',
+								animationFillMode: 'forwards',
+								animationDelay: '2s',
+							}}
+							className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+						/>
+					</div>
+				</span>
+			),
+		},
+		{
 			href: '/posts',
-			label: 'Learn',
+			label: 'Posts',
 			// label: (
 			// 	<span className="relative">
 			// 		Posts
