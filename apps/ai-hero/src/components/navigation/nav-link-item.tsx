@@ -40,10 +40,6 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 			label: typeof label === 'string' ? label : textLabel,
 			href,
 		})
-		console.log({
-			label: typeof label === 'string' ? label : textLabel,
-			href,
-		})
 		onClick && onClick()
 	}
 
