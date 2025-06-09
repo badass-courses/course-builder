@@ -75,7 +75,7 @@ export const LessonControls = async ({
 						<Link href={githubUrl} target="_blank">
 							<Github className="text-muted-foreground mr-2 h-4 w-4" />
 							<span className="inline-block sm:hidden" aria-hidden="true">
-								Source
+								Code
 							</span>
 							<span className="hidden sm:inline-block">Source Code</span>
 						</Link>

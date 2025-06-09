@@ -74,6 +74,7 @@ export async function LessonPage({
 						params={params}
 						lessonType={lessonType}
 						workshop={workshop}
+						ability={ability}
 					/>
 				)}
 				<LessonControls
@@ -182,25 +183,39 @@ async function PlayerContainer({
 	searchParams,
 	params,
 	workshop,
+	ability,
 }: {
 	lesson: Lesson | null
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	searchParams: { [key: string]: string | string[] | undefined }
 	params: { module: string; lesson: string }
 	workshop: MinimalWorkshop | null
+	ability: Omit<AbilityForResource, 'canView'> & {
+		canViewWorkshop: boolean
+		canViewLesson: boolean
+		isPendingOpenAccess: boolean
+	}
 }) {
 	if (!lesson) {
 		notFound()
 	}
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
-	const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
+
+	// const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
+	const muxPlaybackId = ability.canViewLesson
+		? await getLessonMuxPlaybackId(lesson.id)
+		: null
 	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
 		return resource.type === 'videoResource'
 	})
 	const thumbnailUrl =
 		videoResource &&
 		`${env.NEXT_PUBLIC_URL}/api/thumbnails?videoResourceId=${videoResource.resourceId}&time=${lesson.fields?.thumbnailTime || 0}`
+
+	if (!muxPlaybackId) {
+		return null
+	}
 
 	return (
 		<VideoPlayerOverlayProvider>
@@ -245,7 +260,8 @@ async function PlayerContainer({
 					</WorkshopPricing>
 					<AuthedVideoPlayer
 						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
-						playbackIdLoader={playbackIdLoader}
+						muxPlaybackId={muxPlaybackId}
+						// playbackIdLoader={playbackIdLoader}
 						resource={lesson}
 						abilityLoader={abilityLoader}
 						moduleSlug={params.module}

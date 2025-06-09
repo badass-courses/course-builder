@@ -48,7 +48,7 @@ export function AuthedVideoPlayer({
 }: {
 	muxPlaybackId?: string
 	title?: string
-	playbackIdLoader: Promise<string | null | undefined>
+	playbackIdLoader?: Promise<string | null | undefined>
 	className?: string
 	abilityLoader?: Promise<
 		Omit<AbilityForResource, 'canView'> & {
@@ -64,7 +64,11 @@ export function AuthedVideoPlayer({
 	const ability = abilityLoader ? use(abilityLoader) : null
 	const canView = ability?.canViewLesson
 
-	const playbackId = canView ? use(playbackIdLoader) : muxPlaybackId
+	const playbackId = canView
+		? playbackIdLoader
+			? use(playbackIdLoader)
+			: muxPlaybackId
+		: muxPlaybackId
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const {

@@ -560,6 +560,9 @@ importers:
       react-resizable-panels:
         specifier: ^2.1.7
         version: 2.1.7(react-dom@19.0.0)(react@19.0.0)
+      react-rewards:
+        specifier: ^2.1.0
+        version: 2.1.0(react-dom@19.0.0)(react@19.0.0)
       react-stately:
         specifier: ^3.33.0
         version: 3.36.1(react@19.0.0)
@@ -31953,6 +31956,16 @@ packages:
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+    dev: false
+
+  /react-rewards@2.1.0(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-99EgPVXWWA7qphBnFAGxEh74HJIkskChdxUuaiCuYjdsOSUmsIzB3xwaaXCHr6dr9l7locYFPFiqelZ5gCLpew==}
+    peerDependencies:
+      react: '>=15'
+      react-dom: '>=15'
     dependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)

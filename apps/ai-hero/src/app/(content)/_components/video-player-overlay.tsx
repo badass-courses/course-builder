@@ -23,6 +23,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import pluralize from 'pluralize'
+import { useReward } from 'react-rewards'
 
 import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
@@ -79,16 +80,18 @@ export const CompletedLessonOverlay: React.FC<{
 	return nextLesson ? (
 		<div
 			aria-live="polite"
-			className="bg-background/80 absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 p-5 text-lg text-white backdrop-blur-md"
+			className="bg-background/80 absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-lg text-white backdrop-blur-md sm:gap-5 lg:gap-10"
 		>
 			<div className="flex flex-col items-center text-center">
-				<p className="pb-2 opacity-80">
+				<p className="pb-2 text-sm opacity-80 sm:text-base">
 					{isSolutionNext
 						? `Now Watch ${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME || 'Instructor'}'s Solution`
 						: 'Up Next:'}
 				</p>
-				<p className="font-heading fluid-2xl font-bold">{nextLesson?.title}</p>
-				<div className="mt-8 flex items-center gap-3 text-sm">
+				<p className="font-heading sm:fluid-2xl text-xl font-bold">
+					{nextLesson?.title}
+				</p>
+				<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
 					<Progress
 						value={percentCompleted}
 						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
@@ -130,7 +133,7 @@ export const CompletedLessonOverlay: React.FC<{
 			</div>
 			<Button
 				type="button"
-				className="absolute right-5 top-5 bg-white/10"
+				className="absolute right-3 top-3 h-8 w-8 bg-white/10 sm:right-5 sm:top-5 sm:h-10 sm:w-10"
 				variant="ghost"
 				size="icon"
 				onClick={() => {
@@ -138,7 +141,7 @@ export const CompletedLessonOverlay: React.FC<{
 				}}
 			>
 				<span className="sr-only">Dismiss</span>
-				<XMarkIcon aria-hidden="true" className="h-6 w-6" />
+				<XMarkIcon aria-hidden="true" className="h-4 w-4 sm:h-6 sm:w-6" />
 			</Button>
 		</div>
 	) : (
@@ -168,10 +171,16 @@ export const CompletedModuleOverlay: React.FC<{
 			(p) => p.resourceId === resource?.id && p.completedAt,
 		),
 	)
+	const { reward, isAnimating } = useReward('rewardId', 'confetti', {
+		angle: 90,
+		decay: 0.9,
+		spread: 100,
+	})
+
 	React.useEffect(() => {
 		if (!resource) return
+		reward()
 		if (isCurrentLessonCompleted) return
-
 		startTransition(() => {
 			handleSetLessonComplete({
 				currentResource:
@@ -195,16 +204,16 @@ export const CompletedModuleOverlay: React.FC<{
 	return (
 		<div
 			aria-live="polite"
-			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-10 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md"
+			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-2 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md sm:gap-5 xl:gap-5"
 		>
-			<p className="font-heading fluid-xl pb-3 text-center font-bold">
-				Great job!
+			<p className="font-heading fluid-xl text-center font-bold">Great job!</p>
+			<p className="sm:fluid-base text-center text-sm">
+				You&apos;ve completed the "{moduleNavigation?.title}" {moduleType}.
 			</p>
-			<p className="fluid-base text-center">
-				You&apos;ve completed the {moduleNavigation?.title} {moduleType}.
-			</p>
+			<span id="rewardId" />
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
+					className="rounded-md border border-white/20 bg-white/10 hover:bg-white/20"
 					variant="outline"
 					type="button"
 					onClick={() => {
@@ -218,7 +227,8 @@ export const CompletedModuleOverlay: React.FC<{
 				{nextWorkshop && (
 					<Button asChild variant="default">
 						<Link href={`/workshops/${nextWorkshop?.slug}`}>
-							Continue to {nextWorkshop?.title}
+							Continue{' '}
+							<span className="hidden sm:inline">to {nextWorkshop?.title}</span>
 						</Link>
 					</Button>
 				)}
