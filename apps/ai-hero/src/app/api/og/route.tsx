@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 							resource: {
 								extras: {
 									fields:
-										sql<string>`JSON_REMOVE(${contentResource.fields}, '$.srt', '$.wordLevelSrt', '$.transcript', '$.muxAssetId', '$.originalMediaUrl')`.as(
+										sql<string>`JSON_REMOVE(${contentResource.fields}, '$.body', '$.srt', '$.wordLevelSrt', '$.transcript', '$.muxAssetId', '$.originalMediaUrl')`.as(
 											'fields',
 										),
 								},
@@ -112,6 +112,24 @@ export async function GET(request: Request) {
 		const seed = resourceSlugOrID || title || 'default-seed'
 
 		const squareGridPattern = generateGridPattern(seed)
+
+		if (resource?.type === 'cohort' && resource?.fields?.image) {
+			return new ImageResponse(
+				(
+					<img
+						src={resource?.fields?.image}
+						style={{
+							width: 1200,
+							height: 630,
+						}}
+					/>
+				),
+				{
+					width: 1200,
+					height: 630,
+				},
+			)
+		}
 
 		return new ImageResponse(
 			(
@@ -209,7 +227,7 @@ export async function GET(request: Request) {
 					</div>
 					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
 						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : 'text-[56px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-16`}
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : resource?.type === 'workshop' ? 'text-[42px]' : 'text-[56px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-16`}
 						>
 							{title}
 						</div>
