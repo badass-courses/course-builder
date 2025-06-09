@@ -48,7 +48,7 @@ export const LessonUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
-		optional: z.boolean().default(false),
+		optional: z.boolean().nullish().default(false),
 	}),
 	tags: PostTagsSchema,
 })
