@@ -359,14 +359,17 @@ export default async function CohortPage(props: {
 														>
 															<div className="relative flex items-center justify-between">
 																<Link
-																	className="text-foreground hover:text-primary max-w-[90%] py-2 text-lg font-semibold transition ease-in-out"
+																	className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
 																	href={getResourcePath(
 																		'workshop',
 																		workshop.fields.slug,
 																		'view',
 																	)}
 																>
-																	{workshop.fields.title}
+																	{workshop.fields.title}{' '}
+																	<div className="mt-1 text-sm font-normal opacity-80">
+																		Available from {workshopDateString}
+																	</div>
 																</Link>
 																<AccordionTrigger
 																	aria-label="Toggle lessons"
