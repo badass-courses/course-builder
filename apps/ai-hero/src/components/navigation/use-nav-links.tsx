@@ -30,6 +30,7 @@ export function useNavLinks() {
 					</div>
 				</span>
 			),
+			textLabel: 'Course',
 		},
 		{
 			href: '/posts',
