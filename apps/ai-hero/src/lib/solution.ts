@@ -53,6 +53,7 @@ export const SolutionUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
+		optional: z.boolean().nullish().default(false),
 	}),
 	tags: PostTagsSchema,
 })
@@ -70,6 +71,7 @@ export const NewSolutionInputSchema = z.object({
 	thumbnailTime: z.number().nullish(),
 	createdById: z.string(),
 	parentLessonId: z.string(),
+	optional: z.boolean().nullish().default(false),
 })
 
 export type NewSolutionInput = z.infer<typeof NewSolutionInputSchema>
