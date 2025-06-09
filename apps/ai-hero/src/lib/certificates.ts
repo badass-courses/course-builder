@@ -112,6 +112,7 @@ async function hasUserCompletedAllLessons(
 			)
 	)
 	AND cr.type IN ('lesson', 'exercise')
+	AND (cr.fields->>'$.optional' IS NULL OR cr.fields->>'$.optional' = 'false')
 `)
 
 	const incompleteLessons = Number(results.rows[0]?.incomplete_lessons) || 0
