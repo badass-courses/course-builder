@@ -17,6 +17,7 @@ import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import type { Workshop } from '@/lib/workshops'
+import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -40,6 +41,7 @@ import {
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
@@ -379,19 +381,9 @@ export default async function CohortPage(props: {
 											)} */}
 																</div>
 																<ol className="list-inside list-none">
-																	{workshop.resources?.map(
-																		({ resource }, index) => {
-																			return (
-																				<WorkshopLessonItem
-																					index={index + 1}
-																					className="rounded pl-10"
-																					key={resource.id}
-																					resource={resource}
-																					workshopSlug={workshop.fields.slug}
-																				/>
-																			)
-																		},
-																	)}
+																	<WorkshopListRowRenderer
+																		workshop={workshop}
+																	/>
 																</ol>
 															</AccordionContent>
 														</AccordionItem>
@@ -481,18 +473,9 @@ export default async function CohortPage(props: {
 															</div>
 															<AccordionContent>
 																<ol className="divide-border list-inside list-none divide-y">
-																	{workshop.resources?.map(
-																		({ resource }, index) => {
-																			return (
-																				<WorkshopLessonItem
-																					index={index + 1}
-																					key={resource.id}
-																					resource={resource}
-																					workshopSlug={workshop.fields.slug}
-																				/>
-																			)
-																		},
-																	)}
+																	<WorkshopListRowRenderer
+																		workshop={workshop}
+																	/>
 																</ol>
 															</AccordionContent>
 														</AccordionItem>
@@ -515,6 +498,28 @@ export default async function CohortPage(props: {
 				{/* <CohortSidebarMobile cohort={cohort} /> */}
 			</main>
 		</LayoutClient>
+	)
+}
+
+const WorkshopListRowRenderer = ({ workshop }: { workshop: Workshop }) => {
+	const workshopNavDataLoader = getCachedWorkshopNavigation(
+		workshop.fields.slug,
+	)
+
+	return (
+		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>
+			{workshop.resources?.map(({ resource }, index) => {
+				return (
+					<WorkshopLessonItem
+						index={index + 1}
+						className="rounded pl-10"
+						key={resource.id}
+						resource={resource}
+						workshopSlug={workshop.fields.slug}
+					/>
+				)
+			})}
+		</WorkshopNavigationProvider>
 	)
 }
 
