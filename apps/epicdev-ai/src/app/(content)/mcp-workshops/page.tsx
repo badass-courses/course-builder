@@ -163,12 +163,11 @@ export default async function MCPFundamentalsPage() {
 						<UpcomingEvents />
 					</section>
 					<section className="mt-5 pt-8 lg:border-t">
-						{upcomingEvents.length > 0 && (
-							// {pastEvents.length > 0 && (
+						{pastEvents.length > 0 && (
 							<section>
 								<h2 className="mb-4 text-2xl font-semibold">Past Events</h2>
 								<div className="space-y-4">
-									{upcomingEvents.map((event) => renderEvent(event, false))}
+									{pastEvents.map((event) => renderEvent(event, false))}
 								</div>
 							</section>
 						)}
