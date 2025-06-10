@@ -156,7 +156,7 @@ const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose relative mx-auto flex w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
+				'not-prose relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
 			centered:
 				'flex text-center text-balance flex-col items-center justify-center border-none dark:text-white',
 		},
@@ -191,7 +191,7 @@ const Testimonial = ({
 							src={authorAvatar}
 						/>
 					)}
-					<span className="font-mono text-sm">{authorName}</span>
+					<span className="text-sm">{authorName}</span>
 				</div>
 			)}
 		</blockquote>

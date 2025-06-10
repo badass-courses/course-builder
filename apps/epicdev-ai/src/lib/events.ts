@@ -63,6 +63,18 @@ export const NewEventSchema = z.object({
 		startsAt: z.date().nullish(),
 		endsAt: z.date().nullish(),
 		price: z.number().min(0).nullish(),
+		quantity: z.number().min(-1).nullish(),
+		tagIds: z
+			.array(
+				z.object({
+					id: z.string(),
+					fields: z.object({
+						label: z.string(),
+						name: z.string(),
+					}),
+				}),
+			)
+			.nullish(),
 	}),
 })
 
