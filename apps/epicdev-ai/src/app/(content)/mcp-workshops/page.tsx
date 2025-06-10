@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
+import { Share } from '@/components/share'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { EventSchema } from '@/lib/events'
@@ -162,19 +163,24 @@ export default async function MCPFundamentalsPage() {
 					<section className="mt-5 block border-t pt-8 lg:hidden">
 						<UpcomingEvents />
 					</section>
-					<section className="mt-5 pt-8 lg:border-t">
-						{pastEvents.length > 0 && (
-							<section>
-								<h2 className="mb-4 text-2xl font-semibold">Past Events</h2>
-								<div className="space-y-4">
-									{pastEvents.map((event) => renderEvent(event, false))}
-								</div>
-							</section>
-						)}
+					{pastEvents.length > 0 && (
+						<section className="mt-5 pt-8 lg:border-t">
+							<h2 className="mb-4 text-2xl font-semibold">Past Events</h2>
+							<div className="space-y-4">
+								{pastEvents.map((event) => renderEvent(event, false))}
+							</div>
+						</section>
+					)}
+					<section className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
+						<strong className="text-lg font-semibold">Share</strong>
+						<Share
+							className="inline-flex rounded-md border"
+							title={pageTitle}
+						/>
 					</section>
 				</div>
 				<aside className="relative col-span-4 hidden lg:block">
-					<div className="absolute z-0 h-full w-1/2 rotate-6 bg-violet-400/10 blur-3xl" />
+					<div className="absolute z-0 h-full w-1/2 rotate-6 bg-violet-400/10 blur-3xl dark:hidden" />
 					<UpcomingEvents />
 				</aside>
 			</main>
