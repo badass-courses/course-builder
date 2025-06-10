@@ -147,7 +147,7 @@ export async function createEvent(input: NewEvent) {
 			const product = await createProduct({
 				name: input.fields.title,
 				price: input.fields.price,
-				quantityAvailable: -1,
+				quantityAvailable: input.fields.quantity ?? -1,
 				type: 'live',
 				state: 'published',
 				visibility: 'public',
@@ -166,6 +166,30 @@ export async function createEvent(input: NewEvent) {
 			}
 		} catch (error) {
 			console.error('Error creating and associating product', error)
+		}
+	}
+
+	// if we provide tagIds, we need to associate them with the event
+	if (input.fields.tagIds) {
+		try {
+			await db.insert(contentResourceTag).values(
+				input.fields.tagIds.map((tag) => ({
+					contentResourceId: newResourceId,
+					tagId: tag.id,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					position: 0,
+				})),
+			)
+		} catch (error) {
+			console.error('Error associating tags with event', error)
+			await log.error('event.create.tags.failed', {
+				eventId: newResourceId,
+				userId: user.id,
+				tagIds: input.fields.tagIds,
+				error: getErrorMessage(error),
+				stack: getErrorStack(error),
+			})
 		}
 	}
 
