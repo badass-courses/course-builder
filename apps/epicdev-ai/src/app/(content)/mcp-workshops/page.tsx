@@ -18,17 +18,10 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 import WorkshopWaitlist from './_components/waitlist'
 
-export const metadata: Metadata = {
-	title: 'MCP Fundamentals | Epic AI',
-	description:
-		'Learn the fundamentals of MCP and how to use it to build your own AI-powered applications.',
-}
-
 const MCP_TAG_ID = 'jpiz9'
 const PAGE_ID = 'page-c644u'
 
-export default async function MCPFundamentalsPage() {
-	const page = await getPage(PAGE_ID)
+async function getEventsData() {
 	const allEvents = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'event'),
@@ -75,7 +68,67 @@ export default async function MCPFundamentalsPage() {
 		return eventTimeInUTC >= now
 	})
 
-	const renderEvent = (event: (typeof parsedEvents)[0], isUpcoming = false) => {
+	return { pastEvents, upcomingEvents, soldOutOrPastIds }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+	const page = await getPage(PAGE_ID)
+	const { upcomingEvents, soldOutOrPastIds } = await getEventsData()
+
+	const pageTitle = page?.fields?.title || 'MCP Fundamentals'
+	const pageDescription =
+		page?.fields?.description ||
+		'Learn the fundamentals of MCP and how to use it to build your own AI-powered applications.'
+	// Prepare events data for OG image
+	const eventsForOG = upcomingEvents.slice(0, 4).map((event) => ({
+		id: event.id,
+		date: event.fields?.startsAt || '',
+		timezone: event.fields?.timezone ?? 'America/Los_Angeles',
+		isSoldOut: soldOutOrPastIds.includes(event.id),
+	}))
+
+	const ogImageUrl = new URL('/api/og/events', process.env.NEXT_PUBLIC_URL)
+	ogImageUrl.searchParams.set('title', pageTitle)
+	if (eventsForOG.length > 0) {
+		ogImageUrl.searchParams.set(
+			'events',
+			encodeURIComponent(JSON.stringify(eventsForOG)),
+		)
+	}
+
+	return {
+		title: pageTitle,
+		description:
+			'Learn the fundamentals of MCP and how to use it to build your own AI-powered applications.',
+		openGraph: {
+			title: pageTitle,
+			description: pageDescription,
+			images: [
+				{
+					url: ogImageUrl.toString(),
+					width: 1200,
+					height: 630,
+					alt: pageTitle,
+				},
+			],
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title: pageTitle,
+			description: pageDescription,
+			images: [ogImageUrl.toString()],
+		},
+	}
+}
+
+export default async function MCPFundamentalsPage() {
+	const page = await getPage(PAGE_ID)
+	const { pastEvents, upcomingEvents, soldOutOrPastIds } = await getEventsData()
+
+	const renderEvent = (
+		event: (typeof upcomingEvents)[0],
+		isUpcoming = false,
+	) => {
 		const timezone = event.fields?.timezone ?? 'America/Los_Angeles'
 		const isSoldOut = isUpcoming && soldOutOrPastIds.includes(event.id)
 		const Comp = isUpcoming ? Link : 'div'
