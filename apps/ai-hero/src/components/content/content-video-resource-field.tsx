@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { LessonPlayer } from '@/app/(content)/_components/lesson-player'
 import { NewLessonVideoForm } from '@/app/(content)/_components/new-lesson-video-form'
 import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
+import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
@@ -148,6 +149,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 		transcript,
 		setTranscript,
 		setIsProcessing: setIsTranscriptProcessing,
+		isProcessing: isTranscriptProcessing,
 		TranscriptDialog,
 	} = useTranscript({
 		videoResourceId: videoResource?.id,
@@ -299,6 +301,21 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											Replace Video
 										</Button>
 										{showTranscript && transcript && TranscriptDialog}
+										{!transcript && !isTranscriptProcessing && (
+											<Button
+												variant="outline"
+												size={'sm'}
+												type="button"
+												onClick={() => {
+													setIsTranscriptProcessing(true)
+													reprocessTranscript({
+														videoResourceId: videoResource.id,
+													})
+												}}
+											>
+												Add Transcript
+											</Button>
+										)}
 										{thumbnailEnabled && (
 											<Tooltip delayDuration={0}>
 												<div className="flex items-center">
