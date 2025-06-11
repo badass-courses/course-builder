@@ -3,7 +3,7 @@
 import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
 import { tag as tagTable } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { Tag, TagSchema } from './tags'
@@ -34,4 +34,14 @@ export async function updateTag(input: UpdateTagInput): Promise<Tag> {
 
 	revalidateTag('tags')
 	return validatedInput
+}
+
+export async function getTag(slugOrId: string) {
+	const tag = await db.query.tag.findFirst({
+		where: or(
+			eq(sql`JSON_EXTRACT(${tagTable.fields}, "$.slug")`, slugOrId),
+			eq(tagTable.id, slugOrId),
+		),
+	})
+	return tag ? TagSchema.parse(tag) : null
 }

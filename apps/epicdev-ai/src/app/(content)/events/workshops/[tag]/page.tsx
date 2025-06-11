@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
@@ -8,6 +9,8 @@ import { contentResource } from '@/db/schema'
 import { EventSchema } from '@/lib/events'
 import { getSoldOutOrPastEventIds } from '@/lib/events-query'
 import { getPage } from '@/lib/pages-query'
+import type { Tag } from '@/lib/tags'
+import { getTag } from '@/lib/tags-query'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getResourcePath } from '@/utils/resource-paths'
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz'
@@ -21,7 +24,7 @@ import WorkshopWaitlist from './_components/waitlist'
 const MCP_TAG_ID = 'jpiz9'
 const PAGE_ID = 'page-c644u'
 
-async function getEventsData() {
+async function getEventsData(tag: Tag) {
 	const allEvents = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'event'),
@@ -38,7 +41,7 @@ async function getEventsData() {
 
 	// Filter events that have the specific tag
 	const events = allEvents.filter((event) =>
-		event.tags.some((tag) => tag.tag.id === MCP_TAG_ID),
+		event.tags.some((eventTag) => eventTag.tag.id === tag.id),
 	)
 	const parsedEvents = EventSchema.array().parse(events)
 
@@ -71,9 +74,18 @@ async function getEventsData() {
 	return { pastEvents, upcomingEvents, soldOutOrPastIds }
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-	const page = await getPage(PAGE_ID)
-	const { upcomingEvents, soldOutOrPastIds } = await getEventsData()
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ tag: string }>
+}): Promise<Metadata> {
+	const { tag: tagParam } = await params
+	const tag = await getTag(tagParam)
+	const page = await getPage(`/events/workshops/${tagParam}`)
+	if (!tag) {
+		return {}
+	}
+	const { upcomingEvents, soldOutOrPastIds } = await getEventsData(tag)
 
 	const pageTitle = page?.fields?.title || 'MCP Fundamentals'
 	const pageDescription =
@@ -121,9 +133,19 @@ export async function generateMetadata(): Promise<Metadata> {
 	}
 }
 
-export default async function MCPFundamentalsPage() {
-	const page = await getPage(PAGE_ID)
-	const { pastEvents, upcomingEvents, soldOutOrPastIds } = await getEventsData()
+export default async function MCPFundamentalsPage({
+	params,
+}: {
+	params: Promise<{ tag: string }>
+}) {
+	const { tag: tagParam } = await params
+	const tag = await getTag(tagParam)
+	if (!tag) {
+		notFound()
+	}
+	const page = await getPage(`/events/workshops/${tagParam}`)
+	const { pastEvents, upcomingEvents, soldOutOrPastIds } =
+		await getEventsData(tag)
 
 	const renderEvent = (
 		event: (typeof upcomingEvents)[0],
