@@ -8,7 +8,7 @@ import type { Post } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
-import { FilePlus2, FileText, Pencil } from 'lucide-react'
+import { ChevronRight, FilePlus2, FileText, Pencil } from 'lucide-react'
 
 import {
 	Button,
@@ -40,14 +40,7 @@ export default async function PagesIndexPage() {
 				</div>
 				<ul className="divide-border flex flex-col divide-y">
 					{allPages.map((page, i) => {
-						return (
-							<PageTeaser
-								i={i}
-								article={page}
-								key={page.id}
-								className="flex w-full items-center py-4"
-							/>
-						)
+						return <PageTeaser i={i} page={page} key={page.id} />
 					})}
 				</ul>
 			</div>
@@ -56,22 +49,42 @@ export default async function PagesIndexPage() {
 }
 
 const PageTeaser: React.FC<{
-	article: Page
+	page: Page
 	i?: number
 	className?: string
-}> = ({ article, className, i }) => {
-	const title = article.fields.title
-	const description = article.fields.description
-	const createdAt = article.createdAt
+}> = ({ page, className, i }) => {
+	const title = page.fields.title
+	const description = page.fields.description
+	const path = page.fields.path
+	const createdAt = page.createdAt
 
 	return (
 		<li className={cn('', className)}>
 			<Link
-				href={`/admin/pages/${article.fields.slug}/edit`}
+				href={`/admin/pages/${page.fields.slug}/edit`}
 				passHref
-				className="fluid-lg flex w-full items-center gap-3 py-5"
+				className="hover:bg-card flex w-full flex-col items-start justify-between gap-5 p-5 transition ease-in-out sm:flex-row"
+				prefetch
 			>
-				<FileText className="text-muted-foreground h-4 w-4" /> {title}
+				<FileText className="text-primary relative size-5 flex-shrink-0 translate-y-0.5" />
+				<div className="w-full">
+					<div className="fluid-lg flex w-full flex-wrap items-baseline gap-1 font-semibold">
+						{title}{' '}
+						{path && (
+							<code className="bg-muted rounded px-1 py-0.5 font-mono text-xs">
+								{path}
+							</code>
+						)}
+					</div>
+					{description && (
+						<div className="text-muted-foreground mt-3 text-sm">
+							{description}
+						</div>
+					)}
+				</div>
+				<div className="hidden sm:flex">
+					<ChevronRight className="text-primary size-4" />
+				</div>
 			</Link>
 		</li>
 	)
