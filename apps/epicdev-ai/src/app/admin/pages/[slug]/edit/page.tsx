@@ -50,12 +50,10 @@ export default async function ArticleEditPage(props: {
 	}
 
 	return (
-		<LayoutClient>
-			<MDXPreviewProvider initialValue={page.fields.body}>
-				<div className="border-t">
-					<EditPagesForm key={page.fields.slug} page={{ ...page }} />
-				</div>
-			</MDXPreviewProvider>
-		</LayoutClient>
+		<MDXPreviewProvider initialValue={page.fields.body}>
+			<div className="border-t">
+				<EditPagesForm key={page.fields.slug} page={{ ...page }} />
+			</div>
+		</MDXPreviewProvider>
 	)
 }
