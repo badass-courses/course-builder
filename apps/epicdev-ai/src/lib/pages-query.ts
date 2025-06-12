@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { NewPage, Page, PageSchema } from '@/lib/pages'
@@ -238,6 +238,12 @@ export async function getPage(slugOrIdOrPath: string) {
 
 	return pageParsed.data
 }
+
+export const getCachedPage = unstable_cache(
+	async (slugOrIdOrPath: string) => getPage(slugOrIdOrPath),
+	['page'],
+	{ revalidate: 3600, tags: ['page'] },
+)
 
 function getErrorMessage(error: unknown) {
 	if (isErrorWithMessage(error)) return error.message

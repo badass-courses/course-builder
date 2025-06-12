@@ -23,7 +23,7 @@ import {
 	RESOURCE_UPDATED_EVENT,
 } from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
-import { getProductForPost } from './posts-query'
+import { getMinimalProductInfoWithoutUser } from './posts-query'
 import { addResourceToProduct, createProduct } from './products-query'
 import { upsertPostToTypeSense } from './typesense-query'
 
@@ -432,7 +432,7 @@ export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 			continue
 		}
 
-		const productInfo = await getProductForPost(item.id)
+		const productInfo = await getMinimalProductInfoWithoutUser(item.id)
 
 		// we can sell more seats than we have available via coupons or team seats,
 		// so we need to check if the total quantity is -1 (which means unlimited)

@@ -1192,3 +1192,70 @@ export async function getProductForPost(
 	}
 	return ProductForPostPropsSchema.parse(props)
 }
+
+export async function getMinimalProductInfoWithoutUser(
+	postId: string,
+): Promise<ProductForPostProps | null> {
+	const contentProduct = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, postId),
+	})
+
+	const product = await courseBuilderAdapter.getProduct(
+		contentProduct?.productId,
+	)
+	if (!product) {
+		return null
+	}
+
+	const productParsed = productSchema.parse(product)
+
+	const pricingDataLoader = getPricingData({
+		productId: productParsed.id,
+	})
+
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				allowPurchase: 'true',
+			},
+			userId: null,
+			products: [productParsed],
+		},
+		courseBuilderAdapter,
+	)
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, productParsed.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const props = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	return ProductForPostPropsSchema.parse(props)
+}

@@ -1,33 +1,40 @@
 import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getCachedLiveWorkshopsPerTag } from '@/lib/live-workshops-query'
+import { getLiveWorkshopsPerTag } from '@/lib/live-workshops-query'
 import { getCachedPage } from '@/lib/pages-query'
 import { getCachedTag, getCachedTags } from '@/lib/tags-query'
 
-import WorkshopPage from '../_components/workshop-page'
+import WorkshopPage from '../../_components/workshop-page'
 
 export async function generateStaticParams() {
 	const tags = await getCachedTags()
 
 	return tags.map((tag) => ({
 		tag: tag.fields.slug,
+		subtag: tag.fields.slug,
 	}))
 }
 
 export async function generateMetadata({
 	params,
 }: {
-	params: Promise<{ tag: string }>
+	params: Promise<{ tag: string; subtag: string }>
 }): Promise<Metadata> {
-	const { tag: tagParam } = await params
+	const { tag: tagParam, subtag: subtagParam } = await params
 	const tag = await getCachedTag(tagParam)
-	const page = await getCachedPage(`/events/workshops/${tagParam}`)
-	if (!tag) {
+	const subtag = await getCachedTag(subtagParam)
+
+	const page = await getCachedPage(
+		`/events/workshops/${tagParam}/${subtagParam}`,
+	)
+	if (!tag || !subtag) {
 		return {}
 	}
-	const { upcomingEvents, soldOutOrPastIds } =
-		await getCachedLiveWorkshopsPerTag([tag])
+	const { upcomingEvents, soldOutOrPastIds } = await getLiveWorkshopsPerTag([
+		tag,
+		subtag,
+	])
 
 	const pageTitle = page?.fields?.title || tag.fields.label
 	const pageDescription =
@@ -75,19 +82,22 @@ export async function generateMetadata({
 	}
 }
 
-export default async function MCPFundamentalsPage({
+export default async function WorkshopSubtagPage({
 	params,
 }: {
-	params: Promise<{ tag: string }>
+	params: Promise<{ tag: string; subtag: string }>
 }) {
-	const { tag: tagParam } = await params
+	const { tag: tagParam, subtag: subtagParam } = await params
 	const tag = await getCachedTag(tagParam)
-	if (!tag) {
+	const subtag = await getCachedTag(subtagParam)
+	if (!tag || !subtag) {
 		notFound()
 	}
-	const page = await getCachedPage(`/events/workshops/${tagParam}`)
+	const page = await getCachedPage(
+		`/events/workshops/${tagParam}/${subtagParam}`,
+	)
 	const { pastEvents, upcomingEvents, soldOutOrPastIds } =
-		await getCachedLiveWorkshopsPerTag([tag])
+		await getLiveWorkshopsPerTag([tag, subtag])
 
 	const pageTitle = page?.fields?.title || tag.fields.label
 

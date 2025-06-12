@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { db } from '@/db'
 import { tag as tagTable } from '@/db/schema'
 import { eq, or, sql } from 'drizzle-orm'
@@ -45,3 +45,14 @@ export async function getTag(slugOrId: string) {
 	})
 	return tag ? TagSchema.parse(tag) : null
 }
+
+export const getCachedTag = unstable_cache(
+	async (slugOrId: string) => getTag(slugOrId),
+	['tag'],
+	{ revalidate: 3600, tags: ['tag'] },
+)
+
+export const getCachedTags = unstable_cache(async () => getTags(), ['tags'], {
+	revalidate: 3600,
+	tags: ['tags'],
+})
