@@ -4,10 +4,16 @@ import {
 	entitlements,
 	entitlementTypes,
 } from '@/db/schema'
+import WelcomeCohortEmail from '@/emails/welcome-cohort-email'
+import WelcomeCohortEmailForTeam from '@/emails/welcome-cohort-email-team'
+import WelcomeCohortEmailForTeamRedeemer from '@/emails/welcome-cohort-email-team-redeemer'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
+import { log } from '@/server/logger'
+import { sendAnEmail } from '@/utils/send-an-email'
+import { addDays, format } from 'date-fns'
 import { and, eq } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
@@ -92,7 +98,34 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 		}
 
 		if (isTeamPurchase) {
-			// send an email to the purchaser explaining next steps
+			await step.run(`send welcome email`, async () => {
+				const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.slug}/day-0`
+				const dayOneUnlockDate = product.fields?.startDate
+					? format(
+							addDays(new Date(product.fields.startDate), 1),
+							'MMMM do, yyyy',
+						)
+					: 'TBD'
+
+				await sendAnEmail({
+					Component: WelcomeCohortEmailForTeam,
+					componentProps: {
+						cohortTitle: cohortResource.title || cohortResource.slug,
+						dayZeroUrl,
+						dayOneUnlockDate,
+						quantity: purchase.quantity || 1,
+						userFirstName: user.name?.split(' ')[0],
+					},
+					Subject: `Welcome to ${cohortResource.title || 'your cohort'}!`,
+					To: user.email,
+					type: 'transactional',
+				})
+
+				await log.info('cohort_welcome_email.sent', {
+					purchaseId: purchase.id,
+					emailType: 'team_purchaser',
+				})
+			})
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
 				const cohortContentAccessEntitlementType = await step.run(
@@ -231,6 +264,40 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							organizationMembershipId: orgMembership.id,
 							userId: user.id,
 						}
+					})
+
+					await step.run(`send welcome email`, async () => {
+						const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.slug}/day-0`
+						const dayOneUnlockDate = product.fields?.startDate
+							? format(
+									addDays(new Date(product.fields.startDate), 1),
+									'MMMM do, yyyy',
+								)
+							: 'TBD'
+
+						const ComponentToSend = isFullPriceCouponRedemption
+							? WelcomeCohortEmailForTeamRedeemer
+							: WelcomeCohortEmail
+
+						await sendAnEmail({
+							Component: ComponentToSend,
+							componentProps: {
+								cohortTitle: cohortResource.title || cohortResource.slug,
+								dayZeroUrl,
+								dayOneUnlockDate,
+								userFirstName: user.name?.split(' ')[0],
+							},
+							Subject: `Welcome to ${cohortResource.title || 'your cohort'}!`,
+							To: user.email,
+							type: 'transactional',
+						})
+
+						await log.info('cohort_welcome_email.sent', {
+							purchaseId: purchase.id,
+							emailType: isFullPriceCouponRedemption
+								? 'coupon_redeemer'
+								: 'individual',
+						})
 					})
 				}
 			} else {
