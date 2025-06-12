@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { NewPage, Page, PageSchema } from '@/lib/pages'
@@ -163,6 +163,9 @@ export async function updatePage(
 		})
 
 		revalidate && revalidateTag('pages')
+		revalidate &&
+			updatedPage?.fields?.path &&
+			revalidatePath(updatedPage.fields.path)
 
 		try {
 			console.log(

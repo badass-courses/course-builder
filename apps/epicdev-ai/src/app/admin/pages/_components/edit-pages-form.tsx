@@ -135,7 +135,8 @@ const pageFormConfig: ResourceFormConfig<Page, typeof PageSchema> = {
 			},
 		}
 	},
-	getResourcePath: (slug?: string) => `/${slug || ''}`,
+	getResourcePath: (slug?: string, path?: string) =>
+		`${path || (slug ? `/${slug}` : '')}`,
 	updateResource: updatePageResource,
 	createResourceConfig: {
 		title: 'Create a Resource',

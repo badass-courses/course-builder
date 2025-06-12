@@ -129,7 +129,7 @@ export interface ResourceFormConfig<
 	customTools?: BaseTool[]
 
 	/** Function to generate resource URL path */
-	getResourcePath: (slug?: string) => string
+	getResourcePath: (slug?: string, path?: string) => string
 
 	/**
 	 * Function to update resource data
