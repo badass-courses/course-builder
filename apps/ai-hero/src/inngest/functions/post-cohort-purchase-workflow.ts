@@ -4,11 +4,9 @@ import {
 	entitlements,
 	entitlementTypes,
 } from '@/db/schema'
-import WelcomeCohortEmail from '@/emails/welcome-cohort-email'
-import WelcomeCohortEmailForTeam from '@/emails/welcome-cohort-email-team'
-import WelcomeCohortEmailForTeamRedeemer from '@/emails/welcome-cohort-email-team-redeemer'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
+import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getCohort } from '@/lib/cohorts-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
@@ -108,7 +106,10 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					: 'TBD'
 
 				await sendAnEmail({
-					Component: WelcomeCohortEmailForTeam,
+					Component: getCohortWelcomeEmailVariant({
+						isTeamPurchase: true,
+						isFullPriceCouponRedemption,
+					}),
 					componentProps: {
 						cohortTitle: cohortResource.title || cohortResource.slug,
 						dayZeroUrl,
@@ -275,9 +276,10 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 								)
 							: 'TBD'
 
-						const ComponentToSend = isFullPriceCouponRedemption
-							? WelcomeCohortEmailForTeamRedeemer
-							: WelcomeCohortEmail
+						const ComponentToSend = getCohortWelcomeEmailVariant({
+							isTeamPurchase: false,
+							isFullPriceCouponRedemption,
+						})
 
 						await sendAnEmail({
 							Component: ComponentToSend,
