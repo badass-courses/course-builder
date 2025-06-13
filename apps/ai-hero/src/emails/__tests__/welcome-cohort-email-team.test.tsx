@@ -9,7 +9,7 @@ describe('WelcomeCohortEmailForTeam', () => {
 		const html = await render(
 			<WelcomeCohortEmailForTeam
 				cohortTitle="Team Cohort"
-				dayZeroUrl="#day0"
+				url="#day0"
 				dayOneUnlockDate="July 2nd, 2025"
 				quantity={5}
 			/>,
