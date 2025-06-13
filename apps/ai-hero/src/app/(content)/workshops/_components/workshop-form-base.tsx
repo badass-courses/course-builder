@@ -25,6 +25,8 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { EmailField } from './email-field'
+
 /**
  * Base form component for workshop editing
  * Contains only workshop-specific form fields
@@ -199,6 +201,7 @@ export function WorkshopFormBase(
 				)}
 				name="fields.coverImage.alt"
 			/>
+			<EmailField workshop={resource as any} showEditButton={true} />
 			<MetadataFieldSocialImage
 				form={form}
 				currentSocialImage={getOGImageUrlForResource(form.getValues() as any)}

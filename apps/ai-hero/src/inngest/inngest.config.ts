@@ -8,6 +8,7 @@ import { ensurePersonalOrganizationWorkflow } from '@/inngest/functions/ensure-p
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
+import { sendWorkshopAccessEmails } from '@/inngest/functions/send-workshop-access-emails'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
@@ -53,5 +54,6 @@ export const inngestConfig = {
 		videoResourceAttached,
 		videoResourceDetached,
 		addCohortRoleDiscord,
+		sendWorkshopAccessEmails,
 	],
 }
