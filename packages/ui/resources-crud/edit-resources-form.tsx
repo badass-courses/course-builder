@@ -58,7 +58,7 @@ export function EditResourcesForm({
 			slug: string
 		}
 	}
-	getResourcePath: (slug?: string) => string
+	getResourcePath: (slug?: string, path?: string) => string
 	resourceSchema: Schema
 	children?: React.ReactNode
 	form: UseFormReturn<z.infer<typeof resourceSchema>>
@@ -116,7 +116,10 @@ export function EditResourcesForm({
 		<Accordion type="multiple" defaultValue={['body']}>
 			<EditResourcesActionBar
 				resource={resource}
-				resourcePath={getResourcePath(resource.fields?.slug)}
+				resourcePath={getResourcePath(
+					resource.fields?.slug,
+					resource.fields?.path,
+				)}
 				isAutoSaving={isAutoSaving}
 				onSubmit={async () => {
 					await onSubmit(form.getValues(), 'save').then(() => {
@@ -185,7 +188,10 @@ export function EditResourcesForm({
 		<>
 			<EditResourcesActionBar
 				resource={resource}
-				resourcePath={getResourcePath(resource.fields?.slug)}
+				resourcePath={getResourcePath(
+					resource.fields?.slug,
+					resource.fields?.path,
+				)}
 				isAutoSaving={isAutoSaving}
 				onSubmit={async () => {
 					await onSubmit(form.getValues(), 'save').then(() => {
