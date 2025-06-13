@@ -125,7 +125,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					componentProps: {
 						cohortTitle:
 							cohortResource.fields.title || cohortResource.fields.slug,
-						dayZeroUrl,
+						url: dayZeroUrl,
 						dayOneUnlockDate,
 						quantity: bulkCoupon?.maxUses || 1,
 						userFirstName: user.name?.split(' ')[0],
@@ -298,7 +298,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							componentProps: {
 								cohortTitle:
 									cohortResource.fields.title || cohortResource.fields.slug,
-								dayZeroUrl,
+								url: dayZeroUrl,
 								dayOneUnlockDate,
 								quantity: purchase.totalAmount || 1,
 								userFirstName: user.name?.split(' ')[0],

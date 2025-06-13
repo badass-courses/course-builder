@@ -37,7 +37,7 @@ export default function WelcomeCohortEmail({
 
 	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
-	const dayOneIsPast = isAfter(
+	const dayOneIsInFuture = isAfter(
 		parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
 		new Date(),
 	)
@@ -63,7 +63,7 @@ export default function WelcomeCohortEmail({
 								</Link>
 							</Section>
 						</Section>
-						{dayOneIsPast && (
+						{dayOneIsInFuture && (
 							<Section style={contentSection}>
 								<Text style={text}>
 									<strong>Heads up:</strong> <strong>Day&nbsp;1</strong> unlocks
