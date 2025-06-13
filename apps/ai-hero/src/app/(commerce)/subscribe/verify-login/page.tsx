@@ -62,7 +62,10 @@ export default async function VerifyLoginPage({
 			if (cohortProductPurchases.length > 0) {
 				return redirect(`/invoices`)
 			} else {
-				return redirect(checkoutUrl as string)
+				if (typeof checkoutUrl !== 'string' || !checkoutUrl) {
+					return redirect('/subscribe/error')
+				}
+				return redirect(checkoutUrl)
 			}
 		}
 	}
@@ -72,7 +75,10 @@ export default async function VerifyLoginPage({
 			const { hasActiveSubscription } = await getSubscriptionStatus(user?.id)
 
 			if (!hasActiveSubscription) {
-				return redirect(checkoutUrl as string)
+				if (typeof checkoutUrl !== 'string' || !checkoutUrl) {
+					return redirect('/subscribe/error')
+				}
+				return redirect(checkoutUrl)
 			} else {
 				return redirect(`/subscribe/already-subscribed`)
 			}
