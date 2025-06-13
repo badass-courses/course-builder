@@ -67,7 +67,8 @@ export async function checkout(
 						'0.0.0.0',
 					organizationId: request.query?.organizationId,
 					productId: checkoutParams.productId,
-				})}&checkoutUrl=${encodeURIComponent(stripe.redirect)}`,
+					checkoutUrl: stripe.redirect,
+				})}`,
 			)
 		}
 

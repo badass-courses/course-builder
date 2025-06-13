@@ -86,7 +86,7 @@ export default async function CohortPage(props: {
 	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-
+	const currentOrganization = (await headers()).get('x-organization-id')
 	const cohort = await getCohort(params.slug)
 
 	if (!cohort) {
@@ -159,6 +159,7 @@ export default async function CohortPage(props: {
 			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 			product,
 			pricingDataLoader,
+			organizationId: currentOrganization,
 			...commerceProps,
 		}
 

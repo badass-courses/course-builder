@@ -4,11 +4,13 @@ import { redirect } from 'next/navigation'
 import { getCsrf } from '@/app/(user)/login/actions'
 import LayoutClient from '@/components/layout-client'
 import { Login } from '@/components/login'
-import config from '@/config'
+import { db } from '@/db'
+import { purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { getSubscriptionStatus } from '@/lib/subscriptions'
 import { getProviders, getServerAuthSession } from '@/server/auth'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 
 import { CheckoutParamsSchema } from '@coursebuilder/core/types'
 
@@ -47,7 +49,22 @@ export default async function VerifyLoginPage({
 	}
 
 	if (product?.type === 'cohort') {
-		// TODO: check if user is already actively in cohort
+		if (user) {
+			const cohortProductPurchases = await db.query.purchases.findMany({
+				where: and(
+					eq(purchases.userId, user.id),
+					eq(purchases.productId, product.id),
+					inArray(purchases.status, ['Valid', 'Restricted']),
+					isNull(purchases.bulkCouponId),
+				),
+			})
+
+			if (cohortProductPurchases.length > 0) {
+				return redirect(`/invoices`)
+			} else {
+				return redirect(checkoutUrl as string)
+			}
+		}
 	}
 
 	if (product?.type === 'membership') {
