@@ -47,9 +47,9 @@ export const PricingWidget: React.FC<{
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="pt-0">
-					<Pricing.Name />
+					<Pricing.Name className="font-normal" />
 					<Pricing.LiveQuantity />
-					<div className="flex items-center gap-1">
+					<div className="mt-3 flex items-center gap-1">
 						<Pricing.Price />
 						{product.type === 'membership' && (
 							<span className="text-xl opacity-80">/ year</span>
@@ -57,14 +57,27 @@ export const PricingWidget: React.FC<{
 					</div>
 					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>
-							<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary' />
+							<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-2' />
 							<Pricing.TeamQuantityInput />
 						</>
 					)}
-					<Pricing.BuyButton className="mt-4">Join Now</Pricing.BuyButton>
+					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
+						<span className="relative z-10">Enroll</span>
+						<div
+							style={{
+								backgroundSize: '200% 100%',
+								animationDuration: '2s',
+								animationIterationCount: 'infinite',
+								animationTimingFunction: 'linear',
+								animationFillMode: 'forwards',
+								animationDelay: '2s',
+							}}
+							className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+						/>
+					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
-					<Pricing.SaleCountdown className="py-4" />
+					<Pricing.SaleCountdown className="pt-8 [&_p]:text-lg [&_p]:font-normal" />
 					<Pricing.PPPToggle />
 				</Pricing.Details>
 			</Pricing.Product>
