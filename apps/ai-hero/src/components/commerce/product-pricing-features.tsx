@@ -11,19 +11,27 @@ import {
 
 import { Product } from '@coursebuilder/core/schemas'
 import { Accordion } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { Icon } from '../brand/icons'
 
 export const ProductPricingFeatures = ({
 	workshops,
+	className,
 }: {
 	workshops: {
 		title: string
 		slug: string
 	}[]
+	className?: string
 }) => {
 	return (
-		<div className="relative mt-5 flex w-full flex-col items-center">
+		<div
+			className={cn(
+				'relative mt-5 flex w-full flex-col items-center',
+				className,
+			)}
+		>
 			{/* <strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
 				<span className="relative z-10 bg-white px-3 py-1 dark:bg-[#0F0F0F]">
 					Includes
