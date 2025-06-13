@@ -217,7 +217,10 @@ const Home = async (props: Props) => {
 											</div>
 										}
 									>
-										<div className="mx-auto mt-0 flex w-full flex-col items-center justify-center pb-16 sm:-mt-8">
+										<div
+											id="buy"
+											className="mx-auto mt-0 flex w-full flex-col items-center justify-center pb-16 sm:-mt-8"
+										>
 											<div className="-mb-5">
 												<CldImage
 													loading="lazy"
