@@ -1,5 +1,41 @@
 # @coursebuilder/commerce-next
 
+## 0.0.13
+
+### Patch Changes
+
+- [`cfa869c`](https://github.com/badass-courses/course-builder/commit/cfa869c18791f7c742a2f48b0b6c4e2664846251)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - remove balancer
+  component in product name
+
+- [`9769874`](https://github.com/badass-courses/course-builder/commit/9769874a8acd0c21e317674b3cfb68d16602c219)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - sold out label
+
+- [`3eb7362`](https://github.com/badass-courses/course-builder/commit/3eb7362c53d5589138e657423d1d43390c16bd15)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add cohort link
+
+- [`639af6d`](https://github.com/badass-courses/course-builder/commit/639af6d499410198e322df38a74b4fa8ec8310df)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - update sold out
+  handling in pricing widget and team toggle, improve waitlist styling
+
+- [`a34b701`](https://github.com/badass-courses/course-builder/commit/a34b701f70d9ba66d7c291f51db8e63ff81c660a)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add ability to init
+  product with a type, fix waitlist logic
+
+- Updated dependencies
+  [[`ed6b124`](https://github.com/badass-courses/course-builder/commit/ed6b1246b35b40f30cdf27b5507407c26d310424),
+  [`b1907df`](https://github.com/badass-courses/course-builder/commit/b1907dfdebc4f7bca7ede2532695c0375b437ebe),
+  [`aa77733`](https://github.com/badass-courses/course-builder/commit/aa77733d0965710f849be83cffe7374ad3e1edf3),
+  [`60e8113`](https://github.com/badass-courses/course-builder/commit/60e811310faab346e385669c9a4ef5a25849ce07),
+  [`c40a50c`](https://github.com/badass-courses/course-builder/commit/c40a50c1e4244e2881eed47a0903a5243222f1cf),
+  [`8096127`](https://github.com/badass-courses/course-builder/commit/8096127e361879f5ef768c74d95fd8aef85bfbac),
+  [`4e29da7`](https://github.com/badass-courses/course-builder/commit/4e29da74a433635089bb2796abbe1339fd8f4dbd),
+  [`639af6d`](https://github.com/badass-courses/course-builder/commit/639af6d499410198e322df38a74b4fa8ec8310df),
+  [`1edb931`](https://github.com/badass-courses/course-builder/commit/1edb9318a1af4869e1685606bf4dae9da5dfb031),
+  [`a34b701`](https://github.com/badass-courses/course-builder/commit/a34b701f70d9ba66d7c291f51db8e63ff81c660a)]:
+  - @coursebuilder/core@1.0.5
+  - @coursebuilder/ui@2.0.6
+
 ## 0.0.12
 
 ### Patch Changes
