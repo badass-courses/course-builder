@@ -42,7 +42,7 @@ export default async function ProfilePage() {
 	if (ability.can('read', 'User', session?.user?.id)) {
 		return (
 			<LayoutClient withContainer>
-				<div className="mx-auto flex w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
+				<div className="mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
 					<header className="w-full md:max-w-[230px]">
 						<h1 className="fluid-xl text-center font-bold md:text-left">
 							Your Profile
