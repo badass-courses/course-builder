@@ -11,12 +11,13 @@ import {
 	Section,
 	Text,
 } from '@react-email/components'
+import { format, isAfter, parse } from 'date-fns'
 
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 export interface WelcomeCohortEmailProps {
 	cohortTitle: string
-	dayZeroUrl: string
+	url: string
 	dayOneUnlockDate: string
 	userFirstName?: string
 	supportEmail?: string
@@ -24,7 +25,7 @@ export interface WelcomeCohortEmailProps {
 
 export default function WelcomeCohortEmail({
 	cohortTitle,
-	dayZeroUrl,
+	url,
 	dayOneUnlockDate,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
@@ -36,11 +37,15 @@ export default function WelcomeCohortEmail({
 
 	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
+	const dayOneIsPast = isAfter(
+		parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
+		new Date(),
+	)
 
 	return (
 		<Html>
 			<Head />
-			<Preview>Welcome to {cohortTitle}! Your cohort journey begins.</Preview>
+			<Preview>Welcome to {cohortTitle}!</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Section style={section}>
@@ -49,24 +54,26 @@ export default function WelcomeCohortEmail({
 						<Section style={contentSection}>
 							<Text style={text}>{greeting}</Text>
 							<Text style={text}>
-								You now have access to <strong>Day 0</strong> of the cohort.
+								You now have access and can start with <strong>Day 0</strong> of
+								the cohort.
 							</Text>
 							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
-								<Link href={dayZeroUrl} style={buttonStyle}>
-									Go to Day 0
+								<Link href={url} style={buttonStyle}>
+									Get Started with {cohortTitle}
 								</Link>
 							</Section>
 						</Section>
-
-						<Section style={contentSection}>
-							<Text style={text}>
-								<strong>Heads-up:</strong> <strong>Day&nbsp;1</strong> unlocks
-								on {dayOneUnlockDate}.{' '}
-								<Link href={everyTimeZoneLink} style={link}>
-									View in your timezone
-								</Link>
-							</Text>
-						</Section>
+						{dayOneIsPast && (
+							<Section style={contentSection}>
+								<Text style={text}>
+									<strong>Heads up:</strong> <strong>Day&nbsp;1</strong> unlocks
+									on {dayOneUnlockDate}.{' '}
+								</Text>
+								<Text style={text}>
+									You'll receive another email when Day 1 unlocks.
+								</Text>
+							</Section>
+						)}
 
 						<Section style={contentSection}>
 							<Text style={text}>Need anything? We're here to help.</Text>
