@@ -7,7 +7,9 @@ import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { authOptions } from '@/server/auth'
+import { authOptions, getServerAuthSession } from '@/server/auth'
 
+import { userSchema } from '@coursebuilder/core/schemas'
 import NextCourseBuilder, {
 	type NextCourseBuilderConfig,
 } from '@coursebuilder/next'
