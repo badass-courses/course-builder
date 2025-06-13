@@ -37,8 +37,6 @@ export async function checkout(
 
 	const checkoutParams = checkoutParamsParsed.data
 
-	console.log('checkoutParams', checkoutParams)
-
 	try {
 		const stripe = await options.provider.createCheckoutSession(
 			checkoutParams,
@@ -68,6 +66,7 @@ export async function checkout(
 					organizationId: request.query?.organizationId,
 					productId: checkoutParams.productId,
 					checkoutUrl: stripe.redirect,
+					cancelUrl: checkoutParams.cancelUrl,
 				})}`,
 			)
 		}
