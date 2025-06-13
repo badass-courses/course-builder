@@ -8,7 +8,7 @@ import {
 } from '@/inngest/events/video-attachment'
 import { inngest } from '@/inngest/inngest.server'
 import { log } from '@/server/logger'
-import { and, desc, eq, lt, notExists, notInArray, or, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, lt, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
@@ -77,8 +77,34 @@ export async function getPaginatedVideoResources(
 			conditions.push(lt(contentResource.createdAt, cursorDate))
 		}
 
-		const videoResources = await db.query.contentResource.findMany({
+		// Step 1: Get paginated IDs with minimal data (fast sort on lightweight records)
+		const paginatedIds = await db.query.contentResource.findMany({
 			where: and(...conditions),
+			orderBy: [desc(contentResource.createdAt)],
+			limit: limit + 1, // Fetch one extra to check if there's a next page
+			columns: {
+				id: true,
+				createdAt: true,
+			},
+		})
+
+		const hasNextPage = paginatedIds.length > limit
+		const idsToFetch = hasNextPage ? paginatedIds.slice(0, limit) : paginatedIds
+		const lastItem = idsToFetch[idsToFetch.length - 1]
+		const nextCursor =
+			hasNextPage && idsToFetch.length > 0 && lastItem?.createdAt
+				? lastItem.createdAt.toISOString()
+				: null
+
+		// Step 2: Get full records with relations for the specific IDs (no sorting needed)
+		const videoResources = await db.query.contentResource.findMany({
+			where: and(
+				eq(contentResource.type, 'videoResource'),
+				inArray(
+					contentResource.id,
+					idsToFetch.map((item) => item.id),
+				),
+			),
 			with: {
 				resources: {
 					with: {
@@ -86,17 +112,14 @@ export async function getPaginatedVideoResources(
 					},
 				},
 			},
-			orderBy: [desc(contentResource.createdAt)],
-			limit: limit + 1, // Fetch one extra to check if there's a next page
 		})
 
-		const hasNextPage = videoResources.length > limit
-		const items = hasNextPage ? videoResources.slice(0, limit) : videoResources
-		const lastItem = items[items.length - 1]
-		const nextCursor =
-			hasNextPage && items.length > 0 && lastItem?.createdAt
-				? lastItem.createdAt.toISOString()
-				: null
+		// Sort the full records to match the original pagination order
+		const items = idsToFetch
+			.map((idItem) =>
+				videoResources.find((resource) => resource.id === idItem.id),
+			)
+			.filter(Boolean) // Remove any null/undefined entries
 
 		await log.info('video-resources.paginated.fetch.success', {
 			count: items.length,

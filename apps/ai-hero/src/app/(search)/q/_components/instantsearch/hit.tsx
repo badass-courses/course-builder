@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
+import { getResourcePath } from '@/utils/resource-paths'
 import { format } from 'date-fns'
 import { Highlight } from 'react-instantsearch'
 
@@ -14,7 +15,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 			<Link
 				prefetch
 				className="to-secondary group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out hover:bg-gradient-to-l sm:py-5 md:flex-row lg:px-6"
-				href={`/${hit.slug}`}
+				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
 					<span className="fluid-lg pr-5 font-semibold sm:truncate">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
 import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import { TagField } from '@/app/(content)/posts/_components/tag-field'
 import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
@@ -344,6 +345,7 @@ const EventFormFields = ({
 			/>
 			<MetadataFieldState form={form} />
 			<MetadataFieldVisibility form={form} />
+			<TagField resource={resource} showEditButton />
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">

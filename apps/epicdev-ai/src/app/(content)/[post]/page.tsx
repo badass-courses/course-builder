@@ -36,7 +36,7 @@ import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 import PostTranscript from './_components/post-transcript'
 
-export const experimental_ppr = true
+// export const experimental_ppr = true
 
 type Props = {
 	params: Promise<{ post: string }>

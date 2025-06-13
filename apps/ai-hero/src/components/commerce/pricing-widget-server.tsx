@@ -111,5 +111,5 @@ export async function PricingWidgetServer({
 		}
 	}
 
-	return <ProductPricing {...productProps} />
+	return <ProductPricing resource={cohort} {...productProps} />
 }

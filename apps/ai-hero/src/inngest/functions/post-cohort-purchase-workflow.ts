@@ -6,8 +6,12 @@ import {
 } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
+import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getCohort } from '@/lib/cohorts-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
+import { log } from '@/server/logger'
+import { sendAnEmail } from '@/utils/send-an-email'
+import { addDays, format } from 'date-fns'
 import { and, eq } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
@@ -91,8 +95,53 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			throw new Error(`cohort resource not found`)
 		}
 
+		const dayOneStartsAt = cohortResource.resources?.find(
+			(resource) => resource.position === 1,
+		)?.resource?.fields?.startsAt
+		const dayOneUnlockDate = dayOneStartsAt
+			? format(addDays(new Date(dayOneStartsAt), 1), 'MMMM do, yyyy')
+			: 'TBD'
+
 		if (isTeamPurchase) {
-			// send an email to the purchaser explaining next steps
+			const bulkCoupon = await step.run('get bulk coupon', async () => {
+				if (purchase.bulkCouponId) {
+					return adapter.getCoupon(purchase.bulkCouponId)
+				}
+				return null
+			})
+
+			await step.run(`send welcome email to team purchaser`, async () => {
+				const dayZeroWorkshop = cohortResource.resources?.find(
+					(resource) => resource.position === 0,
+				)?.resource
+				const dayZeroSlug = dayZeroWorkshop.fields?.slug
+				const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
+
+				await sendAnEmail({
+					Component: getCohortWelcomeEmailVariant({
+						isTeamPurchase: true,
+						isFullPriceCouponRedemption,
+					}),
+					componentProps: {
+						cohortTitle:
+							cohortResource.fields.title || cohortResource.fields.slug,
+						url: dayZeroUrl,
+						dayOneUnlockDate,
+						quantity: bulkCoupon?.maxUses || 1,
+						userFirstName: user.name?.split(' ')[0],
+					},
+					Subject: `Welcome to ${cohortResource.fields.title || 'AI Hero'}!`,
+					To: user.email,
+					ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+					From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+					type: 'transactional',
+				})
+
+				await log.info('cohort_welcome_email.sent', {
+					purchaseId: purchase.id,
+					emailType: 'team_purchaser',
+				})
+			})
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
 				const cohortContentAccessEntitlementType = await step.run(
@@ -231,6 +280,42 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							organizationMembershipId: orgMembership.id,
 							userId: user.id,
 						}
+					})
+
+					await step.run(`send welcome email to individual`, async () => {
+						const dayZeroWorkshop = cohortResource.resources?.find(
+							(resource) => resource.position === 0,
+						)?.resource
+						const dayZeroSlug = dayZeroWorkshop.fields?.slug
+						const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
+						const ComponentToSend = getCohortWelcomeEmailVariant({
+							isTeamPurchase: false,
+							isFullPriceCouponRedemption,
+						})
+
+						await sendAnEmail({
+							Component: ComponentToSend,
+							componentProps: {
+								cohortTitle:
+									cohortResource.fields.title || cohortResource.fields.slug,
+								url: dayZeroUrl,
+								dayOneUnlockDate,
+								quantity: purchase.totalAmount || 1,
+								userFirstName: user.name?.split(' ')[0],
+							},
+							Subject: `Welcome to ${cohortResource.fields.title || 'AI Hero'}!`,
+							To: user.email,
+							ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+							From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+							type: 'transactional',
+						})
+
+						await log.info('cohort_welcome_email.sent', {
+							purchaseId: purchase.id,
+							emailType: isFullPriceCouponRedemption
+								? 'coupon_redeemer'
+								: 'individual',
+						})
 					})
 				}
 			} else {

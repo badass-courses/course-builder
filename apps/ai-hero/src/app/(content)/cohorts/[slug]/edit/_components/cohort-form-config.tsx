@@ -28,6 +28,7 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 			return {
 				...cohort,
 				fields: {
+					...cohort?.fields,
 					title: cohort?.fields?.title || '',
 					visibility: cohort?.fields?.visibility || 'public',
 					image: cohort?.fields?.image || '',

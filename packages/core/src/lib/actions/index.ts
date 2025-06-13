@@ -24,6 +24,17 @@ export async function getUserPurchases(
 ): Promise<ResponseInternal> {
 	const client = options.adapter
 
+	const currentUser = await options.getCurrentUser?.()
+
+	if (!currentUser?.id || currentUser.id !== request.query?.userId) {
+		return {
+			status: 401,
+			body: [],
+			headers: { 'Content-Type': 'application/json' },
+			cookies,
+		}
+	}
+
 	if (!request.query?.userId)
 		return {
 			status: 200,

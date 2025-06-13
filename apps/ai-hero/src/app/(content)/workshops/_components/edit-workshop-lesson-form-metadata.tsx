@@ -23,12 +23,7 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
+	Checkbox,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -184,6 +179,30 @@ export const LessonMetadataFormFields: React.FC<{
 				)}
 			/>
 			<TagField resource={lesson} showEditButton />
+			<FormField
+				control={form.control}
+				name="fields.optional"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="flex items-center gap-2 text-lg font-bold">
+							<Checkbox
+								name={field.name}
+								ref={field.ref}
+								onBlur={field.onBlur}
+								disabled={field.disabled}
+								className="border-input"
+								checked={field.value ?? false}
+								onCheckedChange={(checked) => field.onChange(!!checked)}
+							/>{' '}
+							Optional
+						</FormLabel>
+						<FormDescription>
+							Optional lessons are not required to complete the workshop.
+						</FormDescription>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			{/* Solution Section */}
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">

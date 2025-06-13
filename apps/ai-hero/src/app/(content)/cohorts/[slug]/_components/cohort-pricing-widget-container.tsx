@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { SubscribeToConvertkitForm } from '@/convertkit'
+import { env } from '@/env.mjs'
 import { track } from '@/utils/analytics'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -65,6 +66,7 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 						commerceProps={commerceProps}
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={{
+							cancelUrl: `${env.NEXT_PUBLIC_URL}/cohorts/${cohort.fields.slug}`,
 							isCohort: true,
 							isLiveEvent: true,
 							withImage: false,

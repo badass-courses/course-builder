@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { NewEventSchema, type NewEvent } from '@/lib/events'
 import { createEvent } from '@/lib/events-query'
+import { api } from '@/trpc/react'
 import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
@@ -23,6 +24,7 @@ import {
 	Input,
 	useToast,
 } from '@coursebuilder/ui'
+import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
 
 export default function CreateNewEventForm() {
 	const form = useForm<NewEvent>({
@@ -32,7 +34,9 @@ export default function CreateNewEventForm() {
 				title: '',
 				startsAt: undefined,
 				endsAt: undefined,
-				price: 0,
+				price: 250,
+				quantity: 40,
+				tagIds: undefined,
 			},
 		},
 	})
@@ -58,6 +62,18 @@ export default function CreateNewEventForm() {
 			})
 		}
 	}
+	const { data: tags, isLoading } = api.tags.getTags.useQuery()
+	const parsedTagsForUiPackage = z
+		.array(
+			z.object({
+				id: z.string(),
+				fields: z.object({
+					label: z.string(),
+					name: z.string(),
+				}),
+			}),
+		)
+		.parse(tags || [])
 
 	return (
 		<div>
@@ -165,6 +181,54 @@ export default function CreateNewEventForm() {
 							</FormItem>
 						)}
 					/>
+					<FormField
+						control={form.control}
+						name="fields.quantity"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Seats available</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										{...field}
+										value={
+											field.value === null || field.value === undefined
+												? ''
+												: String(field.value)
+										}
+										onChange={(e) => {
+											const value = e.target.value
+											const parsedValue = parseInt(value)
+											field.onChange(isNaN(parsedValue) ? null : parsedValue)
+										}}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<div>
+						<FormLabel>Tags</FormLabel>
+						<AdvancedTagSelector
+							className="mt-0 space-y-1"
+							availableTags={parsedTagsForUiPackage}
+							selectedTags={form.watch('fields.tagIds') || []}
+							onTagSelect={(tag) => {
+								form.setValue('fields.tagIds', [
+									...(form.getValues('fields.tagIds') || []),
+									tag,
+								])
+							}}
+							onTagRemove={(tagId) => {
+								form.setValue(
+									'fields.tagIds',
+									(form.getValues('fields.tagIds') || []).filter(
+										(t) => t.id !== tagId,
+									),
+								)
+							}}
+						/>
+					</div>
 					<Button type="submit" disabled={form.formState.isSubmitting}>
 						{form.formState.isSubmitting ? 'Creating...' : 'Create event'}
 					</Button>

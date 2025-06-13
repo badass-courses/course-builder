@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation'
-import CreateResourcePage from '@/components/resources-crud/create-resource-page'
+import LayoutClient from '@/components/layout-client'
 import { getServerAuthSession } from '@/server/auth'
+
+import CreateNewEventForm from '../_components/create-new-event-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,8 +14,11 @@ export default async function NewEventPage() {
 	}
 
 	return (
-		<div>
-			<CreateResourcePage resourceType={'event'} />
-		</div>
+		<LayoutClient withContainer>
+			<main className="mx-auto flex w-full max-w-screen-sm flex-col pb-16 pt-4">
+				<h1 className="mb-4 text-2xl font-bold">Create New Event</h1>
+				<CreateNewEventForm />
+			</main>
+		</LayoutClient>
 	)
 }

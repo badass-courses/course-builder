@@ -217,11 +217,27 @@ const Home = async (props: Props) => {
 											</div>
 										}
 									>
-										<PricingWidgetServer
-											productId="product-3vfob"
-											searchParams={searchParams}
-											{...props}
-										/>
+										<div
+											id="buy"
+											className="mx-auto mt-0 flex w-full flex-col items-center justify-center pb-16 sm:-mt-8"
+										>
+											<div className="-mb-5">
+												<CldImage
+													loading="lazy"
+													src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
+													alt=""
+													aria-hidden="true"
+													width={130}
+													height={130}
+													className="rotate-12"
+												/>
+											</div>
+											<PricingWidgetServer
+												productId="product-3vfob"
+												searchParams={searchParams}
+												{...props}
+											/>
+										</div>
 									</React.Suspense>
 								),
 								// @ts-expect-error

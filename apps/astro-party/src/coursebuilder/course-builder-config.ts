@@ -25,6 +25,12 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 		emailListProvider,
 	],
 	basePath: '/api/coursebuilder',
+	getCurrentUser: async () => {
+		const { session } = await getServerAuthSession()
+		if (!session?.user) return null
+
+		return userSchema.parse(session.user)
+	},
 	callbacks: {
 		session: async (req) => {
 			// TODO: there's nothing on the "session" but we can add whatever we want here

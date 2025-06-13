@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { optional, z } from 'zod'
 
 import {
 	ContentResourceResourceSchema,
@@ -28,6 +28,7 @@ export const LessonSchema = ContentResourceSchema.merge(
 			github: z.string().optional(),
 			gitpod: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
+			optional: z.boolean().nullish().default(false),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 		tags: PostTagsSchema,
@@ -47,6 +48,7 @@ export const LessonUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
+		optional: z.boolean().nullish().default(false),
 	}),
 	tags: PostTagsSchema,
 })

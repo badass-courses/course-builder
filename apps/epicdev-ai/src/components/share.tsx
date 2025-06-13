@@ -34,7 +34,7 @@ export const Share = ({
 	return (
 		<div
 			className={cn(
-				'hover:[&_a]:bg-foreground/5 hover:[&_button]:bg-foreground/5 relative flex items-stretch rounded border [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:border-r [&_a]:p-3 first-of-type:[&_a]:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
+				'hover:[&_a]:bg-foreground/5 hover:[&_button]:bg-foreground/5 relative flex items-stretch overflow-hidden rounded border [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:border-r [&_a]:p-3 first-of-type:[&_a]:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
 				className,
 			)}
 		>

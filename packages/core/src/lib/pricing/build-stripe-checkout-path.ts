@@ -13,7 +13,7 @@ const ParamsSchema = z
 		cancelUrl: z.string().optional(),
 		usedCouponId: z.string().optional(),
 		errorRedirectUrl: z.string().optional(),
-		organizationId: z.string().optional(),
+		organizationId: z.string().nullish(),
 	})
 	.transform((params) => {
 		return {
@@ -21,6 +21,7 @@ const ParamsSchema = z
 			bulk: Boolean(params.bulk).toString(),
 			productId: params.productId || '',
 			quantity: String(params.quantity),
+			organizationId: params.organizationId || undefined,
 		}
 	})
 

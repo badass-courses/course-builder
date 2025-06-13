@@ -42,6 +42,7 @@ interface SolutionFormData extends Solution {
 		state: 'draft' | 'published' | 'archived' | 'deleted'
 		visibility: 'public' | 'private' | 'unlisted'
 		thumbnailTime?: number
+		optional: boolean | null
 	}
 }
 
@@ -248,6 +249,7 @@ export function EditSolutionForm({
 						state: resource?.fields?.state || 'draft',
 						visibility: resource?.fields?.visibility || 'unlisted',
 						thumbnailTime: resource?.fields?.thumbnailTime || 0,
+						optional: resource?.fields?.optional || false,
 					},
 					resources: resource?.resources || [],
 				}

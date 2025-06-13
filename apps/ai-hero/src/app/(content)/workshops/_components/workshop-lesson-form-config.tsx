@@ -56,6 +56,7 @@ export const createWorkshopLessonFormConfig = (
 			github: lesson?.fields?.github || '',
 			gitpod: lesson?.fields?.gitpod || '',
 			thumbnailTime: lesson?.fields?.thumbnailTime || 0,
+			optional: lesson?.fields?.optional || false,
 		},
 		tags: lesson?.tags || [],
 	}),
@@ -89,6 +90,7 @@ export const createWorkshopLessonFormConfig = (
 					visibility: resource.fields?.visibility || 'public',
 					github: resource.fields?.github || '',
 					thumbnailTime: resource.fields?.thumbnailTime || 0,
+					optional: resource.fields?.optional || false,
 				},
 				tags: resource.tags || [],
 			}
@@ -141,6 +143,7 @@ export const createWorkshopLessonFormConfig = (
 				visibility: resource.fields.visibility || 'public',
 				github: resource.fields.github || '',
 				thumbnailTime: resource.fields.thumbnailTime || 0,
+				optional: resource.fields.optional || false,
 			},
 			tags: resource.tags || [],
 		}

@@ -504,16 +504,18 @@ const TreeItem = memo(function TreeItem({
 									{state !== 'idle' && `State: ${state}`}
 								</div>
 							)}
-							{showTierSelector && item.type !== 'section' && (
-								<TierSelect item={item} dispatch={dispatch} />
-							)}
+							<span className="text-muted-foreground ml-2 flex min-w-[50px] items-center gap-2 text-xs">
+								{item.type}
+							</span>
 							<span className="text-muted-foreground ml-2 flex min-w-[90px] items-center gap-2 text-xs">
 								{getResourceStatus(
 									item.itemData?.resource.fields?.visibility,
 									item.itemData?.resource.fields?.state,
 								)}
 							</span>
-							<span></span>
+							{showTierSelector && item.type !== 'section' && (
+								<TierSelect item={item} dispatch={dispatch} />
+							)}
 						</DraggableItemRenderer>
 					</ContextMenuTrigger>
 					<ContextMenuContent>

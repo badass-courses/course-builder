@@ -37,8 +37,6 @@ export async function checkout(
 
 	const checkoutParams = checkoutParamsParsed.data
 
-	console.log('checkoutParams', checkoutParams)
-
 	try {
 		const stripe = await options.provider.createCheckoutSession(
 			checkoutParams,
@@ -67,7 +65,9 @@ export async function checkout(
 						'0.0.0.0',
 					organizationId: request.query?.organizationId,
 					productId: checkoutParams.productId,
-				})}&checkoutUrl=${encodeURIComponent(stripe.redirect)}`,
+					checkoutUrl: stripe.redirect,
+					cancelUrl: checkoutParams.cancelUrl,
+				})}`,
 			)
 		}
 
