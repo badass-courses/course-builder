@@ -1,21 +1,20 @@
 import * as React from 'react'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
-import { CldImage } from '@/components/cld-image'
 import { PricingWidget } from '@/components/commerce/home-pricing-widget'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
-import { contentResource, contentResourceProduct } from '@/db/schema'
+import { contentResourceProduct, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getPricingProps } from '@/lib/pricing-query'
+import { getAllWorkshops } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
-import { asc, eq } from 'drizzle-orm'
+import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
-import { z } from 'zod'
 
+import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Card,
@@ -96,53 +95,39 @@ export default async function Workshops(props: {
 }
 
 async function WorkshopsList() {
-	const productResources = await db.query.contentResourceProduct.findMany({
+	const products = await db.query.contentResourceProduct.findMany({
 		with: {
-			resource: true,
+			resource: {
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			},
 			product: true,
 		},
 		orderBy: asc(contentResourceProduct.position),
 	})
-
-	const workshopsModule = z
-		.array(
-			z.object({ fields: z.record(z.any()), id: z.string(), type: z.string() }),
-		)
-		.parse(
-			productResources.map((productResource) => {
-				return productResource.resource
-			}),
-		)
-
+	const cohorts = products.flatMap((product) => {
+		return product.resource.resources.map((resource) => {
+			return resource.resource
+		})
+	})
+	let workshops = cohorts as ContentResource[]
 	const { ability } = await getServerAuthSession()
 
-	let workshops = [...workshopsModule].filter((workshop) => {
-		if (workshop.type !== 'workshop') {
-			return false
-		}
-		if (ability.can('create', 'Content')) {
-			return workshop
-		} else {
-			return workshop.fields?.visibility === 'public'
-		}
-	})
-
-	const publicWorkshops = [...workshopsModule].filter(
-		(workshop) => workshop.fields?.visibility === 'public',
-	)
-
-	const allWorkshops = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'workshop'),
-		limit: 50,
-		orderBy: asc(contentResource.createdAt),
-	})
-
-	// @ts-expect-error
-	workshops = [...workshops, ...allWorkshops]
+	const canEdit = ability.can('create', 'Content')
+	if (canEdit) {
+		const allWorkshops = await getAllWorkshops()
+		workshops = allWorkshops
+	}
 
 	return (
 		<ul className="mx-auto mt-8 flex w-full flex-col">
-			{publicWorkshops.length === 0 && (
+			{workshops.length === 0 && (
 				<p className="p-5">There are no public workshops.</p>
 			)}
 			{workshops.map((workshop) => (
@@ -169,17 +154,17 @@ async function WorkshopsList() {
 								<CardHeader className="p-0">
 									<CardTitle className="fluid-xl font-semibold">
 										<Link
-											href={`/workshops/${workshop.fields.slug || workshop.id}`}
+											href={`/workshops/${workshop.fields?.slug || workshop.id}`}
 											className="hover:text-primary w-full text-balance"
 										>
-											{workshop.fields.title}
+											{workshop.fields?.title}
 										</Link>
 									</CardTitle>
 								</CardHeader>
-								{workshop.fields.description && (
+								{workshop.fields?.description && (
 									<CardContent className="px-0 py-3">
 										<p className="text-muted-foreground text-base font-normal">
-											{workshop.fields.description}
+											{workshop.fields?.description}
 										</p>
 									</CardContent>
 								)}
@@ -190,11 +175,11 @@ async function WorkshopsList() {
 									{ability.can('create', 'Content') && (
 										<>
 											<span className="text-sm">
-												{workshop.fields.visibility}
+												{workshop.fields?.visibility} {workshop.fields?.state}
 											</span>
 											<Button asChild variant="outline" size="sm">
 												<Link
-													href={`/workshops/${workshop.fields.slug || workshop.id}/edit`}
+													href={`/workshops/${workshop.fields?.slug || workshop.id}/edit`}
 												>
 													Edit
 												</Link>
