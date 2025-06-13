@@ -4,9 +4,11 @@ import {
 	BadgeCheck,
 	Check,
 	FileCheck2,
+	Globe,
 	Infinity,
 	ListVideo,
 	Percent,
+	Speaker,
 } from 'lucide-react'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -68,8 +70,12 @@ export const ProductPricingFeatures = ({
 					{workshops.length} Workshops
 				</li>
 				<li className="flex items-center gap-2">
+					<Speaker className="h-4 w-4" />
+					Live Office Hours
+				</li>
+				<li className="flex items-center gap-2">
 					<Infinity className="h-4 w-4" />
-					Lifetime Access
+					Lifetime Access to Lessons
 				</li>
 				<li className="flex items-center gap-2">
 					<FileCheck2 className="h-4 w-4" />
