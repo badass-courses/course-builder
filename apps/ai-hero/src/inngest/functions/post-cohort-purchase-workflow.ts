@@ -95,15 +95,27 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			throw new Error(`cohort resource not found`)
 		}
 
+		const dayOneStartsAt = cohortResource.resources?.find(
+			(resource) => resource.position === 1,
+		)?.resource?.fields?.startsAt
+		const dayOneUnlockDate = dayOneStartsAt
+			? format(addDays(new Date(dayOneStartsAt), 1), 'MMMM do, yyyy')
+			: 'TBD'
+
 		if (isTeamPurchase) {
-			await step.run(`send welcome email`, async () => {
-				const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.slug}/day-0`
-				const dayOneUnlockDate = product.fields?.startDate
-					? format(
-							addDays(new Date(product.fields.startDate), 1),
-							'MMMM do, yyyy',
-						)
-					: 'TBD'
+			const bulkCoupon = await step.run('get bulk coupon', async () => {
+				if (purchase.bulkCouponId) {
+					return adapter.getCoupon(purchase.bulkCouponId)
+				}
+				return null
+			})
+
+			await step.run(`send welcome email to team purchaser`, async () => {
+				const dayZeroWorkshop = cohortResource.resources?.find(
+					(resource) => resource.position === 0,
+				)?.resource
+				const dayZeroSlug = dayZeroWorkshop.fields?.slug
+				const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
 
 				await sendAnEmail({
 					Component: getCohortWelcomeEmailVariant({
@@ -111,14 +123,17 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						isFullPriceCouponRedemption,
 					}),
 					componentProps: {
-						cohortTitle: cohortResource.title || cohortResource.slug,
+						cohortTitle:
+							cohortResource.fields.title || cohortResource.fields.slug,
 						dayZeroUrl,
 						dayOneUnlockDate,
-						quantity: purchase.quantity || 1,
+						quantity: bulkCoupon?.maxUses || 1,
 						userFirstName: user.name?.split(' ')[0],
 					},
-					Subject: `Welcome to ${cohortResource.title || 'your cohort'}!`,
+					Subject: `Welcome to ${cohortResource.fields.title || 'AI Hero'}!`,
 					To: user.email,
+					ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+					From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 					type: 'transactional',
 				})
 
@@ -267,15 +282,12 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						}
 					})
 
-					await step.run(`send welcome email`, async () => {
-						const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.slug}/day-0`
-						const dayOneUnlockDate = product.fields?.startDate
-							? format(
-									addDays(new Date(product.fields.startDate), 1),
-									'MMMM do, yyyy',
-								)
-							: 'TBD'
-
+					await step.run(`send welcome email to individual`, async () => {
+						const dayZeroWorkshop = cohortResource.resources?.find(
+							(resource) => resource.position === 0,
+						)?.resource
+						const dayZeroSlug = dayZeroWorkshop.fields?.slug
+						const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
 						const ComponentToSend = getCohortWelcomeEmailVariant({
 							isTeamPurchase: false,
 							isFullPriceCouponRedemption,
@@ -284,13 +296,17 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						await sendAnEmail({
 							Component: ComponentToSend,
 							componentProps: {
-								cohortTitle: cohortResource.title || cohortResource.slug,
+								cohortTitle:
+									cohortResource.fields.title || cohortResource.fields.slug,
 								dayZeroUrl,
 								dayOneUnlockDate,
+								quantity: purchase.totalAmount || 1,
 								userFirstName: user.name?.split(' ')[0],
 							},
-							Subject: `Welcome to ${cohortResource.title || 'your cohort'}!`,
+							Subject: `Welcome to ${cohortResource.fields.title || 'AI Hero'}!`,
 							To: user.email,
+							ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+							From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 							type: 'transactional',
 						})
 
