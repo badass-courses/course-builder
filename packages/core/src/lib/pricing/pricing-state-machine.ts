@@ -98,10 +98,11 @@ export const pricingMachine = setup({
 			},
 			{ userId: string; productId: string }
 		>(async ({ input }) => {
-			if (!input)
+			if (!input.userId) {
 				return Promise.resolve({
 					isPreviouslyPurchased: false,
 				})
+			}
 			return await fetch(
 				`${process.env.NEXT_PUBLIC_URL}/api/coursebuilder/purchases?userId=${input.userId}`,
 			)
