@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { ProductPricingFeatures } from '@/components/commerce/product-pricing-features'
 import { env } from '@/env.mjs'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 
@@ -40,7 +41,7 @@ export function ProductPricing({
 	const { startsAt, endsAt, timezone } = fields
 	const { dateString: eventDateString, timeString: eventTimeString } =
 		formatCohortDateRange(startsAt, endsAt, timezone)
-
+	const workshops = resource.workshops
 	return product ? (
 		<PriceCheckProvider
 			purchasedProductIds={purchasedProductIds}
@@ -66,6 +67,11 @@ export function ProductPricing({
 						cancelUrl: cancelUrl,
 						allowTeamPurchase: product.type !== 'membership',
 					}}
+				/>
+
+				<ProductPricingFeatures
+					className="mx-auto mt-10 w-full max-w-[280px] text-base"
+					workshops={resource.resources ?? []}
 				/>
 			</div>
 		</PriceCheckProvider>

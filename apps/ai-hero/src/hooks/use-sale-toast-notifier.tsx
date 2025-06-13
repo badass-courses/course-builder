@@ -96,7 +96,7 @@ export const useSaleToastNotifier = () => {
 						asChild
 						className="bg-primary hover:bg-primary/90 text-primary-foreground"
 					>
-						<Link href={productPath || '/#buy'}>Buy Now</Link>
+						<Link href={'/#buy'}>Buy Now</Link>
 					</ToastAction>
 				),
 			})
