@@ -85,17 +85,9 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 							const workshopEntitledUsers = await getUsersEntitledToWorkshops([
 								workshop.id,
 							])
-							const workshopEntitledUsersTESTING = [
-								{
-									id: '0548650a-98a3-4d9c-ae9a-20655eb0622f',
-									email: 'vojta@egghead.io',
-									name: 'Vojta',
-								},
-							]
 							const emailsSent = await processWorkshopEmails(
 								workshop,
-								// workshopEntitledUsers,
-								workshopEntitledUsersTESTING,
+								workshopEntitledUsers,
 							)
 							emailsSentForProduct += emailsSent
 						}
