@@ -115,7 +115,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					(resource) => resource.position === 0,
 				)?.resource
 				const dayZeroSlug = dayZeroWorkshop.fields?.slug
-				const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
+				const dayZeroUrl = `${env.COURSEBUILDER_URL}/workshops/${dayZeroSlug}`
 
 				await sendAnEmail({
 					Component: getCohortWelcomeEmailVariant({
@@ -287,7 +287,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							(resource) => resource.position === 0,
 						)?.resource
 						const dayZeroSlug = dayZeroWorkshop.fields?.slug
-						const dayZeroUrl = `${env.COURSEBUILDER_URL}/cohorts/${cohortResource.fields.slug}/${dayZeroSlug}`
+						const dayZeroUrl = `${env.COURSEBUILDER_URL}/workshops/${dayZeroSlug}`
 						const ComponentToSend = getCohortWelcomeEmailVariant({
 							isTeamPurchase: false,
 							isFullPriceCouponRedemption,
