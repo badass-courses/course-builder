@@ -14,6 +14,7 @@ const NavLinkItemSchema = z.object({
 	className: z.string().optional(),
 	icon: z.any().optional(),
 	variant: z.enum(['nav', 'menu']).default('nav').optional(),
+	textLabel: z.string().optional(),
 })
 
 export type NavLinkItem = z.infer<typeof NavLinkItemSchema>
@@ -28,13 +29,17 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	onClick,
 	className,
 	icon,
+	textLabel,
 	variant = 'nav',
 }) => {
 	const pathname = usePathname()
 	const isActive = href && pathname === href.replace(/\/$/, '')
 
 	const handleClick = () => {
-		track('nav-link-clicked', { label, href })
+		track('nav-link-clicked', {
+			label: typeof label === 'string' ? label : textLabel,
+			href,
+		})
 		onClick && onClick()
 	}
 
@@ -55,8 +60,10 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 			<Button
 				className={cn(
 					styles[variant],
+
 					{
-						underline: isActive,
+						'after:bg-foreground/50 after:absolute after:-bottom-px after:left-0 after:h-px after:w-full after:content-[""]':
+							isActive,
 						'bg-muted': isActive && variant === 'menu',
 					},
 					className,

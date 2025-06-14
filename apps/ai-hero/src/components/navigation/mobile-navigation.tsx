@@ -74,7 +74,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 			<Sheet onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
 				<SheetContent
 					side="right"
-					className="bg-card px-0 py-5 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
+					className="bg-card overflow-y-auto px-0 py-5 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
 				>
 					<nav
 						aria-label="Primary Mobile Navigation"
