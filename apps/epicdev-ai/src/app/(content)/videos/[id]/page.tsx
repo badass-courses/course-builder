@@ -20,7 +20,7 @@ export default async function VideoTranscriptEditor({
 	const { id: videoResourceId } = await params
 
 	// TODO: Add proper ability check for video resource management
-	if (!ability) {
+	if (!ability || !ability.can('manage', 'Content')) {
 		return notFound()
 	}
 
