@@ -243,37 +243,33 @@ export function mergeWords(
 		.join(' ')
 		.replace(/\s([,.!?])/g, '$1')
 
-	// Update channel alternatives
-	newData.deepgramResults.channels.forEach((channel) => {
-		channel.alternatives.forEach((alt) => {
-			// Find and merge corresponding words in the alternative
-			const altWordIndex = alt.words.findIndex(
-				(w) => w.start === word1.start && w.end === word1.end,
-			)
-			if (altWordIndex !== -1 && altWordIndex < alt.words.length - 1) {
-				alt.words.splice(altWordIndex, 2, mergedWord)
+		// Update alternative transcript
+		alt.transcript = alt.words
+			.map((w) => w.punctuated_word)
+			.join(' ')
+			.replace(/\s([,.!?])/g, '$1')
 
-				// Update alternative transcript
-				alt.transcript = alt.words
-					.map((w) => w.punctuated_word)
-					.join(' ')
-					.replace(/\s([,.!?])/g, '$1')
++		if (alt.confidence !== undefined) {
++			alt.confidence =
++				alt.words.reduce((sum, w) => sum + w.confidence, 0) /
++				alt.words.length
++		}
 
-				// Update paragraphs if they exist
-				if (alt.paragraphs) {
-					alt.paragraphs.paragraphs.forEach((paragraph) => {
-						paragraph.sentences.forEach((sentence) => {
-							if (
-								sentence.start <= mergedWord.end &&
-								sentence.end >= mergedWord.start
-							) {
-								const sentenceWords = alt.words.filter(
-									(w) => w.start >= sentence.start && w.end <= sentence.end,
-								)
-								sentence.text = sentenceWords
-									.map((w) => w.punctuated_word)
-									.join(' ')
-									.replace(/\s([,.!?])/g, '$1')
+		// Update paragraphs if they exist
+		if (alt.paragraphs) {
+			alt.paragraphs.paragraphs.forEach((paragraph) => {
+				paragraph.sentences.forEach((sentence) => {
+					if (
+						sentence.start <= mergedWord.end &&
+						sentence.end >= mergedWord.start
+					) {
+						const sentenceWords = alt.words.filter(
+							(w) => w.start >= sentence.start && w.end <= sentence.end,
+						)
+						sentence.text = sentenceWords
+							.map((w) => w.punctuated_word)
+							.join(' ')
+							.replace(/\s([,.!?])/g, '$1')
 							}
 						})
 
