@@ -71,7 +71,7 @@ export const WordEditor: React.FC<WordEditorProps> = ({
 							onCancel()
 						}
 						if (e.key === 'Enter') {
-							onSave(true)
+							onSave(false)
 						}
 					}}
 					className="rounded border border-blue-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
