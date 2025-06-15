@@ -105,12 +105,26 @@ export default function TranscriptEditorPage({
 				</div>
 			</header>
 			<main className="py-8">
-				<TranscriptEditor
-					utterances={transcriptData.deepgramResults.utterances}
-					onUpdateWord={handleUpdateWord}
-					onReplaceAll={handleReplaceAll}
-					onMergeWords={handleMergeWords}
-				/>
+				{transcriptData.deepgramResults.utterances ? (
+					<TranscriptEditor
+						utterances={transcriptData.deepgramResults.utterances}
+						onUpdateWord={handleUpdateWord}
+						onReplaceAll={handleReplaceAll}
+						onMergeWords={handleMergeWords}
+					/>
+				) : (
+					<div className="mx-auto max-w-4xl p-6">
+						<div className="rounded-lg bg-white p-8 text-center shadow-md">
+							<h2 className="mb-2 text-xl font-semibold text-gray-800">
+								No Utterances Available
+							</h2>
+							<p className="text-gray-600">
+								This transcript doesn't contain utterance data. Utterances may
+								not have been enabled during transcription.
+							</p>
+						</div>
+					</div>
+				)}
 			</main>
 		</div>
 	)

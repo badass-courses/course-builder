@@ -53,7 +53,7 @@ export const UtteranceSchema = z.object({
 
 export const DeepgramResultsSchema = z.object({
 	channels: z.array(ChannelSchema),
-	utterances: z.array(UtteranceSchema),
+	utterances: z.array(UtteranceSchema).optional(),
 })
 
 export const DeepgramResponseSchema = z.object({

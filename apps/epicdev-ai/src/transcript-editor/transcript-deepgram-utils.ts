@@ -13,6 +13,8 @@ export function updateTranscriptData(
 	const newData = structuredClone(prevData)
 
 	// Find the utterance and its position in the timeline
+	if (!newData.deepgramResults.utterances) return newData
+
 	const utteranceIndex = newData.deepgramResults.utterances.findIndex(
 		(u) => u.id === utteranceId,
 	)
@@ -119,32 +121,34 @@ export function replaceAllWords(
 	const newData = structuredClone(prevData)
 
 	// Update all utterances
-	newData.deepgramResults.utterances.forEach((utterance) => {
-		let updated = false
-		utterance.words.forEach((word, index) => {
-			if (word.word.toLowerCase() === originalWord.toLowerCase()) {
-				utterance.words[index] = {
-					...newWord,
-					start: word.start,
-					end: word.end,
+	if (newData.deepgramResults.utterances) {
+		newData.deepgramResults.utterances.forEach((utterance) => {
+			let updated = false
+			utterance.words.forEach((word, index) => {
+				if (word.word.toLowerCase() === originalWord.toLowerCase()) {
+					utterance.words[index] = {
+						...newWord,
+						start: word.start,
+						end: word.end,
+					}
+					updated = true
 				}
-				updated = true
+			})
+
+			if (updated) {
+				// Update utterance transcript
+				utterance.transcript = utterance.words
+					.map((w) => w.punctuated_word)
+					.join(' ')
+					.replace(/\s([,.!?])/g, '$1')
+
+				// Recalculate confidence
+				utterance.confidence =
+					utterance.words.reduce((sum, word) => sum + word.confidence, 0) /
+					utterance.words.length
 			}
 		})
-
-		if (updated) {
-			// Update utterance transcript
-			utterance.transcript = utterance.words
-				.map((w) => w.punctuated_word)
-				.join(' ')
-				.replace(/\s([,.!?])/g, '$1')
-
-			// Recalculate confidence
-			utterance.confidence =
-				utterance.words.reduce((sum, word) => sum + word.confidence, 0) /
-				utterance.words.length
-		}
-	})
+	}
 
 	// Update all channels
 	newData.deepgramResults.channels.forEach((channel) => {
@@ -208,6 +212,8 @@ export function mergeWords(
 	wordIndex: number,
 ): DeepgramResponse {
 	const newData = structuredClone(prevData)
+
+	if (!newData.deepgramResults.utterances) return newData
 
 	const utteranceIndex = newData.deepgramResults.utterances.findIndex(
 		(u) => u.id === utteranceId,
