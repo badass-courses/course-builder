@@ -19,10 +19,12 @@ export const ParagraphSchema = z
 		text: z.string().optional(),
 		sentences: z.array(SentenceSchema),
 	})
-	.transform((data) => ({
-		...data,
-		text: data.text ?? data.sentences.map((s) => s.text).join(' '),
-	}))
+	.transform(
+		(data): { text: string; sentences: z.infer<typeof SentenceSchema>[] } => ({
+			...data,
+			text: data.text ?? data.sentences.map((s) => s.text).join(' '),
+		}),
+	)
 
 export const AlternativeSchema = z.object({
 	transcript: z.string(),
