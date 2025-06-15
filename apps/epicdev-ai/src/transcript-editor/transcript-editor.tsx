@@ -61,16 +61,22 @@ export const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
 		setEditingWord(null)
 	}
 
-	const countWordOccurrences = (word: string) => {
-		return utterances.reduce((count, utterance) => {
-			return (
-				count +
-				utterance.words.filter(
-					(w) => w.word.toLowerCase() === word.toLowerCase(),
-				).length
-			)
-		}, 0)
-	}
+// Replace the old reducer-based implementation with a memoized map
+const wordCounts = React.useMemo(() => {
+  const map = new Map<string, number>()
+  utterances.forEach((u) =>
+    u.words.forEach((w) =>
+      map.set(
+        w.word.toLowerCase(),
+        (map.get(w.word.toLowerCase()) ?? 0) + 1,
+      ),
+    ),
+  )
+  return map
+}, [utterances])
+
+const countWordOccurrences = (word: string) =>
+  wordCounts.get(word.toLowerCase()) ?? 0
 
 	const handleMergeWords = (utteranceId: string, wordIndex: number) => {
 		onMergeWords(utteranceId, wordIndex)
