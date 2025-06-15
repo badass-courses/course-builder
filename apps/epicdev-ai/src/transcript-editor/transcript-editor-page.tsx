@@ -1,0 +1,117 @@
+'use client'
+
+import * as React from 'react'
+
+import { updateTranscript } from './actions'
+import { DeepgramResponse, Word } from './transcript-deepgram-response'
+import {
+	mergeWords,
+	replaceAllWords,
+	updateTranscriptData,
+} from './transcript-deepgram-utils'
+import { TranscriptEditor } from './transcript-editor'
+
+interface TranscriptEditorPageProps {
+	transcriptData: DeepgramResponse
+	videoResourceId: string
+}
+
+/**
+ * Client-side transcript editor page component
+ * Manages transcript state, handles word editing operations, and saves changes
+ */
+export default function TranscriptEditorPage({
+	transcriptData: initialTranscriptData,
+	videoResourceId,
+}: TranscriptEditorPageProps) {
+	const [transcriptData, setTranscriptData] = React.useState<DeepgramResponse>(
+		initialTranscriptData,
+	)
+	const [isDirty, setIsDirty] = React.useState(false)
+
+	const handleUpdateWord = (
+		utteranceId: string,
+		wordIndex: number,
+		newWord: Word,
+	) => {
+		setIsDirty(true)
+		setTranscriptData((prevData) =>
+			updateTranscriptData(prevData, utteranceId, wordIndex, newWord),
+		)
+	}
+
+	const handleReplaceAll = (originalWord: string, newWord: Word) => {
+		setIsDirty(true)
+		setTranscriptData((prevData) =>
+			replaceAllWords(prevData, originalWord, newWord),
+		)
+	}
+
+	const handleMergeWords = (utteranceId: string, wordIndex: number) => {
+		setIsDirty(true)
+		setTranscriptData((prevData) =>
+			mergeWords(prevData, utteranceId, wordIndex),
+		)
+	}
+
+	const handleSave = async () => {
+		try {
+			await updateTranscript(videoResourceId, transcriptData)
+			setIsDirty(false)
+		} catch (error) {
+			console.error('Failed to save transcript:', error)
+			// TODO: Add proper error handling/toast notification
+		}
+	}
+
+	const handleDiscard = () => {
+		setTranscriptData(initialTranscriptData)
+		setIsDirty(false)
+	}
+
+	return (
+		<div className="min-h-screen bg-gray-50">
+			<header className="bg-white shadow-sm">
+				<div className="mx-auto max-w-4xl px-6 py-4">
+					<div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
+						<span className="text-gray-900">Video Transcript Editor</span>
+					</div>
+					<div className="flex items-center justify-between">
+						<div>
+							<h1 className="text-2xl font-semibold text-gray-800">
+								Transcript Editor
+							</h1>
+							<p className="mt-1 text-sm text-gray-600">
+								Video ID: {videoResourceId}
+							</p>
+						</div>
+						{isDirty && (
+							<div className="flex gap-2">
+								<button
+									onClick={handleDiscard}
+									className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-600 hover:bg-gray-50"
+								>
+									Discard Changes
+								</button>
+								<button
+									onClick={handleSave}
+									className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+								>
+									Save Changes
+								</button>
+							</div>
+						)}
+					</div>
+				</div>
+			</header>
+			<main className="py-8">
+				<TranscriptEditor
+					utterances={transcriptData.deepgramResults.utterances}
+					onUpdateWord={handleUpdateWord}
+					onReplaceAll={handleReplaceAll}
+					onMergeWords={handleMergeWords}
+				/>
+			</main>
+		</div>
+	)
+}
