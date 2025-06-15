@@ -37,12 +37,6 @@ export const courseBuilderConfig: NextCourseBuilderConfig = {
 			return { ...req, example: 'just an example' }
 		},
 	},
-	getCurrentUser: async () => {
-		const { session } = await getServerAuthSession()
-		if (!session?.user) return null
-
-		return userSchema.parse(session.user)
-	},
 	authConfig: authOptions,
 }
 
