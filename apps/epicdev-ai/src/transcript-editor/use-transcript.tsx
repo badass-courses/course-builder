@@ -1,8 +1,9 @@
 import * as React from 'react'
+import Link from 'next/link'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
 import Spinner from '@/components/spinner'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { RefreshCcw } from 'lucide-react'
+import { Edit, RefreshCcw } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import {
@@ -21,6 +22,7 @@ type TranscriptDialogProps = {
 	onReprocess: () => Promise<void>
 	isOpen: boolean
 	onOpenChange: (open: boolean) => void
+	videoResourceId?: string | null
 }
 
 const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
@@ -29,6 +31,7 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
 	onReprocess,
 	isOpen,
 	onOpenChange,
+	videoResourceId,
 }) => {
 	return (
 		<Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -54,6 +57,13 @@ const TranscriptDialog: React.FC<TranscriptDialogProps> = ({
 					)}
 				</div>
 				<DialogFooter className="flex items-center">
+					{videoResourceId && (
+						<Button asChild variant="outline" className="gap-2">
+							<Link href={`/videos/${videoResourceId}`}>
+								<Edit className="w-3" /> Edit Transcript
+							</Link>
+						</Button>
+					)}
 					<Button
 						variant="secondary"
 						type="button"
@@ -135,6 +145,7 @@ export function useTranscript(options: {
 				onReprocess={handleReprocess}
 				isOpen={isOpen}
 				onOpenChange={setIsOpen}
+				videoResourceId={options.videoResourceId}
 			/>
 		) : null
 

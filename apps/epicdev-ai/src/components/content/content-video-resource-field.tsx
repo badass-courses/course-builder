@@ -9,7 +9,7 @@ import { NewLessonVideoForm } from '@/app/(content)/_components/new-lesson-video
 import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
-import { useTranscript } from '@/hooks/use-transcript'
+import { useTranscript } from '@/transcript-editor/use-transcript'
 import { api } from '@/trpc/react'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
