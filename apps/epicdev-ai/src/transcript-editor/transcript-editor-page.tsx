@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { Loader2 } from 'lucide-react'
 
 import { updateTranscript } from './actions'
 import { DeepgramResponse, Word } from './transcript-deepgram-response'
@@ -28,6 +29,7 @@ export default function TranscriptEditorPage({
 		initialTranscriptData,
 	)
 	const [isDirty, setIsDirty] = React.useState(false)
+	const [isSaving, setIsSaving] = React.useState(false)
 
 	const handleUpdateWord = (
 		utteranceId: string,
@@ -56,11 +58,14 @@ export default function TranscriptEditorPage({
 
 	const handleSave = async () => {
 		try {
+			setIsSaving(true)
 			await updateTranscript(videoResourceId, transcriptData)
 			setIsDirty(false)
 		} catch (error) {
 			console.error('Failed to save transcript:', error)
 			// TODO: Add proper error handling/toast notification
+		} finally {
+			setIsSaving(false)
 		}
 	}
 
@@ -89,15 +94,18 @@ export default function TranscriptEditorPage({
 							<div className="flex gap-2">
 								<button
 									onClick={handleDiscard}
-									className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-600 hover:bg-gray-50"
+									disabled={isSaving}
+									className="rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
 								>
 									Discard Changes
 								</button>
 								<button
 									onClick={handleSave}
-									className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+									disabled={isSaving}
+									className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
 								>
-									Save Changes
+									{isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+									{isSaving ? 'Saving...' : 'Save Changes'}
 								</button>
 							</div>
 						)}
