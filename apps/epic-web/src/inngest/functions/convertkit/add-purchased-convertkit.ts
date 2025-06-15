@@ -30,6 +30,9 @@ export const addPurchasesConvertkit = inngest.createFunction(
 		const purchase = await step.run('get purchase', async () => {
 			return db.query.purchases.findFirst({
 				where: eq(purchases.id, event.data.purchaseId),
+				with: {
+					product: true,
+				},
 			})
 		})
 
@@ -42,10 +45,15 @@ export const addPurchasesConvertkit = inngest.createFunction(
 
 		if (convertkitUser && emailListProvider.updateSubscriberFields) {
 			await step.run('update convertkit user', async () => {
+				const productSlug = purchase.product.fields?.slug
+				const purchasedOnFieldName = productSlug
+					? `purchased_${productSlug.replace(/-/gi, '_')}_on`
+					: process.env.CONVERTKIT_PURCHASED_ON_FIELD_NAME || 'purchased_on'
+
 				return emailListProvider.updateSubscriberFields?.({
 					subscriberId: convertkitUser.id,
 					fields: {
-						purchased_pronextjs_course_on: format(
+						[purchasedOnFieldName]: format(
 							new Date(purchase.createdAt),
 							'yyyy-MM-dd HH:mm:ss z',
 						),
