@@ -1,10 +1,11 @@
 import * as React from 'react'
+import Link from 'next/link'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
 import { api } from '@/trpc/react'
 import MuxPlayer from '@mux/mux-player-react'
-import { Loader2, MoreVertical, Play } from 'lucide-react'
+import { Edit, Loader2, MoreVertical, Play } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
@@ -217,6 +218,12 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 											}}
 										>
 											Preview
+										</DropdownMenuItem>
+										<DropdownMenuItem asChild>
+											<Link href={`/videos/${videoResource.id}`}>
+												<Edit className="mr-2 h-4 w-4" />
+												Edit Transcript
+											</Link>
 										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
