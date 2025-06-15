@@ -204,6 +204,23 @@ export function replaceAllWords(
 }
 
 /**
+ * Helper function to properly merge punctuated words while preserving
+ * capitalization, contractions, and punctuation from both words
+ */
+function mergePunctuatedWords(word1: string, word2: string): string {
+	// Remove trailing punctuation from first word
+	const word1Base = word1.replace(/[,.!?;:]*$/, '')
+
+	// Remove leading punctuation from second word but preserve trailing
+	const word2Match = word2.match(/^[^a-zA-Z0-9]*(.+?)([,.!?;:]*)$/)
+	const word2Base = word2Match?.[1] || word2
+	const word2TrailingPunct = word2Match?.[2] || ''
+
+	// Combine the words and add back trailing punctuation
+	return `${word1Base}${word2Base}${word2TrailingPunct}`
+}
+
+/**
  * Merges two adjacent words into a single word
  */
 export function mergeWords(
@@ -232,9 +249,10 @@ export function mergeWords(
 	// Create merged word
 	const mergedWord: Word = {
 		word: `${word1.word}${word2.word}`,
-		punctuated_word: `${word1.word}${word2.word}${
-			word2.punctuated_word.match(/[,.!?]$/)?.[0] || ''
-		}`,
+		punctuated_word: mergePunctuatedWords(
+			word1.punctuated_word,
+			word2.punctuated_word,
+		),
 		start: word1.start,
 		end: word2.end,
 		confidence: (word1.confidence + word2.confidence) / 2,
