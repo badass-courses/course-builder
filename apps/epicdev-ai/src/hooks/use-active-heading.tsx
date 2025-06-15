@@ -17,6 +17,8 @@ const ActiveHeadingContext = createContext<ActiveHeadingContextType | null>(
 	null,
 )
 
+export { ActiveHeadingContext }
+
 interface ActiveHeadingProviderProps {
 	children: ReactNode
 }
