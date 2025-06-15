@@ -220,7 +220,10 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 											Preview
 										</DropdownMenuItem>
 										<DropdownMenuItem asChild>
-											<Link href={`/videos/${videoResource.id}`}>
+											<Link
+												href={`/videos/${videoResource.id}`}
+												onClick={(e) => e.stopPropagation()}
+											>
 												<Edit className="mr-2 h-4 w-4" />
 												Edit Transcript
 											</Link>
