@@ -11,6 +11,7 @@ import { CldImage } from '@/components/cld-image'
 import { PricingWidgetServer } from '@/components/commerce/pricing-widget-server'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
@@ -41,8 +42,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const searchParams = await props.searchParams
-	let ogImageUrl =
-		'https://res.cloudinary.com/total-typescript/image/upload/v1741104174/aihero.dev/assets/card_2x_mxsopp.jpg' // `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('From Zero to Hero in Node')}`
+	let ogImageUrl = config.openGraph.images[0]!.url
 	const codeParam = searchParams?.code
 	const couponParam = searchParams?.coupon
 	const couponCodeOrId = codeParam || couponParam
@@ -64,11 +64,7 @@ export async function generateMetadata(
 			default: `From Zero to AI Hero`,
 		},
 		openGraph: {
-			images: [
-				{
-					url: ogImageUrl,
-				},
-			],
+			images: ogImageUrl ? [{ url: ogImageUrl }] : [],
 		},
 	}
 }
