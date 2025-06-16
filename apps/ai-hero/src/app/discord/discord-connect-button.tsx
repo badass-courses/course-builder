@@ -9,14 +9,16 @@ import { Button } from '@coursebuilder/ui'
 
 export function DiscordConnectButton({
 	discordProvider,
+	children,
 }: {
 	discordProvider: { id: string; name: string }
+	children?: React.ReactNode
 }) {
 	return (
 		<Button
 			data-button=""
 			variant="ghost"
-			className="bg-black text-white"
+			className="h-full bg-black text-white"
 			onClick={() =>
 				signIn(discordProvider.id, {
 					callbackUrl: `${env.NEXT_PUBLIC_URL}/discord/redirect`,
@@ -29,7 +31,7 @@ export function DiscordConnectButton({
 				name="Discord"
 				size="20"
 			/>
-			Connect to Discord
+			{children || 'Connect to Discord'}
 		</Button>
 	)
 }

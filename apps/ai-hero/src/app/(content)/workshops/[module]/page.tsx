@@ -22,6 +22,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
+import { getProviders } from '@/server/auth'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -41,10 +42,9 @@ import {
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { ConnectToDiscord } from '../_components/connect-to-discord'
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
-import { WorkshopPricing as WorkshopPricingClient } from '../_components/workshop-pricing'
-import { WorkshopPricing } from '../_components/workshop-pricing-server'
 
 type Props = {
 	params: Promise<{ module: string }>
@@ -100,6 +100,9 @@ export default async function ModulePage(props: Props) {
 		notFound()
 	}
 
+	const providers = getProviders()
+	const discordProvider = providers?.discord
+
 	const Links = ({ children }: { children?: React.ReactNode }) => {
 		return (
 			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
@@ -135,6 +138,9 @@ export default async function ModulePage(props: Props) {
 								</DialogContent>
 							</Dialog>
 						</div>
+					</React.Suspense>
+					<React.Suspense fallback={null}>
+						<ConnectToDiscord discordProvider={discordProvider} />
 					</React.Suspense>
 				</div>
 				{children}
