@@ -315,11 +315,18 @@ export async function processStripeWebhook(
 			console.log('checkout.session.async_payment_succeeded', event)
 			break
 		case 'charge.refunded':
-			await updatePurchaseStatus({
-				stripeChargeId: event.data.object.id,
-				status: 'Refunded',
-				options,
-			})
+			const stripeChargeId = event.data.object.id
+
+			const totalRefunded = event.data.object.amount_refunded
+			const totalCharged = event.data.object.amount
+
+			if (totalRefunded === totalCharged) {
+				await updatePurchaseStatus({
+					stripeChargeId,
+					status: 'Refunded',
+					options,
+				})
+			}
 			// log the transaction
 			break
 		case 'charge.dispute.created':
