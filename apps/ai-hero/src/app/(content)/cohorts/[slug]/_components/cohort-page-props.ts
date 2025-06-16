@@ -3,7 +3,11 @@ import { Event } from '@/lib/events'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
 import { Product, Purchase } from '@coursebuilder/core/schemas'
-import { CommerceProps, PricingData } from '@coursebuilder/core/types'
+import {
+	CommerceProps,
+	PricingData,
+	type PricingOptions,
+} from '@coursebuilder/core/types'
 
 export type CohortPageProps = {
 	cohort: Cohort
@@ -18,4 +22,5 @@ export type CohortPageProps = {
 	purchases?: Purchase[]
 	userId?: string
 	pricingDataLoader: Promise<PricingData>
+	pricingWidgetOptions?: Partial<PricingOptions>
 } & CommerceProps

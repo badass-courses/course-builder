@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
+import { CldImage } from '@/components/cld-image'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
 import { track } from '@/utils/analytics'
@@ -10,11 +11,13 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { toSnakeCase } from 'drizzle-orm/casing'
 import { CheckCircle } from 'lucide-react'
 
+import { cn } from '@coursebuilder/ui/utils/cn'
+
 import type { CohortPageProps } from './cohort-page-props'
 
-export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
-	props,
-) => {
+export const CohortPricingWidgetContainer: React.FC<
+	CohortPageProps & { className?: string }
+> = ({ className, ...props }) => {
 	const {
 		cohort,
 		mdx,
@@ -24,6 +27,7 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 		totalQuantity,
 		pricingDataLoader,
 		hasPurchasedCurrentProduct,
+		pricingWidgetOptions,
 		...commerceProps
 	} = props
 	const { fields } = cohort
@@ -54,8 +58,21 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 	return (
 		<>
 			{product && product.status === 1 && isUpcoming && (
-				<div className="border-b px-5 pb-5">
-					<p className="-mb-8 flex w-full items-center justify-center pt-5 text-center">
+				<div className={cn('border-b px-5 pb-5', className)}>
+					{pricingWidgetOptions?.withImage && (
+						<div className="mb-3 flex w-full items-center justify-center">
+							<CldImage
+								loading="lazy"
+								src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
+								alt=""
+								aria-hidden="true"
+								width={130}
+								height={130}
+								className="rotate-12"
+							/>
+						</div>
+					)}
+					<p className="opacit-50 -mb-7 flex w-full items-center justify-center pt-5 text-center text-base">
 						{eventDateString}
 					</p>
 					<PricingWidget
@@ -71,6 +88,7 @@ export const CohortPricingWidgetContainer: React.FC<CohortPageProps> = (
 							isLiveEvent: true,
 							withImage: false,
 							withTitle: false,
+							...pricingWidgetOptions,
 						}}
 					/>
 				</div>

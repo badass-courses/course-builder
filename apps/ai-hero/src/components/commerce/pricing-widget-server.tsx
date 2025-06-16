@@ -1,15 +1,19 @@
 import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
-import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import Link from 'next/link'
+import { CohortPricingWidgetContainer } from '@/app/(content)/cohorts/[slug]/_components/cohort-pricing-widget-container'
+import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getResourcePath } from '@/utils/resource-paths'
 import { count, eq } from 'drizzle-orm'
+import { CheckCircle } from 'lucide-react'
 
-import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
+import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 
@@ -111,5 +115,45 @@ export async function PricingWidgetServer({
 		}
 	}
 
-	return <ProductPricing resource={cohort} {...productProps} />
+	const purchasedProductIds = productProps.purchasedProductIds || []
+	const organizationId = productProps.organizationId
+
+	// Extract workshops from cohort for features display
+	const workshops =
+		cohort?.resources?.map(({ resource }: any) => ({
+			title: resource.fields.title,
+			slug: resource.fields.slug,
+		})) || []
+
+	if (!cohort) return null
+
+	return productProps.hasPurchasedCurrentProduct ? (
+		<div className="flex w-full flex-col items-center justify-center gap-2 px-10 pt-3 text-center text-lg sm:flex-row">
+			<CheckCircle className="size-4 flex-shrink-0 text-emerald-600 dark:text-emerald-300" />{' '}
+			<span>You have already purchased a ticket to this cohort.</span>{' '}
+			<Link
+				className="text-primary underline"
+				href={getResourcePath(cohort.type, cohort.fields.slug, 'view')}
+			>
+				View →
+			</Link>
+		</div>
+	) : (
+		<PriceCheckProvider
+			purchasedProductIds={purchasedProductIds}
+			organizationId={organizationId}
+		>
+			<CohortPricingWidgetContainer
+				className="border-b-0 pt-10 [&_[aria-live='polite']]:text-6xl"
+				{...productProps}
+				{...productProps.commerceProps}
+				workshops={workshops}
+				cohort={cohort}
+				pricingWidgetOptions={{
+					withTitle: true,
+					withImage: true,
+				}}
+			/>
+		</PriceCheckProvider>
+	)
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { ProductPricingFeatures } from '@/components/commerce/product-pricing-features'
 
@@ -56,14 +58,14 @@ export const PricingWidget: React.FC<{
 			{...commerceProps}
 		>
 			<Pricing.Product className="w-full">
-				<Pricing.ProductImage />
+				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
-					<Pricing.Name className="mb-2 font-medium sm:text-xl" />
+					<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
 					<Pricing.LiveQuantity />
 					<Pricing.Price className="[&_[aria-live='polite']]:text-5xl [&_sup]:-mt-1" />
-					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-3' />
+					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative bg-blue-600 hover:bg-blue-700">
+					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
 						<span className="relative z-10">Enroll</span>
 						<div
 							style={{
@@ -79,8 +81,8 @@ export const PricingWidget: React.FC<{
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					{/* <Pricing.LiveRefundPolicy /> */}
-					<Pricing.SaleCountdown className="py-4" />
-					<Pricing.PPPToggle />
+					<Pricing.SaleCountdown className="mt-3 py-4 [&_p]:text-base [&_p]:font-normal" />
+					<Pricing.PPPToggle className="bg-muted mt-5 max-w-sm rounded p-5" />
 				</Pricing.Details>
 			</Pricing.Product>
 			<ProductPricingFeatures workshops={workshops ?? []} />

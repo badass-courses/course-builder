@@ -212,31 +212,22 @@ const Home = async (props: Props) => {
 								Pricing: (props) => (
 									<React.Suspense
 										fallback={
-											<div className="flex h-full w-full items-center justify-center p-10 text-center">
+											<div className="flex h-full w-full items-center justify-center px-5 py-10 text-center">
 												Loading pricing...
 											</div>
 										}
 									>
-										<div
-											id="buy"
-											className="mx-auto mt-0 flex w-full flex-col items-center justify-center pb-16 sm:-mt-8"
-										>
-											<div className="-mb-5">
-												<CldImage
-													loading="lazy"
-													src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
-													alt=""
-													aria-hidden="true"
-													width={130}
-													height={130}
-													className="rotate-12"
+										<div className="mt-10 flex flex-col items-center justify-center border-t sm:flex-row">
+											<div
+												id="buy"
+												className="not-prose bg-card pb-5 pt-3 sm:border-x"
+											>
+												<PricingWidgetServer
+													productId="product-3vfob"
+													searchParams={searchParams}
+													{...props}
 												/>
 											</div>
-											<PricingWidgetServer
-												productId="product-3vfob"
-												searchParams={searchParams}
-												{...props}
-											/>
 										</div>
 									</React.Suspense>
 								),

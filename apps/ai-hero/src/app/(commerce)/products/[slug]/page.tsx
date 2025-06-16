@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
-import { ProductPricing } from '@/app/(commerce)/products/[slug]/_components/product-pricing'
+import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -13,6 +13,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { count, eq } from 'drizzle-orm'
 
+import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
@@ -200,9 +201,39 @@ async function ProductCommerce({
 		}
 	}
 
+	const purchasedProductIds = productProps.purchasedProductIds || []
+	const organizationId = productProps.organizationId
+
 	return (
 		<Suspense>
-			<ProductPricing {...productProps} />
+			<PriceCheckProvider
+				purchasedProductIds={purchasedProductIds}
+				organizationId={organizationId}
+			>
+				<PricingWidget
+					product={product}
+					quantityAvailable={quantityAvailable}
+					commerceProps={commerceProps}
+					pricingDataLoader={pricingDataLoader}
+					hasPurchasedCurrentProduct={productProps.hasPurchasedCurrentProduct}
+					workshops={[]} // No workshops for regular product pages
+					pricingWidgetOptions={{
+						withImage: product.type !== 'live',
+						withGuaranteeBadge: product.type !== 'live',
+						isLiveEvent: product.type === 'live',
+						isCohort: product.type === 'cohort',
+						isPPPEnabled: !['live', 'cohort'].includes(product.type),
+						cancelUrl: `${process.env.NEXT_PUBLIC_URL || ''}/products/${product.fields?.slug || product.id}`,
+						allowTeamPurchase: product.type !== 'membership',
+						teamQuantityLimit:
+							product.type === 'live'
+								? quantityAvailable && quantityAvailable > 5
+									? 5
+									: quantityAvailable
+								: 100,
+					}}
+				/>
+			</PriceCheckProvider>
 		</Suspense>
 	)
 }

@@ -207,8 +207,6 @@ export default async function CohortPage(props: {
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 
-	const { dateString: eventDateString, timeString: eventTimeString } =
-		formatCohortDateRange(startsAt, endsAt, PT)
 	const workshops: Workshop[] =
 		cohort.resources?.map((resource) => resource.resource) ?? []
 

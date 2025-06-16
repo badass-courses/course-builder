@@ -30,7 +30,7 @@ export const ProductPricingFeatures = ({
 	return (
 		<div
 			className={cn(
-				'relative mt-5 flex w-full flex-col items-center',
+				'not-prose relative mt-5 flex w-full max-w-xs flex-col items-center text-base',
 				className,
 			)}
 		>
