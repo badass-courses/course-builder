@@ -66,11 +66,14 @@ export async function generateMetadata(
 		description: cohort.fields.description,
 		openGraph: {
 			images: [
-				getOGImageUrlForResource({
-					fields: { slug: cohort.fields.slug },
-					id: cohort.id,
-					updatedAt: cohort.updatedAt,
-				}),
+				{
+					url: `${env.NEXT_PUBLIC_URL}/api/og/default?title=${encodeURIComponent(cohort.fields.title)}`,
+				},
+				// getOGImageUrlForResource({
+				// 	fields: { slug: cohort.fields.slug },
+				// 	id: cohort.id,
+				// 	updatedAt: cohort.updatedAt,
+				// }),
 			],
 		},
 	}
