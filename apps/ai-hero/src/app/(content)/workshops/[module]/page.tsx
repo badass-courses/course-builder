@@ -100,8 +100,8 @@ export default async function ModulePage(props: Props) {
 		notFound()
 	}
 
-  const providers = await getProviders()
-  const discordProvider = providers?.discord
+	const providers = getProviders()
+	const discordProvider = providers?.discord
 	const Links = ({ children }: { children?: React.ReactNode }) => {
 		return (
 			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
