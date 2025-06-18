@@ -13,6 +13,7 @@ export const EventFieldsSchema = z.object({
 	startsAt: z.string().datetime().nullable().optional(),
 	endsAt: z.string().datetime().nullable().optional(),
 	timezone: z.string().default('America/Los_Angeles').nullish(),
+	attendeeInstructions: z.string().nullable().optional(),
 })
 
 /**

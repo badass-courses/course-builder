@@ -149,6 +149,7 @@ const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 					url: getOGImageUrlForResource(event as Event),
 				},
 				details: event?.fields?.details || '',
+				attendeeInstructions: event?.fields?.attendeeInstructions || '',
 			},
 			// Handle resourceProducts (specific to EventSchema merge)
 			resourceProducts: event?.resourceProducts || [],
@@ -346,6 +347,76 @@ const EventFormFields = ({
 			<MetadataFieldState form={form} />
 			<MetadataFieldVisibility form={form} />
 			<TagField resource={resource} showEditButton />
+
+			<FormField
+				control={form.control}
+				name="fields.startsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Starts at</FormLabel>
+						<DateTimePicker
+							aria-label="Starts At"
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.endsAt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Ends at</FormLabel>
+						<DateTimePicker
+							aria-label="Ends At"
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.timezone"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
+						<Input {...field} readOnly disabled value={field.value || ''} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">
@@ -396,75 +467,60 @@ const EventFormFields = ({
 				</DialogContent>
 			</Dialog>
 
-			<FormField
-				control={form.control}
-				name="fields.startsAt"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Starts At:</FormLabel>
-						<DateTimePicker
-							aria-label="Starts At"
-							{...field}
-							value={
-								!!field.value
-									? parseAbsolute(
-											new Date(field.value).toISOString(),
-											'America/Los_Angeles',
-										)
-									: null
-							}
-							onChange={(date) => {
-								field.onChange(
-									!!date ? date.toDate('America/Los_Angeles') : null,
-								)
-							}}
-							shouldCloseOnSelect={false}
-							granularity="minute"
+			<Dialog>
+				<DialogTrigger asChild>
+					<div className="px-5">
+						<FormLabel className="inline-flex items-center text-lg font-bold">
+							Attendee Instructions
+						</FormLabel>
+						<FormDescription>
+							Instructions for attendees who have registered for this event.
+							Displayed on the event page.
+						</FormDescription>
+						<Textarea
+							readOnly
+							value={form.watch('fields.attendeeInstructions') ?? ''}
 						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="fields.endsAt"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Ends At:</FormLabel>
-						<DateTimePicker
-							aria-label="Ends At"
-							{...field}
-							value={
-								!!field.value
-									? parseAbsolute(
-											new Date(field.value).toISOString(),
-											'America/Los_Angeles',
-										)
-									: null
-							}
-							onChange={(date) => {
-								field.onChange(
-									!!date ? date.toDate('America/Los_Angeles') : null,
-								)
-							}}
-							shouldCloseOnSelect={false}
-							granularity="minute"
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="fields.timezone"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Timezone:</FormLabel>
-						<Input {...field} readOnly disabled value={field.value || ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+					</div>
+				</DialogTrigger>
+				<DialogContent className="scrollbar-thin max-h-[500px] max-w-screen-md">
+					<DialogHeader>
+						<DialogTitle className=" inline-flex items-center text-lg font-bold">
+							Attendee Instructions
+						</DialogTitle>
+						<DialogDescription>
+							Instructions for attendees who have registered for this event.
+							Displayed on the event page. Markdown is supported.
+						</DialogDescription>
+					</DialogHeader>
+					<FormField
+						control={form.control}
+						name="fields.attendeeInstructions"
+						render={({ field }) => (
+							<FormItem>
+								<MarkdownEditor
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+									height="300px"
+									maxHeight="500px"
+									onChange={(value) => {
+										form.setValue('fields.attendeeInstructions', value)
+									}}
+									value={field.value?.toString()}
+								/>
+
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</DialogContent>
+			</Dialog>
+
 			<FormField
 				control={form.control}
 				name="fields.description"
