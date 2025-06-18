@@ -9,7 +9,7 @@ import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
-import { products, purchases } from '@/db/schema'
+import { products, purchases, users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { checkCohortCertificateEligibility } from '@/lib/certificates'
 import { Cohort } from '@/lib/cohort'
@@ -18,7 +18,7 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getProviders, getServerAuthSession } from '@/server/auth'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { getResourcePath } from '@/utils/resource-paths'
@@ -46,6 +46,7 @@ import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-it
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
+import ConnectDiscordButton from './_components/connect-discord-button'
 
 export async function generateMetadata(
 	props: {
@@ -222,6 +223,17 @@ export default async function CohortPage(props: {
 
 	const hasPurchasedCurrentProduct = cohortProps.hasPurchasedCurrentProduct
 
+	const providers = getProviders()
+	const discordProvider = providers?.discord
+	const userWithAccountsLoader = session?.user
+		? db.query.users.findFirst({
+				where: eq(users.id, session.user.id),
+				with: {
+					accounts: true,
+				},
+			})
+		: null
+
 	return (
 		<LayoutClient withContainer>
 			<main className="relative">
@@ -248,14 +260,17 @@ export default async function CohortPage(props: {
 					</div>
 				)}
 				{hasPurchasedCurrentProduct ? (
-					<div className="flex w-full items-center border-b px-5 py-5 text-left">
-						<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
-						You have purchased a ticket to this cohort.
-						{/* starting{' '}
-						{eventDateString ? `on ${eventDateString}` : 'soon'}.{' '}
-						<span role="img" aria-label="Waving hand">
-							👋
-						</span> */}
+					<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">
+						<div className="flex items-center">
+							<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
+							You have purchased a ticket to this cohort.
+						</div>
+						<React.Suspense fallback={null}>
+							<ConnectDiscordButton
+								userWithAccountsLoader={userWithAccountsLoader}
+								discordProvider={discordProvider}
+							/>
+						</React.Suspense>
 					</div>
 				) : null}
 

@@ -17,9 +17,15 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import {
+	CheckCircleIcon,
+	DocumentCurrencyDollarIcon,
+	DocumentTextIcon,
+} from '@heroicons/react/24/outline'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
-import { CheckCircle, File } from 'lucide-react'
+import { CheckCircle, File, StickyNote } from 'lucide-react'
+import Markdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -219,6 +225,8 @@ export default async function EventPage(props: {
 		},
 	)
 
+	const hasPurchasedCurrentProduct = eventProps.hasPurchasedCurrentProduct
+
 	return (
 		<LayoutClient withContainer>
 			<EventMetadata
@@ -275,6 +283,17 @@ export default async function EventPage(props: {
 			</header>
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
 				<div className="col-span-8 flex w-full flex-col">
+					{event.fields.attendeeInstructions && (
+						<div className="dark:bg-card dark:border-foreground/10 mb-8 flex flex-col gap-1 rounded-md border bg-white p-6 text-left font-medium shadow-xl">
+							<p className="inline-flex items-center font-semibold">
+								<DocumentTextIcon className="mr-1 size-5 text-teal-600 dark:text-teal-400" />{' '}
+								Attendee Instructions
+							</p>
+							<Markdown className="prose dark:prose-invert mt-2">
+								{event.fields.attendeeInstructions}
+							</Markdown>
+						</div>
+					)}
 					{hasVideo && <PlayerContainer event={event} />}
 					<Contributor className="justify-center sm:justify-start" />
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
@@ -283,31 +302,48 @@ export default async function EventPage(props: {
 				</div>
 
 				<EventSidebar>
-					{eventProps.hasPurchasedCurrentProduct ? (
-						<div className="dark:border-b-foreground/10 flex flex-col gap-1 border-b p-6 text-left font-medium">
-							<p>
-								<CheckCircle className="inline-block size-4 text-teal-600 dark:text-teal-400" />{' '}
-								You have purchased a ticket to this event. See you on{' '}
-								{eventDate}.{' '}
-								<span role="img" aria-label="Waving hand">
-									👋
-								</span>
-							</p>
-							{eventProps?.existingPurchase?.merchantChargeId && (
-								<p>
-									<File className="text-primary inline-block size-4" />{' '}
-									<Link
-										className="text-primary underline underline-offset-2"
-										href={`/invoices/${eventProps.existingPurchase?.merchantChargeId}`}
-									>
-										Invoice
-									</Link>
+					{hasPurchasedCurrentProduct ? (
+						<>
+							<div
+								className={cn(
+									'dark:border-b-foreground/10 flex flex-col gap-1 border-b p-6 text-left font-medium',
+								)}
+							>
+								<p className="font-semibold">
+									<CheckCircleIcon className="inline-block size-5 text-teal-600 dark:text-teal-400" />{' '}
+									You have purchased a ticket to this event. See you on{' '}
+									{eventDate}.{' '}
+									<span role="img" aria-label="Waving hand">
+										👋
+									</span>
 								</p>
-							)}
-						</div>
+								{eventProps?.existingPurchase?.merchantChargeId && (
+									<p>
+										<DocumentCurrencyDollarIcon className="text-primary inline-block size-5" />{' '}
+										<Link
+											className="text-primary underline underline-offset-2"
+											href={`/invoices/${eventProps.existingPurchase?.merchantChargeId}`}
+										>
+											Invoice
+										</Link>
+									</p>
+								)}
+							</div>
+							{/* {event.fields.attendeeInstructions && (
+								<div className="dark:border-b-foreground/10 flex flex-col gap-1 border-b p-6 text-left font-medium">
+									<p className="inline-flex items-center font-semibold">
+										<DocumentTextIcon className="mr-1 size-5 text-teal-600 dark:text-teal-400" />{' '}
+										Attendee Instructions
+									</p>
+									<Markdown className="prose dark:prose-invert">
+										{event.fields.attendeeInstructions}
+									</Markdown>
+								</div>
+							)} */}
+						</>
 					) : null}
 					<EventDetails event={event} />
-					{!eventProps.hasPurchasedCurrentProduct && (
+					{!hasPurchasedCurrentProduct && (
 						<EventPricingWidgetContainer {...eventProps} />
 					)}
 				</EventSidebar>

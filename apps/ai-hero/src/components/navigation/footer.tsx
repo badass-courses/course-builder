@@ -33,6 +33,9 @@ export default function Footer() {
 				>
 					Terms & Conditions
 				</Link>
+				<Link className="opacity-75 transition hover:opacity-100" href="/faq">
+					FAQ
+				</Link>
 			</div>
 		</footer>
 	)

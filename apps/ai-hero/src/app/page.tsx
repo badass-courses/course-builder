@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import {
+	FAQ,
 	ShinyText,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
@@ -13,14 +14,12 @@ import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceProduct, products } from '@/db/schema'
+import { products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getSaleBannerData } from '@/lib/sale-banner'
-import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
-import { eq } from 'drizzle-orm'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -229,6 +228,11 @@ const Home = async (props: Props) => {
 								),
 								// @ts-expect-error
 								MuxPlayer,
+								FAQ: () => (
+									<React.Suspense fallback={null}>
+										<FAQ faqPageLoader={getPage('faq-2ryr6')} />
+									</React.Suspense>
+								),
 							}}
 						/>
 					) : (
