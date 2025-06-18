@@ -21,7 +21,7 @@ import { authOptions, getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { Theme } from '@auth/core/types'
 import { render } from '@react-email/render'
-import { and, eq, gte } from 'drizzle-orm'
+import { and, eq, gte, isNull, or } from 'drizzle-orm'
 import { Inngest } from 'inngest'
 import type { NextAuthConfig } from 'next-auth'
 import { v4 } from 'uuid'
@@ -311,19 +311,29 @@ export async function acceptPurchaseTransfer(input: {
 }
 
 export async function getPurchaseTransferForPurchaseId(input: {
-	sourceUserId?: string | null | undefined
 	id: string
+	sourceUserId?: string | null | undefined
 }) {
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 
+	// Determine which user id we should lock the query to.
+	// Priority: 1) authenticated user, 2) provided sourceUserId (for post-purchase flow)
+	const ownerId = user?.id ?? input.sourceUserId ?? undefined
+
+	if (!ownerId) {
+		return []
+	}
+
 	const transfers = await db.query.purchaseUserTransfer.findMany({
 		where: and(
-			user && input.sourceUserId === user?.id
-				? eq(purchaseUserTransferTable.sourceUserId, user.id as string)
-				: undefined,
+			eq(purchaseUserTransferTable.sourceUserId, ownerId as string),
 			eq(purchaseUserTransferTable.purchaseId, input.id as string),
-			gte(purchaseUserTransferTable.expiresAt, new Date()),
+			// include rows that never expire (NULL) or ones in the future
+			or(
+				isNull(purchaseUserTransferTable.expiresAt),
+				gte(purchaseUserTransferTable.expiresAt, new Date()),
+			),
 		),
 	})
 
