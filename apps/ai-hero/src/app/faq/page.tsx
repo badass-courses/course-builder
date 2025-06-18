@@ -3,15 +3,10 @@ import LayoutClient from '@/components/layout-client'
 import { env } from '@/env.mjs'
 import { getPage } from '@/lib/pages-query'
 import { formatFaq } from '@/utils/format-faq'
-import Markdown from 'react-markdown'
 
-import {
-	Accordion,
-	AccordionContent,
-	AccordionHeader,
-	AccordionItem,
-	AccordionTrigger,
-} from '@coursebuilder/ui'
+import { Accordion } from '@coursebuilder/ui'
+
+import { FaqItem } from './_components/faq-item'
 
 export const metadata: Metadata = {
 	title: 'FAQ | AI Hero',
@@ -39,11 +34,7 @@ export default async function FaqPage() {
 									question: string
 									answer: string
 								}) => (
-									<Question
-										question={question}
-										answer={answer}
-										key={question}
-									/>
+									<FaqItem question={question} answer={answer} key={question} />
 								),
 							)}
 						</ul>
@@ -60,35 +51,5 @@ export default async function FaqPage() {
 				</h2>
 			</main>
 		</LayoutClient>
-	)
-}
-
-const Question: React.FC<{ question: string; answer: string }> = ({
-	question,
-	answer,
-}) => {
-	return (
-		<li>
-			<AccordionItem
-				value={question}
-				className="rounded-md border border-gray-200/50 bg-white shadow-xl shadow-gray-500/5 transition dark:border-white/5 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10"
-			>
-				<AccordionHeader className="">
-					<AccordionTrigger className="[&_[data-chevron]]:text-foreground px-3 py-3 text-left text-base font-semibold sm:px-5 sm:py-3 sm:text-lg">
-						{question}
-					</AccordionTrigger>
-				</AccordionHeader>
-				<AccordionContent>
-					<Markdown
-						components={{
-							a: (props) => <a {...props} target="_blank" />,
-						}}
-						className="prose dark:prose-invert max-w-none px-5 pb-5"
-					>
-						{answer}
-					</Markdown>
-				</AccordionContent>
-			</AccordionItem>
-		</li>
 	)
 }

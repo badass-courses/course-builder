@@ -1,15 +1,18 @@
 'use client'
 
-import React from 'react'
-import Image from 'next/image'
+import React, { use } from 'react'
+import { FaqItem } from '@/app/faq/_components/faq-item'
 import { AnimatedTitle } from '@/components/brand/animated-word'
 import { CldImage } from '@/components/cld-image'
 import config from '@/config'
+import type { Page } from '@/lib/pages'
+import { formatFaq } from '@/utils/format-faq'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
+import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 const CenteredTitle = ({
@@ -523,6 +526,45 @@ const ShinyText = ({
 	)
 }
 
+const FAQ = ({
+	faqPageLoader,
+	className,
+}: {
+	faqPageLoader: Promise<Page | null>
+	className?: string
+}) => {
+	const faqPage = use(faqPageLoader)
+	if (!faqPage) return null
+	const formattedQuestions = formatFaq(faqPage?.fields?.body || '')
+	if (!formattedQuestions.length) return null
+
+	return (
+		<div
+			className={cn(
+				'-mb-8 flex flex-col gap-5 border-t pt-0 sm:-mb-16',
+				className,
+			)}
+		>
+			<h2 className="mb-5 px-5">FAQ</h2>
+			<Accordion
+				type="multiple"
+				className="not-prose flex w-full flex-col border-t"
+			>
+				<ul className="divide-border flex flex-col gap-0 divide-y">
+					{formattedQuestions.map(({ question, answer }) => (
+						<FaqItem
+							className="rounded-none border-none bg-transparent hover:bg-transparent dark:border-none dark:bg-transparent dark:hover:bg-transparent"
+							question={question}
+							answer={answer}
+							key={question}
+						/>
+					))}
+				</ul>
+			</Accordion>
+		</div>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -550,4 +592,5 @@ export {
 	Testimonial,
 	AIPracticesGrid,
 	ShinyText,
+	FAQ,
 }
