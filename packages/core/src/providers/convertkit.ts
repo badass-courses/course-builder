@@ -361,7 +361,7 @@ export async function setConvertkitSubscriberFields({
 			'Content-Type': 'application/json; charset=utf-8',
 		},
 		body: JSON.stringify({
-			api_secret: process.env.CONVERTKIT_API_SECRET,
+			api_secret: convertkitApiSecret,
 			fields,
 		}),
 	})

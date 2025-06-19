@@ -1,4 +1,5 @@
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
+import { ttConvertkitProvider } from '@/coursebuilder/tt-convertkit-provider'
 import { db } from '@/db'
 import { purchases, users } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
@@ -43,13 +44,13 @@ export const addPurchasesConvertkit = inngest.createFunction(
 			return emailListProvider.getSubscriberByEmail(user.email)
 		})
 
+		const productSlug = purchase.product.fields?.slug
+		const purchasedOnFieldName = productSlug
+			? `purchased_${productSlug.replace(/-/gi, '_')}_on`
+			: process.env.CONVERTKIT_PURCHASED_ON_FIELD_NAME || 'purchased_on'
+
 		if (convertkitUser && emailListProvider.updateSubscriberFields) {
 			await step.run('update convertkit user', async () => {
-				const productSlug = purchase.product.fields?.slug
-				const purchasedOnFieldName = productSlug
-					? `purchased_${productSlug.replace(/-/gi, '_')}_on`
-					: process.env.CONVERTKIT_PURCHASED_ON_FIELD_NAME || 'purchased_on'
-
 				return emailListProvider.updateSubscriberFields?.({
 					subscriberId: convertkitUser.id,
 					fields: {
@@ -63,6 +64,30 @@ export const addPurchasesConvertkit = inngest.createFunction(
 			console.log(`synced convertkit tags for ${purchase.id}`)
 		} else {
 			console.log(`no convertkit tags to sync for ${user.email}`)
+		}
+
+		const ttConvertkitUser = await step.run(
+			'get tt convertkit user',
+			async () => {
+				return ttConvertkitProvider.getSubscriberByEmail(user.email)
+			},
+		)
+
+		if (ttConvertkitUser && ttConvertkitProvider.updateSubscriberFields) {
+			await step.run('update tt convertkit user', async () => {
+				return ttConvertkitProvider.updateSubscriberFields?.({
+					subscriberId: ttConvertkitUser.id,
+					fields: {
+						[purchasedOnFieldName]: format(
+							new Date(purchase.createdAt),
+							'yyyy-MM-dd HH:mm:ss z',
+						),
+					},
+				})
+			})
+			console.log(`synced tt convertkit tags for ${purchase.id}`)
+		} else {
+			console.log(`no tt convertkit tags to sync for ${user.email}`)
 		}
 
 		return 'No discord account found for user'
