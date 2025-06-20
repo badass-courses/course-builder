@@ -101,7 +101,6 @@ export default async function WorkshopPage({
 								announced:
 							</p>
 						</div>
-
 						<WorkshopWaitlist title={pageTitle} />
 					</>
 				)}
@@ -139,6 +138,17 @@ export default async function WorkshopPage({
 							</div>
 						</section>
 					)}
+					<section className="mt-10 hidden flex-col gap-4 pt-8 lg:flex">
+						<h2 className="w-full text-2xl font-semibold">
+							None of these dates work for you? Get notified when new dates are
+							announced:
+						</h2>
+						<WorkshopWaitlist
+							className="flex-col items-center sm:flex-row sm:items-end [&_button]:w-auto"
+							title={pageTitle}
+							actionLabel="Get Notified"
+						/>
+					</section>
 					<section className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
 						<strong className="text-lg font-semibold">Share</strong>
 						<Share
