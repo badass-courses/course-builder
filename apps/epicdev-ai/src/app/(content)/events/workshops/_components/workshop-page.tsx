@@ -77,18 +77,22 @@ export default async function WorkshopPage({
 	const { content: pageBody } = await compileMDX(page?.fields?.body || '')
 
 	const UpcomingEvents = ({ className }: { className?: string }) => {
+		const allUpcomingEventsAreSoldOut = upcomingEvents.every((event) =>
+			soldOutOrPastIds.includes(event.id),
+		)
 		return (
 			<section className={cn('sticky top-6', className)}>
-				{upcomingEvents.length > 0 ? (
+				{upcomingEvents.length > 0 && (
 					<>
 						<p className="mb-4 text-2xl font-semibold">Upcoming Dates</p>
 						<div className="space-y-3">
 							{upcomingEvents.map((event) => renderEvent(event, true))}
 						</div>
 					</>
-				) : (
+				)}
+				{(allUpcomingEventsAreSoldOut || upcomingEvents.length === 0) && (
 					<>
-						<div className="mb-4 flex items-center gap-2">
+						<div className="mb-4 mt-8 flex items-center gap-2">
 							<div className="bg-primary/10 aspect-square rounded-full p-3">
 								<Calendar className="text-primary size-4" />
 							</div>
@@ -97,6 +101,7 @@ export default async function WorkshopPage({
 								announced:
 							</p>
 						</div>
+
 						<WorkshopWaitlist title={pageTitle} />
 					</>
 				)}

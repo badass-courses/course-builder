@@ -132,7 +132,7 @@ export async function GET(request: Request) {
 														)}
 													</div>
 													{event.isSoldOut && (
-														<div tw="bg-[#7C56D0] ml-3 text-white text-base px-2 py-1 rounded">
+														<div tw="flex-shrink-0 bg-[#7C56D0] ml-3 text-white text-base px-2 py-1 rounded">
 															Sold Out
 														</div>
 													)}
