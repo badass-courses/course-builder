@@ -123,7 +123,7 @@ export function EditResourcesBodyPanel({
 							instructor: ({ children }: any) => children,
 						},
 					}}
-					height="var(--code-editor-layout-height)"
+					height={children ? '100%' : 'var(--code-editor-layout-height)'}
 					value={form.getValues('fields.body') || ''}
 					onChange={(value, viewUpdate) => {
 						const yDoc = Buffer.from(

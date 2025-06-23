@@ -244,7 +244,7 @@ export function EditResourcesForm({
 						id="edit-resources-body-panel"
 						order={isShowingMdxPreview ? 3 : 2}
 						defaultSize={55}
-						className="flex min-h-full md:min-h-full"
+						className=""
 					>
 						<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
 							<EditResourcesBodyPanel
