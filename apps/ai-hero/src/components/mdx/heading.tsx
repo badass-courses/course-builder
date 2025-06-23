@@ -3,7 +3,7 @@
 import { Children, useContext, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
-	useActiveHeadingContext,
+	ActiveHeadingContext,
 	type HeadingInfo,
 } from '@/hooks/use-active-heading'
 import { slugifyHeading } from '@/utils/extract-markdown-headings'
@@ -20,11 +20,12 @@ interface HeadingProps {
 /**
  * Custom heading component that tracks viewport visibility and updates active heading context
  * Will not track headings that are within an AISummary component
+ * Gracefully falls back to normal heading behavior when not wrapped in ActiveHeadingProvider
  */
 export function Heading({ level, children, ...props }: HeadingProps) {
 	const ref = useRef<HTMLHeadingElement>(null)
 	const isInView = useInView(ref, { amount: 0.5, margin: '0px 0px -50% 0px' })
-	const { setActiveHeading } = useActiveHeadingContext()
+	const activeHeadingContext = useContext(ActiveHeadingContext)
 	const isWithinAISummary = useContext(AISummaryContext)
 
 	const text = Children.toArray(children)
@@ -33,21 +34,28 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 	const slug = slugifyHeading(text)
 
 	useEffect(() => {
-		if (isInView && !isWithinAISummary) {
+		if (
+			isInView &&
+			!isWithinAISummary &&
+			activeHeadingContext?.setActiveHeading
+		) {
 			const headingInfo: HeadingInfo = {
 				slug,
 				text,
 				level,
 			}
-			setActiveHeading(headingInfo)
+			activeHeadingContext.setActiveHeading(headingInfo)
 		}
-	}, [isInView, slug, text, level, setActiveHeading, isWithinAISummary])
+	}, [isInView, slug, text, level, activeHeadingContext, isWithinAISummary])
 
 	const Component = motion[`h${level}`]
 
 	return (
-		<Component ref={ref} id={slug} className="scroll-mt-32">
-			<Link href={`#${slug}`} className="!text-inherit no-underline">
+		<Component ref={ref} id={slug} className="scroll-mt-16">
+			<Link
+				href={`#${slug}`}
+				className="w-full font-semibold !text-inherit no-underline"
+			>
 				{children}
 			</Link>
 		</Component>

@@ -1,10 +1,7 @@
 import dynamic from 'next/dynamic'
 import { ThemeImage } from '@/components/cld-image'
-import { Code } from '@/components/codehike/code'
-import MDXVideo from '@/components/content/mdx-video'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
-import type { RawCode } from 'codehike/code'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
@@ -24,6 +21,10 @@ const Testimonial = dynamic(() =>
 		(mod) => mod.Testimonial,
 	),
 )
+const DynamicCode = dynamic(() =>
+	import('@/components/codehike/code').then((mod) => mod.Code),
+)
+const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -35,9 +36,7 @@ export async function compileMDX(source: string) {
 	return await _compileMDX({
 		source: source,
 		components: {
-			Code: ({ codeblock }: { codeblock: RawCode }) => (
-				<Code codeblock={codeblock} />
-			),
+			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
 			Mermaid: (props) => (
@@ -53,7 +52,7 @@ export async function compileMDX(source: string) {
 				/>
 			),
 			Video: ({ resourceId }: { resourceId: string }) => (
-				<MDXVideo resourceId={resourceId} />
+				<DynamicMDXVideo resourceId={resourceId} />
 			),
 			ThemeImage: ({
 				urls,

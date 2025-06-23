@@ -19,6 +19,7 @@ import { getModuleProgressForUser } from '@/lib/progress'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getProviders, getServerAuthSession } from '@/server/auth'
+import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { getResourcePath } from '@/utils/resource-paths'
@@ -234,6 +235,8 @@ export default async function CohortPage(props: {
 			})
 		: null
 
+	const { content } = await compileMDX(cohort.fields.body || '')
+
 	return (
 		<LayoutClient withContainer>
 			<main className="relative">
@@ -317,9 +320,7 @@ export default async function CohortPage(props: {
 							</div>
 						</header>
 						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
-							{cohort.fields.body && (
-								<ReactMarkdown>{cohort.fields.body}</ReactMarkdown>
-							)}
+							{content}
 						</article>
 						{!hasPurchasedCurrentProduct && (
 							<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
