@@ -245,7 +245,7 @@ export default async function CohortPage(props: {
 					quantityAvailable={cohortProps.quantityAvailable}
 				/>
 				{cohort && ability.can('update', 'Content') && (
-					<div className="absolute right-3 top-3 flex items-center gap-2">
+					<div className="absolute right-3 top-3 z-10 flex items-center gap-2">
 						{product && (
 							<Button asChild size="sm" variant="secondary">
 								<Link
@@ -322,97 +322,92 @@ export default async function CohortPage(props: {
 						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
 							{content}
 						</article>
-						{!hasPurchasedCurrentProduct && (
-							<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
-								<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
-								<ul className="flex flex-col gap-3">
-									{workshops.map((workshop, index) => {
-										// Determine end date and timezone for the workshop
-										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-										const workshopTimezone = workshop.fields.timezone || PT
 
-										// Format workshop date/time range (only start)
-										const {
-											dateString: workshopDateString,
-											timeString: workshopTimeString,
-										} = formatCohortDateRange(
-											workshop.fields.startsAt,
-											null, // Pass null for end date
-											workshopTimezone,
-										)
+						<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
+							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
+							<ul className="flex flex-col gap-3">
+								{workshops.map((workshop, index) => {
+									// Determine end date and timezone for the workshop
+									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+									const workshopTimezone = workshop.fields.timezone || PT
 
-										// Calculate Day number
-										let dayNumber: number | null = null
-										if (cohortStartDate && workshop.fields.startsAt) {
-											const workshopStartDate = new Date(
-												workshop.fields.startsAt,
-											)
-											// Calculate difference, add 1, and ensure it's at least 1
-											dayNumber = Math.max(
-												1,
-												differenceInCalendarDays(
-													workshopStartDate,
-													cohortStartDate,
-												) + 1,
-											)
-										}
-										const moduleProgressLoader = getModuleProgressForUser(
-											workshop.fields.slug,
+									// Format workshop date/time range (only start)
+									const {
+										dateString: workshopDateString,
+										timeString: workshopTimeString,
+									} = formatCohortDateRange(
+										workshop.fields.startsAt,
+										null, // Pass null for end date
+										workshopTimezone,
+									)
+
+									// Calculate Day number
+									let dayNumber: number | null = null
+									if (cohortStartDate && workshop.fields.startsAt) {
+										const workshopStartDate = new Date(workshop.fields.startsAt)
+										// Calculate difference, add 1, and ensure it's at least 1
+										dayNumber = Math.max(
+											1,
+											differenceInCalendarDays(
+												workshopStartDate,
+												cohortStartDate,
+											) + 1,
 										)
-										return (
-											<li key={workshop.id}>
-												<ModuleProgressProvider
-													moduleProgressLoader={moduleProgressLoader}
+									}
+									const moduleProgressLoader = getModuleProgressForUser(
+										workshop.fields.slug,
+									)
+									return (
+										<li key={workshop.id}>
+											<ModuleProgressProvider
+												moduleProgressLoader={moduleProgressLoader}
+											>
+												<Accordion
+													type="multiple"
+													defaultValue={[`${workshop.id}-body`]}
 												>
-													<Accordion
-														type="multiple"
-														defaultValue={[`${workshop.id}-body`]}
+													<AccordionItem
+														value={`${workshop.id}-body`}
+														className="bg-card rounded border pl-4 pr-1 shadow-sm"
 													>
-														<AccordionItem
-															value={`${workshop.id}-body`}
-															className="bg-card rounded border pl-4 pr-1 shadow-sm"
-														>
-															<div className="relative flex items-center justify-between">
-																<Link
-																	className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
-																	href={getResourcePath(
-																		'workshop',
-																		workshop.fields.slug,
-																		'view',
-																	)}
-																>
-																	{workshop.fields.title}{' '}
-																	<div className="mt-1 text-sm font-normal opacity-80">
-																		Available from {workshopDateString}
-																	</div>
-																</Link>
-																<AccordionTrigger
-																	aria-label="Toggle lessons"
-																	className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
-																/>
-															</div>
-															<AccordionContent className="pb-2">
-																{/* Display formatted workshop date/time */}
-																<div className="text-muted-foreground text-sm">
-																	{/* {dayNumber !== null && (
+														<div className="relative flex items-center justify-between">
+															<Link
+																className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																href={getResourcePath(
+																	'workshop',
+																	workshop.fields.slug,
+																	'view',
+																)}
+															>
+																{workshop.fields.title}{' '}
+																<div className="mt-1 text-sm font-normal opacity-80">
+																	Available from {workshopDateString}
+																</div>
+															</Link>
+															<AccordionTrigger
+																aria-label="Toggle lessons"
+																className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+															/>
+														</div>
+														<AccordionContent className="pb-2">
+															{/* Display formatted workshop date/time */}
+															<div className="text-muted-foreground text-sm">
+																{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-																</div>
-																<ol className="list-inside list-none">
-																	<WorkshopListRowRenderer
-																		workshop={workshop}
-																	/>
-																</ol>
-															</AccordionContent>
-														</AccordionItem>
-													</Accordion>
-												</ModuleProgressProvider>
-											</li>
-										)
-									})}
-								</ul>
-							</div>
-						)}
+															</div>
+															<ol className="list-inside list-none">
+																<WorkshopListRowRenderer workshop={workshop} />
+															</ol>
+														</AccordionContent>
+													</AccordionItem>
+												</Accordion>
+											</ModuleProgressProvider>
+										</li>
+									)
+								})}
+							</ul>
+						</div>
 					</div>
 					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
 						{fields?.image && (

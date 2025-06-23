@@ -5,7 +5,13 @@ import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import Spinner from '../spinner'
 
-export default function MDXVideo({ resourceId }: { resourceId: string }) {
+export default function MDXVideo({
+	resourceId,
+	thumbnailTime = 0,
+}: {
+	resourceId: string
+	thumbnailTime?: number
+}) {
 	const { data, status } = api.videoResources.get.useQuery({
 		videoResourceId: resourceId,
 	})
@@ -27,6 +33,7 @@ export default function MDXVideo({ resourceId }: { resourceId: string }) {
 			minResolution="540p"
 			accentColor="#DD9637"
 			playbackId={data.muxPlaybackId}
+			thumbnailTime={thumbnailTime}
 		/>
 	)
 }
