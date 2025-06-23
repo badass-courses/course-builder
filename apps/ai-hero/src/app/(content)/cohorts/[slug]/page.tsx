@@ -247,7 +247,12 @@ export default async function CohortPage(props: {
 				{cohort && ability.can('update', 'Content') && (
 					<div className="absolute right-3 top-3 z-10 flex items-center gap-2">
 						{product && (
-							<Button asChild size="sm" variant="secondary">
+							<Button
+								asChild
+								size="sm"
+								variant="secondary"
+								className="bg-secondary/50 border-foreground/20 border backdrop-blur-sm"
+							>
 								<Link
 									href={`/products/${product?.fields?.slug || product?.id}/edit`}
 								>
@@ -255,7 +260,12 @@ export default async function CohortPage(props: {
 								</Link>
 							</Button>
 						)}
-						<Button asChild size="sm" variant="secondary">
+						<Button
+							asChild
+							size="sm"
+							variant="secondary"
+							className="bg-secondary/50 border-foreground/20 border backdrop-blur-sm"
+						>
 							<Link href={`/cohorts/${cohort.fields?.slug || cohort.id}/edit`}>
 								Edit Cohort
 							</Link>
