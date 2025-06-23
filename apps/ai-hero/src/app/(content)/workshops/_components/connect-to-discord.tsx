@@ -2,16 +2,26 @@ import { DiscordConnectButton } from '@/app/discord/discord-connect-button'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { getServerAuthSession, Provider } from '@/server/auth'
+import { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { eq } from 'drizzle-orm'
 
 export const ConnectToDiscord = async ({
 	discordProvider,
+	abilityLoader,
 }: {
 	discordProvider?: Provider
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) => {
 	const { session } = await getServerAuthSession()
+	const { canViewWorkshop: canView } = await abilityLoader
 
-	if (!session?.user?.id) {
+	if (!session?.user?.id || !canView) {
 		return null
 	}
 
@@ -33,7 +43,7 @@ export const ConnectToDiscord = async ({
 	return (
 		<>
 			{discordProvider ? (
-				<div className="h-14 w-full rounded-none md:w-auto md:border-r">
+				<div className="flex h-14 w-full items-center justify-center  rounded-none md:w-auto md:border-r">
 					<DiscordConnectButton discordProvider={discordProvider}>
 						Join Discord
 					</DiscordConnectButton>
