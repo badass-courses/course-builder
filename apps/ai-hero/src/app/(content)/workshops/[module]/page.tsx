@@ -139,7 +139,10 @@ export default async function ModulePage(props: Props) {
 						</div>
 					</React.Suspense>
 					<React.Suspense fallback={null}>
-						<ConnectToDiscord discordProvider={discordProvider} />
+						<ConnectToDiscord
+							discordProvider={discordProvider}
+							abilityLoader={abilityLoader}
+						/>
 					</React.Suspense>
 				</div>
 				{children}
