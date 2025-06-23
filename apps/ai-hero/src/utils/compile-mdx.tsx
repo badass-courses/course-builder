@@ -51,8 +51,20 @@ export async function compileMDX(source: string) {
 					}}
 				/>
 			),
-			Video: ({ resourceId }: { resourceId: string }) => (
-				<DynamicMDXVideo resourceId={resourceId} />
+			Video: ({
+				resourceId,
+				thumbnailTime,
+				poster,
+			}: {
+				resourceId: string
+				thumbnailTime?: number
+				poster?: string
+			}) => (
+				<DynamicMDXVideo
+					resourceId={resourceId}
+					thumbnailTime={thumbnailTime}
+					poster={poster}
+				/>
 			),
 			ThemeImage: ({
 				urls,
