@@ -99,7 +99,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			(resource) => resource.position === 1,
 		)?.resource?.fields?.startsAt
 		const dayOneUnlockDate = dayOneStartsAt
-			? format(addDays(new Date(dayOneStartsAt), 1), 'MMMM do, yyyy')
+			? format(new Date(dayOneStartsAt), 'MMMM do, yyyy')
 			: 'TBD'
 
 		if (isTeamPurchase) {
