@@ -35,11 +35,15 @@ export default function CreateNewEventDialog({
 						{buttonLabel}
 					</Button>
 				</DialogTrigger>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>Create a new event</DialogTitle>
+				<DialogContent className="max-h-[90vh] overflow-y-auto">
+					<DialogHeader className="border-b pb-4">
+						<DialogTitle className="text-xl font-bold">
+							Create a new event(s)
+						</DialogTitle>
+						<DialogDescription>
+							Create one or multiple events that can be sold as a series.
+						</DialogDescription>
 					</DialogHeader>
-					<DialogDescription></DialogDescription>
 					<CreateNewEventForm />
 				</DialogContent>
 			</Dialog>
