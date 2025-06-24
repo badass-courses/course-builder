@@ -212,6 +212,177 @@ export async function createEvent(input: NewEvent) {
 	return parsedResource.data
 }
 
+/**
+ * Create multiple events with shared product configuration
+ * All events will be associated with the same product
+ */
+export async function createMultipleEvents(
+	events: NewEvent[],
+): Promise<Event[]> {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	if (events.length === 0) {
+		throw new Error('At least one event is required')
+	}
+
+	const results: Event[] = []
+	let sharedProduct = null
+
+	// Check if we need to create a product (if any event has a price)
+	const firstEventWithPrice = events.find(
+		(event) => event.fields.price && event.fields.price > 0,
+	)
+
+	if (firstEventWithPrice && firstEventWithPrice.fields.price) {
+		try {
+			sharedProduct = await createProduct({
+				name: `Event Series: ${firstEventWithPrice.fields.title}`,
+				price: firstEventWithPrice.fields.price,
+				quantityAvailable: firstEventWithPrice.fields.quantity ?? -1,
+				type: 'live',
+				state: 'published',
+				visibility: 'public',
+			})
+		} catch (error) {
+			console.error('Error creating shared product for events', error)
+			throw new Error('Failed to create shared product')
+		}
+	}
+
+	// Create each event
+	for (const eventInput of events) {
+		const hash = guid()
+		const newResourceId = slugify(`${eventInput.type}~${hash}`)
+
+		const newEvent = {
+			id: newResourceId,
+			...eventInput,
+			type: 'event',
+			fields: {
+				...eventInput.fields,
+				title: eventInput.fields.title,
+				state: 'draft',
+				visibility: 'public',
+				slug: slugify(`${eventInput.fields.title}~${hash}`),
+			},
+			createdById: user.id,
+		}
+
+		await db.insert(contentResource).values(newEvent)
+
+		const resource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, newResourceId),
+			with: {
+				resources: {
+					with: {
+						resource: {
+							with: {
+								resources: {
+									with: {
+										resource: true,
+									},
+									orderBy: asc(contentResourceResource.position),
+								},
+							},
+						},
+					},
+					orderBy: asc(contentResourceResource.position),
+				},
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTag.position),
+				},
+				resourceProducts: {
+					with: {
+						product: {
+							with: {
+								price: true,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		const parsedResource = EventSchema.safeParse(resource)
+		if (!parsedResource.success) {
+			console.error('Error parsing resource', resource)
+			throw new Error('Error parsing resource')
+		}
+
+		// Associate with shared product if it exists
+		if (
+			sharedProduct &&
+			eventInput.fields.price &&
+			eventInput.fields.price > 0
+		) {
+			try {
+				await addResourceToProduct({
+					resource: parsedResource.data,
+					productId: sharedProduct.id,
+				})
+			} catch (error) {
+				console.error('Error associating event with shared product', error)
+				await log.error('event.create.product.association.failed', {
+					eventId: newResourceId,
+					productId: sharedProduct.id,
+					userId: user.id,
+				})
+			}
+		}
+
+		// if we provide tagIds, we need to associate them with the event
+		if (eventInput.fields.tagIds) {
+			try {
+				await db.insert(contentResourceTag).values(
+					eventInput.fields.tagIds.map((tag) => ({
+						contentResourceId: newResourceId,
+						tagId: tag.id,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						position: 0,
+					})),
+				)
+			} catch (error) {
+				console.error('Error associating tags with event', error)
+				await log.error('event.create.tags.failed', {
+					eventId: newResourceId,
+					userId: user.id,
+					tagIds: eventInput.fields.tagIds,
+					error: getErrorMessage(error),
+					stack: getErrorStack(error),
+				})
+			}
+		}
+
+		try {
+			console.log(
+				`Dispatching ${RESOURCE_CREATED_EVENT} for resource: ${parsedResource.data.id} (type: ${parsedResource.data.type})`,
+			)
+			await inngest.send({
+				name: RESOURCE_CREATED_EVENT,
+				data: {
+					id: parsedResource.data.id,
+					type: parsedResource.data.type,
+				},
+			})
+		} catch (error) {
+			console.error(`Error dispatching ${RESOURCE_CREATED_EVENT}`, error)
+		}
+
+		await upsertPostToTypeSense(parsedResource.data, 'save')
+		results.push(parsedResource.data)
+	}
+
+	return results
+}
+
 export async function updateEvent(
 	input: Partial<Event>,
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',

@@ -125,3 +125,25 @@ export async function createProduct(input: NewProduct) {
 
 	return courseBuilderAdapter.createProduct(input)
 }
+
+export async function removeResourceFromProduct(
+	resourceId: string,
+	productId: string,
+) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const result = await db
+		.delete(contentResourceProduct)
+		.where(
+			and(
+				eq(contentResourceProduct.resourceId, resourceId),
+				eq(contentResourceProduct.productId, productId),
+			),
+		)
+	console.log({ result })
+	return result
+}

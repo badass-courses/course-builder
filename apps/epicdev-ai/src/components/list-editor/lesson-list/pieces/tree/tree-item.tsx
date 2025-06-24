@@ -172,6 +172,7 @@ const TreeItem = memo(function TreeItem({
 		rootResource,
 		rootResourceId,
 		onResourceUpdate,
+		onResourceRemove,
 	} = useContext(TreeContext)
 	const { DropIndicator, attachInstruction, extractInstruction } =
 		useContext(DependencyContext)
@@ -572,6 +573,8 @@ const TreeItem = memo(function TreeItem({
 										)
 										refresh()
 									}
+
+									await onResourceRemove?.(item.id, rootResourceId)
 									await removePostFromList({
 										postId: item.id,
 										listId: rootResourceId,
