@@ -80,3 +80,54 @@ export const NewEventSchema = z.object({
 })
 
 export type NewEvent = z.infer<typeof NewEventSchema>
+
+/**
+ * Schema for creating multiple events with shared product configuration
+ * Each event has its own title, dates, and tags, but they share price and quantity
+ */
+export const MultipleEventsSchema = z.object({
+	type: z.literal('event').default('event'),
+	sharedFields: z.object({
+		price: z.number().min(0).nullish(),
+		quantity: z.number().min(-1).nullish(),
+	}),
+	events: z
+		.array(
+			z.object({
+				title: z.string().min(2).max(90),
+				startsAt: z.date().nullish(),
+				endsAt: z.date().nullish(),
+				tagIds: z
+					.array(
+						z.object({
+							id: z.string(),
+							fields: z.object({
+								label: z.string(),
+								name: z.string(),
+							}),
+						}),
+					)
+					.nullish(), // Tags are per-event, not shared
+			}),
+		)
+		.min(1),
+})
+
+export type MultipleEvents = z.infer<typeof MultipleEventsSchema>
+
+/**
+ * Convert MultipleEvents to array of NewEvent for processing
+ */
+export function multipleEventsToNewEvents(input: MultipleEvents): NewEvent[] {
+	return input.events.map((event) => ({
+		type: 'event' as const,
+		fields: {
+			title: event.title,
+			startsAt: event.startsAt,
+			endsAt: event.endsAt,
+			price: input.sharedFields.price,
+			quantity: input.sharedFields.quantity,
+			tagIds: event.tagIds,
+		},
+	}))
+}

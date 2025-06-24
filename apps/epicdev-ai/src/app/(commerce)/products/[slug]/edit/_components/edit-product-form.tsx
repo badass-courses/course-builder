@@ -15,6 +15,7 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import {
 	addResourceToProduct,
 	archiveProduct,
+	removeResourceFromProduct,
 	updateProduct,
 } from '@/lib/products-query'
 import { api } from '@/trpc/react'
@@ -257,6 +258,24 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
+				name="fields.slug"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Slug</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								Short with keywords is best.
+							</FormDescription>
+							<FormControl>
+								<Input {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
+			/>
+			<FormField
+				control={form.control}
 				name="type"
 				render={({ field }) => {
 					return (
@@ -335,6 +354,9 @@ export function EditProductForm({ product }: { product: Product }) {
 				rootResourceId={product.id}
 				state={state}
 				updateState={updateState}
+				onResourceRemove={async (itemId, listId) => {
+					await removeResourceFromProduct(itemId, listId)
+				}}
 			/>
 			<FormField
 				control={form.control}
