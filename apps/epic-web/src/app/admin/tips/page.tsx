@@ -37,7 +37,7 @@ export default async function TipsIndexPage() {
 						return (
 							<TipTeaser
 								i={i}
-								article={tip}
+								tip={tip}
 								key={tip.id}
 								className="flex w-full items-center py-4"
 							/>
@@ -49,17 +49,24 @@ export default async function TipsIndexPage() {
 	)
 }
 
+/**
+ * Displays a single tip entry inside the Tips admin list.
+ *
+ * @param tip - The tip resource to display.
+ * @param i - Optional index of the tip in the list (unused currently, but handy for future needs).
+ * @param className - Optional additional CSS classes to apply to the list item element.
+ */
 const TipTeaser: React.FC<{
-	article: Post
+	tip: Post
 	i?: number
 	className?: string
-}> = ({ article, className, i }) => {
-	const title = article.fields.title
+}> = ({ tip, className, i }) => {
+	const title = tip.fields.title
 
 	return (
 		<li className={cn('', className)}>
 			<Link
-				href={`/admin/posts/${article.fields.slug}/edit`}
+				href={`/admin/posts/${tip.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>

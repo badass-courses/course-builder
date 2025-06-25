@@ -91,7 +91,7 @@ export async function getAllTips(): Promise<Post[]> {
 		const posts = await db.query.contentResource.findMany({
 			where: and(
 				eq(contentResource.type, 'post'),
-				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'tip')
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'tip'),
 			),
 			orderBy: desc(contentResource.createdAt),
 			with: {
