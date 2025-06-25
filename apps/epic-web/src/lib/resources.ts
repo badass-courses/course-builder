@@ -3,6 +3,7 @@ import { z } from 'zod'
 import {
 	AnyResourceTypeSchema,
 	POST_SUBTYPES,
+	POST_TYPES_WITH_VIDEO,
 	PostTypeSchema,
 	RESOURCE_TYPES_WITH_VIDEO,
 	ResourceType,
@@ -54,8 +55,7 @@ export function supportsVideo(type: string): boolean {
 	}
 
 	// Check if it's a post subtype that supports video
-	const postTypesWithVideo = ['article']
-	return postTypesWithVideo.includes(type)
+	return POST_TYPES_WITH_VIDEO.includes(type)
 }
 
 /**

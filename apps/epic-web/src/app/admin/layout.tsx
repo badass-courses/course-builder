@@ -3,6 +3,7 @@ import LayoutClient from '@/components/layout-client'
 import {
 	FileText,
 	Flag,
+	Lightbulb,
 	ListChecks,
 	Mail,
 	TagIcon,
@@ -33,6 +34,10 @@ const AdminLayout = async ({
 									<NavItem href="/admin/posts">
 										<FileText className="h-4 w-4" />
 										Posts
+									</NavItem>
+									<NavItem href="/admin/tips">
+										<Lightbulb className="h-4 w-4" />
+										Tips
 									</NavItem>
 								</li>
 							</ul>

@@ -82,6 +82,48 @@ export async function getAllPosts(): Promise<Post[]> {
 	}
 }
 
+export async function getAllTips(): Promise<Post[]> {
+	try {
+		const posts = await db.query.contentResource.findMany({
+			where: eq(contentResource.type, 'post'),
+			orderBy: desc(contentResource.createdAt),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+		})
+
+		const postsParsed = z.array(PostSchema).safeParse(posts)
+		if (!postsParsed.success) {
+			await log.error('tips.parse.failed', {
+				error: postsParsed.error.format(),
+			})
+			return []
+		}
+
+		// Filter for tips only
+		const tips = postsParsed.data.filter(
+			(post) => post.fields.postType === 'tip',
+		)
+
+		await log.info('tips.fetch.success', {
+			count: tips.length,
+		})
+
+		return tips
+	} catch (error) {
+		await log.error('tips.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
+		return []
+	}
+}
+
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	if (!userId) {
 		redirect('/')
