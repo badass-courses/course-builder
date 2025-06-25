@@ -9,12 +9,15 @@ import { Lightbulb } from 'lucide-react'
 
 import { CreatePostModal } from '../posts/_components/create-post-modal'
 
+/**
+ * Admin page for managing tips.
+ * Requires 'manage all' permissions to access.
+ */
 export default async function TipsIndexPage() {
 	const { ability } = await getServerAuthSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
 	}
-
 	const allTips = await getAllTips()
 
 	return (
