@@ -82,6 +82,50 @@ export async function getAllPosts(): Promise<Post[]> {
 	}
 }
 
+/**
+ * Fetch all posts of type 'tip' from the database
+ * @returns Promise<Post[]> Array of tip posts sorted by creation date descending
+ */
+export async function getAllTips(): Promise<Post[]> {
+	try {
+		const posts = await db.query.contentResource.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'tip'),
+			),
+			orderBy: desc(contentResource.createdAt),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+		})
+
+		const postsParsed = z.array(PostSchema).safeParse(posts)
+		if (!postsParsed.success) {
+			await log.error('tips.parse.failed', {
+				error: postsParsed.error.format(),
+			})
+			return []
+		}
+
+		await log.info('tips.fetch.success', {
+			count: postsParsed.data.length,
+		})
+
+		return postsParsed.data
+	} catch (error) {
+		await log.error('tips.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
+		return []
+	}
+}
+
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	if (!userId) {
 		redirect('/')

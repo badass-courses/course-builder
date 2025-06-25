@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import { PostType } from '@/lib/posts'
 import { FilePlus2, Loader2 } from 'lucide-react'
@@ -99,7 +101,13 @@ export function CreatePostModal({
 		setIsProcessing(true)
 		if (onResourceCreated) {
 			await onResourceCreated(resource)
-			setIsProcessing(false)
+		}
+		// Reset processing state and allow modal to be closed
+		setIsProcessing(false)
+		// Auto-close the dialog after successful creation when no custom
+		// onResourceCreated handler is provided
+		if (!onResourceCreated) {
+			setIsOpen(false)
 		}
 	}
 

@@ -5,7 +5,7 @@ import { z } from 'zod'
  */
 export const PostTypeSchema = z.union([
 	z.literal('article'),
-
+	z.literal('tip'),
 	z.literal('event'),
 ])
 
@@ -17,7 +17,7 @@ export type PostType = z.infer<typeof PostTypeSchema>
 /**
  * Valid post subtypes - only the 'post' resource type has subtypes
  */
-export const POST_SUBTYPES: (PostType | string)[] = ['article', 'event']
+export const POST_SUBTYPES: (PostType | string)[] = ['article', 'tip', 'event']
 
 /**
  * Schema defining all top-level resource types in the system
@@ -70,4 +70,4 @@ export const RESOURCE_TYPES_WITH_VIDEO: ResourceType[] = ['lesson']
 /**
  * Post types that support video content
  */
-export const POST_TYPES_WITH_VIDEO: (PostType | string)[] = ['article']
+export const POST_TYPES_WITH_VIDEO: (PostType | string)[] = ['article', 'tip']
