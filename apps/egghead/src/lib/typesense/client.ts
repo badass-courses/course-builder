@@ -5,6 +5,7 @@ import Typesense from 'typesense'
  */
 export interface TypesenseClientConfig {
 	host?: string
+	hostHash?: string
 	port?: number
 	protocol?: string
 	apiKey?: string
@@ -16,6 +17,7 @@ export interface TypesenseClientConfig {
  */
 export const DEFAULT_TYPESENSE_CONFIG: TypesenseClientConfig = {
 	host: process.env.NEXT_PUBLIC_TYPESENSE_HOST,
+	hostHash: process.env.NEXT_PUBLIC_TYPESENSE_HOST_HASH,
 	port: 443,
 	protocol: 'https',
 	apiKey: process.env.TYPESENSE_WRITE_API_KEY,
@@ -31,9 +33,24 @@ export function createTypesenseClient(
 	config: TypesenseClientConfig = DEFAULT_TYPESENSE_CONFIG,
 ) {
 	return new Typesense.Client({
+		nearestNode: {
+			host: config.host!,
+			port: config.port!,
+			protocol: config.protocol!,
+		},
 		nodes: [
 			{
-				host: config.host!,
+				host: `${config.hostHash}-1.a1.typesense.net`,
+				port: config.port!,
+				protocol: config.protocol!,
+			},
+			{
+				host: `${config.hostHash}-2.a1.typesense.net`,
+				port: config.port!,
+				protocol: config.protocol!,
+			},
+			{
+				host: `${config.hostHash}-3.a1.typesense.net`,
 				port: config.port!,
 				protocol: config.protocol!,
 			},
