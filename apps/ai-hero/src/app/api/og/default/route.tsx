@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
 import { coupon } from '@/db/schema'
-import { and, eq, isNull, or } from 'drizzle-orm'
+import { and, eq, gte, isNull, or } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
@@ -26,10 +26,15 @@ export async function GET(request: Request) {
 		let discountPercentage = null
 
 		try {
-			// Look for any active default coupon without product restrictions
+			// Pick the highest-discount *active* default coupon
+			const now = new Date()
 			const globalCoupon = await db.query.coupon.findFirst({
-				where: and(eq(coupon.default, true)),
-				orderBy: (coupon, { desc }) => [desc(coupon.createdAt)],
+				where: and(
+					eq(coupon.default, true), // flagged as default
+					eq(coupon.status, 1), // status “active” (matches adapter logic)
+					or(isNull(coupon.expires), gte(coupon.expires, now)), // not expired
+				),
+				orderBy: (coupon, { desc }) => [desc(coupon.percentageDiscount)],
 			})
 
 			if (globalCoupon?.percentageDiscount) {
