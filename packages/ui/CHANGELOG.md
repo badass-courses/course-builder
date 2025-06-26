@@ -1,5 +1,13 @@
 # @coursebuilder/ui
 
+## 2.0.7
+
+### Patch Changes
+
+- [`8f4bb1c`](https://github.com/badass-courses/course-builder/commit/8f4bb1c0cee7296841f40564f43910ccf743752b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - clean up
+  EditResourcesForm
+
 ## 2.0.6
 
 ### Patch Changes
