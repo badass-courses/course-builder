@@ -11,7 +11,7 @@ import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
-import type { Event } from '@/lib/events'
+import { EventSchema, type Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -27,6 +27,7 @@ import { count, eq } from 'drizzle-orm'
 import { CheckCircle, File, StickyNote } from 'lucide-react'
 import Markdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
+import { z } from 'zod'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import {
@@ -226,6 +227,11 @@ export default async function EventPage(props: {
 	)
 
 	const hasPurchasedCurrentProduct = eventProps.hasPurchasedCurrentProduct
+	const IS_SERIES = event.resources?.length && event.resources?.length > 1
+
+	const events = z
+		.array(EventSchema)
+		.safeParse(event.resources?.map(({ resource }) => resource)).data
 
 	return (
 		<LayoutClient withContainer>
@@ -247,7 +253,7 @@ export default async function EventPage(props: {
 						)}
 						<Button asChild size="sm" variant="secondary">
 							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-								Edit Event
+								Edit {IS_SERIES ? 'Event Series' : 'Event'}
 							</Link>
 						</Button>
 					</div>
@@ -256,7 +262,7 @@ export default async function EventPage(props: {
 					href="/events"
 					className="bg-primary/20 text-primary mb-2 inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-sm font-semibold"
 				>
-					<span>Event</span>
+					<span>{IS_SERIES ? 'Event Series' : 'Event'}</span>
 				</Link>
 
 				{/* {eventDate ? (
@@ -283,7 +289,7 @@ export default async function EventPage(props: {
 			</header>
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
 				<div className="col-span-8 flex w-full flex-col">
-					{event.fields.attendeeInstructions && (
+					{event.fields.attendeeInstructions && hasPurchasedCurrentProduct && (
 						<div className="dark:bg-card dark:border-foreground/10 mb-8 flex flex-col gap-1 rounded-md border bg-white p-6 text-left font-medium shadow-xl">
 							<p className="inline-flex items-center font-semibold">
 								<DocumentTextIcon className="mr-1 size-5 text-teal-600 dark:text-teal-400" />{' '}
@@ -342,7 +348,7 @@ export default async function EventPage(props: {
 							)} */}
 						</>
 					) : null}
-					<EventDetails event={event} />
+					<EventDetails events={IS_SERIES ? events || [] : [event]} />
 					{!hasPurchasedCurrentProduct && (
 						<EventPricingWidgetContainer {...eventProps} />
 					)}
