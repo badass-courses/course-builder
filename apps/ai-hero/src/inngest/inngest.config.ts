@@ -15,6 +15,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { cohortTransferWorkflow } from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
@@ -46,6 +47,7 @@ export const inngestConfig = {
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
 		cohortTransferWorkflow,
+		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
