@@ -6,6 +6,7 @@ import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 
+import { triggerCohortEntitlementSync } from './cohort-update-trigger'
 import { upsertPostToTypeSense } from './typesense-query'
 
 export async function updateResource(input: {
@@ -104,6 +105,22 @@ export async function updateResource(input: {
 		userId: user.id,
 		changes: Object.keys(input.fields),
 	})
+
+	// Trigger entitlement sync for cohorts
+	if (input.type === 'cohort') {
+		try {
+			await triggerCohortEntitlementSync(input.id, {
+				// We don't know the specific changes, so we'll let the sync function
+				// compare current vs updated state
+			})
+		} catch (error) {
+			await log.error('cohort.entitlement_sync.trigger_failed', {
+				cohortId: input.id,
+				error: error instanceof Error ? error.message : String(error),
+			})
+			// Don't throw - this shouldn't break the cohort update
+		}
+	}
 
 	return updatedResource
 }

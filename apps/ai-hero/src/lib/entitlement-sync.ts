@@ -11,6 +11,27 @@ import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
 import { getCohort } from './cohorts-query'
 
+// Type definitions for better type safety
+type Entitlement = {
+	id: string
+	userId: string | null
+	entitlementType: string
+	sourceType: string
+	sourceId: string
+	metadata?: Record<string, any> | null
+}
+
+type CohortResource = {
+	resource: {
+		id: string
+	}
+}
+
+type Cohort = {
+	id: string
+	resources?: CohortResource[] | null
+}
+
 /**
  * Find all users who have entitlements for a specific cohort
  */
@@ -89,14 +110,14 @@ export function calculateEntitlementChanges(
 	currentEntitlements: any[],
 	updatedCohort: any,
 ) {
-	const currentResourceIds = new Set(
+	const currentResourceIds = new Set<string>(
 		currentEntitlements
 			.map((e) => e.metadata?.contentIds?.[0])
 			.filter((id): id is string => Boolean(id)),
 	)
-	const updatedResourceIds = new Set(
+	const updatedResourceIds = new Set<string>(
 		(updatedCohort.resources?.map((r: any) => r.resource.id) || []).filter(
-			(id): id is string => Boolean(id),
+			(id: any): id is string => Boolean(id),
 		),
 	)
 
@@ -104,14 +125,14 @@ export function calculateEntitlementChanges(
 	const toRemove: string[] = []
 
 	// Find resources that need new entitlements
-	updatedResourceIds.forEach((resourceId) => {
+	updatedResourceIds.forEach((resourceId: string) => {
 		if (!currentResourceIds.has(resourceId)) {
 			toAdd.push(resourceId)
 		}
 	})
 
 	// Find entitlements that should be removed (resources no longer in cohort)
-	currentResourceIds.forEach((resourceId) => {
+	currentResourceIds.forEach((resourceId: string) => {
 		if (!updatedResourceIds.has(resourceId)) {
 			toRemove.push(resourceId)
 		}
@@ -154,7 +175,7 @@ export async function syncUserCohortEntitlements(
 				cohortId,
 				duration: Date.now() - startTime,
 			})
-			return { toAdd: [], toRemove: [], toUpdate: [] }
+			return { toAdd: [], toRemove: [] }
 		}
 
 		// Get entitlement type
@@ -221,7 +242,7 @@ export async function syncUserCohortEntitlements(
 			changesApplied: { toAdd, toRemove },
 		})
 
-		return { toAdd, toRemove, toUpdate: [] }
+		return { toAdd, toRemove }
 	} catch (error) {
 		await log.error('entitlement_sync.failed', {
 			userId,

@@ -27,18 +27,8 @@ export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 			})
 		})
 
-		// Only proceed if there are actual changes to resources
-		if (
-			(!changes.resourcesAdded || changes.resourcesAdded.length === 0) &&
-			(!changes.resourcesRemoved || changes.resourcesRemoved.length === 0)
-		) {
-			await step.run('log-no-changes', async () => {
-				await log.info('cohort_entitlement_sync.no_resource_changes', {
-					cohortId,
-				})
-			})
-			return { cohortId, message: 'No resource changes detected' }
-		}
+		// Always proceed with sync - the sync function will determine if changes are needed
+		// This handles cases where we don't know the specific changes (like from updateResource)
 
 		// Sync entitlements for all users of this cohort
 		const syncResult = await step.run('sync-cohort-entitlements', async () => {

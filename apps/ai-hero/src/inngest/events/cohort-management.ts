@@ -1,5 +1,5 @@
 /**
- * Event triggered when a cohort is updated (resources added/removed/reordered)
+ * Event triggered when a cohort is updated (resources added/removed)
  */
 export const COHORT_UPDATED_EVENT = 'cohort/updated' as const
 
