@@ -8,6 +8,7 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getCohort } from '@/lib/cohorts-query'
+import { createCohortEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -249,24 +250,18 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						const createdEntitlements = []
 
 						for (const resource of cohortResource.resources || []) {
-							const entitlementId = `${resource.resource.id}-${guid()}`
-							const entitlementData = {
-								id: entitlementId,
-								entitlementType: cohortContentAccessEntitlementType.id,
-								sourceType: 'cohort',
-								sourceId: cohortResource.id,
+							await createCohortEntitlement({
 								userId: user.id,
+								cohortId: cohortResource.id,
+								resourceId: resource.resource.id,
 								organizationId,
 								organizationMembershipId: orgMembership.id,
-								metadata: {
-									contentIds: [resource.resource.id],
-								},
-							}
-
-							await db.insert(entitlements).values(entitlementData)
+								entitlementTypeId: cohortContentAccessEntitlementType.id,
+								metadata: {},
+							})
 
 							createdEntitlements.push({
-								entitlementId,
+								entitlementId: null, // Not returned by utility, can be omitted or set to null
 								resourceId: resource.resource.id,
 								resourceType: resource.resource.type,
 								resourceTitle: resource.resource.fields?.title,

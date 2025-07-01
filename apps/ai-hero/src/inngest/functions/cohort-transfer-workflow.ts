@@ -2,6 +2,7 @@ import { db } from '@/db'
 import { entitlements, entitlementTypes, purchases } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
+import { createCohortEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 import { and, eq, sql } from 'drizzle-orm'
 
@@ -204,18 +205,14 @@ export const cohortTransferWorkflow = inngest.createFunction(
 				}
 
 				for (const resource of cohortResource.resources || []) {
-					const entitlementId = `${resource.resource.id}-${guid()}`
-					await db.insert(entitlements).values({
-						id: entitlementId,
-						entitlementType: cohortContentAccessEntitlementType.id,
-						sourceType: 'cohort',
-						sourceId: cohortResource.id,
+					await createCohortEntitlement({
 						userId: targetUser.id,
+						cohortId: cohortResource.id,
+						resourceId: resource.resource.id,
 						organizationId: targetUserOrganization.id,
 						organizationMembershipId: targetUserOrgMembership.id,
-						metadata: {
-							contentIds: [resource.resource.id],
-						},
+						entitlementTypeId: cohortContentAccessEntitlementType.id,
+						metadata: {},
 					})
 				}
 
