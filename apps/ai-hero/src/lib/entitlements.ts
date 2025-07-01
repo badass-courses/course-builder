@@ -205,3 +205,47 @@ export async function createCohortEntitlement({
 	})
 	return entitlementId
 }
+
+/**
+ * Creates a cohort entitlement for a user for a specific resource in a cohort within a transaction.
+ * This should be used when you need to create entitlements as part of a larger transaction.
+ * @returns The ID of the created entitlement
+ */
+export async function createCohortEntitlementInTransaction(
+	tx: any,
+	{
+		userId,
+		resourceId,
+		sourceId,
+		organizationId,
+		organizationMembershipId,
+		entitlementType,
+		sourceType,
+		metadata = {},
+	}: {
+		userId: string
+		resourceId: string
+		organizationId: string
+		organizationMembershipId: string
+		entitlementType: string
+		sourceId: string
+		sourceType: string
+		metadata?: Record<string, any>
+	},
+): Promise<string> {
+	const entitlementId = `${resourceId}-${guid()}`
+	await tx.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType,
+		sourceId,
+		metadata: {
+			...metadata,
+			contentIds: [resourceId],
+		},
+	})
+	return entitlementId
+}
