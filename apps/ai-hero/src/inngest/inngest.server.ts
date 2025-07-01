@@ -69,6 +69,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	COHORT_UPDATED_EVENT,
+	CohortUpdatedPayload,
+} from './events/cohort-management'
+import {
 	CONCEPT_SELECTED,
 	CONCEPT_TAGS_REQUESTED,
 	REQUEST_CONCEPT_SELECTION,
@@ -114,6 +118,7 @@ export type Events = {
 	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
+	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 }
 
 const callbackBase =
