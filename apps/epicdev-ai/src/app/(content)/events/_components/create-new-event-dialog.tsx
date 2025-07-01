@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { useSession } from 'next-auth/react'
 
 import {
 	Button,
@@ -16,7 +15,6 @@ import {
 import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { CreatePostModal } from '../../posts/_components/create-post-modal'
 import CreateNewEventForm from './create-new-event-form'
 
 export default function CreateNewEventDialog({
