@@ -10,7 +10,7 @@ import { contentResource } from '@/db/schema'
 import { EventSchema } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -63,6 +63,7 @@ async function EventsList() {
 	const { ability } = await getServerAuthSession()
 	const eventsModule = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'event'),
+		orderBy: desc(contentResource.createdAt),
 		with: {
 			resources: true,
 			resourceProducts: {

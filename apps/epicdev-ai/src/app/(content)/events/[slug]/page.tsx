@@ -12,7 +12,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
-import { getEvent } from '@/lib/events-query'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -59,7 +59,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const event = await getEvent(params.slug)
+	const event = await getEventOrEventSeries(params.slug)
 
 	if (!event) {
 		return parent as Metadata
@@ -81,7 +81,7 @@ export default async function EventPage(props: {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
-	const event = await getEvent(params.slug)
+	const event = await getEventOrEventSeries(params.slug)
 
 	if (!event) {
 		notFound()
@@ -191,7 +191,10 @@ export default async function EventPage(props: {
 		}
 	}
 
-	const { fields } = event
+	const fields =
+		event.type === 'event'
+			? event.fields
+			: event?.resources?.[0]?.resource?.fields
 
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
@@ -317,11 +320,9 @@ export default async function EventPage(props: {
 							>
 								<p className="font-semibold">
 									<CheckCircleIcon className="inline-block size-5 text-teal-600 dark:text-teal-400" />{' '}
-									You have purchased a ticket to this event. See you on{' '}
-									{eventDate}.{' '}
-									<span role="img" aria-label="Waving hand">
-										👋
-									</span>
+									You have purchased a ticket{' '}
+									{IS_SERIES ? 'to this event series' : 'to this event'}. See
+									you on {eventDate}.
 								</p>
 								{eventProps?.existingPurchase?.merchantChargeId && (
 									<p>

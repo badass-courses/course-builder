@@ -1,11 +1,19 @@
 import { courseBuilderAdapter, db } from '@/db'
-import { coupon, products, purchases, users } from '@/db/schema'
+import {
+	contentResourceProduct,
+	coupon,
+	products,
+	purchases,
+	users,
+} from '@/db/schema'
 import WelcomeEmail, { WelcomeEmailForTeam } from '@/emails/welcome-email'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { type AuthConfig } from '@auth/core'
 import { addDays, format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { eq } from 'drizzle-orm'
 import { NonRetriableError } from 'inngest'
 
@@ -61,7 +69,7 @@ export const sendWelcomeEmail = inngest.createFunction(
 		}
 
 		const product = await step.run('Load Product', async () => {
-			return db.query.products.findFirst({
+			return await db.query.products.findFirst({
 				where: eq(products.id, purchase.productId),
 			})
 		})
@@ -81,7 +89,7 @@ export const sendWelcomeEmail = inngest.createFunction(
 			if (!purchase.userId) {
 				throw new NonRetriableError('No user id for purchase.')
 			}
-			return db.query.users.findFirst({
+			return await db.query.users.findFirst({
 				where: eq(users.id, purchase.userId),
 				columns: {
 					email: true,
@@ -96,6 +104,45 @@ export const sendWelcomeEmail = inngest.createFunction(
 
 		const userFirstName = user.name?.split(' ')[0]
 
+		const eventResource = await step.run('Load Event', async () => {
+			const productRef = await db.query.contentResourceProduct.findFirst({
+				where: eq(contentResourceProduct.productId, product.id),
+			})
+
+			if (!productRef) {
+				throw new NonRetriableError('Content Resource Product not found')
+			}
+
+			return await getEventOrEventSeries(productRef.resourceId)
+		})
+
+		if (!eventResource) {
+			throw new NonRetriableError('Event not found')
+		}
+
+		// For event-series, get dates from first child event; for single events, use event fields
+		const eventFields =
+			eventResource.type === 'event'
+				? eventResource.fields
+				: eventResource?.resources?.[0]?.resource?.fields
+
+		if (!eventFields?.startsAt || !eventFields?.endsAt) {
+			return { skipped: true, reason: 'No event dates available' }
+		}
+
+		const { startsAt: _startsAt, endsAt: _endsAt } = eventFields
+
+		// Convert to Date objects for formatting
+		const startsAtDate = new Date(_startsAt)
+		const endsAtDate = new Date(_endsAt)
+
+		// Format dates and times in Pacific Time (Los Angeles timezone)
+		const PT = 'America/Los_Angeles'
+		const startDate = formatInTimeZone(startsAtDate, PT, 'MMMM do, yyyy')
+		const endDate = formatInTimeZone(endsAtDate, PT, 'MMMM do, yyyy')
+		const startTime = formatInTimeZone(startsAtDate, PT, 'h:mm a')
+		const endTime = formatInTimeZone(endsAtDate, PT, 'h:mm a')
+
 		function pickEmail() {
 			switch (true) {
 				case isTeamPurchaseByCoupon:
@@ -106,23 +153,13 @@ export const sendWelcomeEmail = inngest.createFunction(
 		}
 
 		return await step.run('send welcome email', async () => {
-			const startDate = product.fields?.startDate
-			const originalStartDate = new Date(startDate)
-			const startDateOneDayLater = format(
-				addDays(originalStartDate, 1),
-				'MMMM do, yyyy',
-			)
-
 			return await sendAnEmail({
 				Component: pickEmail(),
 				componentProps: {
 					productName: product.name,
-					startDate:
-						process.env.NEXT_PUBLIC_TEMPORARY_TIMEZONE_OFFSET === 'true'
-							? startDateOneDayLater
-							: product.fields?.startDate,
-					startTime: product.fields?.startTime,
-					endTime: product.fields?.endTime,
+					startDate: startDate,
+					startTime: startTime,
+					endTime: endTime,
 					userFirstName: userFirstName,
 					supportEmail: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 					quantity: quantity,

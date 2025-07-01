@@ -1,5 +1,6 @@
 'use client'
 
+import * as React from 'react'
 import { useSession } from 'next-auth/react'
 
 import {
@@ -19,7 +20,7 @@ import { CreatePostModal } from '../../posts/_components/create-post-modal'
 import CreateNewEventForm from './create-new-event-form'
 
 export default function CreateNewEventDialog({
-	buttonLabel = 'Create a new event',
+	buttonLabel = 'Create new event',
 	variant = 'default',
 	className,
 }: {
@@ -27,9 +28,16 @@ export default function CreateNewEventDialog({
 	className?: string
 	variant?: ButtonProps['variant']
 }) {
+	const [open, setOpen] = React.useState(false)
+
 	return (
 		<div>
-			<Dialog>
+			<Dialog
+				onOpenChange={(isOpen) => {
+					setOpen(isOpen)
+				}}
+				open={open}
+			>
 				<DialogTrigger asChild>
 					<Button className={cn(className)} variant={variant}>
 						{buttonLabel}
@@ -38,10 +46,12 @@ export default function CreateNewEventDialog({
 				<DialogContent className="max-h-[90vh] overflow-y-auto">
 					<DialogHeader className="border-b pb-4">
 						<DialogTitle className="text-xl font-bold">
-							Create a new event(s)
+							Create Event(s)
 						</DialogTitle>
 						<DialogDescription>
-							Create one or multiple events that can be sold as a series.
+							Create one or multiple events that can be sold as a series. When
+							creating multiple events, they will be grouped under one product
+							for easier management.
 						</DialogDescription>
 					</DialogHeader>
 					<CreateNewEventForm />
