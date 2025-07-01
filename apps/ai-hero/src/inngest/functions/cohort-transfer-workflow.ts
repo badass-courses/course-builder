@@ -118,7 +118,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 									cohortContentAccessEntitlementType.id,
 								),
 								eq(entitlements.sourceType, 'cohort'),
-								eq(entitlements.sourceId, resource.resource.id),
+								eq(entitlements.sourceId, cohortResource.id),
 							),
 						)
 				}
@@ -209,7 +209,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 						id: entitlementId,
 						entitlementType: cohortContentAccessEntitlementType.id,
 						sourceType: 'cohort',
-						sourceId: resource.resource.id,
+						sourceId: cohortResource.id,
 						userId: targetUser.id,
 						organizationId: targetUserOrganization.id,
 						organizationMembershipId: targetUserOrgMembership.id,
