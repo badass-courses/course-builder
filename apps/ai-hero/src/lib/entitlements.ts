@@ -2,6 +2,8 @@ import { db } from '@/db'
 import { entitlements, organizationMemberships, purchases } from '@/db/schema'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
+
 export type EntitlementType =
 	| 'cohort_content_access'
 	| 'cohort_discord_role'
@@ -161,4 +163,45 @@ export async function hasAvailableSeatsForPurchase(
 		.then((ents) => ents.length)
 
 	return allocatedEntitlementsCount < purchase.fields.seats
+}
+
+/**
+ * Creates a cohort entitlement for a user for a specific resource in a cohort.
+ * This should be used by all flows (purchase, transfer, redeem, etc.)
+ * @returns The ID of the created entitlement
+ */
+export async function createCohortEntitlement({
+	userId,
+	resourceId,
+	sourceId,
+	organizationId,
+	organizationMembershipId,
+	entitlementType,
+	sourceType,
+	metadata = {},
+}: {
+	userId: string
+	resourceId: string
+	organizationId: string
+	organizationMembershipId: string
+	entitlementType: string
+	sourceId: string
+	sourceType: string
+	metadata?: Record<string, any>
+}): Promise<string> {
+	const entitlementId = `${resourceId}-${guid()}`
+	await db.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType,
+		sourceId,
+		metadata: {
+			...metadata,
+			contentIds: [resourceId],
+		},
+	})
+	return entitlementId
 }

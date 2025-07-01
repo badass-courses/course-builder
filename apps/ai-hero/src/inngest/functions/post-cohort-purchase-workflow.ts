@@ -8,6 +8,7 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getCohort } from '@/lib/cohorts-query'
+import { createCohortEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -249,21 +250,18 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						const createdEntitlements = []
 
 						for (const resource of cohortResource.resources || []) {
-							const entitlementId = `${resource.resource.id}-${guid()}`
-							const entitlementData = {
-								id: entitlementId,
-								entitlementType: cohortContentAccessEntitlementType.id,
-								sourceType: 'cohort',
-								sourceId: cohortResource.id,
+							const entitlementId = await createCohortEntitlement({
 								userId: user.id,
+								resourceId: resource.resource.id,
+								sourceId: cohortResource.id,
 								organizationId,
 								organizationMembershipId: orgMembership.id,
+								entitlementType: cohortContentAccessEntitlementType.id,
+								sourceType: 'cohort',
 								metadata: {
 									contentIds: [resource.resource.id],
 								},
-							}
-
-							await db.insert(entitlements).values(entitlementData)
+							})
 
 							createdEntitlements.push({
 								entitlementId,
@@ -272,6 +270,14 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 								resourceTitle: resource.resource.fields?.title,
 							})
 						}
+
+						await log.info('cohort_entitlements_created', {
+							userId: user.id,
+							cohortId: cohortResource.id,
+							entitlementsCreated: createdEntitlements.length,
+							organizationId,
+							organizationMembershipId: orgMembership.id,
+						})
 
 						return {
 							entitlementsCreated: createdEntitlements.length,
