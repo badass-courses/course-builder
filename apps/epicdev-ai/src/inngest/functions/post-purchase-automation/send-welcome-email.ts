@@ -126,6 +126,17 @@ export const sendWelcomeEmail = inngest.createFunction(
 				? eventResource.fields
 				: eventResource?.resources?.[0]?.resource?.fields
 
+		// Validate that we have event fields
+		if (!eventFields) {
+			return {
+				skipped: true,
+				reason:
+					eventResource.type === 'event-series'
+						? 'Event series has no child events'
+						: 'No event fields available',
+			}
+		}
+
 		if (!eventFields?.startsAt || !eventFields?.endsAt) {
 			return { skipped: true, reason: 'No event dates available' }
 		}
