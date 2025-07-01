@@ -725,62 +725,294 @@ export async function createEventSeries(input: MultipleEvents): Promise<{
 	const { eventSeries: eventSeriesInput, childEvents: childEventsInput } =
 		multipleEventsToEventSeriesAndEvents(input)
 
-	try {
-		// Step 1: Create the event series (this will have the product)
-		const eventSeries = await createEventSeriesResource(eventSeriesInput)
+	let eventSeries: EventSeries
+	let childEvents: Event[] = []
+	let sharedProduct = null
 
-		if (!eventSeries) {
-			throw new Error('Failed to create event series')
+	try {
+		// Execute all database operations within a transaction
+		const result = await db.transaction(async (tx) => {
+			// Step 1: Create the event series resource
+			const eventSeriesHash = guid()
+			const eventSeriesResourceId = slugify(`event-series~${eventSeriesHash}`)
+
+			const newEventSeries = {
+				id: eventSeriesResourceId,
+				type: 'event-series',
+				fields: {
+					...eventSeriesInput.fields,
+					title: eventSeriesInput.fields.title,
+					state: 'draft',
+					visibility: 'public',
+					slug: slugify(`${eventSeriesInput.fields.title}~${eventSeriesHash}`),
+				},
+				createdById: user.id,
+			}
+
+			await tx.insert(contentResource).values(newEventSeries)
+
+			// Fetch the created event series with relations
+			const eventSeriesResource = await tx.query.contentResource.findFirst({
+				where: eq(contentResource.id, eventSeriesResourceId),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+					tags: {
+						with: {
+							tag: true,
+						},
+						orderBy: asc(contentResourceTag.position),
+					},
+					resourceProducts: {
+						with: {
+							product: {
+								with: {
+									price: true,
+								},
+							},
+						},
+					},
+				},
+			})
+
+			const parsedEventSeries = EventSeriesSchema.safeParse(eventSeriesResource)
+			if (!parsedEventSeries.success) {
+				throw new Error('Error parsing event series resource')
+			}
+
+			// Step 2: Associate tags with event series
+			if (eventSeriesInput.fields.tagIds) {
+				await tx.insert(contentResourceTag).values(
+					eventSeriesInput.fields.tagIds.map((tag) => ({
+						contentResourceId: eventSeriesResourceId,
+						tagId: tag.id,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						position: 0,
+					})),
+				)
+			}
+
+			// Step 3: Create child events and associate them
+			const createdChildEvents: Event[] = []
+
+			for (let i = 0; i < childEventsInput.length; i++) {
+				const childEventInput = childEventsInput[i]
+
+				if (!childEventInput) {
+					throw new Error(`Child event input is required`)
+				}
+
+				// Create child event
+				const childEventHash = guid()
+				const childEventResourceId = slugify(`event~${childEventHash}`)
+
+				const newChildEvent = {
+					id: childEventResourceId,
+					type: 'event',
+					fields: {
+						title: childEventInput.fields.title,
+						startsAt: childEventInput.fields.startsAt,
+						endsAt: childEventInput.fields.endsAt,
+						description: childEventInput.fields.description,
+						state: 'draft',
+						visibility: 'public',
+						slug: slugify(`${childEventInput.fields.title}~${childEventHash}`),
+						// No price/quantity - they're on the event series
+						price: null,
+						quantity: null,
+					},
+					createdById: user.id,
+				}
+
+				await tx.insert(contentResource).values(newChildEvent)
+
+				// Fetch the created child event with relations
+				const childEventResource = await tx.query.contentResource.findFirst({
+					where: eq(contentResource.id, childEventResourceId),
+					with: {
+						resources: {
+							with: {
+								resource: {
+									with: {
+										resources: {
+											with: {
+												resource: true,
+											},
+											orderBy: asc(contentResourceResource.position),
+										},
+									},
+								},
+							},
+							orderBy: asc(contentResourceResource.position),
+						},
+						tags: {
+							with: {
+								tag: true,
+							},
+							orderBy: asc(contentResourceTag.position),
+						},
+						resourceProducts: {
+							with: {
+								product: {
+									with: {
+										price: true,
+									},
+								},
+							},
+						},
+					},
+				})
+
+				const parsedChildEvent = EventSchema.safeParse(childEventResource)
+				if (!parsedChildEvent.success) {
+					throw new Error(`Error parsing child event resource ${i + 1}`)
+				}
+
+				// Associate tags with child event
+				if (childEventInput.fields.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						childEventInput.fields.tagIds.map((tag) => ({
+							contentResourceId: childEventResourceId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
+				// Associate child event with event series
+				await tx.insert(contentResourceResource).values({
+					resourceOfId: eventSeriesResourceId,
+					resourceId: childEventResourceId,
+					position: i,
+				})
+
+				createdChildEvents.push(parsedChildEvent.data)
+			}
+
+			return {
+				eventSeries: parsedEventSeries.data,
+				childEvents: createdChildEvents,
+			}
+		})
+
+		eventSeries = result.eventSeries
+		childEvents = result.childEvents
+
+		// Step 4: Handle product creation outside transaction (if needed)
+		if (
+			eventSeriesInput.sharedFields.price &&
+			eventSeriesInput.sharedFields.price > 0
+		) {
+			try {
+				sharedProduct = await createProduct({
+					name: eventSeriesInput.fields.title,
+					price: eventSeriesInput.sharedFields.price,
+					quantityAvailable: eventSeriesInput.sharedFields.quantity ?? -1,
+					type: 'live',
+					state: 'published',
+					visibility: 'public',
+				})
+				if (sharedProduct) {
+					await addResourceToProduct({
+						resource: eventSeries,
+						productId: sharedProduct.id,
+					})
+				} else {
+					await log.error('event.series.product.failed', {
+						eventSeriesId: eventSeries.id,
+						userId: user.id,
+						price: eventSeriesInput.sharedFields.price,
+					})
+				}
+			} catch (error) {
+				await log.error('event.series.product.creation.failed', {
+					eventSeriesId: eventSeries.id,
+					userId: user.id,
+					error: getErrorMessage(error),
+					stack: getErrorStack(error),
+				})
+				// Note: We don't throw here since the core data is already committed
+				console.error('Error creating and associating product', error)
+			}
 		}
 
+		// Step 5: Handle external service calls (outside transaction)
+		try {
+			// Send Inngest events for the event series
+			console.log(
+				`Dispatching ${RESOURCE_CREATED_EVENT} for resource: ${eventSeries.id} (type: ${eventSeries.type})`,
+			)
+			await inngest.send({
+				name: RESOURCE_CREATED_EVENT,
+				data: {
+					id: eventSeries.id,
+					type: eventSeries.type,
+				},
+			})
+
+			// Send Inngest events for each child event
+			for (const childEvent of childEvents) {
+				console.log(
+					`Dispatching ${RESOURCE_CREATED_EVENT} for resource: ${childEvent.id} (type: ${childEvent.type})`,
+				)
+				await inngest.send({
+					name: RESOURCE_CREATED_EVENT,
+					data: {
+						id: childEvent.id,
+						type: childEvent.type,
+					},
+				})
+			}
+		} catch (error) {
+			await log.error('event.series.inngest.failed', {
+				eventSeriesId: eventSeries.id,
+				error: getErrorMessage(error),
+				stack: getErrorStack(error),
+			})
+			console.error(`Error dispatching ${RESOURCE_CREATED_EVENT}`, error)
+		}
+
+		// Step 6: Update TypeSense (outside transaction)
+		try {
+			await upsertPostToTypeSense(eventSeries, 'save')
+			for (const childEvent of childEvents) {
+				await upsertPostToTypeSense(childEvent, 'save')
+			}
+		} catch (error) {
+			await log.error('event.series.typesense.failed', {
+				eventSeriesId: eventSeries.id,
+				error: getErrorMessage(error),
+				stack: getErrorStack(error),
+			})
+			console.error('Error updating TypeSense', error)
+		}
+
+		// Logging for successful creation
 		await log.info('event.series.created', {
 			eventSeriesId: eventSeries.id,
 			userId: user.id,
-			childEventCount: childEventsInput.length,
+			childEventCount: childEvents.length,
 		})
 
-		// Step 2: Create child events (without products) and associate them
-		const childEvents: Event[] = []
-
-		for (let i = 0; i < childEventsInput.length; i++) {
-			const childEventInput = childEventsInput[i]
-
-			if (!childEventInput) {
-				throw new Error(`Child event input is required`)
-			}
-
-			// Create child event as a regular event but without price/quantity
-			const childEventForCreation: NewEvent = {
-				type: 'event',
-				fields: {
-					title: childEventInput.fields.title,
-					startsAt: childEventInput.fields.startsAt,
-					endsAt: childEventInput.fields.endsAt,
-					tagIds: childEventInput.fields.tagIds,
-					description: childEventInput.fields.description,
-					// No price/quantity - they're on the event series
-					price: null,
-					quantity: null,
-				},
-			}
-
-			const childEvent = await createEvent(childEventForCreation)
-
-			if (!childEvent) {
-				throw new Error(`Failed to create child event ${i + 1}`)
-			}
-
-			// Step 3: Associate child event with event series
-			await addEventToEventSeries({
-				childEvent,
-				wrapperEventId: eventSeries.id, // Using event series ID
-				position: i,
-			})
-
-			childEvents.push(childEvent)
-
+		for (let i = 0; i < childEvents.length; i++) {
 			await log.info('event.series.child.created', {
-				childEventId: childEvent.id,
+				childEventId: childEvents[i]!.id,
 				eventSeriesId: eventSeries.id,
 				position: i,
 				userId: user.id,
