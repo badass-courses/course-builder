@@ -102,9 +102,12 @@ async function EventsList() {
 				<p className="mb-10 text-center">There are no public events.</p>
 			)}
 			{events.map((event) => {
-				const { fields } = event
-				const { startsAt, endsAt } = fields
-				const PT = fields.timezone || 'America/Los_Angeles'
+				const sharedFields =
+					event.type === 'event'
+						? event.fields
+						: event?.resources?.[0]?.resource?.fields
+				const { startsAt, endsAt } = sharedFields
+				const PT = sharedFields.timezone || 'America/Los_Angeles'
 				const eventDate =
 					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 				const eventTime =
