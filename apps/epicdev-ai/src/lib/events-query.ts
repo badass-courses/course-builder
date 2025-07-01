@@ -1049,7 +1049,7 @@ export async function updateEvent(
 		throw new Error('Event id is required')
 	}
 
-	const currentEvent = await getEvent(input.id)
+	const currentEvent = await getEventOrEventSeries(input.id)
 
 	if (!currentEvent) {
 		await log.error('event.update.notfound', {

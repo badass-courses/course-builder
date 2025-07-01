@@ -7,10 +7,10 @@ import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { EventSchema } from '@/lib/events'
+import { EventSchema, EventSeriesSchema } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -62,7 +62,10 @@ async function EventActions({}: {}) {
 async function EventsList() {
 	const { ability } = await getServerAuthSession()
 	const eventsModule = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'event'),
+		where: or(
+			eq(contentResource.type, 'event'),
+			eq(contentResource.type, 'event-series'),
+		),
 		orderBy: desc(contentResource.createdAt),
 		with: {
 			resources: true,
@@ -77,7 +80,9 @@ async function EventsList() {
 			},
 		},
 	})
-	const parsedEventsModule = z.array(EventSchema).parse(eventsModule)
+	const parsedEventsModule = z
+		.array(z.union([EventSchema, EventSeriesSchema]))
+		.parse(eventsModule)
 
 	const events = [...parsedEventsModule].filter((event) => {
 		if (ability.can('create', 'Content')) {
