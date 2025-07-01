@@ -30,9 +30,13 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 			isNull(entitlements.deletedAt),
 		),
 		with: {
-			user: true,
-			organization: true,
-			membership: true,
+			user: {
+				columns: {
+					id: true,
+					name: true,
+					email: true,
+				},
+			},
 		},
 	})
 
@@ -40,10 +44,11 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 	cohortEntitlements.forEach((entitlement) => {
 		if (entitlement.user && entitlement.userId) {
 			uniqueUsers.set(entitlement.userId, {
-				user: entitlement.user,
-				entitlements: cohortEntitlements.filter(
-					(e) => e.userId === entitlement.userId,
-				),
+				user: {
+					id: entitlement.user.id,
+					name: entitlement.user.name,
+					email: entitlement.user.email,
+				},
 			})
 		}
 	})
