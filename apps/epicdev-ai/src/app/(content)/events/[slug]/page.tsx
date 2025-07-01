@@ -191,13 +191,16 @@ export default async function EventPage(props: {
 		}
 	}
 
-	const fields =
+	const { title, description, body } = event.fields
+	const attendeeInstructions =
+		event.fields.attendeeInstructions || sharedFields.attendeeInstructions
+
+	const sharedFields =
 		event.type === 'event'
 			? event.fields
 			: event?.resources?.[0]?.resource?.fields
-
-	const { startsAt, endsAt } = fields
-	const PT = fields.timezone || 'America/Los_Angeles'
+	const { startsAt, endsAt } = sharedFields
+	const PT = sharedFields.timezone || 'America/Los_Angeles'
 	const eventDate =
 		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 	const eventTime =
@@ -215,7 +218,7 @@ export default async function EventPage(props: {
 	)
 
 	const { content: eventBody } = await compileMDX(
-		event.fields.body || '',
+		body || '',
 
 		{
 			EventPricing: (props) => <EventPricing post={event} {...props} />,
@@ -281,25 +284,25 @@ export default async function EventPage(props: {
 
 				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
 					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
-						{fields.title}
+						{title}
 					</h1>
-					{fields.description && (
+					{description && (
 						<h2 className="mt-5 text-balance text-lg font-normal text-purple-950 lg:text-xl dark:text-purple-200">
-							{fields.description}
+							{description}
 						</h2>
 					)}
 				</div>
 			</header>
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
 				<div className="col-span-8 flex w-full flex-col">
-					{event.fields.attendeeInstructions && hasPurchasedCurrentProduct && (
+					{attendeeInstructions && hasPurchasedCurrentProduct && (
 						<div className="dark:bg-card dark:border-foreground/10 mb-8 flex flex-col gap-1 rounded-md border bg-white p-6 text-left font-medium shadow-xl">
 							<p className="inline-flex items-center font-semibold">
 								<DocumentTextIcon className="mr-1 size-5 text-teal-600 dark:text-teal-400" />{' '}
 								Attendee Instructions
 							</p>
 							<Markdown className="prose dark:prose-invert mt-2">
-								{event.fields.attendeeInstructions}
+								{attendeeInstructions}
 							</Markdown>
 						</div>
 					)}
