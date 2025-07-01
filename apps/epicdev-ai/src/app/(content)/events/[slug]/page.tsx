@@ -192,13 +192,14 @@ export default async function EventPage(props: {
 	}
 
 	const { title, description, body } = event.fields
-	const attendeeInstructions =
-		event.fields.attendeeInstructions || sharedFields.attendeeInstructions
 
 	const sharedFields =
 		event.type === 'event'
 			? event.fields
 			: event?.resources?.[0]?.resource?.fields
+	const attendeeInstructions =
+		event.fields.attendeeInstructions || sharedFields.attendeeInstructions
+
 	const { startsAt, endsAt } = sharedFields
 	const PT = sharedFields.timezone || 'America/Los_Angeles'
 	const eventDate =
