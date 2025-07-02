@@ -203,3 +203,7 @@
 		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDMuMTVMMTMuMyAxLjc1QzcuMjYyIDMuNSA0LjIgNy4zNSA0LjIgNy4zNUwxLjQgNS4yNUwwIDYuNjVMNC4yIDEyLjI1QzcuNDM3IDYuMjEzIDE0IDMuMTUgMTQgMy4xNVoiIGZpbGw9IiM3QzNCRUQiLz4KPC9zdmc+Cg==');
 	}
 }
+
+mux-player::part(center play button) {
+	@apply sm:scale-50;
+}

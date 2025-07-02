@@ -111,7 +111,6 @@ const Home = async (props: Props) => {
 						{page?.fields?.title || 'Title'}
 					</h1>
 				</header>
-
 				<article
 					className={cn(
 						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',
@@ -146,8 +145,20 @@ const Home = async (props: Props) => {
 								),
 								// @ts-expect-error
 								MuxPlayer,
-								Video: ({ resourceId }: { resourceId: string }) => (
-									<MDXVideo resourceId={resourceId} />
+								Video: ({
+									resourceId,
+									thumbnailTime,
+									poster,
+								}: {
+									resourceId: string
+									thumbnailTime?: number
+									poster?: string
+								}) => (
+									<MDXVideo
+										resourceId={resourceId}
+										thumbnailTime={thumbnailTime}
+										poster={poster}
+									/>
 								),
 							}}
 						/>
