@@ -67,7 +67,6 @@ async function updatePageResource(pageUpdate: Partial<Page>): Promise<Page> {
 			title: pageUpdate.fields.title || '',
 			body: pageUpdate.fields.body || '',
 			slug: pageUpdate.fields.slug || '',
-			path: pageUpdate.fields.path || '',
 			description: pageUpdate.fields.description || '',
 			state: pageUpdate.fields.state || 'draft',
 			visibility: pageUpdate.fields.visibility || 'public',
@@ -100,7 +99,6 @@ const pageFormConfig: ResourceFormConfig<Page, typeof PageSchema> = {
 					description: '',
 					state: 'draft',
 					slug: '',
-					path: '',
 					socialImage: {
 						type: 'imageUrl',
 						url: '',
@@ -124,7 +122,6 @@ const pageFormConfig: ResourceFormConfig<Page, typeof PageSchema> = {
 				title: page.fields?.title || '',
 				body: page.fields?.body || '',
 				slug: page.fields?.slug || '',
-				path: page.fields?.path || '',
 				visibility: page.fields?.visibility || 'public',
 				state: page.fields?.state || 'draft',
 				description: page.fields?.description ?? '',
@@ -135,8 +132,7 @@ const pageFormConfig: ResourceFormConfig<Page, typeof PageSchema> = {
 			},
 		}
 	},
-	getResourcePath: (slug?: string, path?: string) =>
-		`${path || (slug ? `/${slug}` : '')}`,
+	getResourcePath: (slug?: string) => '/admin/pages',
 	updateResource: updatePageResource,
 	createResourceConfig: {
 		title: 'Create a Resource',
@@ -219,21 +215,6 @@ const PageFormFields = ({
 		<>
 			<MetadataFieldTitle form={form} />
 			<MetadataFieldSlug form={form} />
-			<FormField
-				control={form.control}
-				name="fields.path"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Path</FormLabel>
-						<FormDescription>
-							Used to match the page to a URL path. Example:{' '}
-							<code>/events/workshops/mcp</code>
-						</FormDescription>
-						<Input {...field} value={field.value || ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldState form={form} />
 			<MetadataFieldDescription form={form} />

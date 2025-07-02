@@ -28,7 +28,7 @@ export default function MDXVideo({
 	if (!data?.muxPlaybackId) return null
 
 	return (
-		<div className="flex aspect-video h-full w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg">
+		<div className="flex aspect-video w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg">
 			<MuxPlayer
 				className="aspect-video w-full"
 				playbackRates={[0.75, 1, 1.25, 1.5, 1.75, 2]}

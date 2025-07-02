@@ -30,7 +30,6 @@ export const PageSchema = ContentResourceSchema.merge(
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			slug: z.string(),
-			path: z.string().nullish(),
 			state: PageStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('public'),
 			resources: z.array(ContentResourceSchema).nullish(),

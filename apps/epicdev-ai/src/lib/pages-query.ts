@@ -163,9 +163,6 @@ export async function updatePage(
 		})
 
 		revalidate && revalidateTag('pages')
-		revalidate &&
-			updatedPage?.fields?.path &&
-			revalidatePath(updatedPage.fields.path)
 
 		try {
 			console.log(
@@ -199,19 +196,12 @@ export async function updatePage(
 	}
 }
 
-export async function getPage(slugOrIdOrPath: string) {
+export async function getPage(slugOrId: string) {
 	const page = await db.query.contentResource.findFirst({
 		where: and(
 			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					slugOrIdOrPath,
-				),
-				eq(contentResource.id, slugOrIdOrPath),
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.path")`,
-					slugOrIdOrPath,
-				),
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+				eq(contentResource.id, slugOrId),
 			),
 			eq(contentResource.type, 'page'),
 		),
@@ -243,7 +233,7 @@ export async function getPage(slugOrIdOrPath: string) {
 }
 
 export const getCachedPage = unstable_cache(
-	async (slugOrIdOrPath: string) => getPage(slugOrIdOrPath),
+	async (slugOrId: string) => getPage(slugOrId),
 	['page'],
 	{ revalidate: 3600, tags: ['page'] },
 )
