@@ -10,7 +10,6 @@ import { cn } from '@coursebuilder/utils-ui/cn'
 
 import { EventDetailsMobile } from './event-details'
 import type { EventPageProps } from './event-page-props'
-import { EventPricingWidget } from './event-pricing-widget'
 
 export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 	props,

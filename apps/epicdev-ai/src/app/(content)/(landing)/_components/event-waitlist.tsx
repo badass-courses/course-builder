@@ -7,7 +7,7 @@ import { CheckCircle } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-export default function WorkshopWaitlist({
+export default function EventWaitlist({
 	title,
 	className,
 	actionLabel = 'Join Waitlist',

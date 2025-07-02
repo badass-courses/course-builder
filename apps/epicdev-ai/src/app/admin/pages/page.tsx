@@ -1,14 +1,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import LayoutClient from '@/components/layout-client'
 import { Page } from '@/lib/pages'
 import { getPages } from '@/lib/pages-query'
-import type { Post } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { format } from 'date-fns'
-import { ChevronRight, FilePlus2, FileText, Pencil } from 'lucide-react'
+import { ChevronRight, FilePlus2, FileText } from 'lucide-react'
 
 import {
 	Button,
@@ -55,7 +52,7 @@ const PageTeaser: React.FC<{
 }> = ({ page, className, i }) => {
 	const title = page.fields.title
 	const description = page.fields.description
-	const path = page.fields.path
+
 	const createdAt = page.createdAt
 
 	return (
@@ -69,12 +66,7 @@ const PageTeaser: React.FC<{
 				<FileText className="text-primary relative size-5 flex-shrink-0 translate-y-0.5" />
 				<div className="w-full">
 					<div className="fluid-lg flex w-full flex-wrap items-baseline gap-1 font-semibold">
-						{title}{' '}
-						{path && (
-							<code className="bg-muted rounded px-1 py-0.5 font-mono text-xs">
-								{path}
-							</code>
-						)}
+						{title}
 					</div>
 					{description && (
 						<div className="text-muted-foreground mt-3 text-sm">
