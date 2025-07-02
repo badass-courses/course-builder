@@ -15,11 +15,11 @@ import { z } from 'zod'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import WorkshopWaitlist from './waitlist'
+import EventWaitlist from './event-waitlist'
 
 type Event = z.infer<typeof EventSchema>
 
-interface WorkshopPageProps {
+interface TopicPageProps {
 	page: Page | null
 	pageTitle: string
 	pastEvents: Event[]
@@ -30,13 +30,13 @@ interface WorkshopPageProps {
 /**
  * Shared workshop page component for rendering workshop events with tags
  */
-export default async function WorkshopPage({
+export default async function TopicPage({
 	page,
 	pageTitle,
 	pastEvents,
 	upcomingEvents,
 	soldOutOrPastIds,
-}: WorkshopPageProps) {
+}: TopicPageProps) {
 	const renderEvent = (event: Event, isUpcoming = false) => {
 		const timezone = event.fields?.timezone ?? 'America/Los_Angeles'
 		const isSoldOut = isUpcoming && soldOutOrPastIds.includes(event.id)
@@ -101,7 +101,7 @@ export default async function WorkshopPage({
 								announced:
 							</p>
 						</div>
-						<WorkshopWaitlist title={pageTitle} />
+						<EventWaitlist title={pageTitle} />
 					</>
 				)}
 			</section>
@@ -127,8 +127,19 @@ export default async function WorkshopPage({
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
 						{pageBody}
 					</article>
-					<section className="mt-5 block border-t pt-8 lg:hidden">
+					<section className="mt-5 border-t pt-8">
 						<UpcomingEvents />
+					</section>
+					<section className="mt-10 hidden flex-col gap-4 pt-8 lg:flex">
+						<h2 className="w-full text-2xl font-semibold">
+							None of these dates work for you? Get notified when new dates are
+							announced:
+						</h2>
+						<EventWaitlist
+							className="flex-col items-center sm:flex-row sm:items-end [&_button]:w-auto"
+							title={pageTitle}
+							actionLabel="Get Notified"
+						/>
 					</section>
 					{pastEvents.length > 0 && (
 						<section className="mt-5 pt-8 lg:border-t">
@@ -138,17 +149,6 @@ export default async function WorkshopPage({
 							</div>
 						</section>
 					)}
-					<section className="mt-10 hidden flex-col gap-4 pt-8 lg:flex">
-						<h2 className="w-full text-2xl font-semibold">
-							None of these dates work for you? Get notified when new dates are
-							announced:
-						</h2>
-						<WorkshopWaitlist
-							className="flex-col items-center sm:flex-row sm:items-end [&_button]:w-auto"
-							title={pageTitle}
-							actionLabel="Get Notified"
-						/>
-					</section>
 					<section className="mx-auto flex w-full flex-wrap items-center justify-center gap-5 py-16">
 						<strong className="text-lg font-semibold">Share</strong>
 						<Share

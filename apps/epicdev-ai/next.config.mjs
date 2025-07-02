@@ -39,6 +39,20 @@ const config = {
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
 	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote', 'shiki'],
+	redirects: async () => {
+		return [
+			{
+				source: '/events/workshops/mcp/fundamentals',
+				destination: '/mcp-fundamentals',
+				statusCode: 308,
+			},
+			{
+				source: '/events/workshops/mcp/advanced',
+				destination: '/advanced-mcp',
+				statusCode: 308,
+			},
+		]
+	},
 }
 
 export default withAxiom(withMDX(config))
