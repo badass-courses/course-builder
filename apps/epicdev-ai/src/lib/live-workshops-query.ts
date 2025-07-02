@@ -5,7 +5,7 @@ import { EventSchema } from '@/lib/events'
 import { getSoldOutOrPastEventIds } from '@/lib/events-query'
 import type { Tag } from '@/lib/tags'
 import { zonedTimeToUtc } from 'date-fns-tz'
-import { and, eq, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, or, sql } from 'drizzle-orm'
 
 export const getCachedLiveWorkshopsPerTag = unstable_cache(
 	async (tags: Tag[]) => getLiveWorkshopsPerTag(tags),
@@ -16,7 +16,7 @@ export const getCachedLiveWorkshopsPerTag = unstable_cache(
 export async function getLiveWorkshopsPerTag(tags: Tag[]) {
 	const allEvents = await db.query.contentResource.findMany({
 		where: and(
-			eq(contentResource.type, 'event'),
+			or(eq(contentResource.type, 'event')),
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, 'published'),
 		),
 		with: {
@@ -26,6 +26,7 @@ export async function getLiveWorkshopsPerTag(tags: Tag[]) {
 				},
 			},
 		},
+		orderBy: asc(sql`JSON_EXTRACT (${contentResource.fields}, "$.startsAt")`),
 	})
 
 	// Filter events that have all the required tags

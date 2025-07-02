@@ -48,7 +48,12 @@ const config = {
 			},
 			{
 				source: '/events/workshops/mcp/advanced',
-				destination: '/advanced-mcp',
+				destination: '/advanced-mcp-features',
+				statusCode: 308,
+			},
+			{
+				source: '/events/workshops/mcp',
+				destination: '/mcp-workshops',
 				statusCode: 308,
 			},
 		]
