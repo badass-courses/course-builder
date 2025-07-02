@@ -205,5 +205,5 @@
 }
 
 mux-player::part(center play button) {
-	@apply sm:scale-50;
+	@apply bg-black/50 backdrop-blur-md sm:scale-50;
 }
