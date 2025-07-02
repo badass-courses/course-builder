@@ -20,7 +20,7 @@ export default function MDXVideo({
 
 	if (status === 'pending')
 		return (
-			<div className="mb-5 flex aspect-video h-full w-full max-w-4xl items-center justify-center rounded-lg border">
+			<div className="mb-5 flex aspect-video w-full max-w-4xl items-center justify-center rounded-lg border">
 				<Spinner className="h-6 w-6" />
 			</div>
 		)
