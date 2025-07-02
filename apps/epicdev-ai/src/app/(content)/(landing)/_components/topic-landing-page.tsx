@@ -144,7 +144,7 @@ export default async function TopicPage({
 					{pastEvents.length > 0 && (
 						<section className="mt-5 pt-8 lg:border-t">
 							<h2 className="mb-4 text-2xl font-semibold">Past Events</h2>
-							<div className="space-y-4">
+							<div className="space-y-4 opacity-50">
 								{pastEvents.map((event) => renderEvent(event, false))}
 							</div>
 						</section>
