@@ -28,6 +28,10 @@ export default function LayoutClient({
 }) {
 	return (
 		<div className={cn(withGrid && 'home-page-grid')}>
+			<Navigation
+				highlightedResource={highlightedResource}
+				withContainer={withContainer}
+			/>
 			<div
 				className={cn(
 					'',
@@ -37,14 +41,8 @@ export default function LayoutClient({
 					className,
 				)}
 			>
-				<div className="">
-					<Navigation
-						highlightedResource={highlightedResource}
-						withContainer={withContainer}
-					/>
-					{children}
-					<Footer />
-				</div>
+				{children}
+				<Footer />
 			</div>
 		</div>
 	)

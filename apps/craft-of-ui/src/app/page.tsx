@@ -89,14 +89,14 @@ const Home = async (props: Props) => {
 			withContainer
 			withGrid
 		>
-			<div className="min-h-screen overflow-auto pb-16">
-				<div className="mx-auto max-w-3xl px-4 pb-16 pt-16">
-					<header className="text-gray-900 dark:text-gray-100">
-						<h1 className="mb-4 flex items-center text-sm font-extralight text-gray-800 dark:text-gray-200">
+			<div className="mask-content fixed inset-0 min-h-screen overflow-auto pb-[calc(var(--header-height)*1)] [--end:calc(2*var(--header-height))] [--start:var(--header-height)] lg:[--end:var(--header-height)] lg:[--start:0]">
+				<div className="mx-auto w-[var(--content)] max-w-[calc(100vw-(2*var(--gutter)))] pb-[var(--header-height)] pt-[calc(2*var(--header-height))]">
+					<header className="text-[canvasText] dark:text-gray-100">
+						<h1 className="mb-4 flex items-center font-sans text-sm font-[200] text-gray-900 dark:text-gray-200">
 							The Craft of UI — by&nbsp;
 							<Link
 								aria-label="Jhey Tompkins"
-								className="flex items-center gap-x-2 text-gray-600 outline-red-500 transition-colors hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400"
+								className="flex items-center gap-x-2 text-gray-900 outline-red-500 transition-colors hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400"
 								href="https://twitter.com/intent/follow?screen_name=jh3yy"
 								target="_blank"
 							>
@@ -110,7 +110,7 @@ const Home = async (props: Props) => {
 								/>
 							</Link>
 						</h1>
-						<p className="mb-6 font-serif text-4xl leading-none sm:text-5xl md:text-6xl">
+						<p className="text-fluid mb-6 font-serif leading-none [--font-level:4] [--font-size-min:20]">
 							What if you could build{' '}
 							<span className="text-red-500">anything</span>?
 						</p>
@@ -118,11 +118,9 @@ const Home = async (props: Props) => {
 
 					<main
 						className={cn(
-							'prose prose-lg dark:prose-invert',
-							'[&>p:not(:has(+ul))]:mb-8 [&_p]:text-gray-600 [&_p]:dark:text-gray-300',
-							'[&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6',
-							'[&_h2]:font-serif [&_h2]:text-3xl [&_h2]:font-normal [&_h2]:leading-none',
-							'[&_h2]:mb-4 [&_h2]:mt-20',
+							'[&_p]:text-md leading-[1.5]',
+							'[&_h2]:mb-4 [&_h2]:mt-20 [&_h2]:font-serif [&_h2]:font-[600] [&_h2]:leading-none [&_h2]:[--font-level:1.8] [&_h2]:[--font-size-min:20]',
+							'[&_p:not(:has(+ul))]:mb-8 [&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6',
 						)}
 					>
 						{firstPageResource && (
@@ -137,6 +135,17 @@ const Home = async (props: Props) => {
 								</span>
 							</Link>
 						)}
+
+						<p className="text-fluid text-balance font-[200] leading-[1.25] [--font-level:0.6]">
+							Master the tools, mindset, and techniques behind crafting
+							exceptional user interfaces with HTML, CSS, and JavaScript
+						</p>
+
+						<PrimaryNewsletterCta
+							title="You want to build exceptional user interfaces, I want to empower you to do so."
+							byline="Join the waitlist to learn more and get course launch updates."
+							actionLabel="Subscribe"
+						/>
 
 						<article className="mx-auto w-full max-w-3xl pb-10">
 							{page?.fields?.body ? (
