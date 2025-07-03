@@ -15,7 +15,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 5rem;
+		--nav-height: 80px;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -49,6 +49,18 @@
 		--chart-4: 43 74% 66%;
 		--chart-5: 27 87% 67%;
 		color-scheme: light;
+
+		/* imported */
+		--header-height: 80px;
+		--content: 600px;
+		--gutter: 1.5rem;
+		--font-size-min: 14;
+		--font-size-max: 20;
+		--font-ratio-min: 1.2;
+		--font-ratio-max: 1.33;
+		--font-width-min: 375;
+		--font-width-max: 1500;
+		--breakpoint-lg: 968px;
 
 		/* codehike theme */
 		--ch-0: light;
@@ -202,7 +214,7 @@
 		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
 
-	/* 
+	/*
   Hide the second #primary-newsletter-cta only if there are exactly two on the page.
   This is a temporary workaround for duplicate IDs rendered by the framework.
   Ideally, IDs should be unique—consider refactoring to use class names or unique IDs.
