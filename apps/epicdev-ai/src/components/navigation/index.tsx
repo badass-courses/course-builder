@@ -92,7 +92,7 @@ const Navigation = ({
 						className={cn(
 							'absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 ring-gray-800/[.075] backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
 							{
-								'hidden md:flex': true, // links.length > 3,
+								'hidden lg:flex': true, // links.length > 3,
 							},
 						)}
 						aria-label={`Navigation header with ${links.length} links`}
@@ -122,7 +122,7 @@ const Navigation = ({
 							</Button>
 						</div>
 					)} */}
-					<ul className="hidden items-center md:flex">
+					<ul className="hidden items-center lg:flex">
 						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
 								label="Feedback"

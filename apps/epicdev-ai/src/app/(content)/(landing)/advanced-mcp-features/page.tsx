@@ -1,33 +1,51 @@
-import React from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getCachedLiveWorkshopsPerTag } from '@/lib/live-workshops-query'
 import { getCachedPage } from '@/lib/pages-query'
-import { getCachedTag, getCachedTags } from '@/lib/tags-query'
+import { getCachedTag } from '@/lib/tags-query'
 
-import WorkshopPage from '../_components/workshop-page'
+import TopicLandingPage from '../_components/topic-landing-page'
 
-export async function generateStaticParams() {
-	const tags = await getCachedTags()
+const TAGS = ['mcp', 'advanced']
+const PAGE_ID = 'advanced-mcp-features-cz53t'
 
-	return tags.map((tag) => ({
-		tag: tag.fields.slug,
-	}))
+export default async function AdvancedMCP() {
+	const page = await getCachedPage(PAGE_ID)
+	if (!page) {
+		return notFound()
+	}
+	const mcpTag = await getCachedTag(TAGS[0]!)
+	const fundamentalsTag = await getCachedTag(TAGS[1]!)
+
+	if (!mcpTag || !fundamentalsTag) {
+		return notFound()
+	}
+
+	const { upcomingEvents, soldOutOrPastIds, pastEvents } =
+		await getCachedLiveWorkshopsPerTag([mcpTag, fundamentalsTag])
+
+	return (
+		<TopicLandingPage
+			page={page}
+			upcomingEvents={upcomingEvents}
+			soldOutOrPastIds={soldOutOrPastIds}
+			pageTitle={page?.fields?.title || 'MCP Fundamentals'}
+			pastEvents={pastEvents}
+		/>
+	)
 }
 
-export async function generateMetadata({
-	params,
-}: {
-	params: Promise<{ tag: string }>
-}): Promise<Metadata> {
-	const { tag: tagParam } = await params
-	const tag = await getCachedTag(tagParam)
-	const page = await getCachedPage(`/events/workshops/${tagParam}`)
-	if (!tag) {
+export async function generateMetadata(): Promise<Metadata> {
+	const tag = await getCachedTag(TAGS[0]!)
+	const subtag = await getCachedTag(TAGS[1]!)
+
+	const page = await getCachedPage(PAGE_ID)
+
+	if (!tag || !subtag) {
 		return {}
 	}
 	const { upcomingEvents, soldOutOrPastIds } =
-		await getCachedLiveWorkshopsPerTag([tag])
+		await getCachedLiveWorkshopsPerTag([tag, subtag])
 
 	const pageTitle = page?.fields?.title || tag.fields.label
 	const pageDescription =
@@ -73,31 +91,4 @@ export async function generateMetadata({
 			images: [ogImageUrl.toString()],
 		},
 	}
-}
-
-export default async function MCPFundamentalsPage({
-	params,
-}: {
-	params: Promise<{ tag: string }>
-}) {
-	const { tag: tagParam } = await params
-	const tag = await getCachedTag(tagParam)
-	if (!tag) {
-		notFound()
-	}
-	const page = await getCachedPage(`/events/workshops/${tagParam}`)
-	const { pastEvents, upcomingEvents, soldOutOrPastIds } =
-		await getCachedLiveWorkshopsPerTag([tag])
-
-	const pageTitle = page?.fields?.title || tag.fields.label
-
-	return (
-		<WorkshopPage
-			page={page}
-			pageTitle={pageTitle}
-			pastEvents={pastEvents}
-			upcomingEvents={upcomingEvents}
-			soldOutOrPastIds={soldOutOrPastIds}
-		/>
-	)
 }

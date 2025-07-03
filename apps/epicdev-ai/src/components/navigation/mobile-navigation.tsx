@@ -63,7 +63,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
 	return (
 		<div
-			className={cn('flex items-stretch md:hidden', {
+			className={cn('flex items-stretch lg:hidden', {
 				'fixed right-8 top-[33px]': !isEditRoute,
 				'absolute -top-5 right-0': isEditRoute,
 			})}
