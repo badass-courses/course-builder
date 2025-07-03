@@ -865,7 +865,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.6
+        specifier: ^2.0.7
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -1548,7 +1548,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.6
+        specifier: ^2.0.7
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3399,7 +3399,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.6
+        specifier: ^2.0.7
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3757,7 +3757,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.6
+        specifier: ^2.0.7
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -5461,7 +5461,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.6
+        specifier: ^2.0.7
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1

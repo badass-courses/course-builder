@@ -1,5 +1,13 @@
 # craft-of-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  [[`8f4bb1c`](https://github.com/badass-courses/course-builder/commit/8f4bb1c0cee7296841f40564f43910ccf743752b)]:
+  - @coursebuilder/ui@2.0.7
+
 ## 0.1.2
 
 ### Patch Changes
