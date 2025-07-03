@@ -23,7 +23,7 @@
 		--code-editor-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height) - 30px
 		);
-		--background: 0 0% 93%;
+		--background: 0 0% 98%;
 		--foreground: 240 2% 20%;
 		--card: 0 0% 100%;
 		--card-foreground: 240 2% 20%;
@@ -55,12 +55,26 @@
 		--content: 600px;
 		--gutter: 1.5rem;
 		--font-size-min: 14;
-		--font-size-max: 20;
+		--font-size-max: 18;
 		--font-ratio-min: 1.2;
 		--font-ratio-max: 1.33;
 		--font-width-min: 375;
 		--font-width-max: 1500;
 		--breakpoint-lg: 968px;
+		--color-red-400: oklch(0.704 0.191 22.216);
+		--color-red-500: oklch(0.637 0.237 25.331);
+		--color-red-800: oklch(0.444 0.177 26.899);
+		--color-green-200: oklch(0.925 0.084 155.995);
+		--color-green-600: oklch(0.627 0.194 149.214);
+		--color-green-800: oklch(0.448 0.119 151.328);
+		--color-gray-100: oklch(0.967 0.003 264.542);
+		--color-gray-200: oklch(0.928 0.006 264.531);
+		--color-gray-300: oklch(0.872 0.01 258.338);
+		--color-gray-400: oklch(0.707 0.022 261.325);
+		--color-gray-500: oklch(0.551 0.027 264.364);
+		--color-gray-800: oklch(0.278 0.033 256.848);
+		--color-gray-900: oklch(0.21 0.034 264.665);
+		--color-white: #fff;
 
 		/* codehike theme */
 		--ch-0: light;
@@ -175,7 +189,8 @@
 	}
 
 	body {
-		@apply bg-background text-foreground selection:bg-primary selection:text-primary-foreground overflow-x-hidden font-normal antialiased;
+		@apply bg-background selection:bg-primary selection:text-primary-foreground overflow-x-hidden font-[300] text-[canvasText] antialiased;
+		color: color-mix(in hsl, canvasText, canvas 40%);
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;
@@ -200,8 +215,69 @@
 		z-index: -1;
 	}
 
+	.text-fluid {
+		--fluid-min: calc(
+			var(--font-size-min) * pow(var(--font-ratio-min), var(--font-level, 0))
+		);
+		--fluid-max: calc(
+			var(--font-size-max) * pow(var(--font-ratio-max), var(--font-level, 0))
+		);
+		--fluid-preferred: calc(
+			(var(--fluid-max) - var(--fluid-min)) /
+				(var(--font-width-max) - var(--font-width-min))
+		);
+		--fluid-type: clamp(
+			(var(--fluid-min) / 16) * 1rem,
+			((var(--fluid-min) / 16) * 1rem) -
+				(((var(--fluid-preferred) * var(--font-width-min)) / 16) * 1rem) +
+				(var(--fluid-preferred) * var(--variable-unit, 100vi)),
+			(var(--fluid-max) / 16) * 1rem
+		);
+		font-size: var(--fluid-type);
+	}
+	.mask-content {
+		mask-image:
+			linear-gradient(
+				#0000 var(--start),
+				#fff var(--end) calc(100% - var(--header-height)),
+				#0000
+			),
+			linear-gradient(#fff 0 100%);
+		mask-position:
+			0 50%,
+			calc(100vw - var(--gutter)) 0;
+		mask-size: calc(100vw - var(--gutter)) 100%;
+		mask-repeat: no-repeat;
+	}
+
 	html {
 		/* scrollbar-gutter: stable; */
+	}
+
+	:where(a, button):focus-visible {
+		outline: 2px solid var(--color-red-400);
+		outline-offset: 2px;
+	}
+
+	strong {
+		@apply font-[600];
+	}
+
+	::selection {
+		background: var(--color-red-400);
+		color: #fff;
+	}
+
+	html[lang] {
+		color-scheme: light dark;
+		scrollbar-color: light-dark(var(--color-red-400), var(--color-red-500))
+			#0000;
+		scrollbar-width: thin;
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		.overflow-auto {
+			scroll-behavior: smooth;
+		}
 	}
 
 	html.dark .shiki,
@@ -232,5 +308,78 @@
 	@apply list-outside !pl-0;
 	li {
 		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDMuMTVMMTMuMyAxLjc1QzcuMjYyIDMuNSA0LjIgNy4zNSA0LjIgNy4zNUwxLjQgNS4yNUwwIDYuNjVMNC4yIDEyLjI1QzcuNDM3IDYuMjEzIDE0IDMuMTUgMTQgMy4xNVoiIGZpbGw9IiM3QzNCRUQiLz4KPC9zdmc+Cg==');
+	}
+}
+
+@layer signature {
+	.sig {
+		--duration: 1.4;
+		--delay: 0.2;
+		--base-delay: calc((var(--duration) + var(--delay)));
+		--natty-delay: 0.973125;
+		width: 160px;
+		rotate: 10deg;
+		path {
+			--end: 1.025;
+			stroke-dasharray: var(--end);
+			stroke-dashoffset: var(--end);
+			animation: draw calc(var(--path-speed) * 1s)
+				calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+				forwards;
+		}
+
+		:is(.eye, .nose) {
+			fill: hsl(0 0% 0% / 0);
+			animation:
+				draw calc(var(--path-speed) * 1s)
+					calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+					forwards,
+				fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+					forwards;
+		}
+		.eye {
+			transform-box: fill-box;
+			transform-origin: 50% 50%;
+			animation:
+				draw calc(var(--path-speed) * 1s)
+					calc((var(--base-delay) * 1s) + var(--path-delay, 0) * 1s) ease-in
+					forwards,
+				fill 0.5s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+					forwards,
+				blink 6s calc((var(--base-delay) * 1s) + var(--natty-delay, 0) * 1s)
+					infinite;
+		}
+	}
+
+	@keyframes fill {
+		to {
+			fill: currentColor;
+		}
+	}
+
+	@keyframes draw {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@keyframes blink {
+		0%,
+		46%,
+		48%,
+		50%,
+		100% {
+			transform: scaleY(1);
+		}
+		47%,
+		49% {
+			transform: scaleY(0.1);
+		}
+	}
+}
+
+@keyframes move {
+	50% {
+		transform: translate(calc(100cqi - 100%), 0);
 	}
 }

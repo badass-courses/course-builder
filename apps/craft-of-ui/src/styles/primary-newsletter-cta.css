@@ -5,7 +5,7 @@
 		@apply mb-0;
 	}
 	input {
-		@apply placeholder:text-muted-foreground text-foreground relative flex p-5 text-base placeholder:opacity-75;
+		@apply placeholder:text-muted-foreground text-foreground relative flex text-base placeholder:opacity-75;
 		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
 	}
 	[data-sr-input-label] {
