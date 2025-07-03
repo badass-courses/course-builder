@@ -1,5 +1,5 @@
 import { inngest } from '@/inngest/inngest.server'
-import { getEvent } from '@/lib/events-query'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import { addUserToGoogleCalendarEvent } from '@/lib/google-calendar'
 
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
@@ -48,12 +48,15 @@ export const postEventPurchase = inngest.createFunction(
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 
 		// the cohort should be part of the product resources
-		const eventResourceId = product.resources?.find(
-			(resource) => resource.resource?.type === 'event',
+		const eventResourceId = product.resources?.find((resource) =>
+			['event', 'event-series'].includes(resource.resource?.type),
 		)?.resource.id
 
 		const eventResource = await step.run(`get event resource`, async () => {
-			return getEvent(eventResourceId)
+			console.log('eventResourceId:', eventResourceId)
+			const resource = await getEventOrEventSeries(eventResourceId)
+			console.log('eventResource found:', resource?.type, resource?.id)
+			return resource
 		})
 
 		let gCalEvent = null
@@ -86,23 +89,60 @@ export const postEventPurchase = inngest.createFunction(
 
 					return orgMembership
 				})
-				console.log(
-					'eventResource?.fields.calendarId',
-					eventResource?.fields.calendarId,
-				)
-				if (eventResource?.fields.calendarId) {
-					gCalEvent = await step.run(`add user to calendar event`, async () => {
-						if (!user.email) {
-							throw new Error(`user.email is required`)
+
+				// if the event is a series, we need to add the user to the calendar event for each child event
+				if (
+					eventResource?.type === 'event-series' &&
+					eventResource.resources &&
+					eventResource.resources.length > 0
+				) {
+					const calendarResults = []
+					for (const { resource } of eventResource.resources) {
+						if (resource?.type === 'event' && resource.fields.calendarId) {
+							const calResult = await step.run(
+								`add user to calendar event (${resource.fields.title})`,
+								async () => {
+									if (!user.email) {
+										throw new Error(`user.email is required`)
+									}
+									if (!resource.fields.calendarId) {
+										throw new Error(`resource.fields.calendarId is required`)
+									}
+									return await addUserToGoogleCalendarEvent(
+										resource.fields.calendarId,
+										user.email,
+									)
+								},
+							)
+							calendarResults.push(calResult)
 						}
-						if (!eventResource.fields.calendarId) {
-							throw new Error(`eventResource.fields.calendarId is required`)
-						}
-						return await addUserToGoogleCalendarEvent(
-							eventResource.fields.calendarId,
-							user.email,
+					}
+					gCalEvent = calendarResults
+				} else {
+					if (
+						eventResource?.type === 'event' &&
+						'calendarId' in eventResource.fields &&
+						eventResource.fields.calendarId
+					) {
+						gCalEvent = await step.run(
+							`add user to calendar event`,
+							async () => {
+								if (!user.email) {
+									throw new Error(`user.email is required`)
+								}
+								if (
+									!('calendarId' in eventResource.fields) ||
+									!eventResource.fields.calendarId
+								) {
+									throw new Error(`eventResource.fields.calendarId is required`)
+								}
+								return await addUserToGoogleCalendarEvent(
+									eventResource.fields.calendarId as string,
+									user.email,
+								)
+							},
 						)
-					})
+					}
 				}
 			} else {
 				// send a slack message or something because it seems broken

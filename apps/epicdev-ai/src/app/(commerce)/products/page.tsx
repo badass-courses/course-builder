@@ -37,7 +37,17 @@ export default async function ProductsPage() {
 								</Link>
 							</CardTitle>
 						</CardHeader>
-						<CardContent></CardContent>
+						<CardContent>
+							{ability.can('update', 'Content') ? (
+								<Button variant="outline" size="sm" asChild>
+									<Link
+										href={`/products/${product.fields?.slug || product.id}/edit`}
+									>
+										Edit
+									</Link>
+								</Button>
+							) : null}
+						</CardContent>
 					</Card>
 				))}
 			</div>

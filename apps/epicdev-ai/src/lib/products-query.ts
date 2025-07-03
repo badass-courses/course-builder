@@ -11,7 +11,7 @@ import {
 } from '@/db/schema'
 import { NewProduct } from '@/lib/products'
 import { getServerAuthSession } from '@/server/auth'
-import { and, eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -80,7 +80,9 @@ export async function updateProduct(input: Product) {
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
-	return courseBuilderAdapter.updateProduct(input)
+	const updatedProduct = await courseBuilderAdapter.updateProduct(input)
+
+	return updatedProduct
 }
 
 export async function getProduct(productSlugOrId?: string) {
@@ -90,6 +92,7 @@ export async function getProduct(productSlugOrId?: string) {
 export async function getProducts() {
 	const productsData = await db.query.products.findMany({
 		where: eq(products.status, 1),
+		orderBy: desc(products.createdAt),
 		with: {
 			price: true,
 			resources: {

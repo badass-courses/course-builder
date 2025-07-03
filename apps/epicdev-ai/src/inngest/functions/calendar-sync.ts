@@ -1,7 +1,7 @@
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
-import { getEvent } from '@/lib/events-query'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import {
 	createGoogleCalendarEvent,
 	getGoogleCalendarEvent,
@@ -451,8 +451,8 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 				}
 
 				// Use .find() as seen in post-event-purchase.ts
-				const foundEventResource = resources.find(
-					(item) => item.resource?.type === 'event',
+				const foundEventResource = resources.find((item) =>
+					['event', 'event-series'].includes(item.resource?.type),
 				)?.resource
 
 				return foundEventResource?.id || null
@@ -497,11 +497,11 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 
 		logger.info(`Found user email: ${user.email} for userId: ${userId}`)
 
-		// Step 6: Fetch and validate Event Resource using getEvent (was Step 5)
+		// Step 6: Fetch and validate Event Resource using getEvent
 		const validEventResource = await step.run(
 			'fetch-and-validate-event-resource',
 			async () => {
-				const ev = await getEvent(eventResourceId) // Use getEvent
+				const ev = await getEventOrEventSeries(eventResourceId) // Use getEvent
 				if (!ev) {
 					// getEvent returns null if not found or parsing fails, throw NonRetriableError
 					throw new NonRetriableError(
@@ -527,45 +527,138 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 			}
 		}
 
-		const calendarId = validEventResource.fields?.calendarId
-		if (!calendarId) {
-			logger.warn(
-				`Event resource ${eventResourceId} does not have a calendarId. Cannot remove user.`,
-			)
-			return {
-				outcome: 'skipped',
-				reason: 'calendarId missing from event resource',
-				eventResourceId,
+		// Step 7: Handle calendar removal based on resource type
+		if (validEventResource.type === 'event-series') {
+			// Handle event series - remove from each child event
+			if (
+				!validEventResource.resources ||
+				validEventResource.resources.length === 0
+			) {
+				logger.warn(
+					`Event series ${eventResourceId} has no child events. Nothing to remove.`,
+				)
+				return {
+					outcome: 'skipped',
+					reason: 'Event series has no child events',
+					eventResourceId,
+				}
 			}
-		}
 
-		logger.info(
-			`Found calendarId: ${calendarId} for eventResource: ${eventResourceId}`,
-		)
-
-		// Step 7: Remove User from Google Calendar Event
-		try {
-			await step.run('remove-user-from-google-event', async () => {
-				await removeUserFromGoogleCalendarEvent(calendarId, user.email)
-			})
+			const removalResults = []
 			logger.info(
-				`Successfully removed user ${user.email} from calendar event ${calendarId}`,
+				`Processing event series ${eventResourceId} with ${validEventResource.resources.length} child events`,
 			)
+
+			for (const { resource } of validEventResource.resources) {
+				if (
+					resource?.type === 'event' &&
+					'calendarId' in resource.fields &&
+					resource.fields.calendarId
+				) {
+					try {
+						await step.run(
+							`remove-user-from-event-${resource.id}`,
+							async () => {
+								await removeUserFromGoogleCalendarEvent(
+									resource.fields.calendarId as string,
+									user.email,
+								)
+							},
+						)
+
+						logger.info(
+							`Successfully removed user ${user.email} from calendar event ${resource.fields.calendarId} (${resource.fields.title})`,
+						)
+						removalResults.push({
+							eventId: resource.id,
+							eventTitle: resource.fields.title,
+							calendarId: resource.fields.calendarId,
+							outcome: 'success',
+						})
+					} catch (error: any) {
+						logger.error(
+							`Failed to remove user ${user.email} from calendar event ${resource.fields.calendarId} (${resource.fields.title}): ${error.message}`,
+							{ error },
+						)
+						removalResults.push({
+							eventId: resource.id,
+							eventTitle: resource.fields.title,
+							calendarId: resource.fields.calendarId,
+							outcome: 'failed',
+							error: error.message,
+						})
+						// Continue with other events, don't fail the entire operation
+					}
+				} else {
+					logger.warn(
+						`Child resource ${resource?.id} is not an event or missing calendarId, skipping`,
+					)
+					removalResults.push({
+						eventId: resource?.id || 'unknown',
+						eventTitle: resource?.fields?.title || 'unknown',
+						calendarId: null,
+						outcome: 'skipped',
+						reason: 'Not an event or missing calendarId',
+					})
+				}
+			}
+
 			return {
-				outcome: 'success',
+				outcome: 'event-series-processed',
 				userId,
 				email: user.email,
-				calendarId,
 				eventResourceId,
+				eventSeriesTitle: validEventResource.fields.title,
+				childResults: removalResults,
+				totalProcessed: removalResults.length,
+				successCount: removalResults.filter((r) => r.outcome === 'success')
+					.length,
+				failedCount: removalResults.filter((r) => r.outcome === 'failed')
+					.length,
 			}
-		} catch (error: any) {
-			logger.error(
-				`Failed to remove user ${user.email} from calendar event ${calendarId}: ${error.message}`,
-				{ error },
+		} else {
+			// Handle single event
+			if (
+				!('calendarId' in validEventResource.fields) ||
+				!validEventResource.fields.calendarId
+			) {
+				logger.warn(
+					`Event resource ${eventResourceId} does not have a calendarId. Cannot remove user.`,
+				)
+				return {
+					outcome: 'skipped',
+					reason: 'calendarId missing from event resource',
+					eventResourceId,
+				}
+			}
+
+			const calendarId = validEventResource.fields.calendarId as string
+			logger.info(
+				`Found calendarId: ${calendarId} for eventResource: ${eventResourceId}`,
 			)
-			// Depending on the error, you might want to retry.
-			// For now, assume most GCal API errors might be retriable if not handled by removeUserFromGoogleCalendarEvent itself.
-			throw error
+
+			try {
+				await step.run('remove-user-from-google-event', async () => {
+					await removeUserFromGoogleCalendarEvent(calendarId, user.email)
+				})
+				logger.info(
+					`Successfully removed user ${user.email} from calendar event ${calendarId}`,
+				)
+				return {
+					outcome: 'success',
+					userId,
+					email: user.email,
+					calendarId,
+					eventResourceId,
+				}
+			} catch (error: any) {
+				logger.error(
+					`Failed to remove user ${user.email} from calendar event ${calendarId}: ${error.message}`,
+					{ error },
+				)
+				// For single events, we can still throw to allow retries
+				throw error
+			}
 		}
 	},
 )
