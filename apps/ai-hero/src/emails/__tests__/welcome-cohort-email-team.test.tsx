@@ -10,7 +10,7 @@ describe('WelcomeCohortEmailForTeam', () => {
 			<WelcomeCohortEmailForTeam
 				cohortTitle="Team Cohort"
 				url="#day0"
-				dayOneUnlockDate="July 2nd, 2025"
+				dayOneUnlockDate="July 2nd, 2055"
 				quantity={5}
 			/>,
 		)
