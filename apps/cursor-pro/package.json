@@ -148,6 +148,7 @@
 		"json-schema": "^0.4.0",
 		"liquidjs": "^10.16.3",
 		"lucide-react": "^0.288.0",
+		"marked": "^15.0.12",
 		"memoize-one": "^6.0.0",
 		"mjml": "^4.15.3",
 		"nanoid": "^5.0.2",
