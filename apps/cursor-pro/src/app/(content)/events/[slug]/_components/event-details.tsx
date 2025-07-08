@@ -18,6 +18,7 @@ import { Pen } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 export const EventDetails: React.FC<{
 	events: Event[]
@@ -166,12 +167,12 @@ export const EventDetails: React.FC<{
 		'MMMM do, yyyy',
 	)
 
-	const everyTimeZoneLink = `buildEtzLink(
+	const everyTimeZoneLink = buildEtzLink(
 		process.env.NEXT_PUBLIC_TEMPORARY_TIMEZONE_OFFSET === 'true'
 			? startDateOneDayLater
 			: pacificDateString,
 		pacificTimeString,
-	)`
+	)
 
 	return (
 		<div className={cn('flex flex-col p-6')}>
@@ -243,7 +244,7 @@ export const EventDetailsMobile: React.FC<{
 	const everyTimeZoneLink =
 		pacificDateString &&
 		pacificTimeString &&
-		`buildEtzLink(pacificDateString, pacificTimeString)`
+		buildEtzLink(pacificDateString, pacificTimeString)
 
 	return (
 		<div
