@@ -12,6 +12,7 @@ export const loadUsersForRole = async (role: string) => {
 		.select({
 			id: users.id,
 			name: users.name,
+			email: users.email,
 			image: users.image,
 			role: roles.name,
 		})
@@ -21,6 +22,22 @@ export const loadUsersForRole = async (role: string) => {
 		.where(eq(roles.name, role))
 
 	return z.array(UserSchema).parse(usersByRole)
+}
+
+// Fetch users where the `users.role` column matches given role (case-insensitive)
+export const loadUsersByDirectRole = async (role: string) => {
+	const usersByColumn = await db
+		.select({
+			id: users.id,
+			name: users.name,
+			email: users.email,
+			image: users.image,
+			role: users.role,
+		})
+		.from(users)
+		.where(eq(users.role, role))
+
+	return z.array(UserSchema).parse(usersByColumn)
 }
 
 export async function githubAccountsForCurrentUser() {

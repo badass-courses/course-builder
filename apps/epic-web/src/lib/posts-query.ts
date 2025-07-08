@@ -233,13 +233,19 @@ export async function createPost(input: NewPostInput) {
 		throw new Error('Unauthorized')
 	}
 
+	// Determine the author of the post based on the current user's role
+	const isAdmin = user.roles?.some((role) => role.name === 'admin')
+
+	// Contributors must author their own posts. Admins can optionally specify another author.
+	const createdById = isAdmin && input.createdById ? input.createdById : user.id
+
 	const postGuid = guid()
 	const newPostId = `post_${postGuid}`
 
 	const postValues = {
 		id: newPostId,
 		type: 'post',
-		createdById: input.createdById || user.id,
+		createdById, // use calculated author id
 		fields: {
 			title: input.title,
 			postType: input.postType || 'article',
@@ -557,9 +563,27 @@ export async function writeNewPostToDatabase(
 	input: NewPostInput,
 ): Promise<Post> {
 	try {
-		console.log('🔍 Validating input:', input)
-		const validatedInput = NewPostInputSchema.parse(input)
-		const { title, videoResourceId, postType, createdById } = validatedInput
+		// Determine author based on current session user
+		const { session } = await getServerAuthSession()
+		const currentUser = session?.user
+
+		if (!currentUser) {
+			throw new Error('Unauthorized – no active session')
+		}
+
+		const isAdmin = currentUser.roles?.some((role) => role.name === 'admin')
+
+		const authorId =
+			isAdmin && input.createdById ? input.createdById : currentUser.id
+
+		// Merge resolved authorId into the input before validation
+		const validatedInput = NewPostInputSchema.parse({
+			...input,
+			createdById: authorId,
+		})
+
+		const { title, videoResourceId, postType } = validatedInput
+		const createdById = authorId
 		console.log('✅ Input validated:', validatedInput)
 
 		const postGuid = guid()
