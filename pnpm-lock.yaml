@@ -270,8 +270,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -913,8 +913,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -1590,8 +1590,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -2200,8 +2200,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -2858,8 +2858,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -4193,8 +4193,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -4854,8 +4854,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -5527,8 +5527,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -6755,8 +6755,8 @@ importers:
         specifier: ^3.3.2
         version: 3.10.0(react-hook-form@7.55.0(react@19.0.0))
       '@internationalized/date':
-        specifier: 3.8.2
-        version: 3.8.2
+        specifier: 3.7.0
+        version: 3.7.0
       '@lezer/highlight':
         specifier: ^1.2.1
         version: 1.2.1
@@ -9523,9 +9523,6 @@ packages:
 
   '@internationalized/date@3.7.0':
     resolution: {integrity: sha512-VJ5WS3fcVx0bejE/YHfbDKR/yawZgKqn/if+oEeLqNwBtPzVB06olkfcnojTmEMX+gTpH+FlQ69SHNitJ8/erQ==}
-
-  '@internationalized/date@3.8.2':
-    resolution: {integrity: sha512-/wENk7CbvLbkUvX1tu0mwq49CVkkWpkXubGel6birjRPyo6uQ4nQpnq5xZu823zRCwwn82zgHrvgF1vZyvmVgA==}
 
   '@internationalized/message@3.1.6':
     resolution: {integrity: sha512-JxbK3iAcTIeNr1p0WIFg/wQJjIzJt9l/2KNY/48vXV7GRGZSv3zMxJsce008fZclk2cDC8y0Ig3odceHO7EfNQ==}
@@ -25734,10 +25731,6 @@ snapshots:
 
   '@internationalized/date@3.7.0':
     dependencies:
-      '@swc/helpers': 0.5.15
-
-  '@internationalized/date@3.8.2':
-    dependencies:
       '@swc/helpers': 0.5.17
 
   '@internationalized/message@3.1.6':
@@ -28035,7 +28028,7 @@ snapshots:
 
   '@react-aria/calendar@3.7.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@react-aria/i18n': 3.12.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-aria/interactions': 3.24.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@react-aria/live-announcer': 3.4.1
@@ -28105,7 +28098,7 @@ snapshots:
 
   '@react-aria/datepicker@3.14.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@internationalized/number': 3.6.0
       '@internationalized/string': 3.2.5
       '@react-aria/focus': 3.20.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -28218,7 +28211,7 @@ snapshots:
 
   '@react-aria/i18n@3.12.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@internationalized/message': 3.1.6
       '@internationalized/number': 3.6.0
       '@internationalized/string': 3.2.5
@@ -28876,7 +28869,7 @@ snapshots:
 
   '@react-stately/calendar@3.7.1(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@react-stately/utils': 3.10.5(react@19.0.0)
       '@react-types/calendar': 3.6.1(react@19.0.0)
       '@react-types/shared': 3.28.0(react@19.0.0)
@@ -28932,7 +28925,7 @@ snapshots:
 
   '@react-stately/datepicker@3.13.0(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@internationalized/string': 3.2.5
       '@react-stately/form': 3.1.2(react@19.0.0)
       '@react-stately/overlays': 3.6.14(react@19.0.0)
@@ -29119,7 +29112,7 @@ snapshots:
 
   '@react-types/calendar@3.6.1(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@react-types/shared': 3.28.0(react@19.0.0)
       react: 19.0.0
 
@@ -29141,7 +29134,7 @@ snapshots:
 
   '@react-types/datepicker@3.11.0(react@19.0.0)':
     dependencies:
-      '@internationalized/date': 3.8.2
+      '@internationalized/date': 3.7.0
       '@react-types/calendar': 3.6.1(react@19.0.0)
       '@react-types/overlays': 3.8.13(react@19.0.0)
       '@react-types/shared': 3.28.0(react@19.0.0)
