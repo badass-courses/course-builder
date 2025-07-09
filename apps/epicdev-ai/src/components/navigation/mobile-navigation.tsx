@@ -125,11 +125,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									<NavLinkItem className="" href="/profile" label="Profile" />
 								)}
 								{canCreateContent && (
-									<NavLinkItem
-										className=""
-										href="/admin/dashboard"
-										label="Admin"
-									/>
+									<NavLinkItem className="" href="/admin/pages" label="Admin" />
 								)}
 							</ul>
 							{sessionStatus === 'unauthenticated' && (
