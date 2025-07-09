@@ -70,7 +70,8 @@ type Props = {
 
 const Home = async (props: Props) => {
 	const { session } = await getServerAuthSession()
-	const role = session?.user.role ?? 'guest'
+	// Ensure we safely access optional user and allow arbitrary role strings
+	const role: string = (session?.user?.role as string | undefined) ?? 'guest'
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
