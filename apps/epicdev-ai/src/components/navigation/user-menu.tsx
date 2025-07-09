@@ -94,7 +94,11 @@ export const UserMenu = () => {
 						<DropdownMenuSeparator className="bg-border" />
 						<ul className="flex flex-col">
 							{canCreateContent && (
-								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
+								<NavLinkItem
+									variant="menu"
+									href="/admin/coupons"
+									label="Admin"
+								/>
 							)}
 							{canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
