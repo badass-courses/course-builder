@@ -63,6 +63,11 @@ export interface CreatePostModalProps {
 	 * @default true
 	 */
 	uploadEnabled?: boolean
+	/**
+	 * Custom label for the trigger button text
+	 * @default "New Post"
+	 */
+	triggerLabel?: string
 }
 
 /**
@@ -89,6 +94,7 @@ export function CreatePostModal({
 	topLevelResourceTypes = [],
 	title = 'New Post',
 	uploadEnabled = true,
+	triggerLabel = 'New Post',
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
 	const [isProcessing, setIsProcessing] = React.useState(false)
@@ -130,7 +136,7 @@ export function CreatePostModal({
 						className=" gap-1"
 						onClick={() => setIsOpen(true)}
 					>
-						<FilePlus2 className="h-4 w-4" /> {'New Post'}
+						<FilePlus2 className="h-4 w-4" /> {triggerLabel}
 					</Button>
 				</DialogTrigger>
 			)}
