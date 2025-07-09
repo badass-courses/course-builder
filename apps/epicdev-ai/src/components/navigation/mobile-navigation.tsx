@@ -127,7 +127,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								{canCreateContent && (
 									<NavLinkItem
 										className=""
-										href="/admin/dashboard"
+										href="/admin/coupons"
 										label="Admin"
 									/>
 								)}
