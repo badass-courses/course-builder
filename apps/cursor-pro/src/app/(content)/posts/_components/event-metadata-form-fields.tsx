@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
+	DateTimePicker,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -31,7 +32,6 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { AddToList } from './add-to-list'
-import { DateTimePicker } from './date-time-picker/date-time-picker'
 import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 

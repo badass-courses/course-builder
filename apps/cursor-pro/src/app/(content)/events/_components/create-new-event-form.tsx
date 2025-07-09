@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import {
 	MultipleEventsSchema,
 	multipleEventsToNewEvents,
@@ -22,6 +21,7 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 	Button,
+	DateTimePicker,
 	DialogFooter,
 	Form,
 	FormControl,

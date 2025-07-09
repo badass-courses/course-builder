@@ -1,5 +1,6 @@
 import { db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { getActiveEvents } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { count, desc, eq } from 'drizzle-orm'
@@ -91,5 +92,8 @@ export const eventsRouter = createTRPCRouter({
 				const dateB = new Date(b.contentResource?.fields?.startsAt || 0)
 				return dateA.getTime() - dateB.getTime()
 			})
+	}),
+	getActiveEvents: publicProcedure.query(async () => {
+		return await getActiveEvents()
 	}),
 })
