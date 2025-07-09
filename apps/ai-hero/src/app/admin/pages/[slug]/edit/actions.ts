@@ -7,7 +7,7 @@ import { ContentResource } from '@coursebuilder/core/schemas'
 
 export const onPageSave = async (resource: ContentResource) => {
 	'use server'
-	redirect(`/admin/pages`)
+	redirect(`/admin/coupons`)
 }
 
 export async function serializeForPreview(mdxSource: string) {
