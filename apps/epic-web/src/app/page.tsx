@@ -11,12 +11,15 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
+import { getServerAuthSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
+import { FileText } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { Button } from '@coursebuilder/ui'
 
 import {
 	CenteredTitle,
@@ -25,6 +28,7 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
+import { CreatePostModal } from './admin/posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -65,12 +69,106 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
+	const { session } = await getServerAuthSession()
+	const role = session?.user.role ?? 'guest'
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
 	const firstPageResource = page?.resources?.[0] && {
 		path: page.resources[0]?.resource?.fields?.slug,
 		title: page.resources[0]?.resource?.fields?.title,
+	}
+
+	let actionSection: React.ReactNode = null
+
+	if (!session?.user) {
+		actionSection = (
+			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
+				<div className="flex flex-wrap justify-center gap-4">
+					<Button asChild size="lg">
+						<Link href="/login" prefetch>
+							Sign&nbsp;in
+						</Link>
+					</Button>
+					<Button asChild variant="secondary" size="lg">
+						<Link href="/login" prefetch>
+							Create&nbsp;account
+						</Link>
+					</Button>
+				</div>
+				<p className="text-muted-foreground max-w-2xl text-center">
+					Epic Web Course Builder is the platform we use to draft, edit, and
+					publish tips and articles for the Epic Web community. Sign in or
+					create an account to start contributing.
+				</p>
+			</section>
+		)
+	} else if (role === 'contributor') {
+		actionSection = (
+			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
+				<div className="flex flex-wrap justify-center gap-4">
+					<CreatePostModal
+						triggerLabel="New Tip"
+						title="New Tip"
+						availableResourceTypes={['tip']}
+						defaultResourceType="tip"
+						topLevelResourceTypes={['post']}
+					/>
+					<CreatePostModal
+						triggerLabel="New Article"
+						title="New Article"
+						availableResourceTypes={['article']}
+						defaultResourceType="article"
+						topLevelResourceTypes={['post']}
+					/>
+				</div>
+				<p className="text-muted-foreground max-w-2xl text-center">
+					Quickly create a new tip or article to share with the community.
+				</p>
+			</section>
+		)
+	} else if (role === 'admin') {
+		const adminLinks = [
+			{ href: '/admin/pages', label: 'Admin Pages' },
+			{ href: '/admin/posts', label: 'Admin Posts' },
+			{ href: '/admin/tips', label: 'Admin Tips' },
+		]
+
+		actionSection = (
+			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
+				<div className="flex flex-wrap justify-center gap-4">
+					<CreatePostModal
+						triggerLabel="New Tip"
+						title="New Tip"
+						availableResourceTypes={['tip']}
+						defaultResourceType="tip"
+						topLevelResourceTypes={['post']}
+					/>
+					<CreatePostModal
+						triggerLabel="New Article"
+						title="New Article"
+						availableResourceTypes={['article']}
+						defaultResourceType="article"
+						topLevelResourceTypes={['post']}
+					/>
+				</div>
+				<nav className="flex flex-wrap justify-center gap-3">
+					{adminLinks.map(({ href, label }) => (
+						<Button
+							key={href}
+							asChild
+							variant="outline"
+							size="sm"
+							className="flex items-center gap-1"
+						>
+							<Link href={href} prefetch>
+								<FileText className="h-4 w-4" /> {label}
+							</Link>
+						</Button>
+					))}
+				</nav>
+			</section>
+		)
 	}
 
 	return (
@@ -91,9 +189,10 @@ const Home = async (props: Props) => {
 				)}
 				<header>
 					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
-						{page?.fields?.title || 'Title'}
+						Epic Web Builder
 					</h1>
 				</header>
+				{actionSection && <div className="w-full">{actionSection}</div>}
 
 				<article
 					className={cn(
@@ -131,7 +230,11 @@ const Home = async (props: Props) => {
 							}}
 						/>
 					) : (
-						<p>Page body not found</p>
+						<p>
+							Epic Web Course Builder helps create and manage educational
+							content. Get started by creating an account or selecting one of
+							the actions above.
+						</p>
 					)}
 				</article>
 			</main>
