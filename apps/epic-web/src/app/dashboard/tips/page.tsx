@@ -44,6 +44,11 @@ export default async function ContributorTipsPage() {
 	)
 }
 
+/**
+ * Renders a teaser for a tip with a link to its edit page
+ * @param tip - The tip to display
+ * @param className - Optional CSS class name for styling
+ */
 const TipTeaser: React.FC<{
 	tip: Post
 	className?: string
