@@ -12,7 +12,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
-import { getEvent } from '@/lib/events-query'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -59,7 +59,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const event = await getEvent(params.slug)
+	const event = await getEventOrEventSeries(params.slug)
 
 	if (!event) {
 		return parent as Metadata
@@ -81,7 +81,7 @@ export default async function EventPage(props: {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 
-	const event = await getEvent(params.slug)
+	const event = await getEventOrEventSeries(params.slug)
 
 	if (!event) {
 		notFound()
@@ -191,10 +191,17 @@ export default async function EventPage(props: {
 		}
 	}
 
-	const { fields } = event
+	const { title, description, body } = event.fields
 
-	const { startsAt, endsAt } = fields
-	const PT = fields.timezone || 'America/Los_Angeles'
+	const sharedFields =
+		event.type === 'event'
+			? event.fields
+			: event?.resources?.[0]?.resource?.fields
+	const attendeeInstructions =
+		event.fields.attendeeInstructions || sharedFields.attendeeInstructions
+
+	const { startsAt, endsAt } = sharedFields
+	const PT = sharedFields.timezone || 'America/Los_Angeles'
 	const eventDate =
 		startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 	const eventTime =
@@ -212,7 +219,7 @@ export default async function EventPage(props: {
 	)
 
 	const { content: eventBody } = await compileMDX(
-		event.fields.body || '',
+		body || '',
 
 		{
 			EventPricing: (props) => <EventPricing post={event} {...props} />,
@@ -278,25 +285,25 @@ export default async function EventPage(props: {
 
 				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
 					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
-						{fields.title}
+						{title}
 					</h1>
-					{fields.description && (
+					{description && (
 						<h2 className="mt-5 text-balance text-lg font-normal text-purple-950 lg:text-xl dark:text-purple-200">
-							{fields.description}
+							{description}
 						</h2>
 					)}
 				</div>
 			</header>
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
 				<div className="col-span-8 flex w-full flex-col">
-					{event.fields.attendeeInstructions && hasPurchasedCurrentProduct && (
+					{attendeeInstructions && hasPurchasedCurrentProduct && (
 						<div className="dark:bg-card dark:border-foreground/10 mb-8 flex flex-col gap-1 rounded-md border bg-white p-6 text-left font-medium shadow-xl">
 							<p className="inline-flex items-center font-semibold">
 								<DocumentTextIcon className="mr-1 size-5 text-teal-600 dark:text-teal-400" />{' '}
 								Attendee Instructions
 							</p>
 							<Markdown className="prose dark:prose-invert mt-2">
-								{event.fields.attendeeInstructions}
+								{attendeeInstructions}
 							</Markdown>
 						</div>
 					)}
@@ -317,11 +324,9 @@ export default async function EventPage(props: {
 							>
 								<p className="font-semibold">
 									<CheckCircleIcon className="inline-block size-5 text-teal-600 dark:text-teal-400" />{' '}
-									You have purchased a ticket to this event. See you on{' '}
-									{eventDate}.{' '}
-									<span role="img" aria-label="Waving hand">
-										👋
-									</span>
+									You have purchased a ticket{' '}
+									{IS_SERIES ? 'to this event series' : 'to this event'}. See
+									you on {eventDate}.
 								</p>
 								{eventProps?.existingPurchase?.merchantChargeId && (
 									<p>
