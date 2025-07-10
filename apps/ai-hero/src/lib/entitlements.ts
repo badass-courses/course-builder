@@ -15,7 +15,23 @@ export type EntitlementSource =
 	| { type: 'MANUAL'; id: string }
 
 /**
- * Get all active entitlements for an organization member
+ * Soft delete all entitlements for a user when a refund occurs
+ * @param userId - The ID of the user whose entitlements should be soft deleted
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForUser(userId: string) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(and(eq(entitlements.userId, userId), isNull(entitlements.deletedAt)))
+
+	return result
+}
+
+/**
+ * Get all active entitlements for an organization member (excluding soft deleted ones)
  * @param organizationMembershipId - The ID of the organization membership to get entitlements for
  * @returns An array of entitlements
  */
