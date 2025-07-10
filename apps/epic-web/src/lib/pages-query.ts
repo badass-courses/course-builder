@@ -122,21 +122,16 @@ export async function getPage(slugOrId: string) {
 				eq(contentResource.id, slugOrId),
 			),
 			eq(contentResource.type, 'page'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		with: {
 			resources: {
 				with: {
 					resource: {
-						where: and(
-							inArray(
-								sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-								visibility,
-							),
-							inArray(
-								sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`,
-								states,
-							),
-						),
 						with: {
 							tags: {
 								with: {
@@ -153,7 +148,11 @@ export async function getPage(slugOrId: string) {
 
 	const pageParsed = PageSchema.safeParse(page)
 	if (!pageParsed.success) {
-		console.debug('Error parsing page', pageParsed)
+		// Only log if there was actually a page returned but it failed validation
+		// If page is undefined, it just means the page doesn't exist, which is fine
+		if (page !== undefined) {
+			console.debug('Error parsing page', pageParsed.error)
+		}
 		return null
 	}
 
