@@ -128,7 +128,7 @@ export async function getAllTips(): Promise<Post[]> {
 
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	if (!userId) {
-		redirect('/')
+		return []
 	}
 
 	const posts = await db.query.contentResource.findMany({
@@ -160,6 +160,54 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	}
 
 	return postsParsed.data
+}
+
+export async function getAllTipsForUser(userId?: string): Promise<Post[]> {
+	if (!userId) {
+		return []
+	}
+
+	try {
+		const posts = await db.query.contentResource.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				eq(contentResource.createdById, userId),
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'tip'),
+			),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+			orderBy: desc(contentResource.createdAt),
+		})
+
+		const postsParsed = z.array(PostSchema).safeParse(posts)
+		if (!postsParsed.success) {
+			await log.error('user.tips.parse.failed', {
+				error: postsParsed.error.format(),
+				userId,
+			})
+			return []
+		}
+
+		await log.info('user.tips.fetch.success', {
+			count: postsParsed.data.length,
+			userId,
+		})
+
+		return postsParsed.data
+	} catch (error) {
+		await log.error('user.tips.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			userId,
+		})
+		return []
+	}
 }
 
 export async function getPostTags(postId: string): Promise<Tag[]> {
