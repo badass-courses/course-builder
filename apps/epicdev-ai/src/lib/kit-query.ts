@@ -1,15 +1,12 @@
 import { env } from '@/env.mjs'
 
 export async function getFormSubscribers() {
-	if (!process.env.CONVERTKIT_V4_API_KEY || !env.CONVERTKIT_SIGNUP_FORM) {
-		throw new Error('CONVERTKIT_API_SECRET is not set')
-	}
 	try {
 		const response = await fetch(
 			`https://api.convertkit.com/v4/forms/${env.CONVERTKIT_SIGNUP_FORM}/subscribers?include_total_count=include_total_count&per_page=1&status=active`,
 			{
 				headers: {
-					'X-Kit-Api-Key': process.env.CONVERTKIT_V4_API_KEY,
+					'X-Kit-Api-Key': process.env.CONVERTKIT_V4_API_KEY!,
 				},
 			},
 		)
@@ -23,7 +20,7 @@ export async function getFormSubscribers() {
 			`https://api.convertkit.com/v4/forms/${env.CONVERTKIT_SIGNUP_FORM}/subscribers?include_total_count=include_total_count&per_page=1&created_after=${sevenDaysAgo.toISOString()}`,
 			{
 				headers: {
-					'X-Kit-Api-Key': process.env.CONVERTKIT_V4_API_KEY,
+					'X-Kit-Api-Key': process.env.CONVERTKIT_V4_API_KEY!,
 				},
 			},
 		)
