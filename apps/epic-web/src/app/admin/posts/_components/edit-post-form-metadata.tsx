@@ -6,7 +6,9 @@ import type { List } from '@/lib/lists'
 import { Post, PostSchema, PostTypeSchema } from '@/lib/posts'
 import { POST_SUBTYPES } from '@/lib/resource-types'
 import { Sparkles } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import type { UseFormReturn } from 'react-hook-form'
+import useSWR from 'swr'
 import { z } from 'zod'
 
 import { VideoResource } from '@coursebuilder/core/schemas'
@@ -33,6 +35,9 @@ import { AddToList } from './add-to-list'
 import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 
+// fetcher helper
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
+
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	videoResource?: VideoResource | null
@@ -56,6 +61,14 @@ export const PostMetadataFormFields: React.FC<{
 
 	const [isGeneratingDescription, setIsGeneratingDescription] =
 		React.useState(false)
+
+	const { data: session } = useSession()
+	const isAdmin = session?.user?.roles?.some(
+		(role: any) => role.name === 'admin',
+	)
+
+	const { data: authorsData } = useSWR(isAdmin ? '/api/authors' : null, fetcher)
+	const authors = (authorsData?.authors as any[]) ?? []
 
 	useSocket({
 		room: post.id,
@@ -173,6 +186,36 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			{isAdmin && (
+				<FormField
+					control={form.control}
+					name="createdById"
+					render={({ field }) => (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">Author</FormLabel>
+							<FormDescription>
+								Select the author for this post.
+							</FormDescription>
+							<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<SelectTrigger>
+									<SelectValue placeholder="Select author" />
+								</SelectTrigger>
+								<SelectContent>
+									{authors.map((author) => (
+										<SelectItem key={author.id} value={author.id}>
+											{author.displayName ||
+												author.name ||
+												author.email ||
+												author.id}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			)}
 			<TagField resource={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField

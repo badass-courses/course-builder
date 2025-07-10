@@ -1,12 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {
-	MultipleEventsSchema,
-	multipleEventsToNewEvents,
-	type MultipleEvents,
-} from '@/lib/events'
-import { createMultipleEvents } from '@/lib/events-query'
+import { MultipleEventsSchema, type MultipleEvents } from '@/lib/events'
+import { createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
 import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,6 +36,11 @@ export default function CreateNewEventForm() {
 		resolver: zodResolver(MultipleEventsSchema),
 		defaultValues: {
 			type: 'event',
+			eventSeries: {
+				title: '',
+				description: '',
+				tagIds: undefined,
+			},
 			sharedFields: {
 				price: 250,
 				quantity: 40,
@@ -65,22 +66,60 @@ export default function CreateNewEventForm() {
 
 	const onSubmit = async (data: MultipleEvents) => {
 		try {
-			const eventsToCreate = multipleEventsToNewEvents(data)
-			const createdEvents = await createMultipleEvents(eventsToCreate)
+			if (data.events.length === 1 && !data.eventSeries.title.trim()) {
+				// Single event creation - use existing logic with createEvent
+				const { createEvent } = await import('@/lib/events-query')
+				const firstEvent = data.events[0]
+				if (!firstEvent) {
+					throw new Error('Event data is required')
+				}
 
-			if (!createdEvents || createdEvents.length === 0) {
-				throw new Error('No events were created')
-			}
+				const singleEventData = {
+					type: 'event' as const,
+					fields: {
+						title: firstEvent.title,
+						startsAt: firstEvent.startsAt,
+						endsAt: firstEvent.endsAt,
+						price: data.sharedFields.price,
+						quantity: data.sharedFields.quantity,
+						tagIds: firstEvent.tagIds,
+					},
+				}
+				const event = await createEvent(singleEventData)
 
-			toast({
-				title: `${createdEvents.length} event${createdEvents.length > 1 ? 's' : ''} created`,
-				description: 'Events created successfully',
-			})
+				if (!event?.fields?.slug) {
+					throw new Error('Event slug is required')
+				}
 
-			// Navigate to the first event's edit page
-			const firstEvent = createdEvents[0]
-			if (firstEvent?.fields?.slug) {
-				router.push(getResourcePath('event', firstEvent.fields.slug, 'edit'))
+				toast({
+					title: 'Event created',
+					description: 'Event created successfully',
+				})
+
+				router.push(getResourcePath('event', event.fields.slug, 'edit'))
+			} else {
+				// Multiple events or event series specified - use new logic
+				const result = await createEventSeries(data)
+
+				if (!result.eventSeries || !result.childEvents.length) {
+					throw new Error('Failed to create event series')
+				}
+
+				toast({
+					title: `Event series created with ${result.childEvents.length} event${result.childEvents.length > 1 ? 's' : ''}`,
+					description: 'Event series created successfully',
+				})
+
+				// Navigate to the event series edit page
+				if (result.eventSeries.fields?.slug) {
+					router.push(
+						getResourcePath(
+							'event-series',
+							result.eventSeries.fields.slug,
+							'edit',
+						),
+					)
+				}
 			}
 		} catch (error) {
 			console.error(error)
@@ -90,6 +129,7 @@ export default function CreateNewEventForm() {
 			})
 		}
 	}
+
 	const { data: tags, isLoading } = api.tags.getTags.useQuery()
 	const parsedTagsForUiPackage = z
 		.array(
@@ -194,7 +234,77 @@ export default function CreateNewEventForm() {
 								<PlusCircle className="mr-2 size-4" /> Add another event
 							</Button>
 						</div>
-
+						{/* Wrapper Event Configuration - Only show for multiple events */}
+						{fields.length > 1 && (
+							<div className="bg-card rounded-lg border p-4">
+								<h3 className="text-lg font-semibold">
+									Event Series Information
+								</h3>
+								<FormDescription>
+									This will be used to present the series to the user.
+								</FormDescription>
+								<div className="mt-1 space-y-2">
+									<FormField
+										control={form.control}
+										name="eventSeries.title"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Series Title (required)</FormLabel>
+												{/* <FormDescription>
+												The main title for this event series
+											</FormDescription> */}
+												<FormControl>
+													<Input {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<FormField
+										control={form.control}
+										name="eventSeries.description"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Series Description</FormLabel>
+												<FormControl>
+													<textarea
+														{...field}
+														className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
+														rows={3}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<div>
+										<FormLabel>Series Tags</FormLabel>
+										<AdvancedTagSelector
+											className="mt-0 space-y-1"
+											availableTags={parsedTagsForUiPackage}
+											selectedTags={form.watch('eventSeries.tagIds') || []}
+											onTagSelect={(tag) => {
+												const currentTags =
+													form.getValues('eventSeries.tagIds') || []
+												form.setValue('eventSeries.tagIds', [
+													...currentTags,
+													tag,
+												])
+											}}
+											onTagRemove={(tagId) => {
+												const currentTags =
+													form.getValues('eventSeries.tagIds') || []
+												form.setValue(
+													'eventSeries.tagIds',
+													currentTags.filter((t) => t.id !== tagId),
+												)
+											}}
+										/>
+									</div>
+								</div>
+							</div>
+						)}
+						{/* Events Section */}
 						<Accordion
 							type="multiple"
 							defaultValue={['event-0']}
@@ -206,7 +316,7 @@ export default function CreateNewEventForm() {
 									key={field.id}
 									value={`event-${index}`}
 								>
-									<AccordionTrigger className="bg-card w-full justify-between rounded-lg px-3 py-2 text-left [&[data-state=open]]:rounded-b-none">
+									<AccordionTrigger className="bg-card w-full justify-between rounded-lg border px-3 py-2 text-left [&[data-state=open]]:rounded-b-none [&[data-state=open]]:border-b-0">
 										<div className="mr-4 flex w-full items-center justify-between">
 											<span className="font-semibold">
 												{form.watch(`events.${index}.title`) ||
@@ -304,7 +414,10 @@ export default function CreateNewEventForm() {
 											)}
 										/>
 										<div>
-											<FormLabel>Tags</FormLabel>
+											<FormLabel>Event Tags</FormLabel>
+											<FormDescription className="mb-2">
+												Tags specific to this individual event
+											</FormDescription>
 											<AdvancedTagSelector
 												className="mt-0 space-y-1"
 												availableTags={parsedTagsForUiPackage}
@@ -342,7 +455,9 @@ export default function CreateNewEventForm() {
 					>
 						{form.formState.isSubmitting
 							? 'Creating...'
-							: `Create ${fields.length} Event${fields.length > 1 ? 's' : ''}`}
+							: fields.length === 1 && !form.watch('eventSeries.title')?.trim()
+								? 'Create Event'
+								: `Create Event Series (${fields.length} Event${fields.length > 1 ? 's' : ''})`}
 					</Button>
 				</form>
 			</Form>

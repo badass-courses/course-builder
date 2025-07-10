@@ -8,6 +8,7 @@ import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_com
 import { TagField } from '@/app/(content)/posts/_components/tag-field'
 import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import { useSelection } from '@/components/list-editor/selection-context'
 import {
 	ResourceFormProps,
 	withResourceForm,
@@ -16,7 +17,7 @@ import {
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
-import { Event, EventSchema } from '@/lib/events'
+import { EventSeriesSchema, type EventSeries } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { EditorView } from '@codemirror/view'
@@ -30,6 +31,7 @@ import {
 	VideoIcon,
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { Configure } from 'react-instantsearch'
 import { z } from 'zod'
 
 import type { VideoResource } from '@coursebuilder/core/schemas'
@@ -61,10 +63,47 @@ import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metada
 
 import { VideoResourceField } from './video-resource-field'
 
+const EventResourcesTitle = () => {
+	const { excludedIds } = useSelection()
+
+	return (
+		<div className="flex w-full flex-col">
+			{excludedIds && excludedIds.length > 0 && (
+				<div className="mb-5 border-b pb-5">
+					<div className="flex items-start gap-2">
+						<div className="flex-1">
+							<div className="text-lg font-bold">Series Event</div>
+							<div className="text-sm">
+								This parent event contains {excludedIds.length} child event
+								{excludedIds.length !== 1 ? 's' : ''}. Individual events remain
+								accessible while this serves as the main display wrapper.
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+			<span className="flex text-lg font-bold">Resources</span>
+			<span className="text-muted-foreground mt-2 font-normal">
+				Attach other events to this event to create a series.
+			</span>
+		</div>
+	)
+}
+
+const SearchConfig = () => {
+	const { excludedIds } = useSelection()
+	return (
+		<Configure
+			hitsPerPage={20}
+			filters={`type:event ${excludedIds.length ? `&& id:!=${excludedIds.join(',')}` : ''}`}
+		/>
+	)
+}
+
 // Wrapper function for updateResource to match HOC's Partial<T> input and return type
 async function updateEventResource(
-	eventUpdate: Partial<Event>,
-): Promise<Event> {
+	eventUpdate: Partial<EventSeries>,
+): Promise<EventSeries> {
 	// Ensure required fields are present for the original updateResource function
 	// We might need the original event context here if the partial doesn't contain everything.
 	// For now, let's assume the partial *should* contain enough, or the original function handles it.
@@ -103,15 +142,18 @@ async function updateEventResource(
 		throw new Error('Failed to update event.')
 	}
 
-	return updatedEvent as Event
+	return updatedEvent as EventSeries
 }
 
 // Define the configuration for the event form
-const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
+const eventFormConfig: ResourceFormConfig<
+	EventSeries,
+	typeof EventSeriesSchema
+> = {
 	// Set resourceType back to 'event' as it's now a top-level type
-	resourceType: 'event' as const,
-	schema: EventSchema,
-	defaultValues: (event?: Event) => {
+	resourceType: 'event-series' as const,
+	schema: EventSeriesSchema,
+	defaultValues: (event?: EventSeries) => {
 		// Explicitly define all top-level fields from ContentResourceSchema
 		// and event-specific fields, providing defaults or null.
 		const initialValues = {
@@ -130,25 +172,16 @@ const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 			// fields needs special handling for event specifics
 			fields: {
 				...(event?.fields || {}), // Start with existing fields
-				// Ensure specific event fields have defaults
-				...(event?.fields?.startsAt && {
-					startsAt: new Date(event.fields.startsAt).toISOString(),
-				}),
-				...(event?.fields?.endsAt && {
-					endsAt: new Date(event.fields.endsAt).toISOString(),
-				}),
 				title: event?.fields?.title || '',
 				visibility: event?.fields?.visibility || 'unlisted',
 				state: event?.fields?.state || 'draft', // Default state
 				image: event?.fields?.image || '',
 				description: event?.fields?.description ?? '',
 				slug: event?.fields?.slug ?? '',
-				timezone: event?.fields?.timezone || 'America/Los_Angeles',
 				socialImage: event?.fields?.socialImage || {
 					type: 'imageUrl',
-					url: getOGImageUrlForResource(event as Event),
+					url: getOGImageUrlForResource(event as EventSeries),
 				},
-				details: event?.fields?.details || '',
 				attendeeInstructions: event?.fields?.attendeeInstructions || '',
 			},
 			// Handle resourceProducts (specific to EventSchema merge)
@@ -161,21 +194,28 @@ const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 		// EventSchema itself handles the transformation if needed.
 		// For now, we assume the structure matches z.infer<typeof EventSchema>
 
-		return initialValues as z.infer<typeof EventSchema> // Assert type compatibility
+		return initialValues as z.infer<typeof EventSeriesSchema> // Assert type compatibility
 	},
 	getResourcePath: (slug?: string) => `/events/${slug}`,
 	// Use the wrapper function here
 	updateResource: updateEventResource,
 	onSave: onEventSave,
+	bodyPanelConfig: {
+		showListResources: true,
+		listEditorConfig: {
+			title: <EventResourcesTitle />,
+			searchConfig: <SearchConfig />,
+		},
+	},
 	// sendResourceChatMessage: sendResourceChatMessage,
 	// hostUrl: env.NEXT_PUBLIC_PARTY_KIT_URL,
 }
 
-export function EditEventForm({
+export function EditEventSeriesForm({
 	event,
 	videoResource,
 }: {
-	event: Event
+	event: EventSeries
 	videoResource: VideoResource | null
 }) {
 	const router = useRouter()
@@ -244,7 +284,7 @@ const EventFormFields = ({
 	form,
 	resource,
 	videoResource,
-}: ResourceFormProps<Event, typeof EventSchema> & {
+}: ResourceFormProps<EventSeries, typeof EventSeriesSchema> & {
 	videoResource: VideoResource | null
 }) => {
 	const { theme } = useTheme()
@@ -347,125 +387,6 @@ const EventFormFields = ({
 			<MetadataFieldVisibility form={form} />
 			<TagField resource={resource} showEditButton />
 
-			<FormField
-				control={form.control}
-				name="fields.startsAt"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Starts at</FormLabel>
-						<DateTimePicker
-							aria-label="Starts At"
-							{...field}
-							value={
-								!!field.value
-									? parseAbsolute(
-											new Date(field.value).toISOString(),
-											'America/Los_Angeles',
-										)
-									: null
-							}
-							onChange={(date) => {
-								field.onChange(
-									!!date ? date.toDate('America/Los_Angeles') : null,
-								)
-							}}
-							shouldCloseOnSelect={false}
-							granularity="minute"
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="fields.endsAt"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Ends at</FormLabel>
-						<DateTimePicker
-							aria-label="Ends At"
-							{...field}
-							value={
-								!!field.value
-									? parseAbsolute(
-											new Date(field.value).toISOString(),
-											'America/Los_Angeles',
-										)
-									: null
-							}
-							onChange={(date) => {
-								field.onChange(
-									!!date ? date.toDate('America/Los_Angeles') : null,
-								)
-							}}
-							shouldCloseOnSelect={false}
-							granularity="minute"
-						/>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<FormField
-				control={form.control}
-				name="fields.timezone"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
-						<Input {...field} readOnly disabled value={field.value || ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
-			<Dialog>
-				<DialogTrigger asChild>
-					<div className="px-5">
-						<FormLabel className="inline-flex items-center text-lg font-bold">
-							<Calendar className="mr-1 size-4" /> Event Details
-						</FormLabel>
-						<FormDescription>
-							Details to be used in Google calendar for this event.
-						</FormDescription>
-						<Textarea readOnly value={form.watch('fields.details')} />
-					</div>
-				</DialogTrigger>
-				<DialogContent className="scrollbar-thin max-h-[500px] max-w-screen-md">
-					<DialogHeader>
-						<DialogTitle className=" inline-flex items-center text-lg font-bold">
-							<Calendar className="mr-1 size-4" /> Event Details
-						</DialogTitle>
-						<DialogDescription>
-							Details to be used in Google calendar for this event. Markdown is
-							supported.
-						</DialogDescription>
-					</DialogHeader>
-					<FormField
-						control={form.control}
-						name="fields.details"
-						render={({ field }) => (
-							<FormItem>
-								<MarkdownEditor
-									theme={
-										(theme === 'dark'
-											? CourseBuilderEditorThemeDark
-											: CourseBuilderEditorThemeLight) ||
-										CourseBuilderEditorThemeDark
-									}
-									extensions={[EditorView.lineWrapping]}
-									height="300px"
-									maxHeight="500px"
-									onChange={(value) => {
-										form.setValue('fields.details', value)
-									}}
-									value={field.value?.toString()}
-								/>
-
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</DialogContent>
-			</Dialog>
-
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">
@@ -566,7 +487,9 @@ const EventFormFields = ({
 			<MetadataFieldSocialImage
 				form={form}
 				// Ensure form.getValues() is safe to call
-				currentSocialImage={getOGImageUrlForResource(form.getValues() as Event)}
+				currentSocialImage={getOGImageUrlForResource(
+					form.getValues() as EventSeries,
+				)}
 			/>
 		</>
 	)
