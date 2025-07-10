@@ -18,7 +18,7 @@
 @import './login.css';
 @import './commerce.css'; */
 
-@reference 'tailwindcss/theme.css';
+@reference 'tailwindcss';
 
 @tailwind base;
 @tailwind components;
