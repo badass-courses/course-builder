@@ -50,7 +50,7 @@ export default async function OrganizationList() {
 
 	return (
 		<LayoutClient withContainer>
-			<div className="container relative mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full flex-grow flex-col items-center justify-start px-5 pb-10 pt-16 sm:px-8">
+			<div className="container relative mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full grow flex-col items-center justify-start px-5 pb-10 pt-16 sm:px-8">
 				<div className="mb-16 flex flex-col gap-2">
 					<h1 className="fluid-2xl font-bold tracking-tight">Organizations</h1>
 				</div>

@@ -38,7 +38,7 @@ export default function ListResources({ list }: { list: List }) {
 										href={`/${resource.fields.slug}`}
 									>
 										{isComplete ? (
-											<Check className="text-muted-foreground w-4 flex-shrink-0" />
+											<Check className="text-muted-foreground w-4 shrink-0" />
 										) : (
 											<small className="min-w-[2ch] text-right font-mono text-[9px] font-normal opacity-60">
 												{i + 1}

@@ -182,7 +182,7 @@ function PrimaryTagSelector({
 							<span>{tag?.fields?.label}</span>
 						</Label>
 						<button
-							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+							className="focus:ring-ring outline-hidden ml-1 rounded-full focus:ring-2 focus:ring-offset-2"
 							onClick={() => {
 								if (tag.id === selectedPrimaryTag) {
 									setSelectedPrimaryTag('')

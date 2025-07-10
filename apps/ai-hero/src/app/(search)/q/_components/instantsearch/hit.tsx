@@ -14,7 +14,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 		<li className="">
 			<Link
 				prefetch
-				className="to-secondary group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out hover:bg-gradient-to-l sm:py-5 md:flex-row lg:px-6"
+				className="to-secondary hover:bg-linear-to-l group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out sm:py-5 md:flex-row lg:px-6"
 				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
@@ -40,7 +40,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 					)}
 					<Contributor className="mt-3 hidden text-sm md:flex [&_img]:w-7" />
 				</div>
-				<div className="mt-3 flex flex-shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
+				<div className="mt-3 flex shrink-0 flex-wrap items-center gap-3 sm:pl-0 md:mt-0 md:gap-10 md:pl-7">
 					<Contributor className="flex text-sm md:hidden [&_img]:w-7" />
 					{hit?.tags && hit.tags.length > 0 && (
 						<div className="flex flex-wrap items-center gap-1">
@@ -49,7 +49,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 									<Badge
 										key={tag.id}
 										variant="outline"
-										className="text-muted-foreground flex flex-shrink-0 items-center gap-3 rounded-full text-left text-sm opacity-75"
+										className="text-muted-foreground flex shrink-0 items-center gap-3 rounded-full text-left text-sm opacity-75"
 									>
 										<span># {tag.fields?.label || tag.fields?.name}</span>
 									</Badge>
@@ -57,7 +57,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							})}
 						</div>
 					)}
-					<div className="text-muted-foreground leading-1 flex min-w-[130px] flex-shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
+					<div className="text-muted-foreground leading-1 flex min-w-[130px] shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
 						<span className="font-semibold">{hit.type}</span>
 						{hit.created_at_timestamp && (
 							<span>

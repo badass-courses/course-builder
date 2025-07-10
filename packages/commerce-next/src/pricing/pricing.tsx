@@ -330,7 +330,7 @@ const TeamToggle = ({
 						checked={isTeamPurchaseActive}
 						id="team-switch"
 					>
-						<Switch.Thumb className="radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-sm shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300" />
+						<Switch.Thumb className="radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 shadow-xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300" />
 					</Switch.Root>
 					<button
 						className="decoration-gray-600 underline-offset-2 transition hover:underline"

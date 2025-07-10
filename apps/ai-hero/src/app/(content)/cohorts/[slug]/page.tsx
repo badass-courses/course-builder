@@ -251,7 +251,7 @@ export default async function CohortPage(props: {
 								asChild
 								size="sm"
 								variant="secondary"
-								className="bg-secondary/50 border-foreground/20 border backdrop-blur-sm"
+								className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
 							>
 								<Link
 									href={`/products/${product?.fields?.slug || product?.id}/edit`}
@@ -264,7 +264,7 @@ export default async function CohortPage(props: {
 							asChild
 							size="sm"
 							variant="secondary"
-							className="bg-secondary/50 border-foreground/20 border backdrop-blur-sm"
+							className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
 						>
 							<Link href={`/cohorts/${cohort.fields?.slug || cohort.id}/edit`}>
 								Edit Cohort
@@ -329,7 +329,7 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						</header>
-						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
 							{content}
 						</article>
 
@@ -378,7 +378,7 @@ export default async function CohortPage(props: {
 												>
 													<AccordionItem
 														value={`${workshop.id}-body`}
-														className="bg-card rounded border pl-4 pr-1 shadow-sm"
+														className="bg-card shadow-xs rounded border pl-4 pr-1"
 													>
 														<div className="relative flex items-center justify-between">
 															<Link

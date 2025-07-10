@@ -78,7 +78,7 @@ export function PostActions({
 									href={`/posts/${post.fields.slug}/edit`}
 								>
 									<strong className="group-hover:text-primary inline-flex items-baseline gap-1 font-semibold leading-tight transition">
-										<Pencil className="text-muted-foreground h-3 w-3 flex-shrink-0" />
+										<Pencil className="text-muted-foreground h-3 w-3 shrink-0" />
 										<span>{post.fields.title}</span>
 									</strong>
 								</Link>

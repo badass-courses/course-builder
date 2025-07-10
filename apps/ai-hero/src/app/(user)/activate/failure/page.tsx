@@ -9,7 +9,7 @@ import Balancer from 'react-wrap-balancer'
 export default function ActivateFailure() {
 	return (
 		<LayoutClient withContainer>
-			<main className="mx-auto flex w-full max-w-lg flex-grow flex-col items-center justify-center pb-24 pt-16">
+			<main className="mx-auto flex w-full max-w-lg grow flex-col items-center justify-center pb-24 pt-16">
 				<div className="flex w-full flex-col items-center rounded p-5 text-center">
 					<XCircleIcon className="mb-5 h-10 w-10 text-rose-600 dark:text-rose-400" />
 					<h1 className="text-2xl font-bold sm:text-3xl">

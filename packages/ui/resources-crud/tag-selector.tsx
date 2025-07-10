@@ -77,7 +77,7 @@ export default function AdvancedTagSelector({
 					<Badge key={tag.id} variant="secondary" className="text-sm">
 						{tag?.fields?.label}
 						<button
-							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+							className="focus:ring-ring outline-hidden ml-1 rounded-full focus:ring-2 focus:ring-offset-2"
 							onClick={() => handleTagRemove(tag.id)}
 							aria-label={`Remove ${tag?.fields?.label} tag`}
 						>

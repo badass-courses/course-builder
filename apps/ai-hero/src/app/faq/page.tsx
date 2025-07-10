@@ -19,7 +19,7 @@ export default async function FaqPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-grow flex-col pb-16">
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] grow flex-col pb-16">
 				<div className="flex w-full flex-col items-center px-3 py-16 sm:px-10">
 					<h1 className="mb-16 text-center text-6xl font-bold">
 						{page?.fields?.title}

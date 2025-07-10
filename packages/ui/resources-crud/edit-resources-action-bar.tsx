@@ -53,7 +53,7 @@ export function EditResourcesActionBar({
 						<ArrowLeft className="w-4" />
 					</a>
 				</Button>
-				<span className="truncate overflow-ellipsis pr-3 font-medium">
+				<span className="truncate text-ellipsis pr-3 font-medium">
 					{resource?.fields?.title}{' '}
 					<span className="hidden font-mono text-xs font-normal md:inline-block">
 						({resource.id})
