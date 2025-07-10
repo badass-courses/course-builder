@@ -9,14 +9,15 @@ import { CreatePostModal } from '../admin/posts/_components/create-post-modal'
 
 /**
  * Client component wrapper for creating tips and articles with proper redirect handling.
- * Ensures resources are created before redirecting to their edit pages.
+ * Navigates to the edit page after resource creation completes.
  */
 export function CreateResourceModals() {
 	const router = useRouter()
 
 	/**
-	 * Handles resource creation and navigation with proper timing
-	 * to ensure the resource exists before redirecting
+	 * Handles resource creation and navigation.
+	 * Since createPost is synchronous and the resource exists in the database
+	 * when it returns, we can navigate immediately without any delay.
 	 */
 	const handleResourceCreated = async (resource: ContentResource) => {
 		// Get the correct edit path based on resource type
@@ -31,10 +32,7 @@ export function CreateResourceModals() {
 			'edit',
 		)
 
-		// Small delay to ensure resource is fully created and available
-		await new Promise((resolve) => setTimeout(resolve, 100))
-
-		// Navigate to the edit page
+		// Navigate to the edit page immediately
 		router.push(editPath)
 	}
 
