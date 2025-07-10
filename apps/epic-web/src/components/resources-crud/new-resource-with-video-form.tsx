@@ -11,7 +11,9 @@ import { createResourceAction } from '@/lib/resources/create-resource-action'
 import { ResourceCreationError } from '@/lib/resources/resource-errors'
 import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
+import useSWR from 'swr'
 import { z } from 'zod'
 
 import {
@@ -63,6 +65,7 @@ const FormValuesSchema = z.object({
 			message: `Invalid type: ${type}. Must be a valid resource type or post subtype.`,
 		}),
 	),
+	createdById: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof FormValuesSchema>
@@ -115,14 +118,42 @@ export function NewResourceWithVideoForm({
 		React.useState<boolean>(false)
 	const [creationError, setCreationError] = React.useState<string | null>(null)
 
+	// Session to determine admin permissions
+	const { data: session } = useSession()
+	const isAdmin = session?.user?.roles?.some(
+		(role: any) => role.name === 'admin',
+	)
+
+	// Fetch authors list only for admins
+	const fetcher = (url: string) => fetch(url).then((res) => res.json())
+	const { data: authorsData, error: authorsError } = useSWR(
+		isAdmin ? '/api/authors' : null,
+		fetcher,
+	)
+	const authors: {
+		id: string
+		name?: string
+		email?: string
+		displayName?: string
+		image?: string
+	}[] = authorsData?.authors || []
+
 	const form = useForm<FormValues>({
 		resolver: zodResolver(FormValuesSchema),
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
 			postType: defaultPostType,
+			createdById: isAdmin && session?.user?.id ? session.user.id : '',
 		},
 	})
+
+	// Ensure createdById defaults after session loads
+	React.useEffect(() => {
+		if (isAdmin && session?.user?.id && !form.getValues('createdById')) {
+			form.setValue('createdById', session.user.id)
+		}
+	}, [isAdmin, session?.user?.id])
 
 	// Determine if current type needs video
 	const selectedPostType = form.watch('postType')
@@ -232,7 +263,7 @@ export function NewResourceWithVideoForm({
 				resource = await createResource({
 					...values,
 					postType: selectedType as any,
-					createdById: '',
+					createdById: values.createdById || '',
 				})
 			}
 
@@ -391,6 +422,49 @@ export function NewResourceWithVideoForm({
 								</FormItem>
 							)
 						}}
+					/>
+				)}
+
+				{/* Author selection for admins */}
+				{isAdmin && (
+					<FormField
+						control={form.control}
+						name="createdById"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Author</FormLabel>
+								<FormDescription>
+									Select the instructor (admin or contributor) who will own this
+									post.
+								</FormDescription>
+								<FormControl>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										<SelectTrigger>
+											<SelectValue placeholder="Select Author..." />
+										</SelectTrigger>
+										<SelectContent>
+											{authors.map((author) => (
+												<SelectItem key={author.id} value={author.id}>
+													{author.displayName ||
+														author.name ||
+														author.email ||
+														author.id}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</FormControl>
+								{authorsError && (
+									<div className="text-destructive text-sm">
+										Error loading authors
+									</div>
+								)}
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
 				)}
 				{uploadEnabled && (typeRequiresVideo || typeSupportsVideo) && (

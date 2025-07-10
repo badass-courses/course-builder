@@ -22,7 +22,7 @@ import {
 
 export const UserSchema = userSchema.merge(
 	z.object({
-		role: z.enum(['admin', 'user']).nullish(),
+		role: z.enum(['admin', 'user', 'contributor']).nullish(),
 		email: z.string().nullish(),
 		fields: z.any(),
 		entitlements: z
