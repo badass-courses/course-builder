@@ -12,7 +12,6 @@ export async function getFormSubscribers() {
 		)
 
 		const data = await response.json()
-		console.log(data)
 
 		const sevenDaysAgo = new Date()
 		sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -25,7 +24,6 @@ export async function getFormSubscribers() {
 			},
 		)
 		const subscribersWithinLastWeekData = await subscribersWithinLastWeek.json()
-		console.log(subscribersWithinLastWeekData)
 
 		return {
 			...data,
@@ -35,6 +33,10 @@ export async function getFormSubscribers() {
 		}
 	} catch (error) {
 		console.error(error)
-		return []
+		return {
+			total_count: 0,
+			subscribers_added_last_week: 0,
+			pagination: { total_count: 0 },
+		}
 	}
 }
