@@ -1,5 +1,5 @@
 /* @import url('https://use.typekit.net/tjw2gng.css'); */
-@import './primary-newsletter-cta.css';
+/* @import './primary-newsletter-cta.css';
 @import './tip-newsletter-cta.css';
 @import './video-block-newsletter-cta.css';
 @import './nprogress.css';
@@ -16,7 +16,9 @@
 @import '@code-hike/mdx/dist/index.css';
 @import './ui/button.css';
 @import './login.css';
-@import './commerce.css';
+@import './commerce.css'; */
+
+@reference 'tailwindcss/theme.css'
 
 @tailwind base;
 @tailwind components;
