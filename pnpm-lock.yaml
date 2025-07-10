@@ -2842,6 +2842,9 @@ importers:
       '@coursebuilder/utils-string':
         specifier: workspace:*
         version: link:../../packages/utils-string
+      '@coursebuilder/utils-timezones':
+        specifier: workspace:*
+        version: link:../../packages/utils-timezones
       '@coursebuilder/utils-ui':
         specifier: workspace:*
         version: link:../../packages/utils-ui
@@ -3028,6 +3031,12 @@ importers:
       geist:
         specifier: ^1.3.0
         version: 1.3.1(next@15.3.0-canary.31)
+      google-auth-library:
+        specifier: ^9.15.1
+        version: 9.15.1(encoding@0.1.13)
+      googleapis:
+        specifier: ^148.0.0
+        version: 148.0.0(encoding@0.1.13)
       groq:
         specifier: ^3.18.1
         version: 3.82.0
@@ -3061,6 +3070,9 @@ importers:
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.0.0)
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
       memoize-one:
         specifier: ^6.0.0
         version: 6.0.0
@@ -3118,9 +3130,6 @@ importers:
       react:
         specifier: 19.0.0
         version: 19.0.0
-      react-aria:
-        specifier: ^3.35.1
-        version: 3.38.1(react-dom@19.0.0)(react@19.0.0)
       react-countdown:
         specifier: ^2.3.5
         version: 2.3.6(react-dom@19.0.0)(react@19.0.0)
@@ -28275,12 +28284,6 @@ packages:
     hasBin: true
     dev: false
 
-  /marked@15.0.7:
-    resolution: {integrity: sha512-dgLIeKGLx5FwziAnsk4ONoGwHwGPJzselimvlVskE9XLN4Orv9u2VA3GWw/lYUqjfA0rUT/6fqKwfZJapP9BEg==}
-    engines: {node: '>= 18'}
-    hasBin: true
-    dev: false
-
   /marked@7.0.4:
     resolution: {integrity: sha512-t8eP0dXRJMtMvBojtkcsA7n48BkauktUKzfkPSCq85ZMTJ0v76Rke4DYz01omYpPTUh4p/f7HePgRo3ebG8+QQ==}
     engines: {node: '>= 16'}
@@ -28561,7 +28564,7 @@ packages:
       katex: 0.16.21
       khroma: 2.1.0
       lodash-es: 4.17.21
-      marked: 15.0.7
+      marked: 15.0.12
       roughjs: 4.6.6
       stylis: 4.3.6
       ts-dedent: 2.2.0

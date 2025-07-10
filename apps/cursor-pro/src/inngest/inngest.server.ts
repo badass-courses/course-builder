@@ -70,6 +70,12 @@ import {
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
 import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+	ResourceCreated,
+	ResourceUpdated,
+} from './events/resource-management'
+import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
@@ -99,6 +105,8 @@ export type Events = {
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
+	[RESOURCE_CREATED_EVENT]: ResourceCreated
+	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
 }
 
 const callbackBase =
