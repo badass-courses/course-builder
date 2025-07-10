@@ -97,9 +97,7 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-	return (
-		<div className="rounded-sm bg-red-300 p-[var(--grid)]">Item {item.id}</div>
-	)
+	return <div className="p-(--grid) rounded-sm bg-red-300">Item {item.id}</div>
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {

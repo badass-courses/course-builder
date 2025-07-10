@@ -36,7 +36,7 @@ export default function LayoutClient({
 					className,
 				)}
 			>
-				<div className="absolute inset-x-0 -top-6 -z-10 h-12 -rotate-3 bg-gradient-to-r from-violet-300 via-pink-300 to-sky-300 blur-3xl dark:from-violet-500/10 dark:via-pink-500/10 dark:to-sky-500/10" />
+				<div className="bg-linear-to-r absolute inset-x-0 -top-6 -z-10 h-12 -rotate-3 from-violet-300 via-pink-300 to-sky-300 blur-3xl dark:from-violet-500/10 dark:via-pink-500/10 dark:to-sky-500/10" />
 				<div
 					style={{
 						background: 'url("/noise.png") repeat',
@@ -44,7 +44,7 @@ export default function LayoutClient({
 					}}
 					className="absolute  inset-0 -z-10 hidden h-80 w-full opacity-[0.15] mix-blend-overlay dark:flex"
 				/>
-				<div className="from-background  to-background/0  absolute inset-0  -z-10 hidden h-80  w-full bg-gradient-to-t opacity-100 dark:flex" />
+				<div className="from-background  to-background/0  bg-linear-to-t absolute  inset-0 -z-10 hidden  h-80 w-full opacity-100 dark:flex" />
 				<div className="">
 					<Navigation
 						highlightedResource={highlightedResource}

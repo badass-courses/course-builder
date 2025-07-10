@@ -77,7 +77,7 @@ const memoizedFormatDate = (() => {
  */
 function PurchaseCard({ item }: { item: PurchaseData }) {
 	return (
-		<div className="bg-card text-card-foreground mb-4 rounded-lg border p-4 shadow-sm">
+		<div className="bg-card text-card-foreground shadow-xs mb-4 rounded-lg border p-4">
 			<div className="mb-2 flex flex-col space-y-1">
 				<p className="text-sm font-medium leading-none">{item.name || 'N/A'}</p>
 				<p className="text-muted-foreground text-xs">{item.email}</p>
@@ -130,7 +130,7 @@ export default function ProductPurchasesTable({
 	if (!purchaseDataResult || purchaseData.length === 0) {
 		return (
 			<div className="m-4 space-y-4 sm:my-12">
-				<div className="bg-card text-card-foreground rounded-lg border p-8 text-center shadow-sm">
+				<div className="bg-card text-card-foreground shadow-xs rounded-lg border p-8 text-center">
 					<h2 className="mb-2 text-xl font-medium">
 						No purchase data available
 					</h2>
@@ -276,7 +276,7 @@ export default function ProductPurchasesTable({
 						/>
 					))
 				) : (
-					<div className="bg-card text-card-foreground rounded-lg border p-4 text-center shadow-sm">
+					<div className="bg-card text-card-foreground shadow-xs rounded-lg border p-4 text-center">
 						{searchTerm
 							? 'No results match your search on this page.'
 							: 'No purchases found for this page.'}

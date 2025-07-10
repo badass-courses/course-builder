@@ -403,7 +403,7 @@ const EventFormFields = ({
 						/>
 					</div>
 				</DialogTrigger>
-				<DialogContent className="scrollbar-thin max-h-[500px] max-w-screen-md">
+				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
 						<DialogTitle className=" inline-flex items-center text-lg font-bold">
 							Attendee Instructions

@@ -316,7 +316,7 @@ export default function CreateNewEventForm() {
 									key={field.id}
 									value={`event-${index}`}
 								>
-									<AccordionTrigger className="bg-card w-full justify-between rounded-lg border px-3 py-2 text-left [&[data-state=open]]:rounded-b-none [&[data-state=open]]:border-b-0">
+									<AccordionTrigger className="bg-card w-full justify-between rounded-lg border px-3 py-2 text-left data-[state=open]:rounded-b-none data-[state=open]:border-b-0">
 										<div className="mr-4 flex w-full items-center justify-between">
 											<span className="font-semibold">
 												{form.watch(`events.${index}.title`) ||
@@ -337,7 +337,7 @@ export default function CreateNewEventForm() {
 											)}
 										</div>
 									</AccordionTrigger>
-									<AccordionContent className="space-y-4 rounded-b-lg border p-3 [&[data-state=open]]:rounded-t-none">
+									<AccordionContent className="space-y-4 rounded-b-lg border p-3 data-[state=open]:rounded-t-none">
 										<FormField
 											control={form.control}
 											name={`events.${index}.title`}

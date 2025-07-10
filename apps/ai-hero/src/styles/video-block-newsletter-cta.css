@@ -1,4 +1,4 @@
-@reference './globals.css';
+/* @reference './globals.css'; */
 
 #video-block-newsletter-cta [data-sr-convertkit-subscribe-form] {
 	@apply mx-auto flex w-full max-w-[420px] flex-col;
