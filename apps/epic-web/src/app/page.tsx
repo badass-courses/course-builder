@@ -206,7 +206,7 @@ const Home = async (props: Props) => {
 										{...props}
 									/>
 								),
-								MuxPlayer,
+								MuxPlayer: (props) => <MuxPlayer {...props} />,
 							}}
 						/>
 					) : (
