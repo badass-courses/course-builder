@@ -1,3 +1,7 @@
+import '@code-hike/mdx/dist/index.css'
+import '@/styles/primary-newsletter-cta.css'
+import '@/styles/tip-newsletter-cta.css'
+import '@/styles/video-block-newsletter-cta.css'
 import '@/styles/globals.css'
 
 import * as React from 'react'

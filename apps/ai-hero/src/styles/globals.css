@@ -1,22 +1,4 @@
 /* @import url('https://use.typekit.net/tjw2gng.css'); */
-/* @import './primary-newsletter-cta.css';
-@import './tip-newsletter-cta.css';
-@import './video-block-newsletter-cta.css';
-@import './nprogress.css';
-@import './video/mux-player.css';
-@import './video/github-link.css';
-@import './video/lesson-completion-toggle.css';
-@import './video/lesson-description.css';
-@import './video/lesson-title.css';
-@import './video/module-lesson-list.css';
-@import './video/video-overlays.css';
-@import './video/video-transcript.css';
-@import './video/module-navigator.css';
-@import './focus-visible.css';
-@import '@code-hike/mdx/dist/index.css';
-@import './ui/button.css';
-@import './login.css';
-@import './commerce.css'; */
 
 @import 'tailwindcss';
 
@@ -31,16 +13,14 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
-  }
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentcolor);
+	}
 }
-
-@reference 'tailwindcss';
 
 @layer base {
 	:root {
@@ -249,7 +229,7 @@
 }
 
 [data-checklist] {
-	@apply list-outside pl-4!;
+	@apply pl-4! list-outside;
 	list-style-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDE0IDE0Ij4KICA8cGF0aCBmaWxsPSIjRjNBRDVCIiBkPSJtMTQgMy4xNS0uNy0xLjRjLTYuMDM4IDEuNzUtOS4xIDUuNi05LjEgNS42bC0yLjgtMi4xTDAgNi42NWw0LjIgNS42YzMuMjM3LTYuMDM3IDkuOC05LjEgOS44LTkuMVoiLz4KPC9zdmc+Cg==');
 }
 

@@ -57,7 +57,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							})}
 						</div>
 					)}
-					<div className="text-muted-foreground leading-1 flex min-w-[130px] shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
+					<div className="text-muted-foreground flex min-w-[130px] shrink-0 flex-row gap-3 text-sm capitalize opacity-75 md:flex-col md:gap-0">
 						<span className="font-semibold">{hit.type}</span>
 						{hit.created_at_timestamp && (
 							<span>

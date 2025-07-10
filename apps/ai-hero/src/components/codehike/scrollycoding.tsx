@@ -99,7 +99,7 @@ async function Code({
 			<Pre
 				code={highlighted}
 				handlers={[tokenTransitions]}
-				className="bg-card! mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
+				className="!bg-card mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 !text-sm shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
 				style={{
 					...highlighted.style,
 					padding: '1rem',
