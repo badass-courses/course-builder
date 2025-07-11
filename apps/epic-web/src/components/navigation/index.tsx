@@ -46,7 +46,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] w-full items-center justify-between print:hidden',
+				'h-(--nav-height) relative z-50 flex w-full items-center justify-between print:hidden',
 				{
 					'px-5': !withContainer,
 				},
