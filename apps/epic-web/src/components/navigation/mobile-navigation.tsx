@@ -29,26 +29,31 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	setIsMobileMenuOpen,
 	subscriber,
 }) => {
-	const { data: sessionData, status: sessionStatus } = useSession()
+	const { data: sessionData, status: sessionStatus, update } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 
-	const canViewTeam = ability.can('invite', 'Team')
-	const canCreateContent = ability.can('create', 'Content')
-	const canViewInvoice = ability.can('read', 'Invoice')
+	const canManageAll = ability.can('manage', 'all')
 
-	const userAvatar = sessionData?.user?.image ? (
+	// Check if we're impersonating
+	const isImpersonating = Boolean(sessionData?.user?.impersonatingFromUserId)
+
+	if (!sessionData?.user?.email) {
+		return null
+	}
+
+	const userAvatar = sessionData.user.image ? (
 		<Image
 			src={sessionData.user.image}
 			alt={sessionData.user.name || ''}
-			width={80}
-			height={80}
+			width={28}
+			height={28}
 			className="rounded-full"
 		/>
 	) : (
 		<Gravatar
-			className="h-20 w-20 rounded-full"
-			email={sessionData?.user?.email || ''}
+			className="h-7 w-7 rounded-full"
+			email={sessionData.user.email || ''}
 			default="mp"
 		/>
 	)
@@ -78,11 +83,29 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					>
 						<div className="flex w-full flex-col">
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5">
+								<div
+									className={cn(
+										'mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5',
+										isImpersonating && 'border-orange-200 bg-orange-50',
+									)}
+								>
+									{isImpersonating && (
+										<div className="mb-2 text-sm font-medium text-orange-600">
+											🎭 Impersonating
+										</div>
+									)}
 									{userAvatar}
 									<span className="text-xl font-bold">
 										{sessionData.user.name?.split(' ')[0] || ''}
 									</span>
+									{isImpersonating && (
+										<div className="text-muted-foreground text-center text-sm">
+											<div>{sessionData.user.email}</div>
+											<div className="text-xs">
+												Role: {sessionData.user.role}
+											</div>
+										</div>
+									)}
 								</div>
 							)}
 							{sessionStatus === 'unauthenticated' && (
@@ -113,7 +136,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								/>
 							)}
 							<ul className="flex flex-col gap-1">
-								{canCreateContent && (
+								{canManageAll && (
 									<NavLinkItem
 										className=""
 										href="/admin/dashboard"

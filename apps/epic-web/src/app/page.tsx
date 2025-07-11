@@ -76,10 +76,7 @@ const Home = async (props: Props) => {
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-	}
+	const firstPageResource = undefined
 
 	let actionSection: React.ReactNode = null
 
@@ -158,15 +155,6 @@ const Home = async (props: Props) => {
 			withContainer
 		>
 			<main className="flex w-full flex-col items-center justify-center">
-				{firstPageResource && (
-					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md  px-3 py-1 text-sm font-medium "
-						href={firstPageResource.path}
-						prefetch
-					>
-						New: <span className="underline">{firstPageResource?.title}</span>
-					</Link>
-				)}
 				<header>
 					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
 						Epic Web Builder

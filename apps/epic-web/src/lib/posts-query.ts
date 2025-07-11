@@ -3,6 +3,7 @@
 import crypto from 'node:crypto'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { AppAbility } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
@@ -487,12 +488,12 @@ export async function updatePost(
 }
 
 export const getCachedPost = unstable_cache(
-	async (slugOrId: string) => getPost(slugOrId),
+	async (slugOrId: string, ability?: AppAbility) => getPost(slugOrId, ability),
 	['posts'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
 
-export async function getPost(slugOrId: string) {
+export async function getPost(slugOrId: string, ability?: AppAbility) {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
 		'public',
 		'unlisted',
@@ -532,6 +533,18 @@ export async function getPost(slugOrId: string) {
 	const postParsed = PostSchema.safeParse(post)
 	if (!postParsed.success) {
 		console.debug('Error parsing post', postParsed.error)
+		console.debug(
+			'Post data that failed to parse:',
+			JSON.stringify(post, null, 2),
+		)
+		return null
+	}
+
+	if (ability && !ability.can('read', subject('Content', postParsed.data))) {
+		console.debug(
+			'User does not have permission to read post:',
+			postParsed.data.id,
+		)
 		return null
 	}
 

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
@@ -23,14 +24,15 @@ import {
 import { NavLinkItem } from './nav-link-item'
 
 /**
- * Desktop user menu component with dropdown
+ * Desktop user menu client component with dropdown
  */
-export const UserMenu = () => {
-	const { data: sessionData, status: sessionStatus } = useSession()
+export const UserMenuClient = () => {
+	const { data: sessionData, status: sessionStatus, update } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
+	const router = useRouter()
 
-	const canCreateContent = ability.can('create', 'Content')
+	const canManageAll = ability.can('manage', 'all')
 
 	if (sessionStatus === 'loading') {
 		return (
@@ -63,10 +65,13 @@ export const UserMenu = () => {
 	) : (
 		<Gravatar
 			className="h-7 w-7 rounded-full"
-			email={sessionData.user.email}
+			email={sessionData.user.email || ''}
 			default="mp"
 		/>
 	)
+
+	// Check if we're impersonating
+	const isImpersonating = Boolean(sessionData.user.impersonatingFromUserId)
 
 	return (
 		<>
@@ -76,14 +81,26 @@ export const UserMenu = () => {
 					<DropdownMenuTrigger asChild>
 						<Button
 							variant="link"
-							className="text-foreground hover:text-primary flex items-center space-x-1 px-3 py-2"
+							className={cn(
+								'text-foreground hover:text-primary flex items-center space-x-1 px-3 py-2',
+								isImpersonating &&
+									'rounded-md border border-orange-200 bg-orange-50',
+							)}
 						>
+							{isImpersonating && (
+								<span className="mr-1 text-orange-600">🎭</span>
+							)}
 							{userAvatar}
 							<div className="flex flex-col pl-0.5">
 								<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
 									<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
 										{sessionData.user.name?.split(' ')[0] || 'Account'}
 									</span>
+									{isImpersonating && (
+										<span className="text-xs text-orange-600">
+											(Impersonating)
+										</span>
+									)}
 									<ChevronDownIcon className="w-2" />
 								</span>
 							</div>
@@ -91,11 +108,23 @@ export const UserMenu = () => {
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
 						<DropdownMenuLabel>
-							{sessionData.user.email || 'Account'}
+							{isImpersonating ? (
+								<div className="flex flex-col">
+									<span className="font-medium text-orange-600">
+										🎭 Impersonating
+									</span>
+									<span className="text-sm">{sessionData.user.email}</span>
+									<span className="text-muted-foreground text-xs">
+										Role: {sessionData.user.role}
+									</span>
+								</div>
+							) : (
+								sessionData.user.email || 'Account'
+							)}
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<ul className="flex flex-col">
-							{canCreateContent && (
+							{canManageAll && (
 								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
 							)}
 							{/* {canViewInvoice && (

@@ -1,5 +1,8 @@
 import React from 'react'
+import { redirect } from 'next/navigation'
+import { getAbility } from '@/ability'
 import LayoutClient from '@/components/layout-client'
+import { getServerAuthSession } from '@/server/auth'
 import {
 	FileText,
 	Flag,
@@ -8,6 +11,7 @@ import {
 	Mail,
 	TagIcon,
 	TicketIcon,
+	Users,
 } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
@@ -19,6 +23,13 @@ const AdminLayout = async ({
 	children: React.ReactNode
 	params: Promise<{ module: string }>
 }) => {
+	const { session } = await getServerAuthSession()
+	const ability = getAbility({ user: session?.user || undefined })
+
+	if (!ability.can('manage', 'all')) {
+		redirect('/')
+	}
+
 	return (
 		<LayoutClient>
 			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
@@ -31,9 +42,17 @@ const AdminLayout = async ({
 										<FileText className="h-4 w-4" />
 										Pages
 									</NavItem>
+									<NavItem href="/admin/posts">
+										<ListChecks className="h-4 w-4" />
+										Posts
+									</NavItem>
 									<NavItem href="/admin/tips">
 										<Lightbulb className="h-4 w-4" />
 										Tips
+									</NavItem>
+									<NavItem href="/admin/contributors">
+										<Users className="h-4 w-4" />
+										Contributors
 									</NavItem>
 								</li>
 							</ul>

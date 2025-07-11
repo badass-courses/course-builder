@@ -37,8 +37,9 @@ export default async function PostPage(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
+	const { session, ability } = await getServerAuthSession()
 
-	const post = await getCachedPost(params.post)
+	const post = await getCachedPost(params.post, ability)
 
 	if (!post) {
 		notFound()
