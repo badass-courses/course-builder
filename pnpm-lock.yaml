@@ -6002,7 +6002,7 @@ importers:
         specifier: ^7.3.2
         version: 7.3.5
       '@tailwindcss/typography':
-        specifier: ^0.5.10
+        specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
@@ -6017,7 +6017,7 @@ importers:
         specifier: ^7.0.14
         version: 7.0.15
       '@types/node':
-        specifier: ^20.17.30
+        specifier: ^20.12.5
         version: 20.17.30
       '@types/pluralize':
         specifier: ^0.0.33
