@@ -87,7 +87,7 @@ export function WorkshopResourceList(props: Props) {
 		>
 			<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
 				{withHeader && (
-					<div className="relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0_/_0.05),_0_8px_10px_-6px_rgb(0_0_0_/_0.05)]">
+					<div className="relative z-10 flex w-full flex-row items-center gap-3 border-b p-3 pl-2 shadow-[0_20px_25px_-5px_rgb(0_0_0/0.05),0_8px_10px_-6px_rgb(0_0_0/0.05)]">
 						{workshopNavigation.coverImage && (
 							<CldImage
 								width={48}

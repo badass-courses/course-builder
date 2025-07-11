@@ -32,7 +32,7 @@ export const Layout = ({
 		>
 			<div
 				className={cn(
-					'min-h-[calc(100vh)] w-full pt-[var(--nav-height)]',
+					'pt-(--nav-height) min-h-[calc(100vh)] w-full',
 					{
 						'border-x-2': withBorder,
 						'bg-background': withBackground,

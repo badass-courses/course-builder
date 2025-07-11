@@ -32,21 +32,21 @@ export default async function EventIndexPage() {
 	return (
 		<>
 			<Layout>
-				<div className=" mx-auto w-full max-w-screen-md pb-10 pt-16">
+				<div className=" max-w-(--breakpoint-md) mx-auto w-full pb-10 pt-16">
 					<h1 className="font-heading fluid-3xl text-center font-bold">
 						Astro Live Events & Workshops
 					</h1>
 				</div>
 				<EventsList />
 				{ability.can('update', 'Content') ? (
-					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center py-10">
+					<div className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full items-center justify-center py-10">
 						<Button asChild variant="secondary">
 							<Link href={`/events/new`}>New Event</Link>
 						</Button>
 					</div>
 				) : null}
 				<div
-					className="absolute top-0 -z-10 h-full w-full max-w-screen-md"
+					className="max-w-(--breakpoint-md) absolute top-0 -z-10 h-full w-full"
 					aria-hidden="true"
 				/>
 			</Layout>
@@ -86,7 +86,7 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-10 flex w-full max-w-screen-md flex-col gap-5">
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full flex-col gap-5">
 			{publicEvents.length === 0 && (
 				<p className="mb-10 text-center">There are no public events.</p>
 			)}

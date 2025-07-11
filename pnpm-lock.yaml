@@ -1268,22 +1268,22 @@ importers:
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
         specifier: ^2.0.0
-        version: 2.0.0(tailwindcss@3.4.17)
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
         specifier: ^4.0.2
-        version: 4.0.2(tailwindcss@3.4.17)
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1318,9 +1318,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
         specifier: ^0.5.16
-        version: 0.5.16(tailwindcss@3.4.17)
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -1388,8 +1391,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -1398,10 +1401,10 @@ importers:
         version: 16.9.0
       tailwind-scrollbar:
         specifier: ^4.0.2
-        version: 4.0.2(react@19.0.0)(tailwindcss@3.4.17)
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.30)(typescript@5.4.5)
@@ -34296,14 +34299,6 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /tailwind-fluid-typography@2.0.0(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-Y/aFjnGWzVzOVIe+JWrQHOC6c5OZuKjdO+5V9p8mHmTPlOu1VhHsnLtp8+3JSrb/lvc7QWvayqTC1RhQyKioRw==}
-    peerDependencies:
-      tailwindcss: '>=1.2.0'
-    dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
-    dev: false
-
   /tailwind-fluid-typography@2.0.0(tailwindcss@4.1.11):
     resolution: {integrity: sha512-Y/aFjnGWzVzOVIe+JWrQHOC6c5OZuKjdO+5V9p8mHmTPlOu1VhHsnLtp8+3JSrb/lvc7QWvayqTC1RhQyKioRw==}
     peerDependencies:
@@ -34334,18 +34329,6 @@ packages:
     dependencies:
       tailwindcss: 3.4.17(ts-node@10.9.2)
     dev: false
-
-  /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
-    engines: {node: '>=12.13.0'}
-    peerDependencies:
-      tailwindcss: 4.x
-    dependencies:
-      prism-react-renderer: 2.4.1(react@19.0.0)
-      tailwindcss: 3.4.17(ts-node@10.9.2)
-    transitivePeerDependencies:
-      - react
-    dev: true
 
   /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@4.1.11):
     resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
@@ -34381,15 +34364,6 @@ packages:
     dependencies:
       tailwindcss: 4.1.11
     dev: true
-
-  /tailwindcss-radix@4.0.2(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      tailwindcss: ^3.0 || ^4.0
-    dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
-    dev: false
 
   /tailwindcss-radix@4.0.2(tailwindcss@4.1.11):
     resolution: {integrity: sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA==}

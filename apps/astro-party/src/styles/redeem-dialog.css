@@ -3,7 +3,7 @@
 	@apply h-[400px] overflow-y-scroll;
 }
 [data-redeem-dialog-content] {
-	@apply bg-background dark:bg-secondary fixed left-1/2 top-1/2 z-[60] max-h-[90vh] w-full max-w-[95%] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md shadow-xl sm:max-w-md;
+	@apply bg-background dark:bg-secondary fixed left-1/2 top-1/2 z-60 max-h-[90vh] w-full max-w-[95%] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md shadow-xl sm:max-w-md;
 	[data-title] {
 		@apply px-8 pt-8 text-xl font-bold;
 	}
@@ -27,7 +27,7 @@
 				@apply dark:bg-background flex rounded bg-gray-200 px-4 py-2 text-sm font-medium;
 			}
 			[data-submit] {
-				@apply bg-primary flex rounded border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm transition;
+				@apply bg-primary flex rounded border border-transparent px-4 py-2 text-sm font-medium text-white shadow-xs transition;
 			}
 			[data-submit]:hover {
 				@apply brightness-105;
@@ -36,5 +36,5 @@
 	}
 }
 [data-redeem-dialog-overlay] {
-	@apply fixed inset-0 z-50 bg-black/30 backdrop-blur-sm;
+	@apply fixed inset-0 z-50 bg-black/30 backdrop-blur-xs;
 }
