@@ -3958,17 +3958,17 @@ importers:
         specifier: ^2.2.1
         version: 2.2.2
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3982,9 +3982,12 @@ importers:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/node':
         specifier: ^20.12.5
         version: 20.17.30
@@ -4019,11 +4022,11 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -34332,7 +34335,6 @@ packages:
       tailwindcss: 4.1.11
     transitivePeerDependencies:
       - react
-    dev: true
 
   /tailwindcss-animate@1.0.7(tailwindcss@3.4.17):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
