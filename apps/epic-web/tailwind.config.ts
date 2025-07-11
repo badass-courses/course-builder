@@ -1,4 +1,3 @@
-import { color } from 'framer-motion'
 import colors from 'tailwindcss/colors'
 import defaultTheme from 'tailwindcss/defaultTheme'
 
