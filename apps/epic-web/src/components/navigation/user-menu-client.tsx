@@ -7,7 +7,13 @@ import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { ChevronDownIcon } from 'lucide-react'
+import {
+	ChevronDownIcon,
+	FileText,
+	Lightbulb,
+	ListChecks,
+	Users,
+} from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import {
@@ -125,7 +131,32 @@ export const UserMenuClient = () => {
 						<DropdownMenuSeparator />
 						<ul className="flex flex-col">
 							{canManageAll && (
-								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
+								<>
+									<NavLinkItem
+										variant="menu"
+										href="/admin/pages"
+										label="Admin Pages"
+										icon={<FileText className="mr-2 h-4 w-4" />}
+									/>
+									<NavLinkItem
+										variant="menu"
+										href="/admin/posts"
+										label="Admin Posts"
+										icon={<ListChecks className="mr-2 h-4 w-4" />}
+									/>
+									<NavLinkItem
+										variant="menu"
+										href="/admin/tips"
+										label="Admin Tips"
+										icon={<Lightbulb className="mr-2 h-4 w-4" />}
+									/>
+									<NavLinkItem
+										variant="menu"
+										href="/admin/contributors"
+										label="Admin Contributors"
+										icon={<Users className="mr-2 h-4 w-4" />}
+									/>
+								</>
 							)}
 							{/* {canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />

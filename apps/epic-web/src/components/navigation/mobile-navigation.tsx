@@ -7,7 +7,15 @@ import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { Menu, Newspaper, X } from 'lucide-react'
+import {
+	FileText,
+	Lightbulb,
+	ListChecks,
+	Menu,
+	Newspaper,
+	Users,
+	X,
+} from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
@@ -137,11 +145,32 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 							)}
 							<ul className="flex flex-col gap-1">
 								{canManageAll && (
-									<NavLinkItem
-										className=""
-										href="/admin/dashboard"
-										label="Admin"
-									/>
+									<>
+										<NavLinkItem
+											className=""
+											href="/admin/pages"
+											label="Admin Pages"
+											icon={<FileText className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/posts"
+											label="Admin Posts"
+											icon={<ListChecks className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/tips"
+											label="Admin Tips"
+											icon={<Lightbulb className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/contributors"
+											label="Admin Contributors"
+											icon={<Users className="mr-2 h-4 w-4" />}
+										/>
+									</>
 								)}
 							</ul>
 						</div>

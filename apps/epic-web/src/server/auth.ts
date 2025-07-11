@@ -244,6 +244,13 @@ export const getServerAuthSession = async () => {
 	if (session?.user?.id) {
 		const dbUser = await db.query.users.findFirst({
 			where: (u, { eq }) => eq(u.id, session.user.id),
+			with: {
+				roles: {
+					with: {
+						role: true,
+					},
+				},
+			},
 		})
 
 		if (dbUser) {
@@ -255,7 +262,7 @@ export const getServerAuthSession = async () => {
 				user: {
 					...session.user,
 					role: primaryRole,
-					roles: [],
+					roles: dbUser.roles.map((userRole) => userRole.role),
 				},
 			}
 		}
@@ -301,6 +308,13 @@ export const getImpersonatedSession = async () => {
 		// Fetch the target user
 		const targetUser = await db.query.users.findFirst({
 			where: eq(users.id, impersonationData.targetUserId),
+			with: {
+				roles: {
+					with: {
+						role: true,
+					},
+				},
+			},
 		})
 
 		if (!targetUser) {
@@ -323,7 +337,7 @@ export const getImpersonatedSession = async () => {
 				name: targetUser.name,
 				image: targetUser.image,
 				role: targetRole,
-				roles: [],
+				roles: targetUser.roles.map((userRole) => userRole.role),
 				// Keep track of the original admin
 				impersonatingFromUserId: impersonationData.adminId,
 			},
