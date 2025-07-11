@@ -187,6 +187,7 @@
 	},
 	"devDependencies": {
 		"@mux/mux-node": "^7.3.2",
+		"@tailwindcss/postcss": "^4.1.11",
 		"@tailwindcss/typography": "^0.5.16",
 		"@types/base-64": "^1.0.1",
 		"@types/eslint": "^8.44.2",
@@ -209,9 +210,9 @@
 		"partykit": "0.0.104",
 		"postcss": "^8.4.47",
 		"prettier": "^3.2.5",
-		"prettier-plugin-tailwindcss": "^0.5.12",
+		"prettier-plugin-tailwindcss": "^0.6.14",
 		"stripe": "16.9.0",
-		"tailwindcss": "^3.3.3",
+		"tailwindcss": "^4.1.11",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.7.1",
 		"typescript": "5.4.5"

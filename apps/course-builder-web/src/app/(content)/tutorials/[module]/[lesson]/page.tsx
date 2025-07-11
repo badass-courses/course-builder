@@ -66,7 +66,7 @@ export default async function LessonPage(props: Props) {
 				</Suspense>
 				<PlayerContainer lessonLoader={lessonLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
-					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
+					<div className="max-w-(--breakpoint-lg) mx-auto w-full pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
 							<div className="flex flex-col lg:col-span-8">
 								<LessonBody lessonLoader={lessonLoader} />
@@ -166,8 +166,8 @@ async function LessonActionBar({
 function PlayerContainerSkeleton() {
 	return (
 		<div className="relative z-10 flex items-center justify-center">
-			<div className="flex w-full max-w-screen-lg flex-col">
-				<div className="relative aspect-[16/9]">
+			<div className="max-w-(--breakpoint-lg) flex w-full flex-col">
+				<div className="relative aspect-video">
 					<div className="flex items-center justify-center  overflow-hidden">
 						<div className="h-full w-full bg-gray-100" />
 					</div>
@@ -196,8 +196,8 @@ async function PlayerContainer({
 	return (
 		<Suspense fallback={<PlayerContainerSkeleton />}>
 			<div className="relative z-10 flex items-center justify-center">
-				<div className="flex w-full max-w-screen-lg flex-col">
-					<div className="relative aspect-[16/9]">
+				<div className="max-w-(--breakpoint-lg) flex w-full flex-col">
+					<div className="relative aspect-video">
 						<div
 							className={cn(
 								'flex items-center justify-center  overflow-hidden',

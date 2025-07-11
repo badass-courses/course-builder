@@ -127,7 +127,7 @@ const Invoice = async (props: {
 
 	return (
 		<div>
-			<main className="mx-auto max-w-screen-md">
+			<main className="max-w-(--breakpoint-md) mx-auto">
 				<div className="flex flex-col justify-between pb-5 pt-12 print:hidden">
 					<h1 className="font-text text-lg font-bold leading-tight sm:text-xl">
 						Your Invoice for {process.env.NEXT_PUBLIC_SITE_TITLE}
