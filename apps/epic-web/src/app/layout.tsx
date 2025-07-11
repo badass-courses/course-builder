@@ -72,6 +72,7 @@ export default function RootLayout({
 				<body
 					id="layout"
 					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
+					suppressHydrationWarning
 				>
 					<ImpersonationBanner />
 					<Toaster />
