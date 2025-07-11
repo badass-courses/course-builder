@@ -92,8 +92,8 @@
 		"srt-parser-2": "^1.2.3",
 		"styled-components": "~5.2.3",
 		"superjson": "^2.2.1",
-		"tailwind-merge": "^1.14.0",
-		"tailwind-scrollbar": "^3.0.0",
+		"tailwind-merge": "^3.3.1",
+		"tailwind-scrollbar": "^4.0.2",
 		"tailwindcss-animate": "^1.0.7",
 		"uploadthing": "7.4.4",
 		"uuid": "^9.0.1",
@@ -102,7 +102,7 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@tailwindcss/typography": "^0.5.10",
+		"@tailwindcss/typography": "^0.5.16",
 		"@types/node": "^20.12.5",
 		"@types/pg": "^8.11.6",
 		"@types/pluralize": "^0.0.33",
