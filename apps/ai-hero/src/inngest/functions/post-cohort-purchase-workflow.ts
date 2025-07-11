@@ -4,6 +4,9 @@ import {
 	entitlements,
 	entitlementTypes,
 } from '@/db/schema'
+import LiveOfficeHoursInvitation, {
+	generateICSAttachments,
+} from '@/emails/live-office-hours-invitation'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
@@ -63,6 +66,37 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 		const isFullPriceCouponRedemption = Boolean(purchase.redeemedBulkCouponId)
+
+		const liveOfficeHoursEmailProps = {
+			eventTitle: 'AI Hero Live Office Hours',
+			eventDate: 'July 14th, 2025',
+			intro:
+				'Matt is kicking off the cohort with a live office hours session on July 14th. Below are the details for the sessions with two available times for you to attend.',
+			firstEvent: {
+				date: 'July 14th, 2025',
+				startTime: '1:30 AM',
+				endTime: '2:15 AM',
+				isoStartDate: '2025-07-14T02:30:00Z',
+				isoEndDate: '2025-07-14T03:30:00Z',
+				liveLink: 'https://www.youtube.com/live/9Vf1_C3O5vc',
+			},
+			secondEvent: {
+				date: 'July 14th, 2025',
+				startTime: '8:30 AM',
+				endTime: '9:15 AM',
+				isoStartDate: '2025-07-14T08:30:00Z',
+				isoEndDate: '2025-07-14T09:30:00Z',
+				liveLink: 'https://www.youtube.com/live/gt0wClshfCA',
+			},
+			userFirstName: user?.name ?? 'there',
+			modules: [
+				{
+					title: 'Day 1: Build A Naive Agent',
+					link: 'https://www.aihero.dev/workshops/day-1-build-a-naive-agent',
+					availableAt: 'Jul 14, 2025 at 1:00 AM PDT (9:00AM BST)',
+				},
+			],
+		}
 
 		// Get information about the original bulk purchase if this is a coupon redemption
 		const bulkCouponData = await step.run(`get bulk coupon data`, async () => {
@@ -143,6 +177,30 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					emailType: 'team_purchaser',
 				})
 			})
+
+			if (isFullPriceCouponRedemption) {
+				await step.run(
+					`send live office hours email to team member ticket redeemer`,
+					async () => {
+						await sendAnEmail({
+							Component: LiveOfficeHoursInvitation,
+							componentProps: {
+								...liveOfficeHoursEmailProps,
+							},
+							Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
+							To: user.email,
+							ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+							From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+							type: 'transactional',
+							attachments: generateICSAttachments(
+								liveOfficeHoursEmailProps.eventTitle,
+								liveOfficeHoursEmailProps.firstEvent,
+								liveOfficeHoursEmailProps.secondEvent,
+							),
+						})
+					},
+				)
+			}
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
 				const cohortContentAccessEntitlementType = await step.run(
@@ -323,6 +381,28 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 								: 'individual',
 						})
 					})
+
+					await step.run(
+						`send live office hours email to individual purchaser`,
+						async () => {
+							await sendAnEmail({
+								Component: LiveOfficeHoursInvitation,
+								componentProps: {
+									...liveOfficeHoursEmailProps,
+								},
+								Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
+								To: user.email,
+								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								type: 'transactional',
+								attachments: generateICSAttachments(
+									liveOfficeHoursEmailProps.eventTitle,
+									liveOfficeHoursEmailProps.firstEvent,
+									liveOfficeHoursEmailProps.secondEvent,
+								),
+							})
+						},
+					)
 				}
 			} else {
 				// send a slack message or something because it seems broken
