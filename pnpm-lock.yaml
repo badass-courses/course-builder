@@ -20703,7 +20703,7 @@ packages:
       file-selector: 0.6.0
       next: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
-      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
+      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
     dev: false
 
   /@uploadthing/shared@7.1.5:
