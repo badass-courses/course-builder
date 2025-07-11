@@ -3197,17 +3197,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@3.4.17)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@3.4.17)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -3345,8 +3345,8 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@3.4.17)
       tailwindcss:
         specifier: ^3.3.3
         version: 3.4.17(ts-node@10.9.2)
@@ -6890,8 +6890,8 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
         version: 0.3.2-joel-fork(@codemirror/state@6.5.2)(@codemirror/view@6.36.5)(yjs@13.6.24)
@@ -20682,7 +20682,7 @@ packages:
       file-selector: 0.6.0
       next: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
-      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
     dev: false
 
   /@uploadthing/shared@7.1.5:
@@ -34289,6 +34289,14 @@ packages:
       tailwindcss: 3.4.17(ts-node@10.9.2)
     dev: false
 
+  /tailwind-fluid-typography@2.0.0(tailwindcss@3.4.17):
+    resolution: {integrity: sha512-Y/aFjnGWzVzOVIe+JWrQHOC6c5OZuKjdO+5V9p8mHmTPlOu1VhHsnLtp8+3JSrb/lvc7QWvayqTC1RhQyKioRw==}
+    peerDependencies:
+      tailwindcss: '>=1.2.0'
+    dependencies:
+      tailwindcss: 3.4.17(ts-node@10.9.2)
+    dev: false
+
   /tailwind-fluid-typography@2.0.0(tailwindcss@4.1.11):
     resolution: {integrity: sha512-Y/aFjnGWzVzOVIe+JWrQHOC6c5OZuKjdO+5V9p8mHmTPlOu1VhHsnLtp8+3JSrb/lvc7QWvayqTC1RhQyKioRw==}
     peerDependencies:
@@ -34318,6 +34326,18 @@ packages:
       tailwindcss: 3.x
     dependencies:
       tailwindcss: 3.4.17(ts-node@10.9.2)
+
+  /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@3.4.17):
+    resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
+    engines: {node: '>=12.13.0'}
+    peerDependencies:
+      tailwindcss: 4.x
+    dependencies:
+      prism-react-renderer: 2.4.1(react@19.0.0)
+      tailwindcss: 3.4.17(ts-node@10.9.2)
+    transitivePeerDependencies:
+      - react
+    dev: true
 
   /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@4.1.11):
     resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
@@ -34357,6 +34377,15 @@ packages:
 
   /tailwindcss-radix@2.9.0:
     resolution: {integrity: sha512-N49SnciSeRgLC+VK+Fu5VULNJIvJUvN7tUKF1kEHPXrS76WAlwrSVthCbJ9NUw0Cj/ptxs73pdVEdosomAN5Lg==}
+    dev: false
+
+  /tailwindcss-radix@4.0.2(tailwindcss@3.4.17):
+    resolution: {integrity: sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      tailwindcss: ^3.0 || ^4.0
+    dependencies:
+      tailwindcss: 3.4.17(ts-node@10.9.2)
     dev: false
 
   /tailwindcss-radix@4.0.2(tailwindcss@4.1.11):
