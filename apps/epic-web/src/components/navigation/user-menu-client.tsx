@@ -14,7 +14,7 @@ import {
 	ListChecks,
 	Users,
 } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 
 import {
 	Button,
@@ -29,28 +29,30 @@ import {
 
 import { NavLinkItem } from './nav-link-item'
 
+type User = {
+	name?: string | null
+	email?: string | null
+	image?: string | null
+	id: string
+	role?: string
+	impersonatingFromUserId?: string
+}
+
+interface UserMenuClientProps {
+	user?: User | null
+}
+
 /**
  * Desktop user menu client component with dropdown
  */
-export const UserMenuClient = () => {
-	const { data: sessionData, status: sessionStatus, update } = useSession()
+export const UserMenuClient = ({ user }: UserMenuClientProps) => {
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 	const router = useRouter()
 
 	const canManageAll = ability.can('manage', 'all')
 
-	if (sessionStatus === 'loading') {
-		return (
-			<div className="flex items-stretch">
-				<div className="flex h-full items-center justify-center px-5">
-					<Skeleton className="bg-foreground/10 h-2 w-10 rounded" />
-				</div>
-			</div>
-		)
-	}
-
-	if (!sessionData?.user?.email) {
+	if (!user?.email) {
 		return (
 			<NavLinkItem
 				className="rounded-md border"
@@ -60,10 +62,10 @@ export const UserMenuClient = () => {
 		)
 	}
 
-	const userAvatar = sessionData.user.image ? (
+	const userAvatar = user.image ? (
 		<Image
-			src={sessionData.user.image}
-			alt={sessionData.user.name || ''}
+			src={user.image}
+			alt={user.name || ''}
 			width={28}
 			height={28}
 			className="rounded-full"
@@ -71,13 +73,13 @@ export const UserMenuClient = () => {
 	) : (
 		<Gravatar
 			className="h-7 w-7 rounded-full"
-			email={sessionData.user.email || ''}
+			email={user.email || ''}
 			default="mp"
 		/>
 	)
 
 	// Check if we're impersonating
-	const isImpersonating = Boolean(sessionData.user.impersonatingFromUserId)
+	const isImpersonating = Boolean(user.impersonatingFromUserId)
 
 	return (
 		<>
@@ -90,20 +92,22 @@ export const UserMenuClient = () => {
 							className={cn(
 								'text-foreground hover:text-primary flex items-center space-x-1 px-3 py-2',
 								isImpersonating &&
-									'rounded-md border border-orange-200 bg-orange-50',
+									'rounded-md border border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950',
 							)}
 						>
 							{isImpersonating && (
-								<span className="mr-1 text-orange-600">🎭</span>
+								<span className="mr-1 text-orange-600 dark:text-orange-400">
+									🎭
+								</span>
 							)}
 							{userAvatar}
 							<div className="flex flex-col pl-0.5">
 								<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
 									<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
-										{sessionData.user.name?.split(' ')[0] || 'Account'}
+										{user.name?.split(' ')[0] || 'Account'}
 									</span>
 									{isImpersonating && (
-										<span className="text-xs text-orange-600">
+										<span className="text-xs text-orange-600 dark:text-orange-400">
 											(Impersonating)
 										</span>
 									)}
@@ -116,16 +120,16 @@ export const UserMenuClient = () => {
 						<DropdownMenuLabel>
 							{isImpersonating ? (
 								<div className="flex flex-col">
-									<span className="font-medium text-orange-600">
+									<span className="font-medium text-orange-600 dark:text-orange-400">
 										🎭 Impersonating
 									</span>
-									<span className="text-sm">{sessionData.user.email}</span>
+									<span className="text-sm">{user.email}</span>
 									<span className="text-muted-foreground text-xs">
-										Role: {sessionData.user.role}
+										Role: {user.role}
 									</span>
 								</div>
 							) : (
-								sessionData.user.email || 'Account'
+								user.email || 'Account'
 							)}
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />

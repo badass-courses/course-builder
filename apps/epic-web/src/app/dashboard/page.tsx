@@ -11,5 +11,5 @@ export default async function DashboardPage() {
 		redirect('/login')
 	}
 
-	return <DashboardComponent />
+	return <DashboardComponent user={session.user} />
 }

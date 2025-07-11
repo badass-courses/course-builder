@@ -21,7 +21,7 @@ import {
 	PostSchema,
 	type PostUpdate,
 } from '@/lib/posts'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -238,7 +238,7 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await getImpersonatedSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
 		'update',
@@ -272,7 +272,7 @@ export async function getPosts(): Promise<Post[]> {
 }
 
 export async function createPost(input: NewPostInput) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
 		await log.error('post.create.unauthorized', {
@@ -379,7 +379,7 @@ export async function updatePost(
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
 	revalidate = true,
 ) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	const currentPost = await getPost(input.id)
@@ -552,7 +552,7 @@ export async function getPost(slugOrId: string, ability?: AppAbility) {
 }
 
 export async function deletePost(id: string) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	const post = PostSchema.nullish().parse(
@@ -625,7 +625,7 @@ export async function writeNewPostToDatabase(
 ): Promise<Post> {
 	try {
 		// Determine author based on current session user
-		const { session } = await getServerAuthSession()
+		const { session } = await getImpersonatedSession()
 		const currentUser = session?.user
 
 		if (!currentUser) {

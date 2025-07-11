@@ -6,12 +6,12 @@ import {
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
-import LayoutClient from '@/components/layout-client'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -70,7 +70,7 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
-	const { session } = await getServerAuthSession()
+	const { session } = await getImpersonatedSession()
 	// Ensure we safely access optional user and allow arbitrary role strings
 	const role: string = (session?.user?.role as string | undefined) ?? 'guest'
 	const page = await getPage('root')
@@ -149,7 +149,7 @@ const Home = async (props: Props) => {
 	}
 
 	return (
-		<LayoutClient
+		<LayoutWithImpersonation
 			className="static"
 			highlightedResource={firstPageResource}
 			withContainer
@@ -205,7 +205,7 @@ const Home = async (props: Props) => {
 					)}
 				</article>
 			</main>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 

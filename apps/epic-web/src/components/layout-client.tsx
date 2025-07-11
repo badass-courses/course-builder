@@ -7,6 +7,14 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import Navigation from './navigation'
 import Footer from './navigation/footer'
 
+type User = {
+	name?: string | null
+	email?: string | null
+	image?: string | null
+	id: string
+	role?: string
+}
+
 /**
  * Client-side layout component that handles container styling and side patterns
  */
@@ -15,10 +23,12 @@ export default function LayoutClient({
 	withContainer = false,
 	highlightedResource,
 	className,
+	user,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
+	user?: User | null
 	highlightedResource?: {
 		path: string
 		title: string
@@ -37,6 +47,7 @@ export default function LayoutClient({
 			<Navigation
 				highlightedResource={highlightedResource}
 				withContainer={withContainer}
+				user={user}
 			/>
 			{children}
 			<Footer />

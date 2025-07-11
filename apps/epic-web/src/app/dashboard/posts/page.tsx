@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import type { Post } from '@/lib/posts'
 import { getAllPostsForUser } from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { FileText } from 'lucide-react'
 
@@ -12,15 +12,13 @@ import { CreatePostModal } from '../../posts/_components/create-post-modal'
 /**
  * Page for a contributor to see and manage their posts.
  */
-export default async function ContributorPostsPage() {
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-
-	if (!user) {
+export default async function PostsIndexPage() {
+	const { session, ability } = await getImpersonatedSession()
+	if (ability.cannot('create', 'Content')) {
 		redirect('/login')
 	}
 
-	const posts = await getAllPostsForUser(user.id)
+	const posts = await getAllPostsForUser(session?.user?.id)
 
 	return (
 		<main className="flex w-full justify-between p-10">

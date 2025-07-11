@@ -1,11 +1,23 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import * as React from 'react'
 
-export default function DashboardComponent() {
-	const { data: session } = useSession()
-	const user = session?.user
+type User = {
+	name?: string | null
+	email?: string | null
+	image?: string | null
+	id: string
+}
 
+interface DashboardComponentProps {
+	user: User
+}
+
+/**
+ * Dashboard component for contributors.
+ * Shows the user's name and explains content types.
+ */
+export default function DashboardComponent({ user }: DashboardComponentProps) {
 	if (!user) {
 		return null
 	}

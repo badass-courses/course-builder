@@ -7,7 +7,6 @@ import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 
 import { Logo } from '../brand/logo'
 import { MobileNavigation } from './mobile-navigation'
@@ -15,12 +14,22 @@ import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { UserMenuClient } from './user-menu-client'
 
+type User = {
+	name?: string | null
+	email?: string | null
+	image?: string | null
+	id: string
+	role?: string
+}
+
 const Navigation = ({
 	withContainer,
 	highlightedResource,
+	user,
 }: {
 	withContainer?: boolean
 	highlightedResource?: { path: string; title: string }
+	user?: User | null
 }) => {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
@@ -36,7 +45,6 @@ const Navigation = ({
 		setIsMobileMenuOpen(false)
 	}, [pathname])
 
-	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
 
@@ -76,7 +84,7 @@ const Navigation = ({
 					aria-label={`User navigation`}
 				>
 					<ul className="hidden items-center md:flex">
-						<UserMenuClient />
+						<UserMenuClient user={user} />
 						<ThemeToggle className="" />
 					</ul>
 				</nav>
@@ -84,6 +92,7 @@ const Navigation = ({
 					isMobileMenuOpen={isMobileMenuOpen}
 					setIsMobileMenuOpen={setIsMobileMenuOpen}
 					subscriber={subscriber}
+					user={user}
 				/>
 			</div>
 		</header>

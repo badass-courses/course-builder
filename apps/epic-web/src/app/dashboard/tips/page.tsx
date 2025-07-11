@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { revalidateTag } from 'next/cache'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Post } from '@/lib/posts'
 import { getAllTipsForUser } from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { Lightbulb } from 'lucide-react'
 
@@ -13,12 +13,16 @@ import { CreatePostModal } from '../../posts/_components/create-post-modal'
 /**
  * Page for a contributor to see and manage their tips.
  */
-export default async function ContributorTipsPage() {
-	const { session, ability } = await getServerAuthSession()
+export default async function TipsIndexPage() {
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	if (!user) {
 		redirect('/login')
+	}
+
+	if (ability.cannot('create', 'Content')) {
+		notFound()
 	}
 
 	const tips = await getAllTipsForUser(user.id)

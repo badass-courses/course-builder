@@ -1,8 +1,8 @@
 import React from 'react'
 import { redirect } from 'next/navigation'
 import { getAbility } from '@/ability'
-import LayoutClient from '@/components/layout-client'
-import { getServerAuthSession } from '@/server/auth'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
+import { getImpersonatedSession } from '@/server/auth'
 import {
 	FileText,
 	Flag,
@@ -23,15 +23,14 @@ const AdminLayout = async ({
 	children: React.ReactNode
 	params: Promise<{ module: string }>
 }) => {
-	const { session } = await getServerAuthSession()
-	const ability = getAbility({ user: session?.user || undefined })
+	const { session, ability } = await getImpersonatedSession()
 
 	if (!ability.can('manage', 'all')) {
 		redirect('/')
 	}
 
 	return (
-		<LayoutClient>
+		<LayoutWithImpersonation>
 			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
 				<div className="hidden border-r border-t md:block">
 					<div className="flex h-full max-h-screen flex-col gap-2">
@@ -61,7 +60,7 @@ const AdminLayout = async ({
 				</div>
 				<div className="flex flex-col">{children}</div>
 			</div>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 

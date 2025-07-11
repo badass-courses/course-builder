@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Post } from '@/lib/posts'
 import { getAllTips } from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { Lightbulb } from 'lucide-react'
 
@@ -14,7 +14,7 @@ import { CreatePostModal } from '../../posts/_components/create-post-modal'
  * Requires 'manage all' permissions to access.
  */
 export default async function TipsIndexPage() {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await getImpersonatedSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
 	}

@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { FileText } from 'lucide-react'
 
 import CreatePostModalClient from './_components/modal-client'
 
 export default async function PagesIndexPage() {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await getImpersonatedSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
 	}
