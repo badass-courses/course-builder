@@ -36,5 +36,5 @@
 	}
 }
 [data-redeem-dialog-overlay] {
-	@apply fixed inset-0 z-50 bg-black bg-opacity-30 backdrop-blur-sm;
+	@apply fixed inset-0 z-50 bg-black/30 backdrop-blur-sm;
 }
