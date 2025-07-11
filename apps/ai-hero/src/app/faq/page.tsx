@@ -40,7 +40,7 @@ export default async function FaqPage() {
 						</ul>
 					</Accordion>
 				</div>
-				<h2 className="mx-auto  max-w-sm text-balance text-center font-normal opacity-80 sm:text-lg lg:text-xl">
+				<h2 className="mx-auto max-w-sm text-balance text-center font-normal opacity-80 sm:text-lg lg:text-xl">
 					If you have any more questions, please contact us at{' '}
 					<a
 						href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}

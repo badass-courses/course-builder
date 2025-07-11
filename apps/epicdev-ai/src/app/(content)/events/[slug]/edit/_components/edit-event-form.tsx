@@ -430,7 +430,7 @@ const EventFormFields = ({
 				</DialogTrigger>
 				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
-						<DialogTitle className=" inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-bold">
 							<Calendar className="mr-1 size-4" /> Event Details
 						</DialogTitle>
 						<DialogDescription>
@@ -484,7 +484,7 @@ const EventFormFields = ({
 				</DialogTrigger>
 				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
-						<DialogTitle className=" inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-bold">
 							Attendee Instructions
 						</DialogTitle>
 						<DialogDescription>

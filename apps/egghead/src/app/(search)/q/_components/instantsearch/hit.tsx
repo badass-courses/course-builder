@@ -7,7 +7,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
 		<li className="">
 			<Link
-				className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-1.5 "
+				className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-1.5"
 				target={'_blank'}
 				href={`https://egghead.io${hit.path}`}
 			>

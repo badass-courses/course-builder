@@ -181,7 +181,7 @@ const Home = async (props: Props) => {
 			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md  px-3 py-1 text-sm font-medium "
+						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md px-3 py-1 text-sm font-medium"
 						href={firstPageResource.path}
 						prefetch
 					>

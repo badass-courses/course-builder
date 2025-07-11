@@ -99,7 +99,7 @@ function PlayerContainerSkeleton() {
 		<div className="relative z-10 flex items-center justify-center">
 			<div className="max-w-(--breakpoint-lg) flex w-full flex-col">
 				<div className="relative aspect-video">
-					<div className="flex items-center justify-center  overflow-hidden">
+					<div className="flex items-center justify-center overflow-hidden">
 						<div className="h-full w-full bg-gray-100" />
 					</div>
 				</div>
@@ -131,7 +131,7 @@ async function PlayerContainer({
 					<div className="relative aspect-video">
 						<div
 							className={cn(
-								'flex items-center justify-center  overflow-hidden',
+								'flex items-center justify-center overflow-hidden',
 								{
 									hidden: displayOverlay,
 								},

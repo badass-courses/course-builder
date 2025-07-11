@@ -42,9 +42,9 @@ export default function LayoutClient({
 						background: 'url("/noise.png") repeat',
 						backgroundSize: '120px',
 					}}
-					className="absolute  inset-0 -z-10 hidden h-80 w-full opacity-[0.15] mix-blend-overlay dark:flex"
+					className="absolute inset-0 -z-10 hidden h-80 w-full opacity-[0.15] mix-blend-overlay dark:flex"
 				/>
-				<div className="from-background  to-background/0  bg-linear-to-t absolute  inset-0 -z-10 hidden  h-80 w-full opacity-100 dark:flex" />
+				<div className="from-background to-background/0 bg-linear-to-t absolute inset-0 -z-10 hidden h-80 w-full opacity-100 dark:flex" />
 				<div className="">
 					<Navigation
 						highlightedResource={highlightedResource}

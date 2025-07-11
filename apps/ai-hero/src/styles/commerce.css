@@ -15,7 +15,7 @@ body {
 						@apply bg-card rounded-lg border pt-36 shadow-2xl shadow-gray-500/10;
 					}
 					[data-pricing-product-sale-countdown] {
-						@apply mt-5 flex w-full flex-col  py-5 text-center;
+						@apply mt-5 flex w-full flex-col py-5 text-center;
 						[data-grid] {
 							@apply mx-auto grid max-w-[300px] grid-cols-4 items-center justify-center gap-3 tabular-nums tracking-tight;
 						}
@@ -34,7 +34,7 @@ body {
 							@apply hidden;
 						}
 						[data-name-badge] {
-							@apply pb-2 text-center  text-sm font-extrabold uppercase;
+							@apply pb-2 text-center text-sm font-extrabold uppercase;
 						}
 						[data-title] {
 							@apply px-5 text-center text-xl font-black sm:text-2xl;
@@ -153,7 +153,7 @@ body {
 							}
 						}
 						[data-unavailable] {
-							@apply py-4 text-center  text-lg font-bold text-blue-500;
+							@apply py-4 text-center text-lg font-bold text-blue-500;
 						}
 						[data-price-container] {
 							@apply pt-0;
@@ -486,7 +486,7 @@ body {
 							@apply mt-1.5 flex flex-col items-center pl-3 font-sans text-lg !font-light;
 
 							[data-full-price] {
-								@apply before:bg-background relative flex text-xl leading-none  text-gray-500 before:absolute before:left-0 before:top-1/2 before:h-0.5 before:w-full dark:text-gray-400;
+								@apply before:bg-background relative flex text-xl leading-none text-gray-500 before:absolute before:left-0 before:top-1/2 before:h-0.5 before:w-full dark:text-gray-400;
 
 								span {
 									@apply text-xs leading-none text-gray-500 dark:text-gray-300;
@@ -548,7 +548,7 @@ body {
 						}
 					}
 					[data-unavailable] {
-						@apply py-4 text-center  text-lg font-bold text-blue-500;
+						@apply py-4 text-center text-lg font-bold text-blue-500;
 					}
 					[data-sr-convertkit-subscribe-form] {
 						@apply flex w-full flex-col gap-2 text-left;
@@ -600,7 +600,7 @@ body {
 									@apply text-foreground underline-offset-2 transition hover:underline;
 								}
 								button[role='switch'] {
-									@apply hover:radix-state-checked:bg-gray-300/50 dark:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30  transition hover:bg-gray-300/50 dark:border-white/5 dark:bg-gray-800 dark:shadow-black/20;
+									@apply hover:radix-state-checked:bg-gray-300/50 dark:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-white/5 dark:bg-gray-800 dark:shadow-black/20;
 									span {
 										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-primary group-hover:radix-state-checked:bg-indigo-400 bg-foreground dark:bg-foreground block h-[18px] w-[18px] translate-x-[2px] rounded-full shadow-sm shadow-black/20 transition-all will-change-transform group-hover:bg-gray-300;
 									}
@@ -733,13 +733,13 @@ body {
 			}
 			[data-purchased-container] {
 				[data-purchased] {
-					@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5  text-lg font-black;
+					@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5 text-lg font-black;
 					svg {
 						@apply h-8 w-8 text-sky-500;
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center  text-lg font-bold text-blue-500;
+					@apply py-4 text-center text-lg font-bold text-blue-500;
 				}
 
 				#team-upgrade-pricing-inline {
@@ -910,7 +910,7 @@ body {
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center  text-lg font-bold text-blue-400;
+					@apply py-4 text-center text-lg font-bold text-blue-400;
 				}
 			}
 			[data-purchase-container] {

@@ -12,7 +12,7 @@ const Invoices = async () => {
 		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
 	return (
 		<LayoutClient withContainer>
-			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col ">
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
 				<div className="max-w-(--breakpoint-md) mx-auto flex h-full w-full flex-grow flex-col items-center py-16">
 					<h1 className="font-heading mb-16 text-3xl font-bold">
 						{purchases.length > 0 ? 'Your Invoices' : 'No invoices'}

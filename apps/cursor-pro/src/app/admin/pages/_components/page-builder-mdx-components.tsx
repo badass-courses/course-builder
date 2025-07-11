@@ -257,7 +257,7 @@ const BlockItem = ({
 
 const PageBlocks = () => {
 	return (
-		<div className="flex flex-col gap-4 ">
+		<div className="flex flex-col gap-4">
 			{data?.ctas && (
 				<div className="flex flex-wrap items-center gap-1">
 					<strong className="mb-1">CTAs</strong>

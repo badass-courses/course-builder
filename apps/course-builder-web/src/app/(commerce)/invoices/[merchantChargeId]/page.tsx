@@ -149,7 +149,7 @@ const Invoice = async (props: {
 				</div>
 				<div className="rounded-t-md bg-white pr-12 text-gray-900 shadow-xl print:shadow-none">
 					<div className="px-10 py-16">
-						<div className="grid w-full grid-cols-3 items-start justify-between ">
+						<div className="grid w-full grid-cols-3 items-start justify-between">
 							<div className="col-span-2 flex items-center">
 								<span className="font-text pl-2 text-2xl font-bold">
 									{process.env.NEXT_PUBLIC_SITE_TITLE}

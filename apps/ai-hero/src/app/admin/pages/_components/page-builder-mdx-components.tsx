@@ -264,7 +264,7 @@ const BlockItem = ({
 
 const PageBlocks = () => {
 	return (
-		<div className="flex flex-col gap-4 ">
+		<div className="flex flex-col gap-4">
 			<div className="flex flex-wrap items-center gap-1">
 				<strong className="mb-1">Layout</strong>
 				{data.layout.map((item, index) => {
@@ -410,7 +410,7 @@ const AIPracticesGrid: React.FC<AIPracticesGridProps> = ({
 					<div
 						key={item}
 						className={cn(
-							'bg-linear-to-b group relative flex h-56 items-center justify-center from-white to-gray-100 text-center first-of-type:border-l first-of-type:border-t dark:from-gray-900  dark:to-gray-950',
+							'bg-linear-to-b group relative flex h-56 items-center justify-center from-white to-gray-100 text-center first-of-type:border-l first-of-type:border-t dark:from-gray-900 dark:to-gray-950',
 						)}
 					>
 						<PatternElement

@@ -218,7 +218,7 @@ async function PostListActions({
 				</ul>
 			) : null}
 			{unlisted && unlisted.length > 0 ? (
-				<ul className=" flex flex-col pt-4 lg:px-5">
+				<ul className="flex flex-col pt-4 lg:px-5">
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
@@ -245,7 +245,7 @@ async function PostListActions({
 											<Link
 												key={postList.id}
 												href={`/lists/${postList?.fields.slug}/edit`}
-												className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+												className="text-muted-foreground hover:text-primary flex items-center gap-1"
 											>
 												<ListOrderedIcon className="w-3" />
 												{postList && postList.fields.title}

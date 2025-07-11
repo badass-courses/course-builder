@@ -76,7 +76,7 @@ export const CategoryField = ({
 			>
 				{categories.map((category) => (
 					<div
-						className="radix-state-checked:*:bg-border hover:radix-state-unchecked:*:bg-border/50 radix-state-checked:*:shadow-inner relative h-10 first-of-type:rounded-l-md last-of-type:rounded-r-md [&_svg]:absolute  [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
+						className="radix-state-checked:*:bg-border hover:radix-state-unchecked:*:bg-border/50 radix-state-checked:*:shadow-inner relative h-10 first-of-type:rounded-l-md last-of-type:rounded-r-md [&_svg]:absolute [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
 						key={category}
 					>
 						<RadioGroupItem

@@ -30,7 +30,7 @@ export default async function EventIndexPage() {
 	return (
 		<>
 			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-				<div className=" max-w-(--breakpoint-md) w-full border-b px-5 py-16 md:border-dashed">
+				<div className="max-w-(--breakpoint-md) w-full border-b px-5 py-16 md:border-dashed">
 					<h1 className="font-heading text-center text-5xl font-bold">
 						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 							Live

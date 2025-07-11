@@ -62,7 +62,7 @@ export const PricingWidget: React.FC<{
 						<Pricing.Name>{product.name}</Pricing.Name>
 					</Link>
 					<div className="bg-muted mt-3 flex h-12 w-full items-center justify-center gap-2 rounded px-5 text-base font-medium">
-						<CheckCircle2Icon className="h-4 w-4 " />
+						<CheckCircle2Icon className="h-4 w-4" />
 						Purchased
 					</div>
 					<Pricing.BuyMoreSeats className="pt-5">

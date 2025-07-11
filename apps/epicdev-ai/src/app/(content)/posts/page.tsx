@@ -83,11 +83,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List | Event)[] }) => {
 			{secondary.length > 2 && (
 				<div className="grid grid-cols-1 md:grid-cols-2">
 					{secondary.slice(2).map((post, i) => (
-						<PostTeaser
-							key={post.fields.slug}
-							post={post}
-							className=" w-full"
-						/>
+						<PostTeaser key={post.fields.slug} post={post} className="w-full" />
 					))}
 				</div>
 			)}

@@ -47,7 +47,7 @@
 [data-video-overlay='blocked'] {
 	@apply relative flex w-full flex-col items-center justify-center gap-5 bg-gray-900 py-5 text-white sm:gap-10 xl:aspect-video xl:flex-row;
 	[data-thumbnail] {
-		@apply object-contain object-top opacity-25 blur-xs contrast-125;
+		@apply blur-xs object-contain object-top opacity-25 contrast-125;
 	}
 	[data-subscribe] {
 		@apply z-20 flex h-full w-full max-w-sm flex-shrink-0 flex-col items-center justify-center p-5 pb-10 text-center text-lg leading-relaxed sm:p-5 sm:pb-16;
@@ -144,7 +144,7 @@
 		@apply flex items-center justify-center;
 	}
 	[data-image] {
-		@apply opacity-50 blur-xs contrast-125;
+		@apply blur-xs opacity-50 contrast-125;
 	}
 	svg {
 		@apply absolute text-white;

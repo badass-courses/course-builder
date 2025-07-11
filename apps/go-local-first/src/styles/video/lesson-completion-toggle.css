@@ -30,7 +30,7 @@
 		button {
 			@apply radix-state-checked:border-cyan-400 radix-state-checked:bg-cyan-500 relative h-5 w-10 rounded-full border border-gray-700/50 bg-gray-800 shadow-md shadow-black/50;
 			span {
-				@apply radix-state-checked:translate-x-5 radix-state-checked:bg-white block h-4 w-4 translate-x-0.5 rounded-full bg-gray-200 shadow-xs shadow-black/50 transition-all ease-out;
+				@apply radix-state-checked:translate-x-5 radix-state-checked:bg-white shadow-xs block h-4 w-4 translate-x-0.5 rounded-full bg-gray-200 shadow-black/50 transition-all ease-out;
 			}
 		}
 		button[disabled] {

@@ -14,7 +14,7 @@ export default async function ConfirmSubscriptionPage() {
 		<LayoutClient withContainer>
 			<main className="min-h-(--pane-layout-height) container flex flex-grow flex-col items-center justify-center px-5 py-24">
 				<div className="flex w-full max-w-4xl flex-col items-center justify-center text-center font-light">
-					<div className="w-full	max-w-[124px] sm:max-w-[164px] md:max-w-[204px]">
+					<div className="w-full max-w-[124px] sm:max-w-[164px] md:max-w-[204px]">
 						<svg
 							width="100%"
 							height="auto"

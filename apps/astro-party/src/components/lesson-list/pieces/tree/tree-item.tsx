@@ -366,7 +366,7 @@ const TreeItem = memo(function TreeItem({
 				>
 					<span
 						className={cn(
-							'flex flex-col items-center justify-between gap-3 bg-transparent px-3  sm:flex-row',
+							'flex flex-col items-center justify-between gap-3 bg-transparent px-3 sm:flex-row',
 							{
 								'opacity-40': state === 'dragging',
 								transparent: state === 'parent-of-instruction',

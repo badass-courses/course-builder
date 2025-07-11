@@ -125,7 +125,7 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 								</th>
 							</tr>
 						</thead>
-						<tbody className="divide-border divide-y ">
+						<tbody className="divide-border divide-y">
 							{filteredTags().map((tag) => (
 								<tr
 									key={tag.id}

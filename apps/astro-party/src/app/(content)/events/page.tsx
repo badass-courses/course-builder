@@ -32,7 +32,7 @@ export default async function EventIndexPage() {
 	return (
 		<>
 			<Layout>
-				<div className=" max-w-(--breakpoint-md) mx-auto w-full pb-10 pt-16">
+				<div className="max-w-(--breakpoint-md) mx-auto w-full pb-10 pt-16">
 					<h1 className="font-heading fluid-3xl text-center font-bold">
 						Astro Live Events & Workshops
 					</h1>
