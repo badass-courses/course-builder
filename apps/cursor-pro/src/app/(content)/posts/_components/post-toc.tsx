@@ -6,7 +6,8 @@ import { useActiveHeadingContext } from '@/hooks/use-active-heading'
 import { extractMarkdownHeadings } from '@/utils/extract-markdown-headings'
 import { motion } from 'framer-motion'
 import { AlignLeft, ChevronRight } from 'lucide-react'
-import { useInteractOutside } from 'react-aria'
+
+// import { useInteractOutside } from 'react-aria'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -87,10 +88,10 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	const [isOpen, setIsOpen] = React.useState(false)
 	const containerRef = React.useRef<HTMLElement>(null)
 
-	useInteractOutside({
-		ref: containerRef,
-		onInteractOutside: () => setIsOpen(false),
-	})
+	// useInteractOutside({
+	// 	ref: containerRef,
+	// 	onInteractOutside: () => setIsOpen(false),
+	// })
 
 	const flattenedData = data
 		.flatMap((item) => [item, ...(item.items || [])])

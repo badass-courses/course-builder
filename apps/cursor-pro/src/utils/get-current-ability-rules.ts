@@ -118,11 +118,13 @@ export async function getAbilityForResource(
 	const canView = ability.can('read', 'Content')
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+	const canCreate = ability.can('create', 'Content')
 
 	return {
 		canView,
 		canInviteTeam,
 		isRegionRestricted,
+		canCreate,
 	}
 }
 

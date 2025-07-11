@@ -14,11 +14,17 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import {
+	calendarSync,
+	handleRefundAndRemoveFromCalendar,
+} from './functions/calendar-sync'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
+import { postEventPurchase } from './functions/post-event-purchase'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { unlistPastEvents } from './functions/unlist-past-events'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
@@ -49,5 +55,9 @@ export const inngestConfig = {
 		videoResourceAttached,
 		videoResourceDetached,
 		sendWelcomeEmail,
+		calendarSync,
+		postEventPurchase,
+		handleRefundAndRemoveFromCalendar,
+		unlistPastEvents,
 	],
 }
