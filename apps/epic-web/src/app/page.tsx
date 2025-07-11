@@ -29,7 +29,7 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
-import { CreatePostModal } from './admin/posts/_components/create-post-modal'
+import { CreatePostModal } from './posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -124,7 +124,6 @@ const Home = async (props: Props) => {
 	} else if (role === 'admin') {
 		const adminLinks = [
 			{ href: '/admin/pages', label: 'Admin Pages' },
-			{ href: '/admin/posts', label: 'Admin Posts' },
 			{ href: '/admin/tips', label: 'Admin Tips' },
 		]
 

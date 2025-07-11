@@ -2,8 +2,8 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { PostPlayer } from '@/app/admin/posts/_components/post-player'
-import PostToC from '@/app/admin/posts/_components/post-toc'
+import { PostPlayer } from '@/app/posts/_components/post-player'
+import PostToC from '@/app/posts/_components/post-toc'
 import { Contributor } from '@/components/contributor'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 // import { getPricingProps } from '@/lib/pricing-query'
@@ -18,7 +18,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { ChevronLeft, Github } from 'lucide-react'
+import { ChevronLeft, Github, Pencil } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
@@ -69,7 +69,7 @@ export default async function PostPage(props: {
 					<div className="relative z-10 mx-auto flex w-full items-center justify-center pb-5">
 						{!list ? (
 							<Link
-								href="/admin/posts"
+								href="/posts"
 								className="hover:text-primary mb-3 inline-flex items-center text-sm font-medium transition ease-in-out"
 							>
 								<ChevronLeft className="mr-1 size-3" /> All Posts
@@ -286,8 +286,12 @@ async function PostActionBar({ post }: { post: Post | null }) {
 		<>
 			{post && ability.can('update', 'Content') ? (
 				<Button asChild size="sm" className="absolute right-0 top-0 z-20">
-					<Link href={`/admin/posts/${post.fields?.slug || post.id}/edit`}>
-						Edit
+					<Link
+						href={`/posts/${post.fields?.slug || post.id}/edit`}
+						className="flex items-center gap-1 text-sm"
+					>
+						<Pencil className="h-3 w-3" />
+						edit
 					</Link>
 				</Button>
 			) : null}

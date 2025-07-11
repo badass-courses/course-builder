@@ -7,7 +7,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { Lightbulb } from 'lucide-react'
 
-import { CreatePostModal } from '../posts/_components/create-post-modal'
+import { CreatePostModal } from '../../posts/_components/create-post-modal'
 
 /**
  * Admin page for managing tips.
@@ -66,7 +66,7 @@ const TipTeaser: React.FC<{
 	return (
 		<li className={cn('', className)}>
 			<Link
-				href={`/admin/posts/${tip.fields.slug}/edit`}
+				href={`/posts/${tip.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>

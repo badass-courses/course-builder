@@ -7,7 +7,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { FileText } from 'lucide-react'
 
-import { CreatePostModal } from '../../admin/posts/_components/create-post-modal'
+import { CreatePostModal } from '../../posts/_components/create-post-modal'
 
 /**
  * Page for a contributor to see and manage their posts.
@@ -53,7 +53,7 @@ const PostTeaser: React.FC<{
 	return (
 		<li className={cn('flex w-full items-center py-4', className)}>
 			<Link
-				href={`/admin/posts/${article.fields.slug}/edit`}
+				href={`/posts/${article.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>
