@@ -1100,7 +1100,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -1443,7 +1443,7 @@ importers:
         version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.0.0)
       mysql2:
         specifier: ^3.6.1
         version: 3.14.0
@@ -1768,7 +1768,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.0.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.0.0)
@@ -3655,13 +3655,13 @@ importers:
         version: 3.3.1
       tailwind-scrollbar:
         specifier: ^4.0.2
-        version: 4.0.2(react@19.0.0)(tailwindcss@3.4.17)
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
         specifier: ^4.0.2
-        version: 4.0.2(tailwindcss@3.4.17)
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -3673,7 +3673,7 @@ importers:
         version: 2.9.0(@babel/runtime@7.27.0)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3687,9 +3687,12 @@ importers:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
         specifier: ^0.5.16
-        version: 0.5.16(tailwindcss@3.4.17)
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/node':
         specifier: ^20.12.5
         version: 20.17.30
@@ -3730,11 +3733,11 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -23967,7 +23970,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.0.7)(mysql2@3.14.0)(pg@8.14.1)(react@19.0.0)
+      drizzle-orm: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.0.7)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.0.0)
       zod: 3.24.2
     dev: false
 
@@ -34328,18 +34331,6 @@ packages:
     dependencies:
       tailwindcss: 3.4.17(ts-node@10.9.2)
 
-  /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
-    engines: {node: '>=12.13.0'}
-    peerDependencies:
-      tailwindcss: 4.x
-    dependencies:
-      prism-react-renderer: 2.4.1(react@19.0.0)
-      tailwindcss: 3.4.17(ts-node@10.9.2)
-    transitivePeerDependencies:
-      - react
-    dev: false
-
   /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@4.1.11):
     resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
     engines: {node: '>=12.13.0'}
@@ -34377,15 +34368,6 @@ packages:
 
   /tailwindcss-radix@2.9.0:
     resolution: {integrity: sha512-N49SnciSeRgLC+VK+Fu5VULNJIvJUvN7tUKF1kEHPXrS76WAlwrSVthCbJ9NUw0Cj/ptxs73pdVEdosomAN5Lg==}
-    dev: false
-
-  /tailwindcss-radix@4.0.2(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      tailwindcss: ^3.0 || ^4.0
-    dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
     dev: false
 
   /tailwindcss-radix@4.0.2(tailwindcss@4.1.11):

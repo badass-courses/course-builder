@@ -187,7 +187,7 @@ export default function TranscriptEditorPage({
 
 	return (
 		<div className="min-h-screen bg-gray-50">
-			<header className="bg-white shadow-sm">
+			<header className="shadow-xs bg-white">
 				<div className="mx-auto max-w-4xl px-6 py-4">
 					<div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
 						<Link href={`/${slug}`}>View</Link>

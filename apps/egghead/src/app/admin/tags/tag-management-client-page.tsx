@@ -103,7 +103,7 @@ export default function TagManagement({
 					</TagCrudDialog>
 				</div>
 
-				<div className="hidden overflow-hidden rounded-lg shadow sm:block">
+				<div className="hidden overflow-hidden rounded-lg shadow-sm sm:block">
 					{/* Desktop view: Table */}
 					<table className="min-w-full divide-y divide-gray-600">
 						<thead className="">
@@ -182,7 +182,7 @@ export default function TagManagement({
 				<div className="space-y-4 sm:hidden">
 					{/* Mobile view: Card-like layout */}
 					{filteredTags().map((tag) => (
-						<div key={tag.id} className="overflow-hidden rounded-lg shadow">
+						<div key={tag.id} className="overflow-hidden rounded-lg shadow-sm">
 							<div className="border-b border-gray-200 px-4 py-5 sm:px-6">
 								<div className="flex items-center justify-between">
 									<h3 className="text-lg font-medium leading-6 text-gray-900">

@@ -17,7 +17,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						{hit.title}
 					</span>
 				</div>
-				<div className="text-muted-foreground flex flex-shrink-0 items-center gap-3 pl-7 text-sm opacity-75 sm:pl-0">
+				<div className="text-muted-foreground flex shrink-0 items-center gap-3 pl-7 text-sm opacity-75 sm:pl-0">
 					<span>{hit.instructor_name}</span>
 					<span>{hit.type}</span>
 				</div>
