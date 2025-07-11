@@ -1,7 +1,7 @@
 body {
 	[data-default] {
 		[data-pricing-container] {
-			@apply mx-auto flex w-full max-w-screen-lg flex-wrap items-start justify-center gap-5;
+			@apply mx-auto flex w-full max-w-(--breakpoint-lg) flex-wrap items-start justify-center gap-5;
 			#main-pricing {
 				@apply w-full max-w-sm;
 				[data-pricing-product] {
@@ -91,13 +91,13 @@ body {
 							@apply mb-0 mt-0 text-center leading-relaxed;
 						}
 						[data-unavailable] {
-							@apply !pt-0 text-blue-600 dark:text-yellow-300;
+							@apply pt-0! text-blue-600 dark:text-yellow-300;
 						}
 						[data-loading-price] {
 							@apply flex h-12 items-center justify-center py-6;
 						}
 						button[type='submit'] {
-							@apply flex w-full items-center justify-center rounded-md bg-gradient-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-600 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
+							@apply flex w-full items-center justify-center rounded-md bg-linear-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-600 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
 
 							span {
 								@apply relative z-10;
@@ -136,7 +136,7 @@ body {
 											@apply w-full;
 										}
 										[data-price-container='loading'] {
-											@apply flex h-[56px] items-center justify-center !important;
+											@apply flex! h-[56px]! items-center! justify-center!;
 										}
 										button[type='submit'] {
 											@apply bg-primary text-primary-foreground w-full border-none py-4 text-lg no-underline;
@@ -217,7 +217,7 @@ body {
 									button[role='switch'] {
 										@apply radix-state-checked:bg-gray-200 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900;
 										span {
-											@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-sm shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
+											@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-xs shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
 										}
 									}
 								}
@@ -238,7 +238,7 @@ body {
 								}
 							}
 							[data-pricing-product-checkout-button] {
-								@apply flex w-full items-center justify-center rounded-md bg-gradient-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-700 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
+								@apply flex w-full items-center justify-center rounded-md bg-linear-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-700 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
 
 								span {
 									@apply relative z-10;
@@ -333,10 +333,10 @@ body {
 							[data-limited-bonuses] {
 								@apply bg-background mb-5 rounded-md p-5 shadow-inner dark:shadow-none;
 								ul {
-									@apply pb-0 !important;
+									@apply pb-0!;
 								}
 								strong {
-									@apply pb-5 text-center before:content-['⭐️'] !important;
+									@apply pb-5! text-center! before:content-['⭐️']!;
 								}
 								[data-description] {
 									@apply mt-1;
@@ -390,7 +390,7 @@ body {
 									}
 
 									[data-description] {
-										@apply prose prose-sm dark:prose-invert prose-p:!inline-block prose-p:text-base prose-p:font-normal prose-p:leading-tight prose-p:opacity-90 prose-p:first-of-type:my-0 prose-a:inline-block;
+										@apply prose prose-sm dark:prose-invert prose-p:inline-block! prose-p:text-base prose-p:font-normal prose-p:leading-tight prose-p:opacity-90 first-of-type:prose-p:my-0 prose-a:inline-block;
 									}
 
 									[data-state='draft'] {
@@ -417,7 +417,7 @@ body {
 							}
 
 							[data-contents] {
-								@apply relative mx-[1px] mb-[1px] mt-3 flex w-full items-center justify-between rounded-b-lg bg-gray-50 px-5 py-3 text-sm font-medium text-gray-700;
+								@apply relative mx-px mb-px mt-3 flex w-full items-center justify-between rounded-b-lg bg-gray-50 px-5 py-3 text-sm font-medium text-gray-700;
 								span {
 									@apply absolute;
 								}
@@ -483,7 +483,7 @@ body {
 							@apply font-heading mt-1 pl-0.5 align-sub text-base opacity-60;
 						}
 						[data-price-discounted] {
-							@apply mt-1.5 flex flex-col items-center pl-3 font-sans text-lg !font-light;
+							@apply mt-1.5 flex flex-col items-center pl-3 font-sans text-lg font-light!;
 
 							[data-full-price] {
 								@apply before:bg-background relative flex text-xl leading-none  text-gray-500 before:absolute before:left-0 before:top-1/2 before:h-0.5 before:w-full dark:text-gray-400;
@@ -509,7 +509,7 @@ body {
 				[data-pricing-product-sale-countdown] {
 					@apply mt-5 flex w-full flex-col bg-gray-100 px-3 py-5 text-center dark:bg-gray-900;
 					[data-grid] {
-						@apply mx-auto grid max-w-[300px] grid-cols-4 items-center justify-center gap-3 tabular-nums tracking-tight !important;
+						@apply mx-auto! grid! max-w-[300px]! grid-cols-4! items-center! justify-center! gap-3! tabular-nums! tracking-tight!;
 					}
 					[data-title] {
 						@apply pb-4 text-sm font-medium sm:text-base;
@@ -602,7 +602,7 @@ body {
 								button[role='switch'] {
 									@apply hover:radix-state-checked:bg-gray-300/50 dark:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30  transition hover:bg-gray-300/50 dark:border-white/5 dark:bg-gray-800 dark:shadow-black/20;
 									span {
-										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-primary group-hover:radix-state-checked:bg-indigo-400 bg-foreground dark:bg-foreground block h-[18px] w-[18px] translate-x-[2px] rounded-full shadow-sm shadow-black/20 transition-all will-change-transform group-hover:bg-gray-300;
+										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-primary radix-state-checked:group-hover:bg-indigo-400 bg-foreground dark:bg-foreground block h-[18px] w-[18px] translate-x-[2px] rounded-full shadow-xs shadow-black/20 transition-all will-change-transform group-hover:bg-gray-300;
 									}
 								}
 							}
@@ -770,7 +770,7 @@ body {
 							button[role='switch'] {
 								@apply radix-state-checked:bg-gray-200 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50;
 								span {
-									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-sm shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
+									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-xs shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
 								}
 							}
 						}
@@ -933,7 +933,7 @@ body {
 							button[role='switch'] {
 								@apply radix-state-checked:bg-gray-800 hover:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-800 shadow-md shadow-black/30 transition hover:bg-gray-700;
 								span {
-									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-400 group-hover:radix-state-checked:bg-blue-300 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-300 shadow-sm shadow-black/50 transition-all will-change-transform group-hover:bg-gray-300;
+									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-400 radix-state-checked:group-hover:bg-blue-300 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-300 shadow-xs shadow-black/50 transition-all will-change-transform group-hover:bg-gray-300;
 								}
 							}
 						}

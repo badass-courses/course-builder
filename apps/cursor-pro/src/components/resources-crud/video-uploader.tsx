@@ -28,7 +28,7 @@ export function VideoUploader({
 				onClientUploadComplete={async (response: any) => {
 					if (response[0].name) setVideoResourceId(response[0].name)
 				}}
-				className="[&_label]:text-primary [&_label]:hover:text-primary border-border"
+				className="[&_label]:text-primary hover:[&_label]:text-primary border-border"
 				onUploadError={(error: Error) => {
 					// Do something with the error.
 					console.log(`ERROR! ${error.message}`)
