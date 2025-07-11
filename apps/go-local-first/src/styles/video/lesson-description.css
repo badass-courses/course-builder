@@ -3,7 +3,7 @@
 		@apply prose relative max-w-none;
 	}
 	[data-content-visible='false'] {
-		@apply after:absolute after:bottom-0 after:left-0 after:h-1/2 after:w-full after:bg-gradient-to-b after:from-transparent after:via-white after:to-white after:content-[""];
+		@apply after:absolute after:bottom-0 after:left-0 after:h-1/2 after:w-full after:bg-linear-to-b after:from-transparent after:via-white after:to-white after:content-[""];
 	}
 	div[role='status'] {
 		@apply flex w-full -translate-y-5 animate-pulse flex-col gap-3;

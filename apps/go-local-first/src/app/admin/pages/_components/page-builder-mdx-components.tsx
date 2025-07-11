@@ -32,7 +32,7 @@ const Section = ({
 	return (
 		<section
 			className={cn(
-				'bg-foreground/5 prose-headings:first-of-type:mt-4 -mx-5 px-5 py-5',
+				'bg-foreground/5 first-of-type:prose-headings:mt-4 -mx-5 px-5 py-5',
 				props.className,
 			)}
 			{...props}
@@ -87,7 +87,7 @@ const Instructor = ({ className }: { className?: string }) => {
 	return (
 		<section
 			className={cn(
-				'not-prose relative mx-auto my-8 flex w-full max-w-screen-md items-center gap-5 sm:flex-row',
+				'not-prose max-w-(--breakpoint-md) relative mx-auto my-8 flex w-full items-center gap-5 sm:flex-row',
 				className,
 			)}
 		>

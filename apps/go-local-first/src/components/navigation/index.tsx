@@ -48,7 +48,7 @@ const Navigation = ({ className }: { className?: string }) => {
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between bg-transparent print:hidden',
+				'h-(--nav-height) relative z-50 flex w-full items-stretch justify-between bg-transparent print:hidden',
 				className,
 				{
 					// 'sticky top-0': !params.lesson,
@@ -72,7 +72,7 @@ const Navigation = ({ className }: { className?: string }) => {
 						<Link
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
-							className="font-heading flex h-[var(--nav-height)] w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
+							className="font-heading h-(--nav-height) flex w-full items-center justify-center gap-2 pr-4 text-lg font-semibold leading-none transition"
 						>
 							<LogoMark className="w-16" />
 						</Link>
@@ -172,7 +172,7 @@ const MobileNav = ({
 				)}
 			</Button>
 			{isMobileMenuOpen && (
-				<nav className="bg-background absolute left-0 top-[var(--nav-height)] z-10 w-full border-b px-2 py-3">
+				<nav className="bg-background top-(--nav-height) absolute left-0 z-10 w-full border-b px-2 py-3">
 					{links.length > 0 &&
 						links.map((link) => {
 							return (

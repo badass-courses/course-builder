@@ -64,7 +64,7 @@ export default async function PostsIndexPage() {
 
 	return (
 		<main className="container flex flex-grow flex-col px-5 py-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col sm:flex-row">
 				<div className="flex w-full flex-col items-center">
 					{latestPost ? null : (
 						<h1 className="flex w-full py-16 text-center text-2xl">

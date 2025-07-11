@@ -86,7 +86,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 													label="Quantity"
 												/>
 												<Pricing.Price className="scale-75" />
-												<Pricing.BuyButton className="via-primary mt-3 h-10 bg-gradient-to-b from-blue-500 to-blue-700 text-sm shadow">
+												<Pricing.BuyButton className="via-primary bg-linear-to-b mt-3 h-10 from-blue-500 to-blue-700 text-sm shadow-sm">
 													Buy Additional Seats
 												</Pricing.BuyButton>
 											</Pricing.BuyMoreSeats>
