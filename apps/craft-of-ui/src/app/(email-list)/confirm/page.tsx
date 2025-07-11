@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function ConfirmSubscriptionPage() {
 	return (
 		<LayoutClient withContainer>
-			<main className="container flex min-h-[var(--pane-layout-height)] flex-grow flex-col items-center justify-center px-5 py-24">
+			<main className="min-h-(--pane-layout-height) container flex flex-grow flex-col items-center justify-center px-5 py-24">
 				<div className="flex w-full max-w-4xl flex-col items-center justify-center text-center font-light">
 					<div className="w-full	max-w-[124px] sm:max-w-[164px] md:max-w-[204px]">
 						<svg
@@ -21,7 +21,7 @@ export default async function ConfirmSubscriptionPage() {
 							viewBox="0 0 446 895"
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
-							className="aspect-[446/895]"
+							className="aspect-446/895"
 							aria-hidden="true"
 						>
 							<path

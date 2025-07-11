@@ -34,16 +34,16 @@ export const Share = ({
 	return (
 		<div
 			className={cn(
-				'hover:[&_a]:bg-foreground/5 hover:[&_button]:bg-foreground/5 relative flex items-stretch rounded border [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:border-r [&_a]:p-3 first-of-type:[&_a]:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
+				'[&_a]:hover:bg-foreground/5 [&_button]:hover:bg-foreground/5 relative flex items-stretch rounded border [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:border-r [&_a]:p-3 [&_a]:first-of-type:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
 				className,
 			)}
 		>
 			<div
-				className="via-foreground/10 absolute -top-px left-0 h-px w-full bg-gradient-to-r from-transparent to-transparent"
+				className="via-foreground/10 bg-linear-to-r absolute -top-px left-0 h-px w-full from-transparent to-transparent"
 				aria-hidden="true"
 			/>
 			<div
-				className="via-foreground/10 absolute -bottom-px left-0 h-px w-2/3 bg-gradient-to-r from-transparent to-transparent"
+				className="via-foreground/10 bg-linear-to-r absolute -bottom-px left-0 h-px w-2/3 from-transparent to-transparent"
 				aria-hidden="true"
 			/>
 			<a
