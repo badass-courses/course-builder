@@ -52,7 +52,7 @@ export const UserSchema = userSchema
 			organizationRoles: z
 				.array(
 					z.object({
-						organizationId: z.string().nullish(),
+						organizationId: z.string(),
 						name: z.string(),
 					}),
 				)
