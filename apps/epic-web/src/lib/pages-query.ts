@@ -128,22 +128,6 @@ export async function getPage(slugOrId: string) {
 			),
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							tags: {
-								with: {
-									tag: true,
-								},
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
 	})
 
 	const pageParsed = PageSchema.safeParse(page)

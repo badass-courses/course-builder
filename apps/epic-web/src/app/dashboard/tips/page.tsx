@@ -1,23 +1,28 @@
 import * as React from 'react'
+import { revalidateTag } from 'next/cache'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import type { Post } from '@/lib/posts'
 import { getAllTipsForUser } from '@/lib/posts-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { Lightbulb } from 'lucide-react'
 
-import { CreatePostModal } from '../../admin/posts/_components/create-post-modal'
+import { CreatePostModal } from '../../posts/_components/create-post-modal'
 
 /**
  * Page for a contributor to see and manage their tips.
  */
-export default async function ContributorTipsPage() {
-	const { session, ability } = await getServerAuthSession()
+export default async function TipsIndexPage() {
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	if (!user) {
 		redirect('/login')
+	}
+
+	if (ability.cannot('create', 'Content')) {
+		notFound()
 	}
 
 	const tips = await getAllTipsForUser(user.id)
@@ -58,7 +63,7 @@ const TipTeaser: React.FC<{
 	return (
 		<li className={cn('flex w-full items-center py-4', className)}>
 			<Link
-				href={`/admin/posts/${tip.fields.slug}/edit`}
+				href={`/posts/${tip.fields.slug}/edit`}
 				passHref
 				className="fluid-lg flex w-full items-center gap-3 py-5"
 			>

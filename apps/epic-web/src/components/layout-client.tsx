@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { User } from '@/ability'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -15,10 +16,12 @@ export default function LayoutClient({
 	withContainer = false,
 	highlightedResource,
 	className,
+	user,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
+	user?: User | null
 	highlightedResource?: {
 		path: string
 		title: string
@@ -37,6 +40,7 @@ export default function LayoutClient({
 			<Navigation
 				highlightedResource={highlightedResource}
 				withContainer={withContainer}
+				user={user}
 			/>
 			{children}
 			<Footer />

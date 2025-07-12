@@ -5,7 +5,7 @@ import { getResourcePath } from '@/utils/resource-paths'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
-import { CreatePostModal } from '../admin/posts/_components/create-post-modal'
+import { CreatePostModal } from '../posts/_components/create-post-modal'
 
 /**
  * Client component wrapper for creating tips and articles with proper redirect handling.

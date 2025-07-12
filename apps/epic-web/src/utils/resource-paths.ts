@@ -57,15 +57,15 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 		},
 	},
 	post: {
-		edit: (slug) => `/admin/posts/${slug}/edit`,
+		edit: (slug) => `/posts/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
 	article: {
-		edit: (slug) => `/admin/posts/${slug}/edit`,
+		edit: (slug) => `/posts/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
 	tip: {
-		edit: (slug) => `/admin/posts/${slug}/edit`,
+		edit: (slug) => `/posts/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
 	workshop: {

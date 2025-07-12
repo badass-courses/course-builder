@@ -216,7 +216,7 @@ export const PostMetadataFormFields: React.FC<{
 					)}
 				/>
 			)}
-			<TagField resource={post} showEditButton />
+			<TagField resource={post} showEditButton isAdmin={isAdmin} />
 			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}
