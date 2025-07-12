@@ -12,7 +12,7 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
-import { Logo } from '../brand/logo'
+import { Logo, LogoMark } from '../brand/logo'
 import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
@@ -52,7 +52,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] w-full items-center justify-between print:hidden',
+				'sticky top-0 z-50 flex h-[var(--nav-height)] items-center justify-between px-[var(--gutter)] print:hidden',
 				{
 					'px-5': !withContainer,
 				},
@@ -70,20 +70,14 @@ const Navigation = ({
 					// 	router.push('/brand')
 					// }}
 				>
-					<Button
-						asChild
-						variant="ghost"
-						className="h-10 p-0 text-lg hover:bg-transparent"
+					<Link
+						prefetch
+						tabIndex={isRoot ? -1 : 0}
+						href="/"
+						className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
 					>
-						<Link
-							prefetch
-							tabIndex={isRoot ? -1 : 0}
-							href="/"
-							className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
-						>
-							<Logo className="[&_svg]:hover:text-primary origin-left [&_svg]:transition" />
-						</Link>
-					</Button>
+						<LogoMark className="w-7 -translate-x-[1px] text-[canvasText] opacity-50 hover:opacity-100" />
+					</Link>
 				</span>
 				{links.length > 0 && (
 					<nav
