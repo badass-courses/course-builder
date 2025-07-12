@@ -26,7 +26,7 @@ export default async function ProfilePage(props: Props) {
 	) {
 		return (
 			<Layout>
-				<main className="mx-auto w-full max-w-screen-sm">
+				<main className="max-w-(--breakpoint-sm) mx-auto w-full">
 					<EditProfileForm user={fullUser} />
 				</main>
 			</Layout>

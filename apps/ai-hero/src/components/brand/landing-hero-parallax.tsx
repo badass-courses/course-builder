@@ -113,7 +113,7 @@ export const LandingHeroParallax = () => {
 		<div
 			ref={scrollAreaRef}
 			className={cn(
-				'absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95] lg:aspect-[1920/1080]',
+				'lg:aspect-1920/1080 absolute bottom-0 left-0 aspect-square h-auto w-full overflow-hidden bg-[#AD9F95]',
 			)}
 		>
 			{!allImagesLoaded && (

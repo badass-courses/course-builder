@@ -45,7 +45,7 @@ export default async function TopicPage({
 			<Comp
 				href={getResourcePath(event.type, event.fields.slug, 'view')}
 				key={event.id}
-				className="bg-card/50 hover:bg-card/80 flex flex-col rounded-lg border p-4 shadow-xl backdrop-blur-sm transition ease-in-out"
+				className="bg-card/50 hover:bg-card/80 backdrop-blur-xs flex flex-col rounded-lg border p-4 shadow-xl transition ease-in-out"
 			>
 				<div className="flex items-center justify-between">
 					{event.fields?.startsAt && (

@@ -54,7 +54,7 @@ export function EditResourcesToolPanel({
 						id="edit-resources-tool-panel"
 						order={4}
 						className={
-							'h-[var(--pane-layout-height)] min-h-[var(--pane-layout-height)] md:min-h-full'
+							'h-(--pane-layout-height) min-h-(--pane-layout-height) md:min-h-full'
 						}
 						minSize={15}
 						defaultSize={25}

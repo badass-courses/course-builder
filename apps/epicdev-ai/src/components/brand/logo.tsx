@@ -53,7 +53,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 					</span>
 				)}
 			</span>
-			{/* <span className="text-background bg-primary relative ml-0.5 translate-y-[-1px] rotate-[-2deg] rounded px-1 py-0.5 pl-0.5">
+			{/* <span className="text-background bg-primary relative ml-0.5 -translate-y-px -rotate-2 rounded px-1 py-0.5 pl-0.5">
 				Ai
 			</span> */}
 			{/* <span className="ml-0.5">Pro</span> */}

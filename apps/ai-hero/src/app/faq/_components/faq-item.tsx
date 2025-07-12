@@ -25,7 +25,7 @@ export const FaqItem: React.FC<{
 				)}
 			>
 				<AccordionHeader className="">
-					<AccordionTrigger className="[&_[data-chevron]]:text-foreground px-3 py-3 text-left text-base font-semibold sm:px-5 sm:py-3 sm:text-lg">
+					<AccordionTrigger className="**:data-chevron:text-foreground px-3 py-3 text-left text-base font-semibold sm:px-5 sm:py-3 sm:text-lg">
 						{question}
 					</AccordionTrigger>
 				</AccordionHeader>

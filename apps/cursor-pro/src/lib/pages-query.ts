@@ -5,7 +5,9 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import { NewPage, Page, PageSchema } from '@/lib/pages'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
+import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
@@ -73,36 +75,104 @@ export async function createPage(input: NewPage) {
 	return page
 }
 
-export async function updatePage(input: Page) {
+export async function updatePage(
+	input: Page,
+	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+	revalidate = true,
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
-	if (!user || !ability.can('update', 'Content')) {
-		throw new Error('Unauthorized')
+
+	if (!input.id) {
+		throw new Error('Page id is required')
 	}
 
 	const currentPage = await getPage(input.id)
 
 	if (!currentPage) {
+		await log.error('page.update.notfound', {
+			pageId: input.id,
+			userId: user?.id,
+			action,
+		})
 		return createPage(input)
 	}
 
-	let pageSlug = input.fields.slug
-
-	if (input.fields.title !== currentPage?.fields.title) {
-		const splitSlug = currentPage?.fields.slug.split('~') || ['', guid()]
-		pageSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+	if (!user || !ability.can(action, subject('Content', currentPage))) {
+		await log.error('page.update.unauthorized', {
+			pageId: input.id,
+			userId: user?.id,
+			action,
+		})
+		throw new Error('Unauthorized')
 	}
 
-	return courseBuilderAdapter.updateContentResourceFields({
-		id: currentPage.id,
-		fields: {
-			...currentPage.fields,
-			...input.fields,
-			slug: pageSlug,
-		},
-	})
-}
+	let pageSlug = currentPage.fields.slug
 
+	if (
+		input.fields?.title !== currentPage.fields.title &&
+		input.fields?.slug?.includes('~')
+	) {
+		const splitSlug = currentPage.fields.slug.split('~') || ['', guid()]
+		pageSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('page.update.slug.changed', {
+			pageId: input.id,
+			oldSlug: currentPage.fields.slug,
+			newSlug: pageSlug,
+			userId: user.id,
+		})
+	} else if (input?.fields?.slug !== currentPage.fields.slug) {
+		pageSlug = input?.fields?.slug || ''
+		await log.info('page.update.slug.manual', {
+			pageId: input.id,
+			oldSlug: currentPage.fields.slug,
+			newSlug: pageSlug,
+			userId: user.id,
+		})
+	}
+
+	try {
+		const updatedPage = await courseBuilderAdapter.updateContentResourceFields({
+			id: currentPage.id,
+			fields: {
+				...currentPage.fields,
+				...input.fields,
+				slug: pageSlug,
+			},
+		})
+
+		if (!updatedPage) {
+			await log.error('page.update.failed', {
+				pageId: input.id,
+				error: 'Failed to fetch updated page',
+				action,
+				userId: user.id,
+			})
+			console.error(`Failed to fetch updated page: ${currentPage.id}`)
+			return null
+		}
+
+		await log.info('page.update.success', {
+			pageId: input.id,
+			action,
+			userId: user.id,
+			changes: Object.keys(input.fields || {}),
+		})
+
+		revalidate && revalidateTag('pages')
+
+		return updatedPage
+	} catch (error) {
+		await log.error('page.update.failed', {
+			pageId: input.id,
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			action,
+			userId: user.id,
+		})
+		throw error
+	}
+}
 export async function getPage(slugOrId: string) {
 	const page = await db.query.contentResource.findFirst({
 		where: and(
@@ -137,4 +207,32 @@ export async function getPage(slugOrId: string) {
 	}
 
 	return pageParsed.data
+}
+
+function getErrorMessage(error: unknown) {
+	if (isErrorWithMessage(error)) return error.message
+	return String(error)
+}
+
+function getErrorStack(error: unknown) {
+	if (isErrorWithStack(error)) return error.stack
+	return undefined
+}
+
+function isErrorWithMessage(error: unknown): error is { message: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'message' in error &&
+		typeof (error as { message: string }).message === 'string'
+	)
+}
+
+function isErrorWithStack(error: unknown): error is { stack: string } {
+	return (
+		typeof error === 'object' &&
+		error !== null &&
+		'stack' in error &&
+		typeof (error as { stack: string }).stack === 'string'
+	)
 }

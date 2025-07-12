@@ -133,7 +133,7 @@ export function CreatePostModal({
 					<Button
 						variant="default"
 						type="button"
-						className=" gap-1"
+						className="gap-1"
 						onClick={() => setIsOpen(true)}
 					>
 						<FilePlus2 className="h-4 w-4" /> {triggerLabel}

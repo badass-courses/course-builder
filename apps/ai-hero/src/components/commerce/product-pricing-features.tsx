@@ -53,7 +53,7 @@ export const ProductPricingFeatures = ({
 						{workshops.map((workshop) => {
 							return (
 								<li className="flex items-baseline gap-2" key={workshop.slug}>
-									<Check className="text-foreground/50 relative h-4 w-4 flex-shrink-0 translate-y-1" />
+									<Check className="text-foreground/50 relative h-4 w-4 shrink-0 translate-y-1" />
 									{workshop.title}
 								</li>
 							)

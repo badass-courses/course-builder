@@ -60,7 +60,7 @@ const AccordionContent = React.forwardRef<
 	<AccordionPrimitive.Content
 		ref={ref}
 		className={cn(
-			'data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm',
+			'radix-state-closed:animate-accordion-up radix-state-open:animate-accordion-down overflow-hidden text-sm',
 			className,
 		)}
 		{...props}

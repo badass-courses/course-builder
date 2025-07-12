@@ -103,7 +103,7 @@ export async function GET(request: Request) {
 					</div> */}
 
 					{/* Main content area */}
-					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full flex-grow items-start justify">
+					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
 						<div tw="flex flex-col items-start">
 							<div tw="text-[72px] text-white max-w-[600px] leading-tight mb-4 font-bold">
 								{title}

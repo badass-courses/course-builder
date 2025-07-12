@@ -42,7 +42,7 @@ const Navigation = ({ className }: { className?: string }) => {
 
 	return (
 		<div
-			className={cn('z-40 h-[var(--nav-height)] w-full print:hidden', {
+			className={cn('h-(--nav-height) z-40 w-full print:hidden', {
 				'fixed top-0 px-1': !isLessonRoute && !isEditRoute,
 				className,
 			})}

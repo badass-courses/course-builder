@@ -135,7 +135,7 @@ const ProductImage: React.FC<React.PropsWithChildren<ProductImageProps>> = ({
 		children
 	) : product?.fields?.image?.url ? (
 		<CldImage
-			className={cn('flex-shrink-0', className)}
+			className={cn('shrink-0', className)}
 			src={product.fields.image.url}
 			alt={product.fields?.image?.alt || product?.name}
 			width={250}

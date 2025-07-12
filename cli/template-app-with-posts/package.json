@@ -58,7 +58,7 @@
 		"@types/react": "19.0.7",
 		"@types/node": "^20.12.5",
 		"drizzle-kit": "0.27.1",
-		"tailwindcss": "^3.3.3",
+		"tailwindcss": "^4.1.11",
 		"postcss": "^8.4.47",
 		"autoprefixer": "^10.4.14",
 		"eslint": "^8.47.0",

@@ -141,7 +141,7 @@ export function ResourceChatAssistant({
 				>
 					<Textarea
 						ref={textareaRef}
-						className="w-full flex-grow rounded-none border-0 px-5 py-4 pr-10 focus-visible:ring-0"
+						className="w-full grow rounded-none border-0 px-5 py-4 pr-10 focus-visible:ring-0"
 						placeholder="Tell the Assistant what you want..."
 						onKeyDown={async (event) => {
 							if (event.key === 'Enter' && !event.shiftKey) {

@@ -91,7 +91,7 @@ const Home = async (props: Props) => {
 						href={firstPageResource.path}
 						prefetch
 					>
-						<span className="truncate overflow-ellipsis">
+						<span className="truncate text-ellipsis">
 							New {firstPageResource.type}:{' '}
 							<span className="underline">{firstPageResource?.title}</span>
 						</span>
@@ -117,7 +117,7 @@ const Home = async (props: Props) => {
 				</header>
 				<article
 					className={cn(
-						'prose prose-IDE prose-hr:overflow-hidden dark:prose-invert mx-auo prose-hr:my-3 prose-hr:relative prose-hr:border-0 prose-hr:h-5 prose-hr:opacity-50 prose-hr:before:content-["..................................................................................................................."] w-full max-w-none pb-10',
+						'prose prose-IDE prose-hr:overflow-hidden dark:prose-invert mx-auo prose-hr:my-3 prose-hr:relative prose-hr:border-0 prose-hr:h-10 prose-hr:opacity-50 prose-hr:before:content-["..................................................................................................................."] w-full max-w-none pb-10',
 					)}
 				>
 					{page?.fields?.body ? (

@@ -139,7 +139,7 @@ const InstructorDataTable: React.FC<{ invites: InviteRow[] }> = ({
 	})
 
 	return (
-		<div className="w-full max-w-screen-lg">
+		<div className="max-w-(--breakpoint-lg) w-full">
 			<h2 className="pb-4 text-lg font-bold">Current Invites</h2>
 			<div className="flex flex-col items-center justify-between gap-2 pb-4 sm:flex-row">
 				<div className="relative w-full">
@@ -262,13 +262,13 @@ const InstructorDataTable: React.FC<{ invites: InviteRow[] }> = ({
 						onChange={(e) => {
 							table.setPageSize(Number(e.target.value))
 						}}
-						className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-6 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+						className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-hidden inline-flex h-6 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 					>
 						{[10, 25, 50, 100].map((pageSize) => (
 							<option
 								key={pageSize}
 								value={pageSize}
-								className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground border text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+								className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground focus-visible:outline-hidden border text-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 							>
 								Show {pageSize}
 							</option>

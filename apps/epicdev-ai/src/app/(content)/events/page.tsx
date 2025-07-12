@@ -97,7 +97,7 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-10 flex w-full max-w-screen-md flex-col gap-5">
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full flex-col gap-5">
 			{publicEvents.length === 0 && (
 				<p className="mb-10 text-center">There are no public events.</p>
 			)}

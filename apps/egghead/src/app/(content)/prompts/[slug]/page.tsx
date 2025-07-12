@@ -85,7 +85,7 @@ async function Prompt({
 				{prompt.fields?.body}
 			</ReactMarkdown>
 			{prompt.fields?.description && (
-				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full flex-shrink-0 flex-col gap-3 md:max-w-[280px]">
+				<aside className="prose dark:prose-invert prose-sm mt-3 flex w-full shrink-0 flex-col gap-3 md:max-w-[280px]">
 					<div className="border-t pt-5">
 						<strong>Description</strong>
 						<ReactMarkdown>{prompt.fields?.description}</ReactMarkdown>
@@ -130,7 +130,7 @@ export default async function PromptPage(props: {
 			>
 				<PromptActionBar promptLoader={promptLoader} />
 			</Suspense>
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
+			<article className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col px-5 py-10 md:py-16">
 				<PromptTitle promptLoader={promptLoader} />
 				<Prompt promptLoader={promptLoader} />
 			</article>

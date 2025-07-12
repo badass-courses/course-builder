@@ -178,7 +178,7 @@ export default async function ListPage(props: {
 									className="rounded brightness-90 transition duration-300 ease-in-out group-hover:brightness-100"
 								/>
 								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
-									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
+									<PlayIcon className="relative h-5 w-5 translate-x-px" />
 									<span className="sr-only">Start Learning</span>
 								</div>
 							</Link>
@@ -190,14 +190,14 @@ export default async function ListPage(props: {
 				</div>
 				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
 					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						className="to-background via-background bg-linear-to-bl absolute left-0 top-0 z-10 h-full w-full from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
 			</header>
 			<div className="px-5 sm:px-8">
 				<div className="mx-auto mt-10 flex w-full max-w-5xl flex-col gap-10 sm:grid md:grid-cols-5 lg:gap-16">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 col-span-3 max-w-none [&_[data-pre]]:max-w-4xl">
+					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 **:data-pre:max-w-4xl col-span-3 max-w-none">
 						{body || 'No body found.'}
 					</article>
 					<aside className="col-span-2">

@@ -72,18 +72,18 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-3">
+			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 md:container md:h-20 md:flex-row md:pr-0 lg:pl-3">
 				<div
-					className="via-muted-foreground/20 absolute -top-px left-0 z-10 h-px w-1/2 bg-gradient-to-r from-transparent to-transparent"
+					className="via-muted-foreground/20 bg-linear-to-r absolute -top-px left-0 z-10 h-px w-1/2 from-transparent to-transparent"
 					aria-hidden="true"
 				/>
 				<div
-					className="via-muted-foreground/20 absolute -bottom-px left-0 z-10 h-px w-full bg-gradient-to-r from-transparent to-transparent"
+					className="via-muted-foreground/20 bg-linear-to-r absolute -bottom-px left-0 z-10 h-px w-full from-transparent to-transparent"
 					aria-hidden="true"
 				/>
 				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left md:flex-col md:items-start md:pt-0">
 					<div className="flex items-center">
-						<div className="font-heading flex-shrink-0 text-2xl font-semibold sm:text-base">
+						<div className="font-heading shrink-0 text-2xl font-semibold sm:text-base">
 							{common['video-newsletter-title']}
 						</div>
 					</div>

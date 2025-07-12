@@ -294,7 +294,7 @@ export default async function EventPage(props: {
 					)}
 				</div>
 			</header>
-			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12 ">
+			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12">
 				<div className="col-span-8 flex w-full flex-col">
 					{attendeeInstructions && hasPurchasedCurrentProduct && (
 						<div className="dark:bg-card dark:border-foreground/10 mb-8 flex flex-col gap-1 rounded-md border bg-white p-6 text-left font-medium shadow-xl">

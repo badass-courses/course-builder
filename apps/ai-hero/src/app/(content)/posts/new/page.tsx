@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 export default async function NewPostPage() {
 	return (
 		<LayoutClient withContainer>
-			<div className="container flex h-full flex-shrink-0 items-center justify-center py-16">
+			<div className="container flex h-full shrink-0 items-center justify-center py-16">
 				<main className="mx-auto max-w-4xl">
 					<h1 className="fluid-3xl mb-8">New Post</h1>
 					<CreatePost />

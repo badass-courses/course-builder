@@ -108,7 +108,7 @@ export default async function AdminDashboardPage() {
 											<div className="flex-1 space-y-1">
 												<Link
 													href={`/${list.fields?.slug}`}
-													className="truncate overflow-ellipsis text-base font-semibold hover:underline"
+													className="truncate text-ellipsis text-base font-semibold hover:underline"
 												>
 													{list.fields?.title}
 												</Link>
@@ -166,7 +166,7 @@ export default async function AdminDashboardPage() {
 										<div className="flex-1 space-y-1">
 											<Link
 												href={`/${post.fields.slug}`}
-												className="truncate overflow-ellipsis text-base font-semibold hover:underline"
+												className="truncate text-ellipsis text-base font-semibold hover:underline"
 											>
 												{post.fields.title}
 											</Link>

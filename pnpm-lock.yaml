@@ -90,8 +90,8 @@ importers:
         specifier: ^0.14.1
         version: 0.14.1
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       turbo:
         specifier: ^2.1.1
         version: 2.4.4
@@ -606,17 +606,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -631,7 +631,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -666,9 +666,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -745,8 +748,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -754,11 +757,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -1264,23 +1267,23 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1315,9 +1318,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -1385,8 +1391,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -1394,11 +1400,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.30)(typescript@5.4.5)
@@ -1908,20 +1914,23 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
+      tailwindcss-radix:
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -1956,9 +1965,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -2023,14 +2035,14 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       stripe:
         specifier: 16.9.0
         version: 16.9.0
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.30)(typescript@5.4.5)
@@ -2536,17 +2548,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -2561,7 +2573,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -2596,9 +2608,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -2675,8 +2690,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -2684,11 +2699,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -3203,17 +3218,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -3228,7 +3243,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3263,9 +3278,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -3342,8 +3360,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -3351,11 +3369,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -3654,17 +3672,17 @@ importers:
         specifier: ^2.2.1
         version: 2.2.2
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -3676,7 +3694,7 @@ importers:
         version: 2.9.0(@babel/runtime@7.27.0)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3690,9 +3708,12 @@ importers:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/node':
         specifier: ^20.12.5
         version: 20.17.30
@@ -3733,11 +3754,11 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -3961,17 +3982,17 @@ importers:
         specifier: ^2.2.1
         version: 2.2.2
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -3985,9 +4006,12 @@ importers:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/node':
         specifier: ^20.12.5
         version: 20.17.30
@@ -4022,11 +4046,11 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -4529,17 +4553,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -4554,7 +4578,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -4589,9 +4613,12 @@ importers:
       '@mux/mux-node':
         specifier: ^7.3.2
         version: 7.3.5
+      '@tailwindcss/postcss':
+        specifier: ^4.1.11
+        version: 4.1.11
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -4668,8 +4695,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -4677,11 +4704,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -5199,17 +5226,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -5224,7 +5251,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -5260,8 +5287,8 @@ importers:
         specifier: ^7.3.2
         version: 7.3.5
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -5341,8 +5368,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -5350,11 +5377,11 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.30)(typescript@5.4.5)
@@ -5512,8 +5539,8 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/utils-ui
       '@designbycode/tailwindcss-text-stroke':
-        specifier: ^1.2.1
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^1.3.0
+        version: 1.3.0(tailwindcss@4.1.11)
       '@fontsource/inter':
         specifier: ^5.0.16
         version: 5.2.5
@@ -5923,17 +5950,17 @@ importers:
         specifier: ^2.2.4
         version: 2.3.3(react@19.0.0)
       tailwind-fluid-typography:
-        specifier: ^1.3.0
-        version: 1.3.0(tailwindcss@3.4.17)
+        specifier: ^2.0.0
+        version: 2.0.0(tailwindcss@4.1.11)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.17)
+        version: 1.0.7(tailwindcss@4.1.11)
       tailwindcss-radix:
-        specifier: ^2.8.0
-        version: 2.9.0
+        specifier: ^4.0.2
+        version: 4.0.2(tailwindcss@4.1.11)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -5948,7 +5975,7 @@ importers:
         version: 11.0.5
       uploadthing:
         specifier: 7.4.4
-        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+        version: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -5984,8 +6011,8 @@ importers:
         specifier: ^7.3.2
         version: 7.3.5
       '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.16(tailwindcss@3.4.17)
+        specifier: ^0.5.16
+        version: 0.5.16(tailwindcss@4.1.11)
       '@types/base-64':
         specifier: ^1.0.1
         version: 1.0.2
@@ -6050,8 +6077,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       shiki:
         specifier: 1.1.7
         version: 1.1.7
@@ -6059,14 +6086,14 @@ importers:
         specifier: 16.9.0
         version: 16.9.0
       tailwind-scrollbar:
-        specifier: ^3.0.0
-        version: 3.1.0(tailwindcss@3.4.17)
+        specifier: ^4.0.2
+        version: 4.0.2(react@19.0.0)(tailwindcss@4.1.11)
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tailwindcss-fluid-typography:
         specifier: ^1.0.5
-        version: 1.0.5(tailwindcss@3.4.17)
+        version: 1.0.5(tailwindcss@4.1.11)
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -6165,8 +6192,8 @@ importers:
         specifier: ^3.2.5
         version: 3.5.3
       prettier-plugin-tailwindcss:
-        specifier: ^0.5.12
-        version: 0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
+        specifier: ^0.6.14
+        version: 0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3)
       prisma:
         specifier: ^5.6.0
         version: 5.22.0
@@ -6180,11 +6207,11 @@ importers:
         specifier: ^2.2.1
         version: 2.2.2
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(postcss@8.5.3)(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.11.16)(typescript@5.4.5)
       type-fest:
         specifier: ^3.7.0
         version: 3.13.1
@@ -6405,11 +6432,11 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwindcss:
-        specifier: ^3.3.3
-        version: 3.4.17(ts-node@10.9.2)
+        specifier: ^4.1.11
+        version: 4.1.11
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -6896,8 +6923,8 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4(react@19.0.0)
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
       y-codemirror.jh:
         specifier: 0.3.2-joel-fork
         version: 0.3.2-joel-fork(@codemirror/state@6.5.2)(@codemirror/view@6.36.5)(yjs@13.6.24)
@@ -7195,8 +7222,8 @@ importers:
         specifier: ^2.0.0
         version: 2.1.1
       tailwind-merge:
-        specifier: ^1.14.0
-        version: 1.14.0
+        specifier: ^3.3.1
+        version: 3.3.1
     devDependencies:
       tsup:
         specifier: 8.0.2
@@ -10191,6 +10218,7 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+    dev: true
 
   /@ctrl/tinycolor@4.1.0:
     resolution: {integrity: sha512-WyOx8cJQ+FQus4Mm4uPIZA64gbk3Wxh0so5Lcii0aJifqwoVOlfFtorjLE0Hen4OYyHZMXDWqMmaQemBhgxFRQ==}
@@ -10201,12 +10229,12 @@ packages:
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
     dev: false
 
-  /@designbycode/tailwindcss-text-stroke@1.3.0(tailwindcss@3.4.17):
+  /@designbycode/tailwindcss-text-stroke@1.3.0(tailwindcss@4.1.11):
     resolution: {integrity: sha512-EyZi2EDv+/v55JF7OFrPUUJHr0r/C9bZtvhWNpamMj5MjAEMqBMhcO1ZW9aXAD2viszgtlnYLIta80NJtsuy6w==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      tailwindcss: 4.1.11
     dev: false
 
   /@drizzle-team/brocli@0.10.2:
@@ -12055,7 +12083,6 @@ packages:
     engines: {node: '>=18.0.0'}
     dependencies:
       minipass: 7.1.2
-    dev: false
 
   /@istanbuljs/load-nyc-config@1.1.0:
     resolution: {integrity: sha512-VjeHSlIzpv/NyD3N0YuHfXOPDIixcA1q2ZV98wsMqcYlPmv2n3Yb2lYP9XMElnaFVXg5A7YLTeLu6V84uQDjmQ==}
@@ -12327,6 +12354,7 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+    dev: true
 
   /@lezer/common@1.2.3:
     resolution: {integrity: sha512-w7ojc8ejBqr2REPsWxJjrMFsA/ysDCFICn8zEOR9mrqzOu2amhITYuLD8ag6XZf0CFXDrhKqw7+tW8cX66NaDA==}
@@ -19266,7 +19294,165 @@ packages:
       typescript: 5.4.5
       zod: 3.24.2
 
-  /@tailwindcss/typography@0.5.16(tailwindcss@3.4.17):
+  /@tailwindcss/node@4.1.11:
+    resolution: {integrity: sha512-yzhzuGRmv5QyU9qLNg4GTlYI6STedBWRE7NjxP45CsFYYq9taI0zJXZBMqIC/c8fViNLhmrbpSFS57EoxUmD6Q==}
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      enhanced-resolve: 5.18.1
+      jiti: 2.4.2
+      lightningcss: 1.30.1
+      magic-string: 0.30.17
+      source-map-js: 1.2.1
+      tailwindcss: 4.1.11
+    dev: true
+
+  /@tailwindcss/oxide-android-arm64@4.1.11:
+    resolution: {integrity: sha512-3IfFuATVRUMZZprEIx9OGDjG3Ou3jG4xQzNTvjDoKmU9JdmoCohQJ83MYd0GPnQIu89YoJqvMM0G3uqLRFtetg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-darwin-arm64@4.1.11:
+    resolution: {integrity: sha512-ESgStEOEsyg8J5YcMb1xl8WFOXfeBmrhAwGsFxxB2CxY9evy63+AtpbDLAyRkJnxLy2WsD1qF13E97uQyP1lfQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-darwin-x64@4.1.11:
+    resolution: {integrity: sha512-EgnK8kRchgmgzG6jE10UQNaH9Mwi2n+yw1jWmof9Vyg2lpKNX2ioe7CJdf9M5f8V9uaQxInenZkOxnTVL3fhAw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-freebsd-x64@4.1.11:
+    resolution: {integrity: sha512-xdqKtbpHs7pQhIKmqVpxStnY1skuNh4CtbcyOHeX1YBE0hArj2romsFGb6yUmzkq/6M24nkxDqU8GYrKrz+UcA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-linux-arm-gnueabihf@4.1.11:
+    resolution: {integrity: sha512-ryHQK2eyDYYMwB5wZL46uoxz2zzDZsFBwfjssgB7pzytAeCCa6glsiJGjhTEddq/4OsIjsLNMAiMlHNYnkEEeg==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-linux-arm64-gnu@4.1.11:
+    resolution: {integrity: sha512-mYwqheq4BXF83j/w75ewkPJmPZIqqP1nhoghS9D57CLjsh3Nfq0m4ftTotRYtGnZd3eCztgbSPJ9QhfC91gDZQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-linux-arm64-musl@4.1.11:
+    resolution: {integrity: sha512-m/NVRFNGlEHJrNVk3O6I9ggVuNjXHIPoD6bqay/pubtYC9QIdAMpS+cswZQPBLvVvEF6GtSNONbDkZrjWZXYNQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-linux-x64-gnu@4.1.11:
+    resolution: {integrity: sha512-YW6sblI7xukSD2TdbbaeQVDysIm/UPJtObHJHKxDEcW2exAtY47j52f8jZXkqE1krdnkhCMGqP3dbniu1Te2Fg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-linux-x64-musl@4.1.11:
+    resolution: {integrity: sha512-e3C/RRhGunWYNC3aSF7exsQkdXzQ/M+aYuZHKnw4U7KQwTJotnWsGOIVih0s2qQzmEzOFIJ3+xt7iq67K/p56Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-wasm32-wasi@4.1.11:
+    resolution: {integrity: sha512-Xo1+/GU0JEN/C/dvcammKHzeM6NqKovG+6921MR6oadee5XPBaKOumrJCXvopJ/Qb5TH7LX/UAywbqrP4lax0g==}
+    engines: {node: '>=14.0.0'}
+    cpu: [wasm32]
+    requiresBuild: true
+    dev: true
+    optional: true
+    bundledDependencies:
+      - '@napi-rs/wasm-runtime'
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - '@tybys/wasm-util'
+      - '@emnapi/wasi-threads'
+      - tslib
+
+  /@tailwindcss/oxide-win32-arm64-msvc@4.1.11:
+    resolution: {integrity: sha512-UgKYx5PwEKrac3GPNPf6HVMNhUIGuUh4wlDFR2jYYdkX6pL/rn73zTq/4pzUm8fOjAn5L8zDeHp9iXmUGOXZ+w==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide-win32-x64-msvc@4.1.11:
+    resolution: {integrity: sha512-YfHoggn1j0LK7wR82TOucWc5LDCguHnoS879idHekmmiR7g9HUtMw9MI0NHatS28u/Xlkfi9w5RJWgz2Dl+5Qg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@tailwindcss/oxide@4.1.11:
+    resolution: {integrity: sha512-Q69XzrtAhuyfHo+5/HMgr1lAiPP/G40OMFAnws7xcFEYqcypZmdW8eGXaOUIeOl1dzPJBPENXgbjsOyhg2nkrg==}
+    engines: {node: '>= 10'}
+    requiresBuild: true
+    dependencies:
+      detect-libc: 2.0.4
+      tar: 7.4.3
+    optionalDependencies:
+      '@tailwindcss/oxide-android-arm64': 4.1.11
+      '@tailwindcss/oxide-darwin-arm64': 4.1.11
+      '@tailwindcss/oxide-darwin-x64': 4.1.11
+      '@tailwindcss/oxide-freebsd-x64': 4.1.11
+      '@tailwindcss/oxide-linux-arm-gnueabihf': 4.1.11
+      '@tailwindcss/oxide-linux-arm64-gnu': 4.1.11
+      '@tailwindcss/oxide-linux-arm64-musl': 4.1.11
+      '@tailwindcss/oxide-linux-x64-gnu': 4.1.11
+      '@tailwindcss/oxide-linux-x64-musl': 4.1.11
+      '@tailwindcss/oxide-wasm32-wasi': 4.1.11
+      '@tailwindcss/oxide-win32-arm64-msvc': 4.1.11
+      '@tailwindcss/oxide-win32-x64-msvc': 4.1.11
+    dev: true
+
+  /@tailwindcss/postcss@4.1.11:
+    resolution: {integrity: sha512-q/EAIIpF6WpLhKEuQSEVMZNMIY8KhWoAemZ9eylNAih9jxMGAYPPWBn3I9QL/2jZ+e7OEz/tZkX5HwbBR4HohA==}
+    dependencies:
+      '@alloc/quick-lru': 5.2.0
+      '@tailwindcss/node': 4.1.11
+      '@tailwindcss/oxide': 4.1.11
+      postcss: 8.5.3
+      tailwindcss: 4.1.11
+    dev: true
+
+  /@tailwindcss/typography@0.5.16(tailwindcss@4.1.11):
     resolution: {integrity: sha512-0wDLwCVF5V3x3b1SGXPCDcdsbDHMBe+lkFzBRaHeLvNi+nrrnZ1lA18u+OTWO8iSWU2GxUOCvlXtDuqftc1oiA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
@@ -19275,7 +19461,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      tailwindcss: 4.1.11
     dev: true
 
   /@tanstack/query-core@5.54.1:
@@ -19397,15 +19583,19 @@ packages:
 
   /@tsconfig/node10@1.0.11:
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
+    dev: true
 
   /@tsconfig/node12@1.0.11:
     resolution: {integrity: sha512-cqefuRsh12pWyGsIoBKJA9luFu3mRxCA+ORZvA4ktLSzIuCUtWVxGIuXigEwO5/ywWFMZ2QEGKWvkZG1zDMTag==}
+    dev: true
 
   /@tsconfig/node14@1.0.3:
     resolution: {integrity: sha512-ysT8mhdixWK6Hw3i1V2AeRqZ5WfXg1G43mqoYlM2nc6388Fq5jcXyr5mRsqViLx/GJYdoL0bfXD8nmF+Zn/Iow==}
+    dev: true
 
   /@tsconfig/node16@1.0.4:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+    dev: true
 
   /@tybys/wasm-util@0.9.0:
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
@@ -19947,7 +20137,6 @@ packages:
 
   /@types/prismjs@1.26.5:
     resolution: {integrity: sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ==}
-    dev: false
 
   /@types/progress-stream@2.0.5:
     resolution: {integrity: sha512-5YNriuEZkHlFHHepLIaxzq3atGeav1qCTGzB74HKWpo66qjfostF+rHc785YYYHeBytve8ZG3ejg42jEIfXNiQ==}
@@ -20520,7 +20709,7 @@ packages:
       file-selector: 0.6.0
       next: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
       react: 19.0.0
-      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17)
+      uploadthing: 7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11)
     dev: false
 
   /@uploadthing/shared@7.1.5:
@@ -21107,9 +21296,11 @@ packages:
 
   /arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}
+    dev: true
 
   /arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
+    dev: false
 
   /argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -21848,6 +22039,7 @@ packages:
   /camelcase-css@2.0.1:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
+    dev: false
 
   /camelcase@5.3.1:
     resolution: {integrity: sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==}
@@ -22078,7 +22270,6 @@ packages:
   /chownr@3.0.0:
     resolution: {integrity: sha512-+IxzY9BZOQd/XuYPRmrvEVjF/nqj5kgT4kEq7VofrDoM1MxoRjEWkrCC3EtLi59TVawxTAn+orJwFQcrqEN1+g==}
     engines: {node: '>=18'}
-    dev: false
 
   /chrome-trace-event@1.0.4:
     resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
@@ -22560,6 +22751,7 @@ packages:
 
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
+    dev: true
 
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
@@ -23254,6 +23446,11 @@ packages:
     resolution: {integrity: sha512-bwy0MGW55bG41VqxxypOsdSdGqLwXPI/focwgTYCFMbdUiBAxLg9CFzG08sz2aqzknwiX7Hkl0bQENjg8iLByw==}
     engines: {node: '>=8'}
 
+  /detect-libc@2.0.4:
+    resolution: {integrity: sha512-3UDv+G9CsCKO1WKMGw9fwq/SWJYbI0c5Y7LU1AXYoDdbhE2AHQ6N6Nb34sG8Fj7T5APy8qXDCKuuIHd1BR0tVA==}
+    engines: {node: '>=8'}
+    dev: true
+
   /detect-newline@3.1.0:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
@@ -23288,6 +23485,7 @@ packages:
 
   /didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
+    dev: false
 
   /diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
@@ -23300,6 +23498,7 @@ packages:
   /diff@4.0.2:
     resolution: {integrity: sha512-58lmxKSA4BNyLz+HHMUzlOEpg09FV+ev6ZMe3vJihgdxzgcwZ8VoEEPmALCZG9LmqfVoNMMKpttIYTVG6uDY7A==}
     engines: {node: '>=0.3.1'}
+    dev: true
 
   /diff@5.2.0:
     resolution: {integrity: sha512-uIFDxqpRZGZ6ThOk84hEfqWoHx2devRFvpTZcTHur85vImfaxUbTW9Ryh4CpCuDnToOP1CEtXKIgytHBPVff5A==}
@@ -23931,7 +24130,6 @@ packages:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.2.1
-    dev: false
 
   /enquirer@2.4.1:
     resolution: {integrity: sha512-rRqJg/6gd538VHvR3PSrdRBb/1Vy2YfzHqzvbhGIQpDRKIa4FgV/54b5Q1xYSxOOwKvjXweS26E0Q+nAMwp2pQ==}
@@ -25810,7 +26008,6 @@ packages:
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
-    dev: false
 
   /gradient-string@2.0.2:
     resolution: {integrity: sha512-rEDCuqUQ4tbD78TpzsMtt5OIf0cBCSDWSJtUDaF6JsAh+k0v9r++NzxNEG87oDZx9ZwGhD8DaezR2L/yrw0Jdw==}
@@ -27558,6 +27755,12 @@ packages:
   /jiti@1.21.7:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
+    dev: false
+
+  /jiti@2.4.2:
+    resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
+    hasBin: true
+    dev: true
 
   /jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
@@ -27923,6 +28126,114 @@ packages:
       resolve: 1.22.10
     dev: false
 
+  /lightningcss-darwin-arm64@1.30.1:
+    resolution: {integrity: sha512-c8JK7hyE65X1MHMN+Viq9n11RRC7hgin3HhYKhrMyaXflk5GVplZ60IxyoVtzILeKr+xAJwg6zK6sjTBJ0FKYQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-darwin-x64@1.30.1:
+    resolution: {integrity: sha512-k1EvjakfumAQoTfcXUcHQZhSpLlkAuEkdMBsI/ivWw9hL+7FtilQc0Cy3hrx0AAQrVtQAbMI7YjCgYgvn37PzA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-freebsd-x64@1.30.1:
+    resolution: {integrity: sha512-kmW6UGCGg2PcyUE59K5r0kWfKPAVy4SltVeut+umLCFoJ53RdCUWxcRDzO1eTaxf/7Q2H7LTquFHPL5R+Gjyig==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [freebsd]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm-gnueabihf@1.30.1:
+    resolution: {integrity: sha512-MjxUShl1v8pit+6D/zSPq9S9dQ2NPFSQwGvxBCYaBYLPlCWuPh9/t1MRS8iUaR8i+a6w7aps+B4N0S1TYP/R+Q==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm64-gnu@1.30.1:
+    resolution: {integrity: sha512-gB72maP8rmrKsnKYy8XUuXi/4OctJiuQjcuqWNlJQ6jZiWqtPvqFziskH3hnajfvKB27ynbVCucKSm2rkQp4Bw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-arm64-musl@1.30.1:
+    resolution: {integrity: sha512-jmUQVx4331m6LIX+0wUhBbmMX7TCfjF5FoOH6SD1CttzuYlGNVpA7QnrmLxrsub43ClTINfGSYyHe2HWeLl5CQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-x64-gnu@1.30.1:
+    resolution: {integrity: sha512-piWx3z4wN8J8z3+O5kO74+yr6ze/dKmPnI7vLqfSqI8bccaTGY5xiSGVIJBDd5K5BHlvVLpUB3S2YCfelyJ1bw==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-linux-x64-musl@1.30.1:
+    resolution: {integrity: sha512-rRomAK7eIkL+tHY0YPxbc5Dra2gXlI63HL+v1Pdi1a3sC+tJTcFrHX+E86sulgAXeI7rSzDYhPSeHHjqFhqfeQ==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-win32-arm64-msvc@1.30.1:
+    resolution: {integrity: sha512-mSL4rqPi4iXq5YVqzSsJgMVFENoa4nGTT/GjO2c0Yl9OuQfPsIfncvLrEW6RbbB24WtZ3xP/2CCmI3tNkNV4oA==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss-win32-x64-msvc@1.30.1:
+    resolution: {integrity: sha512-PVqXh48wh4T53F/1CCu8PIPCxLzWyCnn/9T5W1Jpmdy5h9Cwd+0YQS6/LwhHXSafuc61/xg9Lv5OrCby6a++jg==}
+    engines: {node: '>= 12.0.0'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /lightningcss@1.30.1:
+    resolution: {integrity: sha512-xi6IyHML+c9+Q3W0S4fCQJOym42pyurFiJUHEcEyHS0CeKzia4yZDEsLlqOFykxOdHpNy0NmvVO31vcSqAxJCg==}
+    engines: {node: '>= 12.0.0'}
+    dependencies:
+      detect-libc: 2.0.4
+    optionalDependencies:
+      lightningcss-darwin-arm64: 1.30.1
+      lightningcss-darwin-x64: 1.30.1
+      lightningcss-freebsd-x64: 1.30.1
+      lightningcss-linux-arm-gnueabihf: 1.30.1
+      lightningcss-linux-arm64-gnu: 1.30.1
+      lightningcss-linux-arm64-musl: 1.30.1
+      lightningcss-linux-x64-gnu: 1.30.1
+      lightningcss-linux-x64-musl: 1.30.1
+      lightningcss-win32-arm64-msvc: 1.30.1
+      lightningcss-win32-x64-msvc: 1.30.1
+    dev: true
+
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -28251,6 +28562,7 @@ packages:
 
   /make-error@1.3.6:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
+    dev: true
 
   /make-iterator@1.0.1:
     resolution: {integrity: sha512-pxiuXh0iVEq7VM7KMIhs5gxsfxCux2URptUQaXo4iZZJxBAzTPOLE2BumO5dbfVYq/hBJFBR/a1mFDmOx5AGmw==}
@@ -29009,7 +29321,6 @@ packages:
     engines: {node: '>= 18'}
     dependencies:
       minipass: 7.1.2
-    dev: false
 
   /mitt@3.0.1:
     resolution: {integrity: sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==}
@@ -29391,7 +29702,6 @@ packages:
     resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: false
 
   /mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
@@ -30114,6 +30424,7 @@ packages:
   /object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
+    dev: false
 
   /object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
@@ -30843,6 +31154,7 @@ packages:
   /pify@2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
+    dev: false
 
   /pify@4.0.1:
     resolution: {integrity: sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==}
@@ -30941,6 +31253,7 @@ packages:
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.10
+    dev: false
 
   /postcss-js@4.0.1(postcss@8.5.3):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
@@ -30950,6 +31263,7 @@ packages:
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.5.3
+    dev: false
 
   /postcss-load-config@4.0.2(postcss@8.4.35):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
@@ -30966,9 +31280,8 @@ packages:
       lilconfig: 3.1.3
       postcss: 8.4.35
       yaml: 2.7.1
-    dev: false
 
-  /postcss-load-config@4.0.2(postcss@8.5.3)(ts-node@10.9.2):
+  /postcss-load-config@4.0.2(postcss@8.5.3):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -30982,8 +31295,8 @@ packages:
     dependencies:
       lilconfig: 3.1.3
       postcss: 8.5.3
-      ts-node: 10.9.2(@types/node@20.17.30)(typescript@5.4.5)
       yaml: 2.7.1
+    dev: false
 
   /postcss-nested@6.2.0(postcss@8.5.3):
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
@@ -30993,6 +31306,7 @@ packages:
     dependencies:
       postcss: 8.5.3
       postcss-selector-parser: 6.1.2
+    dev: false
 
   /postcss-selector-parser@6.0.10:
     resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
@@ -31008,6 +31322,7 @@ packages:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
+    dev: false
 
   /postcss-value-parser@4.2.0:
     resolution: {integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==}
@@ -31027,7 +31342,6 @@ packages:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-    dev: false
 
   /postcss@8.5.3:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
@@ -31144,21 +31458,24 @@ packages:
       prettier: 3.5.3
       sass-formatter: 0.7.9
 
-  /prettier-plugin-tailwindcss@0.5.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3):
-    resolution: {integrity: sha512-Puaz+wPUAhFp8Lo9HuciYKM2Y2XExESjeT+9NQoVFXZsPPnc9VYss2SpxdQ6vbatmt8/4+SN0oe0I1cPDABg9Q==}
+  /prettier-plugin-tailwindcss@0.6.14(@ianvs/prettier-plugin-sort-imports@4.4.1)(prettier-plugin-astro@0.14.1)(prettier@3.5.3):
+    resolution: {integrity: sha512-pi2e/+ZygeIqntN+vC573BcW5Cve8zUB0SSAGxqpB4f96boZF4M3phPVoOFCeypwkpRYdi7+jQ5YJJUwrkGUAg==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-hermes': '*'
+      '@prettier/plugin-oxc': '*'
       '@prettier/plugin-pug': '*'
       '@shopify/prettier-plugin-liquid': '*'
       '@trivago/prettier-plugin-sort-imports': '*'
-      '@zackad/prettier-plugin-twig-melody': '*'
+      '@zackad/prettier-plugin-twig': '*'
       prettier: ^3.0
       prettier-plugin-astro: '*'
       prettier-plugin-css-order: '*'
       prettier-plugin-import-sort: '*'
       prettier-plugin-jsdoc: '*'
       prettier-plugin-marko: '*'
+      prettier-plugin-multiline-arrays: '*'
       prettier-plugin-organize-attributes: '*'
       prettier-plugin-organize-imports: '*'
       prettier-plugin-sort-imports: '*'
@@ -31167,13 +31484,17 @@ packages:
     peerDependenciesMeta:
       '@ianvs/prettier-plugin-sort-imports':
         optional: true
+      '@prettier/plugin-hermes':
+        optional: true
+      '@prettier/plugin-oxc':
+        optional: true
       '@prettier/plugin-pug':
         optional: true
       '@shopify/prettier-plugin-liquid':
         optional: true
       '@trivago/prettier-plugin-sort-imports':
         optional: true
-      '@zackad/prettier-plugin-twig-melody':
+      '@zackad/prettier-plugin-twig':
         optional: true
       prettier-plugin-astro:
         optional: true
@@ -31184,6 +31505,8 @@ packages:
       prettier-plugin-jsdoc:
         optional: true
       prettier-plugin-marko:
+        optional: true
+      prettier-plugin-multiline-arrays:
         optional: true
       prettier-plugin-organize-attributes:
         optional: true
@@ -31249,7 +31572,6 @@ packages:
       '@types/prismjs': 1.26.5
       clsx: 2.1.1
       react: 19.0.0
-    dev: false
 
   /prisma@5.22.0:
     resolution: {integrity: sha512-vtpjW3XuYCSnMsNVBjLMNkTj6OZbudcPPTPYHqX0CJfpcdWciI1dM8uHETwmDxxiqEwCIE6WvXucWUetJgfu/A==}
@@ -32164,6 +32486,7 @@ packages:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
     dependencies:
       pify: 2.3.0
+    dev: false
 
   /read-yaml-file@1.1.0:
     resolution: {integrity: sha512-VIMnQi/Z4HT2Fxuwg5KrY174U1VdUIASQVWXXyqtNRtxSr9IYkn1rsI6Tb6HsrHCmB7gVpNwX6JxPTHcH6IoTA==}
@@ -33935,16 +34258,12 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /tailwind-fluid-typography@1.3.0(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-W6zqO8xD1FAtAOBiWArvpyI5CMzKek9tIjOmwwzDCsiEJaGvhv2WGlEaV0Sl1O5Bn5hMBHiNMdzhz/QIblvIyQ==}
+  /tailwind-fluid-typography@2.0.0(tailwindcss@4.1.11):
+    resolution: {integrity: sha512-Y/aFjnGWzVzOVIe+JWrQHOC6c5OZuKjdO+5V9p8mHmTPlOu1VhHsnLtp8+3JSrb/lvc7QWvayqTC1RhQyKioRw==}
     peerDependencies:
       tailwindcss: '>=1.2.0'
     dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
-    dev: false
-
-  /tailwind-merge@1.14.0:
-    resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
+      tailwindcss: 4.1.11
     dev: false
 
   /tailwind-merge@2.2.0:
@@ -33953,32 +34272,44 @@ packages:
       '@babel/runtime': 7.27.0
     dev: false
 
-  /tailwind-scrollbar@3.1.0(tailwindcss@3.4.17):
-    resolution: {integrity: sha512-pmrtDIZeHyu2idTejfV59SbaJyvp1VRjYxAjZBH0jnyrPRo6HL1kD5Glz8VPagasqr6oAx6M05+Tuw429Z8jxg==}
+  /tailwind-merge@3.3.1:
+    resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+    dev: false
+
+  /tailwind-scrollbar@4.0.2(react@19.0.0)(tailwindcss@4.1.11):
+    resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
     engines: {node: '>=12.13.0'}
     peerDependencies:
-      tailwindcss: 3.x
+      tailwindcss: 4.x
     dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      prism-react-renderer: 2.4.1(react@19.0.0)
+      tailwindcss: 4.1.11
+    transitivePeerDependencies:
+      - react
 
-  /tailwindcss-animate@1.0.7(tailwindcss@3.4.17):
+  /tailwindcss-animate@1.0.7(tailwindcss@4.1.11):
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
     dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      tailwindcss: 4.1.11
     dev: false
 
-  /tailwindcss-fluid-typography@1.0.5(tailwindcss@3.4.17):
+  /tailwindcss-fluid-typography@1.0.5(tailwindcss@4.1.11):
     resolution: {integrity: sha512-vtLgUJ9eAwOMJ1kzau9I0ro54mWQMjhDsoEMJumCxsmnIpILtAfgecr7uXCCPtKb/cVH3kTwqWG5chvHXjAbEw==}
     peerDependencies:
       tailwindcss: '>=2.0.0'
     dependencies:
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      tailwindcss: 4.1.11
     dev: true
 
-  /tailwindcss-radix@2.9.0:
-    resolution: {integrity: sha512-N49SnciSeRgLC+VK+Fu5VULNJIvJUvN7tUKF1kEHPXrS76WAlwrSVthCbJ9NUw0Cj/ptxs73pdVEdosomAN5Lg==}
+  /tailwindcss-radix@4.0.2(tailwindcss@4.1.11):
+    resolution: {integrity: sha512-Uoa2BUCfWKGCjQPXbj4X4Q4EWAeCsvhj0udn0IupeNcvuLbqRXvC5+bKAqsngIne5mrRUPTy/IqMXGh81YyrCA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      tailwindcss: ^3.0 || ^4.0
+    dependencies:
+      tailwindcss: 4.1.11
     dev: false
 
   /tailwindcss@3.4.0:
@@ -34003,7 +34334,7 @@ packages:
       postcss: 8.5.3
       postcss-import: 15.1.0(postcss@8.5.3)
       postcss-js: 4.0.1(postcss@8.5.3)
-      postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.5.3)
       postcss-nested: 6.2.0(postcss@8.5.3)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.10
@@ -34012,40 +34343,12 @@ packages:
       - ts-node
     dev: false
 
-  /tailwindcss@3.4.17(ts-node@10.9.2):
-    resolution: {integrity: sha512-w33E2aCvSDP0tW9RZuNXadXlkHXqFzSkQew/aIa2i/Sj8fThxwovwlXHSPXTbAHwEIhBFXAedUhP2tueAKP8Og==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    dependencies:
-      '@alloc/quick-lru': 5.2.0
-      arg: 5.0.2
-      chokidar: 3.6.0
-      didyoumean: 1.2.2
-      dlv: 1.1.3
-      fast-glob: 3.3.3
-      glob-parent: 6.0.2
-      is-glob: 4.0.3
-      jiti: 1.21.7
-      lilconfig: 3.1.3
-      micromatch: 4.0.8
-      normalize-path: 3.0.0
-      object-hash: 3.0.0
-      picocolors: 1.1.1
-      postcss: 8.5.3
-      postcss-import: 15.1.0(postcss@8.5.3)
-      postcss-js: 4.0.1(postcss@8.5.3)
-      postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2)
-      postcss-nested: 6.2.0(postcss@8.5.3)
-      postcss-selector-parser: 6.1.2
-      resolve: 1.22.10
-      sucrase: 3.35.0
-    transitivePeerDependencies:
-      - ts-node
+  /tailwindcss@4.1.11:
+    resolution: {integrity: sha512-2E9TBm6MDD/xKYe+dvJZAmg3yxIEDNRc0jwlNyDg/4Fil2QcSLjFKGVff0lAf1jjeaArlG/M75Ey/EYr/OJtBA==}
 
   /tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
-    dev: false
 
   /tar-fs@2.1.2:
     resolution: {integrity: sha512-EsaAXwxmx8UB7FRKqeozqEPop69DXcmYwTQwXvyAPF352HJsPdkVhvTaDPYqfNgruveJIJy3TA2l+2zj8LJIJA==}
@@ -34075,7 +34378,6 @@ packages:
       minizlib: 3.0.2
       mkdirp: 3.0.1
       yallist: 5.0.0
-    dev: false
 
   /temporal-polyfill@0.2.5:
     resolution: {integrity: sha512-ye47xp8Cb0nDguAhrrDS1JT1SzwEV9e26sSsrWzVu+yPZ7LzceEcH0i2gci9jWfOfSCCgM3Qv5nOYShVUUFUXA==}
@@ -34338,6 +34640,7 @@ packages:
       typescript: 5.4.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    dev: true
 
   /tsconfck@3.1.5(typescript@5.4.5):
     resolution: {integrity: sha512-CLDfGgUp7XPswWnezWwsCRxNmgQjhYq3VXHM0/XIRxhVrKw0M1if9agzryh1QS3nxjCROvV+xWxoJO1YctzzWg==}
@@ -34394,7 +34697,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2)
+      postcss-load-config: 4.0.2(postcss@8.4.35)
       resolve-from: 5.0.0
       rollup: 4.39.0
       source-map: 0.8.0-beta.0
@@ -34445,46 +34748,6 @@ packages:
       - supports-color
       - ts-node
     dev: false
-
-  /tsup@8.0.2(postcss@8.5.3)(typescript@5.4.5):
-    resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      '@microsoft/api-extractor': ^7.36.0
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.5.0'
-    peerDependenciesMeta:
-      '@microsoft/api-extractor':
-        optional: true
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.2.1(esbuild@0.19.12)
-      cac: 6.7.14
-      chokidar: 3.6.0
-      debug: 4.4.0(supports-color@5.5.0)
-      esbuild: 0.19.12
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss: 8.5.3
-      postcss-load-config: 4.0.2(postcss@8.5.3)(ts-node@10.9.2)
-      resolve-from: 5.0.0
-      rollup: 4.39.0
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
 
   /tsx@4.19.3:
     resolution: {integrity: sha512-4H8vUNGNjQ4V2EOoGw005+c+dGuPSnhpPBPHBtsZdGZBk/iJb4kguGlPWaZTZ3q5nMtFOEsY0nRDlh9PJyd6SQ==}
@@ -35015,7 +35278,7 @@ packages:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  /uploadthing@7.4.4(next@15.3.0-canary.31)(tailwindcss@3.4.17):
+  /uploadthing@7.4.4(next@15.3.0-canary.31)(tailwindcss@4.1.11):
     resolution: {integrity: sha512-dgV8LqaKrXSnpDkqzzLbVEmIubMPi8a5bRtIzM+rG5EbZpIZyOG0bByLxdSlkSbK5L6F+HbIGX5eDkLPFNL8dg==}
     engines: {node: '>=18.13.0'}
     peerDependencies:
@@ -35042,7 +35305,7 @@ packages:
       '@uploadthing/shared': 7.1.5
       effect: 3.11.5
       next: 15.3.0-canary.31(@babel/core@7.26.10)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.0.0)(react@19.0.0)
-      tailwindcss: 3.4.17(ts-node@10.9.2)
+      tailwindcss: 4.1.11
     dev: false
 
   /upper-case-first@2.0.2:
@@ -35196,6 +35459,7 @@ packages:
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
+    dev: true
 
   /v8-to-istanbul@9.3.0:
     resolution: {integrity: sha512-kiGUalWN+rgBJ/1OHZsBtU4rXZOfj/7rKQxULKlIzwzQSvMJUUNgPwJEEh7gU6xEVxC0ahoOBvN2YI8GH6FNgA==}
@@ -35875,7 +36139,6 @@ packages:
   /yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
     engines: {node: '>=18'}
-    dev: false
 
   /yaml@1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
@@ -35913,6 +36176,7 @@ packages:
   /yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
+    dev: true
 
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}

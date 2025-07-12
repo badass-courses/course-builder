@@ -12,7 +12,7 @@ import { allMdxPageBuilderComponents } from './page-builder-mdx-components'
 export default function MDXLivePreview() {
 	const { mdxContent, togglePreviewPanel } = useMDXPreview()
 	return (
-		<div className="bg-background w-full max-w-screen-xl">
+		<div className="bg-background max-w-(--breakpoint-xl) w-full">
 			<div className="flex items-center justify-between border-b px-5 py-3">
 				<h3 className="flex text-lg font-bold">Preview</h3>
 				<Button variant="ghost" onClick={togglePreviewPanel} size="icon">
@@ -21,7 +21,7 @@ export default function MDXLivePreview() {
 			</div>
 			<ErrorBoundary fallback={<p>Error</p>} resetKeys={[mdxContent]}>
 				{mdxContent && (
-					<article className="prose sm:prose-lg prose-headings:mx-auto prose-headings:max-w-screen-md prose-p:mx-auto prose-p:max-w-screen-md prose-ul:mx-auto prose-ul:max-w-screen-md prose-img:mx-auto prose-img:max-w-screen-md mx-auto max-w-none p-5">
+					<article className="prose sm:prose-lg prose-headings:mx-auto prose-headings:max-w-(--breakpoint-md) prose-p:mx-auto prose-p:max-w-(--breakpoint-md) prose-ul:mx-auto prose-ul:max-w-(--breakpoint-md) prose-img:mx-auto prose-img:max-w-(--breakpoint-md) mx-auto max-w-none p-5">
 						<MDXRemote
 							// @ts-expect-error
 							components={allMdxPageBuilderComponents}

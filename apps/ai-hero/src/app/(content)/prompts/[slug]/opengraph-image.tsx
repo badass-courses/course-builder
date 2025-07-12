@@ -24,7 +24,7 @@ export default async function PromptOG({
 					...font('sans'),
 				}}
 			>
-				<main tw="flex flex-col gap-5 h-full flex-grow items-start pb-24 justify-center px-16">
+				<main tw="flex flex-col gap-5 h-full grow items-start pb-24 justify-center px-16">
 					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
 					{/* <img

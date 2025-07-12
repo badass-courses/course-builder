@@ -1,17 +1,30 @@
-@import './primary-newsletter-cta.css';
-@import './tip-newsletter-cta.css';
+@import '@code-hike/mdx/dist/index.css' layer(base);
+@import './primary-newsletter-cta.css' layer(base);
+@import './tip-newsletter-cta.css' layer(base);
+@import './login.css' layer(utilities);
+@import './commerce.css' layer(base);
 
-@import './nprogress.css';
+@import 'tailwindcss';
 
-@import './focus-visible.css';
-@import '@code-hike/mdx/dist/index.css';
-@import './ui/button.css';
-@import './login.css';
-@import './commerce.css';
+@config '../../tailwind.config.ts';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentcolor);
+	}
+}
 
 @layer base {
 	:root {
@@ -183,11 +196,11 @@
 }
 
 .md-editor-toolbar-warp {
-	@apply bg-background border-border border-b !important;
+	@apply bg-background! border-border! border-b!;
 }
 
 [data-checklist] {
-	@apply list-outside !pl-0;
+	@apply pl-0! list-outside;
 	li {
 		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDMuMTVMMTMuMyAxLjc1QzcuMjYyIDMuNSA0LjIgNy4zNSA0LjIgNy4zNUwxLjQgNS4yNUwwIDYuNjVMNC4yIDEyLjI1QzcuNDM3IDYuMjEzIDE0IDMuMTUgMTQgMy4xNVoiIGZpbGw9IiM3QzNCRUQiLz4KPC9zdmc+Cg==');
 	}

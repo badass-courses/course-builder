@@ -46,7 +46,7 @@ export const CohortSidebar = ({
 				<div
 					ref={sidebarRef}
 					className={cn('', {
-						'md:sticky md:top-[var(--nav-height)]':
+						'md:top-(--nav-height) md:sticky':
 							sticky && windowHeight - 63 > height,
 					})}
 				>
@@ -89,7 +89,7 @@ export const CohortSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-4 backdrop-blur-sm transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-4 transition-opacity duration-300 md:hidden',
 				className,
 			)}
 		>

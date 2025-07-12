@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function ConfirmSubscriptionPage() {
 	return (
 		<LayoutClient withContainer>
-			<main className="container flex min-h-[var(--pane-layout-height)] flex-grow flex-col items-center justify-center px-5 py-24">
+			<main className="min-h-(--pane-layout-height) container flex flex-grow flex-col items-center justify-center px-5 py-24">
 				<div className="flex w-full max-w-4xl flex-col items-center justify-center text-center font-light">
 					<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-extrabold sm:text-5xl">
 						Confirm your email address

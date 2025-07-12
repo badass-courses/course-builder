@@ -21,7 +21,7 @@ const PurchaseTransferPage = async (props: {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="mx-auto flex w-full flex-grow flex-col items-center justify-center px-5 py-24 sm:py-32">
+			<main className="mx-auto flex w-full grow flex-col items-center justify-center px-5 py-24 sm:py-32">
 				{purchaseTransfer?.transferState === 'INITIATED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
 						<h1 className="text-center text-3xl font-bold">

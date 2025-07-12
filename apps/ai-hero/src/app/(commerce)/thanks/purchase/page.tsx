@@ -282,7 +282,7 @@ async function PurchaseThanksPageLoaded({
 								</InvoiceTeaser.Title>
 								<InvoiceTeaser.Metadata />
 							</InvoiceTeaser.Link>
-							<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
+							<InvoiceTeaser.Link className="text-primary flex shrink-0 hover:underline" />
 						</InvoiceTeaser.Root>
 					</div>
 					<div>

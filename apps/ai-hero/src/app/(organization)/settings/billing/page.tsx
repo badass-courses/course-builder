@@ -93,7 +93,7 @@ export default async function BillingPage() {
 			<div className="mx-auto max-w-4xl">
 				<h1 className="mb-8 text-3xl font-bold">Billing & Subscription</h1>
 
-				<div className="divide-y divide-gray-200 rounded-lg bg-white shadow">
+				<div className="divide-y divide-gray-200 rounded-lg bg-white shadow-sm">
 					{/* Current Plan */}
 					<div className="p-6">
 						<h2 className="text-lg font-medium text-gray-900">Current Plan</h2>
@@ -109,7 +109,7 @@ export default async function BillingPage() {
 										</div>
 										<button
 											type="button"
-											className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+											className="shadow-xs inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 										>
 											Change Plan
 										</button>
@@ -149,7 +149,7 @@ export default async function BillingPage() {
 									</p>
 									<button
 										type="button"
-										className="mt-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
+										className="shadow-xs mt-4 inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
 									>
 										Subscribe Now
 									</button>
@@ -188,7 +188,7 @@ export default async function BillingPage() {
 									</div>
 									<button
 										type="button"
-										className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+										className="shadow-xs inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
 									>
 										Update Payment Method
 									</button>

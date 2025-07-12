@@ -87,10 +87,10 @@ export default async function PostPage(props: {
 						alt=""
 						aria-hidden="true"
 						src={squareGridPattern}
-						className="hidden h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
+						className="object-top-right hidden h-[400px] w-full overflow-hidden object-cover opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
 					/>
 					<div
-						className="dark:to-background dark:via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent via-white to-white dark:from-transparent"
+						className="dark:to-background dark:via-background bg-linear-to-bl absolute left-0 top-0 z-10 h-full w-full from-transparent via-white to-white dark:from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
@@ -199,7 +199,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="px-5 md:px-10 lg:px-14">
-			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
 				{content}
 			</article>
 		</div>

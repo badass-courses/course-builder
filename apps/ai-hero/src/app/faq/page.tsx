@@ -19,7 +19,7 @@ export default async function FaqPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-grow flex-col pb-16">
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] grow flex-col pb-16">
 				<div className="flex w-full flex-col items-center px-3 py-16 sm:px-10">
 					<h1 className="mb-16 text-center text-6xl font-bold">
 						{page?.fields?.title}
@@ -40,7 +40,7 @@ export default async function FaqPage() {
 						</ul>
 					</Accordion>
 				</div>
-				<h2 className="mx-auto  max-w-sm text-balance text-center font-normal opacity-80 sm:text-lg lg:text-xl">
+				<h2 className="mx-auto max-w-sm text-balance text-center font-normal opacity-80 sm:text-lg lg:text-xl">
 					If you have any more questions, please contact us at{' '}
 					<a
 						href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}

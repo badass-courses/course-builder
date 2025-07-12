@@ -97,9 +97,7 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-	return (
-		<div className="rounded-sm bg-red-300 p-[var(--grid)]">Item {item.id}</div>
-	)
+	return <div className="p-(--grid) rounded-sm bg-red-300">Item {item.id}</div>
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {
@@ -444,7 +442,7 @@ const TreeItem = memo(function TreeItem({
 					{item.label ?? item.id}
 				</span>
 			</div>
-			<small className="flex-shrink-0 text-ellipsis text-right opacity-50">
+			<small className="shrink-0 text-ellipsis text-right opacity-50">
 				{item.itemData?.resource?.fields?.postType ? (
 					<span className="capitalize">
 						{item.itemData.resource.fields.postType}

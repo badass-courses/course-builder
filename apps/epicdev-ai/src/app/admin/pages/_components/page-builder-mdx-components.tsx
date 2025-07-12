@@ -66,7 +66,7 @@ const Section = ({
 	return (
 		<section
 			className={cn(
-				'bg-foreground/5 prose-headings:first-of-type:mt-4 -mx-5 px-5 py-5',
+				'bg-foreground/5 first-of-type:prose-headings:mt-4 -mx-5 px-5 py-5',
 				props.className,
 			)}
 			{...props}
@@ -137,7 +137,7 @@ const Instructor = ({
 				alt={config.author}
 				width={1280}
 				height={854}
-				className="!mb-0 flex-shrink-0 rounded-md"
+				className="mb-0! flex-shrink-0 rounded-md"
 			/>
 
 			<div className="">
@@ -186,7 +186,7 @@ const Testimonial = ({
 						<CldImage
 							alt={authorName}
 							width={40}
-							className="!m-0 rounded-full"
+							className="m-0! rounded-full"
 							height={40}
 							src={authorAvatar}
 						/>
@@ -361,7 +361,7 @@ const BlockItem = ({
 
 const PageBlocks = () => {
 	return (
-		<div className="flex flex-col gap-4 ">
+		<div className="flex flex-col gap-4">
 			{data?.ctas && (
 				<div className="flex flex-wrap items-center gap-1">
 					<strong className="mb-1">CTAs</strong>

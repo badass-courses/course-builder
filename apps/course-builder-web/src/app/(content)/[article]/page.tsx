@@ -100,7 +100,7 @@ export default async function ArticlePage(props: {
 	return (
 		<div>
 			<ArticleActionBar articleLoader={articleLoader} />
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
+			<article className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col px-5 py-10 md:py-16">
 				<ArticleTitle articleLoader={articleLoader} />
 				<Article articleLoader={articleLoader} />
 			</article>

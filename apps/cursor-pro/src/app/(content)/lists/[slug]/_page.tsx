@@ -86,10 +86,10 @@ export default async function ListPage(props: {
 			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
 				<div
 					aria-hidden="true"
-					className="via-foreground/10 to-muted absolute -bottom-px right-0 h-px w-2/3 bg-gradient-to-r from-transparent"
+					className="via-foreground/10 to-muted bg-linear-to-r absolute -bottom-px right-0 h-px w-2/3 from-transparent"
 				/>
 				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
-					<div className="h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat sm:w-8 lg:w-10  dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]" />
+					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat sm:w-8 lg:w-10 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]" />
 					{firstResource?.fields?.slug && (
 						<Button
 							size="lg"
@@ -174,7 +174,7 @@ export default async function ListPage(props: {
 									sizes="(max-width: 768px) 100vw, 480px"
 								/>
 								<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
-									<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
+									<PlayIcon className="relative h-5 w-5 translate-x-px" />
 									<span className="sr-only">Start Learning</span>
 								</div>
 							</Link>
@@ -191,8 +191,8 @@ export default async function ListPage(props: {
 				</div>
 			</Links>
 			<div className="">
-				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid ">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10 [&_[data-pre]]:max-w-4xl">
+				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
+					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
 						{body || 'No body found.'}
 					</article>
 					<ListResources list={list} />

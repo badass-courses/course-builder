@@ -46,8 +46,7 @@ export const CohortDetails: React.FC<{
 				{eventDateString && (
 					<div className="flex flex-col">
 						<span className="inline-flex items-center gap-1 font-semibold">
-							<CalendarIcon className="text-primary h-5 w-5 flex-shrink-0" />{' '}
-							Date
+							<CalendarIcon className="text-primary h-5 w-5 shrink-0" /> Date
 						</span>{' '}
 						<div className="opacity-90">{eventDateString}</div>
 					</div>
@@ -55,7 +54,7 @@ export const CohortDetails: React.FC<{
 				{eventTimeString && (
 					<div className="flex flex-col">
 						<span className="inline-flex items-center gap-1 font-semibold">
-							<ClockIcon className="text-primary relative h-5 w-5 flex-shrink-0" />{' '}
+							<ClockIcon className="text-primary relative h-5 w-5 shrink-0" />{' '}
 							Time{' '}
 							{everyTimeZoneLink && (
 								<>

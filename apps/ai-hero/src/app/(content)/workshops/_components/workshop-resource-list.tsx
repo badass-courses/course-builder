@@ -110,7 +110,7 @@ export function WorkshopResourceList(props: Props) {
 			aria-controls="workshop-navigation"
 			aria-label="Workshop navigation"
 			className={cn(
-				'bg-muted/50 relative w-full max-w-xs flex-shrink-0 border-r',
+				'bg-muted/50 relative w-full max-w-xs shrink-0 border-r',
 				className,
 				{
 					'border-r': !isSidebarCollapsed,
@@ -159,7 +159,7 @@ export function WorkshopResourceList(props: Props) {
 											)}
 										</Button>
 									</TooltipTrigger>
-									<TooltipContent className="z-[1000]" side="left">
+									<TooltipContent className="z-1000" side="left">
 										{isSidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
 									</TooltipContent>
 								</Tooltip>
@@ -189,10 +189,10 @@ export function WorkshopResourceList(props: Props) {
 									>
 										{workshopNavigation.title}
 									</Link>
-									<AutoPlayToggle className="text-muted-foreground [&_label]:hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+									<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 								</div>
 							</div>
-							<div className="absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
+							<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 						</div>
 					)}
 					<ScrollArea
@@ -292,7 +292,7 @@ export function WorkshopResourceList(props: Props) {
 								)}
 							</Button>
 						</TooltipTrigger>
-						<TooltipContent className="z-[1000]" side="right">
+						<TooltipContent className="z-1000" side="right">
 							{isSidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
 						</TooltipContent>
 					</Tooltip>
@@ -382,7 +382,7 @@ const LessonResource = ({
 								{isCompleted ? (
 									<div
 										aria-label="Completed"
-										className="flex w-6 flex-shrink-0 items-center justify-center pr-1"
+										className="flex w-6 shrink-0 items-center justify-center pr-1"
 									>
 										<Check
 											aria-hidden="true"
@@ -391,7 +391,7 @@ const LessonResource = ({
 									</div>
 								) : (
 									<span
-										className="relative w-6 flex-shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
+										className="relative w-6 shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
 										aria-hidden="true"
 									>
 										{index + 1}

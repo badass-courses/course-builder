@@ -218,7 +218,7 @@ const CouponGeneratorForm = ({
 										disabled={!Boolean(form.watch('restrictedToProductId'))}
 										onValueChange={field.onChange}
 									>
-										<SelectTrigger className="truncate overflow-ellipsis pr-5 text-left">
+										<SelectTrigger className="truncate text-ellipsis pr-5 text-left">
 											<SelectValue
 												placeholder={
 													Boolean(form.watch('restrictedToProductId'))

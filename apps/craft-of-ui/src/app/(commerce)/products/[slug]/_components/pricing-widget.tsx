@@ -80,7 +80,7 @@ export const PricingWidget: React.FC<{
 						</>
 					)}
 					{!isSoldOut && (
-						<Pricing.BuyButton className="from-primary relative my-3 w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+						<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative my-3 w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-bold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
 							{isSoldOut ? 'Sold Out' : ctaLabel}
 						</Pricing.BuyButton>
 					)}
@@ -91,7 +91,7 @@ export const PricingWidget: React.FC<{
 				</Pricing.Details>
 			</Pricing.Product>
 			<Pricing.Waitlist className="w-full">
-				<p className="!mb-3 text-center font-medium">
+				<p className="mb-3! text-center font-medium">
 					Get notified when the next cohort opens
 				</p>
 				<SubscribeToConvertkitForm

@@ -86,7 +86,7 @@ export const PrimaryNewsletterCta: React.FC<
 			) : (
 				<div
 					className={cn('relative z-10', {
-						'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
+						'blur-xs opacity-85': subscriber && shouldHideTitleWhenSubscribed,
 					})}
 				>
 					{withImage && (
@@ -130,7 +130,7 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 				<div
 					className={cn('flex w-full flex-col items-center', {
-						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
+						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
 							subscriber && !formId,
 					})}
 				>

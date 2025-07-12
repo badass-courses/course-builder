@@ -73,7 +73,7 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
+			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
 				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left lg:flex-col lg:items-start lg:pt-0">
 					<div className="flex items-center gap-2">
 						<Mail className="text-primary size-4" />
@@ -89,7 +89,7 @@ export const PostNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="dark:[&_input]:bg-card [&_button]:from-primary dark:hover:[&_input]:bg-background [&_button]:bg-gradient-to-b [&_button]:to-indigo-800 [&_input]:border-0 [&_input]:bg-gray-50 [&_input]:text-base hover:[&_input]:bg-gray-100"
+						className="dark:[&_input]:bg-card [&_button]:from-primary dark:[&_input]:hover:bg-background [&_button]:bg-linear-to-b [&_button]:to-indigo-800 [&_input]:border-0 [&_input]:bg-gray-50 [&_input]:text-base [&_input]:hover:bg-gray-100"
 					/>
 				</div>
 			</div>

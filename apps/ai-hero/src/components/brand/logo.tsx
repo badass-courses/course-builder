@@ -25,7 +25,7 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 					</clipPath>
 				</defs>
 			</svg>
-			<span className={cn('text-xl font-semibold !leading-none', {})}>
+			<span className={cn('leading-none! text-xl font-semibold', {})}>
 				<span className="font-mono">AI</span>hero
 			</span>
 		</div>

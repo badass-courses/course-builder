@@ -92,7 +92,7 @@ export const PrimaryNewsletterCta: React.FC<
 					className={cn(
 						'relative z-10 flex max-w-3xl flex-col items-center justify-center pb-5 pt-10 sm:pb-10',
 						{
-							'opacity-85 blur-sm': subscriber && shouldHideTitleWhenSubscribed,
+							'blur-xs opacity-85': subscriber && shouldHideTitleWhenSubscribed,
 						},
 					)}
 				>
@@ -135,7 +135,7 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 				<div
 					className={cn('flex w-full max-w-sm flex-col items-center', {
-						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
+						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
 							subscriber && !formId,
 					})}
 				>

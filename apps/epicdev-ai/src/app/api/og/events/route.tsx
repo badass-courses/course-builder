@@ -36,7 +36,7 @@ export async function GET(request: Request) {
 		return new ImageResponse(
 			(
 				<div
-					tw="flex h-full w-full bg-gradient-to-tr from-purple-200 to-white flex-row"
+					tw="flex h-full w-full bg-linear-to-tr from-purple-200 to-white flex-row"
 					style={{
 						fontFamily: 'HeadingFont',
 						background: '#EFEFFD',

@@ -16,7 +16,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				className="group flex flex-col items-baseline justify-between gap-2 py-5 transition ease-in-out sm:py-5 md:flex-row"
 				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
-				<div className="flex flex-col gap-2 ">
+				<div className="flex flex-col gap-2">
 					<span className="fluid-lg group-hover:text-primary pr-5 font-bold transition sm:truncate">
 						<Highlight
 							attribute="title"

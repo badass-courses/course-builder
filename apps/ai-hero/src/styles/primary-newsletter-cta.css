@@ -1,3 +1,5 @@
+/* @reference './globals.css'; */
+
 #primary-newsletter-cta [data-sr-convertkit-subscribe-form] {
 	@apply mx-auto flex w-full max-w-[420px] flex-col;
 

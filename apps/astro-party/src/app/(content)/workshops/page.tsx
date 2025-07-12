@@ -34,7 +34,7 @@ export default async function Workshops() {
 
 	return (
 		<main className="container min-h-[calc(100vh-var(--nav-height))] px-5">
-			<div className="mx-auto flex h-full w-full max-w-screen-lg flex-col items-center border-x">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex h-full w-full flex-col items-center border-x">
 				<div className="w-full px-5 pb-16 pt-24">
 					<h1 className="font-heading fluid-3xl text-center font-medium">
 						Value-Based Design Workshops

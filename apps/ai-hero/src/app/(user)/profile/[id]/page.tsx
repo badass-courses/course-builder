@@ -62,7 +62,7 @@ export default async function ProfilePage({ params }: Props) {
 	)
 
 	return (
-		<div className="container max-w-screen-lg">
+		<div className="max-w-(--breakpoint-lg) container">
 			<div className="flex w-full grid-cols-2 flex-col items-center justify-between border-b py-8 lg:grid">
 				<div className="flex items-center gap-5">
 					{profile?.image ? (

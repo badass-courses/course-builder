@@ -1,24 +1,42 @@
-@import './primary-newsletter-cta.css';
-@import './tip-newsletter-cta.css';
-@import './video-block-newsletter-cta.css';
-@import './nprogress.css';
-@import './video/mux-player.css';
-@import './video/github-link.css';
-@import './video/lesson-completion-toggle.css';
-@import './video/lesson-description.css';
-@import './video/lesson-title.css';
-@import './video/module-lesson-list.css';
-@import './video/video-overlays.css';
-@import './video/video-transcript.css';
-@import './video/module-navigator.css';
-@import './focus-visible.css';
-@import '@code-hike/mdx/dist/index.css';
-@import './login.css';
-@import './commerce.css';
+@import '@code-hike/mdx/dist/index.css' layer(base);
+@import './primary-newsletter-cta.css' layer(utilities);
+@import './tip-newsletter-cta.css' layer(utilities);
+@import './video-block-newsletter-cta.css' layer(utilities);
+@import './nprogress.css' layer(utilities);
+@import './video/mux-player.css' layer(utilities);
+@import './video/github-link.css' layer(utilities);
+@import './video/lesson-completion-toggle.css' layer(utilities);
+@import './video/lesson-description.css' layer(utilities);
+@import './video/lesson-title.css' layer(utilities);
+@import './video/module-lesson-list.css' layer(utilities);
+@import './video/video-overlays.css' layer(utilities);
+@import './video/video-transcript.css' layer(utilities);
+@import './video/module-navigator.css' layer(utilities);
+@import './focus-visible.css' layer(utilities);
+@import './login.css' layer(utilities);
+@import './commerce.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../../tailwind.config.ts';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentcolor);
+	}
+}
 
 @layer base {
 	:root {

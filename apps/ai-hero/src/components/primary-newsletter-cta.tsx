@@ -117,7 +117,7 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 				<div
 					className={cn('', {
-						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
+						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
 							subscriber,
 					})}
 				>

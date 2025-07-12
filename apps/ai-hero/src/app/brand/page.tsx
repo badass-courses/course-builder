@@ -12,12 +12,12 @@ export default async function BrandRoute() {
 	return (
 		<LayoutClient withContainer>
 			<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col border-x">
-				<div className="mx-auto flex w-full max-w-screen-lg items-center justify-center border-x border-b py-16">
+				<div className="max-w-(--breakpoint-lg) mx-auto flex w-full items-center justify-center border-x border-b py-16">
 					<h1 className="font-heading text-center text-5xl font-bold sm:text-6xl">
 						Brand
 					</h1>
 				</div>
-				<article className="divide-border mx-auto flex h-full w-full max-w-screen-lg flex-shrink-0 flex-col items-center divide-y border-x border-b">
+				<article className="divide-border max-w-(--breakpoint-lg) mx-auto flex h-full w-full shrink-0 flex-col items-center divide-y border-x border-b">
 					<LogoAsset
 						className="bg-background"
 						asset={

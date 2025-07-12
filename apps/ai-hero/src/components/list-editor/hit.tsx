@@ -35,7 +35,7 @@ export default function Hit({
 				<div className="flex items-center gap-2">
 					<span className="py-1 pr-5 font-medium sm:truncate">{hit.title}</span>
 				</div>
-				<div className="text-muted-foreground fon-normal flex flex-shrink-0 items-center gap-3 pl-7 text-xs capitalize opacity-60 sm:pl-0">
+				<div className="text-muted-foreground fon-normal flex shrink-0 items-center gap-3 pl-7 text-xs capitalize opacity-60 sm:pl-0">
 					<span>{hit.type}</span>
 				</div>
 			</Label>

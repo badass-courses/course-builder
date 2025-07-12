@@ -4,7 +4,7 @@
 */
 
 [data-js-focus-visible] :focus:not([data-focus-visible-added]) {
-	@apply outline-none;
+	@apply outline-hidden;
 }
 
 /*
@@ -14,5 +14,5 @@
 */
 
 [data-js-focus-visible] [data-focus-visible-added] {
-	@apply ring-ring outline-none ring-2 ring-offset-1;
+	@apply ring-ring outline-hidden ring-2 ring-offset-1;
 }

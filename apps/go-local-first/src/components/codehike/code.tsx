@@ -25,7 +25,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			<Pre
 				code={highlighted}
 				className={cn('bg-background text-xs sm:text-sm', {
-					'!mt-0 !rounded-t-none rounded-b border-x border-b border-t-0':
+					'mt-0! rounded-t-none! rounded-b border-x border-b border-t-0':
 						isTerminalCode,
 				})}
 				style={{

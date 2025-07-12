@@ -124,7 +124,7 @@ export function PostActions({
 														<Link
 															key={postList.id}
 															href={`/lists/${postList?.fields.slug}/edit`}
-															className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+															className="text-muted-foreground hover:text-primary flex items-center gap-1"
 														>
 															<ListOrderedIcon className="w-3" />
 															{postList && postList.fields.title}

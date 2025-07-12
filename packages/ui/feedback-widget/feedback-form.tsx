@@ -31,7 +31,7 @@ export const FeedbackForm: React.FC<{
 				onSubmit={form.handleSubmit(submitFeedbackForm)}
 				className="flex flex-col space-y-5"
 			>
-				<div className={cn({ 'pointer-events-none blur-sm': isCodeQuestion })}>
+				<div className={cn({ 'blur-xs pointer-events-none': isCodeQuestion })}>
 					<Textarea
 						{...form.register('text')}
 						placeholder="Your feedback..."
@@ -41,7 +41,7 @@ export const FeedbackForm: React.FC<{
 
 				<div className="flex w-full flex-col space-y-5 md:flex-row md:space-x-10 md:space-y-0">
 					<div
-						className={cn({ 'pointer-events-none blur-sm': isCodeQuestion })}
+						className={cn({ 'blur-xs pointer-events-none': isCodeQuestion })}
 					>
 						<EmotionField control={form.control} />
 					</div>
@@ -131,7 +131,7 @@ export const SubmitButton: React.FC<
 			type="submit"
 			size="lg"
 			disabled={isSubmitting}
-			className="bg-primary focus-visible:ring-ring text-primary-foreground inline-flex items-center justify-center gap-1 rounded-lg border border-transparent px-4 py-3 text-base font-semibold leading-none transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+			className="bg-primary focus-visible:ring-ring text-primary-foreground focus:outline-hidden inline-flex items-center justify-center gap-1 rounded-lg border border-transparent px-4 py-3 text-base font-semibold leading-none transition focus-visible:ring-2 focus-visible:ring-offset-2"
 		>
 			{isSubmitting ? (
 				<>

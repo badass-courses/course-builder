@@ -31,7 +31,7 @@ export function EditResourcesMetadataPanel({
 					console.log({ error })
 				})}
 			>
-				<ScrollArea className="md:h-[var(--pane-layout-height)]">
+				<ScrollArea className="md:h-(--pane-layout-height)">
 					<div className="flex flex-col gap-5 py-5">{children}</div>
 				</ScrollArea>
 			</form>

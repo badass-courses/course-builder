@@ -127,7 +127,7 @@ const Invoice = async (props: {
 
 	return (
 		<div>
-			<main className="mx-auto max-w-screen-md">
+			<main className="max-w-(--breakpoint-md) mx-auto">
 				<div className="flex flex-col justify-between pb-5 pt-12 print:hidden">
 					<h1 className="font-text text-lg font-bold leading-tight sm:text-xl">
 						Your Invoice for {process.env.NEXT_PUBLIC_SITE_TITLE}
@@ -149,7 +149,7 @@ const Invoice = async (props: {
 				</div>
 				<div className="rounded-t-md bg-white pr-12 text-gray-900 shadow-xl print:shadow-none">
 					<div className="px-10 py-16">
-						<div className="grid w-full grid-cols-3 items-start justify-between ">
+						<div className="grid w-full grid-cols-3 items-start justify-between">
 							<div className="col-span-2 flex items-center">
 								<span className="font-text pl-2 text-2xl font-bold">
 									{process.env.NEXT_PUBLIC_SITE_TITLE}

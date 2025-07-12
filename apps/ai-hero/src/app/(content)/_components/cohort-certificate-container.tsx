@@ -14,7 +14,7 @@ export const Certificate = ({
 }) => {
 	return isCompleted ? (
 		<CohortCertificate.Root resourceIdOrSlug={resourceSlugOrId}>
-			<CohortCertificate.Trigger className="text-foreground hover:bg-muted bg-background relative flex aspect-[842/595] h-fit w-full flex-col gap-2 rounded border">
+			<CohortCertificate.Trigger className="text-foreground hover:bg-muted bg-background aspect-842/595 relative flex h-fit w-full flex-col gap-2 rounded border">
 				<div className="text-primary text-sm uppercase tracking-wide">
 					Now Available
 				</div>
@@ -39,7 +39,7 @@ export const Certificate = ({
 			</CohortCertificate.Dialog>
 		</CohortCertificate.Root>
 	) : (
-		<div className="bg-background relative flex aspect-[842/595] h-fit w-full flex-col items-center justify-center rounded border text-sm">
+		<div className="bg-background aspect-842/595 relative flex h-fit w-full flex-col items-center justify-center rounded border text-sm">
 			<div className="bg-muted rounded-full p-3">
 				<Lock className="h-4 w-4" />
 			</div>

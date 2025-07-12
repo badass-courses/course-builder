@@ -13,10 +13,10 @@
 		@apply rounded-none text-base;
 	}
 	[data-form] {
-		@apply w-full  sm:mx-auto sm:max-w-md  sm:text-lg;
+		@apply w-full sm:mx-auto sm:max-w-md sm:text-lg;
 
 		[data-input-container] {
-			@apply relative mt-1 rounded-md shadow-sm;
+			@apply shadow-xs relative mt-1 rounded-md;
 			[data-icon] {
 				@apply pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4;
 				svg {

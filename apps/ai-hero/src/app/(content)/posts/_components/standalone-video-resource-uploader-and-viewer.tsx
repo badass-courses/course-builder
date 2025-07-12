@@ -93,7 +93,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 	const { toast } = useToast()
 
 	return (
-		<ScrollArea className="h-[var(--pane-layout-height)]">
+		<ScrollArea className="h-(--pane-layout-height)">
 			<div className="mb-3 px-3">
 				<PostUploader
 					parentResourceId={undefined}
@@ -144,7 +144,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 							>
 								<div className="flex min-w-0 flex-1 items-center gap-3">
 									<button
-										className="group relative flex flex-shrink-0 items-center justify-center"
+										className="group relative flex shrink-0 items-center justify-center"
 										type="button"
 										onClick={() => {
 											setVideoPreviewModal({
@@ -180,7 +180,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 										<Button
 											size="icon"
 											variant="ghost"
-											className="h-8 w-8 flex-shrink-0"
+											className="h-8 w-8 shrink-0"
 										>
 											<MoreVertical className="h-4 w-4" />
 											<span className="sr-only">Open menu</span>

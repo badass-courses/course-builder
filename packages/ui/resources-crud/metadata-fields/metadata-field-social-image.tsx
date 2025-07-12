@@ -32,7 +32,7 @@ export function MetadataFieldSocialImage({
 							alt={'social image preview'}
 							width={1200 / 2}
 							height={630 / 2}
-							className="aspect-[1200/630] w-full rounded-md border"
+							className="aspect-1200/630 w-full rounded-md border"
 						/>
 					)}
 					<div className="flex items-center gap-1">

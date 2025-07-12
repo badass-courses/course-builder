@@ -246,7 +246,7 @@ export function EditResourcesForm({
 						defaultSize={55}
 						className=""
 					>
-						<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+						<ScrollArea className="h-(--pane-layout-height) flex w-full flex-col justify-start overflow-y-auto">
 							<EditResourcesBodyPanel
 								user={user}
 								partykitUrl={hostUrl}

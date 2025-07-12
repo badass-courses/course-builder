@@ -64,7 +64,7 @@ export default async function PostsIndexPage() {
 
 	return (
 		<main className="container flex flex-grow flex-col px-5 py-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col sm:flex-row">
 				<div className="flex w-full flex-col items-center">
 					{latestPost ? null : (
 						<h1 className="flex w-full py-16 text-center text-2xl">
@@ -218,7 +218,7 @@ async function PostListActions({
 				</ul>
 			) : null}
 			{unlisted && unlisted.length > 0 ? (
-				<ul className=" flex flex-col pt-4 lg:px-5">
+				<ul className="flex flex-col pt-4 lg:px-5">
 					<strong>Unlisted</strong>
 					{unlisted.map((post) => {
 						const postLists =
@@ -245,7 +245,7 @@ async function PostListActions({
 											<Link
 												key={postList.id}
 												href={`/lists/${postList?.fields.slug}/edit`}
-												className="text-muted-foreground hover:text-primary flex items-center gap-1 "
+												className="text-muted-foreground hover:text-primary flex items-center gap-1"
 											>
 												<ListOrderedIcon className="w-3" />
 												{postList && postList.fields.title}

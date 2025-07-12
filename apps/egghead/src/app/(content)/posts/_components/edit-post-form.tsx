@@ -111,7 +111,7 @@ export function EditPostForm({
 						/>
 					),
 					toolComponent: (
-						<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+						<div className="h-(--pane-layout-height) overflow-y-auto py-5">
 							<ResourceResourcesList resource={post} />
 						</div>
 					),

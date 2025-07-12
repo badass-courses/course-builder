@@ -121,7 +121,7 @@ async function LessonPage({
 								/>
 							</div>
 						</div>
-						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:flex-shrink-0 2xl:border-l 2xl:border-t-0">
+						<div className="flex flex-col border-t 2xl:w-[512px] 2xl:shrink-0 2xl:border-l 2xl:border-t-0">
 							<Accordion type="single" collapsible className="block lg:hidden">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center p-5 font-medium">

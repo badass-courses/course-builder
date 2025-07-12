@@ -62,13 +62,13 @@ export const PricingWidget: React.FC<{
 						<Pricing.Name>{product.name}</Pricing.Name>
 					</Link>
 					<div className="bg-muted mt-3 flex h-12 w-full items-center justify-center gap-2 rounded px-5 text-base font-medium">
-						<CheckCircle2Icon className="h-4 w-4 " />
+						<CheckCircle2Icon className="h-4 w-4" />
 						Purchased
 					</div>
 					<Pricing.BuyMoreSeats className="pt-5">
 						<Pricing.TeamQuantityInput className="mb-0" label="Quantity" />
 						<Pricing.Price className="scale-75" />
-						<Pricing.BuyButton className="via-primary mt-3 bg-gradient-to-b from-blue-500 to-blue-700 shadow">
+						<Pricing.BuyButton className="via-primary bg-linear-to-b mt-3 from-blue-500 to-blue-700 shadow-sm">
 							Buy Additional Seats
 						</Pricing.BuyButton>
 					</Pricing.BuyMoreSeats>
@@ -81,7 +81,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.Price />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-3' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="via-primary bg-gradient-to-b from-blue-500 to-blue-700 shadow" />
+					<Pricing.BuyButton className="via-primary bg-linear-to-b from-blue-500 to-blue-700 shadow-sm" />
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="mt-6 w-full rounded border p-5" />

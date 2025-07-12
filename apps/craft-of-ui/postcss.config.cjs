@@ -1,7 +1,6 @@
 const config = {
 	plugins: {
-		'tailwindcss/nesting': {},
-		tailwindcss: {},
+		'@tailwindcss/postcss': {},
 		autoprefixer: {
 			flexbox: 'no-2009',
 		},

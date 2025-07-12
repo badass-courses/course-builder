@@ -8,7 +8,7 @@
 			@apply absolute left-0 top-0 h-full w-full rounded-full px-8 pt-8 text-base focus-visible:ring-offset-0;
 		}
 		[data-sr-input-label] {
-			@apply pointer-events-none relative z-10 inline-block -translate-y-3  pb-1 font-medium;
+			@apply pointer-events-none relative z-10 inline-block -translate-y-3 pb-1 font-medium;
 		}
 		[data-sr-input-asterisk] {
 			@apply opacity-50;

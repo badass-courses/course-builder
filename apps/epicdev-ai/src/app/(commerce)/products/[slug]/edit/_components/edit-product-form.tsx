@@ -509,7 +509,7 @@ function EditProductFormDesktop({
 					defaultSize={55}
 					className="flex min-h-full md:min-h-full"
 				>
-					<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+					<ScrollArea className="h-(--pane-layout-height) flex w-full flex-col justify-start overflow-y-auto">
 						<EditResourcesBodyPanel
 							user={user}
 							partykitUrl={hostUrl}

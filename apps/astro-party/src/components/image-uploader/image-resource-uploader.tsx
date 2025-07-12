@@ -9,7 +9,7 @@ export function ImageResourceUploader(props: {
 	belongsToResourceId: string
 }) {
 	return (
-		<ScrollArea className="h-[var(--pane-layout-height)] overflow-y-auto">
+		<ScrollArea className="h-(--pane-layout-height) overflow-y-auto">
 			<CloudinaryUploadButton
 				dir={props.uploadDirectory}
 				id={props.belongsToResourceId}

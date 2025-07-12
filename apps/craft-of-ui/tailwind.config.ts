@@ -1,6 +1,6 @@
 import { color } from 'framer-motion'
 import colors from 'tailwindcss/colors'
-import { fontFamily } from 'tailwindcss/defaultTheme'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 // const { withUt } = require('uploadthing/tw')
 
@@ -76,9 +76,9 @@ module.exports = {
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--font-sans)', ...fontFamily.sans],
-				heading: ['var(--font-serif)', ...fontFamily.serif],
-				serif: ['var(--font-serif)', ...fontFamily.serif],
+				sans: ['var(--font-sans)', ...defaultTheme.fontFamily.sans],
+				heading: ['var(--font-serif)', ...defaultTheme.fontFamily.serif],
+				serif: ['var(--font-serif)', ...defaultTheme.fontFamily.serif],
 			},
 			keyframes: {
 				'accordion-down': {

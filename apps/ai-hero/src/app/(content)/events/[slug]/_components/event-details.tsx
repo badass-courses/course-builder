@@ -37,14 +37,13 @@ export const EventDetails: React.FC<{
 			<div className="flex flex-col gap-2.5 text-base font-normal">
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-light opacity-90">
-						<CalendarIcon className="h-5 w-5 flex-shrink-0 opacity-50" /> Date
+						<CalendarIcon className="h-5 w-5 shrink-0 opacity-50" /> Date
 					</span>{' '}
 					{eventDate}
 				</div>
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-light opacity-90">
-						<ClockIcon className="relative h-5 w-5 flex-shrink-0 opacity-50" />{' '}
-						Time
+						<ClockIcon className="relative h-5 w-5 shrink-0 opacity-50" /> Time
 					</span>
 					<div>
 						{eventTime} (Pacific time){' '}

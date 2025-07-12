@@ -79,7 +79,7 @@
 				@apply rounded-md px-0 py-1;
 			}
 			a[data-is-highlighted='true'] {
-				@apply bg-gradient-to-r from-cyan-300/5 to-transparent;
+				@apply bg-linear-to-r from-cyan-300/5 to-transparent;
 			}
 		}
 	}

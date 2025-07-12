@@ -21,7 +21,7 @@ export function ActiveEventButton({ className }: { className?: string }) {
 		<div className={cn('', className)}>
 			<Button
 				asChild
-				className="from-primary dark:from-primary bg-gradient-to-b to-indigo-800 text-white shadow-lg shadow-indigo-800/20 dark:to-indigo-600 dark:text-black"
+				className="from-primary dark:from-primary bg-linear-to-b to-indigo-800 text-white shadow-lg shadow-indigo-800/20 dark:to-indigo-600 dark:text-black"
 			>
 				<Link href={getResourcePath('event', firstEvent.fields.slug, 'view')}>
 					{/* <Marquee className="max-w-24 [--duration:20s]"> */}
@@ -74,7 +74,7 @@ export function ActiveEventBanner({ className }: { className?: string }) {
 				</p>
 				<Button
 					asChild
-					className="from-primary bg-gradient-to-b to-indigo-800 shadow-lg shadow-indigo-800/20 dark:to-indigo-500 dark:text-black"
+					className="from-primary bg-linear-to-b to-indigo-800 shadow-lg shadow-indigo-800/20 dark:to-indigo-500 dark:text-black"
 				>
 					<Link href={getResourcePath('event', event.fields.slug, 'view')}>
 						<span className="text-sm font-medium">Get Your Ticket</span>

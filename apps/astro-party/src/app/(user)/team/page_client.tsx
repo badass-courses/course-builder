@@ -19,7 +19,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 
 	return (
 		<Layout>
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
 				<header className="w-full md:max-w-[230px]">
 					<h1 className="fluid-xl text-center font-bold md:text-left">
 						Your Team
@@ -92,7 +92,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 														label="Quantity"
 													/>
 													<Pricing.Price className="scale-75" />
-													<Pricing.BuyButton className="via-primary mt-3 h-10 bg-gradient-to-b from-blue-500 to-blue-700 text-sm shadow">
+													<Pricing.BuyButton className="via-primary bg-linear-to-b mt-3 h-10 from-blue-500 to-blue-700 text-sm shadow-sm">
 														Buy Additional Seats
 													</Pricing.BuyButton>
 												</Pricing.BuyMoreSeats>
