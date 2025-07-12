@@ -118,8 +118,8 @@ export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
 type GetAbilityOptions = {
 	user?: User & {
-		roles?: Array<{ name: string }>
-		organizationRoles?: Array<{ organizationId: string; name: string }>
+		roles?: Array<{ name: string }> | null
+		organizationRoles?: Array<{ organizationId: string; name: string }> | null
 		entitlements?: Array<{
 			type: string
 			expires?: Date | null
@@ -230,8 +230,11 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 type ViewerAbilityInput = {
 	user?:
 		| (User & {
-				roles?: Array<{ name: string }>
-				organizationRoles?: Array<{ organizationId: string; name: string }>
+				roles?: Array<{ name: string }> | null
+				organizationRoles?: Array<{
+					organizationId: string
+					name: string
+				}> | null
 				entitlements?: Array<{
 					type: string
 					expires?: Date | null

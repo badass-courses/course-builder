@@ -52,7 +52,7 @@ declare module 'next-auth' {
 		id?: string
 		email?: string | null
 		role?: Role
-		roles: {
+		roles?: {
 			id: string
 			name: string
 			description: string | null
@@ -61,26 +61,18 @@ declare module 'next-auth' {
 			updatedAt: Date | null
 			deletedAt: Date | null
 		}[]
-		entitlements: {
+		entitlements?: {
 			type: string
 			expires?: Date | null
 			metadata: Record<string, any> | null
 		}[]
-		memberships?:
-			| {
-					organizationId: string | null
-					id: string
-					name: string
-					description: string | null
-					active: boolean
-					createdAt: Date | null
-					updatedAt: Date | null
-					deletedAt: Date | null
-			  }[]
-			| null
-		organizationRoles?: {
-			organizationId: string | null
+		memberships?: {
 			id: string
+			organizationId: string
+		}[]
+		organizationRoles?: {
+			id: string
+			organizationId: string
 			name: string
 			description: string | null
 			active: boolean
@@ -263,6 +255,9 @@ export const getServerAuthSession = async () => {
 					...session.user,
 					role: primaryRole,
 					roles: dbUser.roles.map((userRole) => userRole.role),
+					memberships: [],
+					organizationRoles: [],
+					entitlements: [],
 				},
 			}
 		}
@@ -338,6 +333,9 @@ export const getImpersonatedSession = async () => {
 				image: targetUser.image,
 				role: targetRole,
 				roles: targetUser.roles.map((userRole) => userRole.role),
+				memberships: [],
+				organizationRoles: [],
+				entitlements: [],
 				// Keep track of the original admin
 				impersonatingFromUserId: impersonationData.adminId,
 			},

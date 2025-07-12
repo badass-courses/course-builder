@@ -87,7 +87,7 @@ export default async function AdminPostsIndexPage() {
 									</Link>
 								</TableCell>
 								<TableCell>
-									<Contributor userId={post.createdById} />
+									<Contributor />
 								</TableCell>
 								<TableCell>{post.fields.state}</TableCell>
 								<TableCell>

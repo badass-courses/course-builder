@@ -10,5 +10,12 @@ export async function getContributors(): Promise<User[]> {
 		where: eq(users.role, 'contributor'),
 	})
 
-	return contributorsFromColumn
+	// Transform to match the expected User type
+	return contributorsFromColumn.map((user) => ({
+		...user,
+		role: user.role as 'admin' | 'user' | 'contributor',
+		memberships: [],
+		roles: [],
+		organizationRoles: [],
+	}))
 }

@@ -75,6 +75,8 @@ export async function getCurrentAbilityRules({
 		user: {
 			...session?.user,
 			id: session?.user?.id || '',
+			memberships: session?.user?.memberships || [],
+			organizationRoles: session?.user?.organizationRoles || [],
 			entitlements: activeEntitlements.map((e) => ({
 				type: e.entitlementType,
 				expires: e.expiresAt,
