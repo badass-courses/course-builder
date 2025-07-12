@@ -1,13 +1,7 @@
 'use client'
 
 import * as React from 'react'
-
-type User = {
-	name?: string | null
-	email?: string | null
-	image?: string | null
-	id: string
-}
+import { User } from '@/ability'
 
 interface DashboardComponentProps {
 	user: User

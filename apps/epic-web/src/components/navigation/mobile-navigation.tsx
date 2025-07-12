@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Image from 'next/image'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, User } from '@/ability'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
@@ -22,15 +22,6 @@ import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
-
-type User = {
-	name?: string | null
-	email?: string | null
-	image?: string | null
-	id: string
-	role?: string
-	impersonatingFromUserId?: string
-}
 
 type MobileNavigationProps = {
 	isMobileMenuOpen: boolean

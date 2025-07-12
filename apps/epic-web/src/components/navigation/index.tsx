@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, User } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
@@ -13,14 +13,6 @@ import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { UserMenuClient } from './user-menu-client'
-
-type User = {
-	name?: string | null
-	email?: string | null
-	image?: string | null
-	id: string
-	role?: string
-}
 
 const Navigation = ({
 	withContainer,

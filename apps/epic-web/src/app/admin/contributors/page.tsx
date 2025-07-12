@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import { getContributors } from '@/lib/contributors-query'
 import { getImpersonatedSession } from '@/server/auth'
+import { log } from '@/server/logger'
 
 import { Alert, AlertDescription, Button, Gravatar } from '@coursebuilder/ui'
 
@@ -13,12 +14,50 @@ export const metadata: Metadata = {
 }
 
 export default async function ContributorsPage() {
-	const { session, isImpersonating, originalUserId } =
-		await getImpersonatedSession()
-	const contributors = await getContributors()
+	// Initialize with default values
+	let session = null
+	let isImpersonating = false
+	let originalUserId = null
+	let contributors: any[] = []
+	let sessionError = false
+	let contributorsError = false
+
+	// Handle session retrieval with error handling
+	try {
+		const sessionResult = await getImpersonatedSession()
+		session = sessionResult.session
+		isImpersonating = sessionResult.isImpersonating
+		originalUserId = sessionResult.originalUserId
+	} catch (error) {
+		log.error('Failed to retrieve impersonated session in contributors page', {
+			error: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		sessionError = true
+	}
+
+	// Handle contributors retrieval with error handling
+	try {
+		contributors = await getContributors()
+	} catch (error) {
+		log.error('Failed to retrieve contributors list', {
+			error: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		contributorsError = true
+	}
 
 	return (
 		<main className="container px-5">
+			{sessionError && (
+				<Alert className="mb-5 border-red-200 bg-red-50">
+					<AlertDescription className="text-red-800">
+						Failed to load session information. Some features may not work
+						correctly.
+					</AlertDescription>
+				</Alert>
+			)}
+
 			{isImpersonating && session?.user && (
 				<Alert className="mb-5 border-yellow-200 bg-yellow-50">
 					<AlertDescription className="flex items-center justify-between">
@@ -37,8 +76,17 @@ export default async function ContributorsPage() {
 					</AlertDescription>
 				</Alert>
 			)}
+
 			<h1 className="mb-6 text-3xl font-bold">Contributors</h1>
-			{contributors.length === 0 ? (
+
+			{contributorsError ? (
+				<Alert className="mb-5 border-red-200 bg-red-50">
+					<AlertDescription className="text-red-800">
+						Failed to load contributors. Please try refreshing the page or
+						contact support if the problem persists.
+					</AlertDescription>
+				</Alert>
+			) : contributors.length === 0 ? (
 				<p className="text-muted-foreground">No contributors found.</p>
 			) : (
 				<ul className="space-y-4">
@@ -79,7 +127,9 @@ export default async function ContributorsPage() {
 									name="adminId"
 									value={originalUserId || session?.user?.id || ''}
 								/>
-								<Button disabled={isImpersonating}>Sign in as</Button>
+								<Button disabled={isImpersonating || sessionError}>
+									Sign in as
+								</Button>
 							</form>
 						</li>
 					))}

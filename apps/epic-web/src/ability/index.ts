@@ -20,47 +20,63 @@ import {
 	hasChargesForPurchases,
 } from './purchase-validators'
 
-export const UserSchema = userSchema.merge(
-	z.object({
-		role: z.enum(['admin', 'user', 'contributor']).nullish(),
-		email: z.string().nullish(),
-		fields: z.any(),
-		entitlements: z
-			.array(
-				z.object({
-					type: z.string(),
-					expires: z.date().nullish(),
-					metadata: z.record(z.any()),
-				}),
-			)
-			.optional(),
-		organizationRoles: z
-			.array(
-				z.object({
-					organizationId: z.string(),
-					name: z.string(),
-				}),
-			)
-			.nullish(),
-		memberships: z
-			.array(
-				z.object({
-					id: z.string(),
-					organizationId: z.string(),
-				}),
-			)
-			.nullish(),
-		roles: z
-			.array(
-				z.object({
-					name: z.string(),
-				}),
-			)
-			.nullish(),
-	}),
-)
+// Simple, flexible User type that matches what components actually need
+export type User = {
+	id: string
+	name?: string | null
+	email?: string | null
+	image?: string | null
+	role?: string | null
+	impersonatingFromUserId?: string | null
+	// Allow any additional fields that might exist in different contexts
+	[key: string]: any
+}
 
-export type User = z.infer<typeof UserSchema>
+// Keep the original schema for ability checks that need strict validation
+export const UserSchema = userSchema
+	.merge(
+		z.object({
+			role: z.string().nullish(),
+			email: z.string().nullish(),
+			fields: z.any().optional(),
+			impersonatingFromUserId: z.string().nullish(),
+			entitlements: z
+				.array(
+					z.object({
+						type: z.string(),
+						expires: z.date().nullish(),
+						metadata: z.record(z.any()).nullish(),
+					}),
+				)
+				.optional(),
+			organizationRoles: z
+				.array(
+					z.object({
+						organizationId: z.string().nullish(),
+						name: z.string(),
+					}),
+				)
+				.nullish(),
+			memberships: z
+				.array(
+					z.object({
+						id: z.string(),
+						organizationId: z.string(),
+					}),
+				)
+				.nullish(),
+			roles: z
+				.array(
+					z.object({
+						name: z.string(),
+					}),
+				)
+				.nullish(),
+		}),
+	)
+	.passthrough()
+
+export type UserSchemaType = z.infer<typeof UserSchema>
 
 interface OrganizationBilling {
 	organizationId: string
@@ -101,7 +117,15 @@ export type AppAbility = MongoAbility<[Actions, Subjects]>
 export const createAppAbility = createMongoAbility as CreateAbility<AppAbility>
 
 type GetAbilityOptions = {
-	user?: User
+	user?: User & {
+		roles?: Array<{ name: string }>
+		organizationRoles?: Array<{ organizationId: string; name: string }>
+		entitlements?: Array<{
+			type: string
+			expires?: Date | null
+			metadata?: Record<string, any> | null
+		}>
+	}
 }
 
 /**
@@ -179,7 +203,10 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 
 		// Entitlement-based permissions
 		options.user.entitlements?.forEach((entitlement) => {
-			if (entitlement.type === 'cohort_content_access') {
+			if (
+				entitlement.type === 'cohort_content_access' &&
+				entitlement.metadata
+			) {
 				can('read', 'Content', {
 					id: { $in: entitlement.metadata.contentIds },
 					status: 'published',
@@ -201,7 +228,17 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 }
 
 type ViewerAbilityInput = {
-	user?: User | null
+	user?:
+		| (User & {
+				roles?: Array<{ name: string }>
+				organizationRoles?: Array<{ organizationId: string; name: string }>
+				entitlements?: Array<{
+					type: string
+					expires?: Date | null
+					metadata?: Record<string, any> | null
+				}>
+		  })
+		| null
 	subscriber?: any
 	lesson?: Lesson
 	module?: Module

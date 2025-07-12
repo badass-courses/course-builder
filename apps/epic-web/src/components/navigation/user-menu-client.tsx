@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, User } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
@@ -28,15 +28,6 @@ import {
 } from '@coursebuilder/ui'
 
 import { NavLinkItem } from './nav-link-item'
-
-type User = {
-	name?: string | null
-	email?: string | null
-	image?: string | null
-	id: string
-	role?: string
-	impersonatingFromUserId?: string
-}
 
 interface UserMenuClientProps {
 	user?: User | null

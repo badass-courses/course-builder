@@ -1,19 +1,12 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { User } from '@/ability'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import Navigation from './navigation'
 import Footer from './navigation/footer'
-
-type User = {
-	name?: string | null
-	email?: string | null
-	image?: string | null
-	id: string
-	role?: string
-}
 
 /**
  * Client-side layout component that handles container styling and side patterns
