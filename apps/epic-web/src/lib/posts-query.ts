@@ -40,11 +40,37 @@ import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedAllPosts = unstable_cache(
-	async () => getAllPosts(),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
+/**
+ * Generates a cache key suffix based on user abilities to ensure
+ * cached results respect user permissions
+ */
+function generateAbilityCacheKey(ability?: AppAbility): string {
+	if (!ability) {
+		return 'public'
+	}
+
+	// Create a deterministic representation of user abilities
+	const permissions = {
+		canManageAll: ability.can('manage', 'all'),
+		canUpdateContent: ability.can('update', 'Content'),
+		canCreateContent: ability.can('create', 'Content'),
+		canDeleteContent: ability.can('delete', 'Content'),
+		canReadContent: ability.can('read', 'Content'),
+	}
+
+	// Generate a hash of the permissions to use as cache key
+	const permissionsString = JSON.stringify(permissions)
+	const hash = crypto
+		.createHash('sha256')
+		.update(permissionsString)
+		.digest('hex')
+
+	return hash.substring(0, 8) // Use first 8 characters for brevity
+}
+
+// Note: getCachedAllPosts disabled due to security concerns with user abilities
+// Use getAllPosts() directly to ensure proper authorization checks
+export const getCachedAllPosts = getAllPosts
 
 export async function getAllPosts(): Promise<Post[]> {
 	try {
@@ -487,11 +513,29 @@ export async function updatePost(
 	}
 }
 
-export const getCachedPost = unstable_cache(
-	async (slugOrId: string, ability?: AppAbility) => getPost(slugOrId, ability),
-	['posts'],
+// Cached version for public access only (no ability checks)
+const getCachedPostPublic = unstable_cache(
+	async (slugOrId: string) => getPost(slugOrId),
+	['posts', 'public'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
+
+/**
+ * Secure post retrieval that respects user abilities.
+ * Disables caching when ability is provided to prevent unauthorized access.
+ */
+export async function getCachedPost(slugOrId: string, ability?: AppAbility) {
+	if (ability) {
+		// When ability is provided, bypass cache to ensure authorization checks
+		log.debug('Bypassing cache for post retrieval due to ability check', {
+			slugOrId,
+		})
+		return getPost(slugOrId, ability)
+	}
+
+	// Use cached version for public access only
+	return getCachedPostPublic(slugOrId)
+}
 
 export async function getPost(slugOrId: string, ability?: AppAbility) {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
@@ -1147,9 +1191,14 @@ function getErrorStack(error: unknown) {
 	return undefined
 }
 
+/**
+ * Cached post/list retrieval for public content only.
+ * This function only returns public and unlisted content that is published.
+ * For content that requires ability checks, use getPostOrList() directly.
+ */
 export const getCachedPostOrList = unstable_cache(
 	async (slugOrId: string) => getPostOrList(slugOrId),
-	['posts', 'lists'],
+	['posts', 'lists', 'public'],
 	{ revalidate: 3600, tags: ['posts', 'lists'] },
 )
 
