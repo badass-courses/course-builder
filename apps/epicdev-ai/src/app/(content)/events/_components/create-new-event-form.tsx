@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { MultipleEventsSchema, type MultipleEvents } from '@/lib/events'
-import { createEventSeries } from '@/lib/events-query'
+import { createEvent, createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
 import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -78,8 +78,6 @@ export default function CreateNewEventForm() {
 	const onSubmit = async (data: MultipleEvents) => {
 		try {
 			if (data.events.length === 1 && !data.eventSeries.title.trim()) {
-				// Single event creation - use existing logic with createEvent
-				const { createEvent } = await import('@/lib/events-query')
 				const firstEvent = data.events[0]
 				if (!firstEvent) {
 					throw new Error('Event data is required')
