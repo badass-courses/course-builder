@@ -26,7 +26,7 @@ export default async function DashboardPage() {
 					manage your posts and tips.
 				</p>
 				<div className="prose dark:prose-invert rounded-md border p-5">
-					<h2 className="!mt-0">Content Types</h2>
+					<h2 className="mt-0!">Content Types</h2>
 					<p>
 						There are two types of content you can create: Tips and Posts.
 						Here's the difference:
