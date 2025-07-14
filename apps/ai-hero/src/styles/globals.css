@@ -28,6 +28,18 @@
 	}
 }
 
+/*
+  The default cursor has changed to `default` in Tailwind CSS v4,
+  so we've added this compatibility style to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+*/
+@layer base {
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
+	}
+}
+
 @layer base {
 	:root {
 		--nav-height: 63px;
