@@ -72,7 +72,7 @@ export const PostNewsletterCta: React.FC<
 				className,
 			)}
 		>
-			<div className="relative mx-auto flex w-full max-w-screen-xl flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
+			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 lg:container lg:h-16 lg:flex-row lg:pl-3 lg:pr-0">
 				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left lg:flex-col lg:items-start lg:pt-0">
 					<div className="flex items-center">
 						<div className="font-heading flex-shrink-0 text-xl font-semibold lg:text-base">

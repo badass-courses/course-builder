@@ -73,7 +73,7 @@ export function VideoUploader({
 								)
 							}
 						}}
-						className="[&_label]:text-primary [&_label]:hover:text-primary border-border"
+						className="[&_label]:text-primary hover:[&_label]:text-primary border-border"
 						onUploadError={(error: Error) => {
 							console.error('Upload error:', error)
 							setIsUploading(false)

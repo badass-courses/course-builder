@@ -17,7 +17,7 @@ export const Certificate = ({
 
 	return isCompleted ? (
 		<ModuleCertificate.Root resourceIdOrSlug={resourceSlugOrId}>
-			<ModuleCertificate.Trigger className="text-foreground hover:bg-muted bg-background relative flex aspect-[842/595] h-full w-full flex-col items-center justify-center gap-2 rounded border">
+			<ModuleCertificate.Trigger className="text-foreground hover:bg-muted bg-background aspect-842/595 relative flex h-full w-full flex-col items-center justify-center gap-2 rounded border">
 				<div className="text-primary text-sm uppercase tracking-wide">
 					Now Available
 				</div>
@@ -42,7 +42,7 @@ export const Certificate = ({
 			</ModuleCertificate.Dialog>
 		</ModuleCertificate.Root>
 	) : (
-		<div className="bg-background relative flex aspect-[842/595] h-full w-full flex-col items-center justify-center rounded border text-sm">
+		<div className="bg-background aspect-842/595 relative flex h-full w-full flex-col items-center justify-center rounded border text-sm">
 			<div className="bg-muted rounded-full p-3">
 				<Lock className="h-4 w-4" />
 			</div>

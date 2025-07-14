@@ -181,14 +181,14 @@ export const SubscribeToConvertkitForm: React.FC<
 								strokeWidth="4"
 							></circle>
 							<circle
-								className="origin-center animate-[blink_8s_infinite] [transform-box:fill-box]"
+								className="transform-fill origin-center animate-[blink_8s_infinite]"
 								cx="174.19"
 								cy="105.677"
 								r="8.0793"
 								fill="#000"
 							></circle>
 							<circle
-								className="origin-center animate-[blink_8s_infinite] [transform-box:fill-box]"
+								className="transform-fill origin-center animate-[blink_8s_infinite]"
 								cx="65.604"
 								cy="105.677"
 								r="8.0793"

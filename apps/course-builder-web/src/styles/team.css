@@ -91,7 +91,7 @@
 			[data-pricing-product-header] {
 				@apply flex items-center gap-5;
 				[data-price-container] {
-					@apply h-auto !important;
+					@apply h-auto!;
 				}
 			}
 			button[type='submit'] {

@@ -32,7 +32,7 @@ export default async function EventIndexPage() {
 	return (
 		<LayoutClient withContainer>
 			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-				<div className=" w-full max-w-screen-md border-b px-5 py-16 md:border-dashed">
+				<div className="max-w-(--breakpoint-md) w-full border-b px-5 py-16 md:border-dashed">
 					<h1 className="font-heading text-center text-5xl font-bold">
 						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 							Live
@@ -42,14 +42,14 @@ export default async function EventIndexPage() {
 				</div>
 				<CohortsList />
 				{ability.can('update', 'Content') ? (
-					<div className="mx-auto mt-10 flex w-full max-w-screen-md items-center justify-center border-t border-dashed py-10">
+					<div className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full items-center justify-center border-t border-dashed py-10">
 						<Button asChild variant="secondary">
 							<Link href={`/cohorts/new`}>New Cohort</Link>
 						</Button>
 					</div>
 				) : null}
 				<div
-					className="absolute top-0 -z-10 h-full w-full max-w-screen-md border-dashed md:border-x"
+					className="max-w-(--breakpoint-md) absolute top-0 -z-10 h-full w-full border-dashed md:border-x"
 					aria-hidden="true"
 				/>
 			</main>
@@ -89,7 +89,7 @@ async function CohortsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-8 flex w-full max-w-screen-md flex-col gap-5 px-8 md:px-8">
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-8 flex w-full flex-col gap-5 px-8 md:px-8">
 			{publicCohorts.length === 0 && <p>There are no public cohorts.</p>}
 			{cohorts.map((cohort) => {
 				const { fields } = cohort
@@ -107,11 +107,11 @@ async function CohortsList() {
 						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
 							{cohort?.fields?.image && (
 								<Link
-									className="flex-shrink-0"
+									className="shrink-0"
 									href={`/cohorts/${cohort.fields.slug || cohort.id}`}
 								>
 									<CldImage
-										className="flex-shrink-0"
+										className="shrink-0"
 										width={200}
 										height={200}
 										src={cohort.fields.image}

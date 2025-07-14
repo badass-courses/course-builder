@@ -28,7 +28,7 @@
 			}
 		}
 		[data-fadeout] {
-			@apply pointer-events-none absolute bottom-0 left-0 z-20 h-16 w-full bg-gradient-to-t from-gray-100 to-transparent;
+			@apply bg-linear-to-t pointer-events-none absolute bottom-0 left-0 z-20 h-16 w-full from-gray-100 to-transparent;
 		}
 	}
 }

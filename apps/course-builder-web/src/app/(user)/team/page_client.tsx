@@ -29,7 +29,7 @@ export function TeamPageTemplate({
 	return (
 		<main
 			data-team-page=""
-			className="mx-auto flex w-full max-w-xl flex-grow flex-col items-center justify-center gap-3 p-5 pb-16 pt-28 "
+			className="mx-auto flex w-full max-w-xl flex-grow flex-col items-center justify-center gap-3 p-5 pb-16 pt-28"
 		>
 			{user && canInviteTeam && purchase && (
 				<>

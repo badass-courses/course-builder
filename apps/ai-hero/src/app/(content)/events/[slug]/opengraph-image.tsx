@@ -57,7 +57,7 @@ export default async function EventOG({
 					borderBottom: '8px solid #F28D5A',
 				}}
 			>
-				<main tw="flex bg-background flex-row w-full gap-5 h-full flex-grow items-center text-left justify-center">
+				<main tw="flex bg-background flex-row w-full gap-5 h-full grow items-center text-left justify-center">
 					<div tw="flex flex-col pl-40 -mr-16">
 						<div
 							tw="text-[32px] text-white text-[#F28F5A]"

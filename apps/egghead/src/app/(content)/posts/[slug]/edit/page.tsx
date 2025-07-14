@@ -13,7 +13,7 @@ import { EditPostForm } from '../../_components/edit-post-form'
 
 function EditPostSkeleton({ title = '' }: { title: string }) {
 	return (
-		<div className="bg-background/80 fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-5 backdrop-blur-sm">
+		<div className="bg-background/80 backdrop-blur-xs fixed inset-0 flex h-full w-full flex-col items-center justify-center gap-5">
 			<Spinner className="h-8 w-8" />
 			{title}
 		</div>

@@ -94,7 +94,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 	const { toast } = useToast()
 
 	return (
-		<ScrollArea className="h-[var(--pane-layout-height)]">
+		<ScrollArea className="h-(--pane-layout-height)">
 			<div className="mb-3 px-3">
 				<PostUploader
 					parentResourceId={undefined}

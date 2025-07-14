@@ -55,7 +55,7 @@ export default async function PostPage(props: Props) {
 
 				<PlayerContainer postLoader={postLoader} />
 				<article className="relative z-10 border-l border-transparent px-5 pb-16 pt-8 sm:pt-10 xl:border-gray-800 xl:pt-10">
-					<div className="mx-auto w-full max-w-screen-lg pb-5 lg:px-5">
+					<div className="max-w-(--breakpoint-lg) mx-auto w-full pb-5 lg:px-5">
 						<div className="flex w-full grid-cols-11 flex-col gap-0 sm:gap-10 lg:grid">
 							<div className="flex flex-col lg:col-span-8">
 								<PostBody postLoader={postLoader} />
@@ -97,9 +97,9 @@ async function PostActionBar({
 function PlayerContainerSkeleton() {
 	return (
 		<div className="relative z-10 flex items-center justify-center">
-			<div className="flex w-full max-w-screen-lg flex-col">
-				<div className="relative aspect-[16/9]">
-					<div className="flex items-center justify-center  overflow-hidden">
+			<div className="max-w-(--breakpoint-lg) flex w-full flex-col">
+				<div className="relative aspect-video">
+					<div className="flex items-center justify-center overflow-hidden">
 						<div className="h-full w-full bg-gray-100" />
 					</div>
 				</div>
@@ -127,11 +127,11 @@ async function PlayerContainer({
 	return videoResource ? (
 		<Suspense fallback={<PlayerContainerSkeleton />}>
 			<div className="relative z-10 flex items-center justify-center">
-				<div className="flex w-full max-w-screen-lg flex-col">
-					<div className="relative aspect-[16/9]">
+				<div className="max-w-(--breakpoint-lg) flex w-full flex-col">
+					<div className="relative aspect-video">
 						<div
 							className={cn(
-								'flex items-center justify-center  overflow-hidden',
+								'flex items-center justify-center overflow-hidden',
 								{
 									hidden: displayOverlay,
 								},

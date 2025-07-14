@@ -61,9 +61,7 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-	return (
-		<div className="rounded-s bg-red-300 p-[var(--grid)]">Item {item.id}</div>
-	)
+	return <div className="p-(--grid) rounded-s bg-red-300">Item {item.id}</div>
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {
@@ -357,7 +355,7 @@ const TreeItem = memo(function TreeItem({
 				>
 					<span
 						className={cn(
-							'flex flex-col items-center justify-between gap-3 bg-transparent px-3  sm:flex-row',
+							'flex flex-col items-center justify-between gap-3 bg-transparent px-3 sm:flex-row',
 							{
 								'opacity-40': state === 'dragging',
 								transparent: state === 'parent-of-instruction',

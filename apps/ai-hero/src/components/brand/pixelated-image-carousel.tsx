@@ -116,7 +116,7 @@ export default function ImageCarousel() {
 	const maskId = 'pixelated-mask'
 
 	return (
-		<div className="relative aspect-[1278/623] overflow-hidden">
+		<div className="aspect-1278/623 relative overflow-hidden">
 			{/* SVG with mask definitions */}
 			<svg className="absolute h-full w-full overflow-hidden">
 				<defs>

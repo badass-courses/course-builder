@@ -1,6 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
-const { fontFamily } = require('tailwindcss/defaultTheme')
 
 const { withUt } = require('uploadthing/tw')
 

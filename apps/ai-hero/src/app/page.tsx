@@ -114,7 +114,7 @@ const Home = async (props: Props) => {
 				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
 					<div className="">
 						<Link
-							className="bg-background group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-[length:24px_32px] bg-repeat px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)] dark:bg-[length:24px_32px]"
+							className="bg-background bg-size-[24px_32px] dark:bg-size-[24px_32px] group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]"
 							href={saleBannerData.productPath}
 							prefetch
 						>

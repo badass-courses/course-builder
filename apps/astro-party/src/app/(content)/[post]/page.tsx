@@ -146,7 +146,7 @@ export default async function PostPage(props: {
 				</VideoPlayerOverlayProvider>
 				<div
 					className={cn('mx-auto w-full pb-24 pt-10', {
-						// 'pt-[var(--nav-height)]': !videoResourceId,
+						// 'pt-(--nav-height)': !videoResourceId,
 						// 'pt-8': videoResourceId,
 					})}
 				>

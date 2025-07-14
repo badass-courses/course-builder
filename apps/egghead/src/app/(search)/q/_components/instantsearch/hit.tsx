@@ -7,7 +7,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
 		<li className="">
 			<Link
-				className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-1.5 "
+				className="group flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-1.5"
 				target={'_blank'}
 				href={`https://egghead.io${hit.path}`}
 			>
@@ -17,7 +17,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						{hit.title}
 					</span>
 				</div>
-				<div className="text-muted-foreground flex flex-shrink-0 items-center gap-3 pl-7 text-sm opacity-75 sm:pl-0">
+				<div className="text-muted-foreground flex shrink-0 items-center gap-3 pl-7 text-sm opacity-75 sm:pl-0">
 					<span>{hit.instructor_name}</span>
 					<span>{hit.type}</span>
 				</div>

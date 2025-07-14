@@ -67,7 +67,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List | Event)[] }) => {
 					<PostTeaser
 						isHighlighted
 						post={primary}
-						className="[&_[data-card='']]:text-foreground [&_[data-title='']]:hover:text-primary sm:[&_[data-title='']]:fluid-2xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold [&_[data-title='']]:transition"
+						className="**:data-card:text-foreground hover:**:data-title:text-primary sm:**:data-title:fluid-2xl **:data-title:text-foreground **:data-card:p-8 sm:**:data-card:p-10 **:data-title:font-bold **:data-title:transition relative z-10 h-full w-full"
 					/>
 				)}
 
@@ -83,11 +83,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List | Event)[] }) => {
 			{secondary.length > 2 && (
 				<div className="grid grid-cols-1 md:grid-cols-2">
 					{secondary.slice(2).map((post, i) => (
-						<PostTeaser
-							key={post.fields.slug}
-							post={post}
-							className=" w-full"
-						/>
+						<PostTeaser key={post.fields.slug} post={post} className="w-full" />
 					))}
 				</div>
 			)}
@@ -293,7 +289,7 @@ const PostTeaser: React.FC<{
 							<div className="flex items-center gap-2">
 								{isHighlighted && (
 									<Button
-										className="from-primary bg-gradient-to-b to-indigo-800 shadow-lg shadow-indigo-800/20 dark:bg-gradient-to-b dark:to-indigo-600"
+										className="from-primary bg-linear-to-b dark:bg-linear-to-b to-indigo-800 shadow-lg shadow-indigo-800/20 dark:to-indigo-600"
 										variant="default"
 									>
 										{post.type === 'event' ? 'Get Your Ticket' : 'Learn More'}{' '}

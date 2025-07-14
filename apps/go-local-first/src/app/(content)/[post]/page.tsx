@@ -137,7 +137,7 @@ async function Post({ post }: { post: Post | null }) {
 	})
 
 	return (
-		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 mt-10 max-w-none [&_[data-pre]]:max-w-4xl">
+		<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl prose-p:text-foreground/80 **:data-pre:max-w-4xl mt-10 max-w-none">
 			{content}
 		</article>
 	)
@@ -213,10 +213,10 @@ export default async function PostPage(props: {
 				>
 					{/* <img
 						src={squareGridPattern}
-						className="h-[400px] w-full overflow-hidden object-cover object-right-top opacity-[0.15] saturate-0"
+						className="h-[400px] w-full overflow-hidden object-cover object-top-right opacity-[0.15] saturate-0"
 					/> */}
 					<div
-						className="to-background via-background absolute left-0 top-0 z-10 h-full w-full bg-gradient-to-bl from-transparent"
+						className="to-background via-background bg-linear-to-bl absolute left-0 top-0 z-10 h-full w-full from-transparent"
 						aria-hidden="true"
 					/>
 				</div>
