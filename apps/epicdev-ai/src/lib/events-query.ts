@@ -32,6 +32,7 @@ import {
 	RESOURCE_UPDATED_EVENT,
 } from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
+import { createCoupon, type CouponInput } from './coupons-query'
 import { getMinimalProductInfoWithoutUser } from './posts-query'
 import {
 	addResourceToProduct,
@@ -157,7 +158,24 @@ export async function getAllEvents() {
 	return parsedEvents.data
 }
 
-export async function createEvent(input: NewEvent) {
+export async function createEvent(
+	input: NewEvent & {
+		coupon?: {
+			enabled: boolean
+			percentageDiscount?:
+				| '1'
+				| '0.95'
+				| '0.9'
+				| '0.75'
+				| '0.6'
+				| '0.5'
+				| '0.4'
+				| '0.25'
+				| '0.1'
+			expires?: Date
+		}
+	},
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -241,6 +259,62 @@ export async function createEvent(input: NewEvent) {
 					resource: parsedResource.data,
 					productId: product.id,
 				})
+
+				// Create coupon if enabled
+				if (
+					input.coupon?.enabled &&
+					input.coupon.percentageDiscount &&
+					input.coupon.expires
+				) {
+					try {
+						let finalExpires = input.coupon.expires
+						if (finalExpires instanceof Date) {
+							// Create a new Date object for 23:59:59 UTC on the date part of finalExpires
+							// finalExpires from the form should be a JS Date representing 00:00:00 LA time for the chosen day.
+							// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
+							finalExpires = new Date(
+								Date.UTC(
+									finalExpires.getUTCFullYear(),
+									finalExpires.getUTCMonth(), // 0-indexed
+									finalExpires.getUTCDate(),
+									23, // hours
+									59, // minutes
+									59, // seconds
+									0, // milliseconds
+								),
+							)
+						}
+						const couponInput: CouponInput = {
+							quantity: '1',
+							maxUses: -1,
+							expires: finalExpires,
+							restrictedToProductId: product.id,
+							percentageDiscount: input.coupon.percentageDiscount,
+							status: 1,
+							default: true,
+							fields: {
+								bypassSoldOut: false,
+							},
+						}
+						await createCoupon(couponInput)
+						await log.info('event.create.coupon.success', {
+							eventId: newResourceId,
+							productId: product.id,
+							userId: user.id,
+							percentageDiscount: input.coupon.percentageDiscount,
+						})
+					} catch (couponError) {
+						console.error('Error creating coupon for event', couponError)
+						await log.error('event.create.coupon.failed', {
+							eventId: newResourceId,
+							productId: product.id,
+							userId: user.id,
+							error: getErrorMessage(couponError),
+							stack: getErrorStack(couponError),
+						})
+						// Don't throw here - event creation should succeed even if coupon fails
+					}
+				}
 			} else {
 				await log.error('event.create.product.failed', {
 					eventId: newResourceId,
@@ -933,6 +1007,46 @@ export async function createEventSeries(input: MultipleEvents): Promise<{
 						resource: eventSeries,
 						productId: sharedProduct.id,
 					})
+
+					// Create coupon if enabled
+					if (
+						input.coupon?.enabled &&
+						input.coupon.percentageDiscount &&
+						input.coupon.expires
+					) {
+						try {
+							const couponInput: CouponInput = {
+								quantity: '1',
+								maxUses: 1,
+								expires: input.coupon.expires,
+								restrictedToProductId: sharedProduct.id,
+								percentageDiscount: input.coupon.percentageDiscount,
+								status: 1,
+								default: true,
+								fields: {},
+							}
+							await createCoupon(couponInput)
+							await log.info('event.series.coupon.success', {
+								eventSeriesId: eventSeries.id,
+								productId: sharedProduct.id,
+								userId: user.id,
+								percentageDiscount: input.coupon.percentageDiscount,
+							})
+						} catch (couponError) {
+							console.error(
+								'Error creating coupon for event series',
+								couponError,
+							)
+							await log.error('event.series.coupon.failed', {
+								eventSeriesId: eventSeries.id,
+								productId: sharedProduct.id,
+								userId: user.id,
+								error: getErrorMessage(couponError),
+								stack: getErrorStack(couponError),
+							})
+							// Don't throw here - event series creation should succeed even if coupon fails
+						}
+					}
 				} else {
 					await log.error('event.series.product.failed', {
 						eventSeriesId: eventSeries.id,

@@ -106,6 +106,10 @@ async function EventsList() {
 					event.type === 'event'
 						? event.fields
 						: event?.resources?.[0]?.resource?.fields
+
+				if (!sharedFields) {
+					return null
+				}
 				const { startsAt, endsAt } = sharedFields
 				const PT = sharedFields.timezone || 'America/Los_Angeles'
 				const eventDate =
