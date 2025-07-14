@@ -21,6 +21,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Button } from '@coursebuilder/ui'
 
+import { CreateResourceModals } from './_components/create-resource-modals'
 import {
 	CenteredTitle,
 	CheckList,
@@ -28,7 +29,6 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
-import { CreatePostModal } from './admin/posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -107,24 +107,11 @@ const Home = async (props: Props) => {
 	} else if (role === 'contributor') {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
-				<div className="flex flex-wrap justify-center gap-4">
-					<CreatePostModal
-						triggerLabel="New Tip"
-						title="New Tip"
-						availableResourceTypes={['tip']}
-						defaultResourceType="tip"
-						topLevelResourceTypes={['post']}
-					/>
-					<CreatePostModal
-						triggerLabel="New Article"
-						title="New Article"
-						availableResourceTypes={['article']}
-						defaultResourceType="article"
-						topLevelResourceTypes={['post']}
-					/>
+				<div className="grid grid-cols-2 gap-4">
+					<CreateResourceModals />
 				</div>
 				<p className="text-muted-foreground max-w-2xl text-center">
-					Quickly create a new tip or article to share with the community.
+					Create a new tip or article to share with the community.
 				</p>
 			</section>
 		)
@@ -138,20 +125,7 @@ const Home = async (props: Props) => {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
 				<div className="flex flex-wrap justify-center gap-4">
-					<CreatePostModal
-						triggerLabel="New Tip"
-						title="New Tip"
-						availableResourceTypes={['tip']}
-						defaultResourceType="tip"
-						topLevelResourceTypes={['post']}
-					/>
-					<CreatePostModal
-						triggerLabel="New Article"
-						title="New Article"
-						availableResourceTypes={['article']}
-						defaultResourceType="article"
-						topLevelResourceTypes={['post']}
-					/>
+					<CreateResourceModals />
 				</div>
 				<nav className="flex flex-wrap justify-center gap-3">
 					{adminLinks.map(({ href, label }) => (
