@@ -226,20 +226,18 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						}
 
 						const entitlementId = `${cohortResource.id}-discord-${guid()}`
-						const entitlementData = {
+						await createCohortEntitlement({
 							id: entitlementId,
-							entitlementType: cohortDiscordRoleEntitlementType.id,
-							sourceType: 'cohort',
-							sourceId: cohortResource.id,
 							userId: user.id,
 							organizationId,
 							organizationMembershipId: orgMembership.id,
+							entitlementType: cohortDiscordRoleEntitlementType.id,
+							sourceType: 'PURCHASE',
+							sourceId: purchase.id,
 							metadata: {
 								discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
 							},
-						}
-
-						await db.insert(entitlements).values(entitlementData)
+						})
 
 						return {
 							entitlementId,
@@ -253,11 +251,11 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							const entitlementId = await createCohortEntitlement({
 								userId: user.id,
 								resourceId: resource.resource.id,
-								sourceId: cohortResource.id,
+								sourceId: purchase.id,
 								organizationId,
 								organizationMembershipId: orgMembership.id,
 								entitlementType: cohortContentAccessEntitlementType.id,
-								sourceType: 'cohort',
+								sourceType: 'PURCHASE',
 								metadata: {
 									contentIds: [resource.resource.id],
 								},
