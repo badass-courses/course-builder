@@ -6,12 +6,12 @@ import {
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
-import LayoutClient from '@/components/layout-client'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -29,7 +29,7 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
-import { CreatePostModal } from './admin/posts/_components/create-post-modal'
+import { CreatePostModal } from './posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -70,16 +70,13 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
-	const { session } = await getServerAuthSession()
+	const { session } = await getImpersonatedSession()
 	// Ensure we safely access optional user and allow arbitrary role strings
 	const role: string = (session?.user?.role as string | undefined) ?? 'guest'
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-	}
+	const firstPageResource = undefined
 
 	let actionSection: React.ReactNode = null
 
@@ -124,7 +121,6 @@ const Home = async (props: Props) => {
 	} else if (role === 'admin') {
 		const adminLinks = [
 			{ href: '/admin/pages', label: 'Admin Pages' },
-			{ href: '/admin/posts', label: 'Admin Posts' },
 			{ href: '/admin/tips', label: 'Admin Tips' },
 		]
 
@@ -153,21 +149,12 @@ const Home = async (props: Props) => {
 	}
 
 	return (
-		<LayoutClient
+		<LayoutWithImpersonation
 			className="static"
 			highlightedResource={firstPageResource}
 			withContainer
 		>
 			<main className="flex w-full flex-col items-center justify-center">
-				{firstPageResource && (
-					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md px-3 py-1 text-sm font-medium"
-						href={firstPageResource.path}
-						prefetch
-					>
-						New: <span className="underline">{firstPageResource?.title}</span>
-					</Link>
-				)}
 				<header>
 					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
 						Epic Web Builder
@@ -218,7 +205,7 @@ const Home = async (props: Props) => {
 					)}
 				</article>
 			</main>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 

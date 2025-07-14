@@ -3,6 +3,7 @@ import '@/styles/globals.css'
 import * as React from 'react'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { ImpersonationBanner } from '@/components/impersonation-banner'
 import LayoutClient from '@/components/layout-client'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
@@ -71,7 +72,9 @@ export default function RootLayout({
 				<body
 					id="layout"
 					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
+					suppressHydrationWarning
 				>
+					<ImpersonationBanner />
 					<Toaster />
 					<TRPCReactProvider>
 						<NuqsAdapter>

@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PostUploader } from '@/app/admin/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
@@ -13,6 +12,8 @@ import { ExternalLink } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+
+import { PostUploader } from './post-uploader'
 
 /**
  * Props for the CreatePost component, allowing a custom onResourceCreated callback

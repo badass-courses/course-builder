@@ -117,9 +117,14 @@ export async function getList(listIdOrSlug: string) {
 	return listParsed.data
 }
 
+/**
+ * Cached list retrieval for a specific post.
+ * This function only returns lists containing published posts.
+ * For content that requires specific ability checks, use getListForPost() directly.
+ */
 export const getCachedListForPost = unstable_cache(
 	async (slugOrId: string) => getListForPost(slugOrId),
-	['posts'],
+	['posts', 'lists', 'published'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
 

@@ -3,24 +3,25 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, User } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Menu, Newspaper, X } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 
 import { Logo } from '../brand/logo'
 import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
-import { UserMenu } from './user-menu'
+import { UserMenuClient } from './user-menu-client'
 
 const Navigation = ({
 	withContainer,
 	highlightedResource,
+	user,
 }: {
 	withContainer?: boolean
 	highlightedResource?: { path: string; title: string }
+	user?: User | null
 }) => {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
@@ -36,10 +37,6 @@ const Navigation = ({
 		setIsMobileMenuOpen(false)
 	}, [pathname])
 
-	// const { data: abilityRules, status: abilityStatus } =
-	// 	api.ability.getCurrentAbilityRules.useQuery()
-
-	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
 
@@ -78,15 +75,8 @@ const Navigation = ({
 					className="absolute right-0 flex items-center"
 					aria-label={`User navigation`}
 				>
-					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
-					<div className="flex items-center pr-5">
-						<Button asChild size="sm" className="h-8">
-							<Link href="/#buy">Get Access</Link>
-						</Button>
-					</div>
-				)} */}
 					<ul className="hidden items-center md:flex">
-						<UserMenu />
+						<UserMenuClient user={user} />
 						<ThemeToggle className="" />
 					</ul>
 				</nav>
@@ -94,6 +84,7 @@ const Navigation = ({
 					isMobileMenuOpen={isMobileMenuOpen}
 					setIsMobileMenuOpen={setIsMobileMenuOpen}
 					subscriber={subscriber}
+					user={user}
 				/>
 			</div>
 		</header>

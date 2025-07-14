@@ -1,5 +1,8 @@
 import React from 'react'
-import LayoutClient from '@/components/layout-client'
+import { redirect } from 'next/navigation'
+import { getAbility } from '@/ability'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
+import { getImpersonatedSession } from '@/server/auth'
 import {
 	FileText,
 	Flag,
@@ -8,6 +11,7 @@ import {
 	Mail,
 	TagIcon,
 	TicketIcon,
+	Users,
 } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
@@ -19,8 +23,14 @@ const AdminLayout = async ({
 	children: React.ReactNode
 	params: Promise<{ module: string }>
 }) => {
+	const { session, ability } = await getImpersonatedSession()
+
+	if (!ability.can('manage', 'all')) {
+		redirect('/')
+	}
+
 	return (
-		<LayoutClient>
+		<LayoutWithImpersonation>
 			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
 				<div className="hidden border-r border-t md:block">
 					<div className="flex h-full max-h-screen flex-col gap-2">
@@ -32,12 +42,16 @@ const AdminLayout = async ({
 										Pages
 									</NavItem>
 									<NavItem href="/admin/posts">
-										<FileText className="h-4 w-4" />
+										<ListChecks className="h-4 w-4" />
 										Posts
 									</NavItem>
 									<NavItem href="/admin/tips">
 										<Lightbulb className="h-4 w-4" />
 										Tips
+									</NavItem>
+									<NavItem href="/admin/contributors">
+										<Users className="h-4 w-4" />
+										Contributors
 									</NavItem>
 								</li>
 							</ul>
@@ -46,7 +60,7 @@ const AdminLayout = async ({
 				</div>
 				<div className="flex flex-col">{children}</div>
 			</div>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 

@@ -45,12 +45,14 @@ export interface TagFieldProps {
 	}
 	label?: string
 	showEditButton?: boolean
+	isAdmin?: boolean
 }
 
 export const TagField: React.FC<TagFieldProps> = ({
 	resource,
 	label = 'Tags',
 	showEditButton = false,
+	isAdmin = false,
 }) => {
 	const utils = api.useUtils()
 	const { data: tags, isLoading } = api.tags.getTags.useQuery()
@@ -100,7 +102,7 @@ export const TagField: React.FC<TagFieldProps> = ({
 		<div className="px-5">
 			<div className="flex w-full items-baseline justify-between">
 				<FormLabel className="text-lg font-bold">{label}</FormLabel>
-				{showEditButton && (
+				{showEditButton && isAdmin && (
 					<Button
 						variant="ghost"
 						size="sm"

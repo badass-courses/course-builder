@@ -5,7 +5,7 @@ import LayoutClient from '@/components/layout-client'
 import { Page } from '@/lib/pages'
 import { getPages } from '@/lib/pages-query'
 import type { Post } from '@/lib/posts'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { format } from 'date-fns'
 import { FilePlus2, FileText, Pencil } from 'lucide-react'
@@ -19,7 +19,7 @@ import {
 } from '@coursebuilder/ui'
 
 export default async function PagesIndexPage() {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await getImpersonatedSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
 	}

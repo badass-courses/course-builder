@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { PostUploader } from '@/app/admin/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
 import { api } from '@/trpc/react'
@@ -20,6 +19,8 @@ import {
 	Skeleton,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+
+import { PostUploader } from './post-uploader'
 
 type VideoPreviewModalState = {
 	isOpen: boolean

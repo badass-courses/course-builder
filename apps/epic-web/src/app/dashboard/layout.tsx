@@ -1,5 +1,5 @@
 import React from 'react'
-import LayoutClient from '@/components/layout-client'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
 import { FileText, Lightbulb, User } from 'lucide-react'
 
 import { NavItem } from '../admin/pages/_components/nav-link'
@@ -10,7 +10,7 @@ import { NavItem } from '../admin/pages/_components/nav-link'
  */
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
-		<LayoutClient>
+		<LayoutWithImpersonation>
 			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
 				<div className="hidden border-r border-t md:block">
 					<div className="flex h-full max-h-screen flex-col gap-2">
@@ -33,7 +33,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 				</div>
 				<div className="flex flex-col">{children}</div>
 			</div>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 

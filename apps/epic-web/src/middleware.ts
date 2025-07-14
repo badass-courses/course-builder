@@ -18,6 +18,11 @@ export default auth(async function middleware(req) {
 	const currentOrgId = req.cookies.get('organizationId')?.value
 	const response = NextResponse.next()
 
+	// Check if organizationRoles exists, if not, just return next
+	if (!user.organizationRoles || user.organizationRoles.length === 0) {
+		return response
+	}
+
 	const result = determineOrgAccess(user.organizationRoles, currentOrgId)
 
 	// if (result.action === 'REDIRECT_TO_ORG_LIST') {

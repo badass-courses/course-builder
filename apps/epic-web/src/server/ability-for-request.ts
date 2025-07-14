@@ -34,6 +34,9 @@ export async function getUserAbilityForRequest(request: NextRequest) {
 	const userParsed = UserSchema.safeParse({
 		...deviceToken.verifiedBy,
 		roles: deviceToken.verifiedBy.roles.map((role) => role.role),
+		memberships: [],
+		organizationRoles: [],
+		entitlements: [],
 	})
 
 	if (!userParsed.success) {
