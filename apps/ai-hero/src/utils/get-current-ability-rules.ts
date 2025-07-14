@@ -74,6 +74,7 @@ export async function getCurrentAbilityRules({
 						isNull(entitlements.expiresAt),
 						gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 					),
+					isNull(entitlements.deletedAt),
 				),
 			})
 		: []

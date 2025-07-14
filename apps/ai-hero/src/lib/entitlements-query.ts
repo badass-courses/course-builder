@@ -4,6 +4,7 @@ import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 /**
  * Get all active entitlements for a user across all their organizations
+ * Excludes soft-deleted entitlements
  */
 export async function getAllUserEntitlements(userId: string) {
 	// Get all organization memberships for the user
@@ -23,6 +24,7 @@ export async function getAllUserEntitlements(userId: string) {
 							isNull(entitlements.expiresAt),
 							gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 						),
+						isNull(entitlements.deletedAt),
 					),
 				})
 			: []
