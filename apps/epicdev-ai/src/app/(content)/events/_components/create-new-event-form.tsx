@@ -27,6 +27,12 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+	Switch,
 	useToast,
 } from '@coursebuilder/ui'
 import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
@@ -44,6 +50,11 @@ export default function CreateNewEventForm() {
 			sharedFields: {
 				price: 250,
 				quantity: 40,
+			},
+			coupon: {
+				enabled: false,
+				percentageDiscount: undefined,
+				expires: undefined,
 			},
 			events: [
 				{
@@ -84,6 +95,7 @@ export default function CreateNewEventForm() {
 						quantity: data.sharedFields.quantity,
 						tagIds: firstEvent.tagIds,
 					},
+					coupon: data.coupon,
 				}
 				const event = await createEvent(singleEventData)
 
@@ -93,7 +105,9 @@ export default function CreateNewEventForm() {
 
 				toast({
 					title: 'Event created',
-					description: 'Event created successfully',
+					description: data.coupon.enabled
+						? 'Event and discount coupon created successfully'
+						: 'Event created successfully',
 				})
 
 				router.push(getResourcePath('event', event.fields.slug, 'edit'))
@@ -107,7 +121,9 @@ export default function CreateNewEventForm() {
 
 				toast({
 					title: `Event series created with ${result.childEvents.length} event${result.childEvents.length > 1 ? 's' : ''}`,
-					description: 'Event series created successfully',
+					description: data.coupon.enabled
+						? 'Event series and discount coupon created successfully'
+						: 'Event series created successfully',
 				})
 
 				// Navigate to the event series edit page
@@ -214,6 +230,122 @@ export default function CreateNewEventForm() {
 							/>
 						</div>
 					</div>
+
+					{/* Discount Coupon Section */}
+					{form.watch('sharedFields.price') &&
+						form.watch('sharedFields.price')! > 0 && (
+							<div className="border-b pb-4">
+								<h3 className="mb-3 text-lg font-semibold">Discount Coupon</h3>
+								<div className="space-y-4">
+									<FormField
+										control={form.control}
+										name="coupon.enabled"
+										render={({ field }) => (
+											<FormItem className="flex flex-row items-center justify-between">
+												<div className="space-y-0.5">
+													<FormLabel>Create discount coupon</FormLabel>
+													<FormDescription>
+														Auto-apply coupon restricted to this event/series
+													</FormDescription>
+												</div>
+												<FormControl>
+													<Switch
+														checked={field.value}
+														onCheckedChange={field.onChange}
+													/>
+												</FormControl>
+											</FormItem>
+										)}
+									/>
+									{form.watch('coupon.enabled') && (
+										<div className="grid grid-cols-2 gap-4">
+											<FormField
+												control={form.control}
+												name="coupon.percentageDiscount"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Discount percentage</FormLabel>
+														<Select
+															onValueChange={field.onChange}
+															value={field.value}
+															defaultValue="0.25"
+														>
+															<FormControl>
+																<SelectTrigger>
+																	<SelectValue placeholder="Select discount" />
+																</SelectTrigger>
+															</FormControl>
+															<SelectContent>
+																<SelectItem value="0.1">10% off</SelectItem>
+																<SelectItem value="0.25">25% off</SelectItem>
+																<SelectItem value="0.4">40% off</SelectItem>
+																<SelectItem value="0.5">50% off</SelectItem>
+																<SelectItem value="0.6">60% off</SelectItem>
+																<SelectItem value="0.75">75% off</SelectItem>
+																<SelectItem value="0.9">90% off</SelectItem>
+																<SelectItem value="0.95">95% off</SelectItem>
+															</SelectContent>
+														</Select>
+														<FormDescription>
+															{(() => {
+																const originalPrice =
+																	form.watch('sharedFields.price')
+																const discountPercentage = form.watch(
+																	'coupon.percentageDiscount',
+																)
+
+																if (originalPrice && discountPercentage) {
+																	const finalPrice =
+																		originalPrice *
+																		(1 - Number(discountPercentage))
+																	return `Final price: $${finalPrice.toFixed(2)}`
+																}
+																return 'Choose discount amount'
+															})()}
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="coupon.expires"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Expiration date</FormLabel>
+														<DateTimePicker
+															{...field}
+															aria-label="Coupon Expires At"
+															value={
+																!!field.value
+																	? parseAbsolute(
+																			new Date(field.value).toISOString(),
+																			'America/Los_Angeles',
+																		)
+																	: null
+															}
+															onChange={(date) => {
+																field.onChange(
+																	!!date
+																		? date.toDate('America/Los_Angeles')
+																		: null,
+																)
+															}}
+															shouldCloseOnSelect={false}
+															granularity="day"
+														/>
+														<FormDescription>
+															Expires at 23:59:59 PT on the selected date
+														</FormDescription>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
+									)}
+								</div>
+							</div>
+						)}
 
 					{/* Events Section */}
 					<div className="space-y-4">
@@ -447,7 +579,6 @@ export default function CreateNewEventForm() {
 							))}
 						</Accordion>
 					</div>
-
 					<Button
 						type="submit"
 						disabled={form.formState.isSubmitting}
@@ -455,9 +586,16 @@ export default function CreateNewEventForm() {
 					>
 						{form.formState.isSubmitting
 							? 'Creating...'
-							: fields.length === 1 && !form.watch('eventSeries.title')?.trim()
-								? 'Create Event'
-								: `Create Event Series (${fields.length} Event${fields.length > 1 ? 's' : ''})`}
+							: (() => {
+									const isSingleEvent =
+										fields.length === 1 &&
+										!form.watch('eventSeries.title')?.trim()
+									const hasCoupon = form.watch('coupon.enabled')
+									const baseText = isSingleEvent
+										? 'Create Event'
+										: `Create Event Series (${fields.length} Event${fields.length > 1 ? 's' : ''})`
+									return hasCoupon ? `${baseText} + Coupon` : baseText
+								})()}
 					</Button>
 				</form>
 			</Form>
