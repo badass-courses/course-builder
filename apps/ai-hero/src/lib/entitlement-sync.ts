@@ -1,8 +1,10 @@
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import {
 	entitlements,
 	entitlementTypes,
 	organizationMemberships,
+	products,
+	purchases,
 } from '@/db/schema'
 import { log } from '@/server/logger'
 import { and, eq, isNull, or, sql } from 'drizzle-orm'
@@ -24,8 +26,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 
 	const cohortEntitlements = await db.query.entitlements.findMany({
 		where: and(
-			eq(entitlements.sourceType, 'cohort'),
-			eq(entitlements.sourceId, cohortId),
+			eq(entitlements.sourceType, 'PURCHASE'),
 			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 			isNull(entitlements.deletedAt),
 		),
@@ -40,8 +41,29 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 		},
 	})
 
+	// Filter entitlements that belong to this cohort via the relationship chain
+	const cohortEntitlementsForCohort = []
+	for (const entitlement of cohortEntitlements) {
+		// Get the purchase for this entitlement
+		const purchase = await db.query.purchases.findFirst({
+			where: eq(purchases.id, entitlement.sourceId),
+		})
+
+		// Get the product for this purchase
+		const product = await courseBuilderAdapter.getProduct(purchase.productId)
+
+		// Check if this product has the cohort as a resource
+		const hasCohortResource = product.resources?.some(
+			(resource: any) => resource.resource?.id === cohortId,
+		)
+
+		if (hasCohortResource) {
+			cohortEntitlementsForCohort.push(entitlement)
+		}
+	}
+
 	const uniqueUsers = new Map()
-	cohortEntitlements.forEach((entitlement) => {
+	cohortEntitlementsForCohort.forEach((entitlement) => {
 		if (entitlement.user && entitlement.userId) {
 			uniqueUsers.set(entitlement.userId, {
 				user: {
@@ -69,26 +91,52 @@ export async function getCurrentCohortEntitlements(
 		return []
 	}
 
-	return await db.query.entitlements.findMany({
+	const userEntitlements = await db.query.entitlements.findMany({
 		where: and(
 			eq(entitlements.userId, userId),
-			eq(entitlements.sourceType, 'cohort'),
-			eq(entitlements.sourceId, cohortId),
+			eq(entitlements.sourceType, 'PURCHASE'),
 			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 			isNull(entitlements.deletedAt),
 		),
 	})
+
+	// Filter entitlements that belong to this cohort
+	const cohortEntitlementsForUser = []
+	for (const entitlement of userEntitlements) {
+		// Get the purchase for this entitlement
+		const purchase = await db.query.purchases.findFirst({
+			where: eq(purchases.id, entitlement.sourceId),
+		})
+
+		// Get the product for this purchase
+		const product = await courseBuilderAdapter.getProduct(purchase.productId)
+
+		// Check if this product has the cohort as a resource
+		const hasCohortResource = product.resources?.some(
+			(resource: any) => resource.resource?.id === cohortId,
+		)
+
+		if (hasCohortResource) {
+			cohortEntitlementsForUser.push(entitlement)
+		}
+	}
+
+	return cohortEntitlementsForUser
 }
 
 export function calculateEntitlementChanges(
 	currentEntitlements: any[],
 	updatedCohort: any,
 ) {
-	const currentResourceIds = new Set<string>(
-		currentEntitlements
-			.map((e) => e.metadata?.contentIds?.[0])
-			.filter((id): id is string => Boolean(id)),
-	)
+	// Extract all current content IDs from all entitlements
+	const currentResourceIds = new Set<string>()
+	currentEntitlements.forEach((entitlement) => {
+		const contentIds = entitlement.metadata?.contentIds || []
+		contentIds.forEach((id: string) => {
+			if (id) currentResourceIds.add(id)
+		})
+	})
+
 	const updatedResourceIds = new Set<string>(
 		(updatedCohort.resources?.map((r: any) => r.resource.id) || []).filter(
 			(id: any): id is string => Boolean(id),
@@ -130,18 +178,20 @@ export async function syncUserCohortEntitlements(
 			throw new Error(`Cohort ${cohortId} not found`)
 		}
 
-		const { toAdd, toRemove } = calculateEntitlementChanges(
+		// Calculate what needs to be added/removed
+		const changes = calculateEntitlementChanges(
 			currentEntitlements,
 			updatedCohort,
 		)
 
-		if (toAdd.length === 0 && toRemove.length === 0) {
+		// If no changes, return early
+		if (changes.toAdd.length === 0 && changes.toRemove.length === 0) {
 			await log.info('entitlement_sync.no_changes', {
 				userId,
 				cohortId,
 				duration: Date.now() - startTime,
 			})
-			return { toAdd: [], toRemove: [] }
+			return { toAdd: [], toRemove: [], updated: 0 }
 		}
 
 		const cohortContentAccessEntitlementType =
@@ -165,35 +215,46 @@ export async function syncUserCohortEntitlements(
 			throw new Error(`No organization ID found for user ${userId}`)
 		}
 
+		// Get the purchase for this user's cohort access
+		const purchase = await db.query.purchases.findFirst({
+			where: and(eq(purchases.userId, userId), eq(purchases.status, 'Valid')),
+		})
+
+		if (!purchase) {
+			throw new Error(`No valid purchase found for user ${userId}`)
+		}
+
 		await db.transaction(async (tx) => {
-			for (const resourceId of toRemove) {
+			// Remove entitlements for deleted content
+			for (const contentId of changes.toRemove) {
 				await tx
 					.delete(entitlements)
 					.where(
 						and(
 							eq(entitlements.userId, userId),
-							eq(entitlements.sourceType, 'cohort'),
-							eq(entitlements.sourceId, cohortId),
 							eq(
 								entitlements.entitlementType,
 								cohortContentAccessEntitlementType.id,
 							),
-							sql`JSON_EXTRACT(${entitlements.metadata}, '$.contentIds[0]') = ${resourceId}`,
+							eq(entitlements.sourceType, 'PURCHASE'),
+							eq(entitlements.sourceId, purchase.id),
+							sql`JSON_EXTRACT(${entitlements.metadata}, '$.contentIds') LIKE ${`%${contentId}%`}`,
 						),
 					)
 			}
 
-			for (const resourceId of toAdd) {
+			// Add entitlements for new content
+			for (const contentId of changes.toAdd) {
 				await createCohortEntitlementInTransaction(tx, {
 					userId,
-					resourceId,
-					sourceId: cohortId,
-					organizationId: userMembership.organizationId!,
+					resourceId: contentId,
+					sourceId: purchase.id,
+					organizationId: userMembership.organizationId,
 					organizationMembershipId: userMembership.id,
 					entitlementType: cohortContentAccessEntitlementType.id,
-					sourceType: 'cohort',
+					sourceType: 'PURCHASE',
 					metadata: {
-						contentIds: [resourceId],
+						contentIds: [contentId],
 					},
 				})
 			}
@@ -203,10 +264,15 @@ export async function syncUserCohortEntitlements(
 			userId,
 			cohortId,
 			duration: Date.now() - startTime,
-			changesApplied: { toAdd, toRemove },
+			entitlementsAdded: changes.toAdd.length,
+			entitlementsRemoved: changes.toRemove.length,
 		})
 
-		return { toAdd, toRemove }
+		return {
+			toAdd: changes.toAdd,
+			toRemove: changes.toRemove,
+			updated: changes.toAdd.length + changes.toRemove.length,
+		}
 	} catch (error) {
 		await log.error('entitlement_sync.failed', {
 			userId,
