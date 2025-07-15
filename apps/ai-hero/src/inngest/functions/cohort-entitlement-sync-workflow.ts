@@ -136,51 +136,10 @@ export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 			return { results, errors }
 		})
 
-		const summary = await step.run('calculate-summary', async () => {
-			const totalUsers = usersWithEntitlements.length
-			const successful = syncResults.results.length
-			const failed = syncResults.errors.length
-
-			const totalEntitlementsAdded = syncResults.results.reduce(
-				(sum, r) => sum + r.toAdd.length,
-				0,
-			)
-			const totalEntitlementsRemoved = syncResults.results.reduce(
-				(sum, r) => sum + r.toRemove.length,
-				0,
-			)
-
-			await log.info('cohort_entitlement_sync.summary_calculated', {
-				cohortId,
-				cohortTitle: cohortInfo.cohortTitle,
-				totalUsers,
-				successful,
-				failed,
-				successRate:
-					totalUsers > 0
-						? ((successful / totalUsers) * 100).toFixed(2) + '%'
-						: '0%',
-				totalEntitlementsAdded,
-				totalEntitlementsRemoved,
-			})
-
-			return {
-				totalUsers,
-				successful,
-				failed,
-				successRate:
-					totalUsers > 0
-						? ((successful / totalUsers) * 100).toFixed(2) + '%'
-						: '0%',
-				totalEntitlementsAdded,
-				totalEntitlementsRemoved,
-			}
-		})
-
 		return {
 			cohortId,
 			cohortTitle: cohortInfo.cohortTitle,
-			message: `Entitlement sync completed for ${summary.successful}/${summary.totalUsers} users (${summary.successRate} success rate)`,
+			message: `Entitlement sync completed for ${syncResults.results.length}/${usersWithEntitlements.length} users`,
 		}
 	},
 )
