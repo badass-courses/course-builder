@@ -47,8 +47,6 @@ export default async function LessonSolutionPage(props: {
 	const data = await getCachedExerciseSolution(params.lesson)
 	const workshop = await getCachedMinimalWorkshop(params.module)
 
-	console.log('workshop', workshop)
-
 	if (!data) {
 		notFound()
 	}

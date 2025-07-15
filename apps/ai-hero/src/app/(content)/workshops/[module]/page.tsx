@@ -177,7 +177,6 @@ export default async function ModulePage(props: Props) {
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
-							{/* <p className="text-primary mb-2 text-base">Pro Workshop</p> */}
 							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
@@ -219,11 +218,7 @@ export default async function ModulePage(props: Props) {
 
 				<>
 					<Links>
-						{/* <React.Suspense fallback={null}> */}
-						<ContentTitle
-						// abilityLoader={abilityLoader}
-						/>
-						{/* </React.Suspense> */}
+						<ContentTitle />
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
 						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
@@ -234,40 +229,6 @@ export default async function ModulePage(props: Props) {
 							)}
 						</article>
 						<div className="bg-muted/50 col-span-2 flex flex-col border-l">
-							{/* <React.Suspense
-								fallback={
-									<div className="flex flex-col gap-2">
-										{new Array(1).fill(null).map((_, i) => (
-											<Skeleton
-												key={`skeleton-${i}`}
-												className="flex h-80 w-full items-center justify-center"
-											>
-												<Spinner className="size-4" />
-											</Skeleton>
-										))}
-									</div>
-								}
-							>
-								<WorkshopPricing
-									searchParams={searchParams}
-									moduleSlug={params.module}
-								>
-									{(pricingProps) => {
-										return pricingProps.hasPurchasedCurrentProduct ? null : (
-											<>
-												<WorkshopPricingClient
-													{...pricingProps}
-													searchParams={props.searchParams}
-												/>
-												<div className="col-span-2 hidden h-14 items-center border-b pl-5 text-base font-medium md:flex">
-													Content
-												</div>
-											</>
-										)
-									}}
-								</WorkshopPricing>
-								</React.Suspense> */}
-
 							<WorkshopResourceList
 								isCollapsible={false}
 								className="border-r-0! w-full max-w-none"
@@ -275,9 +236,6 @@ export default async function ModulePage(props: Props) {
 								maxHeight="h-auto"
 								wrapperClassName="overflow-hidden pb-0"
 							/>
-							{/* <React.Suspense fallback={null}>
-								<SmallCohortBanner abilityLoader={abilityLoader} />
-							</React.Suspense> */}
 						</div>
 					</div>
 					{workshop?.fields?.body && <Links />}
