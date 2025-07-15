@@ -30,7 +30,7 @@ export default async function Discord() {
 		<LayoutClient withContainer>
 			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col items-center justify-center gap-10 bg-[#7289DA] px-5 text-black dark:text-black">
 				<h1 className="sm:fluid-3xl fluid-2xl mx-auto w-full max-w-xl text-balance text-center">
-					Join <ContributorImage className="inline-block " />{' '}
+					Join <ContributorImage className="inline-block" />{' '}
 					{process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}{' '}
 					{process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}'s AI Hero Discord
 				</h1>

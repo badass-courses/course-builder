@@ -3,6 +3,7 @@
 import crypto from 'node:crypto'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { AppAbility } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
@@ -20,7 +21,7 @@ import {
 	PostSchema,
 	type PostUpdate,
 } from '@/lib/posts'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -39,11 +40,37 @@ import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedAllPosts = unstable_cache(
-	async () => getAllPosts(),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
+/**
+ * Generates a cache key suffix based on user abilities to ensure
+ * cached results respect user permissions
+ */
+function generateAbilityCacheKey(ability?: AppAbility): string {
+	if (!ability) {
+		return 'public'
+	}
+
+	// Create a deterministic representation of user abilities
+	const permissions = {
+		canManageAll: ability.can('manage', 'all'),
+		canUpdateContent: ability.can('update', 'Content'),
+		canCreateContent: ability.can('create', 'Content'),
+		canDeleteContent: ability.can('delete', 'Content'),
+		canReadContent: ability.can('read', 'Content'),
+	}
+
+	// Generate a hash of the permissions to use as cache key
+	const permissionsString = JSON.stringify(permissions)
+	const hash = crypto
+		.createHash('sha256')
+		.update(permissionsString)
+		.digest('hex')
+
+	return hash.substring(0, 8) // Use first 8 characters for brevity
+}
+
+// Note: getCachedAllPosts disabled due to security concerns with user abilities
+// Use getAllPosts() directly to ensure proper authorization checks
+export const getCachedAllPosts = getAllPosts
 
 export async function getAllPosts(): Promise<Post[]> {
 	try {
@@ -128,7 +155,7 @@ export async function getAllTips(): Promise<Post[]> {
 
 export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	if (!userId) {
-		redirect('/')
+		return []
 	}
 
 	const posts = await db.query.contentResource.findMany({
@@ -162,6 +189,54 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 	return postsParsed.data
 }
 
+export async function getAllTipsForUser(userId?: string): Promise<Post[]> {
+	if (!userId) {
+		return []
+	}
+
+	try {
+		const posts = await db.query.contentResource.findMany({
+			where: and(
+				eq(contentResource.type, 'post'),
+				eq(contentResource.createdById, userId),
+				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'tip'),
+			),
+			with: {
+				tags: {
+					with: {
+						tag: true,
+					},
+					orderBy: asc(contentResourceTagTable.position),
+				},
+			},
+			orderBy: desc(contentResource.createdAt),
+		})
+
+		const postsParsed = z.array(PostSchema).safeParse(posts)
+		if (!postsParsed.success) {
+			await log.error('user.tips.parse.failed', {
+				error: postsParsed.error.format(),
+				userId,
+			})
+			return []
+		}
+
+		await log.info('user.tips.fetch.success', {
+			count: postsParsed.data.length,
+			userId,
+		})
+
+		return postsParsed.data
+	} catch (error) {
+		await log.error('user.tips.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+			userId,
+		})
+		return []
+	}
+}
+
 export async function getPostTags(postId: string): Promise<Tag[]> {
 	const tags = await db.query.contentResourceTag.findMany({
 		where: eq(contentResourceTagTable.contentResourceId, postId),
@@ -189,7 +264,7 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await getImpersonatedSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
 		'update',
@@ -223,7 +298,7 @@ export async function getPosts(): Promise<Post[]> {
 }
 
 export async function createPost(input: NewPostInput) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
 		await log.error('post.create.unauthorized', {
@@ -330,7 +405,7 @@ export async function updatePost(
 	action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
 	revalidate = true,
 ) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	const currentPost = await getPost(input.id)
@@ -438,13 +513,31 @@ export async function updatePost(
 	}
 }
 
-export const getCachedPost = unstable_cache(
+// Cached version for public access only (no ability checks)
+const getCachedPostPublic = unstable_cache(
 	async (slugOrId: string) => getPost(slugOrId),
-	['posts'],
+	['posts', 'public'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
 
-export async function getPost(slugOrId: string) {
+/**
+ * Secure post retrieval that respects user abilities.
+ * Disables caching when ability is provided to prevent unauthorized access.
+ */
+export async function getCachedPost(slugOrId: string, ability?: AppAbility) {
+	if (ability) {
+		// When ability is provided, bypass cache to ensure authorization checks
+		log.debug('Bypassing cache for post retrieval due to ability check', {
+			slugOrId,
+		})
+		return getPost(slugOrId, ability)
+	}
+
+	// Use cached version for public access only
+	return getCachedPostPublic(slugOrId)
+}
+
+export async function getPost(slugOrId: string, ability?: AppAbility) {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
 		'public',
 		'unlisted',
@@ -484,6 +577,18 @@ export async function getPost(slugOrId: string) {
 	const postParsed = PostSchema.safeParse(post)
 	if (!postParsed.success) {
 		console.debug('Error parsing post', postParsed.error)
+		console.debug(
+			'Post data that failed to parse:',
+			JSON.stringify(post, null, 2),
+		)
+		return null
+	}
+
+	if (ability && !ability.can('read', subject('Content', postParsed.data))) {
+		console.debug(
+			'User does not have permission to read post:',
+			postParsed.data.id,
+		)
 		return null
 	}
 
@@ -491,7 +596,7 @@ export async function getPost(slugOrId: string) {
 }
 
 export async function deletePost(id: string) {
-	const { session, ability } = await getServerAuthSession()
+	const { session, ability } = await getImpersonatedSession()
 	const user = session?.user
 
 	const post = PostSchema.nullish().parse(
@@ -564,7 +669,7 @@ export async function writeNewPostToDatabase(
 ): Promise<Post> {
 	try {
 		// Determine author based on current session user
-		const { session } = await getServerAuthSession()
+		const { session } = await getImpersonatedSession()
 		const currentUser = session?.user
 
 		if (!currentUser) {
@@ -1086,9 +1191,14 @@ function getErrorStack(error: unknown) {
 	return undefined
 }
 
+/**
+ * Cached post/list retrieval for public content only.
+ * This function only returns public and unlisted content that is published.
+ * For content that requires ability checks, use getPostOrList() directly.
+ */
 export const getCachedPostOrList = unstable_cache(
 	async (slugOrId: string) => getPostOrList(slugOrId),
-	['posts', 'lists'],
+	['posts', 'lists', 'public'],
 	{ revalidate: 3600, tags: ['posts', 'lists'] },
 )
 

@@ -121,7 +121,7 @@ export function EditTutorialForm({ tutorial }: { tutorial: ContentResource }) {
 							/>
 						),
 						toolComponent: (
-							<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
+							<div className="h-(--pane-layout-height) overflow-y-auto py-5">
 								<TutorialResourcesList tutorial={tutorial} />
 							</div>
 						),

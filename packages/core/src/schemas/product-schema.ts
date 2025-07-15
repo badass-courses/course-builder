@@ -32,6 +32,8 @@ export const productSchema = z.object({
 			.enum(['draft', 'published', 'archived', 'deleted'])
 			.default('draft'),
 		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
+		openEnrollment: z.string().datetime().nullish(),
+		closeEnrollment: z.string().datetime().nullish(),
 	}),
 	createdAt: z.coerce.date().nullable(),
 	status: z.number().int().default(0),

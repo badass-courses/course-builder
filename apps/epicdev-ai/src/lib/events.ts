@@ -165,6 +165,13 @@ export const MultipleEventsSchema = z
 			price: z.number().min(0).nullish(),
 			quantity: z.number().min(-1).nullish(),
 		}),
+		coupon: z.object({
+			enabled: z.boolean().default(false),
+			percentageDiscount: z
+				.enum(['1', '0.95', '0.9', '0.75', '0.6', '0.5', '0.4', '0.25', '0.1'])
+				.optional(),
+			expires: z.date().optional(),
+		}),
 		events: z
 			.array(
 				z.object({
@@ -197,7 +204,26 @@ export const MultipleEventsSchema = z
 		{
 			message:
 				'Series title must be at least 2 characters when creating multiple events',
-			path: ['event-series', 'title'],
+			path: ['eventSeries', 'title'],
+		},
+	)
+	.refine(
+		(data) => {
+			// Require coupon fields when coupon is enabled
+			if (data.coupon.enabled) {
+				if (!data.coupon.percentageDiscount) {
+					return false
+				}
+				if (!data.coupon.expires) {
+					return false
+				}
+			}
+			return true
+		},
+		{
+			message:
+				'Percentage discount and expiration date are required when coupon is enabled',
+			path: ['coupon'],
 		},
 	)
 

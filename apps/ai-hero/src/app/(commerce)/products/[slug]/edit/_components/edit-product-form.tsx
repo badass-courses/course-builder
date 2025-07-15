@@ -21,6 +21,7 @@ import {
 import { api } from '@/trpc/react'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { parseAbsolute } from '@internationalized/date'
 import { ChevronsUpDown, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -32,6 +33,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
 import {
 	Button,
+	DateTimePicker,
 	FormControl,
 	FormDescription,
 	FormField,
@@ -154,6 +156,12 @@ export function EditProductForm({ product }: { product: Product }) {
 				},
 				visibility: product.fields.visibility || 'public',
 				state: product.fields.state || 'draft',
+				openEnrollment: product.fields.openEnrollment
+					? new Date(product.fields.openEnrollment).toISOString()
+					: null,
+				closeEnrollment: product.fields.closeEnrollment
+					? new Date(product.fields.closeEnrollment).toISOString()
+					: null,
 			},
 		},
 	})
@@ -283,6 +291,64 @@ export function EditProductForm({ product }: { product: Product }) {
 						</FormItem>
 					)
 				}}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.openEnrollment"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Open Enrollment</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.closeEnrollment"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">
+							Close Enrollment
+						</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
 			/>
 			<FormField
 				control={form.control}
@@ -489,7 +555,7 @@ function EditProductFormDesktop({
 					defaultSize={55}
 					className="flex min-h-full md:min-h-full"
 				>
-					<ScrollArea className="flex h-[var(--pane-layout-height)] w-full flex-col justify-start overflow-y-auto">
+					<ScrollArea className="h-(--pane-layout-height) flex w-full flex-col justify-start overflow-y-auto">
 						<EditResourcesBodyPanel
 							user={user}
 							partykitUrl={hostUrl}

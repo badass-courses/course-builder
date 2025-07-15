@@ -67,7 +67,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 						<PostTeaser
 							isHighlighted
 							post={primary}
-							className="[&_[data-card='']]:text-foreground sm:[&_[data-title='']]:fluid-3xl [&_[data-title='']]:text-foreground relative z-10 h-full w-full [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 [&_[data-title='']]:font-bold"
+							className="**:data-card:text-foreground sm:**:data-title:!fluid-3xl **:data-title:text-foreground **:data-card:p-8 sm:**:data-card:p-10 **:data-title:font-bold relative z-10 h-full w-full"
 						/>
 					</div>
 				)}
@@ -84,11 +84,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 			{secondary.length > 2 && (
 				<div className="grid grid-cols-1 divide-x border-x md:grid-cols-2">
 					{secondary.slice(2).map((post, i) => (
-						<PostTeaser
-							key={post.fields.slug}
-							post={post}
-							className=" w-full"
-						/>
+						<PostTeaser key={post.fields.slug} post={post} className="w-full" />
 					))}
 				</div>
 			)}
@@ -188,7 +184,7 @@ export default async function PostsIndexPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="mx-[-1px] flex min-h-[calc(100vh-var(--nav-height))] flex-col lg:flex-row">
+			<main className="-mx-px flex min-h-[calc(100vh-var(--nav-height))] flex-col lg:flex-row">
 				<div className="mx-auto flex w-full flex-col">
 					<FeaturedGrid posts={featuredContent} />
 					<Search />
@@ -255,7 +251,7 @@ const PostTeaser: React.FC<{
 							)}
 							<CardTitle
 								data-title=""
-								className="fluid-xl font-semibold leading-tight"
+								className="!fluid-xl font-semibold leading-tight"
 							>
 								{title}
 							</CardTitle>

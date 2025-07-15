@@ -26,7 +26,7 @@ export default function EventWaitlist({
 			fields={waitlistCkFields}
 			actionLabel={actionLabel}
 			className={cn(
-				'[&_button]:from-primary relative z-10 flex w-full flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:bg-gradient-to-b [&_button]:to-indigo-800 [&_button]:text-base [&_button]:font-semibold [&_button]:text-white [&_input]:h-12 [&_input]:text-lg',
+				'[&_button]:from-primary [&_button]:bg-linear-to-b relative z-10 flex w-full flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:to-indigo-800 [&_button]:text-base [&_button]:font-semibold [&_button]:text-white [&_input]:h-12 [&_input]:text-lg',
 				className,
 			)}
 			successMessage={

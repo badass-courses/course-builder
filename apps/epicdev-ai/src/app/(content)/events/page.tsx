@@ -97,7 +97,7 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-10 flex w-full max-w-screen-md flex-col gap-5">
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full flex-col gap-5">
 			{publicEvents.length === 0 && (
 				<p className="mb-10 text-center">There are no public events.</p>
 			)}
@@ -106,6 +106,10 @@ async function EventsList() {
 					event.type === 'event'
 						? event.fields
 						: event?.resources?.[0]?.resource?.fields
+
+				if (!sharedFields) {
+					return null
+				}
 				const { startsAt, endsAt } = sharedFields
 				const PT = sharedFields.timezone || 'America/Los_Angeles'
 				const eventDate =

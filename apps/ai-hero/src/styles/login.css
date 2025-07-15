@@ -13,7 +13,7 @@
 		@apply text-base;
 	}
 	[data-form] {
-		@apply w-full  sm:mx-auto sm:max-w-md  sm:text-lg;
+		@apply w-full sm:mx-auto sm:max-w-md sm:text-lg;
 
 		[data-input-container] {
 			@apply relative mt-1 rounded-md shadow-sm;

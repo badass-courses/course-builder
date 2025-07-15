@@ -228,7 +228,9 @@ export const CompletedModuleOverlay: React.FC<{
 					<Button asChild variant="default">
 						<Link href={`/workshops/${nextWorkshop?.slug}`}>
 							Continue{' '}
-							<span className="hidden sm:inline">to {nextWorkshop?.title}</span>
+							<span className="hidden pl-1 sm:inline">
+								to {nextWorkshop?.title}
+							</span>
 						</Link>
 					</Button>
 				)}

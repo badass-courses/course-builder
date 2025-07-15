@@ -27,7 +27,7 @@ export default async function PagesIndexPage() {
 
 	return (
 		<main className="container flex flex-col-reverse px-5 lg:flex-row">
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col sm:flex-row">
 				<div className="flex flex-col items-center border-x">
 					<ul className="divide-border relative grid grid-cols-1 justify-center divide-y sm:grid-cols-2">
 						{allPages.slice(1, allPages.length).map((page, i) => {
@@ -36,7 +36,7 @@ export default async function PagesIndexPage() {
 									i={i}
 									article={page}
 									key={page.id}
-									className="[&_[data-card]]:pl-8 [&_[data-title='']]:transition [&_[data-title='']]:hover:text-blue-500"
+									className="**:data-card:pl-8 **:data-title:transition hover:**:data-title:text-blue-500"
 								/>
 							)
 						})}

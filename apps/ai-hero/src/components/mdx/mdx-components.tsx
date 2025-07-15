@@ -118,7 +118,7 @@ export const AISummary = ({
 								</div>
 							</AccordionTrigger>
 							<TrackLink
-								className="text-foreground/80 dark:text-foreground/60 not-prose hover:text-foreground dark:hover:text-foreground inline-flex flex-shrink-0 items-center gap-1.5 px-5 text-sm font-normal no-underline transition sm:text-base"
+								className="text-foreground/80 dark:text-foreground/60 not-prose hover:text-foreground dark:hover:text-foreground inline-flex shrink-0 items-center gap-1.5 px-5 text-sm font-normal no-underline transition sm:text-base"
 								title={displayTitle}
 								target="_blank"
 								href={href}
@@ -126,7 +126,7 @@ export const AISummary = ({
 								Original <ExternalLink className="size-4" />
 							</TrackLink>
 						</div>
-						<AccordionContent className="px-5 pt-8 data-[state=open]:border-t">
+						<AccordionContent className="radix-state-open:border-t px-5 pt-8">
 							<div className="prose sm:prose-lg lg:prose-xl max-w-4xl">
 								{children}
 							</div>

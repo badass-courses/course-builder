@@ -1,12 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@import './commerce.css';
-@import './login.css';
-@import './redeem-dialog.css';
-@import './team.css';
-@import './subscribe-form.css';
+@import './commerce.css' layer(utilities);
+@import './login.css' layer(utilities);
+@import './redeem-dialog.css' layer(utilities);
+@import './team.css' layer(utilities);
+@import './subscribe-form.css' layer(utilities);
+
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=526')
+layer(utilities); /* FS Brabo Pro Bold */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=527')
+layer(utilities); /* FS Brabo Pro Bold Italic */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=516')
+layer(utilities); /* FS Brabo Pro ExtraLight */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=517')
+layer(utilities); /* FS Brabo Pro ExtraLight Italic */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=521')
+layer(utilities); /* FS Brabo Pro Italic */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=518')
+layer(utilities); /* FS Brabo Pro Light */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=519')
+layer(utilities); /* FS Brabo Pro Light Italic */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=522')
+layer(utilities); /* FS Brabo Pro Medium */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=523')
+layer(utilities); /* FS Brabo Pro Medium Italic */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=520')
+layer(utilities); /* FS Brabo Pro Regular */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=524')
+layer(utilities); /* FS Brabo Pro SemiBold */
+@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=525')
+layer(utilities);
+
+@config '../../tailwind.config.ts'; /* FS Brabo Pro SemiBold Italic */
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--color-gray-200, currentcolor);
+	}
+}
+
+@utility fluid-prose {
+	:where(h1) {
+		@apply fluid-5xl mb-0;
+	}
+	:where(h2) {
+		@apply fluid-4xl mb-0;
+	}
+	:where(h3) {
+		@apply fluid-3xl mb-0;
+	}
+	:where(h4) {
+		@apply fluid-2xl mb-0;
+	}
+	:where(h5) {
+		@apply fluid-xl mb-0;
+	}
+	:where(h6) {
+		@apply fluid-lg mb-0;
+	}
+}
 
 @layer base {
 	:root {
@@ -93,46 +157,12 @@
 }
 
 @layer utilities {
-	.fluid-prose {
-		:where(h1) {
-			@apply fluid-5xl mb-0;
-		}
-		:where(h2) {
-			@apply fluid-4xl mb-0;
-		}
-		:where(h3) {
-			@apply fluid-3xl mb-0;
-		}
-		:where(h4) {
-			@apply fluid-2xl mb-0;
-		}
-		:where(h5) {
-			@apply fluid-xl mb-0;
-		}
-		:where(h6) {
-			@apply fluid-lg mb-0;
-		}
+	mux-player {
+		aspect-ratio: 16 / 9;
+		width: 100%;
+		height: auto;
+		--seek-backward-button: none;
+		--seek-forward-button: none;
+		@apply overflow-hidden;
 	}
 }
-
-mux-player {
-	aspect-ratio: 16 / 9;
-	width: 100%;
-	height: auto;
-	--seek-backward-button: none;
-	--seek-forward-button: none;
-	@apply overflow-hidden;
-}
-
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=526'); /* FS Brabo Pro Bold */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=527'); /* FS Brabo Pro Bold Italic */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=516'); /* FS Brabo Pro ExtraLight */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=517'); /* FS Brabo Pro ExtraLight Italic */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=521'); /* FS Brabo Pro Italic */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=518'); /* FS Brabo Pro Light */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=519'); /* FS Brabo Pro Light Italic */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=522'); /* FS Brabo Pro Medium */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=523'); /* FS Brabo Pro Medium Italic */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=520'); /* FS Brabo Pro Regular */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=524'); /* FS Brabo Pro SemiBold */
-@import url('https://fast.fonts.net/lt/1.css?apiType=fspg&c=22b01e89-ec94-4a8d-b318-504014f1ce19&fontids=525'); /* FS Brabo Pro SemiBold Italic */

@@ -10,7 +10,7 @@ export const focus: AnnotationHandler = {
 	Line: (props) => (
 		<InnerLine
 			merge={props}
-			className="px-2 opacity-50 data-[focus]:opacity-100"
+			className="data-focus:opacity-100 px-2 opacity-50"
 		/>
 	),
 	AnnotatedLine: ({ annotation, ...props }) => (

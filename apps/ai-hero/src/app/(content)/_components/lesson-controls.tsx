@@ -57,7 +57,7 @@ export const LessonControls = async ({
 				className,
 			)}
 		>
-			<div className="flex h-full flex-grow items-center">
+			<div className="flex h-full grow items-center">
 				<React.Suspense fallback={null}>
 					<CopyProblemPromptButton
 						abilityLoader={abilityLoader}

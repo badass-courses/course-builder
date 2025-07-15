@@ -47,7 +47,7 @@ const Navigation = () => {
 	return (
 		<header
 			className={cn(
-				'dark:bg-background relative z-50 flex h-[var(--nav-height)] w-full items-stretch justify-between border-b bg-white px-0 print:hidden',
+				'dark:bg-background h-(--nav-height) relative z-50 flex w-full items-stretch justify-between border-b bg-white px-0 print:hidden',
 				{
 					'sticky top-0': !params.lesson,
 				},
@@ -65,10 +65,10 @@ const Navigation = () => {
 							prefetch
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
-							className="font-heading hover:bg-muted flex h-[var(--nav-height)] w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"
+							className="font-heading hover:bg-muted h-(--nav-height) flex w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"
 						>
 							<LogoMark className="w-7" />
-							<span className="text-foreground text-xl font-semibold !leading-none">
+							<span className="text-foreground leading-none! text-xl font-semibold">
 								<span className="font-mono">AI</span>hero
 							</span>
 						</Link>

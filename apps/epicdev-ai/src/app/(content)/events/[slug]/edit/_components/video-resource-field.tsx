@@ -75,9 +75,6 @@ export const VideoResourceField: React.FC<{
 		},
 	})
 
-	// Use videoResource.id if available, otherwise fall back to initialVideoResourceId
-	const videoId = videoResource?.id || initialVideoResourceId
-
 	async function handleVideoUpdate(
 		resourceId: string,
 		videoResourceId: string,
@@ -92,17 +89,6 @@ export const VideoResourceField: React.FC<{
 				'fields.thumbnailTime' as any,
 				additionalFields.thumbnailTime,
 			)
-
-			// Save changes to the post immediately
-			await updateEvent({
-				id: event.id,
-				fields: {
-					...form.watch('fields'),
-					thumbnailTime: additionalFields.thumbnailTime,
-					videoResourceId, // This is added dynamically to the fields
-				} as any,
-				createdById: event.createdById,
-			})
 		}
 	}
 

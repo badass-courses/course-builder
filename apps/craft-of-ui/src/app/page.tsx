@@ -119,7 +119,7 @@ const Home = async (props: Props) => {
 					<main
 						className={cn(
 							'prose prose-lg dark:prose-invert',
-							'[&>p:not(:has(+ul))]:mb-8 [&_p]:text-gray-600 [&_p]:dark:text-gray-300',
+							'[&>p:not(:has(+ul))]:mb-8 [&_p]:text-gray-600 dark:[&_p]:text-gray-300',
 							'[&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6',
 							'[&_h2]:font-serif [&_h2]:text-3xl [&_h2]:font-normal [&_h2]:leading-none',
 							'[&_h2]:mb-4 [&_h2]:mt-20',
@@ -131,7 +131,7 @@ const Home = async (props: Props) => {
 								href={firstPageResource.path}
 								prefetch
 							>
-								<span className="truncate overflow-ellipsis">
+								<span className="truncate text-ellipsis">
 									New {firstPageResource.type}:{' '}
 									<span className="underline">{firstPageResource?.title}</span>
 								</span>

@@ -1,6 +1,6 @@
 body {
 	[data-pricing-container] {
-		@apply mx-auto flex w-full max-w-screen-lg flex-wrap items-start justify-center gap-5 pb-24;
+		@apply max-w-(--breakpoint-lg) mx-auto flex w-full flex-wrap items-start justify-center gap-5 pb-24;
 		#main-pricing {
 			@apply w-full max-w-sm;
 			[data-pricing-product] {
@@ -14,7 +14,7 @@ body {
 					@apply bg-card rounded-lg border pt-36 shadow-2xl shadow-gray-500/10;
 				}
 				[data-pricing-product-sale-countdown] {
-					@apply mt-5 flex w-full flex-col  py-5 text-center;
+					@apply mt-5 flex w-full flex-col py-5 text-center;
 					[data-grid] {
 						@apply mx-auto grid max-w-[300px] grid-cols-4 items-center justify-center gap-3 tabular-nums tracking-tight;
 					}
@@ -33,7 +33,7 @@ body {
 						@apply hidden;
 					}
 					[data-name-badge] {
-						@apply pb-2 text-center  text-sm font-extrabold uppercase;
+						@apply pb-2 text-center text-sm font-extrabold uppercase;
 					}
 					[data-title] {
 						@apply px-5 text-center text-xl font-black sm:text-2xl;
@@ -90,13 +90,13 @@ body {
 						@apply mb-0 mt-0 text-center leading-relaxed;
 					}
 					[data-unavailable] {
-						@apply !pt-0 text-blue-600 dark:text-yellow-300;
+						@apply pt-0! text-blue-600 dark:text-yellow-300;
 					}
 					[data-loading-price] {
 						@apply flex h-12 items-center justify-center py-6;
 					}
 					button[type='submit'] {
-						@apply flex w-full items-center justify-center rounded-md bg-gradient-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-600 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
+						@apply bg-linear-to-t flex w-full items-center justify-center rounded-md from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-600 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
 
 						span {
 							@apply relative z-10;
@@ -135,7 +135,7 @@ body {
 										@apply w-full;
 									}
 									[data-price-container='loading'] {
-										@apply flex h-[56px] items-center justify-center !important;
+										@apply flex! h-[56px]! items-center! justify-center!;
 									}
 									button[type='submit'] {
 										@apply bg-primary text-primary-foreground w-full border-none py-4 text-lg no-underline;
@@ -152,7 +152,7 @@ body {
 						}
 					}
 					[data-unavailable] {
-						@apply py-4 text-center  text-lg font-bold text-blue-500;
+						@apply py-4 text-center text-lg font-bold text-blue-500;
 					}
 					[data-price-container] {
 						@apply pt-0;
@@ -216,7 +216,7 @@ body {
 								button[role='switch'] {
 									@apply radix-state-checked:bg-gray-200 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900;
 									span {
-										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-sm shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
+										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 shadow-xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
 									}
 								}
 							}
@@ -237,7 +237,7 @@ body {
 							}
 						}
 						[data-pricing-product-checkout-button] {
-							@apply flex w-full items-center justify-center rounded-md bg-gradient-to-t from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-700 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
+							@apply bg-linear-to-t flex w-full items-center justify-center rounded-md from-blue-600 to-blue-500 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:bg-blue-700 hover:shadow-gray-600/20 focus-visible:ring-blue-600 disabled:cursor-wait;
 
 							span {
 								@apply relative z-10;
@@ -332,10 +332,10 @@ body {
 						[data-limited-bonuses] {
 							@apply bg-background mb-5 rounded-md p-5 shadow-inner dark:shadow-none;
 							ul {
-								@apply pb-0 !important;
+								@apply pb-0!;
 							}
 							strong {
-								@apply pb-5 text-center before:content-['⭐️'] !important;
+								@apply pb-5! text-center! before:content-['⭐️']!;
 							}
 							[data-description] {
 								@apply mt-1;
@@ -389,7 +389,7 @@ body {
 								}
 
 								[data-description] {
-									@apply prose prose-sm dark:prose-invert prose-p:!inline-block prose-p:text-base prose-p:font-normal prose-p:leading-tight prose-p:opacity-90 prose-p:first-of-type:my-0 prose-a:inline-block;
+									@apply prose prose-sm dark:prose-invert prose-p:inline-block! prose-p:text-base prose-p:font-normal prose-p:leading-tight prose-p:opacity-90 first-of-type:prose-p:my-0 prose-a:inline-block;
 								}
 
 								[data-state='draft'] {
@@ -416,7 +416,7 @@ body {
 						}
 
 						[data-contents] {
-							@apply relative mx-[1px] mb-[1px] mt-3 flex w-full items-center justify-between rounded-b-lg bg-gray-50 px-5 py-3 text-sm font-medium text-gray-700;
+							@apply relative mx-px mb-px mt-3 flex w-full items-center justify-between rounded-b-lg bg-gray-50 px-5 py-3 text-sm font-medium text-gray-700;
 							span {
 								@apply absolute;
 							}
@@ -496,7 +496,7 @@ body {
 				[data-pricing-product-sale-countdown] {
 					@apply mt-5 flex w-full flex-col bg-gray-100 px-3 py-5 text-center dark:bg-gray-900;
 					[data-grid] {
-						@apply mx-auto grid max-w-[300px] grid-cols-4 items-center justify-center gap-3 tabular-nums tracking-tight !important;
+						@apply mx-auto! grid! max-w-[300px]! grid-cols-4! items-center! justify-center! gap-3! tabular-nums! tracking-tight!;
 					}
 					[data-title] {
 						@apply pb-4 text-sm font-medium sm:text-base;
@@ -526,13 +526,13 @@ body {
 					}
 
 					[data-purchased] {
-						@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5 text-lg  font-black dark:border-gray-800;
+						@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5 text-lg font-black dark:border-gray-800;
 						svg {
 							@apply h-8 w-8 text-sky-500;
 						}
 					}
 					[data-unavailable] {
-						@apply py-4 text-center  text-lg font-bold text-blue-500;
+						@apply py-4 text-center text-lg font-bold text-blue-500;
 					}
 					[data-sr-convertkit-subscribe-form] {
 						@apply flex w-full flex-col gap-2 text-left;
@@ -581,9 +581,9 @@ body {
 									@apply text-foreground underline-offset-2 transition hover:underline;
 								}
 								button[role='switch'] {
-									@apply hover:radix-state-checked:bg-gray-300/50 dark:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30  transition hover:bg-gray-300/50 dark:border-white/5 dark:bg-gray-800 dark:shadow-black/20;
+									@apply hover:radix-state-checked:bg-gray-300/50 dark:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-white/5 dark:bg-gray-800 dark:shadow-black/20;
 									span {
-										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-blue-500 shadow-sm shadow-black/20 transition-all will-change-transform group-hover:bg-gray-300 dark:bg-blue-500;
+										@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 shadow-xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-blue-500 shadow-black/20 transition-all will-change-transform group-hover:bg-gray-300 dark:bg-blue-500;
 									}
 								}
 							}
@@ -604,7 +604,7 @@ body {
 							}
 						}
 						[data-pricing-product-checkout-button] {
-							@apply flex w-full items-center justify-center rounded-md border border-blue-400/20 bg-gradient-to-b from-blue-500 to-blue-600 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:shadow-gray-600/20 hover:brightness-110 focus-visible:ring-blue-600 disabled:cursor-wait;
+							@apply bg-linear-to-b flex w-full items-center justify-center rounded-md border border-blue-400/20 from-blue-500 to-blue-600 px-4 py-4 text-center font-semibold text-white shadow-lg ring-offset-1 transition ease-in-out hover:shadow-gray-600/20 hover:brightness-110 focus-visible:ring-blue-600 disabled:cursor-wait;
 
 							span {
 								@apply relative z-10;
@@ -714,13 +714,13 @@ body {
 			}
 			[data-purchased-container] {
 				[data-purchased] {
-					@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5  text-lg font-black;
+					@apply mb-5 flex items-center gap-1 border-b border-gray-100 pb-5 text-lg font-black;
 					svg {
 						@apply h-8 w-8 text-sky-500;
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center  text-lg font-bold text-blue-500;
+					@apply py-4 text-center text-lg font-bold text-blue-500;
 				}
 
 				#team-upgrade-pricing-inline {
@@ -751,7 +751,7 @@ body {
 							button[role='switch'] {
 								@apply radix-state-checked:bg-gray-200 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50;
 								span {
-									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 group-hover:radix-state-checked:bg-indigo-400 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-sm shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
+									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 shadow-xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300;
 								}
 							}
 						}
@@ -891,7 +891,7 @@ body {
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center  text-lg font-bold text-blue-400;
+					@apply py-4 text-center text-lg font-bold text-blue-400;
 				}
 			}
 			[data-purchase-container] {
@@ -914,7 +914,7 @@ body {
 							button[role='switch'] {
 								@apply radix-state-checked:bg-gray-800 hover:radix-state-checked:bg-gray-700 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-800 shadow-md shadow-black/30 transition hover:bg-gray-700;
 								span {
-									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-400 group-hover:radix-state-checked:bg-blue-300 block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-300 shadow-sm shadow-black/50 transition-all will-change-transform group-hover:bg-gray-300;
+									@apply radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-400 radix-state-checked:group-hover:bg-blue-300 shadow-xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-300 shadow-black/50 transition-all will-change-transform group-hover:bg-gray-300;
 								}
 							}
 						}

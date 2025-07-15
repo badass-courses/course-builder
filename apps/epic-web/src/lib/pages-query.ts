@@ -104,6 +104,17 @@ export async function updatePage(input: Page) {
 }
 
 export async function getPage(slugOrId: string) {
+	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
+		? ['draft', 'published']
+		: ['published']
+
 	const page = await db.query.contentResource.findFirst({
 		where: and(
 			or(
@@ -111,28 +122,21 @@ export async function getPage(slugOrId: string) {
 				eq(contentResource.id, slugOrId),
 			),
 			eq(contentResource.type, 'page'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							tags: {
-								with: {
-									tag: true,
-								},
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-		},
 	})
 
 	const pageParsed = PageSchema.safeParse(page)
 	if (!pageParsed.success) {
-		console.debug('Error parsing page', pageParsed)
+		// Only log if there was actually a page returned but it failed validation
+		// If page is undefined, it just means the page doesn't exist, which is fine
+		if (page !== undefined) {
+			console.debug('Error parsing page', pageParsed.error)
+		}
 		return null
 	}
 

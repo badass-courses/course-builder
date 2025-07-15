@@ -71,7 +71,7 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 
 					<div
 						className={cn(
-							'bg-background/80 fixed bottom-5 left-5 right-5 z-50 flex gap-2 rounded-lg border p-4 shadow-xl backdrop-blur-sm transition duration-150 ease-in-out lg:hidden',
+							'bg-background/80 backdrop-blur-xs fixed bottom-5 left-5 right-5 z-50 flex gap-2 rounded-lg border p-4 shadow-xl transition duration-150 ease-in-out lg:hidden',
 							{
 								'opacity-0': isInView,
 							},

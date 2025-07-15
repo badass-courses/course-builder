@@ -289,7 +289,7 @@ export function EditArticleForm({
 						)}
 					</div>
 
-					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:bg-gradient-to-t before:to-transparent before:content-[''] md:h-auto md:before:h-0">
+					<ReactMarkdown className="prose prose-sm dark:prose-invert before:from-background before:bg-linear-to-t relative mt-3 h-48 max-w-none overflow-hidden before:absolute before:bottom-0 before:left-0 before:z-10 before:h-24 before:w-full before:to-transparent before:content-[''] md:h-auto md:before:h-0">
 						{transcript ? transcript : 'Transcript Processing'}
 					</ReactMarkdown>
 				</div>

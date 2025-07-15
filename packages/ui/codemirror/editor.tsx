@@ -50,7 +50,7 @@ export const CodemirrorEditor = ({
 		user,
 	})
 
-	return <div className="h-full flex-shrink-0" ref={codemirrorElementRef} />
+	return <div className="h-full shrink-0" ref={codemirrorElementRef} />
 }
 
 const CourseBuilderEditorStyles = {

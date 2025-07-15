@@ -6,12 +6,12 @@ import {
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
-import LayoutClient from '@/components/layout-client'
+import LayoutWithImpersonation from '@/components/layout-with-impersonation'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -21,6 +21,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Button } from '@coursebuilder/ui'
 
+import { CreateResourceModals } from './_components/create-resource-modals'
 import {
 	CenteredTitle,
 	CheckList,
@@ -28,7 +29,7 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
-import { CreatePostModal } from './admin/posts/_components/create-post-modal'
+import { CreatePostModal } from './posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -69,16 +70,13 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
-	const { session } = await getServerAuthSession()
+	const { session } = await getImpersonatedSession()
 	// Ensure we safely access optional user and allow arbitrary role strings
 	const role: string = (session?.user?.role as string | undefined) ?? 'guest'
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-	}
+	const firstPageResource = undefined
 
 	let actionSection: React.ReactNode = null
 
@@ -107,51 +105,29 @@ const Home = async (props: Props) => {
 	} else if (role === 'contributor') {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
-				<div className="flex flex-wrap justify-center gap-4">
-					<CreatePostModal
-						triggerLabel="New Tip"
-						title="New Tip"
-						availableResourceTypes={['tip']}
-						defaultResourceType="tip"
-						topLevelResourceTypes={['post']}
-					/>
-					<CreatePostModal
-						triggerLabel="New Article"
-						title="New Article"
-						availableResourceTypes={['article']}
-						defaultResourceType="article"
-						topLevelResourceTypes={['post']}
-					/>
+				<div className="flex w-full max-w-md flex-col gap-4">
+					<Button asChild size="lg">
+						<Link href="/dashboard">Go to Your Dashboard</Link>
+					</Button>
+					<div className="grid grid-cols-2 gap-4">
+						<CreateResourceModals />
+					</div>
 				</div>
 				<p className="text-muted-foreground max-w-2xl text-center">
-					Quickly create a new tip or article to share with the community.
+					Create a new tip or article to share with the community.
 				</p>
 			</section>
 		)
 	} else if (role === 'admin') {
 		const adminLinks = [
 			{ href: '/admin/pages', label: 'Admin Pages' },
-			{ href: '/admin/posts', label: 'Admin Posts' },
 			{ href: '/admin/tips', label: 'Admin Tips' },
 		]
 
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
 				<div className="flex flex-wrap justify-center gap-4">
-					<CreatePostModal
-						triggerLabel="New Tip"
-						title="New Tip"
-						availableResourceTypes={['tip']}
-						defaultResourceType="tip"
-						topLevelResourceTypes={['post']}
-					/>
-					<CreatePostModal
-						triggerLabel="New Article"
-						title="New Article"
-						availableResourceTypes={['article']}
-						defaultResourceType="article"
-						topLevelResourceTypes={['post']}
-					/>
+					<CreateResourceModals />
 				</div>
 				<nav className="flex flex-wrap justify-center gap-3">
 					{adminLinks.map(({ href, label }) => (
@@ -173,21 +149,12 @@ const Home = async (props: Props) => {
 	}
 
 	return (
-		<LayoutClient
+		<LayoutWithImpersonation
 			className="static"
 			highlightedResource={firstPageResource}
 			withContainer
 		>
 			<main className="flex w-full flex-col items-center justify-center">
-				{firstPageResource && (
-					<Link
-						className="text-primary mx-auto flex items-center justify-center gap-1 rounded-md  px-3 py-1 text-sm font-medium "
-						href={firstPageResource.path}
-						prefetch
-					>
-						New: <span className="underline">{firstPageResource?.title}</span>
-					</Link>
-				)}
 				<header>
 					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold dark:text-white">
 						Epic Web Builder
@@ -197,7 +164,7 @@ const Home = async (props: Props) => {
 
 				<article
 					className={cn(
-						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',
+						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auto w-full max-w-3xl pb-10',
 					)}
 				>
 					{page?.fields?.body ? (
@@ -226,8 +193,7 @@ const Home = async (props: Props) => {
 										{...props}
 									/>
 								),
-								// @ts-expect-error
-								MuxPlayer,
+								MuxPlayer: (props) => <MuxPlayer {...props} />,
 							}}
 						/>
 					) : (
@@ -239,7 +205,7 @@ const Home = async (props: Props) => {
 					)}
 				</article>
 			</main>
-		</LayoutClient>
+		</LayoutWithImpersonation>
 	)
 }
 
