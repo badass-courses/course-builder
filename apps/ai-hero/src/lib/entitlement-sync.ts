@@ -57,6 +57,10 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 		// Get the product for this purchase
 		const product = await courseBuilderAdapter.getProduct(purchase.productId)
 
+		if (!product) {
+			continue
+		}
+
 		// Check if this product has the cohort as a resource
 		const hasCohortResource = product.resources?.some(
 			(resource: any) => resource.resource?.id === cohortId,
@@ -120,6 +124,10 @@ export async function getCurrentCohortEntitlements(
 
 		// Get the product for this purchase
 		const product = await courseBuilderAdapter.getProduct(purchase.productId)
+
+		if (!product) {
+			continue
+		}
 
 		// Check if this product has the cohort as a resource
 		const hasCohortResource = product.resources?.some(
