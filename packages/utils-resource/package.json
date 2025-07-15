@@ -7,6 +7,11 @@
 			"types": "./dist/filter-resources.d.ts",
 			"import": "./dist/filter-resources.js",
 			"default": "./dist/filter-resources.js"
+		},
+		"./resource-paths": {
+			"types": "./dist/resource-paths.d.ts",
+			"import": "./dist/resource-paths.js",
+			"default": "./dist/resource-paths.js"
 		}
 	},
 	"files": [

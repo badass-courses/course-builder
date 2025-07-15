@@ -16,7 +16,6 @@ import type { Post } from '@/lib/posts'
 import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
-import { getResourcePath } from '@/utils/resource-paths'
 import { desc, inArray, sql } from 'drizzle-orm'
 import { Book, Calendar, ChevronRight } from 'lucide-react'
 
@@ -29,6 +28,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { PostActions } from './_components/post-actions'
 

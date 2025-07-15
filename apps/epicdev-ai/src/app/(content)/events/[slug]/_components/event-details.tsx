@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { createAppAbility } from '@/ability'
 import { Event } from '@/lib/events'
 import { api } from '@/trpc/react'
-import { getResourcePath } from '@/utils/resource-paths'
 import {
 	CalendarIcon,
 	ClockIcon,
@@ -18,6 +17,7 @@ import { Pen } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 export const EventDetails: React.FC<{

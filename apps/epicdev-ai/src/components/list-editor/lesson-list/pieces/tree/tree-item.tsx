@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation'
 import { useResource } from '@/components/resource-form/resource-context'
 import { removePostFromList } from '@/lib/lists-query'
 import { cn } from '@/utils/cn'
-import { getResourcePath } from '@/utils/resource-paths'
 import { getResourceStatus } from '@/utils/resource-status'
 import {
 	Instruction,
@@ -48,6 +47,7 @@ import {
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { DraggableItemRenderer } from '../../../draggable-item-renderer'
 import { useSelection } from '../../../selection-context'

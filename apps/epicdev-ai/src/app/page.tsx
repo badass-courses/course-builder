@@ -15,11 +15,11 @@ import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { getResourcePath } from '@/utils/resource-paths'
 import MuxPlayer from '@mux/mux-player-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import {
 	Callout,
