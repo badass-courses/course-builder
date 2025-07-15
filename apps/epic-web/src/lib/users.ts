@@ -1,3 +1,4 @@
+// import { unstable_noStore as noStore } from 'next/cache'
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
 import { accounts, roles, userRoles, users } from '@/db/schema'
@@ -38,6 +39,61 @@ export const loadUsersByDirectRole = async (role: string) => {
 		.where(eq(users.role, role))
 
 	return z.array(UserSchema).parse(usersByColumn)
+}
+
+export async function getAuthors() {
+	const [admins, contributorsViaRoleTable, contributorsDirect] =
+		await Promise.all([
+			loadUsersForRole('admin'),
+			loadUsersForRole('contributor'),
+			loadUsersByDirectRole('contributor'),
+		])
+
+	const contributors = [...contributorsViaRoleTable, ...contributorsDirect]
+
+	// merge unique by id
+	const usersMap = new Map<string, any>()
+	;[...admins, ...contributors].forEach((user) => {
+		usersMap.set(user.id, user)
+	})
+
+	const authors = Array.from(usersMap.values()).map((u) => ({
+		...u,
+		displayName: u.name || u.email || u.id,
+	}))
+
+	return authors
+}
+
+export async function getUserByEmail(email: string) {
+	const user = await db.query.users.findFirst({
+		where: eq(users.email, email),
+		with: {
+			roles: {
+				with: {
+					role: true,
+				},
+			},
+		},
+	})
+
+	return user
+}
+
+export async function getCurrentUserRoles(): Promise<string[]> {
+	const { session } = await getServerAuthSession()
+
+	if (!session?.user?.email) {
+		return []
+	}
+
+	const user = await getUserByEmail(session.user.email)
+
+	if (!user) {
+		return []
+	}
+
+	return user.roles.map((r) => r.role.name)
 }
 
 export async function githubAccountsForCurrentUser() {

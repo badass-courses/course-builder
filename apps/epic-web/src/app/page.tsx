@@ -11,8 +11,8 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
+import { getCurrentUserRoles } from '@/lib/users'
 import { getImpersonatedSession } from '@/server/auth'
-import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
 import { FileText } from 'lucide-react'
@@ -72,7 +72,8 @@ type Props = {
 const Home = async (props: Props) => {
 	const { session } = await getImpersonatedSession()
 	// Ensure we safely access optional user and allow arbitrary role strings
-	const role: string = (session?.user?.role as string | undefined) ?? 'guest'
+	const roles = await getCurrentUserRoles()
+
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
 
@@ -102,7 +103,7 @@ const Home = async (props: Props) => {
 				</p>
 			</section>
 		)
-	} else if (role === 'contributor') {
+	} else if (roles.includes('contributor')) {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
 				<div className="flex w-full max-w-md flex-col gap-4">
@@ -118,7 +119,7 @@ const Home = async (props: Props) => {
 				</p>
 			</section>
 		)
-	} else if (role === 'admin') {
+	} else if (roles.includes('admin')) {
 		const adminLinks = [
 			{ href: '/admin/pages', label: 'Admin Pages' },
 			{ href: '/admin/tips', label: 'Admin Tips' },
@@ -127,7 +128,7 @@ const Home = async (props: Props) => {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
 				<div className="flex flex-wrap justify-center gap-4">
-					<CreateResourceModals />
+					<CreateResourceModals isAdmin={roles.includes('admin')} />
 				</div>
 				<nav className="flex flex-wrap justify-center gap-3">
 					{adminLinks.map(({ href, label }) => (
