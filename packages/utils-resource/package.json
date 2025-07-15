@@ -21,7 +21,8 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "workspace:^"
+		"@coursebuilder/core": "workspace:^",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"tsup": "8.0.2",

@@ -16,6 +16,14 @@ export type ResourcePathConfig = {
 }
 
 const resourcePaths: Record<string, ResourcePathConfig> = {
+	event: {
+		edit: (slug) => `/events/${slug}/edit`,
+		view: (slug) => `/events/${slug}`,
+	},
+	'event-series': {
+		edit: (slug) => `/events/${slug}/edit`,
+		view: (slug) => `/events/${slug}`,
+	},
 	lesson: {
 		edit: (slug, context) => {
 			if (context?.parentType === 'workshop') {
