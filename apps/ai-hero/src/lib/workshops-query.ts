@@ -597,7 +597,9 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		return null
 	}
 
-	return parsedWorkshop.data
+	const workshopData = parsedWorkshop.data
+
+	return workshopData
 }
 
 export async function getAllWorkshops() {
@@ -876,13 +878,11 @@ export async function getWorkshopsForLesson(lessonId: string) {
 	`
 
 	const result = await db.execute(query)
-	console.log('parsedWorkshops result', result.rows)
 	if (!result.rows.length) {
 		return []
 	}
 
 	const parsedWorkshops = z.array(ContentResourceSchema).safeParse(result.rows)
-	console.log('parsedWorkshops', parsedWorkshops)
 	if (!parsedWorkshops.success) {
 		await log.error('getWorkshopsForLesson.parseError', {
 			lessonId,
