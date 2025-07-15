@@ -233,6 +233,8 @@ export async function syncUserCohortEntitlements(
 			throw new Error(`No organization ID found for user ${userId}`)
 		}
 
+		const organizationId: string = userMembership.organizationId
+
 		// Get the purchase for this user's cohort access
 		const purchase = await db.query.purchases.findFirst({
 			where: and(eq(purchases.userId, userId), eq(purchases.status, 'Valid')),
@@ -267,7 +269,7 @@ export async function syncUserCohortEntitlements(
 					userId,
 					resourceId: contentId,
 					sourceId: purchase.id,
-					organizationId: userMembership.organizationId,
+					organizationId: organizationId,
 					organizationMembershipId: userMembership.id,
 					entitlementType: cohortContentAccessEntitlementType.id,
 					sourceType: 'PURCHASE',
