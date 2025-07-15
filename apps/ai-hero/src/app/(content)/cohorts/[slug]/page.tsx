@@ -43,7 +43,6 @@ import {
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
-import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'

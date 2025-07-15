@@ -2,9 +2,8 @@
 
 import { createAppAbility } from '@/ability'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+import type { Workshop } from '@/lib/workshops'
 import { api } from '@/trpc/react'
-
-import type { Workshop } from '@coursebuilder/core/schemas'
 
 import { WorkshopLessonItem } from './workshop-lesson-item'
 
