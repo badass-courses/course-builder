@@ -1,6 +1,6 @@
 import { db } from '@/db'
 import { entitlements, entitlementTypes, purchases } from '@/db/schema'
-import { env } from '@/env'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { createCohortEntitlement } from '@/lib/entitlements'
