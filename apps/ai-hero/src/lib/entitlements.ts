@@ -31,6 +31,28 @@ export async function softDeleteEntitlementsForUser(userId: string) {
 }
 
 /**
+ * Soft delete entitlements for a specific purchase when a refund occurs
+ * @param purchaseId - The ID of the purchase whose entitlements should be soft deleted
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForPurchase(purchaseId: string) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceId, purchaseId),
+				eq(entitlements.sourceType, 'PURCHASE'),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
+}
+
+/**
  * Get all active entitlements for an organization member (excluding soft deleted ones)
  * @param organizationMembershipId - The ID of the organization membership to get entitlements for
  * @returns An array of entitlements
@@ -187,15 +209,17 @@ export async function hasAvailableSeatsForPurchase(
  * @returns The ID of the created entitlement
  */
 export async function createCohortEntitlement({
+	id,
 	userId,
 	resourceId,
-	sourceId,
 	organizationId,
 	organizationMembershipId,
 	entitlementType,
+	sourceId,
 	sourceType,
 	metadata = {},
 }: {
+	id?: string
 	userId: string
 	resourceId: string
 	organizationId: string
@@ -205,7 +229,8 @@ export async function createCohortEntitlement({
 	sourceType: string
 	metadata?: Record<string, any>
 }): Promise<string> {
-	const entitlementId = `${resourceId}-${guid()}`
+	const entitlementId =
+		id ?? (resourceId ? `${resourceId}-${guid()}` : `entitlement-${guid()}`)
 	await db.insert(entitlements).values({
 		id: entitlementId,
 		entitlementType,

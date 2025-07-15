@@ -1,12 +1,16 @@
 import { db } from '@/db'
 import { entitlements, entitlementTypes, purchases } from '@/db/schema'
+import { env } from '@/env'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { createCohortEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 import { and, eq } from 'drizzle-orm'
 
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { PURCHASE_TRANSFERRED_EVENT } from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
+
+import { USER_ADDED_TO_COHORT_EVENT } from './discord/add-cohort-role-discord'
 
 export const cohortTransferWorkflow = inngest.createFunction(
 	{
@@ -101,24 +105,51 @@ export const cohortTransferWorkflow = inngest.createFunction(
 				},
 			)
 
+			const cohortDiscordRoleEntitlementType = await step.run(
+				`get cohort discord role entitlement type`,
+				async () => {
+					return await db.query.entitlementTypes.findFirst({
+						where: eq(entitlementTypes.name, 'cohort_discord_role'),
+					})
+				},
+			)
+
 			// Remove entitlements from source user
 			await step.run(`remove entitlements from source user`, async () => {
 				if (!cohortContentAccessEntitlementType || !cohortResource?.resources) {
 					return
 				}
 
-				for (const resource of cohortResource.resources) {
+				// Soft delete all content access entitlements for this purchase
+				await db
+					.update(entitlements)
+					.set({ deletedAt: new Date() })
+					.where(
+						and(
+							eq(entitlements.userId, sourceUser.id),
+							eq(
+								entitlements.entitlementType,
+								cohortContentAccessEntitlementType.id,
+							),
+							eq(entitlements.sourceType, 'PURCHASE'),
+							eq(entitlements.sourceId, purchase.id),
+						),
+					)
+
+				// Soft delete all Discord role entitlements for this purchase
+				if (cohortDiscordRoleEntitlementType) {
 					await db
-						.delete(entitlements)
+						.update(entitlements)
+						.set({ deletedAt: new Date() })
 						.where(
 							and(
 								eq(entitlements.userId, sourceUser.id),
 								eq(
 									entitlements.entitlementType,
-									cohortContentAccessEntitlementType.id,
+									cohortDiscordRoleEntitlementType.id,
 								),
-								eq(entitlements.sourceType, 'cohort'),
-								eq(entitlements.sourceId, resource.resource.id),
+								eq(entitlements.sourceType, 'PURCHASE'),
+								eq(entitlements.sourceId, purchase.id),
 							),
 						)
 				}
@@ -210,10 +241,27 @@ export const cohortTransferWorkflow = inngest.createFunction(
 						userId: targetUser.id,
 						organizationId: targetUserOrganization.id,
 						organizationMembershipId: targetUserOrgMembership.id,
-						sourceType: 'cohort',
-						sourceId: cohortResource.id,
+						sourceType: 'PURCHASE',
+						sourceId: purchase.id,
 						metadata: {
 							contentIds: [resource.resource.id],
+						},
+					})
+				}
+
+				// Add Discord role entitlement for the target user
+				if (cohortDiscordRoleEntitlementType) {
+					const discordEntitlementId = `${cohortResource.id}-discord-${guid()}`
+					await createCohortEntitlement({
+						id: discordEntitlementId,
+						userId: targetUser.id,
+						organizationId: targetUserOrganization.id,
+						organizationMembershipId: targetUserOrgMembership.id,
+						entitlementType: cohortDiscordRoleEntitlementType.id,
+						sourceType: 'PURCHASE',
+						sourceId: purchase.id,
+						metadata: {
+							discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
 						},
 					})
 				}
@@ -221,6 +269,16 @@ export const cohortTransferWorkflow = inngest.createFunction(
 				console.log(
 					'Added entitlements to target user in their personal organization',
 				)
+			})
+
+			// trigger the Discord role event
+			await step.sendEvent('send-discord-role-event', {
+				name: USER_ADDED_TO_COHORT_EVENT,
+				data: {
+					cohortId: cohortResource.id,
+					userId: targetUser.id,
+					discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
+				},
 			})
 		}
 

@@ -1,7 +1,7 @@
 import { db } from '@/db'
 import { purchases } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
-import { softDeleteEntitlementsForUser } from '@/lib/entitlements'
+import { softDeleteEntitlementsForPurchase } from '@/lib/entitlements'
 import { log } from '@/server/logger'
 import { eq } from 'drizzle-orm'
 
@@ -11,8 +11,6 @@ import { REFUND_PROCESSED_EVENT } from '@coursebuilder/core/inngest/commerce/eve
  * Inngest function to handle refund events and soft delete entitlements
  * This function is triggered when a purchase is refunded and removes
  * the associated entitlements by setting the deletedAt timestamp
- *
- * Now deletes all entitlements for the user of the refunded purchase.
  */
 export const refundEntitlements = inngest.createFunction(
 	{
@@ -53,11 +51,11 @@ export const refundEntitlements = inngest.createFunction(
 				return { purchaseId: purchase.id, userId: null, entitlementsDeleted: 0 }
 			}
 
-			// Soft delete all entitlements for this user
+			// Soft delete entitlements for this specific purchase
 			const result = await step.run(
-				'soft delete entitlements for user',
+				'soft delete entitlements for purchase',
 				async () => {
-					return softDeleteEntitlementsForUser(purchase.userId as string)
+					return softDeleteEntitlementsForPurchase(purchase.id)
 				},
 			)
 
