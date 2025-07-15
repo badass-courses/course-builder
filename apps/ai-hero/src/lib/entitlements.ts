@@ -221,7 +221,7 @@ export async function createCohortEntitlement({
 }: {
 	id?: string
 	userId: string
-	resourceId: string
+	resourceId?: string
 	organizationId: string
 	organizationMembershipId: string
 	entitlementType: string
@@ -231,6 +231,13 @@ export async function createCohortEntitlement({
 }): Promise<string> {
 	const entitlementId =
 		id ?? (resourceId ? `${resourceId}-${guid()}` : `entitlement-${guid()}`)
+
+	// Only add contentIds if resourceId is provided and not null
+	const finalMetadata = {
+		...metadata,
+		...(resourceId && { contentIds: [resourceId] }),
+	}
+
 	await db.insert(entitlements).values({
 		id: entitlementId,
 		entitlementType,
@@ -239,10 +246,7 @@ export async function createCohortEntitlement({
 		organizationMembershipId,
 		sourceType,
 		sourceId,
-		metadata: {
-			...metadata,
-			contentIds: [resourceId],
-		},
+		metadata: finalMetadata,
 	})
 	return entitlementId
 }
@@ -265,7 +269,7 @@ export async function createCohortEntitlementInTransaction(
 		metadata = {},
 	}: {
 		userId: string
-		resourceId: string
+		resourceId?: string
 		organizationId: string
 		organizationMembershipId: string
 		entitlementType: string
@@ -274,7 +278,16 @@ export async function createCohortEntitlementInTransaction(
 		metadata?: Record<string, any>
 	},
 ): Promise<string> {
-	const entitlementId = `${resourceId}-${guid()}`
+	const entitlementId = resourceId
+		? `${resourceId}-${guid()}`
+		: `entitlement-${guid()}`
+
+	// Only add contentIds if resourceId is provided and not null
+	const finalMetadata = {
+		...metadata,
+		...(resourceId && { contentIds: [resourceId] }),
+	}
+
 	await tx.insert(entitlements).values({
 		id: entitlementId,
 		entitlementType,
@@ -283,10 +296,7 @@ export async function createCohortEntitlementInTransaction(
 		organizationMembershipId,
 		sourceType,
 		sourceId,
-		metadata: {
-			...metadata,
-			contentIds: [resourceId],
-		},
+		metadata: finalMetadata,
 	})
 	return entitlementId
 }
