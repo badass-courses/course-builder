@@ -49,6 +49,11 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 			where: eq(purchases.id, entitlement.sourceId),
 		})
 
+		// Skip if purchase not found
+		if (!purchase) {
+			continue
+		}
+
 		// Get the product for this purchase
 		const product = await courseBuilderAdapter.getProduct(purchase.productId)
 
@@ -107,6 +112,11 @@ export async function getCurrentCohortEntitlements(
 		const purchase = await db.query.purchases.findFirst({
 			where: eq(purchases.id, entitlement.sourceId),
 		})
+
+		// Skip if purchase not found
+		if (!purchase) {
+			continue
+		}
 
 		// Get the product for this purchase
 		const product = await courseBuilderAdapter.getProduct(purchase.productId)
