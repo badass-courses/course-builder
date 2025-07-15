@@ -187,7 +187,10 @@ export default async function CohortPage(props: {
 					)
 				cohortProps = {
 					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(purchase),
+					hasPurchasedCurrentProduct: Boolean(
+						purchase &&
+							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
+					),
 					existingPurchase,
 				}
 			}
