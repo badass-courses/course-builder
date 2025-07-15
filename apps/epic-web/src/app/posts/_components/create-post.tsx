@@ -47,6 +47,11 @@ export interface CreatePostProps {
 	 * @default true
 	 */
 	uploadEnabled?: boolean
+	/**
+	 * Whether to show the contributor selectable option
+	 * @default false
+	 */
+	contributorSelectable?: boolean
 }
 
 /**
@@ -60,6 +65,7 @@ export function CreatePost({
 	topLevelResourceTypes,
 	onNavigationStart,
 	uploadEnabled = true,
+	contributorSelectable = false,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
@@ -97,6 +103,7 @@ export function CreatePost({
 				defaultPostType={defaultResourceType}
 				topLevelResourceTypes={topLevelResourceTypes}
 				uploadEnabled={uploadEnabled}
+				contributorSelectable={contributorSelectable}
 			>
 				{(handleSetVideoResourceId: (id: string) => void) => (
 					<>

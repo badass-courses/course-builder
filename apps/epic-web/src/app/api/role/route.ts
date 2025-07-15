@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getAuthors } from '@/lib/users'
+import { getCurrentUserRoles, getUserByEmail } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
@@ -8,25 +8,25 @@ export async function GET() {
 	try {
 		const { session } = await getServerAuthSession()
 
-		if (!session?.user) {
+		if (!session?.user || !session.user.email) {
 			return new NextResponse('Unauthorized', { status: 401 })
 		}
 
-		const userRoles = session.user.roles || []
-		const isAdmin = userRoles.some((role) => role.name === 'admin')
-
-		if (!isAdmin) {
-			return new NextResponse('Forbidden', { status: 403 })
+		// we still need to check if the user exists to return the correct
+		// error code
+		const user = await getUserByEmail(session.user.email)
+		if (!user) {
+			return new NextResponse('User not found', { status: 404 })
 		}
 
-		const authors = await getAuthors()
+		const roles = await getCurrentUserRoles()
 
 		return NextResponse.json(
-			{ authors },
+			{ roles },
 			{ headers: { 'Cache-Control': 'no-store' } },
 		)
 	} catch (error) {
-		console.error('Error fetching authors', error)
+		console.error('Error fetching user role', error)
 		return new NextResponse('Internal Server Error', { status: 500 })
 	}
 }

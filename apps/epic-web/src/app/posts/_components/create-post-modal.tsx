@@ -68,6 +68,11 @@ export interface CreatePostModalProps {
 	 * @default "New Post"
 	 */
 	triggerLabel?: string
+	/**
+	 * Whether to show the contributor selectable option
+	 * @default false
+	 */
+	contributorSelectable?: boolean
 }
 
 /**
@@ -85,6 +90,7 @@ export interface CreatePostModalProps {
  * ```
  */
 export function CreatePostModal({
+	contributorSelectable = false,
 	onOpenChange,
 	onResourceCreated,
 	showTrigger = true,
@@ -150,6 +156,7 @@ export function CreatePostModal({
 					</DialogHeader>
 				)}
 				<CreatePost
+					contributorSelectable={contributorSelectable}
 					onResourceCreated={handleResourceCreated}
 					defaultResourceType={defaultResourceType}
 					availableResourceTypes={availableResourceTypes}

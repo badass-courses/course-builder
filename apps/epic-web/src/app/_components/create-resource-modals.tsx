@@ -11,7 +11,7 @@ import { CreatePostModal } from '../posts/_components/create-post-modal'
  * Client component wrapper for creating tips and articles with proper redirect handling.
  * Navigates to the edit page after resource creation completes.
  */
-export function CreateResourceModals() {
+export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
 	const router = useRouter()
 
 	/**
@@ -39,6 +39,7 @@ export function CreateResourceModals() {
 	return (
 		<>
 			<CreatePostModal
+				contributorSelectable={isAdmin}
 				triggerLabel="New Tip"
 				title="New Tip"
 				availableResourceTypes={['tip']}
@@ -47,6 +48,7 @@ export function CreateResourceModals() {
 				onResourceCreated={handleResourceCreated}
 			/>
 			<CreatePostModal
+				contributorSelectable={isAdmin}
 				triggerLabel="New Article"
 				title="New Article"
 				availableResourceTypes={['article']}
