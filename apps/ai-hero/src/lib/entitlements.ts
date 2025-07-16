@@ -9,10 +9,16 @@ export type EntitlementType =
 	| 'cohort_discord_role'
 	| 'subscription_tier'
 
+export enum EntitlementSourceType {
+	PURCHASE = 'PURCHASE',
+	SUBSCRIPTION = 'SUBSCRIPTION',
+	MANUAL = 'MANUAL',
+}
+
 export type EntitlementSource =
-	| { type: 'PURCHASE'; id: string }
-	| { type: 'SUBSCRIPTION'; id: string }
-	| { type: 'MANUAL'; id: string }
+	| { type: EntitlementSourceType.PURCHASE; id: string }
+	| { type: EntitlementSourceType.SUBSCRIPTION; id: string }
+	| { type: EntitlementSourceType.MANUAL; id: string }
 
 /**
  * Soft delete all entitlements for a user when a refund occurs
@@ -44,7 +50,7 @@ export async function softDeleteEntitlementsForPurchase(purchaseId: string) {
 		.where(
 			and(
 				eq(entitlements.sourceId, purchaseId),
-				eq(entitlements.sourceType, 'PURCHASE'),
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 				isNull(entitlements.deletedAt),
 			),
 		)
@@ -100,7 +106,8 @@ export async function allocateEntitlementToMember(
 			throw new Error('Invalid membership')
 		}
 
-		const purchaseId = source.type === 'PURCHASE' ? source.id : null
+		const purchaseId =
+			source.type === EntitlementSourceType.PURCHASE ? source.id : null
 		if (!purchaseId) {
 			throw new Error('Invalid source for allocation')
 		}

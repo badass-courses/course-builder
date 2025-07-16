@@ -4,7 +4,10 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
 import { removeDiscordRole } from '@/lib/discord-utils'
-import { createCohortEntitlement } from '@/lib/entitlements'
+import {
+	createCohortEntitlement,
+	EntitlementSourceType,
+} from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 import { and, eq } from 'drizzle-orm'
 
@@ -132,7 +135,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 								entitlements.entitlementType,
 								cohortContentAccessEntitlementType.id,
 							),
-							eq(entitlements.sourceType, 'PURCHASE'),
+							eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 							eq(entitlements.sourceId, purchase.id),
 						),
 					)
@@ -149,7 +152,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 									entitlements.entitlementType,
 									cohortDiscordRoleEntitlementType.id,
 								),
-								eq(entitlements.sourceType, 'PURCHASE'),
+								eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 								eq(entitlements.sourceId, purchase.id),
 							),
 						)
@@ -266,7 +269,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 						userId: targetUser.id,
 						organizationId: targetUserOrganization.id,
 						organizationMembershipId: targetUserOrgMembership.id,
-						sourceType: 'PURCHASE',
+						sourceType: EntitlementSourceType.PURCHASE,
 						sourceId: purchase.id,
 						metadata: {
 							contentIds: [resource.resource.id],
@@ -283,7 +286,7 @@ export const cohortTransferWorkflow = inngest.createFunction(
 						organizationId: targetUserOrganization.id,
 						organizationMembershipId: targetUserOrgMembership.id,
 						entitlementType: cohortDiscordRoleEntitlementType.id,
-						sourceType: 'PURCHASE',
+						sourceType: EntitlementSourceType.PURCHASE,
 						sourceId: purchase.id,
 						metadata: {
 							discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,

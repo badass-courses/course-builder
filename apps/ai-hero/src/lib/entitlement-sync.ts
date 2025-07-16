@@ -12,7 +12,10 @@ import { and, eq, isNull, or, sql } from 'drizzle-orm'
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
 import { getCohort } from './cohorts-query'
-import { createCohortEntitlementInTransaction } from './entitlements'
+import {
+	createCohortEntitlementInTransaction,
+	EntitlementSourceType,
+} from './entitlements'
 
 export async function findUsersWithCohortEntitlements(cohortId: string) {
 	const cohortContentAccessEntitlementType =
@@ -26,7 +29,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 
 	const cohortEntitlements = await db.query.entitlements.findMany({
 		where: and(
-			eq(entitlements.sourceType, 'PURCHASE'),
+			eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 			isNull(entitlements.deletedAt),
 		),
@@ -103,7 +106,7 @@ export async function getCurrentCohortEntitlements(
 	const userEntitlements = await db.query.entitlements.findMany({
 		where: and(
 			eq(entitlements.userId, userId),
-			eq(entitlements.sourceType, 'PURCHASE'),
+			eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 			isNull(entitlements.deletedAt),
 		),
@@ -256,7 +259,7 @@ export async function syncUserCohortEntitlements(
 								entitlements.entitlementType,
 								cohortContentAccessEntitlementType.id,
 							),
-							eq(entitlements.sourceType, 'PURCHASE'),
+							eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 							eq(entitlements.sourceId, purchase.id),
 							sql`JSON_EXTRACT(${entitlements.metadata}, '$.contentIds') LIKE ${`%${contentId}%`}`,
 						),
@@ -272,7 +275,7 @@ export async function syncUserCohortEntitlements(
 					organizationId: organizationId,
 					organizationMembershipId: userMembership.id,
 					entitlementType: cohortContentAccessEntitlementType.id,
-					sourceType: 'PURCHASE',
+					sourceType: EntitlementSourceType.PURCHASE,
 					metadata: {
 						contentIds: [contentId],
 					},
