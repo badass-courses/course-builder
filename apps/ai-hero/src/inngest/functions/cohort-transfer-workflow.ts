@@ -3,6 +3,7 @@ import { entitlements, entitlementTypes, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
+import { removeDiscordRole } from '@/lib/discord-utils'
 import { createCohortEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 import { and, eq } from 'drizzle-orm'
@@ -152,6 +153,30 @@ export const cohortTransferWorkflow = inngest.createFunction(
 								eq(entitlements.sourceId, purchase.id),
 							),
 						)
+				}
+			})
+
+			// Remove Discord role from source user
+			await step.run(`remove discord role from source user`, async () => {
+				// Check if Discord role ID is configured
+				if (!env.DISCORD_COHORT_001_ROLE_ID) {
+					return {
+						status: 'error',
+						reason: 'Discord cohort role ID not configured',
+						sourceUserId: sourceUser.id,
+					}
+				}
+
+				// Remove the cohort role from Discord using utility function
+				const result = await removeDiscordRole(
+					sourceUser.id,
+					env.DISCORD_COHORT_001_ROLE_ID,
+				)
+
+				return {
+					...result,
+					sourceUserId: sourceUser.id,
+					cohortId: cohortResource.id,
 				}
 			})
 
