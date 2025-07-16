@@ -4,10 +4,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { api } from '@/trpc/react'
-import { getResourcePath } from '@/utils/resource-paths'
 
 import { Badge, Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export function ActiveEventButton({ className }: { className?: string }) {
 	const { data: events } = api.events.getActiveEvents.useQuery()

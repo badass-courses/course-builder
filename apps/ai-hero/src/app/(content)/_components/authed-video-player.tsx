@@ -15,7 +15,6 @@ import {
 	type AdjacentResource,
 } from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
-import { getResourcePath } from '@/utils/resource-paths'
 import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
@@ -30,6 +29,7 @@ import {
 	type VideoPlayerOverlayAction,
 } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { revalidateModuleLesson } from '../actions'
 import { useWorkshopNavigation } from '../workshops/_components/workshop-navigation-provider'

@@ -22,7 +22,6 @@ import { getProviders, getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { getResourcePath } from '@/utils/resource-paths'
 import { differenceInCalendarDays } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
@@ -39,11 +38,12 @@ import {
 	AccordionTrigger,
 	Button,
 } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
-import { WorkshopLessonItem } from './_components/cohort-list/workshop-lesson-item'
+import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
@@ -531,17 +531,7 @@ const WorkshopListRowRenderer = ({ workshop }: { workshop: Workshop }) => {
 
 	return (
 		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>
-			{workshop.resources?.map(({ resource }, index) => {
-				return (
-					<WorkshopLessonItem
-						index={index + 1}
-						className="rounded pl-10"
-						key={resource.id}
-						resource={resource}
-						workshopSlug={workshop.fields.slug}
-					/>
-				)
-			})}
+			<WorkshopLessonList workshop={workshop} />
 		</WorkshopNavigationProvider>
 	)
 }

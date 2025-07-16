@@ -179,27 +179,27 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			})
 
 			if (isFullPriceCouponRedemption) {
-				await step.run(
-					`send live office hours email to team member ticket redeemer`,
-					async () => {
-						await sendAnEmail({
-							Component: LiveOfficeHoursInvitation,
-							componentProps: {
-								...liveOfficeHoursEmailProps,
-							},
-							Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
-							To: user.email,
-							ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-							From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-							type: 'transactional',
-							attachments: generateICSAttachments(
-								liveOfficeHoursEmailProps.eventTitle,
-								liveOfficeHoursEmailProps.firstEvent,
-								liveOfficeHoursEmailProps.secondEvent,
-							),
-						})
-					},
-				)
+				// await step.run(
+				// 	`send live office hours email to team member ticket redeemer`,
+				// 	async () => {
+				// 		await sendAnEmail({
+				// 			Component: LiveOfficeHoursInvitation,
+				// 			componentProps: {
+				// 				...liveOfficeHoursEmailProps,
+				// 			},
+				// 			Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
+				// 			To: user.email,
+				// 			ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				// 			From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				// 			type: 'transactional',
+				// 			attachments: generateICSAttachments(
+				// 				liveOfficeHoursEmailProps.eventTitle,
+				// 				liveOfficeHoursEmailProps.firstEvent,
+				// 				liveOfficeHoursEmailProps.secondEvent,
+				// 			),
+				// 		})
+				// 	},
+				// )
 			}
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
@@ -382,27 +382,27 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						})
 					})
 
-					await step.run(
-						`send live office hours email to individual purchaser`,
-						async () => {
-							await sendAnEmail({
-								Component: LiveOfficeHoursInvitation,
-								componentProps: {
-									...liveOfficeHoursEmailProps,
-								},
-								Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
-								To: user.email,
-								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								type: 'transactional',
-								attachments: generateICSAttachments(
-									liveOfficeHoursEmailProps.eventTitle,
-									liveOfficeHoursEmailProps.firstEvent,
-									liveOfficeHoursEmailProps.secondEvent,
-								),
-							})
-						},
-					)
+					// await step.run(
+					// 	`send live office hours email to individual purchaser`,
+					// 	async () => {
+					// 		await sendAnEmail({
+					// 			Component: LiveOfficeHoursInvitation,
+					// 			componentProps: {
+					// 				...liveOfficeHoursEmailProps,
+					// 			},
+					// 			Subject: `${liveOfficeHoursEmailProps.eventTitle} - ${liveOfficeHoursEmailProps.eventDate}`,
+					// 			To: user.email,
+					// 			ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+					// 			From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+					// 			type: 'transactional',
+					// 			attachments: generateICSAttachments(
+					// 				liveOfficeHoursEmailProps.eventTitle,
+					// 				liveOfficeHoursEmailProps.firstEvent,
+					// 				liveOfficeHoursEmailProps.secondEvent,
+					// 			),
+					// 		})
+					// 	},
+					// )
 				}
 			} else {
 				// send a slack message or something because it seems broken

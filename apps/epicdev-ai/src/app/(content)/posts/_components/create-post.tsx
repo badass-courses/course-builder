@@ -8,11 +8,11 @@ import { useResource } from '@/components/resource-form/resource-context'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { getResourcePath } from '@/utils/resource-paths'
 import { ExternalLink } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 /**
  * Props for the CreatePost component, allowing a custom onResourceCreated callback

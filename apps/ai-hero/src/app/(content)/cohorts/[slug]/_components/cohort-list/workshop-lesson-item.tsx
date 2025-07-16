@@ -1,46 +1,36 @@
 'use client'
 
 import Link from 'next/link'
-import { createAppAbility } from '@/ability'
+import { type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { api } from '@/trpc/react'
-import { getResourcePath } from '@/utils/resource-paths'
 import { subject } from '@casl/ability'
 import { Check, Lock } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export function WorkshopLessonItem({
 	resource,
 	workshopSlug,
 	className,
 	index,
+	ability,
+	abilityStatus,
 }: {
 	resource: ContentResource
 	workshopSlug: string
 	className?: string
 	index: number
+	ability: AppAbility
+	abilityStatus: 'error' | 'success' | 'pending'
 }) {
 	const { moduleProgress } = useModuleProgress()
-	const workshopNavigation = useWorkshopNavigation()
 	const isLessonCompleted = moduleProgress?.completedLessons.some(
 		(lesson) => lesson.resourceId === resource.id,
 	)
-
-	const { data: abilityRules, status: abilityStatus } =
-		api.ability.getCurrentAbilityRules.useQuery(
-			{
-				moduleId: workshopNavigation?.id,
-				lessonId: resource.fields?.slug,
-			},
-			{
-				enabled: !!workshopNavigation?.id,
-			},
-		)
-
-	const ability = createAppAbility(abilityRules || [])
 
 	const canViewLesson = ability.can(
 		'read',

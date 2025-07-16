@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { createCoupon } from '@/lib/coupons-query'
-import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarDate } from '@internationalized/date'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -38,6 +37,7 @@ import {
 	useToast,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 const formSchema = z.object({
 	quantity: z.string(),

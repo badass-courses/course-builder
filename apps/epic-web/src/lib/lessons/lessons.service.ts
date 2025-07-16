@@ -12,9 +12,10 @@ import {
 	NewLessonInputSchema,
 	type LessonAction,
 } from '@/lib/lessons'
-import { getResourcePath } from '@/utils/resource-paths'
 import { Ability, subject } from '@casl/ability'
 import { and, asc, eq, inArray, or, sql } from 'drizzle-orm'
+
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import {
 	deleteLessonFromDatabase,

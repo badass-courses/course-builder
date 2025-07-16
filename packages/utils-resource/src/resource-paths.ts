@@ -16,6 +16,14 @@ export type ResourcePathConfig = {
 }
 
 const resourcePaths: Record<string, ResourcePathConfig> = {
+	event: {
+		edit: (slug) => `/events/${slug}/edit`,
+		view: (slug) => `/events/${slug}`,
+	},
+	'event-series': {
+		edit: (slug) => `/events/${slug}/edit`,
+		view: (slug) => `/events/${slug}`,
+	},
 	lesson: {
 		edit: (slug, context) => {
 			if (context?.parentType === 'workshop') {
@@ -60,11 +68,8 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 		edit: (slug) => `/posts/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
+
 	article: {
-		edit: (slug) => `/posts/${slug}/edit`,
-		view: (slug) => `/${slug}`,
-	},
-	tip: {
 		edit: (slug) => `/posts/${slug}/edit`,
 		view: (slug) => `/${slug}`,
 	},
@@ -79,6 +84,14 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 	section: {
 		edit: (slug) => ``,
 		view: (slug) => ``,
+	},
+	list: {
+		edit: (slug) => `/lists/${slug}/edit`,
+		view: (slug) => `/${slug}`,
+	},
+	cohort: {
+		view: (slug) => `/cohorts/${slug}`,
+		edit: (slug) => `/cohorts/${slug}/edit`,
 	},
 	solution: {
 		view: (slug, context) => {

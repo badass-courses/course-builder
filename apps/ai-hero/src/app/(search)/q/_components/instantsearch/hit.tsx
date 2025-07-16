@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
-import { getResourcePath } from '@/utils/resource-paths'
 import { format } from 'date-fns'
 import { Highlight } from 'react-instantsearch'
 
 import { Badge } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (

@@ -7,6 +7,11 @@
 			"types": "./dist/filter-resources.d.ts",
 			"import": "./dist/filter-resources.js",
 			"default": "./dist/filter-resources.js"
+		},
+		"./resource-paths": {
+			"types": "./dist/resource-paths.d.ts",
+			"import": "./dist/resource-paths.js",
+			"default": "./dist/resource-paths.js"
 		}
 	},
 	"files": [
@@ -21,7 +26,8 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "workspace:^"
+		"@coursebuilder/core": "workspace:^",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"tsup": "8.0.2",
