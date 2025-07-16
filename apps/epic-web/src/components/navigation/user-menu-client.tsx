@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { createAppAbility, User } from '@/ability'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
+import { userHasRole } from '@/utils/user-has-role'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import {
 	ChevronDownIcon,
@@ -116,7 +117,10 @@ export const UserMenuClient = ({ user }: UserMenuClientProps) => {
 									</span>
 									<span className="text-sm">{user.email}</span>
 									<span className="text-muted-foreground text-xs">
-										Role: {user.role}
+										Role:{' '}
+										{user.roles?.map((r: any) => r.name).join(', ') ||
+											user.role ||
+											'user'}
 									</span>
 								</div>
 							) : (

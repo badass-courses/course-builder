@@ -110,7 +110,12 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								{isImpersonating && (
 									<div className="text-muted-foreground text-center text-sm">
 										<div>{user.email}</div>
-										<div className="text-xs">Role: {user.role}</div>
+										<div className="text-xs">
+											Role:{' '}
+											{user.roles?.map((r: any) => r.name).join(', ') ||
+												user.role ||
+												'user'}
+										</div>
 									</div>
 								)}
 							</div>

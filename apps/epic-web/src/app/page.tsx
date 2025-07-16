@@ -11,9 +11,9 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { courseBuilderAdapter } from '@/db'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getCurrentUserRoles } from '@/lib/users'
 import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
+import { userHasRole } from '@/utils/user-has-role'
 import MuxPlayer from '@mux/mux-player-react'
 import { FileText } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -29,7 +29,6 @@ import {
 	Section,
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
-import { CreatePostModal } from './posts/_components/create-post-modal'
 
 export async function generateMetadata(
 	props: Props,
@@ -71,8 +70,6 @@ type Props = {
 
 const Home = async (props: Props) => {
 	const { session } = await getImpersonatedSession()
-	// Ensure we safely access optional user and allow arbitrary role strings
-	const roles = await getCurrentUserRoles()
 
 	const page = await getPage('root')
 	const isCommerceEnabled = await commerceEnabled()
@@ -103,23 +100,7 @@ const Home = async (props: Props) => {
 				</p>
 			</section>
 		)
-	} else if (roles.includes('contributor')) {
-		actionSection = (
-			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
-				<div className="flex w-full max-w-md flex-col gap-4">
-					<Button asChild size="lg">
-						<Link href="/dashboard">Go to Your Dashboard</Link>
-					</Button>
-					<div className="grid grid-cols-2 gap-4">
-						<CreateResourceModals />
-					</div>
-				</div>
-				<p className="text-muted-foreground max-w-2xl text-center">
-					Create a new tip or article to share with the community.
-				</p>
-			</section>
-		)
-	} else if (roles.includes('admin')) {
+	} else if (userHasRole(session.user, 'admin')) {
 		const adminLinks = [
 			{ href: '/admin/pages', label: 'Admin Pages' },
 			{ href: '/admin/tips', label: 'Admin Tips' },
@@ -128,7 +109,7 @@ const Home = async (props: Props) => {
 		actionSection = (
 			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
 				<div className="flex flex-wrap justify-center gap-4">
-					<CreateResourceModals isAdmin={roles.includes('admin')} />
+					<CreateResourceModals isAdmin={userHasRole(session.user, 'admin')} />
 				</div>
 				<nav className="flex flex-wrap justify-center gap-3">
 					{adminLinks.map(({ href, label }) => (
@@ -145,6 +126,22 @@ const Home = async (props: Props) => {
 						</Button>
 					))}
 				</nav>
+			</section>
+		)
+	} else if (userHasRole(session.user, 'contributor')) {
+		actionSection = (
+			<section className="mt-6 flex w-full flex-col items-center gap-5 py-6">
+				<div className="flex w-full max-w-md flex-col gap-4">
+					<Button asChild size="lg">
+						<Link href="/dashboard">Go to Your Dashboard</Link>
+					</Button>
+					<div className="grid grid-cols-2 gap-4">
+						<CreateResourceModals />
+					</div>
+				</div>
+				<p className="text-muted-foreground max-w-2xl text-center">
+					Create a new tip or article to share with the community.
+				</p>
 			</section>
 		)
 	}

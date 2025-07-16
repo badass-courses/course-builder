@@ -29,7 +29,10 @@ export async function ImpersonationBanner() {
 						🎭 Impersonating {session.user.name || 'User'}
 					</span>
 					<span className="text-xs opacity-90">
-						{session.user.email} • Role: {session.user.role}
+						{session.user.email} • Role:{' '}
+						{session.user.roles?.map((r: any) => r.name).join(', ') ||
+							session.user.role ||
+							'user'}
 					</span>
 				</div>
 			</div>
