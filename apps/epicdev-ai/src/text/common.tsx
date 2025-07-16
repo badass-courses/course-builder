@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import config from '@/config'
-import { getResourcePath } from '@/utils/resource-paths'
+
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default {
 	'newsletter-subscribed-logged-in': ({

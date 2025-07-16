@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
-import { getResourcePath } from '@/utils/resource-paths'
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+import { api } from '@/trpc/react'
 import { subject } from '@casl/ability'
 import { Check, Lock } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export function WorkshopLessonItem({
 	resource,

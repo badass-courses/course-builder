@@ -7131,6 +7131,9 @@ importers:
       '@coursebuilder/core':
         specifier: workspace:^
         version: link:../core
+      zod:
+        specifier: ^3.22.4
+        version: 3.24.2
     devDependencies:
       tsup:
         specifier: 8.0.2

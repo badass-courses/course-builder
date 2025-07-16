@@ -3,10 +3,10 @@ import { db } from '@/db'
 import { getFormSubscribers } from '@/lib/kit-query'
 import { getPostsWithCompletionCounts } from '@/lib/posts-query'
 import { getProductsWithPurchaseCounts } from '@/lib/products/products.service'
-import { getResourcePath } from '@/utils/resource-paths'
 import { format } from 'date-fns'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default async function AdminDashboardPage() {
 	try {

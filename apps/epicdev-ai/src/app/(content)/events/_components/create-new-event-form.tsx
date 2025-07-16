@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation'
 import { MultipleEventsSchema, type MultipleEvents } from '@/lib/events'
 import { createEvent, createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
-import { getResourcePath } from '@/utils/resource-paths'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
 import { PlusCircle } from 'lucide-react'
@@ -36,6 +35,7 @@ import {
 	useToast,
 } from '@coursebuilder/ui'
 import AdvancedTagSelector from '@coursebuilder/ui/resources-crud/tag-selector'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default function CreateNewEventForm() {
 	const form = useForm<MultipleEvents>({
