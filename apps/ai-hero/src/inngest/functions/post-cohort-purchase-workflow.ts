@@ -11,7 +11,10 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getCohort } from '@/lib/cohorts-query'
-import { createCohortEntitlement } from '@/lib/entitlements'
+import {
+	createCohortEntitlement,
+	EntitlementSourceType,
+} from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
@@ -290,7 +293,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 							organizationId,
 							organizationMembershipId: orgMembership.id,
 							entitlementType: cohortDiscordRoleEntitlementType.id,
-							sourceType: 'PURCHASE',
+							sourceType: EntitlementSourceType.PURCHASE,
 							sourceId: purchase.id,
 							metadata: {
 								discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
@@ -313,7 +316,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 								organizationId,
 								organizationMembershipId: orgMembership.id,
 								entitlementType: cohortContentAccessEntitlementType.id,
-								sourceType: 'PURCHASE',
+								sourceType: EntitlementSourceType.PURCHASE,
 								metadata: {
 									contentIds: [resource.resource.id],
 								},
