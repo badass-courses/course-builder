@@ -8,6 +8,8 @@ import { z } from 'zod'
 
 import { isEmpty } from '@coursebuilder/nodash'
 
+type User = z.infer<typeof UserSchema>
+
 export const loadUsersForRole = async (role: string) => {
 	const usersByRole = await db
 		.select({
@@ -42,17 +44,32 @@ export const loadUsersByDirectRole = async (role: string) => {
 }
 
 export async function getAuthors() {
-	const [admins, contributorsViaRoleTable, contributorsDirect] =
-		await Promise.all([
-			loadUsersForRole('admin'),
-			loadUsersForRole('contributor'),
-			loadUsersByDirectRole('contributor'),
-		])
+	const results = await Promise.allSettled([
+		loadUsersForRole('admin'),
+		loadUsersForRole('contributor'),
+		loadUsersByDirectRole('contributor'),
+	])
+
+	const [
+		adminsResult,
+		contributorsViaRoleTableResult,
+		contributorsDirectResult,
+	] = results
+
+	const admins = adminsResult.status === 'fulfilled' ? adminsResult.value : []
+	const contributorsViaRoleTable =
+		contributorsViaRoleTableResult.status === 'fulfilled'
+			? contributorsViaRoleTableResult.value
+			: []
+	const contributorsDirect =
+		contributorsDirectResult.status === 'fulfilled'
+			? contributorsDirectResult.value
+			: []
 
 	const contributors = [...contributorsViaRoleTable, ...contributorsDirect]
 
 	// merge unique by id
-	const usersMap = new Map<string, any>()
+	const usersMap = new Map<string, User>()
 	;[...admins, ...contributors].forEach((user) => {
 		usersMap.set(user.id, user)
 	})
@@ -89,7 +106,7 @@ export async function getCurrentUserRoles(): Promise<string[]> {
 
 	const user = await getUserByEmail(session.user.email)
 
-	if (!user) {
+	if (!user || !user.roles) {
 		return []
 	}
 
