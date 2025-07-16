@@ -10,7 +10,7 @@ import { ResourceCreationError } from '@/lib/resources/resource-errors'
 import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useSession } from 'next-auth/react'
-import { useForm } from 'react-hook-form'
+import { useForm, type Control } from 'react-hook-form'
 import useSWR from 'swr'
 import { z } from 'zod'
 
@@ -40,6 +40,16 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import { useResource } from '../resource-form/resource-context'
 import { VideoUploadFormItem } from './video-upload-form-item'
 
+// Author type based on what the API returns
+interface Author {
+	id: string
+	name?: string | null
+	email?: string | null
+	displayName?: string
+	image?: string | null
+	role?: string
+}
+
 const NewResourceWithVideoSchema = z.object({
 	title: z
 		.string()
@@ -68,22 +78,28 @@ const FormValuesSchema = z.object({
 
 type FormValues = z.infer<typeof FormValuesSchema>
 
-const AuthorSelector = ({ control }: { control: any }) => {
-	const fetcher = (url: string) => fetch(url).then((res) => res.json())
-	const { data: authorsData, error: authorsError } = useSWR(
-		'/api/authors',
-		fetcher,
-		{
-			suspense: true,
-		},
-	)
-	const authors: {
-		id: string
-		name?: string
-		email?: string
-		displayName?: string
-		image?: string
-	}[] = authorsData?.authors || []
+interface AuthorSelectorProps {
+	control: Control<FormValues>
+}
+
+const AuthorSelector = ({ control }: AuthorSelectorProps) => {
+	const fetcher = async (url: string) => {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error(
+				`Failed to fetch authors: ${response.status} ${response.statusText}`,
+			)
+		}
+		return response.json()
+	}
+
+	const { data: authorsData, error: authorsError } = useSWR<{
+		authors: Author[]
+	}>('/api/authors', fetcher, {
+		suspense: true,
+	})
+
+	const authors: Author[] = authorsData?.authors || []
 
 	return (
 		<FormField
@@ -114,7 +130,7 @@ const AuthorSelector = ({ control }: { control: any }) => {
 					</FormControl>
 					{authorsError && (
 						<div className="text-destructive text-sm">
-							Error loading authors
+							Error loading authors: {authorsError.message || 'Unknown error'}
 						</div>
 					)}
 					<FormMessage />
