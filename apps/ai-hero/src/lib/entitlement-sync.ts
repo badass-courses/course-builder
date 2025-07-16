@@ -261,7 +261,7 @@ export async function syncUserCohortEntitlements(
 							),
 							eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
 							eq(entitlements.sourceId, purchase.id),
-							sql`JSON_EXTRACT(${entitlements.metadata}, '$.contentIds') LIKE ${`%${contentId}%`}`,
+							sql`JSON_CONTAINS(${entitlements.metadata}, ${JSON.stringify(contentId)}, '$.contentIds')`,
 						),
 					)
 			}
