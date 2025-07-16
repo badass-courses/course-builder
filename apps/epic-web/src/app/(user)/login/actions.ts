@@ -15,8 +15,16 @@ export async function getCsrf() {
 	return await fetch(`${env.COURSEBUILDER_URL}/api/auth/csrf`, options)
 		.then(async (res) => {
 			const resonseText = await res.text()
-			const { csrfToken } = JSON.parse(resonseText)
-			return csrfToken
+			if (!resonseText) {
+				return null
+			}
+			try {
+				const { csrfToken } = JSON.parse(resonseText)
+				return csrfToken
+			} catch (error) {
+				console.error('Failed to parse CSRF token from response.', resonseText)
+				return null
+			}
 		})
 		.catch((e) => {
 			console.log(e)
