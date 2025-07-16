@@ -1,26 +1,17 @@
-import { getAbility, UserSchema } from '@/ability'
+import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
-import {
-	accounts,
-	entitlements,
-	organizationMemberships,
-	userRoles,
-	users,
-} from '@/db/schema'
+import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { userHasRole } from '@/utils/user-has-role'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
-import TwitterProvider from '@auth/core/providers/twitter'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
-import { z } from 'zod'
-
-import { userSchema } from '@coursebuilder/core/schemas'
 
 type Role = 'admin' | 'user' | string
 
@@ -280,7 +271,7 @@ export const getImpersonatedSession = async () => {
 	}
 
 	// Only check impersonation for admin users
-	if (session.user.role !== 'admin') {
+	if (!userHasRole(session.user, 'admin')) {
 		return { session, ability, isImpersonating: false }
 	}
 

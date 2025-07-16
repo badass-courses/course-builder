@@ -60,7 +60,10 @@ async function validateAdminAuthorization(adminId: string): Promise<boolean> {
 		if (ability.cannot('manage', 'all')) {
 			log.warn('Impersonation attempt by non-admin user', {
 				userId: session.user.id,
-				userRole: session.user.role,
+				userRole:
+					session.user.roles?.map((r: any) => r.name).join(', ') ||
+					session.user.role ||
+					'user',
 			})
 			return false
 		}

@@ -31,7 +31,10 @@ export default async function AdminPostsIndexPage() {
 	if (ability.cannot('manage', 'all')) {
 		log.warn('Unauthorized access attempt to admin posts page', {
 			userId: session?.user?.id,
-			userRole: session?.user?.role,
+			userRole:
+				session?.user?.roles?.map((r: any) => r.name).join(', ') ||
+				session?.user?.role ||
+				'user',
 		})
 		notFound()
 	}
