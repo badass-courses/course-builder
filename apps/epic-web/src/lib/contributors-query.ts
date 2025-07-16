@@ -15,13 +15,20 @@ export async function getContributors(): Promise<User[]> {
 
 	// If we have users from the new system, use them
 	if (contributorsFromRoles.length > 0) {
-		return contributorsFromRoles.map((row) => ({
-			...row.User,
-			role: row.User.role as 'admin' | 'user' | 'contributor',
-			memberships: [],
-			roles: [row.Role],
-			organizationRoles: [],
-		}))
+		return contributorsFromRoles.map((row) => {
+			const role = row.User.role
+			const validatedRole =
+				role === 'admin' || role === 'user' || role === 'contributor'
+					? role
+					: 'user'
+			return {
+				...row.User,
+				role: validatedRole,
+				memberships: [],
+				roles: [row.Role],
+				organizationRoles: [],
+			}
+		})
 	}
 
 	// Fallback to the legacy role column for backward compatibility
@@ -30,11 +37,18 @@ export async function getContributors(): Promise<User[]> {
 	})
 
 	// Transform to match the expected User type
-	return contributorsFromColumn.map((user) => ({
-		...user,
-		role: user.role as 'admin' | 'user' | 'contributor',
-		memberships: [],
-		roles: [],
-		organizationRoles: [],
-	}))
+	return contributorsFromColumn.map((user) => {
+		const role = user.role
+		const validatedRole =
+			role === 'admin' || role === 'user' || role === 'contributor'
+				? role
+				: 'user'
+		return {
+			...user,
+			role: validatedRole,
+			memberships: [],
+			roles: [],
+			organizationRoles: [],
+		}
+	})
 }
