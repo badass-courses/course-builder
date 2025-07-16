@@ -7,13 +7,13 @@ import type { EventSchema } from '@/lib/events'
 import type { Page } from '@/lib/pages'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
-import { getResourcePath } from '@/utils/resource-paths'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Calendar, ChevronRight } from 'lucide-react'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import EventWaitlist from './event-waitlist'
 

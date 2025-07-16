@@ -1,9 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { getResourcePath } from '@/utils/resource-paths'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { CreatePostModal } from '../posts/_components/create-post-modal'
 

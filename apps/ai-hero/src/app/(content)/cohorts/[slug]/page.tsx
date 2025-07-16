@@ -22,7 +22,6 @@ import { getProviders, getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { getResourcePath } from '@/utils/resource-paths'
 import { differenceInCalendarDays } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
@@ -39,6 +38,7 @@ import {
 	AccordionTrigger,
 	Button,
 } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'

@@ -8,12 +8,12 @@ import {
 } from 'next/navigation'
 import { api } from '@/trpc/react'
 import cookieUtil from '@/utils/cookies'
-import { getResourcePath } from '@/utils/resource-paths'
 import { isBefore, subDays } from 'date-fns'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
 import { useToast } from '@coursebuilder/ui'
 import { ToastAction } from '@coursebuilder/ui/primitives/toast'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export const useSaleToastNotifier = () => {
 	const DAYS_TO_WAIT_BETWEEN_SHOWING_DISMISSED_PROMOTION = 2

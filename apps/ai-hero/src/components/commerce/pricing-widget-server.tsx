@@ -9,13 +9,13 @@ import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
-import { getResourcePath } from '@/utils/resource-paths'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export async function PricingWidgetServer({
 	productId,
