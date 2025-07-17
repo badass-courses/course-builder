@@ -17,7 +17,10 @@ import { inngest } from '@/inngest/inngest.server'
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
-import { cohortTransferWorkflow } from './functions/cohort-transfer-workflow'
+import {
+	apiTransferWorkflow,
+	cohortTransferWorkflow,
+} from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addCohortRoleDiscord } from './functions/discord/add-cohort-role-discord'
@@ -48,6 +51,7 @@ export const inngestConfig = {
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
 		cohortTransferWorkflow,
+		apiTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
