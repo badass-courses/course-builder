@@ -13,6 +13,7 @@ import {
 	FileText,
 	Lightbulb,
 	ListChecks,
+	User as UserIcon,
 	Users,
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
@@ -131,6 +132,12 @@ export const UserMenuClient = ({ user }: UserMenuClientProps) => {
 						<ul className="flex flex-col">
 							{canManageAll && (
 								<>
+									<NavLinkItem
+										variant="menu"
+										href="/dashboard"
+										label="Instructor Dashboard"
+										icon={<UserIcon className="mr-2 h-4 w-4" />}
+									/>
 									<NavLinkItem
 										variant="menu"
 										href="/admin/pages"
