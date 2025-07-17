@@ -6,7 +6,6 @@ import { createEvent, createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
 import { z } from 'zod'
 
-import { type EventCreationResult } from '@coursebuilder/core'
 import {
 	Button,
 	CreateEventForm,
@@ -18,6 +17,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
+import { type EventCreationResult } from '@coursebuilder/ui/event-creation/create-event-form'
 import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
