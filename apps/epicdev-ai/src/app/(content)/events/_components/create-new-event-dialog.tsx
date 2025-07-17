@@ -25,13 +25,15 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 export default function CreateNewEventDialog({
 	buttonLabel = 'Create new event',
 	variant = 'default',
+	isOpen = false,
 	className,
 }: {
 	buttonLabel?: string | React.ReactNode
 	className?: string
 	variant?: ButtonProps['variant']
+	isOpen?: boolean
 }) {
-	const [open, setOpen] = React.useState(false)
+	const [open, setOpen] = React.useState(isOpen)
 	const router = useRouter()
 	const { data: tags } = api.tags.getTags.useQuery()
 	const parsedTags = z
