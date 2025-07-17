@@ -59,13 +59,6 @@ import {
 	ContentResourceSchema,
 	type ContentResource,
 } from '@coursebuilder/core/schemas/content-resource-schema'
-import {
-	AdapterEventData,
-	AdapterEventSeriesData,
-	EventSchema,
-	EventSeriesResult,
-	EventSeriesSchema,
-} from '@coursebuilder/core/schemas/event-domain-schema'
 import { merchantAccountSchema } from '@coursebuilder/core/schemas/merchant-account-schema'
 import { merchantCustomerSchema } from '@coursebuilder/core/schemas/merchant-customer-schema'
 import {
