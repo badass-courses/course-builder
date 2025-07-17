@@ -12,9 +12,9 @@ import {
 	EventSeriesSchema,
 	multipleEventsToEventSeriesAndEvents,
 	type Event,
-	type EventForm,
+	type EventFormData,
 	type EventSeries,
-	type EventSeriesForm,
+	type EventSeriesFormData,
 } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -507,7 +507,7 @@ export async function getActiveEvents() {
 
 	return parsedEvents.data
 }
-export async function createEvent(input: EventForm) {
+export async function createEvent(input: EventFormData) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -706,7 +706,7 @@ export async function createEvent(input: EventForm) {
  * Create an event series with multiple child events
  * The event series has the product association and acts as a container
  */
-export async function createEventSeries(input: EventSeriesForm): Promise<{
+export async function createEventSeries(input: EventSeriesFormData): Promise<{
 	eventSeries: EventSeries
 	childEvents: Event[]
 }> {

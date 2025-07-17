@@ -6,16 +6,12 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { productSchema } from '@coursebuilder/core/schemas/index'
-import type {
-	EventSeriesForm,
-	MultipleEventsForm,
-} from '@coursebuilder/ui/event-creation/types'
+import type { EventSeriesFormData } from '@coursebuilder/ui/event-creation/create-event-form'
 
 export {
-	type MultipleEventsForm,
-	type EventSeriesForm,
-	type EventForm,
-} from '@coursebuilder/ui/event-creation/types'
+	type EventSeriesFormData,
+	type EventFormData,
+} from '@coursebuilder/ui/event-creation/create-event-form'
 
 /**
  * @description Event-specific field validation schema
@@ -180,7 +176,9 @@ export type ChildEvent = {
  * The event series contains the product information and acts as a container
  * Child events contain individual event details without pricing
  */
-export function multipleEventsToEventSeriesAndEvents(input: EventSeriesForm): {
+export function multipleEventsToEventSeriesAndEvents(
+	input: EventSeriesFormData,
+): {
 	eventSeries: NewEventSeries & {
 		sharedFields: {
 			price: number | null | undefined
