@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import type { ContentResource } from './content-resource-schema'
+import type { ContentResource } from '@coursebuilder/core/schemas/content-resource-schema'
 
 export type EventCreationResult = {
 	type: 'single' | 'series'
@@ -11,12 +11,8 @@ export type EventCreationResult = {
 
 export type CreateEventFormProps = {
 	onSuccess: (result: EventCreationResult) => Promise<void>
-	createEvent: (
-		data: Omit<SingleEventForm, 'createdById' | 'organizationId'>,
-	) => Promise<ContentResource>
-	createEventSeries: (
-		data: Omit<EventSeriesForm, 'createdById' | 'organizationId'>,
-	) => Promise<{
+	createEvent: (data: EventForm) => Promise<ContentResource>
+	createEventSeries: (data: EventSeriesForm) => Promise<{
 		eventSeries: ContentResource
 		childEvents: ContentResource[]
 	}>
@@ -98,28 +94,34 @@ export const MultipleEventsFormSchema = z
 			return true
 		},
 		{
-			message:
-				'Series title must be at least 2 characters when creating multiple events',
+			message: 'Series title must be at least 2 characters',
 			path: ['eventSeries', 'title'],
 		},
 	)
 	.refine(
 		(data) => {
-			// Require coupon fields when coupon is enabled
-			if (data.coupon.enabled) {
-				if (!data.coupon.percentageDiscount) {
-					return false
-				}
-				if (!data.coupon.expires) {
-					return false
-				}
+			// Require percentage discount when coupon is enabled
+			if (data.coupon.enabled && !data.coupon.percentageDiscount) {
+				return false
 			}
 			return true
 		},
 		{
-			message:
-				'Percentage discount and expiration date are required when coupon is enabled',
-			path: ['coupon'],
+			message: 'Percentage discount is required',
+			path: ['coupon', 'percentageDiscount'],
+		},
+	)
+	.refine(
+		(data) => {
+			// Require expiration date when coupon is enabled
+			if (data.coupon.enabled && !data.coupon.expires) {
+				return false
+			}
+			return true
+		},
+		{
+			message: 'Expiration date is required',
+			path: ['coupon', 'expires'],
 		},
 	)
 
@@ -129,7 +131,7 @@ export type MultipleEventsForm = z.infer<typeof MultipleEventsFormSchema>
  * Schema for adapter-level single event creation
  * Includes database fields required by the adapter
  */
-export const SingleEventFormSchema = z.object({
+export const EventFormSchema = z.object({
 	type: z.literal('event'),
 	fields: z.object({
 		title: z.string().min(2).max(90),
@@ -153,8 +155,6 @@ export const SingleEventFormSchema = z.object({
 			)
 			.nullish(),
 	}),
-	createdById: z.string(),
-	organizationId: z.string().nullish(),
 	coupon: z
 		.object({
 			enabled: z.boolean(),
@@ -164,7 +164,7 @@ export const SingleEventFormSchema = z.object({
 		.optional(),
 })
 
-export type SingleEventForm = z.infer<typeof SingleEventFormSchema>
+export type EventForm = z.infer<typeof EventFormSchema>
 
 /**
  * Schema for adapter-level event series creation
@@ -215,8 +215,6 @@ export const EventSeriesFormSchema = z.object({
 			}),
 		)
 		.min(1),
-	createdById: z.string(),
-	organizationId: z.string().nullish(),
 	coupon: z
 		.object({
 			enabled: z.boolean(),

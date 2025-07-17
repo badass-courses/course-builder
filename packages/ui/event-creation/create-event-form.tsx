@@ -8,21 +8,12 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
-	MultipleEventsFormSchema,
-	type CreateEventFormProps,
-	type EventCreationResult,
-	type EventSeriesForm,
-	type SingleEventForm,
-} from '@coursebuilder/core'
-
-import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 	Button,
 	DateTimePicker,
-	DialogFooter,
 	Form,
 	FormControl,
 	FormDescription,
@@ -40,6 +31,12 @@ import {
 	useToast,
 } from '../index'
 import AdvancedTagSelector from '../resources-crud/tag-selector'
+import {
+	MultipleEventsFormSchema,
+	type CreateEventFormProps,
+	type EventForm,
+	type EventSeriesForm,
+} from './types'
 
 type MultipleEvents = z.infer<typeof MultipleEventsFormSchema>
 
@@ -81,7 +78,7 @@ export function CreateEventForm({
 			},
 			coupon: {
 				enabled: false,
-				percentageDiscount: undefined,
+				percentageDiscount: '0.25',
 				expires: undefined,
 			},
 			events: [
@@ -112,7 +109,7 @@ export function CreateEventForm({
 				}
 
 				const singleEventData: Omit<
-					SingleEventForm,
+					EventForm,
 					'createdById' | 'organizationId'
 				> = {
 					type: 'event',
@@ -297,7 +294,6 @@ export function CreateEventForm({
 													<Select
 														onValueChange={field.onChange}
 														value={field.value}
-														defaultValue="0.25"
 													>
 														<FormControl>
 															<SelectTrigger>

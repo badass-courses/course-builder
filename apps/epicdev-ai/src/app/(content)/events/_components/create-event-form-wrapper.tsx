@@ -1,18 +1,11 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {
-	createEventSeriesWithAppLogic,
-	createEventWithAppLogic,
-} from '@/lib/events-query'
+import { createEvent, createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
 import { z } from 'zod'
 
-import {
-	type EventCreationResult,
-	type EventSeriesData,
-	type SingleEventData,
-} from '@coursebuilder/core'
+import { type EventCreationResult } from '@coursebuilder/core'
 import { CreateEventForm } from '@coursebuilder/ui'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
@@ -42,18 +35,6 @@ export default function CreateEventFormWrapper() {
 				getResourcePath('event', result.eventSeries.fields?.slug, 'edit'),
 			)
 		}
-	}
-
-	const createEvent = async (
-		formData: Omit<SingleEventData, 'createdById' | 'organizationId'>,
-	) => {
-		return await createEventWithAppLogic(formData)
-	}
-
-	const createEventSeries = async (
-		formData: Omit<EventSeriesData, 'createdById' | 'organizationId'>,
-	) => {
-		return await createEventSeriesWithAppLogic(formData)
 	}
 
 	return (
