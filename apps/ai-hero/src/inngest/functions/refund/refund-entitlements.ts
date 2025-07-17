@@ -1,9 +1,7 @@
 import { db } from '@/db'
-import { purchases } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { softDeleteEntitlementsForPurchase } from '@/lib/entitlements'
 import { log } from '@/server/logger'
-import { eq } from 'drizzle-orm'
 
 import { REFUND_PROCESSED_EVENT } from '@coursebuilder/core/inngest/commerce/event-refund-processed'
 
@@ -20,35 +18,44 @@ export const refundEntitlements = inngest.createFunction(
 	{
 		event: REFUND_PROCESSED_EVENT,
 	},
-	async ({ event, step }) => {
+	async ({ event, step, db: adapter }) => {
 		const startTime = Date.now()
 
 		try {
-			// Get the purchase associated with the merchant charge
+			// The event.data.merchantChargeId is actually the Stripe charge identifier
+			// Using the adapter's getPurchaseForStripeCharge method directly
 			const purchase = await step.run(
-				'get purchase for merchant charge',
+				'get purchase for stripe charge',
 				async () => {
-					return db.query.purchases.findFirst({
-						where: eq(purchases.merchantChargeId, event.data.merchantChargeId),
-					})
+					return adapter.getPurchaseForStripeCharge(event.data.merchantChargeId)
 				},
 			)
 
 			if (!purchase) {
 				await log.warn('refund_entitlements.purchase_not_found', {
-					merchantChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.merchantChargeId,
 					duration: Date.now() - startTime,
 				})
-				return { entitlementsDeleted: 0 }
+				return {
+					entitlementsDeleted: 0,
+					reason: 'purchase_not_found',
+					stripeChargeId: event.data.merchantChargeId,
+				}
 			}
 
 			if (!purchase.userId) {
 				await log.warn('refund_entitlements.user_id_not_found', {
 					purchaseId: purchase.id,
-					merchantChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.merchantChargeId,
 					duration: Date.now() - startTime,
 				})
-				return { purchaseId: purchase.id, userId: null, entitlementsDeleted: 0 }
+				return {
+					purchaseId: purchase.id,
+					userId: null,
+					entitlementsDeleted: 0,
+					reason: 'user_id_not_found',
+					stripeChargeId: event.data.merchantChargeId,
+				}
 			}
 
 			// Soft delete entitlements for this specific purchase
@@ -61,7 +68,7 @@ export const refundEntitlements = inngest.createFunction(
 
 			await log.info('refund_entitlements.completed', {
 				purchaseId: purchase.id,
-				merchantChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.merchantChargeId,
 				userId: purchase.userId,
 				entitlementsDeleted: result.rowsAffected || 0,
 				duration: Date.now() - startTime,
@@ -71,13 +78,21 @@ export const refundEntitlements = inngest.createFunction(
 				purchaseId: purchase.id,
 				userId: purchase.userId,
 				entitlementsDeleted: result.rowsAffected || 0,
+				reason: 'success',
+				stripeChargeId: event.data.merchantChargeId,
 			}
 		} catch (error) {
 			await log.error('refund_entitlements.failed', {
-				merchantChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.merchantChargeId,
 				error: error instanceof Error ? error.message : String(error),
 				duration: Date.now() - startTime,
 			})
+			return {
+				reason: 'error',
+				stripeChargeId: event.data.merchantChargeId,
+				error: error instanceof Error ? error.message : String(error),
+				entitlementsDeleted: 0,
+			}
 			throw error
 		}
 	},
