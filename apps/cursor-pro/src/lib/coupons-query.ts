@@ -15,6 +15,9 @@ const CouponInputSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentageDiscount: z.string(),
+	status: z.number().default(1),
+	default: z.boolean().default(false),
+	fields: z.record(z.any()).default({}),
 })
 
 const findClosestDiscount = function (percentOff: number) {
@@ -65,7 +68,7 @@ export async function createCoupon(input: CouponInput) {
 					merchantCouponId: merchantCoupon?.id,
 					id,
 				})
-				codesArray.push(`${env.COURSEBUILDER_URL}/?coupon=${id}`)
+				codesArray.push(id)
 			}
 		})
 
