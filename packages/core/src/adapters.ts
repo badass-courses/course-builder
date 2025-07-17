@@ -8,8 +8,8 @@ import {
 } from './schemas'
 import { type ContentResource } from './schemas/content-resource-schema'
 import { Coupon } from './schemas/coupon-schema'
-import { EventSeriesResult } from './schemas/event-domain-schema'
-import { EventSeriesData, SingleEventData } from './schemas/event-ui-schema'
+import { EventSeriesForm, SingleEventForm } from './schemas/event-form-schema'
+import { EventSeriesResult } from './schemas/event-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
@@ -77,8 +77,8 @@ export interface CourseBuilderAdapter<
 		fields: Record<string, any>
 	}): Awaitable<ContentResource | null>
 	// Event-specific methods
-	createEvent(data: SingleEventData): Promise<ContentResource>
-	createEventSeries(data: EventSeriesData): Promise<EventSeriesResult>
+	createEvent(data: SingleEventForm): Promise<ContentResource>
+	createEventSeries(data: EventSeriesForm): Promise<EventSeriesResult>
 	getPriceForProduct(productId: string): Promise<Price | null>
 	getUpgradableProducts(options: {
 		upgradableFromId: string

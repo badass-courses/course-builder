@@ -80,22 +80,22 @@ export interface CourseBuilderConfig {
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'
 
-// Event types and schemas
-export { type EventCreationResult, type CreateEventFormProps } from './types'
-
+// Form schemas and types for creating events
 export {
-	MultipleEventsSchema,
-	type MultipleEvents,
-	SingleEventSchema,
-	type SingleEventData,
-	EventSeriesSchema,
-	type EventSeriesData,
-} from './schemas/event-ui-schema'
+	MultipleEventsFormSchema,
+	type MultipleEventsForm,
+	SingleEventFormSchema,
+	type SingleEventForm,
+	EventSeriesFormSchema,
+	type EventSeriesForm,
+	type EventCreationResult,
+	type CreateEventFormProps,
+} from './schemas/event-form-schema'
 
 // Domain event schemas and types
 export {
 	EventSchema,
-	EventSeriesSchema as EventSeriesDomainSchema,
+	EventSeriesSchema,
 	EventFieldsSchema,
 	NewEventSchema,
 	NewEventSeriesSchema,
@@ -108,4 +108,4 @@ export {
 	type AdapterEventData,
 	type AdapterEventSeriesData,
 	type EventSeriesResult,
-} from './schemas/event-domain-schema'
+} from './schemas/event-schema'

@@ -5,7 +5,7 @@ import {
 	ResourceStateSchema,
 	ResourceVisibilitySchema,
 } from './content-resource-schema'
-import type { MultipleEvents } from './event-ui-schema'
+import type { MultipleEventsForm } from './event-form-schema'
 import { productSchema } from './index'
 
 /**
@@ -171,7 +171,9 @@ export type ChildEvent = {
  * The event series contains the product information and acts as a container
  * Child events contain individual event details without pricing
  */
-export function multipleEventsToEventSeriesAndEvents(input: MultipleEvents): {
+export function multipleEventsToEventSeriesAndEvents(
+	input: MultipleEventsForm,
+): {
 	eventSeries: NewEventSeries & {
 		sharedFields: {
 			price: number | null | undefined
@@ -206,8 +208,8 @@ export function multipleEventsToEventSeriesAndEvents(input: MultipleEvents): {
 	return { eventSeries, childEvents }
 }
 
-// Adapter interface contracts - adapters must implement these
-export interface AdapterEventData {
+// Adapter type contracts - adapters must implement these
+export type AdapterEventData = {
 	type: 'event'
 	fields: {
 		title: string
@@ -224,7 +226,7 @@ export interface AdapterEventData {
 	organizationId?: string | null
 }
 
-export interface AdapterEventSeriesData {
+export type AdapterEventSeriesData = {
 	type: 'event-series'
 	eventSeries: {
 		title: string
@@ -246,7 +248,7 @@ export interface AdapterEventSeriesData {
 	}[]
 }
 
-export interface EventSeriesResult {
+export type EventSeriesResult = {
 	eventSeries: EventSeries
 	childEvents: Event[]
 }

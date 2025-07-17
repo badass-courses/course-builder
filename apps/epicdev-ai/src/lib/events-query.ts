@@ -17,10 +17,10 @@ import { z } from 'zod'
 
 import {
 	EventSchema,
-	EventSeriesDomainSchema as EventSeriesSchema,
+	EventSeriesSchema,
 	type Event,
-	type EventSeriesData,
-	type SingleEventData,
+	type EventSeriesForm,
+	type SingleEventForm,
 } from '@coursebuilder/core'
 
 import {
@@ -516,7 +516,7 @@ export async function getActiveEvents() {
  * Calls adapter for database operations, then handles all app-specific side effects
  */
 export async function createEventWithAppLogic(
-	input: Omit<SingleEventData, 'createdById' | 'organizationId'>,
+	input: Omit<SingleEventForm, 'createdById' | 'organizationId'>,
 ) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -663,7 +663,7 @@ export async function createEventWithAppLogic(
  * Calls adapter for database operations, then handles all app-specific side effects
  */
 export async function createEventSeriesWithAppLogic(
-	input: Omit<EventSeriesData, 'createdById' | 'organizationId'>,
+	input: Omit<EventSeriesForm, 'createdById' | 'organizationId'>,
 ) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user

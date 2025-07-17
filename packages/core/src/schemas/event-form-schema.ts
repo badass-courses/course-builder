@@ -1,11 +1,45 @@
 import { z } from 'zod'
 
+import type { ContentResource } from './content-resource-schema'
+
+export type EventCreationResult = {
+	type: 'single' | 'series'
+	event?: ContentResource
+	eventSeries?: ContentResource
+	childEvents?: ContentResource[]
+}
+
+export type CreateEventFormProps = {
+	onSuccess: (result: EventCreationResult) => Promise<void>
+	createEvent: (
+		data: Omit<SingleEventForm, 'createdById' | 'organizationId'>,
+	) => Promise<ContentResource>
+	createEventSeries: (
+		data: Omit<EventSeriesForm, 'createdById' | 'organizationId'>,
+	) => Promise<{
+		eventSeries: ContentResource
+		childEvents: ContentResource[]
+	}>
+	tags?: {
+		id: string
+		fields: {
+			label: string
+			name: string
+		}
+	}[]
+	allowMultipleEvents?: boolean
+	allowCoupons?: boolean
+	defaultTimezone?: string
+	defaultPrice?: number
+	defaultQuantity?: number
+}
+
 /**
  * Schema for creating multiple events with shared product configuration
  * Each event has its own title, dates, and tags, but they share price and quantity
  * When multiple events are created, an event series is created to contain them
  */
-export const MultipleEventsSchema = z
+export const MultipleEventsFormSchema = z
 	.object({
 		type: z.enum(['event', 'event-series']).default('event'),
 		eventSeries: z.object({
@@ -89,13 +123,13 @@ export const MultipleEventsSchema = z
 		},
 	)
 
-export type MultipleEvents = z.infer<typeof MultipleEventsSchema>
+export type MultipleEventsForm = z.infer<typeof MultipleEventsFormSchema>
 
 /**
  * Schema for adapter-level single event creation
  * Includes database fields required by the adapter
  */
-export const SingleEventSchema = z.object({
+export const SingleEventFormSchema = z.object({
 	type: z.literal('event'),
 	fields: z.object({
 		title: z.string().min(2).max(90),
@@ -130,13 +164,13 @@ export const SingleEventSchema = z.object({
 		.optional(),
 })
 
-export type SingleEventData = z.infer<typeof SingleEventSchema>
+export type SingleEventForm = z.infer<typeof SingleEventFormSchema>
 
 /**
  * Schema for adapter-level event series creation
  * Includes database fields required by the adapter
  */
-export const EventSeriesSchema = z.object({
+export const EventSeriesFormSchema = z.object({
 	type: z.literal('event-series'),
 	eventSeries: z.object({
 		title: z.string().min(2).max(90),
@@ -192,4 +226,4 @@ export const EventSeriesSchema = z.object({
 		.optional(),
 })
 
-export type EventSeriesData = z.infer<typeof EventSeriesSchema>
+export type EventSeriesForm = z.infer<typeof EventSeriesFormSchema>
