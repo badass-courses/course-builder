@@ -15,7 +15,7 @@ import {
 import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import CreateNewEventForm from './create-new-event-form'
+import CreateEventFormWrapper from './create-event-form-wrapper'
 
 export default function CreateNewEventDialog({
 	buttonLabel = 'Create new event',
@@ -52,7 +52,7 @@ export default function CreateNewEventDialog({
 							for easier management.
 						</DialogDescription>
 					</DialogHeader>
-					<CreateNewEventForm />
+					<CreateEventFormWrapper />
 				</DialogContent>
 			</Dialog>
 		</div>

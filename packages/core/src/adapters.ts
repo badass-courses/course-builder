@@ -8,6 +8,8 @@ import {
 } from './schemas'
 import { type ContentResource } from './schemas/content-resource-schema'
 import { Coupon } from './schemas/coupon-schema'
+import { EventSeriesResult } from './schemas/event-domain-schema'
+import { EventSeriesData, SingleEventData } from './schemas/event-ui-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
@@ -74,6 +76,9 @@ export interface CourseBuilderAdapter<
 		id: string
 		fields: Record<string, any>
 	}): Awaitable<ContentResource | null>
+	// Event-specific methods
+	createEvent(data: SingleEventData): Promise<ContentResource>
+	createEventSeries(data: EventSeriesData): Promise<EventSeriesResult>
 	getPriceForProduct(productId: string): Promise<Price | null>
 	getUpgradableProducts(options: {
 		upgradableFromId: string
@@ -423,6 +428,55 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	updateContentResourceFields(_) {
 		return null
+	},
+	// Event methods
+	createEvent: async (data) => {
+		return {
+			id: 'mock-event',
+			organizationId: data.organizationId || null,
+			type: data.type,
+			fields: data.fields,
+			createdById: data.createdById,
+			createdByOrganizationMembershipId: null,
+			resources: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			deletedAt: null,
+		} as ContentResource
+	},
+	createEventSeries: async (data) => {
+		const eventSeries = {
+			id: 'mock-event-series',
+			organizationId: data.organizationId || null,
+			type: data.type,
+			fields: {
+				title: data.eventSeries.title,
+				description: data.eventSeries.description,
+				price: data.sharedFields.price,
+				quantity: data.sharedFields.quantity,
+			},
+			createdById: data.createdById,
+			createdByOrganizationMembershipId: null,
+			resources: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			deletedAt: null,
+		} as ContentResource
+
+		const childEvents = data.childEvents.map((childEvent, index) => ({
+			id: `mock-child-event-${index}`,
+			organizationId: data.organizationId || null,
+			type: childEvent.type,
+			fields: childEvent.fields,
+			createdById: data.createdById,
+			createdByOrganizationMembershipId: null,
+			resources: null,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			deletedAt: null,
+		})) as ContentResource[]
+
+		return { eventSeries, childEvents } as EventSeriesResult
 	},
 	createOrganization: async () => null,
 	getOrganization: async () => null,

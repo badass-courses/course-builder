@@ -21,6 +21,7 @@ import {
 	Purchase,
 	ResourceProgress,
 	User,
+	type ContentResource,
 } from './schemas'
 import { PurchaseInfo } from './schemas/purchase-info'
 import { SubscriptionInfo } from './schemas/subscription-info'
@@ -332,3 +333,41 @@ export type PricingOptions = {
 }
 
 export { CheckoutParamsSchema, type CheckoutParams }
+
+export type EventCreationResult = {
+	type: 'single' | 'series'
+	event?: ContentResource
+	eventSeries?: ContentResource
+	childEvents?: ContentResource[]
+}
+
+export type CreateEventFormProps = {
+	onSuccess: (result: EventCreationResult) => Promise<void>
+	createEvent: (
+		data: Omit<
+			import('./schemas/event-ui-schema').SingleEventData,
+			'createdById' | 'organizationId'
+		>,
+	) => Promise<ContentResource>
+	createEventSeries: (
+		data: Omit<
+			import('./schemas/event-ui-schema').EventSeriesData,
+			'createdById' | 'organizationId'
+		>,
+	) => Promise<{
+		eventSeries: ContentResource
+		childEvents: ContentResource[]
+	}>
+	tags?: {
+		id: string
+		fields: {
+			label: string
+			name: string
+		}
+	}[]
+	allowMultipleEvents?: boolean
+	allowCoupons?: boolean
+	defaultTimezone?: string
+	defaultPrice?: number
+	defaultQuantity?: number
+}
