@@ -50,7 +50,7 @@ export function LessonBody({
 	const { content } = use(mdxContentPromise)
 
 	return (
-		<div className="prose-img:rounded-lg prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl max-w-none">
+		<div className="prose-img:rounded-lg prose dark:prose-a:text-primary prose-a:text-orange-600 lg:prose-pre:text-sm lg:prose-pre:leading-relaxed sm:prose-lg lg:prose-xl max-w-none">
 			{content}
 		</div>
 	)
