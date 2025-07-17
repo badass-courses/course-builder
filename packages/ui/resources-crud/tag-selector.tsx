@@ -32,12 +32,14 @@ export default function AdvancedTagSelector({
 	onTagSelect,
 	onTagRemove,
 	className,
+	modal = false,
 }: {
 	availableTags: Tag[]
 	selectedTags: Tag[]
 	onTagSelect?: (tag: Tag) => void
 	onTagRemove?: (tagId: string) => void
 	className?: string
+	modal?: boolean
 }) {
 	const [open, setOpen] = React.useState(false)
 	const [selectedTags, setSelectedTags] =
@@ -86,7 +88,7 @@ export default function AdvancedTagSelector({
 					</Badge>
 				))}
 			</div>
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover modal={modal} open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
 					<Button
 						variant="outline"
