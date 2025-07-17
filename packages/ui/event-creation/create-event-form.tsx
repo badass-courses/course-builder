@@ -8,11 +8,11 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
-	MultipleEventsSchema,
+	MultipleEventsFormSchema,
 	type CreateEventFormProps,
 	type EventCreationResult,
-	type EventSeriesData,
-	type SingleEventData,
+	type EventSeriesForm,
+	type SingleEventForm,
 } from '@coursebuilder/core'
 
 import {
@@ -41,7 +41,7 @@ import {
 } from '../index'
 import AdvancedTagSelector from '../resources-crud/tag-selector'
 
-type MultipleEvents = z.infer<typeof MultipleEventsSchema>
+type MultipleEvents = z.infer<typeof MultipleEventsFormSchema>
 
 interface Tag {
 	id: string
@@ -67,7 +67,7 @@ export function CreateEventForm({
 	defaultQuantity = 40,
 }: CreateEventFormProps) {
 	const form = useForm<MultipleEvents>({
-		resolver: zodResolver(MultipleEventsSchema),
+		resolver: zodResolver(MultipleEventsFormSchema),
 		defaultValues: {
 			type: 'event',
 			eventSeries: {
@@ -112,7 +112,7 @@ export function CreateEventForm({
 				}
 
 				const singleEventData: Omit<
-					SingleEventData,
+					SingleEventForm,
 					'createdById' | 'organizationId'
 				> = {
 					type: 'event',
@@ -143,7 +143,7 @@ export function CreateEventForm({
 			} else {
 				// Multiple events or event series - transform to adapter format
 				const eventSeriesData: Omit<
-					EventSeriesData,
+					EventSeriesForm,
 					'createdById' | 'organizationId'
 				> = {
 					type: 'event-series',
