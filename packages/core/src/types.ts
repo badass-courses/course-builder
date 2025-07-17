@@ -21,6 +21,7 @@ import {
 	Purchase,
 	ResourceProgress,
 	User,
+	type ContentResource,
 } from './schemas'
 import { PurchaseInfo } from './schemas/purchase-info'
 import { SubscriptionInfo } from './schemas/subscription-info'

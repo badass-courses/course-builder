@@ -1,14 +1,21 @@
 import { z } from 'zod'
 
-import { productSchema } from '@coursebuilder/core/schemas'
 import {
 	ContentResourceSchema,
 	ResourceStateSchema,
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
+import { productSchema } from '@coursebuilder/core/schemas/index'
+import type { EventSeriesFormData } from '@coursebuilder/ui/event-creation/create-event-form'
 
-import { FeaturedSchema, PostTagsSchema } from './posts'
+export {
+	type EventSeriesFormData,
+	type EventFormData,
+} from '@coursebuilder/ui/event-creation/create-event-form'
 
+/**
+ * @description Event-specific field validation schema
+ */
 export const EventFieldsSchema = z.object({
 	startsAt: z.string().datetime().nullable().optional(),
 	endsAt: z.string().datetime().nullable().optional(),
@@ -31,7 +38,7 @@ export const EventSchema = ContentResourceSchema.merge(
 				}),
 			)
 			.default([]),
-		tags: PostTagsSchema,
+		tags: z.array(z.any()).default([]), // Use generic tag array - specific tag schema handled elsewhere
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
@@ -50,13 +57,54 @@ export const EventSchema = ContentResourceSchema.merge(
 				.optional(),
 			calendarId: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
-			featured: FeaturedSchema.optional(),
+			featured: z.boolean().default(false).optional(),
 		}),
 	}),
 )
 
 export type Event = z.infer<typeof EventSchema>
 
+/**
+ * @description Schema for event series that contain multiple related events
+ */
+export const EventSeriesSchema = ContentResourceSchema.merge(
+	z.object({
+		videoResourceId: z.string().optional().nullable(),
+		resourceProducts: z
+			.array(
+				z.object({
+					resourceId: z.string(),
+					productId: z.string(),
+					product: productSchema,
+				}),
+			)
+			.default([]),
+		tags: z.array(z.any()).default([]),
+		fields: z.object({
+			body: z.string().nullable().optional(),
+			title: z.string().min(2).max(90),
+			description: z.string().optional(),
+			slug: z.string(),
+			state: ResourceStateSchema.default('draft'),
+			visibility: ResourceVisibilitySchema.default('unlisted'),
+			image: z.string().optional(),
+			socialImage: z
+				.object({
+					type: z.string(),
+					url: z.string().url(),
+				})
+				.optional(),
+			thumbnailTime: z.number().nullish(),
+			attendeeInstructions: z.string().nullable().optional(),
+		}),
+	}),
+)
+
+export type EventSeries = z.infer<typeof EventSeriesSchema>
+
+/**
+ * @description Schema for creating new events
+ */
 export const NewEventSchema = z.object({
 	type: z.literal('event').default('event'),
 	fields: z.object({
@@ -82,41 +130,9 @@ export const NewEventSchema = z.object({
 
 export type NewEvent = z.infer<typeof NewEventSchema>
 
-export const EventSeriesSchema = ContentResourceSchema.merge(
-	z.object({
-		videoResourceId: z.string().optional().nullable(),
-		resourceProducts: z
-			.array(
-				z.object({
-					resourceId: z.string(),
-					productId: z.string(),
-					product: productSchema,
-				}),
-			)
-			.default([]),
-		tags: PostTagsSchema,
-		fields: z.object({
-			body: z.string().nullable().optional(),
-			title: z.string().min(2).max(90),
-			description: z.string().optional(),
-			slug: z.string(),
-			state: ResourceStateSchema.default('draft'),
-			visibility: ResourceVisibilitySchema.default('unlisted'),
-			image: z.string().optional(),
-			socialImage: z
-				.object({
-					type: z.string(),
-					url: z.string().url(),
-				})
-				.optional(),
-			thumbnailTime: z.number().nullish(),
-			attendeeInstructions: z.string().nullable().optional(),
-		}),
-	}),
-)
-
-export type EventSeries = z.infer<typeof EventSeriesSchema>
-
+/**
+ * @description Schema for creating new event series
+ */
 export const NewEventSeriesSchema = z.object({
 	type: z.literal('event-series').default('event-series'),
 	fields: z.object({
@@ -139,98 +155,7 @@ export const NewEventSeriesSchema = z.object({
 export type NewEventSeries = z.infer<typeof NewEventSeriesSchema>
 
 /**
- * Schema for creating multiple events with shared product configuration
- * Each event has its own title, dates, and tags, but they share price and quantity
- * When multiple events are created, an event series is created to contain them
- */
-export const MultipleEventsSchema = z
-	.object({
-		type: z.enum(['event', 'event-series']).default('event'),
-		eventSeries: z.object({
-			title: z.string().max(90).default(''),
-			description: z.string().optional(),
-			tagIds: z
-				.array(
-					z.object({
-						id: z.string(),
-						fields: z.object({
-							label: z.string(),
-							name: z.string(),
-						}),
-					}),
-				)
-				.nullish(),
-		}),
-		sharedFields: z.object({
-			price: z.number().min(0).nullish(),
-			quantity: z.number().min(-1).nullish(),
-		}),
-		coupon: z.object({
-			enabled: z.boolean().default(false),
-			percentageDiscount: z
-				.enum(['1', '0.95', '0.9', '0.75', '0.6', '0.5', '0.4', '0.25', '0.1'])
-				.optional(),
-			expires: z.date().optional(),
-		}),
-		events: z
-			.array(
-				z.object({
-					title: z.string().min(2).max(90),
-					startsAt: z.date().nullish(),
-					endsAt: z.date().nullish(),
-					tagIds: z
-						.array(
-							z.object({
-								id: z.string(),
-								fields: z.object({
-									label: z.string(),
-									name: z.string(),
-								}),
-							}),
-						)
-						.nullish(), // Tags are per-event, not shared
-				}),
-			)
-			.min(1),
-	})
-	.refine(
-		(data) => {
-			// Require series title if more than one event
-			if (data.events.length > 1 && data.eventSeries.title.trim().length < 2) {
-				return false
-			}
-			return true
-		},
-		{
-			message:
-				'Series title must be at least 2 characters when creating multiple events',
-			path: ['eventSeries', 'title'],
-		},
-	)
-	.refine(
-		(data) => {
-			// Require coupon fields when coupon is enabled
-			if (data.coupon.enabled) {
-				if (!data.coupon.percentageDiscount) {
-					return false
-				}
-				if (!data.coupon.expires) {
-					return false
-				}
-			}
-			return true
-		},
-		{
-			message:
-				'Percentage discount and expiration date are required when coupon is enabled',
-			path: ['coupon'],
-		},
-	)
-
-export type MultipleEvents = z.infer<typeof MultipleEventsSchema>
-
-/**
- *
+ * @description Child event type for event series
  */
 export type ChildEvent = {
 	type: 'event'
@@ -247,11 +172,13 @@ export type ChildEvent = {
 }
 
 /**
- * Convert MultipleEvents to event series and child events for the new pattern
+ * @description Convert MultipleEvents UI data to event series and child events
  * The event series contains the product information and acts as a container
  * Child events contain individual event details without pricing
  */
-export function multipleEventsToEventSeriesAndEvents(input: MultipleEvents): {
+export function multipleEventsToEventSeriesAndEvents(
+	input: EventSeriesFormData,
+): {
 	eventSeries: NewEventSeries & {
 		sharedFields: {
 			price: number | null | undefined
@@ -273,14 +200,13 @@ export function multipleEventsToEventSeriesAndEvents(input: MultipleEvents): {
 		},
 	}
 
-	const childEvents: ChildEvent[] = input.events.map((event) => ({
+	const childEvents: ChildEvent[] = input.childEvents.map((event) => ({
 		type: 'event' as const,
 		fields: {
-			title: event.title,
-			startsAt: event.startsAt,
-			endsAt: event.endsAt,
-			tagIds: event.tagIds,
-			// No price/quantity for child events - they're contained in the event series
+			title: event.fields.title,
+			startsAt: event.fields.startsAt,
+			endsAt: event.fields.endsAt,
+			tagIds: event.fields.tagIds,
 		},
 	}))
 

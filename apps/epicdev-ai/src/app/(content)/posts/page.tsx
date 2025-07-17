@@ -47,7 +47,22 @@ export const metadata: Metadata = {
 	},
 }
 
-const FeaturedGrid = ({ posts }: { posts: (Post | List | Event)[] }) => {
+const FeaturedGrid = ({
+	posts,
+}: {
+	posts: (
+		| Post
+		| List
+		| (Event & {
+				fields: {
+					featured: {
+						priority: number
+						layout: 'primary' | 'secondary' | 'tertiary'
+					}
+				}
+		  })
+	)[]
+}) => {
 	const primary = posts?.find((p) => p?.fields?.featured?.layout === 'primary')
 	const secondary = posts
 		?.filter((p) => p?.fields?.featured?.layout === 'secondary')

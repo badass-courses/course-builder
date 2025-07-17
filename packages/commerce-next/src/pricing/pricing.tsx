@@ -324,7 +324,7 @@ const TeamToggle = ({
 						For myself
 					</button>
 					<Switch.Root
-						className="radix-state-checked:bg-gray-200 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900"
+						className="radix-state-checked:bg-gray-200 dark:radix-state-checked:bg-gray-950 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900"
 						aria-label={isTeamPurchaseActive ? 'For my team' : 'For myself'}
 						onCheckedChange={toggleTeamPurchase}
 						checked={isTeamPurchaseActive}
@@ -463,7 +463,7 @@ const BuyButton = ({
 	return (
 		<Comp
 			className={cn(
-				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium ring-offset-1 transition ease-in-out disabled:cursor-not-allowed disabled:opacity-50',
+				'bg-primary text-primary-foreground flex h-14 w-full items-center justify-center rounded px-4 py-4 text-center text-base font-medium transition ease-in-out disabled:cursor-not-allowed disabled:opacity-50',
 				className,
 			)}
 			type="submit"
