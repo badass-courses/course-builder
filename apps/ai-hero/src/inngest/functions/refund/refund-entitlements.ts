@@ -93,7 +93,6 @@ export const refundEntitlements = inngest.createFunction(
 				error: error instanceof Error ? error.message : String(error),
 				entitlementsDeleted: 0,
 			}
-			throw error
 		}
 	},
 )
