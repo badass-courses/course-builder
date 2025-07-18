@@ -18,6 +18,6 @@ export type PurchaseTransferredApi = {
 		purchaseId: string
 		sourceUserId: string
 		targetUserId: string
-		transferSource: 'api'
+		transferSource: 'api-support-front'
 	}
 }
