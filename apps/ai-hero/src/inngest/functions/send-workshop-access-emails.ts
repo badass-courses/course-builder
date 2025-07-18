@@ -87,7 +87,10 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 						})
 
 						// Filter workshops starting today using existing timezone-aware function
-						const startingToday = await getWorkshopsStartingToday(workshops)
+						const startingToday = await getWorkshopsStartingToday(
+							workshops,
+							'America/Los_Angeles',
+						)
 
 						await log.info('Filtered workshops starting today', {
 							productId: product.id,

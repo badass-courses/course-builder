@@ -11,6 +11,8 @@ import { Email } from '@/lib/emails'
 import { getEmail } from '@/lib/emails-query'
 import { getProduct, getProducts } from '@/lib/products-query'
 import { Workshop } from '@/lib/workshops'
+import { log } from '@/server/logger'
+import { formatInTimeZone } from 'date-fns-tz'
 import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import type { Product } from '@coursebuilder/core/schemas'
@@ -107,27 +109,81 @@ export async function getUsersEntitledToWorkshops(
 	}))
 }
 
+/**
+ * Filters workshops starting on the current UTC date, but in the specified timezone.
+ *
+ * This is designed for a cron running at midnight UTC that needs to find workshops
+ * starting "today" (same UTC calendar date) but in PT timezone.
+ *
+ * Example: Cron runs 2025-07-18T00:00:00Z (midnight UTC July 18th)
+ * → Finds workshops starting July 18th in PT timezone
+ * → Even though it's still July 17th evening in PT when cron runs
+ *
+ * @param mockDate - When provided, uses this date instead of current time for testing.
+ */
 export async function getWorkshopsStartingToday(
 	workshops: Workshop[],
 	timezone: string = 'America/Los_Angeles',
+	mockDate?: Date | string,
 ): Promise<Workshop[]> {
-	// Get current date in PT timezone
-	const now = new Date()
-	const ptDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }))
-	const today = ptDate.toISOString().split('T')[0]
+	// Use provided mock date or current time
+	const now = mockDate ? new Date(mockDate) : new Date()
 
-	return workshops.filter((workshop) => {
+	// Get the UTC date (what matters for cron scheduling)
+	const utcDate = formatInTimeZone(now, 'UTC', 'yyyy-MM-dd')
+
+	// This is the target date we want to find workshops for (same as UTC date)
+	const targetDate = utcDate
+
+	await log.info('Workshop search debug info', {
+		timezone,
+		targetDate,
+		utcDate,
+		mockDate: mockDate?.toString(),
+		currentRealTime: new Date().toISOString(),
+		timeUsedForCalculation: now.toISOString(),
+		explanation: `Looking for workshops starting ${targetDate} in ${timezone} timezone`,
+	})
+	// Log each workshop check
+	for (const workshop of workshops) {
+		if (!workshop.fields.startsAt) continue
+
+		const workshopDateInTimezone = formatInTimeZone(
+			new Date(workshop.fields.startsAt),
+			timezone,
+			'yyyy-MM-dd',
+		)
+
+		const matches = workshopDateInTimezone === targetDate
+
+		await log.info('Workshop date check', {
+			workshopId: workshop.id,
+			workshopStartsAt: workshop.fields.startsAt,
+			workshopDateInTimezone,
+			targetDate,
+			matches,
+		})
+	}
+
+	// Filter workshops
+	const filteredWorkshops = workshops.filter((workshop) => {
 		if (!workshop.fields.startsAt) return false
 
-		// Convert workshop start date to PT and compare
-		const workshopStart = new Date(workshop.fields.startsAt)
-		const workshopPTDate = new Date(
-			workshopStart.toLocaleString('en-US', { timeZone: timezone }),
+		const workshopDateInTimezone = formatInTimeZone(
+			new Date(workshop.fields.startsAt),
+			timezone,
+			'yyyy-MM-dd',
 		)
-		const workshopDate = workshopPTDate.toISOString().split('T')[0]
 
-		return workshopDate === today
+		return workshopDateInTimezone === targetDate
 	})
+
+	await log.info('Workshop filtering complete', {
+		totalWorkshops: workshops.length,
+		filteredCount: filteredWorkshops.length,
+	})
+
+	return filteredWorkshops
 }
 
 export async function getWorkshopEmails(workshop: Workshop): Promise<Email[]> {
