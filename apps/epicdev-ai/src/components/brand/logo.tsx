@@ -18,7 +18,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 				// height="218"
 				fill="none"
 				viewBox="0 0 186 218"
-				className="relative mr-1.5 w-8 -translate-y-0.5 text-[#251356] dark:text-[#DCDDF7]"
+				className="relative mr-1.5 size-8 -translate-y-0.5 text-[#251356] dark:text-[#DCDDF7]"
 			>
 				<path
 					fill="url(#a)"
