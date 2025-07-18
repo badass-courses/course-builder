@@ -61,6 +61,7 @@ export default function CreateNewEventDialog({
 	return (
 		<div>
 			<Dialog
+				modal={false}
 				onOpenChange={(isOpen) => {
 					setOpen(isOpen)
 				}}
@@ -71,7 +72,7 @@ export default function CreateNewEventDialog({
 						{buttonLabel}
 					</Button>
 				</DialogTrigger>
-				<DialogContent className="max-h-[90vh] overflow-y-auto">
+				<DialogContent modal={false} className="max-h-[90vh] overflow-y-auto">
 					<DialogHeader className="border-b pb-4">
 						<DialogTitle className="text-xl font-bold">
 							Create Event(s)
