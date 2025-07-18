@@ -1,5 +1,23 @@
 # @coursebuilder/utils-resource
 
+## 1.0.3
+
+### Patch Changes
+
+- [#521](https://github.com/badass-courses/course-builder/pull/521)
+  [`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add enrollmentOpen and
+  enrollmentClose fields to product
+
+- [#525](https://github.com/badass-courses/course-builder/pull/525)
+  [`ac7f696`](https://github.com/badass-courses/course-builder/commit/ac7f69644c0e52122573b453d2b7a6eeaeafe08b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add util to build
+  resource paths
+
+- Updated dependencies
+  [[`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9)]:
+  - @coursebuilder/core@1.0.6
+
 ## 1.0.2
 
 ### Patch Changes
