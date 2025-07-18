@@ -15,7 +15,7 @@ import { getImpersonatedSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { userHasRole } from '@/utils/user-has-role'
 import MuxPlayer from '@mux/mux-player-react'
-import { FileText } from 'lucide-react'
+import { FileText, Users } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -101,31 +101,118 @@ const Home = async (props: Props) => {
 			</section>
 		)
 	} else if (userHasRole(session.user, 'admin')) {
-		const adminLinks = [
-			{ href: '/admin/pages', label: 'Admin Pages' },
-			{ href: '/admin/tips', label: 'Admin Tips' },
+		const contentManagementLinks = [
+			{
+				href: '/admin/posts',
+				label: 'All Posts',
+				description: 'View and edit all posts',
+			},
+			{
+				href: '/admin/tips',
+				label: 'All Tips',
+				description: 'View and edit all tips',
+			},
+			{
+				href: '/admin/pages',
+				label: 'All Pages',
+				description: 'Manage site pages',
+			},
+		]
+
+		const userManagementLinks = [
+			{
+				href: '/admin/contributors',
+				label: 'Contributors',
+				description: 'Manage users and impersonate',
+			},
 		]
 
 		actionSection = (
-			<section className="mt-6 flex w-full flex-col items-center gap-6 py-6">
-				<div className="flex flex-wrap justify-center gap-4">
-					<CreateResourceModals isAdmin={userHasRole(session.user, 'admin')} />
+			<section className="mt-6 flex w-full flex-col items-center py-6">
+				<div className="w-full max-w-5xl space-y-6">
+					{/* Content Oversight - Primary admin function */}
+					<div className="bg-card rounded-lg border p-6 shadow-sm">
+						<h2 className="mb-4 text-lg font-semibold">Content Oversight</h2>
+						<p className="text-muted-foreground mb-4 text-sm">
+							View and manage all content across the platform
+						</p>
+						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+							{contentManagementLinks.map(({ href, label, description }) => (
+								<Button
+									key={href}
+									asChild
+									variant="outline"
+									size="default"
+									className="flex h-auto flex-col items-start gap-2 p-4 text-left"
+								>
+									<Link href={href} prefetch>
+										<div className="flex items-center gap-2">
+											<FileText className="h-4 w-4" />
+											<span className="font-medium">{label}</span>
+										</div>
+										<span className="text-muted-foreground text-xs">
+											{description}
+										</span>
+									</Link>
+								</Button>
+							))}
+						</div>
+					</div>
+
+					{/* User Management */}
+					<div className="bg-card rounded-lg border p-6 shadow-sm">
+						<h2 className="mb-4 text-lg font-semibold">User Management</h2>
+						<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+							<div className="flex-1">
+								<p className="text-muted-foreground text-sm">
+									Manage contributors and impersonate users for support
+								</p>
+							</div>
+							<div className="flex flex-wrap gap-3">
+								{userManagementLinks.map(({ href, label, description }) => (
+									<Button
+										key={href}
+										asChild
+										variant="default"
+										size="default"
+										className="flex items-center gap-2"
+									>
+										<Link href={href} prefetch>
+											<Users className="h-4 w-4" /> {label}
+										</Link>
+									</Button>
+								))}
+							</div>
+						</div>
+					</div>
+
+					{/* Personal Content Creation */}
+					<div className="bg-card rounded-lg border p-6 shadow-sm">
+						<h2 className="mb-4 text-lg font-semibold">
+							Personal Content Creation
+						</h2>
+						<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+							<div className="flex-1">
+								<p className="text-muted-foreground text-sm">
+									Access your personal dashboard and create your own content
+								</p>
+							</div>
+							<Button asChild size="lg" variant="secondary" className="sm:ml-4">
+								<Link href="/dashboard">Your Dashboard</Link>
+							</Button>
+						</div>
+						<div className="mt-4 border-t pt-4">
+							<p className="text-muted-foreground mb-3 text-sm">
+								Create new content:
+							</p>
+							<div className="flex flex-wrap gap-3">
+								<CreateResourceModals
+									isAdmin={userHasRole(session.user, 'admin')}
+								/>
+							</div>
+						</div>
+					</div>
 				</div>
-				<nav className="flex flex-wrap justify-center gap-3">
-					{adminLinks.map(({ href, label }) => (
-						<Button
-							key={href}
-							asChild
-							variant="outline"
-							size="sm"
-							className="flex items-center gap-1"
-						>
-							<Link href={href} prefetch>
-								<FileText className="h-4 w-4" /> {label}
-							</Link>
-						</Button>
-					))}
-				</nav>
 			</section>
 		)
 	} else if (userHasRole(session.user, 'contributor')) {
