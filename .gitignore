@@ -1,4 +1,4 @@
-.settings.local.json
+.claude/settings.local.json
 .DS_Store
 node_modules
 .turbo
