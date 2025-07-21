@@ -10,7 +10,7 @@ import { getCachedEggheadInstructors } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
-import { EditPostForm } from '../../_components/edit-post-form'
+import { EditPostClient } from '../../_components/edit-post-client'
 
 function EditPostSkeleton({ title = '' }: { title: string }) {
 	return (
@@ -22,44 +22,6 @@ function EditPostSkeleton({ title = '' }: { title: string }) {
 }
 
 export const dynamic = 'force-dynamic'
-
-function EditPostClient({
-	post,
-	videoResourceLoader,
-	videoResourceId,
-	tagLoader,
-	instructorLoader,
-	isAdmin,
-	courseSlug,
-}: {
-	post: any
-	videoResourceLoader: any
-	videoResourceId: string | null | undefined
-	tagLoader: any
-	instructorLoader: any
-	isAdmin: boolean
-	courseSlug: string
-}) {
-	const handleResourceEdit = ({ item }: { itemId: string; item: any }) => {
-		// Navigate to edit the lesson within the course context
-		const lessonSlug = item.fields?.slug
-		if (lessonSlug) {
-			window.location.href = `/posts/${courseSlug}/edit?resource=${lessonSlug}`
-		}
-	}
-
-	return (
-		<EditPostForm
-			post={post}
-			videoResourceLoader={videoResourceLoader}
-			videoResourceId={videoResourceId}
-			tagLoader={tagLoader}
-			instructorLoader={instructorLoader}
-			isAdmin={isAdmin}
-			onResourceEdit={handleResourceEdit}
-		/>
-	)
-}
 
 export default async function PostPage(props: {
 	params: Promise<{ slug: string }>
@@ -116,24 +78,6 @@ export default async function PostPage(props: {
 
 	return (
 		<Layout>
-			{/* Show course context breadcrumb when editing a lesson within a course */}
-			{courseContext && (
-				<div className="bg-background sticky top-0 z-10 border-b">
-					<div className="container mx-auto px-4">
-						<div className="flex items-center gap-2 py-3 text-sm">
-							<Link
-								href={`/posts/${courseContext.fields?.slug}/edit`}
-								className="text-muted-foreground hover:text-foreground hover:underline"
-							>
-								{courseContext.fields?.title}
-							</Link>
-							<span className="text-muted-foreground">/</span>
-							<span className="font-medium">{postToEdit.fields?.title}</span>
-						</div>
-					</div>
-				</div>
-			)}
-
 			<React.Suspense
 				fallback={<EditPostSkeleton title={postToEdit?.fields?.title || ''} />}
 			>
@@ -145,6 +89,7 @@ export default async function PostPage(props: {
 					instructorLoader={instructorLoader}
 					isAdmin={isAdmin}
 					courseSlug={params.slug}
+					courseContext={courseContext}
 				/>
 			</React.Suspense>
 		</Layout>

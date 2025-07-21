@@ -327,14 +327,13 @@ const TreeItem = memo(function TreeItem({
 
 	return (
 		<div className="px-2">
-			<div className="relative flex items-center">
+			<div className="relative flex items-center gap-2">
 				<button
 					{...aria}
 					className={cn(
 						'relative w-full cursor-pointer border-0 bg-transparent py-3',
 						{
 							'border-primary border': instruction?.type === 'make-child',
-							'hover:bg-muted cursor-pointer': state === 'idle',
 						},
 					)}
 					id={`tree-item-${item.id}`}
@@ -345,9 +344,6 @@ const TreeItem = memo(function TreeItem({
 									if (item.type === 'event') {
 										router.push(`/events/${item.id}/edit`)
 										return
-									}
-									if (rootResource) {
-										router.push(`/posts/${item.id}/edit`)
 									}
 								}
 					}
@@ -375,9 +371,9 @@ const TreeItem = memo(function TreeItem({
 							</span>
 						</div>
 						<small className="flex items-center gap-1">
-							{item.type ? (
+							{item.itemData?.resource?.fields?.postType ? (
 								<span className="text-ellipsis capitalize opacity-50">
-									{item.type}
+									{item.itemData?.resource?.fields?.postType}
 								</span>
 							) : null}
 							{/* <span className="text-xs opacity-50">({mode})</span> */}
@@ -414,6 +410,7 @@ const TreeItem = memo(function TreeItem({
 							await onEdit({ itemId: item.id })
 						}}
 						title="Edit lesson"
+						className="hover:cursor-pointer"
 					>
 						<Edit size={12} />
 					</Button>
@@ -421,11 +418,12 @@ const TreeItem = memo(function TreeItem({
 				{item.type === 'post' && (
 					<Button
 						size="icon"
-						variant="destructive"
+						variant="outline"
 						onClick={async () => {
 							dispatch({ type: 'remove-item', itemId: item.id })
 							await onDelete({ itemId: item.id })
 						}}
+						className="hover:cursor-pointer"
 						title="Delete lesson"
 					>
 						<Trash size={12} />

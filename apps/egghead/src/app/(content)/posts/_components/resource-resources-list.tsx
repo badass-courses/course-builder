@@ -236,22 +236,26 @@ export function ResourceResourcesList({
 						}
 					/>
 				)}
-				<div className="flex gap-1 px-5">
-					<Button
-						onClick={() => formDispatch({ type: 'SHOW_LESSON_FORM' })}
-						className="mt-2"
-						variant="outline"
-					>
-						+ add a lesson
-					</Button>
-					<Button
-						onClick={() => formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })}
-						className="mt-2"
-						variant="outline"
-					>
-						+ add existing lesson
-					</Button>
-				</div>
+				{resource?.fields?.postType === 'course' && (
+					<div className="flex gap-1 px-5">
+						<Button
+							onClick={() => formDispatch({ type: 'SHOW_LESSON_FORM' })}
+							className="mt-2"
+							variant="outline"
+						>
+							+ add a lesson
+						</Button>
+						<Button
+							onClick={() =>
+								formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })
+							}
+							className="mt-2"
+							variant="outline"
+						>
+							+ add existing lesson
+						</Button>
+					</div>
+				)}
 			</div>
 		</>
 	)
