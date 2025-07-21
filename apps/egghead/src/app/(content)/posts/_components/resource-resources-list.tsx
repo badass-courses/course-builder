@@ -13,11 +13,8 @@ import {
 	addEggheadLessonToPlaylist,
 	addResourceToResource,
 	createPost,
-	getPost,
-	removeEggheadLessonFromPlaylist,
 	removePostFromCoursePost,
 } from '@/lib/posts-query'
-import { createResource } from '@/lib/resources/create-resources'
 import { addLessonToSanityCourse } from '@/lib/sanity-content-query'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
