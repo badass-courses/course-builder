@@ -27,6 +27,11 @@ export const getNavigationLinks = (): {
 			icon: () => '',
 			href: '/posts',
 		},
+		{
+			label: 'Workshops',
+			icon: () => '',
+			href: '/workshops',
+		},
 	]
 }
 
