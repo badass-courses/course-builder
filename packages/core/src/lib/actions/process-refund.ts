@@ -23,7 +23,7 @@ export async function processRefund(
 		console.log('refunding purchase for:', stripeChargeId)
 
 		// we're receiving a Stripe charge ID, do directly refund
-		const refund = options.provider.refundCharge(stripeChargeId)
+		const refund = await options.provider.refundCharge(stripeChargeId)
 
 		try {
 			await options.inngest.send({
