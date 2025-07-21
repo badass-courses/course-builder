@@ -22,31 +22,30 @@ export const refundEntitlements = inngest.createFunction(
 		const startTime = Date.now()
 
 		try {
-			// The event.data.merchantChargeId is actually the Stripe charge identifier
 			// Using the adapter's getPurchaseForStripeCharge method directly
 			const purchase = await step.run(
 				'get purchase for stripe charge',
 				async () => {
-					return adapter.getPurchaseForStripeCharge(event.data.merchantChargeId)
+					return adapter.getPurchaseForStripeCharge(event.data.stripeChargeId)
 				},
 			)
 
 			if (!purchase) {
 				await log.warn('refund_entitlements.purchase_not_found', {
-					stripeChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.stripeChargeId,
 					duration: Date.now() - startTime,
 				})
 				return {
 					entitlementsDeleted: 0,
 					reason: 'purchase_not_found',
-					stripeChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.stripeChargeId,
 				}
 			}
 
 			if (!purchase.userId) {
 				await log.warn('refund_entitlements.user_id_not_found', {
 					purchaseId: purchase.id,
-					stripeChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.stripeChargeId,
 					duration: Date.now() - startTime,
 				})
 				return {
@@ -54,7 +53,7 @@ export const refundEntitlements = inngest.createFunction(
 					userId: null,
 					entitlementsDeleted: 0,
 					reason: 'user_id_not_found',
-					stripeChargeId: event.data.merchantChargeId,
+					stripeChargeId: event.data.stripeChargeId,
 				}
 			}
 
@@ -68,7 +67,7 @@ export const refundEntitlements = inngest.createFunction(
 
 			await log.info('refund_entitlements.completed', {
 				purchaseId: purchase.id,
-				stripeChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.stripeChargeId,
 				userId: purchase.userId,
 				entitlementsDeleted: result.rowsAffected || 0,
 				duration: Date.now() - startTime,
@@ -79,17 +78,17 @@ export const refundEntitlements = inngest.createFunction(
 				userId: purchase.userId,
 				entitlementsDeleted: result.rowsAffected || 0,
 				reason: 'success',
-				stripeChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.stripeChargeId,
 			}
 		} catch (error) {
 			await log.error('refund_entitlements.failed', {
-				stripeChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.stripeChargeId,
 				error: error instanceof Error ? error.message : String(error),
 				duration: Date.now() - startTime,
 			})
 			return {
 				reason: 'error',
-				stripeChargeId: event.data.merchantChargeId,
+				stripeChargeId: event.data.stripeChargeId,
 				error: error instanceof Error ? error.message : String(error),
 				entitlementsDeleted: 0,
 			}
