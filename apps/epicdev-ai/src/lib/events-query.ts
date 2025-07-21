@@ -4,8 +4,10 @@ import { revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
 	contentResourceTag,
+	purchases,
 } from '@/db/schema'
 import {
 	EventSchema,
@@ -21,7 +23,7 @@ import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
+import { and, asc, eq, inArray, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -30,6 +32,8 @@ import {
 } from '../inngest/events/resource-management'
 import { inngest } from '../inngest/inngest.server'
 import { createCoupon, type CouponInput } from './coupons-query'
+import { EmailSchema, type NewEmail } from './emails'
+import { createEmail } from './emails-query'
 import { getMinimalProductInfoWithoutUser } from './posts-query'
 import { addResourceToProduct, createProduct } from './products-query'
 import { upsertPostToTypeSense } from './typesense-query'
@@ -1072,5 +1076,338 @@ export async function createEventSeries(input: EventSeriesFormData): Promise<{
 			eventCount: input.childEvents.length,
 		})
 		throw error
+	}
+}
+
+/**
+ * Attaches a reminder email resource to an event, replacing any existing reminder email
+ * @param eventId - The ID of the event
+ * @param emailResourceId - The ID of the email resource to attach
+ * @param hoursInAdvance - Number of hours before the event to send the reminder (default: 24)
+ * @returns True if successful, false otherwise
+ */
+export async function attachReminderEmailToEvent(
+	eventId: string,
+	emailResourceId: string,
+	hoursInAdvance: number = 24,
+) {
+	try {
+		// First, check if the event already has a reminder email attached
+		const existingReminderEmails =
+			await db.query.contentResourceResource.findMany({
+				where: and(
+					eq(contentResourceResource.resourceOfId, eventId),
+					eq(
+						sql`(SELECT type FROM ${contentResource} WHERE id = ${contentResourceResource.resourceId})`,
+						'email',
+					),
+				),
+				with: {
+					resource: true,
+				},
+			})
+
+		// If there are existing reminder emails, detach them
+		if (existingReminderEmails.length > 0) {
+			for (const existingEmail of existingReminderEmails) {
+				await db
+					.delete(contentResourceResource)
+					.where(
+						and(
+							eq(contentResourceResource.resourceOfId, eventId),
+							eq(contentResourceResource.resourceId, existingEmail.resourceId),
+							eq(
+								sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+								'event-reminder',
+							),
+						),
+					)
+
+				await log.info('event.reminder-email.detached', {
+					eventId,
+					emailResourceId: existingEmail.resourceId,
+				})
+			}
+		}
+
+		// Now attach the new reminder email
+		const result = await db.insert(contentResourceResource).values({
+			resourceOfId: eventId,
+			resourceId: emailResourceId,
+			metadata: {
+				type: 'event-reminder',
+				hoursInAdvance,
+			},
+		})
+
+		await log.info('event.reminder-email.attached', {
+			eventId,
+			emailResourceId,
+		})
+
+		return result
+	} catch (error) {
+		await log.error('event.reminder-email.attach.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			eventId,
+			emailResourceId,
+		})
+		return null
+	}
+}
+
+/**
+ * Detaches a reminder email resource from an event
+ * @param eventId - The ID of the event
+ * @param emailResourceId - The ID of the email resource to detach
+ * @returns True if successful, false otherwise
+ */
+export async function detachReminderEmailFromEvent(
+	eventId: string,
+	emailResourceId: string,
+) {
+	try {
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, eventId),
+					eq(contentResourceResource.resourceId, emailResourceId),
+					eq(
+						sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+						'event-reminder',
+					),
+				),
+			)
+
+		await log.info('event.reminder-email.detached', {
+			eventId,
+			emailResourceId,
+		})
+
+		return true
+	} catch (error) {
+		await log.error('event.reminder-email.detach.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			eventId,
+			emailResourceId,
+		})
+		return false
+	}
+}
+
+/**
+ * Gets the reminder email attached to an event
+ * @param eventId - The ID of the event
+ * @returns The email resource or null if none attached
+ */
+export async function getEventReminderEmail(eventId: string) {
+	try {
+		const reminderEmail = await db.query.contentResourceResource.findFirst({
+			where: and(
+				eq(contentResourceResource.resourceOfId, eventId),
+				eq(
+					sql`(SELECT type FROM ${contentResource} WHERE id = ${contentResourceResource.resourceId})`,
+					'email',
+				),
+				eq(
+					sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+					'event-reminder',
+				),
+			),
+			with: {
+				resource: true,
+			},
+		})
+
+		return reminderEmail?.resource || null
+	} catch (error) {
+		await log.error('event.reminder-email.get.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			eventId,
+		})
+		return null
+	}
+}
+
+export async function getEventReminderEmails(eventId: string) {
+	const reminderEmailsRefs = await db.query.contentResourceResource.findMany({
+		where: and(
+			eq(contentResourceResource.resourceOfId, eventId),
+			eq(
+				sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+				'event-reminder',
+			),
+		),
+		with: {
+			resource: {
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const reminderEmails = await Promise.all(
+		reminderEmailsRefs.map(async (ref) => {
+			const email = ref.resource
+			return email
+		}),
+	)
+
+	const parsedReminderEmails = z.array(EmailSchema).safeParse(reminderEmails)
+	if (!parsedReminderEmails.success) {
+		console.error('Error parsing reminder emails', reminderEmails)
+		return []
+	}
+
+	return parsedReminderEmails.data
+}
+
+export async function getAllEventReminderEmails() {
+	const reminderEmailsRefs = await db.query.contentResourceResource.findMany({
+		where: and(
+			eq(
+				sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+				'event-reminder',
+			),
+		),
+		with: {
+			resource: {
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const reminderEmails = await Promise.all(
+		reminderEmailsRefs.map(async (ref) => {
+			const email = ref.resource
+			return email
+		}),
+	)
+
+	const parsedReminderEmails = z.array(EmailSchema).safeParse(reminderEmails)
+	if (!parsedReminderEmails.success) {
+		console.error('Error parsing reminder emails', reminderEmails)
+		return []
+	}
+
+	return parsedReminderEmails.data
+}
+
+export async function createAndAttachReminderEmailToEvent(
+	eventId: string,
+	input: NewEmail,
+	hoursInAdvance: number = 24,
+) {
+	const reminderEmail = await createEmail(input)
+	if (!reminderEmail) {
+		throw new Error('Failed to create reminder email')
+	}
+	const result = await attachReminderEmailToEvent(
+		eventId,
+		reminderEmail.id,
+		hoursInAdvance,
+	)
+
+	if (!result) {
+		throw new Error('Failed to attach reminder email to event')
+	}
+	return reminderEmail
+}
+
+/**
+ * Get subscribers for an event who should receive reminder emails
+ * Based on users who purchased products associated with the event
+ *
+ * @param eventId - The ID of the event
+ * @returns Array of users who purchased the event and should receive reminder emails
+ */
+export async function getEventPurchasers(
+	eventId: string,
+): Promise<Array<{ id: string; email: string; name?: string }>> {
+	try {
+		// Find all products associated with this event via contentResourceProduct
+		const eventProducts = await db.query.contentResourceProduct.findMany({
+			where: eq(contentResourceProduct.resourceId, eventId),
+			with: {
+				product: true,
+			},
+		})
+
+		if (eventProducts.length === 0) {
+			await log.info('event.subscribers.no-products', {
+				eventId,
+				message: 'No products associated with this event',
+			})
+			return []
+		}
+
+		const productIds = eventProducts.map((ep) => ep.productId)
+
+		// Find all purchases of these products
+		const eventPurchases = await db.query.purchases.findMany({
+			where: inArray(purchases.productId, productIds),
+			with: {
+				user: true,
+			},
+		})
+
+		if (eventPurchases.length === 0) {
+			await log.info('event.subscribers.no-purchases', {
+				eventId,
+				productIds,
+				message: 'No purchases found for event products',
+			})
+			return []
+		}
+
+		// Extract unique users (in case someone bought multiple products for the same event)
+		const uniqueUsers = new Map<
+			string,
+			{ id: string; email: string; name?: string }
+		>()
+
+		for (const purchase of eventPurchases) {
+			if (purchase.user && purchase.user.email) {
+				uniqueUsers.set(purchase.user.id, {
+					id: purchase.user.id,
+					email: purchase.user.email,
+					name: purchase.user.name || undefined,
+				})
+			}
+		}
+
+		const subscribers = Array.from(uniqueUsers.values())
+
+		await log.info('event.subscribers.found', {
+			eventId,
+			productIds,
+			totalPurchases: eventPurchases.length,
+			uniqueSubscribers: subscribers.length,
+		})
+
+		return subscribers
+	} catch (error) {
+		await log.error('event.subscribers.error', {
+			eventId,
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
+
+		// Return empty array on error to prevent reminder system from crashing
+		return []
 	}
 }
