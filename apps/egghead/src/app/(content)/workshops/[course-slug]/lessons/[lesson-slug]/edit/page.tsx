@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
+import { EditPostForm } from '@/app/(content)/posts/_components/edit-post-form'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
 import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
@@ -7,8 +8,6 @@ import { getCachedEggheadInstructors } from '@/lib/users'
 import { getCachedLessonWithCourse } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
-
-import { EditPostForm } from '../../../../posts/_components/edit-post-form'
 
 function EditLessonSkeleton({ title = '' }: { title: string }) {
 	return (
