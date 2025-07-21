@@ -124,7 +124,7 @@ export const PrimaryNewsletterCta: React.FC<
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="[&_input]:border-foreground/40 relative z-10 [&_input]:h-16"
+						className="[&_input]:border-foreground/40 relative z-10 [&_button]:mt-3 [&_button]:h-16 [&_button]:sm:text-lg [&_input]:h-16"
 					/>
 					<p
 						data-nospam=""

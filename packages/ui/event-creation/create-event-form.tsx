@@ -564,16 +564,20 @@ export function CreateEventForm({
 													<FormControl>
 														<DateTimePicker
 															value={
-																field.value
+																!!field.value
 																	? parseAbsolute(
-																			field.value.toISOString(),
-																			defaultTimezone,
+																			new Date(field.value).toISOString(),
+																			'America/Los_Angeles',
 																		)
 																	: null
 															}
-															onChange={(date) =>
-																field.onChange(date?.toDate('UTC'))
-															}
+															onChange={(date) => {
+																field.onChange(
+																	!!date
+																		? date.toDate('America/Los_Angeles')
+																		: null,
+																)
+															}}
 															granularity="day"
 														/>
 													</FormControl>
@@ -656,7 +660,6 @@ export function CreateEventForm({
 									<FormLabel>Series Tags</FormLabel>
 
 									<AdvancedTagSelector
-										modal={true}
 										className="mt-0 space-y-1"
 										availableTags={tags || []}
 										selectedTags={form.watch('eventSeries.tagIds') || []}
@@ -737,16 +740,20 @@ export function CreateEventForm({
 													<FormControl>
 														<DateTimePicker
 															value={
-																field.value
+																!!field.value
 																	? parseAbsolute(
-																			field.value.toISOString(),
-																			defaultTimezone,
+																			new Date(field.value).toISOString(),
+																			'America/Los_Angeles',
 																		)
 																	: null
 															}
-															onChange={(date) =>
-																field.onChange(date?.toDate('UTC'))
-															}
+															onChange={(date) => {
+																field.onChange(
+																	!!date
+																		? date.toDate('America/Los_Angeles')
+																		: null,
+																)
+															}}
 															granularity="minute"
 														/>
 													</FormControl>
@@ -763,16 +770,20 @@ export function CreateEventForm({
 													<FormControl>
 														<DateTimePicker
 															value={
-																field.value
+																!!field.value
 																	? parseAbsolute(
-																			field.value.toISOString(),
-																			defaultTimezone,
+																			new Date(field.value).toISOString(),
+																			'America/Los_Angeles',
 																		)
 																	: null
 															}
-															onChange={(date) =>
-																field.onChange(date?.toDate('UTC'))
-															}
+															onChange={(date) => {
+																field.onChange(
+																	!!date
+																		? date.toDate('America/Los_Angeles')
+																		: null,
+																)
+															}}
 															granularity="minute"
 														/>
 													</FormControl>
@@ -788,7 +799,6 @@ export function CreateEventForm({
 											Tags specific to this individual event
 										</FormDescription>
 										<AdvancedTagSelector
-											modal={true}
 											className="mt-0 space-y-1"
 											availableTags={tags || []}
 											selectedTags={form.watch(`events.${index}.tagIds`) || []}

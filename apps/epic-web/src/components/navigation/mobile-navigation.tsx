@@ -13,6 +13,7 @@ import {
 	ListChecks,
 	Menu,
 	Newspaper,
+	User as UserIcon,
 	Users,
 	X,
 } from 'lucide-react'
@@ -134,6 +135,12 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 							<ul className="flex flex-col gap-1">
 								{canManageAll && (
 									<>
+										<NavLinkItem
+											className=""
+											href="/dashboard"
+											label="Instructor Dashboard"
+											icon={<UserIcon className="mr-2 h-4 w-4" />}
+										/>
 										<NavLinkItem
 											className=""
 											href="/admin/pages"

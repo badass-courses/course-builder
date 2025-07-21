@@ -61,6 +61,7 @@ export default function CreateNewEventDialog({
 	return (
 		<div>
 			<Dialog
+				modal={false}
 				onOpenChange={(isOpen) => {
 					setOpen(isOpen)
 				}}

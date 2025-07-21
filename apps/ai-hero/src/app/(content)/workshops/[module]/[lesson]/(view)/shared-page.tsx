@@ -7,7 +7,6 @@ import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
-import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -61,22 +60,14 @@ export async function LessonPage({
 	return (
 		<ActiveHeadingProvider>
 			<main className="w-full">
-				{lessonType === 'exercise' ? (
-					<Exercise
-						moduleType="workshop"
-						moduleSlug={params.module}
-						lesson={lesson}
-					/>
-				) : (
-					<PlayerContainer
-						lesson={lesson}
-						searchParams={searchParams}
-						params={params}
-						lessonType={lessonType}
-						workshop={workshop}
-						ability={ability}
-					/>
-				)}
+				<PlayerContainer
+					lesson={lesson}
+					searchParams={searchParams}
+					params={params}
+					lessonType={lessonType}
+					workshop={workshop}
+					ability={ability}
+				/>
 				<LessonControls
 					abilityLoader={abilityLoader}
 					lesson={lesson}
