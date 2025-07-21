@@ -51,8 +51,16 @@ function formReducer(state: FormState, action: FormAction): FormState {
 
 export function ResourceResourcesList({
 	resource,
+	onItemEdit,
 }: {
 	resource: ContentResource
+	onItemEdit?: ({
+		itemId,
+		item,
+	}: {
+		itemId: string
+		item: ContentResource
+	}) => void
 }) {
 	const [formState, formDispatch] = useReducer(formReducer, {
 		activeForm: null,
@@ -187,6 +195,32 @@ export function ResourceResourcesList({
 						})
 					}
 				}}
+				onItemEdit={
+					onItemEdit
+						? async ({ itemId }: { itemId: string }) => {
+								// Find the resource in the tree data
+								const findItemInTree = (
+									items: any[],
+								): ContentResource | null => {
+									for (const item of items) {
+										if (item.id === itemId && item.itemData?.resource) {
+											return item.itemData.resource
+										}
+										if (item.children?.length > 0) {
+											const found = findItemInTree(item.children)
+											if (found) return found
+										}
+									}
+									return null
+								}
+
+								const item = findItemInTree(state.data)
+								if (item && onItemEdit) {
+									onItemEdit({ itemId, item })
+								}
+							}
+						: undefined
+				}
 			/>
 			<div className="flex flex-col gap-1">
 				{formState.activeForm === 'lesson' && (

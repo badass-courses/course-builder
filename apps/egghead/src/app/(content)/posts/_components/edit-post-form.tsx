@@ -63,7 +63,10 @@ export function EditPostForm({
 	tagLoader,
 	instructorLoader,
 	isAdmin,
-}: Omit<EditPostFormProps, 'form'>) {
+	onResourceEdit,
+}: Omit<EditPostFormProps, 'form'> & {
+	onResourceEdit?: ({ itemId, item }: { itemId: string; item: any }) => void
+}) {
 	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PostSchema>>({
@@ -112,7 +115,10 @@ export function EditPostForm({
 					),
 					toolComponent: (
 						<div className="h-(--pane-layout-height) overflow-y-auto py-5">
-							<ResourceResourcesList resource={post} />
+							<ResourceResourcesList
+								resource={post}
+								onItemEdit={onResourceEdit}
+							/>
 						</div>
 					),
 				},

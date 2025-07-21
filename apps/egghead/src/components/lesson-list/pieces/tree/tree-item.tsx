@@ -24,7 +24,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
+import { ChevronDown, ChevronUp, Edit, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
@@ -99,11 +99,13 @@ const TreeItem = memo(function TreeItem({
 	mode,
 	level,
 	onDelete,
+	onEdit,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
 	onDelete: ({ itemId }: { itemId: string }) => Promise<void>
+	onEdit?: ({ itemId }: { itemId: string }) => Promise<void>
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -404,6 +406,18 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
+				{item.type === 'post' && onEdit && (
+					<Button
+						size="icon"
+						variant="outline"
+						onClick={async () => {
+							await onEdit({ itemId: item.id })
+						}}
+						title="Edit lesson"
+					>
+						<Edit size={12} />
+					</Button>
+				)}
 				{item.type === 'post' && (
 					<Button
 						size="icon"
@@ -412,6 +426,7 @@ const TreeItem = memo(function TreeItem({
 							dispatch({ type: 'remove-item', itemId: item.id })
 							await onDelete({ itemId: item.id })
 						}}
+						title="Delete lesson"
 					>
 						<Trash size={12} />
 					</Button>
@@ -438,6 +453,7 @@ const TreeItem = memo(function TreeItem({
 								level={level + 1}
 								mode={childType}
 								onDelete={onDelete}
+								onEdit={onEdit}
 							/>
 						)
 					})}
