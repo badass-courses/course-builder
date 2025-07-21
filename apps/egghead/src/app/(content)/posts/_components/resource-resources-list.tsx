@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { useReducer } from 'react'
-import { useRouter } from 'next/navigation'
 import {
 	getInitialTreeState,
 	treeStateReducer,
@@ -131,7 +130,6 @@ export function ResourceResourcesList({
 		initialData,
 		getInitialTreeState,
 	)
-	const router = useRouter()
 	const { toast } = useToast()
 
 	const handleResourceCreated = async (createdResource: ContentResource) => {
