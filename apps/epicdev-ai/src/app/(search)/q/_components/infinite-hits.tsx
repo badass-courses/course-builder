@@ -1,10 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Spinner from '@/components/spinner'
-import type { TypesenseResource } from '@/lib/typesense'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
-import { z } from 'zod'
 
+import type { SearchableResource } from '@coursebuilder/core/providers/search/schemas'
 import { Button } from '@coursebuilder/ui'
 
 import Hit from './instantsearch/hit'
@@ -23,10 +23,18 @@ function SkeletonItem() {
 }
 
 export function InfiniteHits() {
-	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
+	const [isMounted, setIsMounted] = useState(false)
+	const { items, showMore, isLastPage } = useInfiniteHits<SearchableResource>(
+		{},
+	)
 	const { status } = useInstantSearch()
 
-	if (status === 'loading') {
+	useEffect(() => {
+		setIsMounted(true)
+	}, [])
+
+	// Show consistent loading state during SSR and initial hydration
+	if (!isMounted || status === 'loading') {
 		return (
 			<div className="h-[800px] w-full" aria-live="polite">
 				<div className="sr-only">Loading results...</div>
@@ -37,14 +45,20 @@ export function InfiniteHits() {
 		)
 	}
 
-	return items.length === 0 && status !== 'idle' ? (
-		<div className="h-[800px] w-full" aria-live="polite">
-			<div className="sr-only">Loading results...</div>
-			{Array.from({ length: 5 }).map((_, i) => (
-				<SkeletonItem key={i} />
-			))}
-		</div>
-	) : (
+	// Show skeleton if no items and still searching
+	if (items.length === 0 && status !== 'idle') {
+		return (
+			<div className="h-[800px] w-full" aria-live="polite">
+				<div className="sr-only">Loading results...</div>
+				{Array.from({ length: 5 }).map((_, i) => (
+					<SkeletonItem key={i} />
+				))}
+			</div>
+		)
+	}
+
+	// Show results or empty state
+	return (
 		<div>
 			<ul className="">
 				{items.map((item) => (

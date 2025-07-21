@@ -1,7 +1,6 @@
 'use client'
 
-import type { TypesenseResource } from '@/lib/typesense'
-
+import type { SearchableResource } from '@coursebuilder/core/providers/search/schemas'
 import { Checkbox, Label } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -11,7 +10,7 @@ import { useSelection } from './selection-context'
 export default function Hit({
 	hit,
 }: {
-	hit: TypesenseResource
+	hit: SearchableResource
 	listId: string
 	updateTreeState: React.ActionDispatch<[action: TreeAction]>
 }) {

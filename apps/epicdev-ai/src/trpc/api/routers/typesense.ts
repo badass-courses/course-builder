@@ -1,4 +1,4 @@
-import { getNearestNeighbour } from '@/lib/typesense-query'
+import { getNearestNeighbour } from '@/lib/search-query'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 

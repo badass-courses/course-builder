@@ -2,6 +2,7 @@
 
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
+import { upsertResourceToTypeSense } from '@/lib/search-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
@@ -12,7 +13,6 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resou
 
 import { RESOURCE_CREATED_EVENT } from '../../inngest/events/resource-management'
 import { inngest } from '../../inngest/inngest.server'
-import { upsertPostToTypeSense } from '../typesense-query'
 
 const NewResourceSchema = z.object({
 	type: z.string(),
@@ -87,6 +87,6 @@ export async function createResource(input: NewResource) {
 		console.error(`Error dispatching ${RESOURCE_CREATED_EVENT}`, error)
 	}
 
-	await upsertPostToTypeSense(parsedResource.data, 'save')
+	await upsertResourceToTypeSense(parsedResource.data, 'save')
 	return parsedResource.data
 }

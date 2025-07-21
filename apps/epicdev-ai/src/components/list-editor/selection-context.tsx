@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState } from 'react'
-import type { TypesenseResource } from '@/lib/typesense'
 
+import type { SearchableResource } from '@coursebuilder/core/providers/search/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 type SelectionContextType = {
-	selectedResources: TypesenseResource[]
-	toggleSelection: (resource: TypesenseResource) => void
+	selectedResources: SearchableResource[]
+	toggleSelection: (resource: SearchableResource) => void
 	clearSelection: () => void
 	isSelected: (id: string) => boolean
 	isLoading: boolean
@@ -33,10 +33,10 @@ export function SelectionProvider({
 	list: ContentResource
 }) {
 	const [selectedResources, setSelectedResources] = useState<
-		TypesenseResource[]
+		SearchableResource[]
 	>([])
 
-	const toggleSelection = (resource: TypesenseResource) => {
+	const toggleSelection = (resource: SearchableResource) => {
 		setSelectedResources((current) =>
 			current.some((item) => item.id === resource.id)
 				? current.filter((item) => item.id !== resource.id)

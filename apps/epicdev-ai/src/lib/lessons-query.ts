@@ -14,7 +14,7 @@ import {
 	type LessonUpdate,
 	type NewLessonInput,
 } from '@/lib/lessons'
-import { upsertPostToTypeSense } from '@/lib/typesense-query'
+import { upsertResourceToTypeSense } from '@/lib/search-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
@@ -336,7 +336,7 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 
 	// Index the lesson in Typesense using the existing post indexing function
 	try {
-		await upsertPostToTypeSense(updatedLesson, 'save')
+		await upsertResourceToTypeSense(updatedLesson, 'save')
 		console.log('🔍 Lesson updated in Typesense')
 	} catch (error) {
 		console.log('❌ Error updating lesson in Typesense', error)
@@ -443,7 +443,7 @@ export async function writeNewLessonToDatabase(
 			// Step 4: Index the lesson in Typesense (outside transaction since it's a separate system)
 			try {
 				console.log('🔍 Indexing lesson in Typesense')
-				await upsertPostToTypeSense(lesson, 'save')
+				await upsertResourceToTypeSense(lesson, 'save')
 				console.log('✅ Lesson indexed in Typesense')
 			} catch (error) {
 				console.error('⚠️ Failed to index lesson in Typesense:', {
@@ -657,7 +657,7 @@ export async function writeLessonUpdateToDatabase(input: {
 			lessonId: updatedLesson.data.id,
 			action,
 		})
-		await upsertPostToTypeSense(updatedLesson.data, action)
+		await upsertResourceToTypeSense(updatedLesson.data, action)
 		console.log('✅ Successfully upserted lesson to TypeSense')
 	} catch (error) {
 		console.error(

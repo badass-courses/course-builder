@@ -27,6 +27,10 @@ import {
 	type PostUpdate,
 	type ProductForPostProps,
 } from '@/lib/posts'
+import {
+	deleteResourceInTypeSense,
+	upsertResourceToTypeSense,
+} from '@/lib/search-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
@@ -47,7 +51,6 @@ import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { getPricingData } from './pricing-query'
 import { TagSchema, type Tag } from './tags'
-import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export const getCachedAllPosts = unstable_cache(
 	async () => getAllPosts(),
@@ -254,7 +257,7 @@ export async function createPost(input: NewPostInput) {
 		}
 
 		try {
-			await upsertPostToTypeSense(post, 'save')
+			await upsertResourceToTypeSense(post, 'save')
 			await log.info('post.typesense.indexed', {
 				postId: post.id,
 				action: 'save',
@@ -338,7 +341,7 @@ export async function updatePost(
 	}
 
 	try {
-		await upsertPostToTypeSense(
+		await upsertResourceToTypeSense(
 			{
 				...currentPost,
 				fields: {
@@ -483,7 +486,7 @@ export async function deletePost(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	await deletePostInTypeSense(post.id)
+	await deleteResourceInTypeSense(post.id)
 
 	revalidateTag('posts')
 	revalidateTag(id)
@@ -905,7 +908,7 @@ export async function writePostUpdateToDatabase(input: {
 	})
 
 	try {
-		await upsertPostToTypeSense(updatedPost.data, action)
+		await upsertResourceToTypeSense(updatedPost.data, action)
 		console.log('✅ Successfully upserted post to TypeSense')
 	} catch (error) {
 		console.error(
@@ -984,7 +987,7 @@ export async function deletePostFromDatabase(id: string) {
 		await db.delete(contentResource).where(eq(contentResource.id, id))
 
 		try {
-			await deletePostInTypeSense(id)
+			await deleteResourceInTypeSense(id)
 			await log.info('post.delete.typesense.success', { postId: id })
 		} catch (error) {
 			await log.error('post.delete.typesense.failed', {

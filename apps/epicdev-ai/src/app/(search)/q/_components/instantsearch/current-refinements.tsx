@@ -1,12 +1,12 @@
 'use client'
 
-import { attributeLabelMap } from '@/lib/typesense'
 import { X } from 'lucide-react'
 import {
 	useCurrentRefinements,
 	UseCurrentRefinementsProps,
 } from 'react-instantsearch'
 
+import { searchableContentAttributeLabelMap } from '@coursebuilder/core/providers/search/schemas'
 import { Button } from '@coursebuilder/ui'
 
 const formatRefinementLabel = (label: string): string => {
@@ -25,12 +25,14 @@ const formatRefinementLabel = (label: string): string => {
 
 function isAttributeLabel(
 	label: string,
-): label is keyof typeof attributeLabelMap {
-	return label in attributeLabelMap
+): label is keyof typeof searchableContentAttributeLabelMap {
+	return label in searchableContentAttributeLabelMap
 }
 
 function formatLabel(label: string): string {
-	return isAttributeLabel(label) ? (attributeLabelMap[label] ?? label) : label
+	return isAttributeLabel(label)
+		? (searchableContentAttributeLabelMap[label] ?? label)
+		: label
 }
 
 export function CurrentRefinements(props: UseCurrentRefinementsProps) {

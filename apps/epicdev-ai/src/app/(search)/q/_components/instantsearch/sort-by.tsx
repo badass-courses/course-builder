@@ -1,6 +1,6 @@
 'use client'
 
-import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
+import { getSearchCollectionName } from '@/lib/search-query'
 import { useSortBy } from 'react-instantsearch'
 
 import {
@@ -13,15 +13,15 @@ import {
 
 const sortOptions = [
 	{
-		value: TYPESENSE_COLLECTION_NAME,
+		value: getSearchCollectionName(),
 		label: 'Sort by Relevance',
 	},
 	{
-		value: `${TYPESENSE_COLLECTION_NAME}/sort/updated_at_timestamp:desc`,
+		value: `${getSearchCollectionName()}/sort/updated_at_timestamp:desc`,
 		label: 'Newest First',
 	},
 	{
-		value: `${TYPESENSE_COLLECTION_NAME}/sort/updated_at_timestamp:asc`,
+		value: `${getSearchCollectionName()}/sort/updated_at_timestamp:asc`,
 		label: 'Oldest First',
 	},
 ]
@@ -36,7 +36,7 @@ export function SortBy() {
 		<Select
 			value={currentRefinement}
 			onValueChange={(value) => refine(value)}
-			defaultValue={TYPESENSE_COLLECTION_NAME}
+			defaultValue={getSearchCollectionName()}
 		>
 			<SelectTrigger className="text-muted-foreground truncate text-nowrap text-base [&_span]:truncate">
 				<SelectValue placeholder="Sort by..." />
