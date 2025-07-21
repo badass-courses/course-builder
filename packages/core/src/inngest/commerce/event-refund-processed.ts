@@ -8,7 +8,7 @@ export type RefundProcessed = {
 }
 
 export const RefundProcessedEventSchema = z.object({
-	merchantChargeId: z.string(),
+	stripeChargeId: z.string(),
 })
 
 export type RefundProcessedEvent = z.infer<typeof RefundProcessedEventSchema>
