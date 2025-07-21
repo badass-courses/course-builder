@@ -1,5 +1,7 @@
 import * as React from 'react'
+import Link from 'next/link'
 import { Layout } from '@/components/app/layout'
+import { getCachedWorkshops } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 
 export const dynamic = 'force-dynamic'
@@ -22,6 +24,8 @@ export default async function WorkshopsPage() {
 		)
 	}
 
+	const workshops = await getCachedWorkshops()
+
 	return (
 		<Layout>
 			<div className="container mx-auto py-8">
@@ -32,12 +36,38 @@ export default async function WorkshopsPage() {
 					</p>
 				</div>
 
-				<div className="py-16 text-center">
-					<h2 className="mb-4 text-xl font-semibold">Coming Soon</h2>
-					<p className="text-muted-foreground">
-						Workshop listing and management interface will be implemented here.
-					</p>
-				</div>
+				{workshops.length === 0 ? (
+					<div className="py-16 text-center">
+						<h2 className="mb-4 text-xl font-semibold">No Workshops Yet</h2>
+						<p className="text-muted-foreground">
+							Create your first course-type post to get started with workshops.
+						</p>
+					</div>
+				) : (
+					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+						{workshops.map((workshop) => (
+							<Link
+								key={workshop.id}
+								href={`/workshops/${workshop.fields?.slug}`}
+								className="hover:bg-muted rounded-lg border p-6 transition-colors"
+							>
+								<h3 className="text-lg font-semibold">
+									{workshop.fields?.title}
+								</h3>
+								{workshop.fields?.description && (
+									<p className="text-muted-foreground mt-2 text-sm">
+										{workshop.fields.description}
+									</p>
+								)}
+								<div className="text-muted-foreground mt-4 text-xs">
+									{workshop.fields?.state === 'published'
+										? 'Published'
+										: 'Draft'}
+								</div>
+							</Link>
+						))}
+					</div>
+				)}
 			</div>
 		</Layout>
 	)

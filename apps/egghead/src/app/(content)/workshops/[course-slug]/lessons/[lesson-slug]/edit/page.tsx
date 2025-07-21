@@ -2,9 +2,9 @@ import * as React from 'react'
 import { notFound, redirect } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { getPost } from '@/lib/posts-query'
 import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
 import { getCachedEggheadInstructors } from '@/lib/users'
+import { getCachedLessonWithCourse } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
@@ -29,22 +29,18 @@ export default async function EditLessonPage(props: {
 	const lessonSlug = params['lesson-slug']
 	const { ability } = await getServerAuthSession()
 
-	// Get both course and lesson
-	const [course, lesson] = await Promise.all([
-		getPost(courseSlug),
-		getPost(lessonSlug),
-	])
+	const lessonWithCourse = await getCachedLessonWithCourse(
+		courseSlug,
+		lessonSlug,
+	)
 	const isAdmin = ability.can('manage', 'all')
 
-	// Validate course exists and is a course type
-	if (!course || course.fields?.postType !== 'course') {
+	// Validate course and lesson exist
+	if (!lessonWithCourse || !ability.can('create', 'Content')) {
 		notFound()
 	}
 
-	// Validate lesson exists and user has permissions
-	if (!lesson || !ability.can('create', 'Content')) {
-		notFound()
-	}
+	const { lesson } = lessonWithCourse
 
 	if (ability.cannot('manage', subject('Content', lesson))) {
 		redirect(`/${lesson?.fields?.slug}`)
