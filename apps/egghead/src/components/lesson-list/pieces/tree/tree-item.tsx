@@ -360,7 +360,7 @@ const TreeItem = memo(function TreeItem({
 							},
 						)}
 					>
-						<div className="flex w-full flex-row">
+						<div className="flex w-full flex-row text-sm">
 							<Icon item={item} />
 							<span
 								className={cn('text-left', {
@@ -370,14 +370,6 @@ const TreeItem = memo(function TreeItem({
 								{item.label ?? item.id}
 							</span>
 						</div>
-						<small className="flex items-center gap-1">
-							{item.itemData?.resource?.fields?.postType ? (
-								<span className="text-ellipsis capitalize opacity-50">
-									{item.itemData?.resource?.fields?.postType}
-								</span>
-							) : null}
-							{/* <span className="text-xs opacity-50">({mode})</span> */}
-						</small>
 					</span>
 					{instruction ? (
 						<div
@@ -424,7 +416,7 @@ const TreeItem = memo(function TreeItem({
 							await onDelete({ itemId: item.id })
 						}}
 						className="hover:cursor-pointer"
-						title="Delete lesson"
+						title="Remove lesson"
 					>
 						<Trash size={12} />
 					</Button>
