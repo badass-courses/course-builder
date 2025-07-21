@@ -7,7 +7,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { removeSection } from '@/lib/posts-query'
 import { cn } from '@/utils/cn'
 import {
@@ -94,6 +94,21 @@ function delay({
 	}
 }
 
+/**
+ * TreeItem component for displaying hierarchical lesson data with drag-and-drop functionality.
+ *
+ * Features:
+ * - Drag and drop reordering
+ * - Active state styling when resource query parameter matches item ID
+ * - Edit and delete actions for post items
+ * - Expandable/collapsible sections
+ *
+ * @param item - The tree item data to display
+ * @param mode - The display mode for the item (standard, expanded, last-in-group)
+ * @param level - The nesting level for indentation
+ * @param onDelete - Callback function for deleting items
+ * @param onEdit - Optional callback function for editing items
+ */
 const TreeItem = memo(function TreeItem({
 	item,
 	mode,
@@ -324,14 +339,23 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 	const pathname = usePathname()
+	const searchParams = useSearchParams()
+
+	// Check if this item is active based on resource query parameter
+	const resourceParam = searchParams.get('resource')
+	const isActive = resourceParam === item.itemData?.resource?.fields?.slug
 
 	return (
 		<div className="px-2">
-			<div className="relative flex items-center gap-2">
+			<div
+				className={cn('relative flex items-center gap-2', {
+					'bg-primary/10 border-primary border-l-4': isActive,
+				})}
+			>
 				<button
 					{...aria}
 					className={cn(
-						'relative w-full cursor-pointer border-0 bg-transparent py-3',
+						'relative w-full cursor-grab border-0 bg-transparent py-3',
 						{
 							'border-primary border': instruction?.type === 'make-child',
 						},
@@ -365,6 +389,7 @@ const TreeItem = memo(function TreeItem({
 							<span
 								className={cn('text-left', {
 									'font-semibold': item.type === 'section',
+									'text-primary font-medium': isActive,
 								})}
 							>
 								{item.label ?? item.id}

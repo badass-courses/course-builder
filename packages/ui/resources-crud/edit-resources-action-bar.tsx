@@ -51,7 +51,7 @@ export function EditResourcesActionBar({
 			<div className="flex items-center gap-2">
 				<Button
 					title={`View ${resource.type}`}
-					className="aspect-square p-0"
+					className="aspect-square text-balance p-0"
 					asChild
 					variant="link"
 				>
