@@ -11,8 +11,13 @@ import { EditorView } from '@codemirror/view'
 import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Loader2, Mail, Pencil, Plus } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import type { UseFormReturn } from 'react-hook-form'
 import Markdown from 'react-markdown'
 
+import type {
+	ContentResource,
+	ContentResourceResource,
+} from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Dialog,
@@ -155,8 +160,8 @@ function EmailReminderItem({
 	isUpdatingHours,
 	className,
 }: {
-	email: any
-	emailRef: any
+	email: ContentResource
+	emailRef?: ContentResourceResource
 	isAttached: boolean
 	parentResourceId: string
 	onAttach: (params: {
@@ -186,7 +191,7 @@ function EmailReminderItem({
 				<DialogTrigger>
 					<div className="flex flex-col items-start">
 						<span className="text-primary cursor-pointer text-left font-semibold transition-colors hover:underline">
-							{email.fields.title}
+							{email.fields?.title}
 						</span>
 						<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
 							{emailRef?.metadata?.hoursInAdvance || (
@@ -199,7 +204,7 @@ function EmailReminderItem({
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
 						<DialogTitle className="inline-flex items-center text-lg font-bold">
-							<Mail className="mr-1 size-4" /> {email.fields.title}
+							<Mail className="mr-1 size-4" /> {email.fields?.title}
 						</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-4">
@@ -229,7 +234,7 @@ function EmailReminderItem({
 								Subject:
 							</h3>
 							<p className="text-base font-medium">
-								{email.fields.subject || 'No subject'}
+								{email.fields?.subject || 'No subject'}
 							</p>
 						</div>
 						<div className="flex items-baseline gap-3">
@@ -238,7 +243,7 @@ function EmailReminderItem({
 							</h3>
 							<div className="prose prose-sm bg-muted/30 max-w-none rounded-lg border px-4">
 								<div className="prose dark:prose-invert">
-									<Markdown>{email.fields.body || 'No body content'}</Markdown>
+									<Markdown>{email.fields?.body || 'No body content'}</Markdown>
 								</div>
 							</div>
 						</div>
@@ -246,7 +251,7 @@ function EmailReminderItem({
 					<DialogFooter>
 						<Button asChild variant="secondary">
 							<Link
-								href={getResourcePath(email.type, email.fields.slug, 'edit')}
+								href={getResourcePath(email.type, email.fields?.slug, 'edit')}
 							>
 								<Pencil className="size-3" /> Edit Email
 							</Link>
@@ -301,11 +306,11 @@ function CreateEmailReminderForm({
 	form,
 	onSubmit,
 }: {
-	form: any
+	form: UseFormReturn<ReminderEmailForm>
 	onSubmit: (data: ReminderEmailForm) => void
 }) {
 	const { theme } = useTheme()
-	const [editorView, setEditorView] = React.useState<any>(null)
+	const [editorView, setEditorView] = React.useState<EditorView | null>(null)
 	const insertAtCursor = (text: string) => {
 		if (editorView) {
 			const { state } = editorView
