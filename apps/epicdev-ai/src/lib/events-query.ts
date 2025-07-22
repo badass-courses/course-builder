@@ -1083,17 +1083,35 @@ export async function createEventSeries(input: EventSeriesFormData): Promise<{
  * Attaches a reminder email resource to an event
  * @param eventId - The ID of the event
  * @param emailResourceId - The ID of the email resource to attach
- * @param hoursInAdvance - Number of hours before the event to send the reminder (default: 24)
+ * @param hoursInAdvance - Number of hours before the event to send the reminder (optional - will preserve existing if not specified)
  * @param detachExisting - Whether to detach existing reminder emails before attaching new one (default: false)
  * @returns True if successful, false otherwise
  */
 export async function attachReminderEmailToEvent(
 	eventId: string,
 	emailResourceId: string,
-	hoursInAdvance: number = 24,
+	hoursInAdvance?: number,
 	detachExisting: boolean = false,
 ) {
 	try {
+		// If hoursInAdvance is not specified, try to find existing metadata for this email
+		let finalHoursInAdvance = hoursInAdvance
+		if (finalHoursInAdvance === undefined) {
+			const existingEmailRef = await db.query.contentResourceResource.findFirst(
+				{
+					where: and(
+						eq(contentResourceResource.resourceId, emailResourceId),
+						eq(
+							sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+							'event-reminder',
+						),
+					),
+				},
+			)
+
+			finalHoursInAdvance = existingEmailRef?.metadata?.hoursInAdvance || 24
+		}
+
 		// Only detach existing reminder emails if explicitly requested
 		if (detachExisting) {
 			const existingReminderEmails =
@@ -1143,13 +1161,14 @@ export async function attachReminderEmailToEvent(
 			resourceId: emailResourceId,
 			metadata: {
 				type: 'event-reminder',
-				hoursInAdvance,
+				hoursInAdvance: finalHoursInAdvance,
 			},
 		})
 
 		await log.info('event.reminder-email.attached', {
 			eventId,
 			emailResourceId,
+			hoursInAdvance: finalHoursInAdvance,
 		})
 
 		return result

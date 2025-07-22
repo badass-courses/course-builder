@@ -54,7 +54,11 @@ function EmailReminderItem({
 	emailRef: any
 	isAttached: boolean
 	parentResourceId: string
-	onAttach: (params: { eventId: string; emailId: string }) => void
+	onAttach: (params: {
+		eventId: string
+		emailId: string
+		hoursInAdvance: number
+	}) => void
 	onDetach: (params: { eventId: string; emailId: string }) => void
 	onUpdateHours: (params: {
 		eventId: string
@@ -172,6 +176,7 @@ function EmailReminderItem({
 							onAttach({
 								eventId: parentResourceId,
 								emailId: email.id,
+								hoursInAdvance: emailRef?.metadata?.hoursInAdvance || 24,
 							})
 						}
 					>
