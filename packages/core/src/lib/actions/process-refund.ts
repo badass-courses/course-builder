@@ -14,22 +14,41 @@ export async function processRefund(
 	}
 
 	try {
+		const merchantChargeId =
+			(request.query?.merchantChargeId as string) ||
+			(request.body?.merchantChargeId as string)
+
 		const stripeChargeId =
 			(request.query?.stripeChargeId as string) ||
 			(request.body?.stripeChargeId as string)
 
-		if (!stripeChargeId) throw new Error('No stripe charge id')
+		// Prefer stripeChargeId if provided, else look up from merchantChargeId
+		let finalStripeChargeId = stripeChargeId
+		let finalMerchantChargeId = merchantChargeId
 
-		console.log('refunding purchase for:', stripeChargeId)
+		if (!finalStripeChargeId && merchantChargeId && options.adapter) {
+			// Look up the merchant charge to get the Stripe charge ID
+			const merchantCharge =
+				await options.adapter.getMerchantCharge(merchantChargeId)
+			if (merchantCharge?.identifier) {
+				finalStripeChargeId = merchantCharge.identifier
+			}
+		}
 
-		// we're receiving a Stripe charge ID, do directly refund
-		const refund = await options.provider.refundCharge(stripeChargeId)
+		// If neither is available, throw
+		if (!finalStripeChargeId) throw new Error('No stripe charge id')
+
+		console.log('refunding purchase for:', finalStripeChargeId)
+
+		// Always refund using the Stripe charge ID
+		const refund = await options.provider.refundCharge(finalStripeChargeId)
 
 		try {
 			await options.inngest.send({
 				name: REFUND_PROCESSED_EVENT,
 				data: {
-					stripeChargeId: stripeChargeId,
+					merchantChargeId: finalMerchantChargeId, // old, for compatibility
+					stripeChargeId: finalStripeChargeId, // new, always a Stripe charge ID
 				},
 			})
 		} catch (e) {
