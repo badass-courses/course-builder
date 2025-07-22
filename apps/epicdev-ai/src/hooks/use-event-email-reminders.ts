@@ -62,7 +62,6 @@ export function useEventEmailReminders(eventId: string) {
 			input: emailData,
 			hoursInAdvance,
 		})
-		form.reset()
 	}
 
 	const utils = api.useUtils()
@@ -162,6 +161,9 @@ export function useEventEmailReminders(eventId: string) {
 		onSettled: () => {
 			utils.events.getAllReminderEmails.invalidate()
 			utils.events.getEventReminderEmails.invalidate({ eventId })
+		},
+		onSuccess: () => {
+			form.reset()
 		},
 	})
 
