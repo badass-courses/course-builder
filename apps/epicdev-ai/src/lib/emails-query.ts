@@ -59,6 +59,8 @@ export async function createEmail(input: NewEmail) {
 		type: 'email',
 		fields: {
 			title: input.fields.title,
+			subject: input.fields.subject,
+			body: input.fields.body,
 			state: 'draft',
 			visibility: 'unlisted',
 			slug: slugify(`${input.fields.title}~${guid()}`),
