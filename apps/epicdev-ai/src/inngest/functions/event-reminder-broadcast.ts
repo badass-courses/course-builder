@@ -262,17 +262,26 @@ async function sendEventReminder(reminderData: EventReminderData) {
 		// Send to each purchaser
 		for (const purchaser of purchasers) {
 			try {
-				const parsedBody = await liquid.parseAndRender(emailBody, {
-					event,
-					title: event.fields.title,
-					url: `${env.NEXT_PUBLIC_URL}${getResourcePath(event.type, event.fields.slug, 'view')}`,
-					user: purchaser,
-				})
-				const parsedSubject = await liquid.parseAndRender(emailSubject, {
-					event,
-					title: event.fields.title,
-					user: purchaser,
-				})
+				let parsedBody: string
+				let parsedSubject: string
+
+				try {
+					parsedBody = await liquid.parseAndRender(emailBody, {
+						event,
+						title: event.fields.title,
+						url: `${env.NEXT_PUBLIC_URL}${getResourcePath(event.type, event.fields.slug, 'view')}`,
+						user: purchaser,
+					})
+					parsedSubject = await liquid.parseAndRender(emailSubject, {
+						event,
+						title: event.fields.title,
+						user: purchaser,
+					})
+				} catch (templateError) {
+					throw new Error(
+						`Template parsing failed: ${templateError instanceof Error ? templateError.message : String(templateError)}`,
+					)
+				}
 
 				await sendAnEmail({
 					Component: BasicEmail,
