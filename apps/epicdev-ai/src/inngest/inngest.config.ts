@@ -21,6 +21,7 @@ import {
 } from './functions/calendar-sync'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { postEventPurchase } from './functions/post-event-purchase'
 import { computeVideoSplitPoints } from './functions/split_video'
@@ -59,5 +60,6 @@ export const inngestConfig = {
 		postEventPurchase,
 		handleRefundAndRemoveFromCalendar,
 		unlistPastEvents,
+		eventReminderBroadcast,
 	],
 }

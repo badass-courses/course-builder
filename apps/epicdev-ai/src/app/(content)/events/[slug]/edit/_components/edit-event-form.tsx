@@ -59,6 +59,7 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import EmailEventRemindersField from '../../_components/event-email-reminders-field'
 import { VideoResourceField } from './video-resource-field'
 
 // Wrapper function for updateResource to match HOC's Partial<T> input and return type
@@ -346,7 +347,7 @@ const EventFormFields = ({
 			<MetadataFieldState form={form} />
 			<MetadataFieldVisibility form={form} />
 			<TagField resource={resource} showEditButton />
-
+			<EmailEventRemindersField parentResourceId={resource.id} />
 			<FormField
 				control={form.control}
 				name="fields.startsAt"
