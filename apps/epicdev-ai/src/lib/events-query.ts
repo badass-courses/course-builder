@@ -1094,6 +1094,25 @@ export async function attachReminderEmailToEvent(
 	detachExisting: boolean = false,
 ) {
 	try {
+		// Validate that the emailResourceId exists and is of type 'email'
+		const emailResource = await db.query.contentResource.findFirst({
+			where: and(
+				eq(contentResource.id, emailResourceId),
+				eq(contentResource.type, 'email'),
+			),
+		})
+
+		if (!emailResource) {
+			await log.error('event.reminder-email.attach.invalid-email', {
+				eventId,
+				emailResourceId,
+				error: 'Email resource not found or not of type email',
+			})
+			throw new Error(
+				`Email resource with id ${emailResourceId} not found or not of type 'email'`,
+			)
+		}
+
 		// If hoursInAdvance is not specified, try to find existing metadata for this email
 		let finalHoursInAdvance = hoursInAdvance
 		if (finalHoursInAdvance === undefined) {
@@ -1112,58 +1131,78 @@ export async function attachReminderEmailToEvent(
 			finalHoursInAdvance = existingEmailRef?.metadata?.hoursInAdvance || 24
 		}
 
-		// Only detach existing reminder emails if explicitly requested
-		if (detachExisting) {
-			const existingReminderEmails =
-				await db.query.contentResourceResource.findMany({
-					where: and(
-						eq(contentResourceResource.resourceOfId, eventId),
-						eq(
-							sql`(SELECT type FROM ${contentResource} WHERE id = ${contentResourceResource.resourceId})`,
-							'email',
-						),
-					),
-					with: {
-						resource: true,
-					},
-				})
+		// Execute delete and insert operations in a transaction for atomicity
+		const result = await db.transaction(async (tx) => {
+			let detachedCount = 0
 
-			// If there are existing reminder emails, detach them
-			if (existingReminderEmails.length > 0) {
-				for (const existingEmail of existingReminderEmails) {
-					await db
-						.delete(contentResourceResource)
-						.where(
-							and(
-								eq(contentResourceResource.resourceOfId, eventId),
-								eq(
-									contentResourceResource.resourceId,
-									existingEmail.resourceId,
-								),
-								eq(
-									sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
-									'event-reminder',
-								),
-							),
-						)
-
-					await log.info('event.reminder-email.detached', {
-						eventId,
-						emailResourceId: existingEmail.resourceId,
+			// Only detach existing reminder emails if explicitly requested
+			if (detachExisting) {
+				// Use join to optimize query performance instead of subquery
+				const existingReminderEmails = await tx
+					.select({
+						resourceOfId: contentResourceResource.resourceOfId,
+						resourceId: contentResourceResource.resourceId,
 					})
+					.from(contentResourceResource)
+					.innerJoin(
+						contentResource,
+						eq(contentResource.id, contentResourceResource.resourceId),
+					)
+					.where(
+						and(
+							eq(contentResourceResource.resourceOfId, eventId),
+							eq(contentResource.type, 'email'),
+							eq(
+								sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+								'event-reminder',
+							),
+						),
+					)
+
+				// If there are existing reminder emails, detach them
+				if (existingReminderEmails.length > 0) {
+					for (const existingEmail of existingReminderEmails) {
+						await tx
+							.delete(contentResourceResource)
+							.where(
+								and(
+									eq(contentResourceResource.resourceOfId, eventId),
+									eq(
+										contentResourceResource.resourceId,
+										existingEmail.resourceId,
+									),
+									eq(
+										sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+										'event-reminder',
+									),
+								),
+							)
+
+						detachedCount++
+					}
 				}
 			}
-		}
 
-		// Now attach the new reminder email
-		const result = await db.insert(contentResourceResource).values({
-			resourceOfId: eventId,
-			resourceId: emailResourceId,
-			metadata: {
-				type: 'event-reminder',
-				hoursInAdvance: finalHoursInAdvance,
-			},
+			// Now attach the new reminder email
+			const insertResult = await tx.insert(contentResourceResource).values({
+				resourceOfId: eventId,
+				resourceId: emailResourceId,
+				metadata: {
+					type: 'event-reminder',
+					hoursInAdvance: finalHoursInAdvance,
+				},
+			})
+
+			return { insertResult, detachedCount }
 		})
+
+		// Log success after transaction completes
+		if (result.detachedCount > 0) {
+			await log.info('event.reminder-email.existing-detached', {
+				eventId,
+				detachedCount: result.detachedCount,
+			})
+		}
 
 		await log.info('event.reminder-email.attached', {
 			eventId,
@@ -1171,7 +1210,7 @@ export async function attachReminderEmailToEvent(
 			hoursInAdvance: finalHoursInAdvance,
 		})
 
-		return result
+		return result.insertResult
 	} catch (error) {
 		await log.error('event.reminder-email.attach.failed', {
 			error: error instanceof Error ? error.message : String(error),
