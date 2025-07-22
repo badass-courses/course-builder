@@ -185,7 +185,7 @@ function EmailReminderItem({
 			<Dialog modal={true}>
 				<DialogTrigger>
 					<div className="flex flex-col items-start">
-						<span className="text-primary cursor-pointer font-semibold transition-colors hover:underline">
+						<span className="text-primary cursor-pointer text-left font-semibold transition-colors hover:underline">
 							{email.fields.title}
 						</span>
 						<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
