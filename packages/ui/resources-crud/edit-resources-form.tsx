@@ -46,6 +46,7 @@ export function EditResourcesForm({
 	onResourceBodyChange = () => {},
 	toggleMdxPreview,
 	isShowingMdxPreview,
+	breadcrumb = [],
 }: {
 	onSave?: (resource: ContentResource, hasNewSlug: boolean) => Promise<void>
 	onPublish?: (resource: ContentResource) => Promise<void>
@@ -85,6 +86,7 @@ export function EditResourcesForm({
 	onResourceBodyChange?: (value: string) => void
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
+	breadcrumb?: { title: string; href?: string }[]
 }) {
 	const { isAutoSaving, triggerAutoSave } = useAutoSave({
 		onSave: async () => {
@@ -121,6 +123,7 @@ export function EditResourcesForm({
 					resource.fields?.path,
 				)}
 				isAutoSaving={isAutoSaving}
+				breadcrumb={breadcrumb}
 				onSubmit={async () => {
 					await onSubmit(form.getValues(), 'save').then(() => {
 						toast({
@@ -193,6 +196,7 @@ export function EditResourcesForm({
 					resource.fields?.path,
 				)}
 				isAutoSaving={isAutoSaving}
+				breadcrumb={breadcrumb}
 				onSubmit={async () => {
 					await onSubmit(form.getValues(), 'save').then(() => {
 						toast({

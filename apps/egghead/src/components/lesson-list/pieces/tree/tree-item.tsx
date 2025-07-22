@@ -7,7 +7,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { removeSection } from '@/lib/posts-query'
 import { cn } from '@/utils/cn'
 import {
@@ -24,7 +24,7 @@ import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/eleme
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import type { DragLocationHistory } from '@atlaskit/pragmatic-drag-and-drop/types'
 import { token } from '@atlaskit/tokens'
-import { ChevronDown, ChevronUp, Trash } from 'lucide-react'
+import { ChevronDown, ChevronUp, Edit, Trash } from 'lucide-react'
 import pluralize from 'pluralize'
 import { createRoot } from 'react-dom/client'
 import invariant from 'tiny-invariant'
@@ -94,16 +94,33 @@ function delay({
 	}
 }
 
+/**
+ * TreeItem component for displaying hierarchical lesson data with drag-and-drop functionality.
+ *
+ * Features:
+ * - Drag and drop reordering
+ * - Active state styling when resource query parameter matches item ID
+ * - Edit and delete actions for post items
+ * - Expandable/collapsible sections
+ *
+ * @param item - The tree item data to display
+ * @param mode - The display mode for the item (standard, expanded, last-in-group)
+ * @param level - The nesting level for indentation
+ * @param onDelete - Callback function for deleting items
+ * @param onEdit - Optional callback function for editing items
+ */
 const TreeItem = memo(function TreeItem({
 	item,
 	mode,
 	level,
 	onDelete,
+	onEdit,
 }: {
 	item: TreeItemType
 	mode: ItemMode
 	level: number
 	onDelete: ({ itemId }: { itemId: string }) => Promise<void>
+	onEdit?: ({ itemId }: { itemId: string }) => Promise<void>
 }) {
 	const buttonRef = useRef<HTMLButtonElement>(null)
 
@@ -322,17 +339,25 @@ const TreeItem = memo(function TreeItem({
 
 	const router = useRouter()
 	const pathname = usePathname()
+	const searchParams = useSearchParams()
+
+	// Check if this item is active based on resource query parameter
+	const resourceParam = searchParams.get('resource')
+	const isActive = resourceParam === item.itemData?.resource?.fields?.slug
 
 	return (
 		<div className="px-2">
-			<div className="relative flex items-center">
+			<div
+				className={cn('relative flex items-center gap-2', {
+					'bg-primary/10 border-primary border-l-4': isActive,
+				})}
+			>
 				<button
 					{...aria}
 					className={cn(
-						'relative w-full cursor-pointer border-0 bg-transparent py-3',
+						'relative w-full cursor-grab border-0 bg-transparent py-3',
 						{
 							'border-primary border': instruction?.type === 'make-child',
-							'hover:bg-muted cursor-pointer': state === 'idle',
 						},
 					)}
 					id={`tree-item-${item.id}`}
@@ -343,9 +368,6 @@ const TreeItem = memo(function TreeItem({
 									if (item.type === 'event') {
 										router.push(`/events/${item.id}/edit`)
 										return
-									}
-									if (rootResource) {
-										router.push(`/posts/${item.id}/edit`)
 									}
 								}
 					}
@@ -362,24 +384,17 @@ const TreeItem = memo(function TreeItem({
 							},
 						)}
 					>
-						<div className="flex w-full flex-row">
+						<div className="flex w-full flex-row text-sm">
 							<Icon item={item} />
 							<span
 								className={cn('text-left', {
 									'font-semibold': item.type === 'section',
+									'text-primary font-medium': isActive,
 								})}
 							>
 								{item.label ?? item.id}
 							</span>
 						</div>
-						<small className="flex items-center gap-1">
-							{item.type ? (
-								<span className="text-ellipsis capitalize opacity-50">
-									{item.type}
-								</span>
-							) : null}
-							{/* <span className="text-xs opacity-50">({mode})</span> */}
-						</small>
 					</span>
 					{instruction ? (
 						<div
@@ -404,14 +419,29 @@ const TreeItem = memo(function TreeItem({
 						</span>
 					) : null} */}
 				</button>
+				{item.type === 'post' && onEdit && (
+					<Button
+						size="icon"
+						variant="outline"
+						onClick={async () => {
+							await onEdit({ itemId: item.id })
+						}}
+						title="Edit lesson"
+						className="hover:cursor-pointer"
+					>
+						<Edit size={12} />
+					</Button>
+				)}
 				{item.type === 'post' && (
 					<Button
 						size="icon"
-						variant="destructive"
+						variant="outline"
 						onClick={async () => {
 							dispatch({ type: 'remove-item', itemId: item.id })
 							await onDelete({ itemId: item.id })
 						}}
+						className="hover:cursor-pointer"
+						title="Remove lesson"
 					>
 						<Trash size={12} />
 					</Button>
@@ -438,6 +468,7 @@ const TreeItem = memo(function TreeItem({
 								level={level + 1}
 								mode={childType}
 								onDelete={onDelete}
+								onEdit={onEdit}
 							/>
 						)
 					})}
