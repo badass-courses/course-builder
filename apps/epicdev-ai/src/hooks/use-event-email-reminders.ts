@@ -36,7 +36,7 @@ const ReminderEmailFormSchema = NewEmailSchema.extend({
 	hoursInAdvance: z.number().min(1).max(168).default(24), // 1 hour to 1 week
 })
 
-type ReminderEmailForm = z.infer<typeof ReminderEmailFormSchema>
+export type ReminderEmailForm = z.infer<typeof ReminderEmailFormSchema>
 
 /**
  * Custom hook for managing event email reminders

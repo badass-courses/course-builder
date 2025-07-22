@@ -25,7 +25,7 @@ type EventReminderData = {
 	reminderRef: ContentResourceResource
 }
 
-const SHOULD_SEND_REMINDERS_TO_SUPPORT_EMAIL = true
+const SEND_TO_SUPPORT_EMAIL_ENABLED = true
 
 /**
  * Smart event reminder scheduler
@@ -236,7 +236,7 @@ async function sendEventReminder(reminderData: EventReminderData) {
 			}
 		}
 
-		if (SHOULD_SEND_REMINDERS_TO_SUPPORT_EMAIL) {
+		if (SEND_TO_SUPPORT_EMAIL_ENABLED) {
 			// Add support email to the list of purchasers
 			purchasers.push({
 				id: 'support',

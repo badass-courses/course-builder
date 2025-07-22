@@ -3,7 +3,10 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { env } from '@/env.mjs'
-import { useEventEmailReminders } from '@/hooks/use-event-email-reminders'
+import {
+	useEventEmailReminders,
+	type ReminderEmailForm,
+} from '@/hooks/use-event-email-reminders'
 import { EditorView } from '@codemirror/view'
 import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Loader2, Mail, Pencil, Plus } from 'lucide-react'
@@ -33,6 +36,108 @@ import {
 } from '@coursebuilder/ui/codemirror/editor'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 import { cn } from '@coursebuilder/utils-ui/cn'
+
+/**
+ * @description A reusable component for displaying email reminder items in both attached and detached states
+ */
+export default function EmailEventRemindersField({
+	parentResourceId,
+}: {
+	parentResourceId: string
+}) {
+	const {
+		eventEmails: eventReminderEmails,
+		allEmails: allReminderEmails,
+		isUpdatingEmailHours: isUpdatingHours,
+		attachEmail,
+		detachEmail,
+		createAndAttachEmail,
+		updateEmailHours,
+		form: createEmailReminderForm,
+		onSubmit: handleCreateEmail,
+		isLoading,
+		isAttachingEmailId,
+		isDetachingEmailId,
+		isUpdatingHoursForEmail,
+		isCreatingAndAttachingEmail,
+	} = useEventEmailReminders(parentResourceId)
+
+	const currentReminderEmails = eventReminderEmails
+
+	return (
+		<div className="px-5">
+			<div className="mb-2 text-lg font-bold">Reminder Emails</div>
+			<ul className="flex flex-col gap-2">
+				{currentReminderEmails?.map((currentReminderEmail) => {
+					// Find the specific ref that connects this event to this email
+					const currentReminderEmailRef = allReminderEmails?.refs.find(
+						(r) =>
+							r.resourceOfId === parentResourceId &&
+							r.resourceId === currentReminderEmail.id,
+					)
+
+					return (
+						<EmailReminderItem
+							className="border-primary/50 bg-card/50 border-dashed transition-all duration-200 ease-in-out"
+							isAttached={true}
+							key={`current-reminder-email-${currentReminderEmail.id}`}
+							email={currentReminderEmail}
+							emailRef={currentReminderEmailRef}
+							parentResourceId={parentResourceId}
+							onAttach={attachEmail}
+							onDetach={detachEmail}
+							onUpdateHours={updateEmailHours}
+							isAttaching={isAttachingEmailId(currentReminderEmail.id)}
+							isDetaching={isDetachingEmailId(currentReminderEmail.id)}
+							isUpdatingHours={isUpdatingHoursForEmail(currentReminderEmail.id)}
+						/>
+					)
+				})}
+				{allReminderEmails?.emails
+					.filter((e) => !currentReminderEmails?.find((c) => c.id === e.id))
+					.map((email) => {
+						const ref = allReminderEmails?.refs.find(
+							(r) => r.resourceId === email.id,
+						)
+						return (
+							<EmailReminderItem
+								isAttached={false}
+								key={email.id}
+								email={email}
+								emailRef={ref}
+								parentResourceId={parentResourceId}
+								onAttach={attachEmail}
+								onDetach={detachEmail}
+								onUpdateHours={updateEmailHours}
+								isAttaching={isAttachingEmailId(email.id)}
+								isDetaching={isDetachingEmailId(email.id)}
+								isUpdatingHours={isUpdatingHoursForEmail(email.id)}
+							/>
+						)
+					})}
+				{isCreatingAndAttachingEmail && (
+					<div className="bg-card/50 flex animate-pulse items-center gap-2 rounded-md border px-3 py-2 shadow-sm">
+						<Loader2 className="size-4 animate-spin" />
+						Creating and attaching email...
+					</div>
+				)}
+			</ul>
+			<Dialog modal={true}>
+				<DialogTrigger asChild>
+					<Button className="mt-2" variant="secondary">
+						<Plus className="size-4" /> Create Email
+					</Button>
+				</DialogTrigger>
+				<DialogContent>
+					<CreateEmailReminderForm
+						form={createEmailReminderForm}
+						onSubmit={handleCreateEmail}
+					/>
+				</DialogContent>
+			</Dialog>
+		</div>
+	)
+}
 
 /**
  * @description A reusable component for displaying email reminder items in both attached and detached states
@@ -189,32 +294,18 @@ function EmailReminderItem({
 	)
 }
 
-export default function EmailEventRemindersField({
-	parentResourceId,
+/**
+ * @description A reusable component for creating new email reminders
+ */
+function CreateEmailReminderForm({
+	form,
+	onSubmit,
 }: {
-	parentResourceId: string
+	form: any
+	onSubmit: (data: ReminderEmailForm) => void
 }) {
-	const {
-		eventEmails: eventReminderEmails,
-		allEmails: allReminderEmails,
-		isUpdatingEmailHours: isUpdatingHours,
-		attachEmail,
-		detachEmail,
-		createAndAttachEmail,
-		updateEmailHours,
-		form: createEmailForm,
-		onSubmit: handleCreateEmail,
-		isLoading,
-		isAttachingEmailId,
-		isDetachingEmailId,
-		isUpdatingHoursForEmail,
-		isCreatingAndAttachingEmail,
-	} = useEventEmailReminders(parentResourceId)
-
 	const { theme } = useTheme()
-	const currentReminderEmails = eventReminderEmails
 	const [editorView, setEditorView] = React.useState<any>(null)
-
 	const insertAtCursor = (text: string) => {
 		if (editorView) {
 			const { state } = editorView
@@ -233,201 +324,137 @@ export default function EmailEventRemindersField({
 	}
 
 	return (
-		<div className="px-5">
-			<div className="mb-2 text-lg font-bold">Reminder Emails</div>
-			<ul className="flex flex-col gap-2">
-				{currentReminderEmails?.map((currentReminderEmail) => {
-					// Find the specific ref that connects this event to this email
-					const currentReminderEmailRef = allReminderEmails?.refs.find(
-						(r) =>
-							r.resourceOfId === parentResourceId &&
-							r.resourceId === currentReminderEmail.id,
-					)
+		<>
+			<DialogHeader>
+				<DialogTitle className="inline-flex items-center text-lg font-bold">
+					<Mail className="mr-1 size-4" /> Reminder Email for This Event
+				</DialogTitle>
+				<DialogDescription>
+					Set up a reminder email for this event. You can configure how many
+					hours in advance to send it. Markdown is supported.
+				</DialogDescription>
+			</DialogHeader>
+			<Form {...form}>
+				<form className="flex flex-col gap-4">
+					<FormField
+						control={form.control}
+						name="fields.title"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Title</FormLabel>
+								<FormControl>
+									<Input {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="hoursInAdvance"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Send this many hours before the event</FormLabel>
+								<FormControl>
+									<Input
+										type="number"
+										min={1}
+										max={168}
+										{...field}
+										onChange={(e) =>
+											field.onChange(parseInt(e.target.value) || 24)
+										}
+									/>
+								</FormControl>
+								<FormMessage />
+								<div className="text-muted-foreground text-sm">
+									Send the reminder email this many hours before the event
+									starts (1-168 hours)
+								</div>
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="fields.subject"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email Subject</FormLabel>
+								<FormControl>
+									<Input {...field} value={field.value ?? ''} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-					return (
-						<EmailReminderItem
-							className="border-primary/50 bg-card/50 border-dashed transition-all duration-200 ease-in-out"
-							isAttached={true}
-							key={`current-reminder-email-${currentReminderEmail.id}`}
-							email={currentReminderEmail}
-							emailRef={currentReminderEmailRef}
-							parentResourceId={parentResourceId}
-							onAttach={attachEmail}
-							onDetach={detachEmail}
-							onUpdateHours={updateEmailHours}
-							isAttaching={isAttachingEmailId(currentReminderEmail.id)}
-							isDetaching={isDetachingEmailId(currentReminderEmail.id)}
-							isUpdatingHours={isUpdatingHoursForEmail(currentReminderEmail.id)}
-						/>
-					)
-				})}
-				{allReminderEmails?.emails
-					.filter((e) => !currentReminderEmails?.find((c) => c.id === e.id))
-					.map((email) => {
-						const ref = allReminderEmails?.refs.find(
-							(r) => r.resourceId === email.id,
-						)
-						return (
-							<EmailReminderItem
-								isAttached={false}
-								key={email.id}
-								email={email}
-								emailRef={ref}
-								parentResourceId={parentResourceId}
-								onAttach={attachEmail}
-								onDetach={detachEmail}
-								onUpdateHours={updateEmailHours}
-								isAttaching={isAttachingEmailId(email.id)}
-								isDetaching={isDetachingEmailId(email.id)}
-								isUpdatingHours={isUpdatingHoursForEmail(email.id)}
-							/>
-						)
-					})}
-				{isCreatingAndAttachingEmail && (
-					<div className="bg-card/50 flex animate-pulse items-center gap-2 rounded-md border px-3 py-2 shadow-sm">
-						<Loader2 className="size-4 animate-spin" />
-						Creating and attaching email...
-					</div>
-				)}
-			</ul>
-			<Dialog modal={true}>
-				<DialogTrigger asChild>
-					<Button className="mt-2" variant="secondary">
-						<Plus className="size-4" /> Create Email
-					</Button>
-				</DialogTrigger>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
-							<Mail className="mr-1 size-4" /> Reminder Email for This Event
-						</DialogTitle>
-						<DialogDescription>
-							Set up a reminder email for this event. You can configure how many
-							hours in advance to send it. Markdown is supported.
-						</DialogDescription>
-					</DialogHeader>
-					<Form {...createEmailForm}>
-						<form className="flex flex-col gap-4">
-							<FormField
-								control={createEmailForm.control}
-								name="fields.title"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Title</FormLabel>
-										<FormControl>
-											<Input {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={createEmailForm.control}
-								name="hoursInAdvance"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Send this many hours before the event</FormLabel>
-										<FormControl>
-											<Input
-												type="number"
-												min={1}
-												max={168}
-												{...field}
-												onChange={(e) =>
-													field.onChange(parseInt(e.target.value) || 24)
-												}
-											/>
-										</FormControl>
-										<FormMessage />
-										<div className="text-muted-foreground text-sm">
-											Send the reminder email this many hours before the event
-											starts (1-168 hours)
-										</div>
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={createEmailForm.control}
-								name="fields.subject"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Email Subject</FormLabel>
-										<FormControl>
-											<Input {...field} value={field.value ?? ''} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+					<FormField
+						control={form.control}
+						name="fields.body"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email Body (markdown)</FormLabel>
 
-							<FormField
-								control={createEmailForm.control}
-								name="fields.body"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Email Body (markdown)</FormLabel>
-
-										<MarkdownEditor
-											theme={
-												(theme === 'dark'
-													? CourseBuilderEditorThemeDark
-													: CourseBuilderEditorThemeLight) ||
-												CourseBuilderEditorThemeDark
-											}
-											extensions={[EditorView.lineWrapping]}
-											height="300px"
-											maxHeight="500px"
-											onChange={(value) => {
-												createEmailForm.setValue('fields.body', value)
-											}}
-											onUpdate={(viewUpdate) => {
-												if (viewUpdate.view && !editorView) {
-													setEditorView(viewUpdate.view)
-												}
-											}}
-											value={field.value?.toString()}
-										/>
-										<div className="inline-flex flex-wrap gap-1">
-											{[
-												'{{user.name | default: "everyone"}}',
-												'{{url}}',
-												'{{title}}',
-												'{{event.fields.details}} (for calendar)',
-												'{{event.fields.title}}',
-												'{{event.fields.slug}}',
-												'{{event.fields.description}}',
-											].map((item) => (
-												<button
-													type="button"
-													onClick={() => {
-														insertAtCursor(item)
-													}}
-													key={item}
-													className="bg-card hover:bg-card/80 text-primary hover:text-foreground border-border flex flex-shrink-0 items-center rounded-full border px-2 py-1 text-sm transition-all ease-in-out hover:cursor-pointer"
-												>
-													{item}
-												</button>
-											))}
-										</div>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<DialogTrigger asChild>
-								<Button
-									type="button"
-									onClick={() => {
-										createEmailForm.handleSubmit(handleCreateEmail)()
+								<MarkdownEditor
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+									height="300px"
+									maxHeight="500px"
+									onChange={(value) => {
+										form.setValue('fields.body', value)
 									}}
-								>
-									Create
-								</Button>
-							</DialogTrigger>
-						</form>
-					</Form>
-				</DialogContent>
-			</Dialog>
-		</div>
+									onUpdate={(viewUpdate) => {
+										if (viewUpdate.view && !editorView) {
+											setEditorView(viewUpdate.view)
+										}
+									}}
+									value={field.value?.toString()}
+								/>
+								<div className="inline-flex flex-wrap gap-1">
+									{[
+										'{{user.name | default: "everyone"}}',
+										'{{url}}',
+										'{{title}}',
+										'{{event.fields.title}}',
+										'{{event.fields.slug}}',
+										'{{event.fields.details}}',
+										'{{event.fields.attendeeInstructions}}',
+										'{{event.fields.description}}',
+									].map((item) => (
+										<button
+											type="button"
+											onClick={() => {
+												insertAtCursor(item)
+											}}
+											key={item}
+											className="bg-card hover:bg-card/80 text-primary hover:text-foreground border-border flex flex-shrink-0 items-center rounded-full border px-2 py-1 text-sm transition-all ease-in-out hover:cursor-pointer"
+										>
+											{item}
+										</button>
+									))}
+								</div>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<DialogTrigger asChild>
+						<Button
+							type="button"
+							onClick={() => {
+								form.handleSubmit(onSubmit)()
+							}}
+						>
+							Create
+						</Button>
+					</DialogTrigger>
+				</form>
+			</Form>
+		</>
 	)
 }
 
