@@ -5,6 +5,7 @@ import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resou
 export const NewEmailSchema = z.object({
 	fields: z.object({
 		title: z.string().min(2).max(90),
+		subject: z.string().min(2).max(90).nullish(),
 		body: z.string().optional().nullable(),
 	}),
 })
@@ -27,6 +28,7 @@ export const EmailSchema = ContentResourceSchema.merge(
 	z.object({
 		fields: z.object({
 			body: z.string().nullable().optional(),
+			subject: z.string().min(2).max(90).nullish(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			slug: z.string(),
