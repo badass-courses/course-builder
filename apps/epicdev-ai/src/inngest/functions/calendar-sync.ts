@@ -303,16 +303,13 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 	},
 	{ event: REFUND_PROCESSED_EVENT },
 	async ({ event, step, logger }) => {
-		const { stripeChargeId } = event.data
-
-		if (!stripeChargeId) {
-			logger.error('No stripeChargeId found in the event data.', { event })
-			throw new NonRetriableError(
-				'Refund processed event is missing stripeChargeId.',
-			)
+		const chargeId = event.data.stripeChargeId || event.data.merchantChargeId
+		if (!chargeId) {
+			logger.error('No chargeId found in the event data.', { event })
+			throw new NonRetriableError('Refund processed event is missing chargeId.')
 		}
 
-		logger.info(`Processing refund for stripeChargeId: ${stripeChargeId}`)
+		logger.info(`Processing refund for chargeId: ${chargeId}`)
 
 		// Step 0: Verify adapter methods exist
 		if (
@@ -330,20 +327,20 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 			)
 		}
 
-		// Step 1: Fetch Purchase by Stripe Charge ID directly
+		// Step 1: Fetch Purchase by Charge ID directly
 		const purchase = await step.run(
 			'fetch-purchase-by-stripe-charge-id',
 			async () => {
 				const result =
-					await courseBuilderAdapter.getPurchaseForStripeCharge!(stripeChargeId)
+					await courseBuilderAdapter.getPurchaseForStripeCharge!(chargeId)
 				if (!result) {
 					throw new NonRetriableError(
-						`Purchase not found for Stripe charge ID: ${stripeChargeId}`,
+						`Purchase not found for charge ID: ${chargeId}`,
 					)
 				}
 				if (!result.userId || !result.productId) {
 					throw new NonRetriableError(
-						`Purchase for Stripe charge ID: ${stripeChargeId} is missing userId or productId.`,
+						`Purchase for charge ID: ${chargeId} is missing userId or productId.`,
 					)
 				}
 				return { userId: result.userId, productId: result.productId }
@@ -351,13 +348,11 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 		)
 
 		if (!purchase) {
-			logger.error(
-				`Purchase not found for stripeChargeId: ${stripeChargeId}, stopping.`,
-			)
+			logger.error(`Purchase not found for chargeId: ${chargeId}, stopping.`)
 			return {
 				outcome: 'error',
 				reason: 'Purchase not found',
-				stripeChargeId,
+				chargeId,
 			}
 		}
 
@@ -374,7 +369,7 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 				const p = await courseBuilderAdapter.getProduct!(purchasedProductId)
 				if (!p) {
 					throw new NonRetriableError(
-						`Product not found: ${purchasedProductId} (from purchase related to stripeChargeId: ${stripeChargeId})`,
+						`Product not found: ${purchasedProductId} (from purchase related to chargeId: ${chargeId})`,
 					)
 				}
 				return p
