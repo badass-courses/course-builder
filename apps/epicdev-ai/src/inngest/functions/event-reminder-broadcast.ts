@@ -25,9 +25,12 @@ type EventReminderData = {
 	reminderRef: ContentResourceResource
 }
 
+const SHOULD_SEND_REMINDERS_TO_SUPPORT_EMAIL = true
+
 /**
  * Smart event reminder scheduler
  * Runs early morning to schedule reminders, then sleeps until exact send time
+ * Handles multiple reminder emails per event, each with different timing and content
  */
 export const eventReminderBroadcast = inngest.createFunction(
 	{
@@ -39,48 +42,53 @@ export const eventReminderBroadcast = inngest.createFunction(
 	},
 	async ({ step }) => {
 		const now = new Date()
-		const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+		// Use UTC to match how event times are stored in database
+		const today = new Date(
+			Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+		)
 		const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000)
 
 		await log.info('event-reminder-broadcast.started', {
 			timestamp: now.toISOString(),
 		})
 
-		// Get all events with reminder emails that need scheduling today
-		const eventsToSchedule = await step.run(
-			'get-events-to-schedule',
+		// Get all email reminders that need scheduling today (each email reminder is processed separately)
+		const remindersToSchedule = await step.run(
+			'get-reminders-to-schedule',
 			async () => {
-				return await getEventsNeedingScheduling(now, tomorrow)
+				return await getRemindersNeedingScheduling(now, tomorrow)
 			},
 		)
 
-		if (eventsToSchedule.length === 0) {
-			await log.info('event-reminder-broadcast.no-events-to-schedule', {
+		if (remindersToSchedule.length === 0) {
+			await log.info('event-reminder-broadcast.no-reminders-to-schedule', {
 				timestamp: now.toISOString(),
 			})
-			return { scheduled: 0, sent: 0, events: [] }
+			return { scheduled: 0, sent: 0, reminders: [] }
 		}
 
-		await log.info('event-reminder-broadcast.scheduling-events', {
+		await log.info('event-reminder-broadcast.scheduling-reminders', {
 			timestamp: now.toISOString(),
-			eventsToSchedule: eventsToSchedule.length,
+			remindersToSchedule: remindersToSchedule.length,
+			uniqueEvents: [...new Set(remindersToSchedule.map((r) => r.event.id))]
+				.length,
 		})
 
-		// Process each event that needs a reminder scheduled
+		// Process each reminder email that needs to be scheduled
 		const results = []
 
-		for (const eventData of eventsToSchedule) {
+		for (const reminderData of remindersToSchedule) {
 			// First, wait until the reminder time
 			await step.sleepUntil(
-				`wait-for-reminder-${eventData.event.id}`,
-				eventData.reminderTime,
+				`wait-for-reminder-${reminderData.event.id}-${reminderData.emailResource.id}`,
+				reminderData.reminderTime,
 			)
 
 			// Then send the reminder
 			const result = await step.run(
-				`send-reminder-${eventData.event.id}`,
+				`send-reminder-${reminderData.event.id}-${reminderData.emailResource.id}`,
 				async () => {
-					return await sendEventReminder(eventData as EventReminderData)
+					return await sendEventReminder(reminderData as EventReminderData)
 				},
 			)
 
@@ -97,24 +105,27 @@ export const eventReminderBroadcast = inngest.createFunction(
 
 		await log.info('event-reminder-broadcast.finished', {
 			timestamp: new Date().toISOString(),
-			scheduledEvents: eventsToSchedule.length,
+			scheduledReminders: remindersToSchedule.length,
+			uniqueEvents: [...new Set(remindersToSchedule.map((r) => r.event.id))]
+				.length,
 			totalEmailsSent: totalSent,
 			errors: errors.length,
 		})
 
 		return {
-			scheduled: eventsToSchedule.length,
+			scheduled: remindersToSchedule.length,
 			sent: totalSent,
-			events: results,
+			reminders: results,
 			errors,
 		}
 	},
 )
 
 /**
- * Get events that need reminder scheduling
+ * Get individual email reminders that need scheduling
+ * Each reminder email is processed separately, allowing multiple emails per event
  */
-async function getEventsNeedingScheduling(
+async function getRemindersNeedingScheduling(
 	now: Date,
 	tomorrow: Date,
 ): Promise<EventReminderData[]> {
@@ -130,7 +141,7 @@ async function getEventsNeedingScheduling(
 		},
 	})
 
-	const eventsNeedingScheduling: EventReminderData[] = []
+	const remindersNeedingScheduling: EventReminderData[] = []
 
 	for (const ref of reminderEmailRefs) {
 		const event = await getEvent(ref.resourceOfId)
@@ -139,11 +150,22 @@ async function getEventsNeedingScheduling(
 			!event.fields.startsAt ||
 			event.fields.state !== 'published' ||
 			event.fields.visibility !== 'public'
-		)
+		) {
 			continue
+		}
 
 		const metadata = ref.metadata as any
-		const hoursInAdvance = metadata?.hoursInAdvance || 24
+		const hoursInAdvance = metadata?.hoursInAdvance
+
+		if (!hoursInAdvance || typeof hoursInAdvance !== 'number') {
+			await log.error('event-reminder-broadcast.invalid-hours-in-advance', {
+				eventId: event.id,
+				eventTitle: event.fields.title,
+				emailId: ref.resourceId,
+				hoursInAdvance: metadata?.hoursInAdvance,
+			})
+			continue // Skip this reminder, but continue processing others
+		}
 
 		const eventStartTime = new Date(event.fields.startsAt)
 		const reminderTime = new Date(
@@ -152,37 +174,48 @@ async function getEventsNeedingScheduling(
 
 		// Only schedule if reminder time is between now and tomorrow
 		if (reminderTime >= now && reminderTime < tomorrow) {
-			eventsNeedingScheduling.push({
+			remindersNeedingScheduling.push({
 				event: event,
 				emailResource: ref.resource,
 				hoursInAdvance,
 				reminderTime: reminderTime.toISOString(),
 				reminderRef: ref,
 			})
+
+			await log.info('event-reminder-broadcast.reminder-scheduled', {
+				eventId: event.id,
+				eventTitle: event.fields.title,
+				emailId: ref.resourceId,
+				emailTitle: ref.resource.fields?.title,
+				hoursInAdvance,
+				reminderTime: reminderTime.toISOString(),
+			})
 		}
 	}
 
-	return eventsNeedingScheduling
+	// Sort reminders by time to ensure chronological processing
+	return remindersNeedingScheduling.sort(
+		(a, b) =>
+			new Date(a.reminderTime).getTime() - new Date(b.reminderTime).getTime(),
+	)
 }
 
 /**
  * Send event reminder emails to purchasers
+ * Handles one specific reminder email for an event
  */
-async function sendEventReminder(eventData: EventReminderData) {
+async function sendEventReminder(reminderData: EventReminderData) {
 	try {
-		const { event, emailResource, hoursInAdvance, reminderTime } = eventData
+		const { event, emailResource, hoursInAdvance, reminderTime } = reminderData
 
-		await log.info('event-reminder-broadcast.scheduling-reminder', {
+		await log.info('event-reminder-broadcast.sending-reminder', {
 			eventId: event.id,
 			eventTitle: event.fields.title,
+			emailId: emailResource.id,
+			emailTitle: emailResource.fields?.title,
 			eventStartsAt: event.fields.startsAt,
 			reminderTime: reminderTime,
 			hoursInAdvance,
-		})
-
-		await log.info('event-reminder-broadcast.sending-now', {
-			eventId: event.id,
-			eventTitle: event.fields.title,
 			actualSendTime: new Date().toISOString(),
 		})
 
@@ -193,16 +226,24 @@ async function sendEventReminder(eventData: EventReminderData) {
 			await log.info('event-reminder-broadcast.no-purchasers', {
 				eventId: event.id,
 				eventTitle: event.fields.title,
+				emailId: emailResource.id,
 			})
-			return { eventId: event.id, sent: 0, error: null }
+			return {
+				eventId: event.id,
+				emailId: emailResource.id,
+				sent: 0,
+				error: null,
+			}
 		}
 
-		// Add support email to the list of purchasers
-		purchasers.push({
-			id: 'support',
-			email: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-			name: 'Support',
-		})
+		if (SHOULD_SEND_REMINDERS_TO_SUPPORT_EMAIL) {
+			// Add support email to the list of purchasers
+			purchasers.push({
+				id: 'support',
+				email: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+				name: 'Support',
+			})
+		}
 
 		// Parse email content with Liquid templating
 		const liquid = new Liquid()
@@ -248,6 +289,7 @@ async function sendEventReminder(eventData: EventReminderData) {
 
 				await log.info('event-reminder-broadcast.email-sent', {
 					eventId: event.id,
+					emailId: emailResource.id,
 					userId: purchaser.id,
 					userEmail: purchaser.email,
 				})
@@ -258,6 +300,7 @@ async function sendEventReminder(eventData: EventReminderData) {
 
 				await log.error('event-reminder-broadcast.email-failed', {
 					eventId: event.id,
+					emailId: emailResource.id,
 					userId: purchaser.id,
 					userEmail: purchaser.email,
 					error: errorMessage,
@@ -265,9 +308,11 @@ async function sendEventReminder(eventData: EventReminderData) {
 			}
 		}
 
-		await log.info('event-reminder-broadcast.completed', {
+		await log.info('event-reminder-broadcast.reminder-completed', {
 			eventId: event.id,
 			eventTitle: event.fields.title,
+			emailId: emailResource.id,
+			emailTitle: emailResource_typed?.fields?.title,
 			sentCount,
 			totalPurchasers: purchasers.length,
 			errors: errors.length,
@@ -275,20 +320,23 @@ async function sendEventReminder(eventData: EventReminderData) {
 
 		return {
 			eventId: event.id,
+			emailId: emailResource.id,
 			sent: sentCount,
 			error: errors.length > 0 ? errors.join('; ') : null,
 		}
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error)
 
-		await log.error('event-reminder-broadcast.step-failed', {
-			eventId: eventData.event.id,
+		await log.error('event-reminder-broadcast.reminder-failed', {
+			eventId: reminderData.event.id,
+			emailId: reminderData.emailResource.id,
 			error: errorMessage,
 			stack: error instanceof Error ? error.stack : undefined,
 		})
 
 		return {
-			eventId: eventData.event.id,
+			eventId: reminderData.event.id,
+			emailId: reminderData.emailResource.id,
 			sent: 0,
 			error: errorMessage,
 		}

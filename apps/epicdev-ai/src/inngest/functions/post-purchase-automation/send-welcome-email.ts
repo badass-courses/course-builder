@@ -141,7 +141,7 @@ export const sendWelcomeEmail = inngest.createFunction(
 			return { skipped: true, reason: 'No event dates available' }
 		}
 
-		const { startsAt: _startsAt, endsAt: _endsAt } = eventFields
+		const { startsAt: _startsAt, endsAt: _endsAt, title } = eventFields
 
 		// Convert to Date objects for formatting
 		const startsAtDate = new Date(_startsAt)
@@ -167,7 +167,7 @@ export const sendWelcomeEmail = inngest.createFunction(
 			return await sendAnEmail({
 				Component: pickEmail(),
 				componentProps: {
-					productName: product.name,
+					productName: title || product.name,
 					startDate: startDate,
 					startTime: startTime,
 					endTime: endTime,
