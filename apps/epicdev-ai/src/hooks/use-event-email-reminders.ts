@@ -7,7 +7,7 @@ import { z } from 'zod'
 const DEFAULT_EMAIL = {
 	title: 'Reminder Email',
 	subject: `Tomorrow's {{title}} - Please Review Instructions First! 🚀`,
-	body: `Hey everyone!
+	body: `Hey {{user.name | default: "everyone"}}!
 
 I'm really looking forward to tomorrow! Please please please, make sure to reserve an hour to go through all of the instructions on
 {{url}} before tomorrow starts. It's critical to your success and learning. Otherwise you will spend the first 20 minutes or more missing instruction trying to figure out how things work and in general have a bad time.

@@ -241,7 +241,7 @@ async function sendEventReminder(reminderData: EventReminderData) {
 			purchasers.push({
 				id: 'support',
 				email: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-				name: 'Support',
+				name: 'team',
 			})
 		}
 

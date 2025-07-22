@@ -213,6 +213,24 @@ export default function EmailEventRemindersField({
 
 	const { theme } = useTheme()
 	const currentReminderEmails = eventReminderEmails
+	const [editorView, setEditorView] = React.useState<any>(null)
+
+	const insertAtCursor = (text: string) => {
+		if (editorView) {
+			const { state } = editorView
+			const cursor = state.selection.main.head
+
+			editorView.dispatch({
+				changes: {
+					from: cursor,
+					insert: text,
+				},
+				selection: {
+					anchor: cursor + text.length,
+				},
+			})
+		}
+	}
 
 	return (
 		<div className="px-5">
@@ -348,6 +366,7 @@ export default function EmailEventRemindersField({
 								render={({ field }) => (
 									<FormItem>
 										<FormLabel>Email Body (markdown)</FormLabel>
+
 										<MarkdownEditor
 											theme={
 												(theme === 'dark'
@@ -361,9 +380,35 @@ export default function EmailEventRemindersField({
 											onChange={(value) => {
 												createEmailForm.setValue('fields.body', value)
 											}}
+											onUpdate={(viewUpdate) => {
+												if (viewUpdate.view && !editorView) {
+													setEditorView(viewUpdate.view)
+												}
+											}}
 											value={field.value?.toString()}
 										/>
-
+										<div className="inline-flex flex-wrap gap-1">
+											{[
+												'{{user.name | default: "everyone"}}',
+												'{{url}}',
+												'{{title}}',
+												'{{event.fields.details}} (for calendar)',
+												'{{event.fields.title}}',
+												'{{event.fields.slug}}',
+												'{{event.fields.description}}',
+											].map((item) => (
+												<button
+													type="button"
+													onClick={() => {
+														insertAtCursor(item)
+													}}
+													key={item}
+													className="bg-card hover:bg-card/80 text-primary hover:text-foreground border-border flex flex-shrink-0 items-center rounded-full border px-2 py-1 text-sm transition-all ease-in-out hover:cursor-pointer"
+												>
+													{item}
+												</button>
+											))}
+										</div>
 										<FormMessage />
 									</FormItem>
 								)}
