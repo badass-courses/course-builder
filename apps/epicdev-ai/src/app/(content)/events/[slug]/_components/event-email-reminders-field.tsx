@@ -1,17 +1,14 @@
 'use client'
 
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { env } from '@/env.mjs'
-import { NewEmailSchema, type NewEmail } from '@/lib/emails'
-import { api } from '@/trpc/react'
+import { useEventEmailReminders } from '@/hooks/use-event-email-reminders'
 import { EditorView } from '@codemirror/view'
-import { zodResolver } from '@hookform/resolvers/zod'
 import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Loader2, Mail, Pencil, Plus } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { useForm } from 'react-hook-form'
 import Markdown from 'react-markdown'
-import { z } from 'zod'
 
 import {
 	Button,
@@ -29,30 +26,163 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
-	Textarea,
 } from '@coursebuilder/ui'
 import {
 	CourseBuilderEditorThemeDark,
 	CourseBuilderEditorThemeLight,
 } from '@coursebuilder/ui/codemirror/editor'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
+import { cn } from '@coursebuilder/utils-ui/cn'
 
-const DEFAULT_EMAIL = {
-	title: 'Reminder Email',
-	subject: `Tomorrow's {{title}} - Please Review Instructions First! 🚀`,
-	body: `Hey everyone!
-
-I'm really looking forward to tomorrow! Please please please, make sure to reserve an hour to go through all of the instructions on
-{{url}} before tomorrow starts. It's critical to your success and learning. Otherwise you will spend the first 20 minutes or more missing instruction trying to figure out how things work and in general have a bad time.
-
-But we don't want to have a bad time! We're going to have a good time! So check out and follow the instructions and we'll have an epic time tomorrow. And because this is an advanced workshop, please make sure you check out the resources on the README of the repo as well. See you soon!`,
+/**
+ * @description A reusable component for displaying email reminder items in both attached and detached states
+ */
+function EmailReminderItem({
+	email,
+	emailRef,
+	isAttached,
+	parentResourceId,
+	onAttach,
+	onDetach,
+	onUpdateHours,
+	isAttaching,
+	isDetaching,
+	isUpdatingHours,
+	className,
+}: {
+	email: any
+	emailRef: any
+	isAttached: boolean
+	parentResourceId: string
+	onAttach: (params: { eventId: string; emailId: string }) => void
+	onDetach: (params: { eventId: string; emailId: string }) => void
+	onUpdateHours: (params: {
+		eventId: string
+		emailId: string
+		hoursInAdvance: number
+	}) => void
+	isAttaching: boolean
+	isDetaching: boolean
+	isUpdatingHours: boolean
+	className?: string
+}) {
+	return (
+		<li
+			className={cn(
+				'flex items-center justify-between gap-2 rounded-md border px-3 py-2 shadow-sm',
+				className,
+			)}
+		>
+			<Dialog modal={true}>
+				<DialogTrigger>
+					<div className="flex flex-col items-start">
+						<span className="text-primary cursor-pointer font-semibold transition-colors hover:underline">
+							{email.fields.title}
+						</span>
+						<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+							{emailRef?.metadata?.hoursInAdvance || (
+								<Loader2 className="size-3 animate-spin" />
+							)}{' '}
+							hours before
+						</span>
+					</div>
+				</DialogTrigger>
+				<DialogContent className="max-w-2xl">
+					<DialogHeader>
+						<DialogTitle className="inline-flex items-center text-lg font-bold">
+							<Mail className="mr-1 size-4" /> {email.fields.title}
+						</DialogTitle>
+					</DialogHeader>
+					<div className="space-y-4">
+						{isAttached && (
+							<>
+								<HoursInAdvanceEditor
+									key={`${email.id}-${emailRef?.metadata?.hoursInAdvance || 24}`}
+									eventId={parentResourceId}
+									emailId={email.id}
+									currentHours={emailRef?.metadata?.hoursInAdvance || 24}
+									onUpdate={onUpdateHours}
+									isLoading={isUpdatingHours}
+								/>
+								<hr />
+							</>
+						)}
+						<div className="flex items-baseline gap-3">
+							<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
+								From:
+							</h3>
+							<p className="text-base font-medium">
+								{env.NEXT_PUBLIC_SUPPORT_EMAIL}
+							</p>
+						</div>
+						<div className="flex items-baseline gap-3">
+							<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
+								Subject:
+							</h3>
+							<p className="text-base font-medium">
+								{email.fields.subject || 'No subject'}
+							</p>
+						</div>
+						<div className="flex items-baseline gap-3">
+							<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
+								Body:
+							</h3>
+							<div className="prose prose-sm bg-muted/30 max-w-none rounded-lg border px-4">
+								<div className="prose dark:prose-invert">
+									<Markdown>{email.fields.body || 'No body content'}</Markdown>
+								</div>
+							</div>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button asChild variant="secondary">
+							<Link
+								href={getResourcePath(email.type, email.fields.slug, 'edit')}
+							>
+								<Pencil className="size-3" /> Edit Email
+							</Link>
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+			<div className="flex items-center gap-2">
+				{isAttached ? (
+					<Button
+						size="sm"
+						variant="outline"
+						type="button"
+						disabled={isDetaching}
+						onClick={() =>
+							onDetach({
+								eventId: parentResourceId,
+								emailId: email.id,
+							})
+						}
+					>
+						Detach
+						{isDetaching && <Loader2 className="size-4 animate-spin" />}
+					</Button>
+				) : (
+					<Button
+						size="sm"
+						variant="secondary"
+						type="button"
+						disabled={isAttaching}
+						onClick={() =>
+							onAttach({
+								eventId: parentResourceId,
+								emailId: email.id,
+							})
+						}
+					>
+						Attach
+						{isAttaching && <Loader2 className="size-4 animate-spin" />}
+					</Button>
+				)}
+			</div>
+		</li>
+	)
 }
-
-const ReminderEmailFormSchema = NewEmailSchema.extend({
-	hoursInAdvance: z.number().min(1).max(168).default(24), // 1 hour to 1 week
-})
-
-type ReminderEmailForm = z.infer<typeof ReminderEmailFormSchema>
 
 export default function EmailEventRemindersField({
 	parentResourceId,
@@ -60,254 +190,87 @@ export default function EmailEventRemindersField({
 	parentResourceId: string
 }) {
 	const {
-		data: eventReminderEmails,
-		refetch: refetchEventReminderEmails,
-		status: eventReminderEmailsStatus,
-	} = api.events.getEventReminderEmails.useQuery({
-		eventId: parentResourceId,
-	})
-	const {
-		data: allReminderEmails,
-		refetch: refetchAllReminderEmails,
-		status: allReminderEmailsStatus,
-	} = api.events.getAllEventReminderEmails.useQuery()
-
-	const { mutate: attachReminderEmail, isPending: isAttachingReminderEmail } =
-		api.events.attachReminderEmailToEvent.useMutation()
-	const { mutate: detachReminderEmail, isPending: isDetachingReminderEmail } =
-		api.events.detachReminderEmailFromEvent.useMutation()
-	const {
-		mutate: createAndAttachReminderEmailToEvent,
-		isPending: isCreatingAndAttachingReminderEmail,
-	} = api.events.createAndAttachReminderEmailToEvent.useMutation()
-
-	const isLoading =
-		eventReminderEmailsStatus === 'pending' ||
-		allReminderEmailsStatus === 'pending' ||
-		isAttachingReminderEmail ||
-		isDetachingReminderEmail ||
-		isCreatingAndAttachingReminderEmail
-
-	const form = useForm<ReminderEmailForm>({
-		resolver: zodResolver(ReminderEmailFormSchema),
-		defaultValues: {
-			fields: {
-				...DEFAULT_EMAIL,
-			},
-			hoursInAdvance: 24,
-		},
-	})
-	const onSubmit = (data: ReminderEmailForm) => {
-		const { hoursInAdvance, ...emailData } = data
-		createAndAttachReminderEmailToEvent(
-			{
-				eventId: parentResourceId,
-				input: emailData,
-				hoursInAdvance,
-			},
-			{
-				onSuccess: () => {
-					refetchAllReminderEmails()
-					refetchEventReminderEmails()
-					form.reset()
-				},
-			},
-		)
-	}
+		eventEmails: eventReminderEmails,
+		allEmails: allReminderEmails,
+		isUpdatingEmailHours: isUpdatingHours,
+		attachEmail,
+		detachEmail,
+		createAndAttachEmail,
+		updateEmailHours,
+		form: createEmailForm,
+		onSubmit: handleCreateEmail,
+		isLoading,
+		isAttachingEmailId,
+		isDetachingEmailId,
+		isUpdatingHoursForEmail,
+		isCreatingAndAttachingEmail,
+	} = useEventEmailReminders(parentResourceId)
 
 	const { theme } = useTheme()
-	const currentReminderEmail = eventReminderEmails?.[0]
+	const currentReminderEmails = eventReminderEmails
 
 	return (
 		<div className="px-5">
-			<div className="mb-2 text-lg font-bold">Reminder Email</div>
+			<div className="mb-2 text-lg font-bold">Reminder Emails</div>
 			<ul className="flex flex-col gap-2">
-				{currentReminderEmail && (
-					<li
-						key={`current-reminder-email-${currentReminderEmail.id}`}
-						className="border-primary/50 flex items-center justify-between gap-2 rounded-md border px-3 py-2 shadow-sm"
-					>
-						<Dialog modal={true}>
-							<DialogTrigger asChild>
-								<span className="text-primary inline-flex cursor-pointer items-center gap-2 font-semibold transition-colors hover:underline">
-									{/* <Mail className="size-4 flex-shrink-0" />{' '} */}
-									{currentReminderEmail.fields.title}
-								</span>
-							</DialogTrigger>
-							<DialogContent className="max-w-2xl">
-								<DialogHeader>
-									<DialogTitle className="inline-flex items-center text-lg font-bold">
-										<Mail className="mr-1 size-4" />{' '}
-										{currentReminderEmail.fields.title}
-									</DialogTitle>
-								</DialogHeader>
-								<div className="space-y-4">
-									<div className="flex items-baseline gap-3">
-										<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-											From:
-										</h3>
-										<p className="text-base font-medium">
-											{env.NEXT_PUBLIC_SUPPORT_EMAIL}
-										</p>
-									</div>
-									<div className="flex items-baseline gap-3">
-										<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-											Subject:
-										</h3>
-										<p className="text-base font-medium">
-											{currentReminderEmail.fields.subject || 'No subject'}
-										</p>
-									</div>
-									<div className="flex items-baseline gap-3">
-										<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-											Body:
-										</h3>
-										<div className="prose prose-sm bg-muted/30 max-w-none rounded-lg border px-4">
-											<div className="prose dark:prose-invert">
-												<Markdown>
-													{currentReminderEmail.fields.body ||
-														'No body content'}
-												</Markdown>
-											</div>
-										</div>
-									</div>
-								</div>
-								<DialogFooter>
-									<Button asChild variant="secondary">
-										<Link
-											href={getResourcePath(
-												currentReminderEmail.type,
-												currentReminderEmail.fields.slug,
-												'edit',
-											)}
-										>
-											<Pencil className="size-3" /> Edit Email
-										</Link>
-									</Button>
-								</DialogFooter>
-							</DialogContent>
-						</Dialog>
-						<div className="flex items-center gap-2">
-							<Button
-								size="sm"
-								variant="outline"
-								type="button"
-								disabled={isLoading}
-								onClick={() =>
-									detachReminderEmail(
-										{
-											eventId: parentResourceId,
-											emailId: currentReminderEmail.id,
-										},
-										{
-											onSuccess: () => {
-												refetchAllReminderEmails()
-												refetchEventReminderEmails()
-											},
-										},
-									)
-								}
-							>
-								Detach
-								{isLoading && <Loader2 className="size-4 animate-spin" />}
-							</Button>
-						</div>
-					</li>
+				{currentReminderEmails?.map((currentReminderEmail) => {
+					// Find the specific ref that connects this event to this email
+					const currentReminderEmailRef = allReminderEmails?.refs.find(
+						(r) =>
+							r.resourceOfId === parentResourceId &&
+							r.resourceId === currentReminderEmail.id,
+					)
+
+					return (
+						<EmailReminderItem
+							className="border-primary/50 bg-card/50 border-dashed transition-all duration-200 ease-in-out"
+							isAttached={true}
+							key={`current-reminder-email-${currentReminderEmail.id}`}
+							email={currentReminderEmail}
+							emailRef={currentReminderEmailRef}
+							parentResourceId={parentResourceId}
+							onAttach={attachEmail}
+							onDetach={detachEmail}
+							onUpdateHours={updateEmailHours}
+							isAttaching={isAttachingEmailId(currentReminderEmail.id)}
+							isDetaching={isDetachingEmailId(currentReminderEmail.id)}
+							isUpdatingHours={isUpdatingHoursForEmail(currentReminderEmail.id)}
+						/>
+					)
+				})}
+				{allReminderEmails?.emails
+					.filter((e) => !currentReminderEmails?.find((c) => c.id === e.id))
+					.map((email) => {
+						const ref = allReminderEmails?.refs.find(
+							(r) => r.resourceId === email.id,
+						)
+						return (
+							<EmailReminderItem
+								isAttached={false}
+								key={email.id}
+								email={email}
+								emailRef={ref}
+								parentResourceId={parentResourceId}
+								onAttach={attachEmail}
+								onDetach={detachEmail}
+								onUpdateHours={updateEmailHours}
+								isAttaching={isAttachingEmailId(email.id)}
+								isDetaching={isDetachingEmailId(email.id)}
+								isUpdatingHours={isUpdatingHoursForEmail(email.id)}
+							/>
+						)
+					})}
+				{isCreatingAndAttachingEmail && (
+					<div className="bg-card/50 flex animate-pulse items-center gap-2 rounded-md border px-3 py-2 shadow-sm">
+						<Loader2 className="size-4 animate-spin" />
+						Creating and attaching email...
+					</div>
 				)}
-				{allReminderEmails
-					?.filter((e) => e.id !== currentReminderEmail?.id)
-					.map((email) => (
-						<li
-							key={email.id}
-							className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 shadow-sm"
-						>
-							<Dialog modal={true}>
-								<DialogTrigger asChild>
-									<span className="text-primary inline-flex cursor-pointer items-center gap-2 font-semibold transition-colors hover:underline">
-										{email.fields.title}
-									</span>
-								</DialogTrigger>
-								<DialogContent className="max-w-2xl">
-									<DialogHeader>
-										<DialogTitle className="inline-flex items-center text-lg font-bold">
-											<Mail className="mr-1 size-4" /> {email.fields.title}
-										</DialogTitle>
-									</DialogHeader>
-									<div className="space-y-4">
-										<div className="flex items-baseline gap-3">
-											<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-												From:
-											</h3>
-											<p className="text-base font-medium">
-												{env.NEXT_PUBLIC_SUPPORT_EMAIL}
-											</p>
-										</div>
-										<div className="flex items-baseline gap-3">
-											<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-												Subject:
-											</h3>
-											<p className="text-base font-medium">
-												{email.fields.subject || 'No subject'}
-											</p>
-										</div>
-										<div className="flex items-baseline gap-3">
-											<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
-												Body:
-											</h3>
-											<div className="prose prose-sm bg-muted/30 max-w-none rounded-lg border px-4">
-												<div className="prose dark:prose-invert">
-													<Markdown>
-														{email.fields.body || 'No body content'}
-													</Markdown>
-												</div>
-											</div>
-										</div>
-									</div>
-									<DialogFooter>
-										<Button asChild variant="secondary">
-											<Link
-												href={getResourcePath(
-													email.type,
-													email.fields.slug,
-													'edit',
-												)}
-											>
-												<Pencil className="size-3" /> Edit Email
-											</Link>
-										</Button>
-									</DialogFooter>
-								</DialogContent>
-							</Dialog>
-							<Button
-								size="sm"
-								variant="secondary"
-								type="button"
-								disabled={isLoading}
-								onClick={() =>
-									attachReminderEmail(
-										{
-											eventId: parentResourceId,
-											emailId: email.id,
-										},
-										{
-											onSuccess: () => {
-												refetchAllReminderEmails()
-												refetchEventReminderEmails()
-											},
-										},
-									)
-								}
-							>
-								Attach
-								{isLoading && <Loader2 className="size-4 animate-spin" />}
-							</Button>
-						</li>
-					))}
 			</ul>
 			<Dialog modal={true}>
 				<DialogTrigger asChild>
 					<Button className="mt-2" variant="secondary">
-						<Plus className="size-4" /> Create reminder email
+						<Plus className="size-4" /> Create Email
 					</Button>
 				</DialogTrigger>
 				<DialogContent>
@@ -320,13 +283,10 @@ export default function EmailEventRemindersField({
 							hours in advance to send it. Markdown is supported.
 						</DialogDescription>
 					</DialogHeader>
-					<Form {...form}>
-						<form
-							className="flex flex-col gap-4"
-							onSubmit={form.handleSubmit(onSubmit)}
-						>
+					<Form {...createEmailForm}>
+						<form className="flex flex-col gap-4">
 							<FormField
-								control={form.control}
+								control={createEmailForm.control}
 								name="fields.title"
 								render={({ field }) => (
 									<FormItem>
@@ -339,7 +299,7 @@ export default function EmailEventRemindersField({
 								)}
 							/>
 							<FormField
-								control={form.control}
+								control={createEmailForm.control}
 								name="hoursInAdvance"
 								render={({ field }) => (
 									<FormItem>
@@ -364,7 +324,7 @@ export default function EmailEventRemindersField({
 								)}
 							/>
 							<FormField
-								control={form.control}
+								control={createEmailForm.control}
 								name="fields.subject"
 								render={({ field }) => (
 									<FormItem>
@@ -378,7 +338,7 @@ export default function EmailEventRemindersField({
 							/>
 
 							<FormField
-								control={form.control}
+								control={createEmailForm.control}
 								name="fields.body"
 								render={({ field }) => (
 									<FormItem>
@@ -394,7 +354,7 @@ export default function EmailEventRemindersField({
 											height="300px"
 											maxHeight="500px"
 											onChange={(value) => {
-												form.setValue('fields.body', value)
+												createEmailForm.setValue('fields.body', value)
 											}}
 											value={field.value?.toString()}
 										/>
@@ -403,11 +363,82 @@ export default function EmailEventRemindersField({
 									</FormItem>
 								)}
 							/>
-							<Button type="submit">Create</Button>
+							<DialogTrigger asChild>
+								<Button
+									type="button"
+									onClick={() => {
+										createEmailForm.handleSubmit(handleCreateEmail)()
+									}}
+								>
+									Create
+								</Button>
+							</DialogTrigger>
 						</form>
 					</Form>
 				</DialogContent>
 			</Dialog>
+		</div>
+	)
+}
+
+type HoursInAdvanceEditorProps = {
+	eventId: string
+	emailId: string
+	currentHours: number
+	onUpdate: (params: {
+		eventId: string
+		emailId: string
+		hoursInAdvance: number
+	}) => void
+	isLoading: boolean
+}
+
+/**
+ * @description A component that allows the user to edit the hours in advance for an email reminder
+ */
+function HoursInAdvanceEditor({
+	eventId,
+	emailId,
+	currentHours,
+	onUpdate,
+	isLoading,
+}: HoursInAdvanceEditorProps) {
+	const [hours, setHours] = useState(currentHours)
+	const hasChanged = hours !== currentHours
+
+	// Reset local state when currentHours changes (after successful update)
+	React.useEffect(() => {
+		setHours(currentHours)
+	}, [currentHours])
+
+	return (
+		<div className="flex items-baseline gap-3">
+			<h3 className="text-muted-foreground mb-1 min-w-[6ch] text-base font-semibold">
+				Hours before event:
+			</h3>
+			<div className="flex items-center gap-2">
+				<Input
+					type="number"
+					min={1}
+					max={168}
+					value={hours}
+					onChange={(e) => setHours(parseInt(e.target.value) || currentHours)}
+					className="w-20"
+				/>
+				{hasChanged && (
+					<Button
+						type="button"
+						onClick={() => {
+							onUpdate({ eventId, emailId, hoursInAdvance: hours })
+						}}
+						size="sm"
+						disabled={isLoading}
+					>
+						Save
+						{isLoading && <Loader2 className="ml-1 size-3 animate-spin" />}
+					</Button>
+				)}
+			</div>
 		</div>
 	)
 }

@@ -6,9 +6,10 @@ import {
 	createAndAttachReminderEmailToEvent,
 	detachReminderEmailFromEvent,
 	getActiveEvents,
-	getAllEventReminderEmails,
+	getAllReminderEmails,
 	getEventReminderEmail,
 	getEventReminderEmails,
+	updateReminderEmailHours,
 } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import {
@@ -153,8 +154,8 @@ export const eventsRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			return await getEventReminderEmails(input.eventId)
 		}),
-	getAllEventReminderEmails: publicProcedure.query(async () => {
-		return await getAllEventReminderEmails()
+	getAllReminderEmails: publicProcedure.query(async () => {
+		return await getAllReminderEmails()
 	}),
 	createAndAttachReminderEmailToEvent: protectedProcedure
 		.input(
@@ -168,6 +169,21 @@ export const eventsRouter = createTRPCRouter({
 			return await createAndAttachReminderEmailToEvent(
 				input.eventId,
 				input.input,
+				input.hoursInAdvance,
+			)
+		}),
+	updateReminderEmailHours: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				emailId: z.string(),
+				hoursInAdvance: z.number().min(1).max(168),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await updateReminderEmailHours(
+				input.eventId,
+				input.emailId,
 				input.hoursInAdvance,
 			)
 		}),

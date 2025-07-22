@@ -1080,53 +1080,60 @@ export async function createEventSeries(input: EventSeriesFormData): Promise<{
 }
 
 /**
- * Attaches a reminder email resource to an event, replacing any existing reminder email
+ * Attaches a reminder email resource to an event
  * @param eventId - The ID of the event
  * @param emailResourceId - The ID of the email resource to attach
  * @param hoursInAdvance - Number of hours before the event to send the reminder (default: 24)
+ * @param detachExisting - Whether to detach existing reminder emails before attaching new one (default: false)
  * @returns True if successful, false otherwise
  */
 export async function attachReminderEmailToEvent(
 	eventId: string,
 	emailResourceId: string,
 	hoursInAdvance: number = 24,
+	detachExisting: boolean = false,
 ) {
 	try {
-		// First, check if the event already has a reminder email attached
-		const existingReminderEmails =
-			await db.query.contentResourceResource.findMany({
-				where: and(
-					eq(contentResourceResource.resourceOfId, eventId),
-					eq(
-						sql`(SELECT type FROM ${contentResource} WHERE id = ${contentResourceResource.resourceId})`,
-						'email',
-					),
-				),
-				with: {
-					resource: true,
-				},
-			})
-
-		// If there are existing reminder emails, detach them
-		if (existingReminderEmails.length > 0) {
-			for (const existingEmail of existingReminderEmails) {
-				await db
-					.delete(contentResourceResource)
-					.where(
-						and(
-							eq(contentResourceResource.resourceOfId, eventId),
-							eq(contentResourceResource.resourceId, existingEmail.resourceId),
-							eq(
-								sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
-								'event-reminder',
-							),
+		// Only detach existing reminder emails if explicitly requested
+		if (detachExisting) {
+			const existingReminderEmails =
+				await db.query.contentResourceResource.findMany({
+					where: and(
+						eq(contentResourceResource.resourceOfId, eventId),
+						eq(
+							sql`(SELECT type FROM ${contentResource} WHERE id = ${contentResourceResource.resourceId})`,
+							'email',
 						),
-					)
-
-				await log.info('event.reminder-email.detached', {
-					eventId,
-					emailResourceId: existingEmail.resourceId,
+					),
+					with: {
+						resource: true,
+					},
 				})
+
+			// If there are existing reminder emails, detach them
+			if (existingReminderEmails.length > 0) {
+				for (const existingEmail of existingReminderEmails) {
+					await db
+						.delete(contentResourceResource)
+						.where(
+							and(
+								eq(contentResourceResource.resourceOfId, eventId),
+								eq(
+									contentResourceResource.resourceId,
+									existingEmail.resourceId,
+								),
+								eq(
+									sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+									'event-reminder',
+								),
+							),
+						)
+
+					await log.info('event.reminder-email.detached', {
+						eventId,
+						emailResourceId: existingEmail.resourceId,
+					})
+				}
 			}
 		}
 
@@ -1241,6 +1248,7 @@ export async function getEventReminderEmails(eventId: string) {
 				'event-reminder',
 			),
 		),
+		orderBy: asc(contentResourceResource.createdAt),
 		with: {
 			resource: {
 				with: {
@@ -1270,7 +1278,7 @@ export async function getEventReminderEmails(eventId: string) {
 	return parsedReminderEmails.data
 }
 
-export async function getAllEventReminderEmails() {
+export async function getAllReminderEmails() {
 	const reminderEmailsRefs = await db.query.contentResourceResource.findMany({
 		where: and(
 			eq(
@@ -1278,6 +1286,7 @@ export async function getAllEventReminderEmails() {
 				'event-reminder',
 			),
 		),
+		orderBy: asc(contentResourceResource.createdAt),
 		with: {
 			resource: {
 				with: {
@@ -1301,16 +1310,35 @@ export async function getAllEventReminderEmails() {
 	const parsedReminderEmails = z.array(EmailSchema).safeParse(reminderEmails)
 	if (!parsedReminderEmails.success) {
 		console.error('Error parsing reminder emails', reminderEmails)
-		return []
+		return {
+			emails: [],
+			refs: [],
+		}
 	}
 
-	return parsedReminderEmails.data
+	// remove duplicates
+	const uniqueReminderEmails = parsedReminderEmails.data.filter(
+		(email, index, self) => index === self.findIndex((t) => t.id === email.id),
+	)
+
+	const uniqueRefs = reminderEmailsRefs.filter(
+		(ref, index, self) =>
+			index ===
+			self.findIndex(
+				(t) =>
+					t.resourceId === ref.resourceId &&
+					t.resourceOfId === ref.resourceOfId,
+			),
+	)
+
+	return { emails: uniqueReminderEmails || [], refs: uniqueRefs || [] }
 }
 
 export async function createAndAttachReminderEmailToEvent(
 	eventId: string,
 	input: NewEmail,
 	hoursInAdvance: number = 24,
+	detachExisting: boolean = false,
 ) {
 	const reminderEmail = await createEmail(input)
 	if (!reminderEmail) {
@@ -1320,12 +1348,64 @@ export async function createAndAttachReminderEmailToEvent(
 		eventId,
 		reminderEmail.id,
 		hoursInAdvance,
+		detachExisting,
 	)
 
 	if (!result) {
 		throw new Error('Failed to attach reminder email to event')
 	}
 	return reminderEmail
+}
+
+/**
+ * Updates the hoursInAdvance for an attached reminder email
+ * @param eventId - The ID of the event
+ * @param emailResourceId - The ID of the email resource
+ * @param hoursInAdvance - Number of hours before the event to send the reminder
+ * @returns True if successful, false otherwise
+ */
+export async function updateReminderEmailHours(
+	eventId: string,
+	emailResourceId: string,
+	hoursInAdvance: number,
+) {
+	try {
+		const result = await db
+			.update(contentResourceResource)
+			.set({
+				metadata: {
+					type: 'event-reminder',
+					hoursInAdvance,
+				},
+			})
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, eventId),
+					eq(contentResourceResource.resourceId, emailResourceId),
+					eq(
+						sql`JSON_EXTRACT (${contentResourceResource.metadata}, "$.type")`,
+						'event-reminder',
+					),
+				),
+			)
+
+		await log.info('event.reminder-email.hours-updated', {
+			eventId,
+			emailResourceId,
+			hoursInAdvance,
+		})
+
+		return result
+	} catch (error) {
+		await log.error('event.reminder-email.hours-update.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			eventId,
+			emailResourceId,
+			hoursInAdvance,
+		})
+		return null
+	}
 }
 
 /**
