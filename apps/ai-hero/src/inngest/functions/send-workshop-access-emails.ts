@@ -86,11 +86,8 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 							totalWorkshops: workshops.length,
 						})
 
-						// Filter workshops starting today using existing timezone-aware function
-						const startingToday = await getWorkshopsStartingToday(
-							workshops,
-							'America/Los_Angeles',
-						)
+						// Filter workshops starting today using UTC-consistent function
+						const startingToday = await getWorkshopsStartingToday(workshops)
 
 						await log.info('Filtered workshops starting today', {
 							productId: product.id,
@@ -137,8 +134,9 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 							return { skipped: 'no start date' }
 						}
 
-						// Get workshop start time
-						const workshopStartTime = new Date(workshop.fields.startsAt)
+						// Preserve the exact UTC time from the database without conversion
+						const workshopStartTimeString = workshop.fields.startsAt
+						const workshopStartTime = new Date(workshopStartTimeString)
 						const now = new Date()
 
 						// If workshop starts in the past, skip it
@@ -149,13 +147,15 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 						await log.info('Preparing workshop for scheduling', {
 							workshopId: workshop.id,
 							workshopTitle: workshop.fields.title,
-							startTime: workshopStartTime.toISOString(),
+							startTime: workshopStartTimeString,
+							startTimeAsDate: workshopStartTime.toISOString(),
 							timezone: workshop.fields.timezone || 'America/Los_Angeles',
+							rawStartsAt: workshop.fields.startsAt,
 						})
 
 						return {
 							ready: true,
-							workshopStartTime: workshopStartTime.toISOString(),
+							workshopStartTime: workshopStartTimeString, // Use original string to avoid timezone conversion
 						}
 					} catch (error) {
 						const errorMsg = `Failed to prep workshop ${workshop.id}: ${error}`
@@ -174,7 +174,7 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 			// Sleep until workshop start time (no nesting!)
 			await step.sleepUntil(
 				`wait-for-workshop-start-${workshop.id}`,
-				new Date(workshopPrep.workshopStartTime),
+				workshopPrep.workshopStartTime, // Pass the ISO string directly
 			)
 
 			// Now send the emails after the sleep
