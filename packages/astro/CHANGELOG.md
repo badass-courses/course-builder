@@ -1,5 +1,12 @@
 # @coursebuilder/astro
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9), [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)]:
+  - @coursebuilder/core@1.0.6
+
 ## 0.0.7
 
 ### Patch Changes

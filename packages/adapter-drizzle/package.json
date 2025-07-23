@@ -51,7 +51,7 @@
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",
-		"@coursebuilder/core": "1.0.5",
+		"@coursebuilder/core": "1.0.6",
 		"@libsql/client": "0.5.6",
 		"@types/better-sqlite3": "7.6.9",
 		"@types/uuid": "9.0.8",
