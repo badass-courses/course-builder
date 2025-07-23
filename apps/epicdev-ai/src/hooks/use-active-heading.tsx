@@ -1,6 +1,12 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import {
+	createContext,
+	useContext,
+	useMemo,
+	useState,
+	type ReactNode,
+} from 'react'
 
 export interface HeadingInfo {
 	slug: string
@@ -28,13 +34,16 @@ export function ActiveHeadingProvider({
 }: ActiveHeadingProviderProps) {
 	const [activeHeading, setActiveHeading] = useState<HeadingInfo | null>(null)
 
+	const contextValue = useMemo(
+		() => ({
+			activeHeading,
+			setActiveHeading,
+		}),
+		[activeHeading],
+	)
+
 	return (
-		<ActiveHeadingContext.Provider
-			value={{
-				activeHeading,
-				setActiveHeading,
-			}}
-		>
+		<ActiveHeadingContext.Provider value={contextValue}>
 			{children}
 		</ActiveHeadingContext.Provider>
 	)
