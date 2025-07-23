@@ -294,8 +294,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -2236,8 +2236,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -2900,8 +2900,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -4241,8 +4241,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -4905,8 +4905,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -5578,8 +5578,8 @@ importers:
         specifier: 15.4.2-canary.14
         version: 15.4.2-canary.14(@mdx-js/loader@3.1.0)(@mdx-js/react@3.1.0)
       '@next/third-parties':
-        specifier: 15.3.0-canary.31
-        version: 15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0)
+        specifier: 15.4.2-canary.14
+        version: 15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0)
       '@pinecone-database/pinecone':
         specifier: ^2.1.0
         version: 2.2.2
@@ -13795,8 +13795,8 @@ packages:
     dev: true
     optional: true
 
-  /@next/third-parties@15.3.0-canary.31(next@15.4.2-canary.14)(react@19.1.0):
-    resolution: {integrity: sha512-2kwGzemanB+IuF4lLc47iTMy3Evj3HYI98L6OggYdOj9MSNjLTLWUHDcDpmvN3tHmToHRaQVhKQWe+5tcIh+Cg==}
+  /@next/third-parties@15.4.2-canary.14(next@15.4.2-canary.14)(react@19.1.0):
+    resolution: {integrity: sha512-NRgK/oUaDZe4HPnFQG+eC3C/5KY5t2PRdZ1/ywcbN/hI39CMgGyj0yzbLF1VGi4RlT5tyzWgdHNNa40JXbS6FQ==}
     peerDependencies:
       next: ^13.0.0 || ^14.0.0 || ^15.0.0
       react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
