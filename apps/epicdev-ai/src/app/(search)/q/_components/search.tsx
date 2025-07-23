@@ -3,9 +3,9 @@
 import React from 'react'
 import Link from 'next/link'
 import {
-	TYPESENSE_COLLECTION_NAME,
-	typesenseInstantsearchAdapter,
-} from '@/utils/typesense-instantsearch-adapter'
+	createCompatibleInstantSearchAdapter,
+	getSearchCollectionName,
+} from '@/lib/search-query'
 import { Rss } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
@@ -58,13 +58,15 @@ function SearchWithErrorBoundary() {
 export default SearchWithErrorBoundary
 
 function Search() {
+	const instantSearchAdapter = createCompatibleInstantSearchAdapter()
+	const collectionName = getSearchCollectionName()
+
 	const [type, setType] = useQueryState('type')
 	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
 	const [tagsValue, setTagsValue] = useQueryState('tags')
-
 	const initialUiState = {
-		[TYPESENSE_COLLECTION_NAME]: {
+		[collectionName]: {
 			query: query || '',
 			refinementList: {
 				...(typeof type === 'string' && {
@@ -79,8 +81,8 @@ function Search() {
 
 	return (
 		<InstantSearchNext
-			searchClient={typesenseInstantsearchAdapter.searchClient}
-			indexName={TYPESENSE_COLLECTION_NAME}
+			searchClient={instantSearchAdapter.searchClient}
+			indexName={collectionName}
 			routing={false}
 			onStateChange={({ uiState, setUiState }) => {
 				try {
@@ -89,7 +91,7 @@ function Search() {
 						setState: (value: any) => void,
 					) {
 						const refinementList =
-							uiState[TYPESENSE_COLLECTION_NAME]?.refinementList?.[attribute]
+							uiState[collectionName]?.refinementList?.[attribute]
 						if (refinementList && refinementList.length > 0) {
 							setState(refinementList)
 						} else {
@@ -97,7 +99,7 @@ function Search() {
 						}
 					}
 
-					const searchQuery = uiState[TYPESENSE_COLLECTION_NAME]?.query
+					const searchQuery = uiState[collectionName]?.query
 					setQuery(searchQuery || null)
 
 					handleRefinementListChange('type', setType)

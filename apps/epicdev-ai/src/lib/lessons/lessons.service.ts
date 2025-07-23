@@ -12,6 +12,10 @@ import {
 	NewLessonInputSchema,
 	type LessonAction,
 } from '@/lib/lessons'
+import {
+	deleteResourceInTypeSense,
+	upsertResourceToTypeSense,
+} from '@/lib/search-query'
 import { Ability, subject } from '@casl/ability'
 import { and, asc, eq, inArray, or, sql } from 'drizzle-orm'
 
@@ -23,10 +27,6 @@ import {
 	writeLessonUpdateToDatabase,
 	writeNewLessonToDatabase,
 } from '../lessons-query'
-import {
-	deletePostInTypeSense,
-	upsertPostToTypeSense,
-} from '../typesense-query'
 import { getWorkshopsForLesson } from '../workshops-query'
 
 export class LessonError extends Error {
@@ -166,7 +166,7 @@ export async function createLesson({
 		// Index in TypeSense
 		try {
 			console.log('🔍 Indexing new lesson in Typesense:', lesson.id)
-			await upsertPostToTypeSense(lesson, 'save')
+			await upsertResourceToTypeSense(lesson, 'save')
 			console.log('✅ Lesson successfully indexed in Typesense')
 		} catch (error) {
 			console.error('⚠️ Failed to index lesson in Typesense:', {
@@ -328,7 +328,7 @@ export async function updateLesson({
 				lessonId: result.id,
 				action: actionResult.data,
 			})
-			await upsertPostToTypeSense(result, actionResult.data)
+			await upsertResourceToTypeSense(result, actionResult.data)
 			console.log('✅ Lesson successfully updated in Typesense')
 		} catch (error) {
 			console.error('⚠️ Failed to update lesson in Typesense:', {
@@ -399,7 +399,7 @@ export async function deleteLesson({
 		// Delete from TypeSense
 		try {
 			console.log('🔄 Deleting lesson from Typesense:', id)
-			await deletePostInTypeSense(id)
+			await deleteResourceInTypeSense(id)
 			console.log('✅ Lesson successfully deleted from Typesense')
 		} catch (error) {
 			console.error('⚠️ Failed to delete lesson from Typesense:', {

@@ -21,18 +21,28 @@ export class CourseBuilderError extends Error {
 		message?: string | Error | ErrorOptions,
 		errorOptions?: ErrorOptions,
 	) {
+		let finalMessage: string | undefined
+		let finalOptions: ErrorOptions | undefined
+
 		if (message instanceof Error) {
-			super(undefined, {
+			finalMessage = undefined
+			finalOptions = {
 				cause: { err: message, ...(message.cause as any), ...errorOptions },
-			})
-		} else if (typeof message === 'string') {
-			if (errorOptions instanceof Error) {
-				errorOptions = { err: errorOptions, ...(errorOptions.cause as any) }
 			}
-			super(message, errorOptions)
+		} else if (typeof message === 'string') {
+			finalMessage = message
+			if (errorOptions instanceof Error) {
+				finalOptions = { err: errorOptions, ...(errorOptions.cause as any) }
+			} else {
+				finalOptions = errorOptions
+			}
 		} else {
-			super(undefined, message)
+			finalMessage = undefined
+			finalOptions = message
 		}
+
+		super(finalMessage, finalOptions)
+
 		this.name = this.constructor.name
 		// @ts-expect-error https://github.com/microsoft/TypeScript/issues/3841
 		this.type = this.constructor.type ?? 'CourseBuilderError'

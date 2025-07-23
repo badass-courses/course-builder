@@ -99,6 +99,162 @@ export type TranscriptionUserConfig = Omit<
 	apiKey: string
 	callbackUrl: string
 }
+
+/**
+ * The configuration object for a search service provider.
+ */
+export interface SearchProviderConfig {
+	id: string
+	name: string
+	type: 'search'
+	options: SearchProviderConsumerConfig
+
+	// Client configuration
+	nodes: Array<{
+		host: string
+		port: number
+		protocol: 'http' | 'https'
+	}>
+	apiKey: string
+	writeApiKey?: string
+	connectionTimeoutSeconds?: number
+	defaultCollection?: string
+
+	// Core operations
+	upsertDocument(options: UpsertDocumentOptions): Promise<any>
+	deleteDocument(options: DeleteDocumentOptions): Promise<void>
+	searchDocuments(options: SearchDocumentOptions): Promise<SearchResults>
+	vectorSearch(options: VectorSearchOptions): Promise<SearchResults>
+	multiSearch(
+		searches: Array<{
+			collection: string
+			q: string
+			query_by?: string
+			filter_by?: string
+			vector_query?: string
+			exclude_fields?: string
+		}>,
+	): Promise<{ results: SearchResults[] }>
+	bulkIndex(options: BulkIndexOptions): Promise<void>
+
+	// Collection management
+	createCollection(options: CreateCollectionOptions): Promise<void>
+	deleteCollection(collectionName: string): Promise<void>
+	getCollection(collectionName: string): Promise<CollectionSchema>
+}
+
+export interface SearchProviderConsumerConfig {
+	apiKey: string
+	writeApiKey?: string
+	nodes: Array<{
+		host: string
+		port: number
+		protocol: 'http' | 'https'
+	}>
+	connectionTimeoutSeconds?: number
+	defaultCollection?: string
+}
+
+export interface UpsertDocumentOptions {
+	collectionName: string
+	document: Record<string, any>
+	id?: string
+}
+
+export interface DeleteDocumentOptions {
+	collectionName: string
+	documentId: string
+}
+
+export interface SearchDocumentOptions {
+	collectionName: string
+	query: string
+	queryBy?: string
+	filterBy?: string
+	sortBy?: string
+	facetBy?: string
+	maxFacetValues?: number
+	limit?: number
+	offset?: number
+	includeFields?: string
+	excludeFields?: string
+}
+
+export interface VectorSearchOptions {
+	collectionName: string
+	vectorQuery: string
+	k?: number
+	distanceThreshold?: number
+	filterBy?: string
+	excludeFields?: string
+}
+
+export interface BulkIndexOptions {
+	collectionName: string
+	documents: Record<string, any>[]
+	action?: 'create' | 'upsert' | 'update'
+	batchSize?: number
+}
+
+export interface CreateCollectionOptions {
+	name: string
+	fields: Array<{
+		name: string
+		type: string
+		facet?: boolean
+		optional?: boolean
+		index?: boolean
+	}>
+	default_sorting_field?: string
+}
+
+export interface SearchResults {
+	hits: Array<{
+		document: Record<string, any>
+		text_match?: number
+		text_match_info?: any
+	}>
+	found: number
+	out_of: number
+	page: number
+	request_params: Record<string, any>
+	search_time_ms: number
+	facet_counts?: Array<{
+		field_name: string
+		counts: Array<{
+			count: number
+			highlighted: string
+			value: string
+		}>
+	}>
+}
+
+export interface CollectionSchema {
+	name: string
+	num_documents: number
+	fields: Array<{
+		name: string
+		type: string
+		facet: boolean
+		index: boolean
+		optional: boolean
+	}>
+	default_sorting_field: string
+	created_at: number
+}
+
+export type SearchProviderUserConfig = Omit<
+	Partial<SearchProviderConfig>,
+	'options' | 'type'
+> & {
+	apiKey: string
+	nodes: Array<{
+		host: string
+		port: number
+		protocol: 'http' | 'https'
+	}>
+}
+
 /**
  * The user configuration object for a transcription service provider.
  */
@@ -110,6 +266,7 @@ export type ProviderType =
 	| 'checkout'
 	| 'email'
 	| 'notification'
+	| 'search'
 
 interface InternalProviderOptions {
 	/** Used to deep merge user-provided config with the default config
@@ -143,6 +300,7 @@ export type Provider<P = any> = (
 			| EmailConfig
 			| NodemailerConfig
 			| NotificationProviderConfig
+			| SearchProviderConfig
 	  ) &
 			InternalProviderOptions)
 	| ((
@@ -156,6 +314,7 @@ export type Provider<P = any> = (
 			| EmailConfig
 			| NodemailerConfig
 			| NotificationProviderConfig
+			| SearchProviderConfig
 	  ) &
 			InternalProviderOptions)
 ) &

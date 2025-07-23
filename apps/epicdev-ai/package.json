@@ -70,7 +70,6 @@
 		"@coursebuilder/utils-file": "workspace:*",
 		"@coursebuilder/utils-media": "workspace:*",
 		"@coursebuilder/utils-resource": "workspace:*",
-		"@coursebuilder/utils-search": "workspace:*",
 		"@coursebuilder/utils-seo": "workspace:*",
 		"@coursebuilder/utils-string": "workspace:*",
 		"@coursebuilder/utils-timezones": "workspace:*",

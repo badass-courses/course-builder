@@ -18,6 +18,7 @@ import {
 	type EventSeries,
 	type EventSeriesFormData,
 } from '@/lib/events'
+import { upsertResourceToTypeSense } from '@/lib/search-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
@@ -36,7 +37,6 @@ import { EmailSchema, type NewEmail } from './emails'
 import { createEmail } from './emails-query'
 import { getMinimalProductInfoWithoutUser } from './posts-query'
 import { addResourceToProduct, createProduct } from './products-query'
-import { upsertPostToTypeSense } from './typesense-query'
 
 export async function getEvent(eventIdOrSlug: string) {
 	const eventData = await db.query.contentResource.findFirst({
@@ -258,7 +258,7 @@ export async function updateEvent(
 	}
 
 	try {
-		await upsertPostToTypeSense(
+		await upsertResourceToTypeSense(
 			{
 				...currentEvent,
 				resources: [],
@@ -702,7 +702,7 @@ export async function createEvent(input: EventFormData) {
 		console.error(`Error dispatching ${RESOURCE_CREATED_EVENT}`, error)
 	}
 
-	await upsertPostToTypeSense(parsedResource.data, 'save')
+	await upsertResourceToTypeSense(parsedResource.data, 'save')
 	return parsedResource.data
 }
 
@@ -1032,9 +1032,9 @@ export async function createEventSeries(input: EventSeriesFormData): Promise<{
 
 		// Step 6: Update TypeSense (outside transaction)
 		try {
-			await upsertPostToTypeSense(eventSeries, 'save')
+			await upsertResourceToTypeSense(eventSeries, 'save')
 			for (const childEvent of childEvents) {
-				await upsertPostToTypeSense(childEvent, 'save')
+				await upsertResourceToTypeSense(childEvent, 'save')
 			}
 		} catch (error) {
 			await log.error('event.series.typesense.failed', {

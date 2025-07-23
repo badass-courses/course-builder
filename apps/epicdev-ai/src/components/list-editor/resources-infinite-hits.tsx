@@ -2,9 +2,9 @@ import React from 'react'
 import { SearchBox } from '@/app/(search)/q/_components/instantsearch/searchbox'
 import Spinner from '@/components/spinner'
 import { addPostToList } from '@/lib/lists-query'
-import type { TypesenseResource } from '@/lib/typesense'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
+import type { SearchableResource } from '@coursebuilder/core/providers/search/schemas'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Button, DialogTrigger } from '@coursebuilder/ui'
 
@@ -19,7 +19,9 @@ export function ResourcesInfiniteHits({
 	list: ContentResource
 	updateTreeState: React.ActionDispatch<[action: TreeAction]>
 }) {
-	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
+	const { items, showMore, isLastPage } = useInfiniteHits<SearchableResource>(
+		{},
+	)
 	const { refresh } = useInstantSearch()
 
 	const {

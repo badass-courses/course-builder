@@ -7,6 +7,10 @@ import {
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
 } from '@/db/schema'
+import {
+	deleteResourceInTypeSense,
+	upsertResourceToTypeSense,
+} from '@/lib/search-query'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
@@ -17,7 +21,6 @@ import { z } from 'zod'
 import { ListSchema, type ListUpdate } from './lists'
 import { PostSchema } from './posts'
 import { updatePost } from './posts-query'
-import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 export async function createList(input: {
 	title: string
@@ -48,7 +51,7 @@ export async function createList(input: {
 	const list = await getList(newListId)
 
 	try {
-		list && (await upsertPostToTypeSense(list, 'save'))
+		list && (await upsertResourceToTypeSense(list, 'save'))
 	} catch (e) {
 		console.error(`Failed to index ${newListId} in Typesense`, e)
 	}
@@ -406,7 +409,7 @@ export async function updateList(
 	}
 
 	try {
-		await upsertPostToTypeSense(currentList, action)
+		await upsertResourceToTypeSense(currentList, action)
 	} catch (e) {
 		console.error('Failed to update post in Typesense', e)
 	}
@@ -454,7 +457,7 @@ export async function deleteList(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	await deletePostInTypeSense(list.id)
+	await deleteResourceInTypeSense(list.id)
 
 	revalidateTag('lists')
 	revalidateTag(id)
@@ -513,7 +516,7 @@ export async function updateListItemFields(
 						: {}),
 				},
 			})
-			await upsertPostToTypeSense(result as any, 'save')
+			await upsertResourceToTypeSense(result as any, 'save')
 		}
 	}
 

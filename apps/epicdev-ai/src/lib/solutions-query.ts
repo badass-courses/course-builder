@@ -9,6 +9,10 @@ import {
 } from '@/db/schema'
 import { generateContentHash } from '@/lib/post-utils'
 import {
+	deleteResourceInTypeSense,
+	upsertResourceToTypeSense,
+} from '@/lib/search-query'
+import {
 	NewSolutionInputSchema,
 	Solution,
 	SolutionSchema,
@@ -24,8 +28,6 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
-
-import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 /**
  * Get a solution for a specific lesson
@@ -181,7 +183,7 @@ export async function createSolution({
 		})
 
 		try {
-			await upsertPostToTypeSense(solution, 'save')
+			await upsertResourceToTypeSense(solution, 'save')
 			await log.info('solution.typesense.indexed', {
 				solutionId: solution.id,
 				action: 'save',
@@ -252,7 +254,7 @@ export async function updateSolution(input: Partial<Solution>) {
 			})
 
 		try {
-			await upsertPostToTypeSense(
+			await upsertResourceToTypeSense(
 				{
 					...currentSolution,
 					fields: {
@@ -334,7 +336,7 @@ export async function deleteSolution(solutionId: string) {
 			.where(eq(contentResourceResource.resourceId, solutionId))
 
 		try {
-			await deletePostInTypeSense(solutionId)
+			await deleteResourceInTypeSense(solutionId)
 			await log.info('solution.delete.typesense.success', { solutionId })
 		} catch (error) {
 			await log.error('solution.delete.typesense.failed', {
@@ -558,7 +560,7 @@ export const writeSolutionUpdateToDatabase = async (
 	}
 
 	try {
-		await upsertPostToTypeSense(updatedSolution.data, 'save')
+		await upsertResourceToTypeSense(updatedSolution.data, 'save')
 		console.log('✅ Successfully upserted solution to TypeSense')
 	} catch (error) {
 		console.error(
@@ -616,7 +618,7 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 			console.log('✅ Lesson-solution link created')
 
 			try {
-				await upsertPostToTypeSense(solution, 'save')
+				await upsertResourceToTypeSense(solution, 'save')
 				console.log('✅ Successfully indexed solution in TypeSense')
 			} catch (error) {
 				console.error('⚠️ Failed to index solution in TypeSense:', {
@@ -654,7 +656,7 @@ export async function deleteSolutionFromDatabase(solutionId: string) {
 			.where(eq(contentResourceResource.resourceId, solutionId))
 
 		try {
-			await deletePostInTypeSense(solutionId)
+			await deleteResourceInTypeSense(solutionId)
 			console.log('✅ Successfully deleted solution from TypeSense')
 		} catch (error) {
 			console.error('⚠️ Failed to delete solution from TypeSense:', {

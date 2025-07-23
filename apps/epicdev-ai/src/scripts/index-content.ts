@@ -1,5 +1,5 @@
 import { db } from '@/db'
-import { indexAllContentToTypeSense } from '@/lib/typesense-query'
+import { indexAllContentToTypeSense } from '@/lib/search-query'
 
 const SHOULD_DELETE_ALL_FIRST = true
 

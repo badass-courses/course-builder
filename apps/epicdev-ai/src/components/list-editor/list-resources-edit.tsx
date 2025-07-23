@@ -2,11 +2,11 @@ import * as React from 'react'
 import { useReducer } from 'react'
 import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
-import { track } from '@/utils/analytics'
 import {
-	TYPESENSE_COLLECTION_NAME,
-	typesenseInstantsearchAdapter,
-} from '@/utils/typesense-instantsearch-adapter'
+	createCompatibleInstantSearchAdapter,
+	getSearchCollectionName,
+} from '@/lib/search-query'
+import { track } from '@/utils/analytics'
 import { Plus, Search } from 'lucide-react'
 import { useInstantSearch } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
@@ -88,6 +88,9 @@ export default function ListResourcesEdit({
 	list: ContentResource
 	config?: Partial<ListEditorConfig>
 }) {
+	const instantSearchAdapter = createCompatibleInstantSearchAdapter()
+	const collectionName = getSearchCollectionName()
+
 	const config = createListEditorConfig(userConfig || {})
 	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
 	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
@@ -198,14 +201,14 @@ export default function ListResourcesEdit({
 	return (
 		<SelectionProvider list={list}>
 			<InstantSearchNext
-				searchClient={typesenseInstantsearchAdapter.searchClient}
-				indexName={TYPESENSE_COLLECTION_NAME}
+				searchClient={instantSearchAdapter.searchClient}
+				indexName={collectionName}
 				routing={false}
 				onStateChange={({ uiState, setUiState }) => {
 					setUiState(uiState)
 				}}
 				initialUiState={{
-					[TYPESENSE_COLLECTION_NAME as string]: {
+					[collectionName as string]: {
 						query: '',
 						refinementList: {
 							type: ['post', 'lesson', 'section', 'article'],

@@ -79,3 +79,14 @@ export interface CourseBuilderConfig {
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'
+
+// Search Provider
+export { default as TypesenseProvider } from './providers/typesense'
+export {
+	createContentSearchAdapter,
+	createTypesenseInstantSearchAdapter,
+	getSearchCollectionName,
+	TypesenseAdapter,
+	ContentIndexingService,
+} from './providers/search/index'
+export type { SearchProviderConfig } from './providers'
