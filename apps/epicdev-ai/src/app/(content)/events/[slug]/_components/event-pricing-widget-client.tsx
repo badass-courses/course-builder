@@ -10,10 +10,12 @@ import { cn } from '@coursebuilder/utils-ui/cn'
 
 import { EventDetailsMobile } from './event-details'
 import type { EventPageProps } from './event-page-props'
+import type { PurchaseData } from './purchase-data-provider'
 
-export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
-	props,
-) => {
+export const EventPricingWidgetClient: React.FC<{
+	purchaseDataPromise: Promise<PurchaseData>
+}> = ({ purchaseDataPromise }) => {
+	const purchaseData = React.use(purchaseDataPromise)
 	const {
 		event,
 		mdx,
@@ -24,7 +26,8 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 		pricingDataLoader,
 		hasPurchasedCurrentProduct,
 		...commerceProps
-	} = props
+	} = purchaseData
+
 	const { fields } = event
 	const { startsAt } = fields
 	const product = products && products[0]
@@ -41,8 +44,12 @@ export const EventPricingWidgetContainer: React.FC<EventPageProps> = (
 	const ref = React.useRef<HTMLDivElement>(null)
 	const isInView = useInView(ref, { margin: '0px 0px 0% 0px' })
 
+	if (hasPurchasedCurrentProduct) {
+		return null
+	}
+
 	return (
-		<div ref={ref} className="dark:border-t-foreground/10 border-t py-5">
+		<div ref={ref} className="py-5">
 			{product && product.status === 1 && isUpcoming && (
 				<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
 					<PricingWidget

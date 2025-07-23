@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -83,6 +83,14 @@ export async function getEvent(eventIdOrSlug: string) {
 
 	return parsedEvent.data
 }
+
+export const getCachedEventOrEventSeries = unstable_cache(
+	async (eventIdOrSlug: string) => {
+		return await getEventOrEventSeries(eventIdOrSlug)
+	},
+	['events'],
+	{ revalidate: 3600, tags: ['events'] },
+)
 
 export async function getEventOrEventSeries(eventIdOrSlug: string) {
 	const eventData = await db.query.contentResource.findFirst({

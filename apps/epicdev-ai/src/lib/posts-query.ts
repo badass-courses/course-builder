@@ -155,17 +155,13 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
@@ -405,17 +401,13 @@ export const getCachedPost = unstable_cache(
 )
 
 export async function getPost(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public', 'unlisted']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
