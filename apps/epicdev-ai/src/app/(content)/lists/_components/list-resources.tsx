@@ -16,7 +16,7 @@ export default function ListResources({ list }: { list: List }) {
 
 	React.useEffect(() => {
 		router.prefetch(firstResourceHref)
-	}, [firstResourceHref])
+	}, [firstResourceHref, router])
 
 	return (
 		<aside className="md:bg-muted col-span-2 border-l dark:md:bg-transparent">

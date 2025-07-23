@@ -64,7 +64,7 @@ export function PostPlayer({
 
 	React.useEffect(() => {
 		setMuxPlayerRef(playerRef)
-	}, [playerRef])
+	}, [playerRef, setMuxPlayerRef])
 
 	const playerProps = {
 		playsInline: true,

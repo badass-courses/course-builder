@@ -135,7 +135,6 @@ const TeamToggle = ({
 					<button
 						type="button"
 						aria-label="Switch to team pricing"
-						aria-checked={isTeamPurchaseActive}
 						onClick={() => {
 							toggleTeamPurchase()
 						}}

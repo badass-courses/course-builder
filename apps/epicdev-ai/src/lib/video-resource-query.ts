@@ -1,5 +1,6 @@
 'use server'
 
+import { unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
 import {
@@ -11,7 +12,17 @@ import { log } from '@/server/logger'
 import { and, desc, eq, inArray, lt, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
+import { type VideoResource } from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+
+// Cached version of getVideoResource to prevent PPR bailout
+export const getCachedVideoResource = unstable_cache(
+	async (videoId: string | null | undefined): Promise<VideoResource | null> => {
+		return await courseBuilderAdapter.getVideoResource(videoId)
+	},
+	['video-resource'],
+	{ revalidate: 3600, tags: ['video-resource'] },
+)
 
 export async function getVideoResource(id: string | null | undefined) {
 	return courseBuilderAdapter.getVideoResource(id)

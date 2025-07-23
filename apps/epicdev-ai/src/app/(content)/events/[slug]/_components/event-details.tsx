@@ -76,7 +76,9 @@ export const EventDetails: React.FC<{
 		)
 
 		return (
-			<div className={cn('flex flex-col p-6')}>
+			<div
+				className={cn('dark:border-foreground/5 flex flex-col border-b p-6')}
+			>
 				<div className="flex flex-col gap-6">
 					{Object.values(groupedEvents).map((eventData, index) => (
 						<div
@@ -175,7 +177,7 @@ export const EventDetails: React.FC<{
 	)
 
 	return (
-		<div className={cn('flex flex-col p-6')}>
+		<div className={cn('dark:border-foreground/5 flex flex-col border-b p-6')}>
 			<div className="flex flex-col gap-3 text-base font-normal">
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-semibold opacity-90 dark:text-white">
