@@ -66,6 +66,9 @@ export function StartLearningWorkshopButton({
 		)
 	}
 
+	return null
+
+	// preview not available
 	return (
 		<>
 			<Button

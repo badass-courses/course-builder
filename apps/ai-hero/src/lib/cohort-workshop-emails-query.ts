@@ -110,20 +110,18 @@ export async function getUsersEntitledToWorkshops(
 }
 
 /**
- * Filters workshops starting on the current UTC date, but in the specified timezone.
+ * Filters workshops starting on the same UTC calendar date as the cron run.
  *
  * This is designed for a cron running at midnight UTC that needs to find workshops
- * starting "today" (same UTC calendar date) but in PT timezone.
+ * starting on the same UTC calendar date.
  *
- * Example: Cron runs 2025-07-18T00:00:00Z (midnight UTC July 18th)
- * → Finds workshops starting July 18th in PT timezone
- * → Even though it's still July 17th evening in PT when cron runs
+ * Example: Cron runs 2025-07-23T00:00:00Z (midnight UTC July 23rd)
+ * → Finds workshops starting on July 23rd UTC (regardless of timezone)
  *
  * @param mockDate - When provided, uses this date instead of current time for testing.
  */
 export async function getWorkshopsStartingToday(
 	workshops: Workshop[],
-	timezone: string = 'America/Los_Angeles',
 	mockDate?: Date | string,
 ): Promise<Workshop[]> {
 	// Use provided mock date or current time
@@ -136,46 +134,48 @@ export async function getWorkshopsStartingToday(
 	const targetDate = utcDate
 
 	await log.info('Workshop search debug info', {
-		timezone,
 		targetDate,
 		utcDate,
 		mockDate: mockDate?.toString(),
 		currentRealTime: new Date().toISOString(),
 		timeUsedForCalculation: now.toISOString(),
-		explanation: `Looking for workshops starting ${targetDate} in ${timezone} timezone`,
+		explanation: `Looking for workshops starting on UTC date ${targetDate}`,
 	})
+
 	// Log each workshop check
 	for (const workshop of workshops) {
 		if (!workshop.fields.startsAt) continue
 
-		const workshopDateInTimezone = formatInTimeZone(
+		// Compare UTC dates consistently - workshop start date in UTC
+		const workshopDateUTC = formatInTimeZone(
 			new Date(workshop.fields.startsAt),
-			timezone,
+			'UTC',
 			'yyyy-MM-dd',
 		)
 
-		const matches = workshopDateInTimezone === targetDate
+		const matches = workshopDateUTC === targetDate
 
 		await log.info('Workshop date check', {
 			workshopId: workshop.id,
 			workshopStartsAt: workshop.fields.startsAt,
-			workshopDateInTimezone,
+			workshopDateUTC,
 			targetDate,
 			matches,
 		})
 	}
 
-	// Filter workshops
+	// Filter workshops - compare UTC dates consistently
 	const filteredWorkshops = workshops.filter((workshop) => {
 		if (!workshop.fields.startsAt) return false
 
-		const workshopDateInTimezone = formatInTimeZone(
+		// Compare UTC dates consistently - workshop start date in UTC
+		const workshopDateUTC = formatInTimeZone(
 			new Date(workshop.fields.startsAt),
-			timezone,
+			'UTC',
 			'yyyy-MM-dd',
 		)
 
-		return workshopDateInTimezone === targetDate
+		return workshopDateUTC === targetDate
 	})
 
 	await log.info('Workshop filtering complete', {
