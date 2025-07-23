@@ -148,8 +148,7 @@ async function getRemindersNeedingScheduling(
 		if (
 			!event ||
 			!event.fields.startsAt ||
-			event.fields.state !== 'published' ||
-			event.fields.visibility !== 'public'
+			event.fields.state !== 'published'
 		) {
 			continue
 		}
