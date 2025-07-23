@@ -76,8 +76,8 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@types/react": "19.0.7",
-		"@types/react-dom": "19.0.3",
+		"@types/react": "19.1.8",
+		"@types/react-dom": "19.1.6",
 		"@types/react-gravatar": "^2.6.13"
 	}
 }

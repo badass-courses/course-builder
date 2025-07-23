@@ -107,7 +107,7 @@
 		"@types/node": "^20.12.5",
 		"@types/pg": "^8.11.6",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "19.0.7",
+		"@types/react": "19.1.8",
 		"@types/react-gravatar": "^2.6.13",
 		"concurrently": "^8.2.2",
 		"dotenv-cli": "^7.3.0",
