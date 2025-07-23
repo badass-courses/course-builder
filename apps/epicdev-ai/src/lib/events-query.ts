@@ -1497,7 +1497,10 @@ export async function getEventPurchasers(
 
 		// Find all purchases of these products
 		const eventPurchases = await db.query.purchases.findMany({
-			where: inArray(purchases.productId, productIds),
+			where: and(
+				inArray(purchases.productId, productIds),
+				eq(purchases.status, 'Valid'),
+			),
 			with: {
 				user: true,
 			},
