@@ -69,7 +69,7 @@ export const WordEditor: React.FC<WordEditorProps> = ({
 							onSave(true)
 						}
 					}}
-					className="rounded border border-blue-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+					className="focus:outline-hidden rounded border border-blue-300 px-2 py-1 text-sm focus:ring-2 focus:ring-blue-400"
 				/>
 				<button
 					onClick={() => onSave(false)}

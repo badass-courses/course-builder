@@ -13,6 +13,7 @@
  * @param options.ReplyTo - Optional reply-to email address
  * @param options.From - Optional sender email (defaults to site title and support email)
  * @param options.type - Message stream type: 'transactional' (default) or 'broadcast'
+ * @param options.attachments - Optional array of email attachments
  *
  * @returns Promise that resolves to the Postmark API response or the options object if SKIP_EMAIL is set
  *
@@ -29,6 +30,21 @@
  *   To: 'user@example.com',
  *   ReplyTo: 'support@example.com'
  * })
+ *
+ * // Send an email with attachments
+ * const response = await sendAnEmail({
+ *   Component: WelcomeEmail,
+ *   componentProps: { userName: 'John' },
+ *   Subject: 'Welcome to Our Service',
+ *   To: 'user@example.com',
+ *   attachments: [
+ *     {
+ *       Name: 'calendar-event.ics',
+ *       Content: 'base64-encoded-ics-content',
+ *       ContentType: 'text/calendar'
+ *     }
+ *   ]
+ * })
  * ```
  */
 export async function sendAnEmail<ComponentPropsType = any>({
@@ -39,6 +55,7 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	ReplyTo,
 	From,
 	type = 'transactional',
+	attachments,
 }: {
 	Component: (props: ComponentPropsType) => React.JSX.Element
 	componentProps: ComponentPropsType
@@ -47,6 +64,12 @@ export async function sendAnEmail<ComponentPropsType = any>({
 	ReplyTo?: string
 	To: string
 	type?: 'transactional' | 'broadcast'
+	attachments?: Array<{
+		Name: string
+		Content: string
+		ContentType: string
+		ContentID?: string
+	}>
 }) {
 	// Import dependencies
 	const { render } = await import('@react-email/render')
@@ -68,13 +91,18 @@ export async function sendAnEmail<ComponentPropsType = any>({
 		siteTitle && supportEmail ? `${siteTitle} <${supportEmail}>` : undefined
 
 	// Set up email options
-	const options = {
+	const options: any = {
 		From: From || defaultFrom,
 		To,
 		Subject,
 		ReplyTo,
 		HtmlBody: emailHtml,
 		MessageStream,
+	}
+
+	// Add attachments if provided
+	if (attachments && attachments.length > 0) {
+		options.Attachments = attachments
 	}
 
 	// Skip sending email if SKIP_EMAIL environment variable is set

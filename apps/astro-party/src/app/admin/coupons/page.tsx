@@ -33,11 +33,11 @@ export default async function AdminCouponPage() {
 			<div className="flex items-center">
 				<h1 className="text-lg font-semibold md:text-2xl">Coupons</h1>
 			</div>
-			<section className=" w-full max-w-screen-lg space-y-5 px-5 py-8">
+			<section className="max-w-(--breakpoint-lg) w-full space-y-5 px-5 py-8">
 				<h2 className="text-lg font-semibold md:text-2xl">Create new</h2>
 				<CouponGeneratorForm productsLoader={productsLoader} />
 			</section>
-			<section className="w-full max-w-screen-lg border-t px-5 pt-10">
+			<section className="max-w-(--breakpoint-lg) w-full border-t px-5 pt-10">
 				<h2 className="text-lg font-semibold md:text-2xl">History</h2>
 				<CouponDataTable coupons={coupons} />
 			</section>

@@ -21,7 +21,7 @@ export function CreatePost() {
 	const router = useRouter()
 	return (
 		<NewResourceWithVideoForm
-			className="[&_label]:fluid-lg [&_label]:font-heading [&_[data-sr-button]]:h-10 [&_label]:font-semibold"
+			className="[&_label]:fluid-lg [&_label]:font-heading **:data-sr-button:h-10 [&_label]:font-semibold"
 			onResourceCreated={async (resource: ContentResource) => {
 				router.push(
 					`/${pluralize(resource.type)}/${resource.fields?.slug || resource.id}/edit`,

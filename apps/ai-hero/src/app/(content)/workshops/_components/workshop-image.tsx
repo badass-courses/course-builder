@@ -35,7 +35,7 @@ export default function WorkshopImage({ imageUrl }: { imageUrl: string }) {
 				sizes="(max-width: 768px) 100vw, 480px"
 			/>
 			<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
-				<PlayIcon className="relative h-5 w-5 translate-x-[1px]" />
+				<PlayIcon className="relative h-5 w-5 translate-x-px" />
 				<span className="sr-only">Start Learning</span>
 			</div>
 		</Link>

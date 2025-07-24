@@ -15,6 +15,7 @@ import {
 	contributionTypes,
 	products,
 	purchases,
+	resourceProgress,
 } from '@/db/schema'
 import {
 	NewPostInput,
@@ -154,17 +155,13 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
@@ -404,17 +401,13 @@ export const getCachedPost = unstable_cache(
 )
 
 export async function getPost(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public', 'unlisted']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
@@ -1258,4 +1251,54 @@ export async function getMinimalProductInfoWithoutUser(
 	}
 
 	return ProductForPostPropsSchema.parse(props)
+}
+
+export async function getPostsWithCompletionCounts() {
+	try {
+		const postsWithCounts = await db
+			.select({
+				id: contentResource.id,
+				title: sql`JSON_EXTRACT(${contentResource.fields}, "$.title")`,
+				slug: sql`JSON_EXTRACT(${contentResource.fields}, "$.slug")`,
+				state: sql`JSON_EXTRACT(${contentResource.fields}, "$.state")`,
+				postType: sql`JSON_EXTRACT(${contentResource.fields}, "$.postType")`,
+				completionCount: count(resourceProgress.userId),
+				createdAt: contentResource.createdAt,
+			})
+			.from(contentResource)
+			.leftJoin(
+				resourceProgress,
+				and(
+					eq(contentResource.id, resourceProgress.resourceId),
+					sql`${resourceProgress.completedAt} IS NOT NULL`,
+				),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'post'),
+					eq(
+						sql`JSON_EXTRACT(${contentResource.fields}, "$.state")`,
+						'published',
+					),
+					eq(
+						sql`JSON_EXTRACT(${contentResource.fields}, "$.visibility")`,
+						'public',
+					),
+				),
+			)
+			.groupBy(contentResource.id)
+			.orderBy(desc(count(resourceProgress.userId)))
+
+		await log.info('posts.completions.fetch.success', {
+			count: postsWithCounts.length,
+		})
+
+		return postsWithCounts
+	} catch (error) {
+		await log.error('posts.completions.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
+		return []
+	}
 }

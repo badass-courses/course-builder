@@ -52,7 +52,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] w-full items-center justify-between print:hidden',
+				'h-(--nav-height) relative z-50 flex w-full items-center justify-between print:hidden',
 				{
 					'px-5': !withContainer,
 				},
@@ -81,14 +81,14 @@ const Navigation = ({
 							href="/"
 							className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
 						>
-							<Logo className="[&_svg]:hover:text-primary origin-left [&_svg]:transition" />
+							<Logo className="hover:[&_svg]:text-primary origin-left [&_svg]:transition" />
 						</Link>
 					</Button>
 				</span>
 				{links.length > 0 && (
 					<nav
 						className={cn(
-							'absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 ring-gray-800/[.075] backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
+							'ring-gray-800/7.5 absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
 							{
 								'hidden md:flex': true, // links.length > 3,
 							},

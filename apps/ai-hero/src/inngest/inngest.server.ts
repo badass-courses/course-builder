@@ -57,8 +57,10 @@ import {
 } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
 import type {
+	PURCHASE_TRANSFERRED_API_EVENT,
 	PURCHASE_TRANSFERRED_EVENT,
 	PurchaseTransferred,
+	PurchaseTransferredApi,
 } from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
@@ -68,6 +70,10 @@ import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
+import {
+	COHORT_UPDATED_EVENT,
+	CohortUpdatedPayload,
+} from './events/cohort-management'
 import {
 	CONCEPT_SELECTED,
 	CONCEPT_TAGS_REQUESTED,
@@ -112,8 +118,10 @@ export type Events = {
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
 	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
+	[PURCHASE_TRANSFERRED_API_EVENT]: PurchaseTransferredApi
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
+	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 }
 
 const callbackBase =

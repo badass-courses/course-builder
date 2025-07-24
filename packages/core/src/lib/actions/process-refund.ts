@@ -14,38 +14,32 @@ export async function processRefund(
 	}
 
 	try {
-		const merchantChargeId =
+		const chargeId =
+			(request.query?.stripeChargeId as string) ||
+			(request.body?.stripeChargeId as string) ||
 			(request.query?.merchantChargeId as string) ||
 			(request.body?.merchantChargeId as string)
 
-		if (!merchantChargeId) throw new Error('No merchant charge id')
-
-		console.log('refunding purchase for:', merchantChargeId)
-
-		const merchantCharge =
-			await options.adapter?.getMerchantCharge(merchantChargeId)
-
-		let refund
-
-		if (!merchantCharge) {
-			refund = options.provider.refundCharge(merchantChargeId)
-		} else {
-			refund = options.provider.refundCharge(merchantCharge.identifier)
+		if (!chargeId) {
+			throw new Error('No stripe charge id')
 		}
+
+		console.log('refunding purchase for:', chargeId)
+
+		// Always refund using the Stripe charge ID
+		const refund = await options.provider.refundCharge(chargeId)
 
 		try {
 			await options.inngest.send({
 				name: REFUND_PROCESSED_EVENT,
 				data: {
-					merchantChargeId,
+					stripeChargeId: chargeId,
+					merchantChargeId: chargeId, // for backward compatibility
 				},
 			})
 		} catch (e) {
 			console.log('error', e)
 		}
-
-		// internally we handle this via stripe webhook for a refund
-		// so no need to do anything else here
 
 		return {
 			status: 200,

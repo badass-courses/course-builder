@@ -48,7 +48,7 @@ export function StartLearningWorkshopButton({
 		const formattedDate = formatInTimeZone(
 			new Date(workshop?.fields?.startsAt || ''),
 			'America/Los_Angeles',
-			`MMM d, yyyy 'at' h:mm a z`,
+			`MMM d, yyyy 'at' h:mm a`,
 		)
 
 		return (
@@ -61,11 +61,14 @@ export function StartLearningWorkshopButton({
 				)}
 				disabled
 			>
-				Available {formattedDate}
+				Available {formattedDate} (PT)
 			</Button>
 		)
 	}
 
+	return null
+
+	// preview not available
 	return (
 		<>
 			<Button

@@ -1,5 +1,27 @@
 # @coursebuilder/commerce-next
 
+## 0.0.14
+
+### Patch Changes
+
+- [#516](https://github.com/badass-courses/course-builder/pull/516)
+  [`83e1ff4`](https://github.com/badass-courses/course-builder/commit/83e1ff4e5960bb9897c2444a2424026cd1ed903c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade tailwind to v4
+
+- [#534](https://github.com/badass-courses/course-builder/pull/534)
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bumps next version
+
+- Updated dependencies
+  [[`83e1ff4`](https://github.com/badass-courses/course-builder/commit/83e1ff4e5960bb9897c2444a2424026cd1ed903c),
+  [`b2ac781`](https://github.com/badass-courses/course-builder/commit/b2ac781b15ec695d40c87bbef29fd21c9a9593c4),
+  [`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9),
+  [`8f4bb1c`](https://github.com/badass-courses/course-builder/commit/8f4bb1c0cee7296841f40564f43910ccf743752b),
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)]:
+  - @coursebuilder/ui@2.0.7
+  - @coursebuilder/core@1.0.6
+  - @coursebuilder/email-templates@1.0.6
+
 ## 0.0.13
 
 ### Patch Changes

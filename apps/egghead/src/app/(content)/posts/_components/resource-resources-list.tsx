@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { useReducer } from 'react'
-import { useRouter } from 'next/navigation'
 import {
 	getInitialTreeState,
 	treeStateReducer,
@@ -14,11 +13,8 @@ import {
 	addEggheadLessonToPlaylist,
 	addResourceToResource,
 	createPost,
-	getPost,
-	removeEggheadLessonFromPlaylist,
 	removePostFromCoursePost,
 } from '@/lib/posts-query'
-import { createResource } from '@/lib/resources/create-resources'
 import { addLessonToSanityCourse } from '@/lib/sanity-content-query'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -51,8 +47,16 @@ function formReducer(state: FormState, action: FormAction): FormState {
 
 export function ResourceResourcesList({
 	resource,
+	onItemEdit,
 }: {
 	resource: ContentResource
+	onItemEdit?: ({
+		itemId,
+		item,
+	}: {
+		itemId: string
+		item: ContentResource
+	}) => void
 }) {
 	const [formState, formDispatch] = useReducer(formReducer, {
 		activeForm: null,
@@ -123,7 +127,6 @@ export function ResourceResourcesList({
 		initialData,
 		getInitialTreeState,
 	)
-	const router = useRouter()
 	const { toast } = useToast()
 
 	const handleResourceCreated = async (createdResource: ContentResource) => {
@@ -187,6 +190,32 @@ export function ResourceResourcesList({
 						})
 					}
 				}}
+				onItemEdit={
+					onItemEdit
+						? async ({ itemId }: { itemId: string }) => {
+								// Find the resource in the tree data
+								const findItemInTree = (
+									items: any[],
+								): ContentResource | null => {
+									for (const item of items) {
+										if (item.id === itemId && item.itemData?.resource) {
+											return item.itemData.resource
+										}
+										if (item.children?.length > 0) {
+											const found = findItemInTree(item.children)
+											if (found) return found
+										}
+									}
+									return null
+								}
+
+								const item = findItemInTree(state.data)
+								if (item && onItemEdit) {
+									onItemEdit({ itemId, item })
+								}
+							}
+						: undefined
+				}
 			/>
 			<div className="flex flex-col gap-1">
 				{formState.activeForm === 'lesson' && (
@@ -207,22 +236,26 @@ export function ResourceResourcesList({
 						}
 					/>
 				)}
-				<div className="flex gap-1 px-5">
-					<Button
-						onClick={() => formDispatch({ type: 'SHOW_LESSON_FORM' })}
-						className="mt-2"
-						variant="outline"
-					>
-						+ add a lesson
-					</Button>
-					<Button
-						onClick={() => formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })}
-						className="mt-2"
-						variant="outline"
-					>
-						+ add existing lesson
-					</Button>
-				</div>
+				{resource?.fields?.postType === 'course' && (
+					<div className="flex gap-1 px-5">
+						<Button
+							onClick={() => formDispatch({ type: 'SHOW_LESSON_FORM' })}
+							className="mt-2"
+							variant="outline"
+						>
+							+ add a lesson
+						</Button>
+						<Button
+							onClick={() =>
+								formDispatch({ type: 'SHOW_EXISTING_LESSON_FORM' })
+							}
+							className="mt-2"
+							variant="outline"
+						>
+							+ add existing lesson
+						</Button>
+					</div>
+				)}
 			</div>
 		</>
 	)

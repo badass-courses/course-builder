@@ -18,13 +18,13 @@ import { sendAnEmail } from '@/utils/send-an-email'
 export const sendWorkshopAccessEmails = inngest.createFunction(
 	{
 		id: 'send-workshop-access-emails',
-		name: 'Send Workshop Access Emails Daily',
+		name: 'Schedule Workshop Access Emails',
 	},
-	{ cron: '0 15 * * *' }, // 8 AM PT = 3 PM UTC (15:00)
+	{ cron: '0 0 * * *' }, // Run at midnight UTC
 	async ({ event, step }) => {
 		const startTime = Date.now()
 		let totalEmailsSent = 0
-		let totalWorkshopsProcessed = 0
+		let totalWorkshopsScheduled = 0
 		const errors: string[] = []
 
 		// 1. Get all cohort products
@@ -37,96 +37,202 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 			}
 		})
 
-		await log.info('Workshop access emails job started', {
+		await log.info('Workshop access emails scheduling started', {
 			cohortProductsFound: cohortProducts.length,
 		})
 
-		// 2. Process each cohort product
-		for (const product of cohortProducts) {
-			const productResult = await step.run(
-				`process-product-${product.id}`,
-				async () => {
+		// 2. Collect all workshops starting today from all cohort products
+		const workshopsStartingToday = await step.run(
+			'get-workshops-starting-today',
+			async () => {
+				const allWorkshopsStartingToday: Workshop[] = []
+
+				await log.info('Starting to process cohort products', {
+					totalProducts: cohortProducts.length,
+				})
+
+				for (const [index, product] of cohortProducts.entries()) {
 					try {
+						await log.info('Processing cohort product', {
+							productIndex: index,
+							productId: product.id,
+							totalProducts: cohortProducts.length,
+						})
+
 						// Get cohort from product resources
 						const cohortResource = product.resources?.find(
 							(r) => r.resource?.type === 'cohort',
 						)
 						if (!cohortResource) {
-							return { skipped: 'no cohort resource' }
+							await log.info('No cohort resource found, skipping', {
+								productId: product.id,
+							})
+							continue
 						}
+
+						await log.info('Found cohort resource, getting workshops', {
+							productId: product.id,
+							cohortId: cohortResource.resource.id,
+						})
 
 						// Get workshops in cohort
 						const workshops = await getAllWorkshopsInCohort(
 							cohortResource.resource.id,
 						)
 
-						// Filter workshops starting today
-						const workshopsStartingToday =
-							await getWorkshopsStartingToday(workshops)
+						await log.info('Got workshops from cohort, filtering for today', {
+							productId: product.id,
+							cohortId: cohortResource.resource.id,
+							totalWorkshops: workshops.length,
+						})
 
-						if (workshopsStartingToday.length === 0) {
-							return { skipped: 'no workshops starting today' }
-						}
+						// Filter workshops starting today using UTC-consistent function
+						const startingToday = await getWorkshopsStartingToday(workshops)
 
-						// Get all workshop IDs for entitlement lookup
-						const workshopIds = workshopsStartingToday.map((w) => w.id)
+						await log.info('Filtered workshops starting today', {
+							productId: product.id,
+							cohortId: cohortResource.resource.id,
+							totalWorkshops: workshops.length,
+							workshopsStartingToday: startingToday.length,
+						})
 
-						// Get users entitled to access these workshops
-						const entitledUsers = await getUsersEntitledToWorkshops(workshopIds)
+						allWorkshopsStartingToday.push(...startingToday)
 
-						if (entitledUsers.length === 0) {
-							return { skipped: 'no entitled users found' }
-						}
-
-						// Process each workshop starting today
-						let emailsSentForProduct = 0
-						for (const workshop of workshopsStartingToday) {
-							// Get users specifically entitled to this workshop
-							const workshopEntitledUsers = await getUsersEntitledToWorkshops([
-								workshop.id,
-							])
-							const emailsSent = await processWorkshopEmails(
-								workshop,
-								workshopEntitledUsers,
-							)
-							emailsSentForProduct += emailsSent
-						}
-
-						return {
-							processed: workshopsStartingToday.length,
-							emailsSent: emailsSentForProduct,
-							entitledUsers: entitledUsers.length,
-						}
+						await log.info('Cohort workshops processed successfully', {
+							productId: product.id,
+							totalWorkshops: workshops.length,
+							workshopsStartingToday: startingToday.length,
+							totalCollectedSoFar: allWorkshopsStartingToday.length,
+						})
 					} catch (error) {
-						const errorMsg = `Failed to process product ${product.id}: ${error}`
+						const errorMsg = `Failed to process cohort product ${product.id}: ${error}`
 						errors.push(errorMsg)
 						await log.error(errorMsg, { productId: product.id, error })
+					}
+				}
+
+				await log.info('Completed processing all cohort products', {
+					totalWorkshopsStartingToday: allWorkshopsStartingToday.length,
+				})
+
+				return allWorkshopsStartingToday
+			},
+		)
+
+		await log.info('Workshops starting today found', {
+			totalStartingToday: workshopsStartingToday.length,
+		})
+
+		// 3. Process each workshop starting today
+		for (const workshop of workshopsStartingToday) {
+			// First, validate and prepare the workshop
+			const workshopPrep = await step.run(
+				`prep-workshop-${workshop.id}`,
+				async () => {
+					try {
+						if (!workshop.fields.startsAt) {
+							return { skipped: 'no start date' }
+						}
+
+						// Preserve the exact UTC time from the database without conversion
+						const workshopStartTimeString = workshop.fields.startsAt
+						const workshopStartTime = new Date(workshopStartTimeString)
+						const now = new Date()
+
+						// If workshop starts in the past, skip it
+						if (workshopStartTime <= now) {
+							return { skipped: 'workshop already started' }
+						}
+
+						await log.info('Preparing workshop for scheduling', {
+							workshopId: workshop.id,
+							workshopTitle: workshop.fields.title,
+							startTime: workshopStartTimeString,
+							startTimeAsDate: workshopStartTime.toISOString(),
+							timezone: workshop.fields.timezone || 'America/Los_Angeles',
+							rawStartsAt: workshop.fields.startsAt,
+						})
+
+						return {
+							ready: true,
+							workshopStartTime: workshopStartTimeString, // Use original string to avoid timezone conversion
+						}
+					} catch (error) {
+						const errorMsg = `Failed to prep workshop ${workshop.id}: ${error}`
+						errors.push(errorMsg)
+						await log.error(errorMsg, { workshopId: workshop.id, error })
 						return { error: errorMsg }
 					}
 				},
 			)
 
-			// Use type guards to safely access properties
-			if ('emailsSent' in productResult && productResult.emailsSent) {
-				totalEmailsSent += productResult.emailsSent
+			// Skip if workshop prep failed or should be skipped
+			if ('skipped' in workshopPrep || 'error' in workshopPrep) {
+				continue
 			}
-			if ('processed' in productResult && productResult.processed) {
-				totalWorkshopsProcessed += productResult.processed
+
+			// Sleep until workshop start time (no nesting!)
+			await step.sleepUntil(
+				`wait-for-workshop-start-${workshop.id}`,
+				workshopPrep.workshopStartTime, // Pass the ISO string directly
+			)
+
+			// Now send the emails after the sleep
+			const workshopResult = await step.run(
+				`send-emails-${workshop.id}`,
+				async () => {
+					try {
+						// Get entitled users
+						const entitledUsers = await getUsersEntitledToWorkshops([
+							workshop.id,
+						])
+
+						if (entitledUsers.length === 0) {
+							return { skipped: 'no entitled users found' }
+						}
+
+						const emailsSent = await processWorkshopEmails(
+							workshop as Workshop, // DB serialization: Date fields become strings
+							entitledUsers,
+						)
+
+						return {
+							processed: true,
+							emailsSent,
+							entitledUsers: entitledUsers.length,
+							sentAt: new Date().toISOString(),
+						}
+					} catch (error) {
+						const errorMsg = `Failed to send emails for workshop ${workshop.id}: ${error}`
+						errors.push(errorMsg)
+						await log.error(errorMsg, { workshopId: workshop.id, error })
+						return { error: errorMsg }
+					}
+				},
+			)
+
+			// Track results
+			if ('emailsSent' in workshopResult && workshopResult.emailsSent) {
+				totalEmailsSent += workshopResult.emailsSent
+			}
+			if ('processed' in workshopResult && workshopResult.processed) {
+				totalWorkshopsScheduled += 1
 			}
 		}
 
-		// 3. Log final summary
+		// 4. Log final summary
 		return await step.run('log-summary', async () => {
 			const endTime = Date.now()
 			const summary = {
 				totalProductsProcessed: cohortProducts.length,
-				totalWorkshopsStartingToday: totalWorkshopsProcessed,
+				totalWorkshopsStartingToday: workshopsStartingToday.length,
+				totalWorkshopsScheduled,
 				totalEmailsSent,
 				errors,
 				processingTime: endTime - startTime,
 			}
 
-			await log.info('Workshop access emails job completed', summary)
+			await log.info('Workshop access emails scheduling completed', summary)
 			return summary
 		})
 
@@ -170,7 +276,7 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 						try {
 							await sendWorkshopAccessEmail({
 								user,
-								workshop,
+								workshop: fullWorkshop,
 								email: defaultEmail as any, // Cast to Email type
 							})
 							emailsSent++
@@ -205,7 +311,7 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 						try {
 							await sendWorkshopAccessEmail({
 								user,
-								workshop,
+								workshop: fullWorkshop,
 								email,
 							})
 							emailsSent++

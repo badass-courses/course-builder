@@ -64,7 +64,7 @@ export function PostPlayer({
 
 	React.useEffect(() => {
 		setMuxPlayerRef(playerRef)
-	}, [playerRef])
+	}, [playerRef, setMuxPlayerRef])
 
 	const playerProps = {
 		playsInline: true,
@@ -150,7 +150,7 @@ export function PostPlayer({
 				>
 					<PostNextUpFromListPagination
 						postId={postId}
-						className="mt-0 border-0 bg-transparent px-0 py-0 !text-white"
+						className="text-white! mt-0 border-0 bg-transparent px-0 py-0"
 					/>
 				</div>
 			)}

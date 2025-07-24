@@ -29,7 +29,7 @@ export default function ListResourceNavigation({
 		return (
 			<div
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] flex h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] flex-shrink-0 items-start justify-start overflow-y-auto border-r p-5',
+					'bg-muted/50 scrollbar-thin top-(--nav-height) sticky flex h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 items-start justify-start overflow-y-auto border-r p-5',
 					className,
 					{ 'w-0': !isExpanded },
 				)}
@@ -48,7 +48,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] flex-shrink-0 overflow-y-auto border-r xl:block',
+					'bg-muted/50 scrollbar-thin top-(--nav-height) sticky hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 overflow-y-auto border-r xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -87,7 +87,7 @@ export default function ListResourceNavigation({
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
 						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
-						<div className="absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] [background-size:14px_14px] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
+						<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -107,12 +107,12 @@ export default function ListResourceNavigation({
 									<Link
 										aria-current={isActive ? 'page' : undefined}
 										className={cn(
-											'relative flex items-start gap-2 py-2 pl-2 pr-5 font-medium transition duration-150 ease-in-out hover:bg-gradient-to-l hover:from-transparent hover:to-gray-200 sm:py-3 dark:hover:bg-gray-900 dark:hover:bg-gradient-to-l dark:hover:from-transparent dark:hover:to-gray-800',
+											'hover:bg-linear-to-l dark:hover:bg-linear-to-l relative flex items-start gap-2 py-2 pl-2 pr-5 font-medium transition duration-150 ease-in-out hover:from-transparent hover:to-gray-200 sm:py-3 dark:hover:bg-gray-900 dark:hover:from-transparent dark:hover:to-gray-800',
 											{
 												'': isCompleted,
 												'before:absolute before:left-[17px] before:top-0 before:h-full before:w-px before:bg-gray-200 before:content-[""] dark:before:bg-gray-800':
 													true,
-												'before:bg-gradient-to-b before:from-transparent before:via-gray-500 before:to-transparent dark:before:bg-gradient-to-b dark:before:from-transparent dark:before:via-gray-500 dark:before:to-transparent':
+												'before:bg-linear-to-b dark:before:bg-linear-to-b before:from-transparent before:via-gray-500 before:to-transparent dark:before:from-transparent dark:before:via-gray-500 dark:before:to-transparent':
 													isActive,
 												'opacity-[0.85] hover:opacity-100': !isActive,
 												'bg-gray-200 dark:bg-gray-800/75': isActive,
@@ -122,7 +122,7 @@ export default function ListResourceNavigation({
 									>
 										<div
 											className={cn(
-												'bg-background relative z-10 flex h-5 w-5 flex-shrink-0 translate-y-0.5 items-center justify-center rounded-full border border-gray-300 text-center font-mono text-[11px] font-semibold dark:border-gray-700 dark:bg-gray-800',
+												'bg-background relative z-10 flex h-5 w-5 shrink-0 translate-y-0.5 items-center justify-center rounded-full border border-gray-300 text-center font-mono text-[11px] font-semibold dark:border-gray-700 dark:bg-gray-800',
 												{
 													'dark:bg-primary bg-foreground text-background border-primary dark:border-primary':
 														isActive,
@@ -160,7 +160,7 @@ export function MobileListResourceNavigation() {
 
 	return (
 		<>
-			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow sm:left-3 xl:sr-only xl:hidden">
+			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow-sm sm:left-3 xl:sr-only xl:hidden">
 				<Button
 					className="rounded"
 					onClick={() => {
@@ -189,7 +189,7 @@ export function MobileListResourceNavigation() {
 						withHeader={false}
 						className="relative top-0 block h-full w-full max-w-full border-r-0 bg-transparent text-sm xl:hidden"
 					/>
-					{/* 'bg-muted/50 scrollbar-thin sticky top-[var(--nav-height)] hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block', */}
+					{/* 'bg-muted/50 scrollbar-thin sticky top-(--nav-height) hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[340px] overflow-y-auto border-r xl:block', */}
 				</SheetContent>
 			</Sheet>
 		</>

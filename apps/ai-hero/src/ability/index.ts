@@ -22,7 +22,7 @@ import {
 
 export const UserSchema = userSchema.merge(
 	z.object({
-		role: z.enum(['admin', 'user']).nullish(),
+		role: z.enum(['admin', 'user', 'contributor']).nullish(),
 		email: z.string().nullish(),
 		fields: z.any(),
 		entitlements: z
@@ -328,15 +328,25 @@ export function defineRulesForPurchases(
 	if (user?.entitlements && module?.id) {
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === cohortEntitlementType?.id) {
+				// Grant access to the workshop itself
 				can('read', 'Content', {
 					id: { $in: entitlement.metadata.contentIds },
 				})
+
+				// Check module start date
 				const moduleStartsAt = module?.fields?.startsAt
 				const moduleStarted =
 					!moduleStartsAt || new Date(moduleStartsAt) < new Date()
 
-				if (!moduleStarted) {
-					can('read', 'PendingOpenAccess')
+				// If user has access to this specific workshop, grant access to lessons only if started
+				if (entitlement.metadata.contentIds?.includes(module.id)) {
+					if (moduleStarted) {
+						can('read', 'Content', {
+							id: { $in: allModuleResourceIds },
+						})
+					} else {
+						can('read', 'PendingOpenAccess')
+					}
 				}
 			}
 		})

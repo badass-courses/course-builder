@@ -256,6 +256,7 @@ export const authOptions: NextAuthConfig = {
 								isNull(entitlements.expiresAt),
 								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 							),
+							isNull(entitlements.deletedAt),
 						),
 					})
 				: []

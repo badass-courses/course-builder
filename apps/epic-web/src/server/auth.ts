@@ -1,20 +1,17 @@
-import { cookies, headers } from 'next/headers'
-import { getAbility, UserSchema } from '@/ability'
+import { getAbility } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
-import { accounts, entitlements, organizationMemberships } from '@/db/schema'
+import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import { userHasRole } from '@/utils/user-has-role'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
-import TwitterProvider from '@auth/core/providers/twitter'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
-
-import { userSchema } from '@coursebuilder/core/schemas'
 
 type Role = 'admin' | 'user' | string
 
@@ -29,6 +26,15 @@ declare module 'next-auth' {
 		user: {
 			id: string
 			role: Role
+			roles: {
+				id: string
+				name: string
+				description: string | null
+				active: boolean
+				createdAt: Date | null
+				updatedAt: Date | null
+				deletedAt: Date | null
+			}[]
 		} & DefaultSession['user']
 	}
 
@@ -37,7 +43,7 @@ declare module 'next-auth' {
 		id?: string
 		email?: string | null
 		role?: Role
-		roles: {
+		roles?: {
 			id: string
 			name: string
 			description: string | null
@@ -46,26 +52,18 @@ declare module 'next-auth' {
 			updatedAt: Date | null
 			deletedAt: Date | null
 		}[]
-		entitlements: {
+		entitlements?: {
 			type: string
 			expires?: Date | null
 			metadata: Record<string, any> | null
 		}[]
-		memberships?:
-			| {
-					organizationId: string | null
-					id: string
-					name: string
-					description: string | null
-					active: boolean
-					createdAt: Date | null
-					updatedAt: Date | null
-					deletedAt: Date | null
-			  }[]
-			| null
-		organizationRoles?: {
-			organizationId: string | null
+		memberships?: {
 			id: string
+			organizationId: string
+		}[]
+		organizationRoles?: {
+			id: string
+			organizationId: string
 			name: string
 			description: string | null
 			active: boolean
@@ -73,6 +71,7 @@ declare module 'next-auth' {
 			updatedAt: Date | null
 			deletedAt: Date | null
 		}[]
+		impersonatingFromUserId?: string
 	}
 }
 
@@ -130,6 +129,11 @@ async function refreshDiscordToken(account: { refresh_token: string | null }) {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthConfig = {
+	// Use database sessions (default)
+	session: {
+		strategy: 'database',
+		maxAge: 30 * 24 * 60 * 60, // 30 days
+	},
 	events: {
 		createUser: async ({ user }) => {
 			if (env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {
@@ -159,124 +163,17 @@ export const authOptions: NextAuthConfig = {
 			})
 		},
 		signOut: async () => {
-			const cookieStore = await cookies()
-			cookieStore.delete('organizationId')
-		},
-	},
-	callbacks: {
-		session: async ({ session, user }) => {
-			const dbUser = await db.query.users.findFirst({
-				where: (users, { eq }) => eq(users.id, user.id),
-				with: {
-					accounts: true,
-					organizationMemberships: {
-						with: {
-							organization: true,
-							organizationMembershipRoles: {
-								with: {
-									role: true,
-								},
-							},
-						},
-					},
-				},
-			})
-
-			const discordAccount = dbUser?.accounts.find(
-				(account) => account.provider === 'discord',
-			)
-
-			const isDiscordTokenExpired = Boolean(
-				discordAccount?.expires_at &&
-					discordAccount.expires_at * 1000 < Date.now(),
-			)
-
-			if (discordAccount && isDiscordTokenExpired) {
-				console.log('refreshing discord token')
-				const refreshedToken = await refreshDiscordToken(discordAccount)
-
-				if (
-					'access_token' in refreshedToken &&
-					'expires_in' in refreshedToken &&
-					'refresh_token' in refreshedToken
-				) {
-					await db
-						.update(accounts)
-						.set({
-							access_token: refreshedToken.access_token,
-							expires_at: Math.floor(
-								Date.now() / 1000 + refreshedToken.expires_in,
-							),
-							refresh_token: refreshedToken.refresh_token,
-						})
-						.where(
-							and(
-								eq(
-									accounts.providerAccountId,
-									discordAccount.providerAccountId,
-								),
-								eq(accounts.provider, 'discord'),
-								eq(accounts.userId, user.id),
-							),
-						)
-				}
-			}
-
-			const userRoles = await db.query.userRoles.findMany({
-				where: (ur, { eq }) => eq(ur.userId, user.id),
-				with: {
-					role: true,
-				},
-			})
-
-			const headersList = await headers()
-			const organizationId = headersList.get('x-organization-id')
-
-			const role = dbUser?.role || 'user'
-
-			const organizationRoles =
-				dbUser?.organizationMemberships.flatMap((membership) =>
-					membership.organizationMembershipRoles.map((role) => role.role),
-				) || []
-
-			const currentMembership = organizationId
-				? await db.query.organizationMemberships.findFirst({
-						where: and(
-							eq(organizationMemberships.organizationId, organizationId),
-							eq(organizationMemberships.userId, user.id),
-						),
-					})
-				: null
-
-			const activeEntitlements = currentMembership
-				? await db.query.entitlements.findMany({
-						where: and(
-							eq(entitlements.organizationMembershipId, currentMembership.id),
-							or(
-								isNull(entitlements.expiresAt),
-								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
-							),
-						),
-					})
-				: []
-
-			return {
-				...session,
-				user: {
-					...session.user,
-					id: user.id,
-					role: role as Role,
-					roles: userRoles.map((userRole) => userRole.role),
-					organizationRoles,
-					entitlements: activeEntitlements.map((e) => ({
-						type: e.entitlementType,
-						expires: e.expiresAt,
-						metadata: e.metadata || null,
-					})),
-				},
+			try {
+				const { cookies } = await import('next/headers')
+				const cookieStore = await cookies()
+				cookieStore.delete('organizationId')
+			} catch (error) {
+				// Cookies not available (e.g., during build time)
+				console.log('Cookies not available in signOut event:', error)
 			}
 		},
 	},
+	// No custom callbacks – use NextAuth defaults
 	adapter: courseBuilderAdapter,
 	providers: [
 		/**
@@ -325,11 +222,129 @@ export const {
 
 export const getServerAuthSession = async () => {
 	const session = await auth()
-	const user = userSchema.optional().nullable().parse(session?.user)
-	const parsedUser = UserSchema.nullish().parse(session?.user)
-	const ability = getAbility({ user: parsedUser || undefined })
 
-	return { session: session ? { ...session, user } : null, ability }
+	let enrichedSession = session
+	if (session?.user?.id) {
+		const dbUser = await db.query.users.findFirst({
+			where: (u, { eq }) => eq(u.id, session.user.id),
+			with: {
+				roles: {
+					with: {
+						role: true,
+					},
+				},
+			},
+		})
+
+		if (dbUser) {
+			let primaryRole: Role = 'user'
+			if (dbUser.role) primaryRole = dbUser.role as Role
+
+			enrichedSession = {
+				...session,
+				user: {
+					...session.user,
+					role: primaryRole,
+					roles: dbUser.roles.map((userRole) => userRole.role),
+					memberships: [],
+					organizationRoles: [],
+					entitlements: [],
+				},
+			}
+		}
+	}
+
+	const ability = getAbility({ user: enrichedSession?.user || undefined })
+
+	return { session: enrichedSession, ability }
+}
+
+/**
+ * Get the current session with impersonation support
+ * This checks for impersonation cookies and returns the impersonated user's data
+ */
+export const getImpersonatedSession = async () => {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user) {
+		return { session, ability, isImpersonating: false }
+	}
+
+	// Only check impersonation for admin users
+	if (!userHasRole(session.user, 'admin')) {
+		return { session, ability, isImpersonating: false }
+	}
+
+	try {
+		const { cookies: getCookies } = await import('next/headers')
+		const cookieStore = await getCookies()
+		const impersonationCookie = cookieStore.get('epicweb-impersonation')
+
+		if (!impersonationCookie?.value) {
+			return { session, ability, isImpersonating: false }
+		}
+
+		const impersonationData = JSON.parse(impersonationCookie.value)
+
+		// Verify the admin is the one who started the impersonation
+		if (session.user.id !== impersonationData.adminId) {
+			return { session, ability, isImpersonating: false }
+		}
+
+		// Fetch the target user
+		const targetUser = await db.query.users.findFirst({
+			where: eq(users.id, impersonationData.targetUserId),
+			with: {
+				roles: {
+					with: {
+						role: true,
+					},
+				},
+			},
+		})
+
+		if (!targetUser) {
+			return { session, ability, isImpersonating: false }
+		}
+
+		// Get the target user's roles
+		let targetRole: Role = 'user'
+		if (targetUser?.role) {
+			targetRole = targetUser.role as Role
+		}
+
+		// Create an impersonated session
+		const impersonatedSession = {
+			...session,
+			user: {
+				...session.user,
+				id: targetUser.id,
+				email: targetUser.email,
+				name: targetUser.name,
+				image: targetUser.image,
+				role: targetRole,
+				roles: targetUser.roles.map((userRole) => userRole.role),
+				memberships: [],
+				organizationRoles: [],
+				entitlements: [],
+				// Keep track of the original admin
+				impersonatingFromUserId: impersonationData.adminId,
+			},
+		}
+
+		// Create ability for the impersonated user
+		const impersonatedAbility = getAbility({ user: impersonatedSession.user })
+
+		return {
+			session: impersonatedSession,
+			ability: impersonatedAbility,
+			isImpersonating: true,
+			originalUserId: impersonationData.adminId,
+		}
+	} catch (error) {
+		console.error('Error in getImpersonatedSession:', error)
+		return { session, ability, isImpersonating: false }
+	}
 }
 
 export type Provider = {

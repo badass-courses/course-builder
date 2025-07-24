@@ -106,7 +106,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 			className="bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y"
 			aria-label="On this page"
 		>
-			<div className="mx-auto flex w-full max-w-screen-xl items-center px-5 md:px-10 lg:px-16">
+			<div className="max-w-(--breakpoint-xl) mx-auto flex w-full items-center px-5 md:px-10 lg:px-16">
 				<button
 					onClick={() => {
 						setIsOpen(!isOpen)
@@ -117,7 +117,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					<div>
 						<AlignLeft className="size-4" />
 					</div>
-					<div className="flex-shrink-0 font-medium">On this page</div>
+					<div className="shrink-0 font-medium">On this page</div>
 					<div>
 						<ChevronRight
 							className={cn(
@@ -130,7 +130,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					</div>
 					<p
 						className={cn(
-							'relative max-w-[300px] truncate overflow-ellipsis text-nowrap opacity-80 transition ease-in-out sm:max-w-full',
+							'relative max-w-[300px] truncate text-ellipsis text-nowrap opacity-80 transition ease-in-out sm:max-w-full',
 							{
 								'translate-x-1 opacity-0': isOpen,
 							},
@@ -141,7 +141,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 				</button>
 				{isOpen && (
 					<div className="bg-background absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto border-y pb-5">
-						<ol className="relative mx-auto w-full max-w-screen-xl px-5 md:px-10 lg:px-16">
+						<ol className="max-w-(--breakpoint-xl) relative mx-auto w-full px-5 md:px-10 lg:px-16">
 							<div className="bg-border absolute left-5 h-full w-px md:left-10 lg:left-16" />
 							{data.map((item) => (
 								<TOCItem

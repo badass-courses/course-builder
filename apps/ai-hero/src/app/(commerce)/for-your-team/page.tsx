@@ -17,7 +17,7 @@ export default function TeamPage() {
 						</p>
 					</div>
 
-					<div className="bg-card rounded-lg border p-6 shadow-sm md:p-10">
+					<div className="bg-card shadow-xs rounded-lg border p-6 md:p-10">
 						<h2 className="mb-6 text-2xl font-semibold">Get in Touch</h2>
 						<TeamInquiryForm location="/for-your-team" />
 					</div>

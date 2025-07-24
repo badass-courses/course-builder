@@ -6,7 +6,8 @@ import { useActiveHeadingContext } from '@/hooks/use-active-heading'
 import { extractMarkdownHeadings } from '@/utils/extract-markdown-headings'
 import { motion } from 'framer-motion'
 import { AlignLeft, ChevronRight } from 'lucide-react'
-import { useInteractOutside } from 'react-aria'
+
+// import { useInteractOutside } from 'react-aria'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -87,10 +88,10 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	const [isOpen, setIsOpen] = React.useState(false)
 	const containerRef = React.useRef<HTMLElement>(null)
 
-	useInteractOutside({
-		ref: containerRef,
-		onInteractOutside: () => setIsOpen(false),
-	})
+	// useInteractOutside({
+	// 	ref: containerRef,
+	// 	onInteractOutside: () => setIsOpen(false),
+	// })
 
 	const flattenedData = data
 		.flatMap((item) => [item, ...(item.items || [])])
@@ -106,7 +107,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 			className="bg-background/50 border-foreground/5 sticky top-8 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:mb-10 sm:border-transparent sm:px-0"
 			aria-label="On this page"
 		>
-			<div className="mx-auto flex w-full max-w-screen-xl items-center">
+			<div className="max-w-(--breakpoint-xl) mx-auto flex w-full items-center">
 				<button
 					onClick={() => {
 						setIsOpen(!isOpen)
@@ -130,7 +131,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					</div>
 					<p
 						className={cn(
-							'relative max-w-[300px] truncate overflow-ellipsis text-nowrap pr-10 opacity-80 transition ease-in-out sm:max-w-full sm:pr-0',
+							'relative max-w-[300px] truncate text-ellipsis text-nowrap pr-10 opacity-80 transition ease-in-out sm:max-w-full sm:pr-0',
 							{
 								'translate-x-1 opacity-0': isOpen,
 							},
@@ -140,8 +141,8 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					</p>
 				</button>
 				{isOpen && (
-					<div className="bg-card absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto rounded-md border py-3 shadow">
-						<ol className="relative mx-auto w-full max-w-screen-xl">
+					<div className="bg-card absolute left-0 top-10 max-h-[50vh] w-full overflow-y-auto rounded-md border py-3 shadow-sm">
+						<ol className="max-w-(--breakpoint-xl) relative mx-auto w-full">
 							{/* <div className="bg-border absolute left-0 h-full w-px" /> */}
 							{data.map((item) => (
 								<TOCItem

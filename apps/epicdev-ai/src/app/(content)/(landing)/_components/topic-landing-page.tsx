@@ -7,13 +7,13 @@ import type { EventSchema } from '@/lib/events'
 import type { Page } from '@/lib/pages'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
-import { getResourcePath } from '@/utils/resource-paths'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Calendar, ChevronRight } from 'lucide-react'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import EventWaitlist from './event-waitlist'
 
@@ -45,7 +45,7 @@ export default async function TopicPage({
 			<Comp
 				href={getResourcePath(event.type, event.fields.slug, 'view')}
 				key={event.id}
-				className="bg-card/50 hover:bg-card/80 flex flex-col rounded-lg border p-4 shadow-xl backdrop-blur-sm transition ease-in-out"
+				className="bg-card/50 hover:bg-card/80 backdrop-blur-xs flex flex-col rounded-lg border p-4 shadow-xl transition ease-in-out"
 			>
 				<div className="flex items-center justify-between">
 					{event.fields?.startsAt && (

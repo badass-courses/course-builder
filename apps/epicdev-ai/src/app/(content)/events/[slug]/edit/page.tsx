@@ -3,10 +3,11 @@ import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter } from '@/db'
-import { getEvent } from '@/lib/events-query'
+import { getEventOrEventSeries } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { EditEventForm } from './_components/edit-event-form'
+import { EditEventSeriesForm } from './_components/edit-event-series-form'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +15,7 @@ export async function generateMetadata(props: {
 	params: Promise<{ slug: string }>
 }) {
 	const params = await props.params
-	const event = await getEvent(params.slug)
+	const event = await getEventOrEventSeries(params.slug)
 
 	return {
 		title: `Edit: ${event?.fields.title}`,
@@ -28,11 +29,16 @@ export default async function EventEditPage(props: {
 	const params = await props.params
 	await headers()
 	const { ability } = await getServerAuthSession()
-	const event = await getEvent(params.slug)
-
-	if (!event || !ability.can('create', 'Content')) {
+	if (!ability.can('create', 'Content')) {
 		notFound()
 	}
+
+	const event = await getEventOrEventSeries(params.slug)
+
+	if (!event) {
+		notFound()
+	}
+
 	// Extract video resource from post resources
 	const videoResourceRef =
 		event.resources
@@ -55,11 +61,20 @@ export default async function EventEditPage(props: {
 
 	return (
 		<LayoutClient>
-			<EditEventForm
-				key={event.fields.slug}
-				event={event}
-				videoResource={videoResource}
-			/>
+			{event.type === 'event' && (
+				<EditEventForm
+					key={event.fields.slug}
+					event={event}
+					videoResource={videoResource}
+				/>
+			)}
+			{event.type === 'event-series' && (
+				<EditEventSeriesForm
+					key={event.fields.slug}
+					event={event}
+					videoResource={videoResource}
+				/>
+			)}
 		</LayoutClient>
 	)
 }

@@ -130,7 +130,7 @@ const Invoice = async (props: {
 	return (
 		<Layout>
 			<div className="container border-x px-5">
-				<main className="mx-auto w-full max-w-screen-md">
+				<main className="max-w-(--breakpoint-md) mx-auto w-full">
 					<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
 						<Link
 							href="/invoices"

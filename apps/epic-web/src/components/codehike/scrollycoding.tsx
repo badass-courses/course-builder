@@ -52,7 +52,7 @@ export default function Scrollycoding(props: any) {
 							key={i}
 							index={i}
 							selectOn={['click', 'scroll']}
-							className="data-[selected=true]:border-primary hover:bg-secondary first-of-type:prose-headings:mt-5 group relative -mx-5 flex cursor-pointer items-start border-l-2 pl-9 pr-5 transition duration-100 ease-in-out hover:rounded data-[selected=false]:hover:border-gray-700 sm:mx-0 sm:pl-5 lg:pl-6"
+							className="data-[selected=true]:border-primary hover:bg-secondary prose-headings:first-of-type:mt-5 group relative -mx-5 flex cursor-pointer items-start border-l-2 pl-9 pr-5 transition duration-100 ease-in-out hover:rounded data-[selected=false]:hover:border-gray-700 sm:mx-0 sm:pl-5 lg:pl-6"
 						>
 							<div className="bg-secondary group-data-[selected=true]:bg-primary group-data-[selected=true]:border-primary group-data-[selected=true]:text-primary-foreground absolute left-1 top-5 flex size-7 flex-shrink-0 origin-center scale-90 items-center justify-center rounded-full border-2 text-xs font-bold shadow-xl sm:left-[-15px] sm:top-7 sm:size-7 sm:text-xs lg:scale-100">
 								{i + 1}
@@ -99,7 +99,7 @@ async function Code({
 			<Pre
 				code={highlighted}
 				handlers={[tokenTransitions]}
-				className="!bg-card mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
+				className="bg-card! mb-0 mt-0 h-full max-h-[300px] rounded-none p-5 text-xs shadow-inner sm:max-h-full sm:rounded sm:text-sm sm:shadow-xl"
 				style={{
 					...highlighted.style,
 					padding: '1rem',
@@ -111,7 +111,7 @@ async function Code({
 			<div data-pre="" className="group relative w-auto">
 				<Pre
 					code={highlighted}
-					className={cn('!bg-card text-xs sm:text-sm', {})}
+					className={cn('bg-card! text-xs sm:text-sm', {})}
 					style={{
 						...highlighted.style,
 						padding: '1rem',

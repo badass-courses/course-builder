@@ -35,7 +35,7 @@ const AmplitudeContextProvider = ({
 		if (env.NEXT_PUBLIC_AMPLITUDE_API_KEY && status === 'authenticated') {
 			setUserId(userEmail ? userEmail : undefined)
 		}
-	}, [userEmail])
+	}, [userEmail, status])
 
 	const trackAmplitudeEvent = (
 		eventName: string,

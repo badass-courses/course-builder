@@ -1,4 +1,5 @@
 import { DateTimePicker } from './date-time-picker/date-time-picker'
+import { CreateEventForm } from './event-creation/create-event-form'
 import * as ModuleNavigation from './module-navigation'
 import {
 	Accordion,
@@ -318,4 +319,5 @@ export {
 	PaginationPrevious,
 	PaginationNext,
 	PaginationEllipsis,
+	CreateEventForm,
 }

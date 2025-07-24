@@ -26,6 +26,7 @@ export const POST_SUBTYPES: (PostType | string)[] = ['article', 'event']
  */
 export const ResourceTypeSchema = z.enum([
 	'post',
+	'event',
 	'workshop',
 	'tutorial',
 	'cohort',

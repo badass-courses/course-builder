@@ -7,10 +7,10 @@ import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { EventSchema } from '@/lib/events'
+import { EventSchema, EventSeriesSchema } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
-import { eq } from 'drizzle-orm'
+import { desc, eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -62,7 +62,11 @@ async function EventActions({}: {}) {
 async function EventsList() {
 	const { ability } = await getServerAuthSession()
 	const eventsModule = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'event'),
+		where: or(
+			eq(contentResource.type, 'event'),
+			eq(contentResource.type, 'event-series'),
+		),
+		orderBy: desc(contentResource.createdAt),
 		with: {
 			resources: true,
 			resourceProducts: {
@@ -76,7 +80,9 @@ async function EventsList() {
 			},
 		},
 	})
-	const parsedEventsModule = z.array(EventSchema).parse(eventsModule)
+	const parsedEventsModule = z
+		.array(z.union([EventSchema, EventSeriesSchema]))
+		.parse(eventsModule)
 
 	const events = [...parsedEventsModule].filter((event) => {
 		if (ability.can('create', 'Content')) {
@@ -91,14 +97,21 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="mx-auto mt-10 flex w-full max-w-screen-md flex-col gap-5">
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full flex-col gap-5">
 			{publicEvents.length === 0 && (
 				<p className="mb-10 text-center">There are no public events.</p>
 			)}
 			{events.map((event) => {
-				const { fields } = event
-				const { startsAt, endsAt } = fields
-				const PT = fields.timezone || 'America/Los_Angeles'
+				const sharedFields =
+					event.type === 'event'
+						? event.fields
+						: event?.resources?.[0]?.resource?.fields
+
+				if (!sharedFields) {
+					return null
+				}
+				const { startsAt, endsAt } = sharedFields
+				const PT = sharedFields.timezone || 'America/Los_Angeles'
 				const eventDate =
 					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 				const eventTime =

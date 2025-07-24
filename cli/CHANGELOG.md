@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.1.5
+
+### Patch Changes
+
+- [#516](https://github.com/badass-courses/course-builder/pull/516)
+  [`83e1ff4`](https://github.com/badass-courses/course-builder/commit/83e1ff4e5960bb9897c2444a2424026cd1ed903c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade tailwind to v4
+
+- [#534](https://github.com/badass-courses/course-builder/pull/534)
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bumps next version
+
 ## 8.1.4
 
 ### Patch Changes

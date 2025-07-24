@@ -12,7 +12,6 @@ import { useRouter } from 'next/navigation'
 import { useResource } from '@/components/resource-form/resource-context'
 import { removePostFromList } from '@/lib/lists-query'
 import { cn } from '@/utils/cn'
-import { getResourcePath } from '@/utils/resource-paths'
 import { getResourceStatus } from '@/utils/resource-status'
 import {
 	Instruction,
@@ -48,6 +47,7 @@ import {
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from '@coursebuilder/ui'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { DraggableItemRenderer } from '../../../draggable-item-renderer'
 import { useSelection } from '../../../selection-context'
@@ -97,9 +97,7 @@ function Icon({ item }: { item: TreeItemType }) {
 }
 
 function Preview({ item }: { item: TreeItemType }) {
-	return (
-		<div className="rounded-sm bg-red-300 p-[var(--grid)]">Item {item.id}</div>
-	)
+	return <div className="p-(--grid) rounded-sm bg-red-300">Item {item.id}</div>
 }
 
 function getParentLevelOfInstruction(instruction: Instruction): number {
@@ -444,7 +442,7 @@ const TreeItem = memo(function TreeItem({
 					{item.label ?? item.id}
 				</span>
 			</div>
-			<small className="flex-shrink-0 text-ellipsis text-right opacity-50">
+			<small className="shrink-0 text-ellipsis text-right opacity-50">
 				{item.itemData?.resource?.fields?.postType ? (
 					<span className="capitalize">
 						{item.itemData.resource.fields.postType}

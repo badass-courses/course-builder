@@ -1,5 +1,22 @@
 # @coursebuilder/core
 
+## 1.0.6
+
+### Patch Changes
+
+- [#521](https://github.com/badass-courses/course-builder/pull/521)
+  [`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add enrollmentOpen and
+  enrollmentClose fields to product
+
+- [#534](https://github.com/badass-courses/course-builder/pull/534)
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bumps next version
+
+- Updated dependencies
+  [[`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)]:
+  - @coursebuilder/email-templates@1.0.6
+
 ## 1.0.5
 
 ### Patch Changes

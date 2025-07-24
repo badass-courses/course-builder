@@ -12,7 +12,7 @@ import Hit from './instantsearch/hit'
 function SkeletonItem() {
 	return (
 		<div className="flex animate-pulse gap-4 p-4">
-			<div className="h-16 w-16 flex-shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
+			<div className="h-16 w-16 shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
 			<div className="flex-1 space-y-3">
 				<div className="h-4 w-1/3 rounded bg-black/10 dark:bg-white/10" />
 				<div className="h-3 w-full rounded bg-black/10 dark:bg-white/10" />

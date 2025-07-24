@@ -9,13 +9,13 @@ import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
-import { getResourcePath } from '@/utils/resource-paths'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export async function PricingWidgetServer({
 	productId,
@@ -129,7 +129,7 @@ export async function PricingWidgetServer({
 
 	return productProps.hasPurchasedCurrentProduct ? (
 		<div className="flex w-full flex-col items-center justify-center gap-2 px-10 pt-3 text-center text-lg sm:flex-row">
-			<CheckCircle className="size-4 flex-shrink-0 text-emerald-600 dark:text-emerald-300" />{' '}
+			<CheckCircle className="size-4 shrink-0 text-emerald-600 dark:text-emerald-300" />{' '}
 			<span>You have already purchased a ticket to this cohort.</span>{' '}
 			<Link
 				className="text-primary underline"
@@ -144,7 +144,7 @@ export async function PricingWidgetServer({
 			organizationId={organizationId}
 		>
 			<CohortPricingWidgetContainer
-				className="border-b-0 pt-10 [&_[aria-live='polite']]:text-6xl"
+				className="**:aria-[live='polite']:text-6xl border-b-0 pt-10"
 				{...productProps}
 				{...productProps.commerceProps}
 				workshops={workshops}

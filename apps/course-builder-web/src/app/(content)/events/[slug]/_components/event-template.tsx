@@ -46,7 +46,7 @@ export function EventTemplate(props: EventPageProps) {
 		<Layout>
 			<main
 				data-event={slug}
-				className="mx-auto flex w-full max-w-screen-lg flex-col gap-8 px-5 py-5 md:flex-row md:py-16"
+				className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col gap-8 px-5 py-5 md:flex-row md:py-16"
 			>
 				<div className="w-full">
 					<h1 className="fluid-3xl w-full font-semibold tracking-tight">

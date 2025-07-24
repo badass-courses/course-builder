@@ -19,7 +19,7 @@ const ScrollArea = React.forwardRef<
 		>
 			<ScrollAreaPrimitive.Viewport
 				ref={viewportRef}
-				className="h-full w-full rounded-[inherit] *:!block"
+				className="*:block! h-full w-full rounded-[inherit]"
 			>
 				{children}
 			</ScrollAreaPrimitive.Viewport>
@@ -40,9 +40,9 @@ const ScrollBar = React.forwardRef<
 		className={cn(
 			'flex touch-none select-none transition-colors',
 			orientation === 'vertical' &&
-				'h-full w-2.5 border-l border-l-transparent p-[1px]',
+				'h-full w-2.5 border-l border-l-transparent p-px',
 			orientation === 'horizontal' &&
-				'h-2.5 border-t border-t-transparent p-[1px]',
+				'h-2.5 border-t border-t-transparent p-px',
 			className,
 		)}
 		{...props}

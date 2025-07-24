@@ -36,6 +36,11 @@ const config = {
 				hostname: 'avatars.githubusercontent.com',
 				port: '',
 			},
+			{
+				protocol: 'https',
+				hostname: 'cdn.sanity.io',
+				port: '',
+			},
 		],
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],

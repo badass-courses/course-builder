@@ -1,6 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
-const { fontFamily } = require('tailwindcss/defaultTheme')
 
 const { withUt } = require('uploadthing/tw')
 
@@ -74,8 +73,8 @@ module.exports = withUt({
 				sm: 'calc(var(--radius) - 4px)',
 			},
 			fontFamily: {
-				sans: ['var(--gabarito)', ...fontFamily.sans],
-				heading: ['var(--gabarito)', ...fontFamily.sans],
+				sans: ['var(--gabarito)', ...defaultTheme.fontFamily.sans],
+				heading: ['var(--gabarito)', ...defaultTheme.fontFamily.sans],
 			},
 			keyframes: {
 				'accordion-down': {

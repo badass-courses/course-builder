@@ -117,14 +117,14 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 				<div
 					className={cn('', {
-						'pointer-events-none select-none opacity-75 blur-sm transition ease-in-out':
+						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
 							subscriber,
 					})}
 				>
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="[&_input]:border-foreground/40 relative z-10 [&_input]:h-16"
+						className="[&_input]:border-foreground/40 relative z-10 [&_button]:mt-3 [&_button]:h-16 [&_button]:sm:text-lg [&_input]:h-16"
 					/>
 					<p
 						data-nospam=""

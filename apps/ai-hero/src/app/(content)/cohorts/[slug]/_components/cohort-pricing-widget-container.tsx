@@ -33,6 +33,7 @@ export const CohortPricingWidgetContainer: React.FC<
 	const { fields } = cohort
 	const { startsAt, endsAt, timezone } = fields
 	const product = products && products[0]
+	const { openEnrollment, closeEnrollment } = product?.fields || {}
 
 	// Properly handle timezone comparison - get current time in PT to compare with PT stored date
 	const tz = timezone || 'America/Los_Angeles'
@@ -40,6 +41,11 @@ export const CohortPricingWidgetContainer: React.FC<
 		formatInTimeZone(new Date(), tz, "yyyy-MM-dd'T'HH:mm:ssXXX"),
 	)
 	const isUpcoming = startsAt ? new Date(startsAt) > nowInPT : false
+
+	const isOpenEnrollment = openEnrollment
+		? new Date(openEnrollment) < nowInPT &&
+			(closeEnrollment ? new Date(closeEnrollment) > nowInPT : true)
+		: false
 
 	const workshops = cohort?.resources?.map(({ resource }) => ({
 		title: resource.fields.title,
@@ -57,7 +63,7 @@ export const CohortPricingWidgetContainer: React.FC<
 
 	return (
 		<>
-			{product && product.status === 1 && isUpcoming && (
+			{product && product.status === 1 && isOpenEnrollment && (
 				<div className={cn('border-b px-5 pb-5', className)}>
 					{pricingWidgetOptions?.withImage && (
 						<div className="mb-3 flex w-full items-center justify-center">
@@ -93,43 +99,61 @@ export const CohortPricingWidgetContainer: React.FC<
 					/>
 				</div>
 			)}
-			{!isUpcoming && product && product.status === 1 && (
-				<div className="p-5">
-					<div className="flex flex-col items-center justify-center gap-2 text-center">
-						<p className="text-lg font-semibold">
-							This cohort has already started
-						</p>
-						<p className="text-foreground/80 text-balance text-sm">
-							You can still join the waitlist to be notified when the next
-							cohort starts.
-						</p>
-					</div>
-					<SubscribeToConvertkitForm
-						fields={waitlistCkFields}
-						actionLabel="Join Waitlist"
-						className="w-ful relative z-10 mt-5 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:text-base [&_input]:h-12 [&_input]:text-lg"
-						successMessage={
-							<p className="inline-flex items-center text-center text-lg font-medium">
-								<CheckCircle className="text-primary mr-2 size-5" /> You are on
-								the waitlist
+			{!isOpenEnrollment && product && product.status === 1 && (
+				<>
+					{pricingWidgetOptions?.withImage && (
+						<div className="mb-3 flex w-full items-center justify-center">
+							<CldImage
+								loading="lazy"
+								src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
+								alt=""
+								aria-hidden="true"
+								width={130}
+								height={130}
+								className="rotate-12"
+							/>
+						</div>
+					)}
+					<p className="opacit-50 -mb-3 flex w-full items-center justify-center pt-5 text-center text-sm">
+						{eventDateString}
+					</p>
+					<div className="p-5">
+						<div className="flex flex-col items-center justify-center gap-2 text-center">
+							<p className="text-lg font-semibold">
+								This cohort has already started
 							</p>
-						}
-						onSuccess={(subscriber, email) => {
-							const handleOnSuccess = (subscriber: any) => {
-								if (subscriber) {
-									track('waitlist_joined', {
-										product_name: product.name,
-										product_id: product.id,
-										email: email,
-									})
-
-									return subscriber
-								}
+							<p className="text-foreground/80 text-balance text-sm">
+								You can still join the waitlist to be notified when the next
+								cohort starts.
+							</p>
+						</div>
+						<SubscribeToConvertkitForm
+							fields={waitlistCkFields}
+							actionLabel="Join Waitlist"
+							className="w-ful relative z-10 mt-5 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:text-base [&_input]:h-12 [&_input]:text-lg"
+							successMessage={
+								<p className="inline-flex items-center text-center text-lg font-medium">
+									<CheckCircle className="text-primary mr-2 size-5" /> You are
+									on the waitlist
+								</p>
 							}
-							handleOnSuccess(subscriber)
-						}}
-					/>
-				</div>
+							onSuccess={(subscriber, email) => {
+								const handleOnSuccess = (subscriber: any) => {
+									if (subscriber) {
+										track('waitlist_joined', {
+											product_name: product.name,
+											product_id: product.id,
+											email: email,
+										})
+
+										return subscriber
+									}
+								}
+								handleOnSuccess(subscriber)
+							}}
+						/>
+					</div>
+				</>
 			)}
 		</>
 	)

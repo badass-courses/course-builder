@@ -1,9 +1,9 @@
 import { db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
-import { getResourcePath } from '@/utils/resource-paths'
 import { eq } from 'drizzle-orm'
 
 import type { Coupon } from '@coursebuilder/core/schemas'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export type SaleBannerData = {
 	percentOff: number

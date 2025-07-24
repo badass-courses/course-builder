@@ -54,13 +54,13 @@ export default async function ArticlesIndexPage() {
 			withBorder={false}
 			className="flex min-h-max flex-col-reverse lg:min-h-screen lg:flex-row"
 		>
-			<div className="mx-auto flex w-full max-w-screen-lg flex-col sm:flex-row">
+			<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col sm:flex-row">
 				<div className="flex flex-col items-center border-x-2">
 					{latestArticle && (
 						<div className="relative flex w-full">
 							<ArticleTeaser
 								article={latestArticle}
-								className="[&_[data-card='']]:text-foreground [&_[data-card='']]:bg-background h-full w-full md:aspect-[16/7] [&_[data-card='']]:border-b-2 [&_[data-card='']]:p-8 [&_[data-card='']]:sm:p-10 sm:[&_[data-title='']]:text-3xl"
+								className="**:data-card:text-foreground **:data-card:bg-background md:aspect-16/7 **:data-card:border-b-2 **:data-card:p-8 sm:**:data-card:p-10 sm:**:data-title:text-3xl h-full w-full"
 							/>
 						</div>
 					)}
@@ -73,7 +73,7 @@ export default async function ArticlesIndexPage() {
 										i={i}
 										article={article}
 										key={article.id}
-										className="[&_[data-card]]:bg-background [&_[data-card]]:pl-8 [&_[data-title='']]:transition"
+										className="**:data-card:bg-background **:data-card:pl-8 **:data-title:transition"
 									/>
 								)
 							})}

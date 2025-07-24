@@ -124,6 +124,7 @@ export const CompletedLessonOverlay: React.FC<{
 				)}
 				{resource && (
 					<ContinueButton
+						className="h-10"
 						moduleType={moduleType}
 						resource={resource}
 						nextResource={nextLesson}
@@ -228,7 +229,9 @@ export const CompletedModuleOverlay: React.FC<{
 					<Button asChild variant="default">
 						<Link href={`/workshops/${nextWorkshop?.slug}`}>
 							Continue{' '}
-							<span className="hidden sm:inline">to {nextWorkshop?.title}</span>
+							<span className="hidden pl-1 sm:inline">
+								to {nextWorkshop?.title}
+							</span>
 						</Link>
 					</Button>
 				)}
@@ -254,7 +257,8 @@ const ContinueButton: React.FC<{
 	moduleType: 'workshop' | 'tutorial'
 	nextResource?: AdjacentResource
 	prevResource?: AdjacentResource
-}> = ({ resource, nextResource, prevResource, moduleType }) => {
+	className?: string
+}> = ({ resource, nextResource, prevResource, moduleType, className }) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const pathname = usePathname()
@@ -276,7 +280,10 @@ const ContinueButton: React.FC<{
 
 	return (
 		<Button
-			className="dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80"
+			className={cn(
+				'dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80',
+				className,
+			)}
 			onClick={async () => {
 				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
 					startTransition(async () => {

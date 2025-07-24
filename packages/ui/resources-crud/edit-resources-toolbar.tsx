@@ -20,7 +20,7 @@ export function EditResourcesToolbar({
 }) {
 	const [activeTool, setActiveTool] = React.useState<ResourceTool | null>(null)
 	return (
-		<div className="bg-muted h-12 w-full md:h-[var(--pane-layout-height)] md:w-12 md:border-l">
+		<div className="bg-muted md:h-(--pane-layout-height) h-12 w-full md:w-12 md:border-l">
 			<div className="flex flex-row gap-1 p-1 md:flex-col">
 				<TooltipProvider delayDuration={0}>
 					{tools.map((tool) => (

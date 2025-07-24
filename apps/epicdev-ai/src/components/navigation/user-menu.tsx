@@ -79,7 +79,7 @@ export const UserMenu = () => {
 							{userAvatar}
 							<div className="flex flex-col pl-0.5">
 								<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
-									<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
+									<span className="truncate sm:max-w-32 lg:max-w-44 xl:max-w-none">
 										{sessionData.user.name?.split(' ')[0] || 'Account'}
 									</span>
 									<ChevronDownIcon className="w-2" />
@@ -94,7 +94,11 @@ export const UserMenu = () => {
 						<DropdownMenuSeparator className="bg-border" />
 						<ul className="flex flex-col">
 							{canCreateContent && (
-								<NavLinkItem variant="menu" href="/admin/pages" label="Admin" />
+								<NavLinkItem
+									variant="menu"
+									href="/admin/coupons"
+									label="Admin"
+								/>
 							)}
 							{canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />

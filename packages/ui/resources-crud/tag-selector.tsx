@@ -32,12 +32,14 @@ export default function AdvancedTagSelector({
 	onTagSelect,
 	onTagRemove,
 	className,
+	modal = false,
 }: {
 	availableTags: Tag[]
 	selectedTags: Tag[]
 	onTagSelect?: (tag: Tag) => void
 	onTagRemove?: (tagId: string) => void
 	className?: string
+	modal?: boolean
 }) {
 	const [open, setOpen] = React.useState(false)
 	const [selectedTags, setSelectedTags] =
@@ -77,7 +79,7 @@ export default function AdvancedTagSelector({
 					<Badge key={tag.id} variant="secondary" className="text-sm">
 						{tag?.fields?.label}
 						<button
-							className="focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
+							className="focus:ring-ring outline-hidden ml-1 rounded-full focus:ring-2 focus:ring-offset-2"
 							onClick={() => handleTagRemove(tag.id)}
 							aria-label={`Remove ${tag?.fields?.label} tag`}
 						>
@@ -86,7 +88,7 @@ export default function AdvancedTagSelector({
 					</Badge>
 				))}
 			</div>
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover modal={modal} open={open} onOpenChange={setOpen}>
 				<PopoverTrigger asChild>
 					<Button
 						variant="outline"

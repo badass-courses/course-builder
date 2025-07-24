@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation'
 import { env } from '@/env.mjs'
 import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
-import { getResourcePath } from '@/utils/resource-paths'
 import { ArrowRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { useModuleProgress } from '../../_components/module-progress-provider'
 import { useWorkshopNavigation } from './workshop-navigation-provider'

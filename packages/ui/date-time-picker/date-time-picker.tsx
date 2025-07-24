@@ -33,7 +33,9 @@ export function useForwardedRef<T>(ref: React.ForwardedRef<T>) {
 
 const DateTimePicker = React.forwardRef<
 	HTMLDivElement,
-	DatePickerStateOptions<DateValue>
+	DatePickerStateOptions<DateValue> & {
+		modal?: boolean
+	}
 >((props, forwardedRef) => {
 	const ref = useForwardedRef<HTMLDivElement>(forwardedRef)
 	const buttonRef = useRef<HTMLButtonElement | null>(null)
@@ -48,7 +50,11 @@ const DateTimePicker = React.forwardRef<
 		buttonProps: _buttonProps,
 		dialogProps,
 		calendarProps,
-	} = useDatePicker(props, state, ref)
+	} = useDatePicker(
+		{ ...props, 'aria-label': 'Date and time picker' },
+		state,
+		ref,
+	)
 	const { buttonProps } = useButton(_buttonProps, buttonRef)
 	useInteractOutside({
 		ref: contentRef,
@@ -67,23 +73,24 @@ const DateTimePicker = React.forwardRef<
 			)}
 		>
 			<DateField {...fieldProps} />
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover open={open} onOpenChange={setOpen} modal={props.modal || false}>
 				<PopoverTrigger asChild>
 					<Button
 						{...buttonProps}
 						variant="outline"
 						className="rounded-l-none"
 						disabled={props.isDisabled}
-						onClick={() => setOpen(true)}
+						onClick={() => !open && setOpen(!open)}
 					>
 						<CalendarIcon className="h-5 w-5" />
 					</Button>
 				</PopoverTrigger>
-				<PopoverContent ref={contentRef} className="w-full">
-					<div {...dialogProps} className="space-y-3">
+				<PopoverContent ref={contentRef} {...dialogProps} className="w-full">
+					<div className="space-y-3">
 						<Calendar {...calendarProps} />
 						{!!state.hasTime && (
 							<TimeField
+								aria-label="Time"
 								value={state.timeValue}
 								onChange={(value) => {
 									if (value) {

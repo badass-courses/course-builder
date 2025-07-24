@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const userSchema = z.object({
 	id: z.string().max(255),
 	name: z.string().max(255).optional().nullable(),
-	role: z.enum(['user', 'admin']).default('user'),
+	role: z.enum(['user', 'admin', 'contributor']).default('user'),
 	email: z.string().max(255).email(),
 	emailVerified: z.coerce.date().nullish(),
 	image: z.string().max(255).optional().nullable(),

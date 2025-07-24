@@ -6,7 +6,7 @@ import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
 import { Module } from '@/lib/module'
 import { getModule } from '@/lib/modules-query'
-import { getServerAuthSession } from '@/server/auth'
+import { getImpersonatedSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
@@ -35,7 +35,7 @@ export async function getCurrentAbilityRules({
 
 	const convertkitSubscriber = await getSubscriberFromCookie()
 
-	const { session } = await getServerAuthSession()
+	const { session } = await getImpersonatedSession()
 
 	const lessonResource = lessonId && (await getLesson(lessonId))
 	const moduleResource = moduleId ? await getModule(moduleId) : null
@@ -75,6 +75,8 @@ export async function getCurrentAbilityRules({
 		user: {
 			...session?.user,
 			id: session?.user?.id || '',
+			memberships: session?.user?.memberships || [],
+			organizationRoles: session?.user?.organizationRoles || [],
 			entitlements: activeEntitlements.map((e) => ({
 				type: e.entitlementType,
 				expires: e.expiresAt,

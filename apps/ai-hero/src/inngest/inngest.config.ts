@@ -8,6 +8,7 @@ import { ensurePersonalOrganizationWorkflow } from '@/inngest/functions/ensure-p
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
+import { refundEntitlements } from '@/inngest/functions/refund/refund-entitlements'
 import { sendWorkshopAccessEmails } from '@/inngest/functions/send-workshop-access-emails'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
@@ -15,7 +16,11 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
-import { cohortTransferWorkflow } from './functions/cohort-transfer-workflow'
+import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
+import {
+	apiTransferWorkflow,
+	cohortTransferWorkflow,
+} from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addCohortRoleDiscord } from './functions/discord/add-cohort-role-discord'
@@ -46,6 +51,8 @@ export const inngestConfig = {
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
 		cohortTransferWorkflow,
+		apiTransferWorkflow,
+		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
@@ -55,5 +62,6 @@ export const inngestConfig = {
 		videoResourceDetached,
 		addCohortRoleDiscord,
 		sendWorkshopAccessEmails,
+		refundEntitlements,
 	],
 }

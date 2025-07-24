@@ -1,6 +1,6 @@
 'use client'
 
-import { Children, useContext, useEffect, useRef } from 'react'
+import { Children, useContext, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import {
 	ActiveHeadingContext,
@@ -28,10 +28,24 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 	const activeHeadingContext = useContext(ActiveHeadingContext)
 	const isWithinAISummary = useContext(AISummaryContext)
 
-	const text = Children.toArray(children)
-		.map((child) => (typeof child === 'string' ? child : ''))
-		.join('')
-	const slug = slugifyHeading(text)
+	const text = useMemo(
+		() =>
+			Children.toArray(children)
+				.map((child) => (typeof child === 'string' ? child : ''))
+				.join(''),
+		[children],
+	)
+
+	const slug = useMemo(() => slugifyHeading(text), [text])
+
+	const headingInfo = useMemo(
+		(): HeadingInfo => ({
+			slug,
+			text,
+			level,
+		}),
+		[slug, text, level],
+	)
 
 	useEffect(() => {
 		if (
@@ -39,14 +53,9 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 			!isWithinAISummary &&
 			activeHeadingContext?.setActiveHeading
 		) {
-			const headingInfo: HeadingInfo = {
-				slug,
-				text,
-				level,
-			}
 			activeHeadingContext.setActiveHeading(headingInfo)
 		}
-	}, [isInView, slug, text, level, activeHeadingContext, isWithinAISummary])
+	}, [isInView, headingInfo, activeHeadingContext, isWithinAISummary])
 
 	const Component = motion[`h${level}`]
 
@@ -54,7 +63,7 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 		<Component ref={ref} id={slug} className="scroll-mt-16">
 			<Link
 				href={`#${slug}`}
-				className="w-full font-semibold !text-inherit no-underline"
+				className="text-inherit! w-full font-semibold no-underline"
 			>
 				{children}
 			</Link>

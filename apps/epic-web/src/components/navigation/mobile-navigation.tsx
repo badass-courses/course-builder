@@ -2,13 +2,22 @@
 
 import * as React from 'react'
 import Image from 'next/image'
-import { createAppAbility } from '@/ability'
+import { createAppAbility, User } from '@/ability'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { Menu, Newspaper, X } from 'lucide-react'
-import { signOut, useSession } from 'next-auth/react'
+import {
+	FileText,
+	Lightbulb,
+	ListChecks,
+	Menu,
+	Newspaper,
+	User as UserIcon,
+	Users,
+	X,
+} from 'lucide-react'
+import { signOut } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 
@@ -19,6 +28,7 @@ type MobileNavigationProps = {
 	isMobileMenuOpen: boolean
 	setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 	subscriber?: Subscriber | null
+	user?: User | null
 }
 
 /**
@@ -28,27 +38,32 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	isMobileMenuOpen,
 	setIsMobileMenuOpen,
 	subscriber,
+	user,
 }) => {
-	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 
-	const canViewTeam = ability.can('invite', 'Team')
-	const canCreateContent = ability.can('create', 'Content')
-	const canViewInvoice = ability.can('read', 'Invoice')
+	const canManageAll = ability.can('manage', 'all')
 
-	const userAvatar = sessionData?.user?.image ? (
+	// Check if we're impersonating
+	const isImpersonating = Boolean(user?.impersonatingFromUserId)
+
+	if (!user?.email) {
+		return null
+	}
+
+	const userAvatar = user.image ? (
 		<Image
-			src={sessionData.user.image}
-			alt={sessionData.user.name || ''}
-			width={80}
-			height={80}
+			src={user.image}
+			alt={user.name || ''}
+			width={28}
+			height={28}
 			className="rounded-full"
 		/>
 	) : (
 		<Gravatar
-			className="h-20 w-20 rounded-full"
-			email={sessionData?.user?.email || ''}
+			className="h-7 w-7 rounded-full"
+			email={user.email || ''}
 			default="mp"
 		/>
 	)
@@ -77,30 +92,35 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 						className="flex h-full flex-col items-start justify-between gap-2"
 					>
 						<div className="flex w-full flex-col">
-							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5">
-									{userAvatar}
-									<span className="text-xl font-bold">
-										{sessionData.user.name?.split(' ')[0] || ''}
-									</span>
-								</div>
-							)}
-							{sessionStatus === 'unauthenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b py-5">
-									{/* <div className="bg-muted flex h-16 w-16 rounded-full" /> */}
-									<span className="text-xl font-bold">
-										<NavLinkItem
-											className=""
-											icon={
-												<div className="border-primary mr-3 flex h-12 w-12 rounded-full border border-dashed" />
-											}
-											label="Login"
-											href="/login"
-										/>
-									</span>
-								</div>
-							)}
-							{sessionStatus === 'unauthenticated' && !subscriber && (
+							<div
+								className={cn(
+									'mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5',
+									isImpersonating &&
+										'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950',
+								)}
+							>
+								{isImpersonating && (
+									<div className="mb-2 text-sm font-medium text-orange-600 dark:text-orange-400">
+										🎭 Impersonating
+									</div>
+								)}
+								{userAvatar}
+								<span className="text-xl font-bold">
+									{user.name?.split(' ')[0] || ''}
+								</span>
+								{isImpersonating && (
+									<div className="text-muted-foreground text-center text-sm">
+										<div>{user.email}</div>
+										<div className="text-xs">
+											Role:{' '}
+											{user.roles?.map((r: any) => r.name).join(', ') ||
+												user.role ||
+												'user'}
+										</div>
+									</div>
+								)}
+							</div>
+							{!subscriber && (
 								<NavLinkItem
 									href="/newsletter"
 									className="[&_span]:flex [&_span]:items-center"
@@ -113,30 +133,55 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								/>
 							)}
 							<ul className="flex flex-col gap-1">
-								{canCreateContent && (
-									<NavLinkItem
-										className=""
-										href="/admin/dashboard"
-										label="Admin"
-									/>
+								{canManageAll && (
+									<>
+										<NavLinkItem
+											className=""
+											href="/dashboard"
+											label="Instructor Dashboard"
+											icon={<UserIcon className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/pages"
+											label="Admin Pages"
+											icon={<FileText className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/posts"
+											label="Admin Posts"
+											icon={<ListChecks className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/tips"
+											label="Admin Tips"
+											icon={<Lightbulb className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/contributors"
+											label="Admin Contributors"
+											icon={<Users className="mr-2 h-4 w-4" />}
+										/>
+									</>
 								)}
 							</ul>
 						</div>
 
 						<div className="flex w-full flex-col items-start justify-start border-t pt-3">
-							{sessionStatus === 'authenticated' && (
-								<>
-									<NavLinkItem
-										className="pl-4"
-										href="#"
-										label="Log out"
-										onClick={() => signOut()}
-										icon={
-											<ArrowRightEndOnRectangleIcon className="mr-2 h-5 w-5" />
-										}
-									/>
-								</>
-							)}
+							<>
+								<NavLinkItem
+									className="pl-4"
+									href="#"
+									label="Log out"
+									onClick={() => signOut()}
+									icon={
+										<ArrowRightEndOnRectangleIcon className="mr-2 h-5 w-5" />
+									}
+								/>
+							</>
 							<ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" />
 						</div>
 					</nav>

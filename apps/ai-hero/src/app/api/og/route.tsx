@@ -225,7 +225,7 @@ export async function GET(request: Request) {
 							</defs>
 						</svg>
 					</div>
-					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
+					<main tw="flex p-26 pb-32 relative z-10 flex-row w-full h-full grow items-end justify-between">
 						<div
 							tw={`${resource?.type === 'post' ? 'text-[62px]' : resource?.type === 'workshop' ? 'text-[42px]' : 'text-[56px]'} min-w-[500px] text-[#EAEAEA] leading-tight pr-16`}
 						>

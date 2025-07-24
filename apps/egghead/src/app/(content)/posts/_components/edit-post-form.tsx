@@ -63,7 +63,12 @@ export function EditPostForm({
 	tagLoader,
 	instructorLoader,
 	isAdmin,
-}: Omit<EditPostFormProps, 'form'>) {
+	onResourceEdit,
+	courseContext,
+}: Omit<EditPostFormProps, 'form'> & {
+	onResourceEdit?: ({ itemId, item }: { itemId: string; item: any }) => void
+	courseContext?: any
+}) {
 	const { theme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PostSchema>>({
@@ -84,6 +89,16 @@ export function EditPostForm({
 			},
 		},
 	})
+
+	// Construct breadcrumb if courseContext is present
+	const breadcrumb = courseContext
+		? [
+				{
+					title: courseContext.fields?.title || '',
+					href: `/posts/${courseContext.fields?.slug}/edit`,
+				},
+			]
+		: []
 
 	return (
 		<EditResourcesForm
@@ -111,8 +126,26 @@ export function EditPostForm({
 						/>
 					),
 					toolComponent: (
-						<div className="h-[var(--pane-layout-height)] overflow-y-auto py-5">
-							<ResourceResourcesList resource={post} />
+						<div className="h-(--pane-layout-height) overflow-y-auto py-5">
+							{courseContext ? (
+								<>
+									<ResourceResourcesList
+										resource={courseContext}
+										onItemEdit={onResourceEdit}
+									/>
+									{post?.resources?.length && post?.resources?.length > 0 && (
+										<div className="ml-5 mt-4">
+											<h3 className="text-lg font-bold">{post.fields.title}</h3>
+											<ResourceResourcesList resource={post} />
+										</div>
+									)}
+								</>
+							) : (
+								<ResourceResourcesList
+									resource={post}
+									onItemEdit={onResourceEdit}
+								/>
+							)}
 						</div>
 					),
 				},
@@ -148,6 +181,7 @@ export function EditPostForm({
 						]
 					: []),
 			]}
+			breadcrumb={breadcrumb}
 		>
 			<PostMetadataFormFields
 				form={form}

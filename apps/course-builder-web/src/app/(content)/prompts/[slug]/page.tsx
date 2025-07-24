@@ -130,7 +130,7 @@ export default async function PromptPage(props: {
 			>
 				<PromptActionBar promptLoader={promptLoader} />
 			</Suspense>
-			<article className="mx-auto flex w-full max-w-screen-lg flex-col px-5 py-10 md:py-16">
+			<article className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col px-5 py-10 md:py-16">
 				<PromptTitle promptLoader={promptLoader} />
 				<Prompt promptLoader={promptLoader} />
 			</article>

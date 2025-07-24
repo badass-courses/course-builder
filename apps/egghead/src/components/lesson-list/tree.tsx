@@ -67,12 +67,14 @@ export default function Tree({
 	rootResourceId,
 	rootResource,
 	onItemDelete,
+	onItemEdit,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
 	rootResourceId: string
 	rootResource: ContentResource | Product
 	onItemDelete: ({ itemId }: { itemId: string }) => Promise<void>
+	onItemEdit?: ({ itemId }: { itemId: string }) => Promise<void>
 }) {
 	const params = useParams<{ module: string }>()
 
@@ -334,6 +336,7 @@ export default function Tree({
 								key={item.id}
 								mode={type}
 								onDelete={onItemDelete}
+								onEdit={onItemEdit}
 							/>
 						)
 					})}

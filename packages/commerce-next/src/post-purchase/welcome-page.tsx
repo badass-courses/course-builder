@@ -69,10 +69,10 @@ export function WelcomePage({
 	const router = useRouter()
 	return (
 		<main
-			className="mx-auto flex w-full flex-grow flex-col items-center justify-center py-16"
+			className="mx-auto flex w-full grow flex-col items-center justify-center py-16"
 			id="welcome"
 		>
-			<div className="flex w-full max-w-screen-md flex-col gap-3">
+			<div className="max-w-(--breakpoint-md) flex w-full flex-col gap-3">
 				<Header
 					product={product}
 					productResources={productResources}
@@ -131,7 +131,7 @@ export function WelcomePage({
 									</InvoiceTeaser.Title>
 									<InvoiceTeaser.Metadata />
 								</InvoiceTeaser.Link>
-								<InvoiceTeaser.Link className="text-primary flex flex-shrink-0 hover:underline" />
+								<InvoiceTeaser.Link className="text-primary flex shrink-0 hover:underline" />
 							</InvoiceTeaser.Root>
 						</div>
 					)}
@@ -218,7 +218,7 @@ const Header = ({
 		<header>
 			<div className="flex flex-col items-center gap-10 pb-8 sm:flex-row">
 				{product?.fields.image && (
-					<div className="flex flex-shrink-0 items-center justify-center">
+					<div className="flex shrink-0 items-center justify-center">
 						<Image
 							src={product.fields.image.url}
 							alt={product.name}

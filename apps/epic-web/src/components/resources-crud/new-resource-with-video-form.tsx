@@ -3,15 +3,15 @@ import { NewPostInput } from '@/lib/posts'
 import {
 	isTopLevelResourceType,
 	POST_SUBTYPES,
-	RESOURCE_TYPES_WITH_VIDEO,
-	ResourceCreationConfig,
 	supportsVideo,
 } from '@/lib/resources'
 import { createResourceAction } from '@/lib/resources/create-resource-action'
 import { ResourceCreationError } from '@/lib/resources/resource-errors'
 import { track } from '@/utils/analytics'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useSession } from 'next-auth/react'
+import { useForm, type Control } from 'react-hook-form'
+import useSWR from 'swr'
 import { z } from 'zod'
 
 import {
@@ -40,6 +40,16 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import { useResource } from '../resource-form/resource-context'
 import { VideoUploadFormItem } from './video-upload-form-item'
 
+// Author type based on what the API returns
+interface Author {
+	id: string
+	name?: string | null
+	email?: string | null
+	displayName?: string
+	image?: string | null
+	role?: string
+}
+
 const NewResourceWithVideoSchema = z.object({
 	title: z
 		.string()
@@ -63,9 +73,91 @@ const FormValuesSchema = z.object({
 			message: `Invalid type: ${type}. Must be a valid resource type or post subtype.`,
 		}),
 	),
+	createdById: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof FormValuesSchema>
+
+interface AuthorSelectorProps {
+	control: Control<FormValues>
+}
+
+const AuthorSelector = ({ control }: AuthorSelectorProps) => {
+	const fetcher = async (url: string) => {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error(
+				`Failed to fetch authors: ${response.status} ${response.statusText}`,
+			)
+		}
+		return response.json()
+	}
+
+	const { data: authorsData, error: authorsError } = useSWR<{
+		authors: Author[]
+	}>('/api/authors', fetcher, {
+		suspense: true,
+	})
+
+	const authors: Author[] = authorsData?.authors || []
+
+	return (
+		<FormField
+			control={control}
+			name="createdById"
+			render={({ field }) => (
+				<FormItem>
+					<FormLabel>Author</FormLabel>
+					<FormDescription>
+						Select the instructor (admin or contributor) who will own this post.
+					</FormDescription>
+					<FormControl>
+						<Select onValueChange={field.onChange} defaultValue={field.value}>
+							<SelectTrigger>
+								<SelectValue placeholder="Select Author..." />
+							</SelectTrigger>
+							<SelectContent>
+								{authors.map((author) => (
+									<SelectItem key={author.id} value={author.id}>
+										{author.displayName ||
+											author.name ||
+											author.email ||
+											author.id}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</FormControl>
+					{authorsError && (
+						<div className="text-destructive text-sm">
+							Error loading authors: {authorsError.message || 'Unknown error'}
+						</div>
+					)}
+					<FormMessage />
+				</FormItem>
+			)}
+		/>
+	)
+}
+
+const AuthorSelectorLoading = () => {
+	return (
+		<FormItem>
+			<FormLabel>Author</FormLabel>
+			<FormDescription>
+				Select the instructor (admin or contributor) who will own this post.
+			</FormDescription>
+			<FormControl>
+				<Select disabled>
+					<SelectTrigger>
+						<SelectValue placeholder="Loading Authors..." />
+					</SelectTrigger>
+				</Select>
+			</FormControl>
+			<FormMessage />
+		</FormItem>
+	)
+}
 
 /**
  * Form for creating a new resource with an optional video attachment.
@@ -92,6 +184,7 @@ export function NewResourceWithVideoForm({
 	children,
 	uploadEnabled = true,
 	topLevelResourceTypes = [],
+	contributorSelectable = false,
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewPostInput) => Promise<ContentResource>
@@ -104,6 +197,7 @@ export function NewResourceWithVideoForm({
 	) => React.ReactNode
 	uploadEnabled?: boolean
 	topLevelResourceTypes?: string[]
+	contributorSelectable?: boolean
 }) {
 	const { toast } = useToast()
 	const [videoResourceId, setVideoResourceId] = React.useState<
@@ -115,14 +209,32 @@ export function NewResourceWithVideoForm({
 		React.useState<boolean>(false)
 	const [creationError, setCreationError] = React.useState<string | null>(null)
 
+	// Determine admin status from prop (passed down from the server)
+	const isAdmin = contributorSelectable ?? false
+
+	// Session to determine admin permissions
+	const { data: session } = useSession()
+
+	// NOTE: We previously fetched the user's role client-side which caused UI flicker.
+	// Admin status is now passed from the server via `contributorSelectable`, so we
+	// no longer need to fetch `/api/role` here.
+
 	const form = useForm<FormValues>({
 		resolver: zodResolver(FormValuesSchema),
 		defaultValues: {
 			title: '',
 			videoResourceId: undefined,
 			postType: defaultPostType,
+			createdById: isAdmin && session?.user?.id ? session.user.id : '',
 		},
 	})
+
+	// Ensure createdById defaults after session loads
+	React.useEffect(() => {
+		if (isAdmin && session?.user?.id && !form.getValues('createdById')) {
+			form.setValue('createdById', session.user.id)
+		}
+	}, [isAdmin, session?.user?.id, form])
 
 	// Determine if current type needs video
 	const selectedPostType = form.watch('postType')
@@ -173,9 +285,8 @@ export function NewResourceWithVideoForm({
 			// Validate video if required
 			if (typeRequiresVideo) {
 				if (!values.videoResourceId) {
-					setCreationError(
-						`A video is required for ${selectedPostType} resources`,
-					)
+					const errorMsg = `A video is required for ${selectedPostType} resources`
+					setCreationError(errorMsg)
 
 					// Track validation error
 					track('resource_creation_validation_error', {
@@ -191,7 +302,9 @@ export function NewResourceWithVideoForm({
 				try {
 					await pollVideoResource(values.videoResourceId).next()
 				} catch (error) {
-					setCreationError('Video resource validation failed')
+					const errorMsg = 'Video resource validation failed'
+					setCreationError(errorMsg)
+					console.error(errorMsg, error)
 
 					// Track video validation error
 					track('resource_creation_validation_error', {
@@ -232,12 +345,17 @@ export function NewResourceWithVideoForm({
 				resource = await createResource({
 					...values,
 					postType: selectedType as any,
-					createdById: '',
+					createdById: values.createdById || '',
 				})
 			}
 
 			if (!resource) {
-				setCreationError('Failed to create resource')
+				const errorMsg = 'Failed to create resource'
+				setCreationError(errorMsg)
+				console.error(
+					errorMsg,
+					'createResource or createResourceAction returned null',
+				)
 
 				// Track creation failure
 				track('resource_creation_failed', {
@@ -284,6 +402,7 @@ export function NewResourceWithVideoForm({
 				details: errorDetails,
 			})
 
+			console.error('Error creating resource:', { error, errorMessage })
 			setCreationError(errorMessage)
 			toast({
 				variant: 'destructive',
@@ -306,6 +425,10 @@ export function NewResourceWithVideoForm({
 			setVideoResourceValid(true)
 			setIsValidatingVideoResource(false)
 		} catch (error) {
+			console.error('Failed to validate video resource:', {
+				videoResourceId,
+				error,
+			})
 			setVideoResourceValid(false)
 			form.setError('videoResourceId', { message: 'Video resource not found' })
 			setVideoResourceId('')
@@ -392,6 +515,13 @@ export function NewResourceWithVideoForm({
 							)
 						}}
 					/>
+				)}
+
+				{/* Author selection for admins */}
+				{isAdmin && (
+					<React.Suspense fallback={<AuthorSelectorLoading />}>
+						<AuthorSelector control={form.control} />
+					</React.Suspense>
 				)}
 				{uploadEnabled && (typeRequiresVideo || typeSupportsVideo) && (
 					<VideoUploadFormItem

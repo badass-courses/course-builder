@@ -7,7 +7,6 @@ import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
-import Exercise from '@/app/(content)/workshops/[module]/[lesson]/(view)/exercise/_components/exercise'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -61,28 +60,20 @@ export async function LessonPage({
 	return (
 		<ActiveHeadingProvider>
 			<main className="w-full">
-				{lessonType === 'exercise' ? (
-					<Exercise
-						moduleType="workshop"
-						moduleSlug={params.module}
-						lesson={lesson}
-					/>
-				) : (
-					<PlayerContainer
-						lesson={lesson}
-						searchParams={searchParams}
-						params={params}
-						lessonType={lessonType}
-						workshop={workshop}
-						ability={ability}
-					/>
-				)}
+				<PlayerContainer
+					lesson={lesson}
+					searchParams={searchParams}
+					params={params}
+					lessonType={lessonType}
+					workshop={workshop}
+					ability={ability}
+				/>
 				<LessonControls
 					abilityLoader={abilityLoader}
 					lesson={lesson}
 					problem={problem}
 				/>
-				<div className="container relative max-w-screen-xl pb-16 sm:pb-24 md:px-10 lg:px-14">
+				<div className="max-w-(--breakpoint-xl) container relative pb-16 sm:pb-24 md:px-10 lg:px-14">
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
@@ -121,7 +112,7 @@ export async function LessonPage({
 									<AccordionContent>
 										<Suspense
 											fallback={
-												<div className="flex w-full flex-shrink-0 flex-col gap-2 p-5">
+												<div className="flex w-full shrink-0 flex-col gap-2 p-5">
 													<Skeleton className="h-24 w-full bg-gray-100" />
 													{new Array(10).fill(null).map((_, i) => (
 														<Skeleton
@@ -228,12 +219,12 @@ async function PlayerContainer({
 						src={thumbnailUrl}
 						alt="thumbnail"
 						fill
-						className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
+						className="blur-xs absolute inset-0 z-0 h-full w-full bg-cover opacity-20"
 						priority
 					/>
 				)}
 				{/* <div
-					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-sm"
+					className="absolute inset-0 z-0 h-full w-full bg-cover opacity-20 blur-xs"
 					style={{
 						backgroundImage: `url(${thumbnailUrl})`,
 					}}

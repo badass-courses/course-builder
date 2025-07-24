@@ -1,6 +1,7 @@
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
+import { PURCHASE_TRANSFERRED_API_EVENT } from '../../inngest/purchase-transfer/event-purchase-transferred'
 import { InternalOptions, RequestInternal, ResponseInternal } from '../../types'
 import { Cookie } from '../utils/cookie'
 
@@ -52,6 +53,20 @@ export async function transferPurchase(
 		const updatedPurchase = await options.adapter.getPurchase(
 			transferPurchaseOptions.purchaseId,
 		)
+
+		try {
+			await options.inngest.send({
+				name: PURCHASE_TRANSFERRED_API_EVENT,
+				data: {
+					purchaseId: transferPurchaseOptions.purchaseId,
+					sourceUserId: transferPurchaseOptions.sourceUserId,
+					targetUserId: targetUser.id,
+					transferSource: 'api-support-front',
+				},
+			})
+		} catch (e) {
+			console.log('error', e)
+		}
 
 		return {
 			status: 200,

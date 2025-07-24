@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { createAppAbility } from '@/ability'
 import { Event } from '@/lib/events'
 import { api } from '@/trpc/react'
-import { getResourcePath } from '@/utils/resource-paths'
 import {
 	CalendarIcon,
 	ClockIcon,
@@ -18,6 +17,7 @@ import { Pen } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 export const EventDetails: React.FC<{
@@ -76,7 +76,9 @@ export const EventDetails: React.FC<{
 		)
 
 		return (
-			<div className={cn('flex flex-col p-6')}>
+			<div
+				className={cn('dark:border-foreground/5 flex flex-col border-b p-6')}
+			>
 				<div className="flex flex-col gap-6">
 					{Object.values(groupedEvents).map((eventData, index) => (
 						<div
@@ -175,7 +177,7 @@ export const EventDetails: React.FC<{
 	)
 
 	return (
-		<div className={cn('flex flex-col p-6')}>
+		<div className={cn('dark:border-foreground/5 flex flex-col border-b p-6')}>
 			<div className="flex flex-col gap-3 text-base font-normal">
 				<div className="flex flex-col">
 					<span className="inline-flex items-center gap-1 font-semibold opacity-90 dark:text-white">

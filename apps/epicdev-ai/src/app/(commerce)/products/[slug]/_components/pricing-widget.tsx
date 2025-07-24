@@ -76,7 +76,7 @@ export const PricingWidget: React.FC<{
 							<Pricing.TeamQuantityInput />
 						</>
 					)}
-					<Pricing.BuyButton className="from-primary relative my-3 w-auto min-w-[260px] origin-bottom rounded-md bg-gradient-to-bl to-indigo-800 px-6 py-6 text-lg font-bold !text-white shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative my-3 w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-bold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
 						{ctaLabel}
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
@@ -86,13 +86,13 @@ export const PricingWidget: React.FC<{
 				</Pricing.Details>
 			</Pricing.Product>
 			<Pricing.Waitlist className="border-foreground/5 mt-5 w-full border-t px-5">
-				<p className="!mb-3 text-balance pt-5 text-center text-lg font-medium leading-tight">
+				<p className="mb-3! text-balance pt-5 text-center text-lg font-medium leading-tight">
 					Sold out. Get notified when the next date is announced.
 				</p>
 				<SubscribeToConvertkitForm
 					fields={waitlistCkFields}
 					actionLabel="Join Waitlist"
-					className="w-ful [&_button]:from-primary relative z-10 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:bg-gradient-to-b [&_button]:to-indigo-800 [&_button]:text-base [&_button]:font-semibold [&_button]:text-white [&_input]:h-12 [&_input]:text-lg"
+					className="w-ful [&_button]:from-primary [&_button]:bg-linear-to-b relative z-10 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:to-indigo-800 [&_button]:text-base [&_button]:font-semibold [&_button]:text-white [&_input]:h-12 [&_input]:text-lg"
 					successMessage={
 						<p className="inline-flex items-center text-center text-lg font-medium">
 							<CheckCircle className="text-primary mr-2 size-5" /> You are on

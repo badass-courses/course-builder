@@ -1,9 +1,24 @@
 import { db } from '@/db'
 import { products, purchases } from '@/db/schema'
-import { getActiveEvents } from '@/lib/events-query'
+import { NewEmailSchema } from '@/lib/emails'
+import {
+	attachReminderEmailToEvent,
+	createAndAttachReminderEmailToEvent,
+	detachReminderEmailFromEvent,
+	getActiveEvents,
+	getAllReminderEmails,
+	getEventReminderEmail,
+	getEventReminderEmails,
+	updateReminderEmailHours,
+} from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
-import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from '@/trpc/api/trpc'
 import { count, desc, eq } from 'drizzle-orm'
+import { z } from 'zod'
 
 export const eventsRouter = createTRPCRouter({
 	get: publicProcedure.query(async ({ ctx }) => {
@@ -96,4 +111,80 @@ export const eventsRouter = createTRPCRouter({
 	getActiveEvents: publicProcedure.query(async () => {
 		return await getActiveEvents()
 	}),
+	attachReminderEmailToEvent: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				emailId: z.string(),
+				hoursInAdvance: z.number().optional().default(24),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await attachReminderEmailToEvent(
+				input.eventId,
+				input.emailId,
+				input.hoursInAdvance,
+			)
+		}),
+	detachReminderEmailFromEvent: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				emailId: z.string(),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await detachReminderEmailFromEvent(input.eventId, input.emailId)
+		}),
+	getEventReminderEmail: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			return await getEventReminderEmail(input.eventId)
+		}),
+	getEventReminderEmails: publicProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+			}),
+		)
+		.query(async ({ ctx, input }) => {
+			return await getEventReminderEmails(input.eventId)
+		}),
+	getAllReminderEmails: publicProcedure.query(async () => {
+		return await getAllReminderEmails()
+	}),
+	createAndAttachReminderEmailToEvent: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				input: NewEmailSchema,
+				hoursInAdvance: z.number().optional().default(24),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await createAndAttachReminderEmailToEvent(
+				input.eventId,
+				input.input,
+				input.hoursInAdvance,
+			)
+		}),
+	updateReminderEmailHours: protectedProcedure
+		.input(
+			z.object({
+				eventId: z.string(),
+				emailId: z.string(),
+				hoursInAdvance: z.number().min(1).max(168),
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			return await updateReminderEmailHours(
+				input.eventId,
+				input.emailId,
+				input.hoursInAdvance,
+			)
+		}),
 })

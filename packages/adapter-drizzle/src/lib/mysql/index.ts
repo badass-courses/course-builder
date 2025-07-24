@@ -349,6 +349,7 @@ export function mySqlDrizzleAdapter(
 		contentResource,
 		contentResourceResource,
 		contentResourceProduct,
+		contentResourceTag,
 		purchases: purchaseTable,
 		purchaseUserTransfer,
 		coupon,

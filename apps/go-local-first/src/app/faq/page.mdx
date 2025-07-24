@@ -169,7 +169,7 @@ export default ({children}) => (
 		<header
 			className='flex w-full flex-col items-center overflow-x-hidden pb-10 pt-40 text-center'
 		>
-			<h1 className="mt-36 max-w-screen-md text-balance font-heading text-5xl font-bold md:text-5xl lg:text-6xl">
+			<h1 className="mt-36 max-w-(--breakpoint-md) text-balance font-heading text-5xl font-bold md:text-5xl lg:text-6xl">
 				Frequently Asked Questions
 			</h1>
 
@@ -188,8 +188,8 @@ export default ({children}) => (
 				<Link href="/products/professional-next-js-course-ypo8b">Get Access Now →</Link>
 			</Button>
 		</div>
-		<main className="mx-auto mt-5 w-full max-w-screen-lg p-5 pb-32">
-			<article className="prose mx-auto grid max-w-screen-lg grid-cols-1 sm:prose-lg   sm:gap-8 sm:prose-headings:mt-0 sm:prose-headings:font-semibold  md:grid-cols-2 md:gap-12 lg:gap-16">
+		<main className="mx-auto mt-5 w-full max-w-(--breakpoint-lg) p-5 pb-32">
+			<article className="prose mx-auto grid max-w-(--breakpoint-lg) grid-cols-1 sm:prose-lg   sm:gap-8 sm:prose-headings:mt-0 sm:prose-headings:font-semibold  md:grid-cols-2 md:gap-12 lg:gap-16">
 				{children}
 			</article>
 		</main>

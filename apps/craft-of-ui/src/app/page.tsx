@@ -129,7 +129,7 @@ const Home = async (props: Props) => {
 								href={firstPageResource.path}
 								prefetch
 							>
-								<span className="truncate overflow-ellipsis">
+								<span className="truncate text-ellipsis">
 									New {firstPageResource.type}:{' '}
 									<span className="underline">{firstPageResource?.title}</span>
 								</span>

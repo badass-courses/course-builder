@@ -384,7 +384,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 												<Button
 													variant="outline"
 													size="icon"
-													className="h-6 w-6 flex-shrink-0"
+													className="h-6 w-6 shrink-0"
 													type="button"
 													onClick={() => setShowDetachConfirmation(true)}
 												>
