@@ -379,7 +379,28 @@
 }
 
 @keyframes move {
-	50% {
-		transform: translate(calc(100cqi - 100%), 0);
+	0% {
+		transform: translateX(0);
 	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes bear-float-up {
+	0% {
+		transform: translateY(100%);
+		opacity: 1;
+	}
+	80% {
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-200vh);
+		opacity: 0;
+	}
+}
+
+.animate-bear-float-up {
+	animation: bear-float-up 10s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

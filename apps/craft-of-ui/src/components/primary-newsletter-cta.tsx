@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import { SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
@@ -66,8 +66,7 @@ export const PrimaryNewsletterCta: React.FC<
 	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
 		if (subscriber) {
 			track(trackProps.event as string, trackProps.params)
-			const redirectUrl = redirectUrlBuilder(subscriber, '/confirm')
-			router.push(redirectUrl)
+			// No redirect - let the form handle inline success response
 		}
 	}
 	const { data: session } = useSession()

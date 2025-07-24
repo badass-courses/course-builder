@@ -8,11 +8,11 @@ export function JheyProfile() {
 			<h2 className="text-fluid font-serif">Hey – I'm Jhey Tompkins 🤙</h2>
 			<div className="clearfix">
 				<Image
-					className="float-none mb-4 mr-6 h-[180px] w-[180px] rounded-lg bg-gray-500 object-cover sm:float-left"
+					className="float-none mb-4 mr-6 h-[220px] w-[220px] rounded-lg bg-gray-500 object-cover sm:float-left"
 					src="/headshot.jpeg"
 					alt="Jhey on stage at All Day Hey"
-					width={180}
-					height={180}
+					width={220}
+					height={220}
 					priority
 				/>
 				<div
@@ -21,18 +21,18 @@ export function JheyProfile() {
 				[&_p:not(:has(+ul))]:mb-8 [&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6"
 				>
 					<p>
-						I'm a design engineer who loves making the web feel magical whilst
+						I’m a web developer who loves making the web feel magical whilst
 						showing others how to do the same.
 					</p>
 					<p>
 						Currently, I'm a{' '}
 						<Link
-							href="https://vercel.com/design"
+							href="https://www.shopify.com/online"
 							className="text-red-400 hover:underline"
 							target="_blank"
 							rel="noopener noreferrer"
 						>
-							Design Engineer at Vercel
+							Staff Design Engineer at Shopify
 						</Link>
 						. Before that I worked in{' '}
 						<Link
@@ -52,8 +52,8 @@ export function JheyProfile() {
 						>
 							CSS and UI
 						</Link>{' '}
-						team on Chrome. Along the way, I've built for brands like Nike,
-						Uber, Nearform, and Monzo.
+						team on Chrome. I was also a Design Engineer at Vercel. Along the
+						way, I’ve built for brands like Nike, Uber, Nearform, and Monzo.
 					</p>
 					<p>
 						Over the years I've shared thousands of demos with the community
@@ -66,7 +66,7 @@ export function JheyProfile() {
 						>
 							following on X
 						</Link>{' '}
-						of over 120,000 people and 18,000 on{' '}
+						of over 130,000 people and 19,000 on{' '}
 						<Link
 							href="https://codepen.io/jh3y"
 							className="text-red-400 hover:underline"
@@ -75,8 +75,16 @@ export function JheyProfile() {
 						>
 							CodePen
 						</Link>{' '}
-						(of which many have asked for this course). It's given me the
-						opportunity to{' '}
+						(of which many have asked for this course). becoming the{' '}
+						<Link
+							href="https://x.com/jh3yy/status/1937200950567195036"
+							className="text-red-400 hover:underline"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							"Most Hearted"
+						</Link>{' '}
+						of all time. It's given me the opportunity to{' '}
 						<Link
 							href="https://youtu.be/loKm4JcT4U4"
 							className="text-red-400 hover:underline"
@@ -112,7 +120,7 @@ export function JheyProfile() {
 					className="sig text-[canvasText]"
 					viewBox="0 0 271 209"
 					fill="none"
-					xmlns="http://www.w3.org/2000/svg"
+					xmlns="http://www.w3.org/2200/svg"
 				>
 					<title>Signature</title>
 					<path
