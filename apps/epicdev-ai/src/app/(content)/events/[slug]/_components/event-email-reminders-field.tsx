@@ -279,7 +279,7 @@ function EmailReminderItem({
 				) : (
 					<Button
 						size="sm"
-						variant="secondary"
+						variant="default"
 						type="button"
 						disabled={isAttaching}
 						onClick={() =>

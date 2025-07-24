@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { courseBuilderAdapter } from '@/db'
 import { getCachedPostOrList } from '@/lib/posts-query'
+import { getCachedVideoResource } from '@/lib/video-resource-query'
 
 import { type VideoResource } from '@coursebuilder/core/schemas'
 
@@ -36,8 +36,9 @@ export default async function PostEmbedPage(props: Props) {
 		)
 	}
 
-	const videoDetails: VideoResource | null =
-		await courseBuilderAdapter.getVideoResource(primaryVideo.resource.id)
+	const videoDetails: VideoResource | null = await getCachedVideoResource(
+		primaryVideo.resource.id,
+	)
 
 	if (!videoDetails) {
 		return (

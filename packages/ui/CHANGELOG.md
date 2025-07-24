@@ -1,5 +1,30 @@
 # @coursebuilder/ui
 
+## 2.0.7
+
+### Patch Changes
+
+- [#516](https://github.com/badass-courses/course-builder/pull/516)
+  [`83e1ff4`](https://github.com/badass-courses/course-builder/commit/83e1ff4e5960bb9897c2444a2424026cd1ed903c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade tailwind to v4
+
+- [`b2ac781`](https://github.com/badass-courses/course-builder/commit/b2ac781b15ec695d40c87bbef29fd21c9a9593c4)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - update ui primitives
+  (tailwind 4)
+
+- [`8f4bb1c`](https://github.com/badass-courses/course-builder/commit/8f4bb1c0cee7296841f40564f43910ccf743752b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - clean up
+  EditResourcesForm
+
+- [#534](https://github.com/badass-courses/course-builder/pull/534)
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bumps next version
+
+- Updated dependencies
+  [[`e6e5e59`](https://github.com/badass-courses/course-builder/commit/e6e5e5924fa540e6f4d88dec408a68c7e50725a9),
+  [`a62e812`](https://github.com/badass-courses/course-builder/commit/a62e812c365c6060acce6914a2bf8019bcff5a4f)]:
+  - @coursebuilder/core@1.0.6
+
 ## 2.0.6
 
 ### Patch Changes

@@ -6,14 +6,10 @@ import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
-import { courseBuilderAdapter } from '@/db'
-import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
-import { type Post, type ProductForPostProps } from '@/lib/posts'
-import {
-	getAllPosts,
-	getCachedPostOrList,
-	getProductForPost,
-} from '@/lib/posts-query'
+import { getCachedListForPost } from '@/lib/lists-query'
+import { type Post } from '@/lib/posts'
+import { getCachedPostOrList } from '@/lib/posts-query'
+import { getCachedVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -36,7 +32,7 @@ import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 import PostTranscript from './_components/post-transcript'
 
-// export const experimental_ppr = true
+export const experimental_ppr = true
 
 type Props = {
 	params: Promise<{ post: string }>
@@ -46,7 +42,6 @@ export default async function PostPage(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
-
 	const post = await getCachedPostOrList(params.post)
 
 	if (!post) {
@@ -69,8 +64,7 @@ export default async function PostPage(props: {
 
 	const primaryVideoId = primaryVideo?.resource.id
 
-	const videoDetails =
-		await courseBuilderAdapter.getVideoResource(primaryVideoId)
+	const videoDetails = await getCachedVideoResource(primaryVideoId)
 
 	return (
 		<main className="w-full">
@@ -273,18 +267,15 @@ async function PlayerContainer({
 	) : null
 }
 
-export async function generateStaticParams() {
-	const posts = await getAllPosts()
-	const lists = await getAllLists()
+// export async function generateStaticParams() {
+// 	const posts = await getCachedAllPosts()
 
-	const resources = [...posts, ...lists]
-
-	return resources
-		.filter((resource) => Boolean(resource.fields?.slug))
-		.map((resource) => ({
-			post: resource.fields?.slug,
-		}))
-}
+// 	return posts
+// 		.filter((resource) => Boolean(resource.fields?.slug))
+// 		.map((resource) => ({
+// 			post: resource.fields?.slug,
+// 		}))
+// }
 
 export async function generateMetadata(
 	props: Props,
@@ -312,7 +303,6 @@ export async function generateMetadata(
 		},
 	}
 }
-
 async function PostActionBar({ post }: { post: Post | null }) {
 	const { session, ability } = await getServerAuthSession()
 

@@ -31,16 +31,12 @@ export const MuxPlayerProvider: React.FC<React.PropsWithChildren> = ({
 	const [playerPrefs, setPlayerPrefsState] = React.useState<PlayerPrefs>(
 		defaultPlayerPreferences,
 	)
-	const [isInitialized, setIsInitialized] = React.useState(false)
 
-	// Load preferences from cookies after mount
+	// Load preferences from cookies once on mount
 	React.useEffect(() => {
-		if (!isInitialized) {
-			const prefs = getPlayerPrefs()
-			setPlayerPrefsState(prefs)
-			setIsInitialized(true)
-		}
-	}, [isInitialized])
+		const prefs = getPlayerPrefs()
+		setPlayerPrefsState(prefs)
+	}, [])
 
 	const setPlayerPrefs = React.useCallback((options: Partial<PlayerPrefs>) => {
 		const newPrefs = savePlayerPrefs(options)

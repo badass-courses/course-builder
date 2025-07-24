@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -83,6 +83,14 @@ export async function getEvent(eventIdOrSlug: string) {
 
 	return parsedEvent.data
 }
+
+export const getCachedEventOrEventSeries = unstable_cache(
+	async (eventIdOrSlug: string) => {
+		return await getEventOrEventSeries(eventIdOrSlug)
+	},
+	['events'],
+	{ revalidate: 3600, tags: ['events'] },
+)
 
 export async function getEventOrEventSeries(eventIdOrSlug: string) {
 	const eventData = await db.query.contentResource.findFirst({
@@ -1469,26 +1477,60 @@ export async function updateReminderEmailHours(
 /**
  * Get subscribers for an event who should receive reminder emails
  * Based on users who purchased products associated with the event
+ * Handles both individual events and child events within event-series
  *
- * @param eventId - The ID of the event
+ * @param eventId - The ID of the event (can be individual event or child event in a series)
  * @returns Array of users who purchased the event and should receive reminder emails
  */
 export async function getEventPurchasers(
 	eventId: string,
 ): Promise<Array<{ id: string; email: string; name?: string }>> {
 	try {
-		// Find all products associated with this event via contentResourceProduct
-		const eventProducts = await db.query.contentResourceProduct.findMany({
+		// First, try to find products associated directly with this event
+		let eventProducts = await db.query.contentResourceProduct.findMany({
 			where: eq(contentResourceProduct.resourceId, eventId),
 			with: {
 				product: true,
 			},
 		})
 
+		// If no products found, check if this event is a child of an event-series
+		if (eventProducts.length === 0) {
+			// Check if this event is a child resource of an event-series
+			const parentEventSeries =
+				await db.query.contentResourceResource.findFirst({
+					where: eq(contentResourceResource.resourceId, eventId),
+					with: {
+						resourceOf: true, // This should be the parent event-series
+					},
+				})
+
+			if (parentEventSeries?.resourceOf?.type === 'event-series') {
+				await log.info('event.subscribers.checking-parent-series', {
+					eventId,
+					parentEventSeriesId: parentEventSeries.resourceOfId,
+					message:
+						'Event is child of event-series, checking parent for products',
+				})
+
+				// Get products associated with the parent event-series
+				eventProducts = await db.query.contentResourceProduct.findMany({
+					where: eq(
+						contentResourceProduct.resourceId,
+						parentEventSeries.resourceOfId,
+					),
+					with: {
+						product: true,
+					},
+				})
+			}
+		}
+
 		if (eventProducts.length === 0) {
 			await log.info('event.subscribers.no-products', {
 				eventId,
-				message: 'No products associated with this event',
+				message:
+					'No products associated with this event or its parent event-series',
 			})
 			return []
 		}
@@ -1497,7 +1539,10 @@ export async function getEventPurchasers(
 
 		// Find all purchases of these products
 		const eventPurchases = await db.query.purchases.findMany({
-			where: inArray(purchases.productId, productIds),
+			where: and(
+				inArray(purchases.productId, productIds),
+				eq(purchases.status, 'Valid'),
+			),
 			with: {
 				user: true,
 			},
@@ -1535,6 +1580,11 @@ export async function getEventPurchasers(
 			productIds,
 			totalPurchases: eventPurchases.length,
 			uniqueSubscribers: subscribers.length,
+			foundViaParentSeries: eventProducts.some(
+				(ep) =>
+					// Check if any product was found via parent series (resourceId != eventId)
+					ep.resourceId !== eventId,
+			),
 		})
 
 		return subscribers
