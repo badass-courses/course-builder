@@ -61,8 +61,8 @@ export const PostsSearchFilter: React.FC<
 	const hasActiveFilters = currentSearch || (postType && postType !== 'all')
 
 	return (
-		<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-			<div className="relative flex flex-grow items-center">
+		<div className="flex w-full flex-col gap-4 sm:flex-row sm:items-center">
+			<div className="relative flex flex-1 items-center">
 				<Label htmlFor="search" className="sr-only">
 					Search
 				</Label>

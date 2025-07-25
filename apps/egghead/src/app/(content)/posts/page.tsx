@@ -1,33 +1,13 @@
 import * as React from 'react'
 import { Suspense } from 'react'
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
-import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
-import type { MinimalPost } from '@/lib/posts'
-import {
-	getAllMinimalPosts,
-	getAllMinimalPostsForUser,
-	getCachedAllMinimalPosts,
-	getCachedAllMinimalPostsForUser,
-} from '@/lib/posts-query'
-import {
-	getCachedEggheadInstructorForUser,
-	loadEggheadInstructorForUser,
-} from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
-import { subject } from '@casl/ability'
 
+import PostList from './_components/post-list'
 import {
-	Button,
-	Card,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-	Checkbox,
-} from '@coursebuilder/ui'
-
+	CreatePostSkeleton,
+	PostListSkeleton,
+} from './_components/post-list-skeleton'
 import { PostsFilterToggle } from './_components/posts-filter-toggle'
 import { PostsSearchFilter } from './_components/posts-search-filter'
 
@@ -38,112 +18,32 @@ export default async function PostsListPage(props: {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<div className="bg-muted flex h-full flex-grow flex-col-reverse gap-3 p-5 md:flex-row">
-			<div className="flex flex-grow flex-col space-y-2 md:order-2">
-				<div className="flex items-center justify-between">
-					<h2 className="text-lg font-bold">Posts</h2>
-					<PostsFilterToggle canManageAll={ability.can('manage', 'all')} />
-				</div>
-				<div className="mb-4">
-					<PostsSearchFilter />
-				</div>
-				<Suspense>
-					<PostList
-						showAllPosts={searchParams.view === 'all'}
-						search={searchParams.search}
-						postType={searchParams.postType}
-					/>
+		<div className="bg-muted w-full">
+			<div className="mx-auto h-full max-w-screen-xl gap-3 p-5">
+				<Suspense fallback={<CreatePostSkeleton />}>
+					<PostListActions />
 				</Suspense>
+				<div className="mt-4 flex w-full flex-col space-y-2 md:order-2">
+					<div className="flex items-center justify-between">
+						<h2 className="text-lg font-bold">Posts</h2>
+						<PostsFilterToggle canManageAll={ability.can('manage', 'all')} />
+					</div>
+					<Suspense fallback={<PostListSkeleton />}>
+						<div className="w-full">
+							<div className="mb-4">
+								<PostsSearchFilter />
+							</div>
+							<PostList
+								showAllPosts={searchParams.view === 'all'}
+								search={searchParams.search}
+								postType={searchParams.postType}
+							/>
+						</div>
+					</Suspense>
+				</div>
 			</div>
-			<Suspense>
-				<PostListActions />
-			</Suspense>
 		</div>
 	)
-}
-
-async function PostList({
-	showAllPosts,
-	search,
-	postType,
-}: {
-	showAllPosts: boolean
-	search?: string
-	postType?: string
-}) {
-	const { ability, session } = await getServerAuthSession()
-
-	let postsModule
-
-	// Use cached versions when no search params, non-cached when filtering
-	const hasSearchParams = Boolean(search || postType)
-
-	if (ability.can('manage', 'all') && showAllPosts) {
-		postsModule = hasSearchParams
-			? await getAllMinimalPosts(search, postType)
-			: await getCachedAllMinimalPosts()
-	} else {
-		postsModule = hasSearchParams
-			? await getAllMinimalPostsForUser(session?.user?.id, search, postType)
-			: await getCachedAllMinimalPostsForUser(session?.user?.id)
-	}
-
-	return (
-		<>
-			{postsModule && postsModule.length > 0 ? (
-				postsModule.map((post: MinimalPost) => {
-					return (
-						<Card key={post.id}>
-							<CardHeader>
-								<div className="flex gap-2">
-									<div className="text-muted-foreground text-mono text-xs">
-										{post.fields?.state} {post.fields?.postType}
-									</div>
-								</div>
-								<CardTitle>
-									{/* posts are presented at the root of the site and not in a sub-route */}
-									<Link
-										className="w-full"
-										href={`/${post?.fields?.slug || post.id}`}
-									>
-										{post?.fields?.title}
-									</Link>
-								</CardTitle>
-								<CardDescription>
-									<Suspense>
-										<InstructorByLine userId={post.createdById} />
-									</Suspense>
-								</CardDescription>
-							</CardHeader>
-
-							{ability.can('manage', subject('Content', post)) && (
-								<CardFooter>
-									<div className="flex w-full justify-end gap-2">
-										<Button size="sm">
-											<Link href={`/posts/${post.id}/edit`}>Edit</Link>
-										</Button>
-										<DeletePostButton id={post.id} />
-									</div>
-								</CardFooter>
-							)}
-						</Card>
-					)
-				})
-			) : (
-				<div className="text-muted-foreground flex h-full justify-center">
-					No posts found. Create a post to get started
-				</div>
-			)}
-		</>
-	)
-}
-
-const InstructorByLine = async ({ userId }: { userId: string }) => {
-	const instructor = await getCachedEggheadInstructorForUser(userId)
-	const fullName = `${instructor?.first_name} ${instructor?.last_name}`.trim()
-	return Boolean(fullName) ? (
-		<div className="text-muted-foreground text-mono text-xs">{fullName}</div>
-	) : null
 }
 
 async function PostListActions() {
@@ -151,7 +51,7 @@ async function PostListActions() {
 	return (
 		<>
 			{ability.can('create', 'Content') ? (
-				<div className="order-1 h-full flex-grow md:order-2">
+				<div className="order-1 h-full max-w-lg flex-grow md:order-2">
 					<h1 className="pb-2 text-lg font-bold">Create Post</h1>
 					<CreatePost />
 				</div>
