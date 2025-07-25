@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
+import type { MinimalPost } from '@/lib/posts'
 import {
-	getAllPosts,
-	getAllPostsForUser,
-	getCachedAllPosts,
-	getCachedAllPostsForUser,
+	getAllMinimalPosts,
+	getAllMinimalPostsForUser,
+	getCachedAllMinimalPosts,
+	getCachedAllMinimalPostsForUser,
 } from '@/lib/posts-query'
 import {
 	getCachedEggheadInstructorForUser,
@@ -17,7 +18,6 @@ import {
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 
-import { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Card,
@@ -29,6 +29,7 @@ import {
 } from '@coursebuilder/ui'
 
 import { PostsFilterToggle } from './_components/posts-filter-toggle'
+import { PostsSearchFilter } from './_components/posts-search-filter'
 
 export default async function PostsListPage(props: {
 	searchParams: Promise<{ [key: string]: string | undefined }>
@@ -43,8 +44,15 @@ export default async function PostsListPage(props: {
 					<h2 className="text-lg font-bold">Posts</h2>
 					<PostsFilterToggle canManageAll={ability.can('manage', 'all')} />
 				</div>
+				<div className="mb-4">
+					<PostsSearchFilter />
+				</div>
 				<Suspense>
-					<PostList showAllPosts={searchParams.view === 'all'} />
+					<PostList
+						showAllPosts={searchParams.view === 'all'}
+						search={searchParams.search}
+						postType={searchParams.postType}
+					/>
 				</Suspense>
 			</div>
 			<Suspense>
@@ -54,21 +62,36 @@ export default async function PostsListPage(props: {
 	)
 }
 
-async function PostList({ showAllPosts }: { showAllPosts: boolean }) {
+async function PostList({
+	showAllPosts,
+	search,
+	postType,
+}: {
+	showAllPosts: boolean
+	search?: string
+	postType?: string
+}) {
 	const { ability, session } = await getServerAuthSession()
 
 	let postsModule
 
+	// Use cached versions when no search params, non-cached when filtering
+	const hasSearchParams = Boolean(search || postType)
+
 	if (ability.can('manage', 'all') && showAllPosts) {
-		postsModule = await getAllPosts()
+		postsModule = hasSearchParams
+			? await getAllMinimalPosts(search, postType)
+			: await getCachedAllMinimalPosts()
 	} else {
-		postsModule = await getAllPostsForUser(session?.user?.id)
+		postsModule = hasSearchParams
+			? await getAllMinimalPostsForUser(session?.user?.id, search, postType)
+			: await getCachedAllMinimalPostsForUser(session?.user?.id)
 	}
 
 	return (
 		<>
-			{postsModule.length > 0 ? (
-				postsModule.map((post: ContentResource) => {
+			{postsModule && postsModule.length > 0 ? (
+				postsModule.map((post: MinimalPost) => {
 					return (
 						<Card key={post.id}>
 							<CardHeader>
