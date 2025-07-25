@@ -32,7 +32,7 @@ export function CreatePost() {
 
 	return (
 		<Card>
-			<CardContent>
+			<CardContent className="p-4">
 				<NewResourceWithVideoForm
 					uploadEnabled={false}
 					onResourceCreated={async (resource: ContentResource) => {

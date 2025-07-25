@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 // Import directly using relative paths
 import {
+	MinimalPostSchema,
 	NewPostSchema,
 	PostAccessSchema,
 	PostActionSchema,
@@ -21,6 +22,7 @@ export type PostType = z.infer<typeof PostTypeSchema>
 export type Post = z.infer<typeof PostSchema>
 export type NewPost = z.infer<typeof NewPostSchema>
 export type PostUpdate = z.infer<typeof PostUpdateSchema>
+export type MinimalPost = z.infer<typeof MinimalPostSchema>
 
 // Constants
 export const POST_TYPES_WITH_VIDEO = ['lesson', 'podcast', 'tip']
