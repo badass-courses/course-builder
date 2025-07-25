@@ -1,6 +1,24 @@
+// React
 import { Suspense } from 'react'
+
+// Next
 import Image from 'next/image'
 import Link from 'next/link'
+
+// 3rd party
+import { subject } from '@casl/ability'
+import { Calendar, Edit3, Tag, Trash, User } from 'lucide-react'
+import {
+	Button,
+	Card,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+	Checkbox,
+} from '@coursebuilder/ui'
+
+// Internal
 import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-button'
 import { InstructorSkeleton } from '@/app/(content)/posts/_components/post-list-skeleton'
 import type { MinimalPost } from '@/lib/posts'
@@ -15,19 +33,14 @@ import {
 	loadEggheadInstructorForUser,
 } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
-import { subject } from '@casl/ability'
-import { Calendar, Edit3, Tag, Trash, User } from 'lucide-react'
-
-import {
-	Button,
-	Card,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-	Checkbox,
-} from '@coursebuilder/ui'
-
+/**
+ * Displays a list of posts with optional filtering by search term and post type.
+ * Uses cached data when no filters are applied, and fetches fresh data when filtering.
+ * 
+ * @param showAllPosts - Whether to show all posts or only user's posts
+ * @param search - Optional search term to filter posts by title
+ * @param postType - Optional post type filter
+ */
 export default async function PostList({
 	showAllPosts,
 	search,
@@ -139,6 +152,12 @@ export default async function PostList({
 	)
 }
 
+/**
+ * Fetches and displays the instructor's full name for a given user ID.
+ * Returns null if no valid name is found.
+ *
+ * @param userId - The ID of the user to fetch instructor data for
+ */
 const InstructorByLine = async ({ userId }: { userId: string }) => {
 	const instructor = await getCachedEggheadInstructorForUser(userId)
 	const fullName = `${instructor?.first_name} ${instructor?.last_name}`.trim()
