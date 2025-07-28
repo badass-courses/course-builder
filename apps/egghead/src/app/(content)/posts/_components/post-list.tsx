@@ -8,10 +8,8 @@ import type { MinimalPost } from '@/lib/posts'
 import {
 	countAllMinimalPosts,
 	countAllMinimalPostsForUser,
-	getAllMinimalPosts,
-	getAllMinimalPostsForUser,
-	getCachedAllMinimalPosts,
-	getCachedAllMinimalPostsForUser,
+	getCachedMinimalPosts,
+	getCachedMinimalPostsForUser,
 } from '@/lib/posts-query'
 import {
 	getCachedEggheadInstructorForUser,
@@ -22,21 +20,13 @@ import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 import { Calendar, Edit3, Tag, Trash, User } from 'lucide-react'
 
-import {
-	Button,
-	Card,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-	Checkbox,
-} from '@coursebuilder/ui'
+import { Button } from '@coursebuilder/ui'
 
 import { PostsPagination } from './posts-pagination'
 
 /**
  * Displays a list of posts with optional filtering by search term and post type.
- * Uses cached data when no filters are applied, and fetches fresh data when filtering.
+ * Uses cached data for each page with its specific parameters for optimal performance.
  *
  * @param showAllPosts - Whether to show all posts or only user's posts
  * @param search - Optional search term to filter posts by title
@@ -63,44 +53,28 @@ export default async function PostList({
 	let postsModule
 	let totalCount = 0
 
-	// Use cached versions when no search params, non-cached when filtering
-	const hasSearchParams = Boolean(
-		search || postType || page !== 1 || pageSize !== 50,
-	)
-
-	// Fetch posts and count in parallel
+	// Always use cached versions for better performance
+	// Each page with its specific parameters will be cached individually
 	if (ability.can('manage', 'all') && showAllPosts) {
-		if (hasSearchParams) {
-			const [posts, count] = await Promise.all([
-				getAllMinimalPosts(search, postType, pageSize, offset),
-				countAllMinimalPosts(search, postType),
-			])
-			postsModule = posts
-			totalCount = count
-		} else {
-			postsModule = await getCachedAllMinimalPosts()
-			// For cached version, we'll need to count all posts without filters
-			totalCount = await countAllMinimalPosts()
-		}
+		const [posts, count] = await Promise.all([
+			getCachedMinimalPosts(search, postType, pageSize, offset),
+			countAllMinimalPosts(search, postType),
+		])
+		postsModule = posts
+		totalCount = count
 	} else {
-		if (hasSearchParams) {
-			const [posts, count] = await Promise.all([
-				getAllMinimalPostsForUser(
-					session?.user?.id,
-					search,
-					postType,
-					pageSize,
-					offset,
-				),
-				countAllMinimalPostsForUser(session?.user?.id, search, postType),
-			])
-			postsModule = posts
-			totalCount = count
-		} else {
-			postsModule = await getCachedAllMinimalPostsForUser(session?.user?.id)
-			// For cached version, count user's posts without filters
-			totalCount = await countAllMinimalPostsForUser(session?.user?.id)
-		}
+		const [posts, count] = await Promise.all([
+			getCachedMinimalPostsForUser(
+				session?.user?.id,
+				search,
+				postType,
+				pageSize,
+				offset,
+			),
+			countAllMinimalPostsForUser(session?.user?.id, search, postType),
+		])
+		postsModule = posts
+		totalCount = count
 	}
 
 	logger.info('PostList rendered', {

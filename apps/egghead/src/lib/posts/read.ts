@@ -202,6 +202,25 @@ export const getCachedAllMinimalPosts = unstable_cache(
 )
 
 /**
+ * Get a cached version of minimal posts with pagination and filtering
+ */
+export const getCachedMinimalPosts = unstable_cache(
+	async (search?: string, postType?: string, limit?: number, offset?: number) =>
+		getAllMinimalPosts(search, postType, limit, offset),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
+ * Get a cached version of all minimal posts for a specific user (default view only, no search/filtering)
+ */
+export const getCachedAllMinimalPostsForUser = unstable_cache(
+	async (userId?: string) => getAllMinimalPostsForUser(userId),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
  * Get all minimal posts for a specific user (lightweight for caching)
  */
 export async function getAllMinimalPostsForUser(
@@ -284,10 +303,16 @@ export async function getAllMinimalPostsForUser(
 }
 
 /**
- * Get a cached version of all minimal posts for a specific user (default view only, no search/filtering)
+ * Get a cached version of minimal posts for a specific user with pagination and filtering
  */
-export const getCachedAllMinimalPostsForUser = unstable_cache(
-	async (userId?: string) => getAllMinimalPostsForUser(userId),
+export const getCachedMinimalPostsForUser = unstable_cache(
+	async (
+		userId?: string,
+		search?: string,
+		postType?: string,
+		limit?: number,
+		offset?: number,
+	) => getAllMinimalPostsForUser(userId, search, postType, limit, offset),
 	['posts'],
 	{ revalidate: 3600, tags: ['posts'] },
 )
