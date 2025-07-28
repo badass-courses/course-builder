@@ -6,6 +6,8 @@ import { DeletePostButton } from '@/app/(content)/posts/_components/delete-post-
 import { InstructorSkeleton } from '@/app/(content)/posts/_components/post-list-skeleton'
 import type { MinimalPost } from '@/lib/posts'
 import {
+	countAllMinimalPosts,
+	countAllMinimalPostsForUser,
 	getAllMinimalPosts,
 	getAllMinimalPostsForUser,
 	getCachedAllMinimalPosts,
@@ -41,25 +43,40 @@ export default async function PostList({
 	showAllPosts,
 	search,
 	postType,
+	page = 1,
+	pageSize = 50,
 }: {
 	showAllPosts: boolean
 	search?: string
 	postType?: string
+	page?: number
+	pageSize?: number
 }) {
 	const { ability, session } = await getServerAuthSession()
+
+	// Calculate offset for pagination
+	const offset = (page - 1) * pageSize
 
 	let postsModule
 
 	// Use cached versions when no search params, non-cached when filtering
-	const hasSearchParams = Boolean(search || postType)
+	const hasSearchParams = Boolean(
+		search || postType || page !== 1 || pageSize !== 50,
+	)
 
 	if (ability.can('manage', 'all') && showAllPosts) {
 		postsModule = hasSearchParams
-			? await getAllMinimalPosts(search, postType)
+			? await getAllMinimalPosts(search, postType, pageSize, offset)
 			: await getCachedAllMinimalPosts()
 	} else {
 		postsModule = hasSearchParams
-			? await getAllMinimalPostsForUser(session?.user?.id, search, postType)
+			? await getAllMinimalPostsForUser(
+					session?.user?.id,
+					search,
+					postType,
+					pageSize,
+					offset,
+				)
 			: await getCachedAllMinimalPostsForUser(session?.user?.id)
 	}
 

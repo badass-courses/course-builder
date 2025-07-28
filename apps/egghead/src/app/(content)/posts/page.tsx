@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import { CreatePost } from '@/app/(content)/posts/_components/create-post'
+import { logger } from '@/lib/utils/logger'
 import { getServerAuthSession } from '@/server/auth'
 
 import PostList from './_components/post-list'
@@ -16,6 +17,16 @@ export default async function PostsListPage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const { ability } = await getServerAuthSession()
+
+	// Parse pagination parameters with defaults
+	const page = Number(searchParams.page) || 1
+	const pageSize = Number(searchParams.pageSize) || 50
+
+	logger.info('Posts page loaded', {
+		page,
+		pageSize,
+		calculatedOffset: (page - 1) * pageSize,
+	})
 
 	return (
 		<div className="bg-muted w-full">
@@ -37,6 +48,8 @@ export default async function PostsListPage(props: {
 								showAllPosts={searchParams.view === 'all'}
 								search={searchParams.search}
 								postType={searchParams.postType}
+								page={page}
+								pageSize={pageSize}
 							/>
 						</div>
 					</Suspense>
