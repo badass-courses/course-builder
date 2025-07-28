@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Loader2, Mail, Pencil, Plus } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import pluralize from 'pluralize'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import Markdown from 'react-markdown'
 
@@ -214,7 +215,7 @@ function EmailReminderItem({
 								<Loader2 className="size-3 animate-spin" />
 							)}
 						</span>
-						<div className="flex items-center gap-1">
+						<div className="flex flex-col text-left">
 							<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
 								{emailRef?.metadata?.hoursInAdvance || (
 									<Loader2 className="size-3 animate-spin" />
@@ -223,7 +224,8 @@ function EmailReminderItem({
 							</span>
 							{(usedCount ?? 0) > 0 && (
 								<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
-									・ {usedCount} other events are using this template
+									{usedCount} other {pluralize('event', usedCount)} using this
+									template
 								</span>
 							)}
 						</div>
@@ -237,7 +239,7 @@ function EmailReminderItem({
 						<DialogDescription>
 							Edit the reminder email for this{' '}
 							{(usedCount ?? 0) > 0
-								? `and ${usedCount} other events.`
+								? `and ${usedCount} other ${pluralize('event', usedCount)}.`
 								: 'event.'}
 						</DialogDescription>
 					</DialogHeader>
