@@ -17,6 +17,7 @@ import {
 	getCachedEggheadInstructorForUser,
 	loadEggheadInstructorForUser,
 } from '@/lib/users'
+import { logger } from '@/lib/utils/logger'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
 import { Calendar, Edit3, Tag, Trash, User } from 'lucide-react'
@@ -30,6 +31,8 @@ import {
 	CardTitle,
 	Checkbox,
 } from '@coursebuilder/ui'
+
+import { PostsPagination } from './posts-pagination'
 
 /**
  * Displays a list of posts with optional filtering by search term and post type.
@@ -58,27 +61,53 @@ export default async function PostList({
 	const offset = (page - 1) * pageSize
 
 	let postsModule
+	let totalCount = 0
 
 	// Use cached versions when no search params, non-cached when filtering
 	const hasSearchParams = Boolean(
 		search || postType || page !== 1 || pageSize !== 50,
 	)
 
+	// Fetch posts and count in parallel
 	if (ability.can('manage', 'all') && showAllPosts) {
-		postsModule = hasSearchParams
-			? await getAllMinimalPosts(search, postType, pageSize, offset)
-			: await getCachedAllMinimalPosts()
+		if (hasSearchParams) {
+			const [posts, count] = await Promise.all([
+				getAllMinimalPosts(search, postType, pageSize, offset),
+				countAllMinimalPosts(search, postType),
+			])
+			postsModule = posts
+			totalCount = count
+		} else {
+			postsModule = await getCachedAllMinimalPosts()
+			// For cached version, we'll need to count all posts without filters
+			totalCount = await countAllMinimalPosts()
+		}
 	} else {
-		postsModule = hasSearchParams
-			? await getAllMinimalPostsForUser(
+		if (hasSearchParams) {
+			const [posts, count] = await Promise.all([
+				getAllMinimalPostsForUser(
 					session?.user?.id,
 					search,
 					postType,
 					pageSize,
 					offset,
-				)
-			: await getCachedAllMinimalPostsForUser(session?.user?.id)
+				),
+				countAllMinimalPostsForUser(session?.user?.id, search, postType),
+			])
+			postsModule = posts
+			totalCount = count
+		} else {
+			postsModule = await getCachedAllMinimalPostsForUser(session?.user?.id)
+			// For cached version, count user's posts without filters
+			totalCount = await countAllMinimalPostsForUser(session?.user?.id)
+		}
 	}
+
+	logger.info('PostList rendered', {
+		showingPosts: `${offset + 1}-${Math.min(offset + pageSize, totalCount)}`,
+		totalPosts: totalCount,
+		pages: Math.ceil(totalCount / pageSize),
+	})
 
 	return (
 		<>
@@ -158,8 +187,19 @@ export default async function PostList({
 				</div>
 			) : (
 				<div className="text-muted-foreground flex h-full justify-center">
-					No posts found. Create a post to get started
+					{totalCount === 0
+						? 'No posts found. Create a post to get started'
+						: `No posts found on page ${page}`}
 				</div>
+			)}
+
+			{/* Show pagination only when there are posts */}
+			{totalCount > 0 && (
+				<PostsPagination
+					currentPage={page}
+					pageSize={pageSize}
+					totalCount={totalCount}
+				/>
 			)}
 		</>
 	)
