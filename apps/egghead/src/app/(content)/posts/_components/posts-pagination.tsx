@@ -110,7 +110,7 @@ export function PostsPagination({
 
 		// Add dots where there are gaps
 		range.forEach((i) => {
-			if (l) {
+			if (l !== undefined && typeof i === 'number') {
 				if (i - l === 2) {
 					rangeWithDots.push(l + 1)
 				} else if (i - l !== 1) {
@@ -118,7 +118,7 @@ export function PostsPagination({
 				}
 			}
 			rangeWithDots.push(i)
-			l = i as number
+			l = typeof i === 'number' ? i : undefined
 		})
 
 		return rangeWithDots
