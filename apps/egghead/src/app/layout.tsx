@@ -9,6 +9,7 @@ import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
+import { getOGImageBaseUrl } from '@/utils/get-og-image-url-for-resource'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { extractRouterConfig } from 'uploadthing/server'
@@ -24,6 +25,13 @@ export const metadata = {
 	title: 'egghead Post Builder',
 	description: 'build egghead posts',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
+	openGraph: {
+		images: [
+			{
+				url: `${getOGImageBaseUrl()}/api/og?title=${encodeURIComponent('egghead Post Builder')}`,
+			},
+		],
+	},
 }
 
 export default function RootLayout({

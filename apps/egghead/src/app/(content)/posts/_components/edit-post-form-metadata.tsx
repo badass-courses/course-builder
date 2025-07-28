@@ -22,6 +22,7 @@ import {
 import { EggheadTag } from '@/lib/tags'
 import { CompactInstructor } from '@/lib/users'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResourceAPI } from '@/utils/get-og-image-url-for-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -49,6 +50,7 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
+import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 import AdvancedTagSelectorWithPrimary from '@coursebuilder/ui/resources-crud/tag-selector-with-primary'
@@ -342,6 +344,15 @@ export const PostMetadataFormFields: React.FC<{
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+
+			<MetadataFieldSocialImage
+				form={form}
+				currentSocialImage={getOGImageUrlForResourceAPI({
+					id: post.id,
+					fields: { slug: post.fields?.slug || post.id },
+					updatedAt: post.updatedAt,
+				})}
 			/>
 
 			<MetadataFieldVisibility form={form} />
