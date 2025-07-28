@@ -1,5 +1,8 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"cSpell.words": ["coursebuilder"],
-	"vitest.disableWorkspaceWarning": true
+	"vitest.disableWorkspaceWarning": true,
+	"workbench.colorCustomizations": {
+		"activityBar.activeBorder": "#120A31"
+	}
 }

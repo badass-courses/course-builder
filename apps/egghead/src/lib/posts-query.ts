@@ -14,6 +14,8 @@ import {
 } from './posts/playlists'
 // Import the read operations from the new module
 import {
+	countAllMinimalPosts,
+	countAllMinimalPostsForUser,
 	getAllMinimalPosts,
 	getAllMinimalPostsForUser,
 	getAllPostIds,
@@ -61,6 +63,8 @@ export {
 	getPostTags,
 	getCoursesForPost,
 	getAllPostIds,
+	countAllMinimalPosts,
+	countAllMinimalPostsForUser,
 
 	// Write operations
 	createPost,
