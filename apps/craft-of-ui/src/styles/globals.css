@@ -76,7 +76,9 @@
 		--breakpoint-lg: 968px;
 		--color-red-400: oklch(0.704 0.191 22.216);
 		--color-red-500: oklch(0.637 0.237 25.331);
+		--color-red-600: oklch(0.637 0.237 25.331);
 		--color-red-800: oklch(0.444 0.177 26.899);
+		--red-600: oklch(0.637 0.237 25.331);
 		--color-green-200: oklch(0.925 0.084 155.995);
 		--color-green-600: oklch(0.627 0.194 149.214);
 		--color-green-800: oklch(0.448 0.119 151.328);
@@ -416,4 +418,9 @@
 
 .animate-bear-float-up {
 	animation: bear-float-up 10s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Ensure red button background is applied correctly */
+.bg-red-600 {
+	background-color: var(--red-600, oklch(0.637 0.237 25.331));
 }

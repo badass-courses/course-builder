@@ -69,6 +69,17 @@ module.exports = {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
 				},
+				red: {
+					400: 'var(--color-red-400)',
+					500: 'var(--color-red-500)',
+					600: 'var(--color-red-600)',
+					800: 'var(--color-red-800)',
+				},
+				green: {
+					200: 'var(--color-green-200)',
+					600: 'var(--color-green-600)',
+					800: 'var(--color-green-800)',
+				},
 			},
 			borderRadius: {
 				lg: `var(--radius)`,
@@ -93,11 +104,37 @@ module.exports = {
 					'0%': { 'background-position': '100%' },
 					'100%': { 'background-position': '-100%' },
 				},
+				// Add missing animations that might be used
+				blink: {
+					'0%, 46%, 48%, 50%, 100%': { transform: 'scaleY(1)' },
+					'47%, 49%': { transform: 'scaleY(0.1)' },
+				},
+				draw: {
+					to: { strokeDashoffset: 0 },
+				},
+				fill: {
+					to: { fill: 'currentColor' },
+				},
+				move: {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(100%)' },
+				},
+				'bear-float-up': {
+					'0%': { transform: 'translateY(100%)', opacity: 1 },
+					'80%': { opacity: 1 },
+					'100%': { transform: 'translateY(-200vh)', opacity: 0 },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				shine: 'shine 5s linear infinite',
+				blink: 'blink 6s infinite',
+				draw: 'draw var(--path-speed, 1s) ease-in forwards',
+				fill: 'fill 0.5s forwards',
+				move: 'move 1s ease-in-out',
+				'bear-float-up':
+					'bear-float-up 10s cubic-bezier(0.4, 0, 0.2, 1) forwards',
 			},
 			typography: (theme: any) => ({
 				DEFAULT: {
