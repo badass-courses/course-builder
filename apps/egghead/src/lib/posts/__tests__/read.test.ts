@@ -10,7 +10,7 @@ import {
 
 // Mock the database
 vi.mock('@/db', () => {
-	const mockDb = {
+	const mockDb: any = {
 		query: {
 			contentResource: {
 				findMany: vi.fn(),

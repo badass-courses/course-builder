@@ -111,9 +111,10 @@ export function PostsPagination({
 		// Add dots where there are gaps
 		range.forEach((i) => {
 			if (l !== undefined && typeof i === 'number') {
-				if (i - l === 2) {
+				const diff = i - l
+				if (diff === 2) {
 					rangeWithDots.push(l + 1)
-				} else if (i - l !== 1) {
+				} else if (diff !== 1) {
 					rangeWithDots.push('...')
 				}
 			}
@@ -166,7 +167,7 @@ export function PostsPagination({
 					{getPageNumbers().map((pageNum, idx) => (
 						<PaginationItem key={idx}>
 							{pageNum === '...' ? (
-								<PaginationEllipsis />
+								<PaginationEllipsis data-testid="pagination-ellipsis" />
 							) : (
 								<PaginationLink
 									href="#"
