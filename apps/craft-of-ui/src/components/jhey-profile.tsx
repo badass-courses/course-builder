@@ -15,11 +15,7 @@ export function JheyProfile() {
 					height={220}
 					priority
 				/>
-				<div
-					className="[&_p]:text-md leading-[1.5]
-				[&_h2]:mb-4 [&_h2]:mt-20 [&_h2]:font-serif [&_h2]:font-[600] [&_h2]:leading-none [&_h2]:[--font-level:1.8] [&_h2]:[--font-size-min:20]
-				[&_p:not(:has(+ul))]:mb-8 [&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6"
-				>
+				<div className="[&_p]:text-md leading-[1.5] [&_h2]:mb-4 [&_h2]:mt-20 [&_h2]:font-serif [&_h2]:font-[600] [&_h2]:leading-none [&_h2]:[--font-level:1.8] [&_h2]:[--font-size-min:20] [&_p:not(:has(+ul))]:mb-8 [&_ul]:mb-8 [&_ul]:mt-2 [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-y-2 [&_ul]:pl-6">
 					<p>
 						I’m a web developer who loves making the web feel magical whilst
 						showing others how to do the same.
