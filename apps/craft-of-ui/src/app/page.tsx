@@ -96,7 +96,7 @@ const Home = async (props: Props) => {
 							The Craft of UI — by&nbsp;
 							<Link
 								aria-label="Jhey Tompkins"
-								className="flex items-center gap-x-2 text-gray-900 outline-red-500 transition-colors hover:text-red-500 dark:text-gray-300 dark:hover:text-red-400"
+								className="flex items-center gap-x-2 text-gray-900 outline-red-500 transition-colors hover:text-red-400 dark:text-gray-300 dark:hover:text-red-400"
 								href="https://twitter.com/intent/follow?screen_name=jh3yy"
 								target="_blank"
 							>
@@ -112,7 +112,7 @@ const Home = async (props: Props) => {
 						</h1>
 						<p className="text-fluid mb-6 font-serif leading-none [--font-level:4] [--font-size-min:20]">
 							What if you could build{' '}
-							<span className="text-red-500">anything</span>?
+							<span className="text-red-400">anything</span>?
 						</p>
 					</header>
 

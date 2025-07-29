@@ -74,11 +74,11 @@
 		--font-width-min: 375;
 		--font-width-max: 1500;
 		--breakpoint-lg: 968px;
-		--color-red-400: oklch(0.704 0.191 22.216);
-		--color-red-500: oklch(0.637 0.237 25.331);
-		--color-red-600: oklch(0.637 0.237 25.331);
-		--color-red-800: oklch(0.444 0.177 26.899);
-		--red-600: oklch(0.637 0.237 25.331);
+		--color-red-400: oklch(70.4% 0.191 22.216);
+		--color-red-500: #ef4444;
+		--color-red-600: #ef4444;
+		--color-red-800: #991b1b;
+		--red-600: #ef4444;
 		--color-green-200: oklch(0.925 0.084 155.995);
 		--color-green-600: oklch(0.627 0.194 149.214);
 		--color-green-800: oklch(0.448 0.119 151.328);
@@ -284,13 +284,18 @@
 	}
 
 	::selection {
-		background: var(--color-red-400);
-		color: #fff;
+		background: oklch(70.4% 0.191 22.216) !important;
+		color: #fff !important;
+	}
+
+	::-moz-selection {
+		background: oklch(70.4% 0.191 22.216) !important;
+		color: #fff !important;
 	}
 
 	html[lang] {
 		color-scheme: light dark;
-		scrollbar-color: light-dark(var(--color-red-400), var(--color-red-500))
+		scrollbar-color: light-dark(var(--color-red-400), var(--color-red-400))
 			#0000;
 		scrollbar-width: thin;
 	}

@@ -70,10 +70,10 @@ module.exports = {
 					foreground: 'hsl(var(--card-foreground))',
 				},
 				red: {
-					400: 'var(--color-red-400)',
-					500: 'var(--color-red-500)',
-					600: 'var(--color-red-600)',
-					800: 'var(--color-red-800)',
+					400: '#f87171',
+					500: '#ef4444',
+					600: '#ef4444',
+					800: '#991b1b',
 				},
 				green: {
 					200: 'var(--color-green-200)',
