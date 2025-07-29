@@ -99,6 +99,7 @@ export const SubscribeToConvertkitForm: React.FC<
 	showMascot,
 	...rest
 }) => {
+	const [isEmailFocused, setIsEmailFocused] = useState(false)
 	const {
 		isSubmitting,
 		status,
@@ -116,6 +117,10 @@ export const SubscribeToConvertkitForm: React.FC<
 		validationSchema,
 		validateOnChange,
 	})
+
+	// Check if bear should show: focused AND has content
+	const shouldShowBear =
+		isEmailFocused && values.email && values.email.trim().length > 0
 
 	return (
 		<div
@@ -182,10 +187,21 @@ export const SubscribeToConvertkitForm: React.FC<
 									'isolate',
 								)}
 							>
-								{/* Mascot bear - shows when email input is focused */}
-								{showMascot && (
+								{/* Mascot bear - peeks out when email input is focused */}
+								<div
+									className="pointer-events-none absolute left-[70%] top-0 -z-50 w-12"
+									style={{
+										clipPath: 'inset(-200% 0 0px 0)',
+										transform: 'translateY(-100%)',
+									}}
+								>
 									<svg
-										className="absolute -top-8 left-[70%] -z-50 w-12 delay-200 ease-out motion-safe:transition-transform"
+										className={cn(
+											'w-full motion-safe:transition-transform motion-safe:delay-200 motion-safe:ease-out',
+											shouldShowBear
+												? 'motion-safe:[translate:0_calc(100%+(-50%))]'
+												: 'motion-safe:translate-y-full',
+										)}
 										viewBox="0 0 240 333"
 										fill="none"
 										xmlns="http://www.w3.org/2000/svg"
@@ -242,7 +258,7 @@ export const SubscribeToConvertkitForm: React.FC<
 											fill="#000"
 										/>
 									</svg>
-								)}
+								</div>
 								<input
 									autoComplete="off"
 									className={cn(
@@ -258,8 +274,14 @@ export const SubscribeToConvertkitForm: React.FC<
 									id={id ? `email_${id}` : 'email'}
 									onChange={handleChange}
 									defaultValue={values.email}
-									onFocus={onEmailFocus}
-									onBlur={onEmailBlur}
+									onFocus={() => {
+										setIsEmailFocused(true)
+										onEmailFocus?.()
+									}}
+									onBlur={() => {
+										setIsEmailFocused(false)
+										onEmailBlur?.()
+									}}
 								/>
 							</div>
 							<button
