@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { NewEmailSchema } from '@/lib/emails'
+import { getEmail, updateEmail } from '@/lib/emails-query'
 import {
 	attachReminderEmailToEvent,
 	createAndAttachReminderEmailToEvent,
@@ -186,5 +187,38 @@ export const eventsRouter = createTRPCRouter({
 				input.emailId,
 				input.hoursInAdvance,
 			)
+		}),
+	updateReminderEmail: protectedProcedure
+		.input(
+			z.object({
+				emailId: z.string(),
+				eventId: z.string(),
+				hoursInAdvance: z.number().min(1).max(168),
+				fields: NewEmailSchema.shape.fields,
+			}),
+		)
+		.mutation(async ({ ctx, input }) => {
+			const email = await getEmail(input.emailId)
+
+			if (!email) {
+				throw new Error('Email not found')
+			}
+
+			if (input.hoursInAdvance) {
+				await updateReminderEmailHours(
+					input.eventId,
+					input.emailId,
+					input.hoursInAdvance,
+				)
+			}
+
+			return await updateEmail({
+				...email,
+				id: input.emailId,
+				fields: {
+					...email.fields,
+					...input.fields,
+				},
+			})
 		}),
 })
