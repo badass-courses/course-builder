@@ -15,9 +15,21 @@ I'm really looking forward to tomorrow! Please please please, make sure to reser
 But we don't want to have a bad time! We're going to have a good time! So check out and follow the instructions and we'll have an epic time tomorrow. And because this is an advanced workshop, please make sure you check out the resources on the README of the repo as well. See you soon!`,
 }
 
+export const MARKDOWN_EDITOR_EXTENSIONS = [
+	'{{user.name | default: "everyone"}}',
+	'{{url}}',
+	'{{title}}',
+	'{{event.fields.title}}',
+	'{{event.fields.slug}}',
+	'{{event.fields.details}}',
+	'{{event.fields.attendeeInstructions}}',
+	'{{event.fields.description}}',
+]
+
 type AttachEmailParams = {
 	eventId: string
 	emailId: string
+	hoursInAdvance?: number
 }
 
 type CreateAndAttachEmailParams = {
@@ -32,7 +44,9 @@ type UpdateEmailHoursParams = {
 	hoursInAdvance: number
 }
 
-const ReminderEmailFormSchema = NewEmailSchema.extend({
+export const ReminderEmailFormSchema = NewEmailSchema.extend({
+	emailId: z.string().optional(),
+	eventId: z.string().optional(),
 	hoursInAdvance: z.number().min(1).max(168).default(24), // 1 hour to 1 week
 })
 
@@ -79,38 +93,6 @@ export function useEventEmailReminders(eventId: string) {
 		isPending: isAttachingEmail,
 		variables: attachVariables,
 	} = api.events.attachReminderEmailToEvent.useMutation({
-		onMutate: async ({ eventId, emailId }) => {
-			await utils.events.getEventReminderEmails.cancel({ eventId })
-			await utils.events.getAllReminderEmails.cancel()
-
-			const previousEventEmails = utils.events.getEventReminderEmails.getData({
-				eventId,
-			})
-			const previousAllEmails = utils.events.getAllReminderEmails.getData()
-
-			if (previousAllEmails && previousEventEmails) {
-				const emailToAttach = previousAllEmails.emails.find(
-					(e) => e.id === emailId,
-				)
-				if (emailToAttach) {
-					// Add the email to the existing list instead of replacing it
-					utils.events.getEventReminderEmails.setData({ eventId }, [
-						...previousEventEmails,
-						emailToAttach,
-					])
-				}
-			}
-
-			return { previousEventEmails, previousAllEmails }
-		},
-		onError: (err, variables, context) => {
-			if (context?.previousEventEmails !== undefined) {
-				utils.events.getEventReminderEmails.setData(
-					{ eventId: variables.eventId },
-					context.previousEventEmails,
-				)
-			}
-		},
 		onSettled: () => {
 			utils.events.getEventReminderEmails.invalidate({ eventId })
 			utils.events.getAllReminderEmails.invalidate()
@@ -122,32 +104,6 @@ export function useEventEmailReminders(eventId: string) {
 		isPending: isDetachingEmail,
 		variables: detachVariables,
 	} = api.events.detachReminderEmailFromEvent.useMutation({
-		onMutate: async ({ eventId, emailId }) => {
-			await utils.events.getEventReminderEmails.cancel({ eventId })
-			await utils.events.getAllReminderEmails.cancel()
-
-			const previousEventEmails = utils.events.getEventReminderEmails.getData({
-				eventId,
-			})
-
-			if (previousEventEmails) {
-				// Remove only the specific email being detached
-				const updatedEmails = previousEventEmails.filter(
-					(email) => email.id !== emailId,
-				)
-				utils.events.getEventReminderEmails.setData({ eventId }, updatedEmails)
-			}
-
-			return { previousEventEmails }
-		},
-		onError: (err, variables, context) => {
-			if (context?.previousEventEmails !== undefined) {
-				utils.events.getEventReminderEmails.setData(
-					{ eventId: variables.eventId },
-					context.previousEventEmails,
-				)
-			}
-		},
 		onSettled: () => {
 			utils.events.getEventReminderEmails.invalidate({ eventId })
 			utils.events.getAllReminderEmails.invalidate()
@@ -178,13 +134,25 @@ export function useEventEmailReminders(eventId: string) {
 		},
 	})
 
+	const {
+		mutate: updateEmail,
+		isPending: isUpdatingEmail,
+		variables: updateVariables,
+	} = api.events.updateReminderEmail.useMutation({
+		onSuccess: () => {
+			utils.events.getEventReminderEmails.invalidate({ eventId })
+			utils.events.getAllReminderEmails.invalidate()
+		},
+	})
+
 	const isLoading =
 		eventEmailsStatus === 'pending' ||
 		allEmailsStatus === 'pending' ||
 		isAttachingEmail ||
 		isDetachingEmail ||
 		isCreatingAndAttachingEmail ||
-		isUpdatingEmailHours
+		isUpdatingEmailHours ||
+		isUpdatingEmail
 
 	return {
 		// Form
@@ -201,6 +169,7 @@ export function useEventEmailReminders(eventId: string) {
 		isDetachingEmail,
 		isCreatingAndAttachingEmail,
 		isUpdatingEmailHours,
+		isUpdatingEmail,
 
 		// Granular loading helpers
 		isDetachingEmailId: (emailId: string) =>
@@ -209,12 +178,25 @@ export function useEventEmailReminders(eventId: string) {
 			isAttachingEmail && attachVariables?.emailId === emailId,
 		isUpdatingHoursForEmail: (emailId: string) =>
 			isUpdatingEmailHours && updateHoursVariables?.emailId === emailId,
+		isUpdatingEmailId: (emailId: string) =>
+			isUpdatingEmail && updateVariables?.emailId === emailId,
 
 		// Actions
 		attachEmail: (params: AttachEmailParams) => attachEmail(params),
 		detachEmail: (params: AttachEmailParams) => detachEmail(params),
 		createAndAttachEmail: (params: CreateAndAttachEmailParams) =>
 			createAndAttachEmail(params),
+		updateEmail: (params: ReminderEmailForm) => {
+			if (params.emailId && params.eventId) {
+				updateEmail({
+					...params,
+					emailId: params.emailId,
+					eventId: params.eventId,
+				})
+			} else {
+				console.log('no emailId or eventId', params)
+			}
+		},
 		updateEmailHours: (params: UpdateEmailHoursParams) =>
 			updateEmailHours(params),
 	}
