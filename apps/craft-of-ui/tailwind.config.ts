@@ -124,6 +124,9 @@ module.exports = {
 					'80%': { opacity: 1 },
 					'100%': { transform: 'translateY(-200vh)', opacity: 0 },
 				},
+				float: {
+					to: { translate: '0 calc(-100% + -100vh)' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -135,6 +138,7 @@ module.exports = {
 				move: 'move 1s ease-in-out',
 				'bear-float-up':
 					'bear-float-up 10s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+				float: 'float var(--duration, 15s) linear 2s forwards',
 			},
 			typography: (theme: any) => ({
 				DEFAULT: {

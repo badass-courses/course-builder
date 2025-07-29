@@ -413,7 +413,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				{/* Success message */}
 				{status === 'success' && (
 					<div className="mt-8 flex flex-col items-center justify-center">
-						<p className="rounded-md border border-green-800 bg-green-200/10 p-2 text-green-800 dark:border-green-200 dark:text-green-200">
+						<p className="rounded-md border border-green-800 bg-green-200/10 p-2 text-center text-green-800 dark:border-green-200 dark:text-green-200">
 							<strong className="font-[500]">
 								Thanks{values.first_name ? ` ${values.first_name}` : ''}!
 							</strong>

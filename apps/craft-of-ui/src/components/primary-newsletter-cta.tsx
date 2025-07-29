@@ -66,6 +66,9 @@ export const PrimaryNewsletterCta: React.FC<
 	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
 		if (subscriber) {
 			track(trackProps.event as string, trackProps.params)
+			if (typeof window !== 'undefined' && (window as any).createFloatingBear) {
+				;(window as any).createFloatingBear(subscriber)
+			}
 			// No redirect - let the form handle inline success response
 		}
 	}

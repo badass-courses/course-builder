@@ -6,6 +6,7 @@ import {
 	SubscribeForm,
 	Testimonial,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import { BearAnimation } from '@/components/bear-animation'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
 import { JheyProfile } from '@/components/jhey-profile'
@@ -89,6 +90,8 @@ const Home = async (props: Props) => {
 			withContainer
 			withGrid
 		>
+			<BearAnimation />
+
 			<div className="mask-content fixed inset-0 min-h-screen overflow-auto pb-[calc(var(--header-height)*1)] [--end:calc(2*var(--header-height))] [--start:var(--header-height)] lg:[--end:var(--header-height)] lg:[--start:0]">
 				<div className="mx-auto w-[var(--content)] max-w-[calc(100vw-(2*var(--gutter)))] pb-[var(--header-height)] pt-[calc(2*var(--header-height))]">
 					<header className="text-[canvasText] dark:text-gray-100">
@@ -136,7 +139,7 @@ const Home = async (props: Props) => {
 							</Link>
 						)}
 
-						<p className="text-fluid text-balance font-[200] leading-[1.25] [--font-level:0.6]">
+						<p className="text-fluid text-balance font-[200] leading-[1.25] text-black [--font-level:1] dark:text-white">
 							Master the tools, mindset, and techniques behind crafting
 							exceptional user interfaces with HTML, CSS, and JavaScript
 						</p>

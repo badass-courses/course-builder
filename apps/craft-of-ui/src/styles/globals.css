@@ -412,6 +412,12 @@
 	}
 }
 
+@keyframes float {
+	to {
+		translate: 0 calc(-100% + -100vh);
+	}
+}
+
 @keyframes bear-float-up {
 	0% {
 		transform: translateY(100%);
