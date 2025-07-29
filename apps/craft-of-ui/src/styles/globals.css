@@ -204,14 +204,19 @@
 	}
 
 	body {
-		@apply bg-background selection:bg-primary selection:text-primary-foreground overflow-x-hidden font-[300] text-[canvasText] antialiased;
+		background: color-mix(in hsl, #fff, hsl(45 80% 50%) 1%);
+		@apply selection:bg-primary selection:text-primary-foreground overflow-x-hidden font-[300] text-[canvasText] antialiased;
 		color: color-mix(in hsl, canvasText, canvas 40%);
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;
 	}
 
-	.home-page-grid::before {
+	.dark body {
+		background: hsl(210 10% 10%);
+	}
+
+	body::before {
 		--size: 40px;
 		--line: color-mix(in hsl, canvasText, transparent 90%);
 		content: '';

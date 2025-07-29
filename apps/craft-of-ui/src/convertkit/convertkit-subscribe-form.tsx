@@ -166,6 +166,7 @@ export const SubscribeToConvertkitForm: React.FC<
 									'h-9 flex-1 rounded-md border border-gray-300 px-4 outline-none',
 									'placeholder:text-sm focus-visible:border-red-400',
 									'text-[canvasText] placeholder:text-gray-400',
+									'bg-white dark:bg-transparent',
 								)}
 								id={id ? `first_name_${id}` : 'first_name'}
 								onChange={handleChange}
@@ -265,7 +266,7 @@ export const SubscribeToConvertkitForm: React.FC<
 										'relative z-10 h-9 flex-1 rounded-md border border-gray-300 px-4 outline-none',
 										'placeholder:text-sm focus-visible:border-red-400',
 										'text-[canvasText] placeholder:text-gray-400',
-										'bg-background',
+										'bg-white dark:bg-transparent',
 									)}
 									name="email"
 									type="email"
