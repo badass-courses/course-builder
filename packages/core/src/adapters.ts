@@ -163,11 +163,6 @@ export interface CourseBuilderAdapter<
 		default: boolean
 		fields: Record<string, any>
 	}): Promise<string[]>
-	addResourceToProduct(options: {
-		resource: ContentResource
-		productId: string
-		userId: string
-	}): Promise<ContentResourceProduct | null>
 	getVideoResource(id: string | null | undefined): Promise<VideoResource | null>
 	updateContentResourceFields(options: {
 		id: string
