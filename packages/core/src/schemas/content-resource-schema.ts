@@ -38,7 +38,6 @@ export const ContentResourceSchema = z.object({
 		.default([])
 		.nullable()
 		.optional(),
-	tags: z.any(),
 	organizationId: z.string().nullable(),
 	createdByOrganizationMembershipId: z.string().nullable(),
 })

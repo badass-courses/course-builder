@@ -36,6 +36,7 @@ export const EventFieldsSchema = z.object({
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
+		tags: z.array(z.any()).default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
