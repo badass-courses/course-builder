@@ -67,22 +67,6 @@ export type Event = z.infer<typeof EventSchema>
 export const EventSeriesSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
-		resourceProducts: z
-			.array(
-				z.object({
-					resourceId: z.string(),
-					productId: z.string(),
-					position: z.number().default(0),
-					metadata: z.record(z.string(), z.any()).default({}).nullable(),
-					createdAt: z.coerce.date().nullable(),
-					updatedAt: z.coerce.date().nullable(),
-					deletedAt: z.coerce.date().nullable(),
-					resource: z.any().optional(),
-					product: productSchema.optional(),
-				}),
-			)
-			.default([]),
-		tags: z.array(z.any()).default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
