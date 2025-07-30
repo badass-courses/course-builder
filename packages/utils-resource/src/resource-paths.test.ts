@@ -43,6 +43,13 @@ describe('getResourcePath', () => {
 			)
 		})
 
+		test('should generate tip paths', () => {
+			expect(getResourcePath('tip', 'my-tip')).toBe('/my-tip')
+			expect(getResourcePath('tip', 'my-tip', 'edit')).toBe(
+				'/posts/my-tip/edit',
+			)
+		})
+
 		test('should generate workshop paths', () => {
 			expect(getResourcePath('workshop', 'my-workshop')).toBe(
 				'/workshops/my-workshop',
