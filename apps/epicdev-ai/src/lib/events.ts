@@ -5,6 +5,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
+	ContentResourceProductSchema,
 	ContentResourceSchema,
 	ResourceStateSchema,
 	ResourceVisibilitySchema,
@@ -35,16 +36,6 @@ export const EventFieldsSchema = z.object({
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
-		resourceProducts: z
-			.array(
-				z.object({
-					resourceId: z.string(),
-					productId: z.string(),
-					product: productSchema,
-				}),
-			)
-			.default([]),
-		tags: z.array(z.any()).default([]), // Use generic tag array - specific tag schema handled elsewhere
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),
@@ -81,7 +72,13 @@ export const EventSeriesSchema = ContentResourceSchema.merge(
 				z.object({
 					resourceId: z.string(),
 					productId: z.string(),
-					product: productSchema,
+					position: z.number().default(0),
+					metadata: z.record(z.string(), z.any()).default({}).nullable(),
+					createdAt: z.coerce.date().nullable(),
+					updatedAt: z.coerce.date().nullable(),
+					deletedAt: z.coerce.date().nullable(),
+					resource: z.any().optional(),
+					product: productSchema.optional(),
 				}),
 			)
 			.default([]),

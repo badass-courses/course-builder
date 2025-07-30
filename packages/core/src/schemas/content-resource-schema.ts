@@ -1,7 +1,5 @@
 import { z } from 'zod'
 
-import { productSchema } from './product-schema'
-
 export const ContentResourceResourceSchema = z.object({
 	resourceId: z.string(),
 	resourceOfId: z.string(),
@@ -11,20 +9,6 @@ export const ContentResourceResourceSchema = z.object({
 	updatedAt: z.coerce.date().nullable(),
 	deletedAt: z.coerce.date().nullable(),
 	resource: z.any(),
-})
-
-export const ContentResourceSchema = z.object({
-	id: z.string(),
-	type: z.string(),
-	createdById: z.string(),
-	currentVersionId: z.string().nullish(),
-	fields: z.record(z.string(), z.any()).default({}).nullable().optional(),
-	createdAt: z.coerce.date().nullable(),
-	updatedAt: z.coerce.date().nullable(),
-	deletedAt: z.coerce.date().nullable(),
-	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
-	organizationId: z.string().nullable(),
-	createdByOrganizationMembershipId: z.string().nullable(),
 })
 
 export const ContentResourceProductSchema = z.object({
@@ -37,6 +21,26 @@ export const ContentResourceProductSchema = z.object({
 	deletedAt: z.coerce.date().nullable(),
 	resource: z.any(),
 	product: z.any(),
+})
+
+export const ContentResourceSchema = z.object({
+	id: z.string(),
+	type: z.string(),
+	createdById: z.string(),
+	currentVersionId: z.string().nullish(),
+	fields: z.record(z.string(), z.any()).default({}).nullable().optional(),
+	createdAt: z.coerce.date().nullable(),
+	updatedAt: z.coerce.date().nullable(),
+	deletedAt: z.coerce.date().nullable(),
+	resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
+	resourceProducts: z
+		.array(ContentResourceProductSchema)
+		.default([])
+		.nullable()
+		.optional(),
+	tags: z.any(),
+	organizationId: z.string().nullable(),
+	createdByOrganizationMembershipId: z.string().nullable(),
 })
 
 export type ContentResource = z.infer<typeof ContentResourceSchema>
