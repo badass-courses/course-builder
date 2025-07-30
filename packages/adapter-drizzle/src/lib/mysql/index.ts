@@ -228,6 +228,25 @@ import {
 
 export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
+export const normalizeExpirationDate = (date: Date | undefined) => {
+	if (!date) return undefined
+
+	// Create a new Date object for 23:59:59 UTC on the date part of the input date
+	// The input date should be a JS Date representing 00:00:00 LA time for the chosen day.
+	// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
+	return new Date(
+		Date.UTC(
+			date.getUTCFullYear(),
+			date.getUTCMonth(), // 0-indexed
+			date.getUTCDate(),
+			23, // hours
+			59, // minutes
+			59, // seconds
+			0, // milliseconds
+		),
+	)
+}
+
 export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 	return {
 		accounts: getAccountsSchema(mysqlTable),
@@ -2702,27 +2721,13 @@ export function mySqlDrizzleAdapter(
 							input.coupon.expires
 						) {
 							try {
-								let finalExpires = input.coupon.expires
-								if (finalExpires instanceof Date) {
-									// Create a new Date object for 23:59:59 UTC on the date part of finalExpires
-									// finalExpires from the form should be a JS Date representing 00:00:00 LA time for the chosen day.
-									// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
-									finalExpires = new Date(
-										Date.UTC(
-											finalExpires.getUTCFullYear(),
-											finalExpires.getUTCMonth(), // 0-indexed
-											finalExpires.getUTCDate(),
-											23, // hours
-											59, // minutes
-											59, // seconds
-											0, // milliseconds
-										),
-									)
-								}
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
 								const couponInput = {
 									quantity: '1',
 									maxUses: -1,
-									expires: finalExpires,
+									expires: finalExpires || null,
 									restrictedToProductId: product.id,
 									percentageDiscount: input.coupon.percentageDiscount,
 									status: 1,
