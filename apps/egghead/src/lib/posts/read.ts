@@ -19,6 +19,9 @@ import { z } from 'zod'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
+import { logger } from '../utils/logger'
+import type { MinimalPost } from './types'
+
 /**
  * Search for lessons by title or body text
  */
@@ -117,11 +120,228 @@ export const getCachedAllPosts = unstable_cache(
 )
 
 /**
- * Get all posts
+ * Get all minimal posts data for listing/searching (lightweight for caching)
  */
-export async function getAllPosts(): Promise<Post[]> {
+export async function getAllMinimalPosts(
+	search?: string,
+	postType?: string,
+	limit?: number,
+	offset?: number,
+): Promise<MinimalPost[] | null> {
+	logger.info('Fetching posts with pagination', {
+		limit: limit ?? null,
+		offset: offset ?? null,
+		search: search ?? null,
+		postType: postType ?? null,
+	})
+	const whereConditions = [eq(contentResource.type, 'post')]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
 	const posts = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'post'),
+		where: and(...whereConditions),
+		columns: {
+			id: true,
+			createdById: true,
+			createdAt: true,
+			fields: true,
+		},
+		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
+		orderBy: [desc(contentResource.createdAt)],
+		...(limit !== undefined && { limit }),
+		...(offset !== undefined && { offset }),
+	})
+
+	// Transform to minimal format - only include fields needed for listing
+	return posts.map((post) => ({
+		id: post.id,
+		createdById: post.createdById,
+		createdAt: post.createdAt,
+		fields: {
+			title: post.fields?.title,
+			slug: post.fields?.slug,
+			state: post.fields?.state,
+			postType: post.fields?.postType,
+			description: post.fields?.description,
+		},
+		tags: post.tags.map((tagRelation) => ({
+			tag: {
+				id: tagRelation.tag.id,
+				name: tagRelation.tag.fields?.name || '',
+			},
+		})),
+	}))
+}
+
+/**
+ * Get a cached version of all minimal posts (default view only, no search/filtering)
+ */
+export const getCachedAllMinimalPosts = unstable_cache(
+	async () => getAllMinimalPosts(),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
+ * Get a cached version of minimal posts with pagination and filtering
+ */
+export const getCachedMinimalPosts = unstable_cache(
+	async (search?: string, postType?: string, limit?: number, offset?: number) =>
+		getAllMinimalPosts(search, postType, limit, offset),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
+ * Get a cached version of all minimal posts for a specific user (default view only, no search/filtering)
+ */
+export const getCachedAllMinimalPostsForUser = unstable_cache(
+	async (userId?: string) => getAllMinimalPostsForUser(userId),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
+ * Get all minimal posts for a specific user (lightweight for caching)
+ */
+export async function getAllMinimalPostsForUser(
+	userId?: string,
+	search?: string,
+	postType?: string,
+	limit?: number,
+	offset?: number,
+): Promise<MinimalPost[] | null> {
+	logger.info('Fetching user posts with pagination', {
+		userId,
+		limit: limit ?? null,
+		offset: offset ?? null,
+		search: search ?? null,
+		postType: postType ?? null,
+	})
+	if (!userId) {
+		redirect('/')
+	}
+
+	const whereConditions = [
+		eq(contentResource.type, 'post'),
+		eq(contentResource.createdById, userId),
+	]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
+	const posts = await db.query.contentResource.findMany({
+		where: and(...whereConditions),
+		columns: {
+			id: true,
+			createdById: true,
+			createdAt: true,
+			fields: true,
+		},
+		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+		},
+		orderBy: [desc(contentResource.createdAt)],
+		...(limit !== undefined && { limit }),
+		...(offset !== undefined && { offset }),
+	})
+
+	// Transform to minimal format - only include fields needed for listing
+	return posts.map((post) => ({
+		id: post.id,
+		createdById: post.createdById,
+		createdAt: post.createdAt,
+		fields: {
+			title: post.fields?.title,
+			slug: post.fields?.slug,
+			state: post.fields?.state,
+			postType: post.fields?.postType,
+			description: post.fields?.description,
+		},
+		tags: post.tags.map((tagRelation) => ({
+			tag: {
+				id: tagRelation.tag.id,
+				name: tagRelation.tag.fields?.name || '',
+			},
+		})),
+	}))
+}
+
+/**
+ * Get a cached version of minimal posts for a specific user with pagination and filtering
+ */
+export const getCachedMinimalPostsForUser = unstable_cache(
+	async (
+		userId?: string,
+		search?: string,
+		postType?: string,
+		limit?: number,
+		offset?: number,
+	) => getAllMinimalPostsForUser(userId, search, postType, limit, offset),
+	['posts'],
+	{ revalidate: 3600, tags: ['posts'] },
+)
+
+/**
+ * Get all posts with optional search and filtering
+ */
+export async function getAllPosts(
+	search?: string,
+	postType?: string,
+): Promise<Post[]> {
+	const whereConditions = [eq(contentResource.type, 'post')]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
+	const posts = await db.query.contentResource.findMany({
+		where: and(...whereConditions),
 		with: {
 			tags: {
 				with: {
@@ -149,7 +369,7 @@ export async function getAllPosts(): Promise<Post[]> {
 }
 
 /**
- * Get a cached version of all posts for a specific user
+ * Get a cached version of all posts for a specific user (default view only, no search/filtering)
  */
 export const getCachedAllPostsForUser = unstable_cache(
 	async (userId?: string) => getAllPostsForUser(userId),
@@ -158,18 +378,38 @@ export const getCachedAllPostsForUser = unstable_cache(
 )
 
 /**
- * Get all posts for a specific user
+ * Get all posts for a specific user with optional search and filtering
  */
-export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
+export async function getAllPostsForUser(
+	userId?: string,
+	search?: string,
+	postType?: string,
+): Promise<Post[]> {
 	if (!userId) {
 		redirect('/')
 	}
 
+	const whereConditions = [
+		eq(contentResource.type, 'post'),
+		eq(contentResource.createdById, userId),
+	]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
 	const posts = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'post'),
-			eq(contentResource.createdById, userId),
-		),
+		where: and(...whereConditions),
 		with: {
 			tags: {
 				with: {
@@ -249,4 +489,85 @@ export async function getAllPostIds() {
 			},
 		})
 		.then((posts) => posts.map((post) => post.id))
+}
+
+/**
+ * Get total count of all minimal posts (for pagination)
+ */
+export async function countAllMinimalPosts(
+	search?: string,
+	postType?: string,
+): Promise<number> {
+	logger.info('Counting all posts', {
+		search: search ?? null,
+		postType: postType ?? null,
+	})
+
+	const whereConditions = [eq(contentResource.type, 'post')]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
+	const result = await db
+		.select({ count: sql<number>`count(*)` })
+		.from(contentResource)
+		.where(and(...whereConditions))
+
+	return result[0]?.count ?? 0
+}
+
+/**
+ * Get total count of all minimal posts for a specific user (for pagination)
+ */
+export async function countAllMinimalPostsForUser(
+	userId?: string,
+	search?: string,
+	postType?: string,
+): Promise<number> {
+	logger.info('Counting user posts', {
+		userId,
+		search: search ?? null,
+		postType: postType ?? null,
+	})
+
+	if (!userId) {
+		return 0
+	}
+
+	const whereConditions = [
+		eq(contentResource.type, 'post'),
+		eq(contentResource.createdById, userId),
+	]
+
+	// Add search condition
+	if (search) {
+		whereConditions.push(
+			sql`LOWER(JSON_EXTRACT(${contentResource.fields}, '$.title')) LIKE ${`%${search.toLowerCase()}%`}`,
+		)
+	}
+
+	// Add post type filter
+	if (postType && postType !== 'all') {
+		whereConditions.push(
+			sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = ${postType}`,
+		)
+	}
+
+	const result = await db
+		.select({ count: sql<number>`count(*)` })
+		.from(contentResource)
+		.where(and(...whereConditions))
+
+	return result[0]?.count ?? 0
 }
