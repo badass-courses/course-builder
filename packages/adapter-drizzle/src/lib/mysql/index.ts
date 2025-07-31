@@ -228,6 +228,25 @@ import {
 
 export const guid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
 
+export const normalizeExpirationDate = (date: Date | undefined) => {
+	if (!date) return undefined
+
+	// Create a new Date object for 23:59:59 UTC on the date part of the input date
+	// The input date should be a JS Date representing 00:00:00 LA time for the chosen day.
+	// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
+	return new Date(
+		Date.UTC(
+			date.getUTCFullYear(),
+			date.getUTCMonth(), // 0-indexed
+			date.getUTCDate(),
+			23, // hours
+			59, // minutes
+			59, // seconds
+			0, // milliseconds
+		),
+	)
+}
+
 export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 	return {
 		accounts: getAccountsSchema(mysqlTable),
@@ -2502,6 +2521,684 @@ export function mySqlDrizzleAdapter(
 			}
 
 			return parsedResource.data
+		},
+		async getEvent(
+			eventIdOrSlug: string,
+			options?: {
+				withResources?: boolean
+				withTags?: boolean
+				withProducts?: boolean
+				withPricing?: boolean
+			},
+		): Promise<ContentResource | null> {
+			const {
+				withResources = false,
+				withTags = false,
+				withProducts = false,
+				withPricing = false,
+			} = options || {}
+
+			const eventQuery = await client.query.contentResource.findFirst({
+				where: and(
+					or(
+						eq(contentResource.type, 'event'),
+						eq(contentResource.type, 'event-series'),
+					),
+					or(
+						eq(contentResource.id, eventIdOrSlug),
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							eventIdOrSlug,
+						),
+					),
+				),
+				with: {
+					...(withResources && {
+						resources: {
+							with: { resource: true },
+							orderBy: asc(contentResourceResource.position),
+						},
+					}),
+					...(withTags && {
+						tags: {
+							with: { tag: true },
+							orderBy: asc(contentResourceTag.position),
+						},
+					}),
+					...(withProducts && {
+						resourceProducts: {
+							with: {
+								product: {
+									...(withPricing && {
+										with: { price: true },
+									}),
+								},
+							},
+						},
+					}),
+				},
+			})
+
+			const parsedEvent = ContentResourceSchema.safeParse(eventQuery)
+			if (!parsedEvent.success) {
+				logger.debug('Error parsing event', {
+					eventQuery,
+					error: parsedEvent.error,
+				})
+				return null
+			}
+
+			return parsedEvent.data
+		},
+		async addResourceToProduct(options: {
+			resource: ContentResource
+			productId: string
+			userId: string
+		}) {
+			const { resource, productId, userId } = options
+			const product = await adapter.getProduct(productId)
+
+			if (!product) {
+				throw new Error(`Product not found for id (${productId})`)
+			}
+
+			await client.insert(contentResourceProduct).values({
+				resourceId: resource.id,
+				productId,
+				position: product.resources?.length || 0,
+				metadata: {
+					addedBy: userId,
+				},
+			})
+
+			const resourceProduct =
+				await client.query.contentResourceProduct.findFirst({
+					where: eq(contentResourceProduct.resourceId, resource.id),
+					with: {
+						resource: true,
+						product: true,
+					},
+				})
+
+			return (
+				ContentResourceProductSchema.safeParse(resourceProduct).data || null
+			)
+		},
+		async createEvent(
+			input: {
+				type: 'event'
+				fields: {
+					title: string
+					startsAt?: Date | null | undefined
+					endsAt?: Date | null | undefined
+					description?: string | null | undefined
+					price?: number | null | undefined
+					quantity?: number | null | undefined
+					state?: string | null | undefined
+					visibility?: string | null | undefined
+					slug?: string | null | undefined
+					tagIds?:
+						| { id: string; fields: Record<string, any> }[]
+						| null
+						| undefined
+				}
+				coupon?: {
+					enabled: boolean
+					percentageDiscount: string
+					expires: Date
+				}
+			},
+			userId: string,
+		) {
+			const hash = guid()
+			const newEventId = slugify(`${input.type}~${hash}`)
+
+			const newEvent = {
+				id: newEventId,
+				type: 'event',
+				fields: {
+					title: input.fields.title,
+					state: 'draft',
+					visibility: 'public',
+					slug: slugify(`${input.fields.title}~${hash}`),
+					description: input.fields.description,
+					startsAt: input.fields.startsAt,
+					endsAt: input.fields.endsAt,
+				},
+				createdById: userId,
+			}
+
+			await client.insert(contentResource).values(newEvent)
+			const event = await adapter.getEvent(newEventId, {
+				withResources: true,
+				withTags: true,
+				withProducts: true,
+				withPricing: true,
+			})
+
+			const parsedEvent = ContentResourceSchema.safeParse(event)
+
+			if (!parsedEvent.success) {
+				logger.error(new Error('Error parsing event resource'))
+				throw new Error('Error parsing event resource')
+			}
+
+			// if price is provided, create a product and associate it with the event
+			if (input.fields.price && input.fields.price > 0) {
+				try {
+					const product = await adapter.createProduct({
+						name: input.fields.title,
+						price: input.fields.price,
+						quantityAvailable: input.fields.quantity ?? -1,
+						type: 'live',
+						state: 'published',
+						visibility: 'public',
+					})
+					if (product) {
+						const resourceProduct = await adapter.addResourceToProduct({
+							resource: parsedEvent.data,
+							productId: product.id,
+							userId,
+						})
+						if (!resourceProduct) {
+							logger.error(new Error('Failed to add resource to product'))
+							logger.debug('event.addResourceToProduct.failed', {
+								eventId: newEventId,
+								productId: product.id,
+								userId,
+							})
+						} else {
+							logger.debug('event.addResourceToProduct.success', {
+								eventId: newEventId,
+								productId: product.id,
+								userId,
+							})
+						}
+						// Create coupon if enabled
+						if (
+							input.coupon?.enabled &&
+							input.coupon.percentageDiscount &&
+							input.coupon.expires
+						) {
+							try {
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
+								const couponInput = {
+									quantity: '1',
+									maxUses: -1,
+									expires: finalExpires || null,
+									restrictedToProductId: product.id,
+									percentageDiscount: input.coupon.percentageDiscount,
+									status: 1,
+									default: true,
+									fields: {
+										bypassSoldOut: false,
+									},
+								}
+								await adapter.createCoupon(couponInput)
+								logger.debug('event.create.coupon.success', {
+									eventId: newEventId,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Failed to create coupon for event: ${couponError}`,
+									),
+								)
+								logger.debug('event.create.coupon.failed', {
+									eventId: newEventId,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw here - event creation should succeed even if coupon fails
+							}
+						}
+					} else {
+						logger.error(new Error('Failed to create product'))
+						logger.debug('event.create.product.failed', {
+							eventId: newEventId,
+							userId,
+							price: input.fields.price,
+						})
+					}
+				} catch (error) {
+					logger.error(
+						new Error(`Error creating and associating product: ${error}`),
+					)
+					logger.debug('event.create.product.failed', {
+						eventId: newEventId,
+						userId,
+						price: input.fields.price,
+					})
+				}
+			}
+
+			// if we provide tagIds, we need to associate them with the event
+			if (input.fields.tagIds) {
+				try {
+					await client.insert(contentResourceTag).values(
+						input.fields.tagIds.map((tag) => ({
+							contentResourceId: newEventId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+					logger.debug('event.create.tags.success', {
+						eventId: newEventId,
+						userId,
+						tagIds: input.fields.tagIds,
+					})
+				} catch (error) {
+					logger.error(new Error(`Error associating tags with event: ${error}`))
+					logger.debug('event.create.tags.failed', {
+						eventId: newEventId,
+						userId,
+						tagIds: input.fields.tagIds,
+					})
+				}
+			}
+
+			return parsedEvent.data
+		},
+		async createEventSeries(
+			input: {
+				eventSeries: {
+					type: 'event-series'
+					fields: {
+						title: string
+						description?: string | undefined
+						tagIds?:
+							| { id: string; fields: { label: string; name: string } }[]
+							| null
+							| undefined
+					}
+					sharedFields: {
+						price: number | null | undefined
+						quantity: number | null | undefined
+					}
+				}
+				childEvents: Array<{
+					type: 'event'
+					fields: {
+						title: string
+						startsAt: Date | null | undefined
+						endsAt: Date | null | undefined
+						description?: string | undefined
+						tagIds?:
+							| { id: string; fields: { label: string; name: string } }[]
+							| null
+							| undefined
+					}
+				}>
+				coupon?:
+					| {
+							enabled: boolean
+							expires?: Date | undefined
+							percentageDiscount?: string | undefined
+					  }
+					| undefined
+			},
+			userId: string,
+		) {
+			const { eventSeries: eventSeriesInput, childEvents: childEventsInput } =
+				input
+
+			if (childEventsInput.length === 0) {
+				throw new Error('At least one event is required')
+			}
+
+			// Execute all database operations within a transaction
+			const result = await client.transaction(async (tx) => {
+				// Step 1: Create the event series resource
+				const eventSeriesHash = guid()
+				const eventSeriesResourceId = slugify(`event-series~${eventSeriesHash}`)
+
+				const newEventSeries = {
+					id: eventSeriesResourceId,
+					type: 'event-series',
+					fields: {
+						...eventSeriesInput.fields,
+						title: eventSeriesInput.fields.title,
+						state: 'draft',
+						visibility: 'public',
+						slug: slugify(
+							`${eventSeriesInput.fields.title}~${eventSeriesHash}`,
+						),
+					},
+					createdById: userId,
+				}
+
+				await tx.insert(contentResource).values(newEventSeries)
+
+				// Fetch the created event series with relations
+				const eventSeriesResource = await tx.query.contentResource.findFirst({
+					where: eq(contentResource.id, eventSeriesResourceId),
+					with: {
+						resources: {
+							with: {
+								resource: {
+									with: {
+										resources: {
+											with: {
+												resource: true,
+											},
+											orderBy: asc(contentResourceResource.position),
+										},
+									},
+								},
+							},
+							orderBy: asc(contentResourceResource.position),
+						},
+						tags: {
+							with: {
+								tag: true,
+							},
+							orderBy: asc(contentResourceTag.position),
+						},
+						resourceProducts: {
+							with: {
+								product: {
+									with: {
+										price: true,
+									},
+								},
+							},
+						},
+					},
+				})
+
+				const parsedEventSeries =
+					ContentResourceSchema.safeParse(eventSeriesResource)
+				if (!parsedEventSeries.success) {
+					throw new Error('Error parsing event series resource')
+				}
+
+				// Step 2: Associate tags with event series
+				if (eventSeriesInput.fields.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						eventSeriesInput.fields.tagIds.map((tag) => ({
+							contentResourceId: eventSeriesResourceId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
+				// Step 3: Create child events and associate them
+				const createdChildEvents = []
+
+				for (let i = 0; i < childEventsInput.length; i++) {
+					const childEventInput = childEventsInput[i]
+
+					if (!childEventInput) {
+						throw new Error(`Child event input is required`)
+					}
+
+					// Create child event
+					const childEventHash = guid()
+					const childEventResourceId = slugify(`event~${childEventHash}`)
+
+					const newChildEvent = {
+						id: childEventResourceId,
+						type: 'event',
+						fields: {
+							title: childEventInput.fields.title,
+							startsAt: childEventInput.fields.startsAt,
+							endsAt: childEventInput.fields.endsAt,
+							description: childEventInput.fields.description,
+							state: 'draft',
+							visibility: 'public',
+							slug: slugify(
+								`${childEventInput.fields.title}~${childEventHash}`,
+							),
+							// No price/quantity - they're on the event series
+							price: null,
+							quantity: null,
+						},
+						createdById: userId,
+					}
+
+					await tx.insert(contentResource).values(newChildEvent)
+
+					// Fetch the created child event with relations
+					const childEventResource = await tx.query.contentResource.findFirst({
+						where: eq(contentResource.id, childEventResourceId),
+						with: {
+							resources: {
+								with: {
+									resource: {
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+												orderBy: asc(contentResourceResource.position),
+											},
+										},
+									},
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+							tags: {
+								with: {
+									tag: true,
+								},
+								orderBy: asc(contentResourceTag.position),
+							},
+							resourceProducts: {
+								with: {
+									product: {
+										with: {
+											price: true,
+										},
+									},
+								},
+							},
+						},
+					})
+
+					const parsedChildEvent =
+						ContentResourceSchema.safeParse(childEventResource)
+					if (!parsedChildEvent.success) {
+						throw new Error(`Error parsing child event resource ${i + 1}`)
+					}
+
+					// Associate tags with child event
+					if (childEventInput.fields.tagIds) {
+						await tx.insert(contentResourceTag).values(
+							childEventInput.fields.tagIds.map((tag) => ({
+								contentResourceId: childEventResourceId,
+								tagId: tag.id,
+								createdAt: new Date(),
+								updatedAt: new Date(),
+								position: 0,
+							})),
+						)
+					}
+
+					// Associate child event with event series
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: eventSeriesResourceId,
+						resourceId: childEventResourceId,
+						position: i,
+					})
+
+					createdChildEvents.push(parsedChildEvent.data)
+				}
+
+				return {
+					eventSeries: parsedEventSeries.data,
+					childEvents: createdChildEvents,
+				}
+			})
+
+			const { eventSeries, childEvents } = result
+
+			// Step 4: Handle product creation outside transaction
+			if (
+				eventSeriesInput.sharedFields.price &&
+				eventSeriesInput.sharedFields.price > 0
+			) {
+				try {
+					const product = await adapter.createProduct({
+						name: eventSeriesInput.fields.title,
+						price: eventSeriesInput.sharedFields.price,
+						quantityAvailable: eventSeriesInput.sharedFields.quantity ?? -1,
+						type: 'live',
+						state: 'published',
+						visibility: 'public',
+					})
+					if (product) {
+						await adapter.addResourceToProduct({
+							resource: eventSeries,
+							productId: product.id,
+							userId,
+						})
+
+						// Create coupon if enabled
+						if (
+							input.coupon?.enabled &&
+							input.coupon.percentageDiscount &&
+							input.coupon.expires
+						) {
+							try {
+								let finalExpires = input.coupon.expires
+								if (finalExpires instanceof Date) {
+									finalExpires = new Date(
+										Date.UTC(
+											finalExpires.getUTCFullYear(),
+											finalExpires.getUTCMonth(),
+											finalExpires.getUTCDate(),
+											23,
+											59,
+											59,
+											0,
+										),
+									)
+								}
+								const couponInput = {
+									quantity: '1',
+									maxUses: 1,
+									expires: finalExpires,
+									restrictedToProductId: product.id,
+									percentageDiscount: input.coupon.percentageDiscount,
+									status: 1,
+									default: true,
+									fields: {},
+								}
+								await adapter.createCoupon(couponInput)
+								logger.debug('event.series.coupon.success', {
+									eventSeriesId: eventSeries.id,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Error creating coupon for event series: ${couponError}`,
+									),
+								)
+								logger.debug('event.series.coupon.failed', {
+									eventSeriesId: eventSeries.id,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw here - event series creation should succeed even if coupon fails
+							}
+						}
+					} else {
+						logger.error(new Error('Failed to create product'))
+						logger.debug('event.series.product.failed', {
+							eventSeriesId: eventSeries.id,
+							userId,
+							price: eventSeriesInput.sharedFields.price,
+						})
+					}
+				} catch (error) {
+					logger.error(
+						new Error(`Error creating and associating product: ${error}`),
+					)
+					logger.debug('event.series.product.creation.failed', {
+						eventSeriesId: eventSeries.id,
+						userId,
+					})
+					// Note: We don't throw here since the core data is already committed
+				}
+			}
+
+			return { eventSeries, childEvents }
+		},
+		async createCoupon(input: {
+			quantity: string
+			maxUses: number
+			expires: Date | null
+			restrictedToProductId: string | null
+			percentageDiscount: string
+			status: number
+			default: boolean
+			fields: Record<string, any>
+		}) {
+			function findClosestDiscount(percentOff: number) {
+				// we want a fraction so if it is whole number, we make it fractional
+				percentOff = percentOff <= 1 ? percentOff : percentOff / 100
+				return [1, 0.95, 0.9, 0.75, 0.6, 0.5, 0.4, 0.25, 0.1].reduce((a, b) => {
+					let aDiff = Math.abs(a - percentOff)
+					let bDiff = Math.abs(b - percentOff)
+
+					if (aDiff === bDiff) {
+						// Choose largest vs smallest (> vs <)
+						return a > b ? a : b
+					} else {
+						return bDiff < aDiff ? b : a
+					}
+				})
+			}
+
+			const percentageDiscount = findClosestDiscount(
+				Number(input.percentageDiscount) * 100,
+			)
+
+			const merchantCouponResult =
+				percentageDiscount < 1
+					? await client.query.merchantCoupon.findFirst({
+							where: and(
+								eq(
+									merchantCoupon.percentageDiscount,
+									percentageDiscount.toString(),
+								),
+								eq(merchantCoupon.type, 'special'),
+							),
+						})
+					: null
+
+			if (!merchantCouponResult) {
+				return []
+			}
+
+			const codesArray: string[] = []
+			await client.transaction(async (trx) => {
+				// insert coupon for CouponInput quantity
+				for (let i = 0; i < Number(input.quantity); i++) {
+					const id = `coupon_${guid()}`
+					await trx.insert(coupon).values({
+						...input,
+						merchantCouponId: merchantCouponResult.id as string,
+						id,
+					})
+					codesArray.push(id)
+				}
+			})
+
+			return codesArray
 		},
 		async createUser(data) {
 			try {

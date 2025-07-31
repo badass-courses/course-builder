@@ -9,7 +9,7 @@ import {
 	VIDEO_ATTACHED_EVENT,
 	VIDEO_DETACHED_EVENT,
 } from '@/inngest/events/video-attachment'
-import type { Event } from '@/lib/events'
+import type { Event, EventSeries } from '@/lib/events'
 import { updateEvent } from '@/lib/events-query'
 import type { Post } from '@/lib/posts'
 import { updatePost } from '@/lib/posts-query'
@@ -28,8 +28,8 @@ import { useToast } from '@coursebuilder/ui'
  * Wraps the generic ContentVideoResourceField with post-specific functionality
  */
 export const VideoResourceField: React.FC<{
-	form: UseFormReturn<Event>
-	event: Event
+	form: UseFormReturn<Event | EventSeries>
+	event: Event | EventSeries
 	videoResource?: VideoResource | null
 	initialVideoResourceId?: string | null
 	label?: string

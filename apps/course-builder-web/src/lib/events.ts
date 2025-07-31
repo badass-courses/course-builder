@@ -9,13 +9,7 @@ import {
 
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
-		resourceProducts: z.array(
-			z.object({
-				resourceId: z.string(),
-				productId: z.string(),
-				product: productSchema,
-			}),
-		),
+		tags: z.array(z.any()).default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),
 			title: z.string().min(2).max(90),

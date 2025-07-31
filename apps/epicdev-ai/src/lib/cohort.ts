@@ -12,13 +12,6 @@ import {
  */
 export const CohortSchema = ContentResourceSchema.merge(
 	z.object({
-		resourceProducts: z.array(
-			z.object({
-				resourceId: z.string(),
-				productId: z.string(),
-				product: productSchema,
-			}),
-		),
 		fields: z.object({
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
