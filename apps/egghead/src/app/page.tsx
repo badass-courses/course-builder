@@ -2,7 +2,7 @@ import * as React from 'react'
 import { type Metadata } from 'next'
 import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
-import { getOGImageBaseUrl } from '@/utils/get-og-image-url-for-resource'
+import { env } from '@/env.mjs'
 
 export const metadata: Metadata = {
 	title: 'egghead Post Builder',
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 	openGraph: {
 		images: [
 			{
-				url: `${getOGImageBaseUrl()}/api/og?title=${encodeURIComponent('egghead Post Builder - Build Professional Programming Content')}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('egghead Post Builder - Build Professional Programming Content')}`,
 			},
 		],
 	},

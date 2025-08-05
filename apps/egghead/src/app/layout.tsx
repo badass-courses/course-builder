@@ -7,9 +7,9 @@ import { Party } from '@/app/_components/party'
 import { Providers } from '@/app/_components/providers'
 import Navigation from '@/components/navigation'
 import { ThemeProvider } from '@/components/theme-provider'
+import { env } from '@/env.mjs'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { getOGImageBaseUrl } from '@/utils/get-og-image-url-for-resource'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { extractRouterConfig } from 'uploadthing/server'
@@ -28,7 +28,7 @@ export const metadata = {
 	openGraph: {
 		images: [
 			{
-				url: `${getOGImageBaseUrl()}/api/og?title=${encodeURIComponent('egghead Post Builder')}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('egghead Post Builder')}`,
 			},
 		],
 	},
