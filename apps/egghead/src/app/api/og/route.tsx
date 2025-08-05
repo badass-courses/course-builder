@@ -13,8 +13,12 @@ export const runtime = 'edge'
 export const revalidate = 60
 // export const contentType = 'image/png'
 
+const allowedOrigins = process.env.NODE_ENV === 'production'
+	? ['https://egghead.io', 'https://builder.egghead.io']
+	: ['*']
+
 const corsHeaders = {
-	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Origin': allowedOrigins.join(', '),
 	'Access-Control-Allow-Methods': 'GET, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
