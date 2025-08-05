@@ -50,13 +50,13 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
-import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 import AdvancedTagSelectorWithPrimary from '@coursebuilder/ui/resources-crud/tag-selector-with-primary'
 
 import InstructorSelector from './instructor-selector'
 import { MetadataFieldAccess } from './metadata-field-access'
+import { MetadataFieldogImage } from './metadata-field-social-image'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
@@ -346,14 +346,7 @@ export const PostMetadataFormFields: React.FC<{
 				)}
 			/>
 
-			<MetadataFieldSocialImage
-				form={form}
-				currentSocialImage={getOGImageUrlForResourceAPI({
-					id: post.id,
-					fields: { slug: post.fields?.slug || post.id },
-					updatedAt: post.updatedAt,
-				})}
-			/>
+			<MetadataFieldogImage form={form} post={post} hidden={false} />
 
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldAccess form={form} />

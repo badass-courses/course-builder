@@ -36,11 +36,13 @@ export async function generateMetadata(
 		return parent as Metadata
 	}
 
-	const ogImageUrl = getOGImageUrlForResourceAPI({
-		id: post.id,
-		fields: { slug: post.fields?.slug || post.id },
-		updatedAt: post.updatedAt,
-	})
+	const ogImageUrl =
+		post.fields?.ogImage ||
+		getOGImageUrlForResourceAPI({
+			id: post.id,
+			fields: { slug: post.fields?.slug || post.id },
+			updatedAt: post.updatedAt,
+		})
 
 	return {
 		title: post.fields?.title,
