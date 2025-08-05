@@ -2,7 +2,6 @@
 // with resource: /api/og?resource=[SLUG_OR_ID]
 // with custom title: /api/og?title=ANYTHING
 
-import { Image } from 'next'
 import { ImageResponse } from 'next/og'
 import { NextResponse } from 'next/server'
 import { db } from '@/db'
@@ -299,13 +298,11 @@ export async function GET(request: Request) {
 								</span>
 								<span>
 									{instructor?.email &&
+										instructor.image &&
 										!instructor.image?.includes('gravatar.com') && (
-											<Image
-												alt={instructor.name}
-												height={48}
-												width={48}
-												src={instructor.image}
-												tw="rounded-full ml-4"
+											<img
+												src={instructor.image || ''}
+												tw="rounded-full ml-4 w-[48px] h-[48px]"
 											/>
 										)}
 								</span>
