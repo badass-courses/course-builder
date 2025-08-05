@@ -1,3 +1,4 @@
+import type { MinimalPost } from '@/lib/posts/types'
 import {
 	AbilityBuilder,
 	createMongoAbility,
@@ -39,7 +40,14 @@ type Actions =
 	| 'publish'
 	| 'archive'
 	| 'unpublish'
-type Subjects = 'Content' | 'User' | ContentResource | User | 'all' | 'Invoice'
+type Subjects =
+	| 'Content'
+	| 'User'
+	| ContentResource
+	| MinimalPost
+	| User
+	| 'all'
+	| 'Invoice'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 

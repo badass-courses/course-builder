@@ -79,3 +79,29 @@ export const PostUpdateSchema = z.object({
 	}),
 	videoResourceId: z.string().optional().nullable(),
 })
+
+/**
+ * Minimal post data for listing/searching (lightweight for caching)
+ */
+export const MinimalPostSchema = z.object({
+	id: z.string(),
+	createdById: z.string(),
+	createdAt: z.date().nullable(),
+	fields: z.object({
+		title: z.string().optional(),
+		slug: z.string().optional(),
+		state: z.string().optional(),
+		postType: z.string().optional(),
+		description: z.string().optional(),
+	}),
+	tags: z
+		.array(
+			z.object({
+				tag: z.object({
+					id: z.string(),
+					name: z.string(),
+				}),
+			}),
+		)
+		.optional(),
+})

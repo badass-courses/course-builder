@@ -14,11 +14,19 @@ import {
 } from './posts/playlists'
 // Import the read operations from the new module
 import {
+	countAllMinimalPosts,
+	countAllMinimalPostsForUser,
+	getAllMinimalPosts,
+	getAllMinimalPostsForUser,
 	getAllPostIds,
 	getAllPosts,
 	getAllPostsForUser,
+	getCachedAllMinimalPosts,
+	getCachedAllMinimalPostsForUser,
 	getCachedAllPosts,
 	getCachedAllPostsForUser,
+	getCachedMinimalPosts,
+	getCachedMinimalPostsForUser,
 	getCachedPost,
 	getCoursesForPost,
 	getPost,
@@ -50,9 +58,17 @@ export {
 	getCachedAllPosts,
 	getAllPostsForUser,
 	getCachedAllPostsForUser,
+	getAllMinimalPosts,
+	getAllMinimalPostsForUser,
+	getCachedAllMinimalPosts,
+	getCachedAllMinimalPostsForUser,
+	getCachedMinimalPosts,
+	getCachedMinimalPostsForUser,
 	getPostTags,
 	getCoursesForPost,
 	getAllPostIds,
+	countAllMinimalPosts,
+	countAllMinimalPostsForUser,
 
 	// Write operations
 	createPost,
