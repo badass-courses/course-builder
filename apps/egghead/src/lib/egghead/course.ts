@@ -89,7 +89,6 @@ export async function updateEggheadPlaylist(input: {
 	visibilityState: string
 	accessState: string
 	body?: string
-	ogImageUrl?: string
 }) {
 	const {
 		eggheadPlaylistId,
@@ -100,7 +99,6 @@ export async function updateEggheadPlaylist(input: {
 		slug,
 		guid,
 		body = '',
-		ogImageUrl = null,
 	} = input
 	await eggheadPgQuery(
 		`UPDATE playlists SET
@@ -111,8 +109,7 @@ export async function updateEggheadPlaylist(input: {
 			slug = $4,
 			guid = $5,
 			summary = $6,
-			access_state = $8,
-			og_image_url = $9
+			access_state = $8
 		WHERE id = $7`,
 		[
 			state,
@@ -123,7 +120,6 @@ export async function updateEggheadPlaylist(input: {
 			body,
 			eggheadPlaylistId,
 			accessState,
-			ogImageUrl,
 		],
 	)
 }

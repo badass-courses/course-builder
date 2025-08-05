@@ -102,7 +102,6 @@ export async function updateEggheadLesson(input: {
 	duration: number
 	hlsUrl?: string
 	body?: string
-	ogImageUrl?: string
 }) {
 	const {
 		eggheadLessonId,
@@ -116,7 +115,6 @@ export async function updateEggheadLesson(input: {
 		slug,
 		guid,
 		body = '',
-		ogImageUrl = null,
 	} = input
 	await eggheadPgQuery(
 		`UPDATE lessons SET
@@ -131,8 +129,7 @@ export async function updateEggheadLesson(input: {
 			summary = $8,
       is_pro_content = $10,
       free_forever = NOT $10,
-      published = $11,
-      og_image_url = $12
+      published = $11
 		WHERE id = $9`,
 		[
 			state,
@@ -146,7 +143,6 @@ export async function updateEggheadLesson(input: {
 			eggheadLessonId,
 			access,
 			published,
-			ogImageUrl,
 		],
 	)
 }

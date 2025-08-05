@@ -376,12 +376,6 @@ export async function writePostUpdateToDatabase(input: {
 		: null
 
 	if (currentPost.fields.eggheadLessonId) {
-		const ogImageUrl = getOGImageUrlForResourceAPI({
-			id: currentPost.id,
-			fields: { slug: postSlug },
-			updatedAt: new Date(),
-		})
-
 		await updateEggheadLesson({
 			title: postUpdate.fields.title,
 			slug: postSlug, // probably bypassing friendly id here, does it matter?
@@ -396,7 +390,6 @@ export async function writePostUpdateToDatabase(input: {
 				hlsUrl: `https://stream.mux.com/${videoResource.muxPlaybackId}.m3u8`,
 			}),
 			published: isPublished,
-			ogImageUrl,
 		})
 
 		if (action === 'publish') {
@@ -410,12 +403,6 @@ export async function writePostUpdateToDatabase(input: {
 			await clearLessonPublishedAt(currentPost.fields.eggheadLessonId)
 		}
 	} else if (currentPost.fields.eggheadPlaylistId) {
-		const ogImageUrl = getOGImageUrlForResourceAPI({
-			id: currentPost.id,
-			fields: { slug: postSlug },
-			updatedAt: new Date(),
-		})
-
 		await updateEggheadPlaylist({
 			title: postUpdate.fields.title,
 			slug: postSlug,
@@ -425,7 +412,6 @@ export async function writePostUpdateToDatabase(input: {
 			state: lessonState,
 			visibilityState: lessonVisibilityState,
 			accessState: access ? 'pro' : 'free',
-			ogImageUrl,
 		})
 
 		await updateSanityCourseMetadata({
