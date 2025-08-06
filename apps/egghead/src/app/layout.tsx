@@ -25,13 +25,6 @@ export const metadata = {
 	title: 'egghead Post Builder',
 	description: 'build egghead posts',
 	icons: [{ rel: 'icon', url: '/favicon.ico' }],
-	openGraph: {
-		images: [
-			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('egghead Post Builder')}`,
-			},
-		],
-	},
 }
 
 export default function RootLayout({
