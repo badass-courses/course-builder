@@ -329,7 +329,10 @@ export async function GET(request: Request) {
 		return response
 	} catch (e: any) {
 		console.error('Error generating OG image', e)
-		return new Response(`Failed to generate OG image: ${e.message}`, {
+		const errorMessage = process.env.NODE_ENV === 'production'
+			? 'Failed to generate OG image'
+			: `Failed to generate OG image: ${e.message}`
+		return new Response(errorMessage, {
 			status: 500,
 			headers: corsHeaders,
 		})
