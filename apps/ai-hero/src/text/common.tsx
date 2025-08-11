@@ -58,7 +58,8 @@ export default {
 	},
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle': 'Join 3,000+ Developers Becoming AI Engineers',
+	'primary-newsletter-tittle':
+		'Join over 7,000 Developers Becoming AI Engineers',
 	'primary-newsletter-byline': `Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
