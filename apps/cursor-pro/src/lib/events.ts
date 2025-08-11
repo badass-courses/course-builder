@@ -29,15 +29,6 @@ export const EventFieldsSchema = z.object({
 export const EventSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
-		resourceProducts: z
-			.array(
-				z.object({
-					resourceId: z.string(),
-					productId: z.string(),
-					product: productSchema,
-				}),
-			)
-			.default([]),
 		tags: z.array(z.any()).default([]), // Use generic tag array - specific tag schema handled elsewhere
 		fields: z.object({
 			body: z.string().nullable().optional(),
@@ -70,15 +61,6 @@ export type Event = z.infer<typeof EventSchema>
 export const EventSeriesSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
-		resourceProducts: z
-			.array(
-				z.object({
-					resourceId: z.string(),
-					productId: z.string(),
-					product: productSchema,
-				}),
-			)
-			.default([]),
 		tags: z.array(z.any()).default([]),
 		fields: z.object({
 			body: z.string().nullable().optional(),

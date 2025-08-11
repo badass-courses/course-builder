@@ -6,7 +6,10 @@ import {
 	NewProduct,
 	UpgradableProduct,
 } from './schemas'
-import { type ContentResource } from './schemas/content-resource-schema'
+import {
+	type ContentResource,
+	type ContentResourceProduct,
+} from './schemas/content-resource-schema'
 import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
@@ -69,6 +72,97 @@ export interface CourseBuilderAdapter<
 		createdById: string
 	}): Awaitable<ContentResource>
 	getContentResource(id: string): Promise<ContentResource | null>
+	addResourceToProduct(options: {
+		resource: ContentResource
+		productId: string
+		userId: string
+	}): Promise<ContentResourceProduct | null>
+	getEvent(
+		id: string,
+		options?: {
+			withResources?: boolean
+			withTags?: boolean
+			withProducts?: boolean
+			withPricing?: boolean
+		},
+	): Promise<ContentResource | null>
+	createEvent(
+		input: {
+			type: 'event'
+			fields: {
+				title: string
+				startsAt?: Date | null | undefined
+				endsAt?: Date | null | undefined
+				description?: string | null | undefined
+				price?: number | null | undefined
+				quantity?: number | null | undefined
+				state?: string | null | undefined
+				visibility?: string | null | undefined
+				slug?: string | null | undefined
+				tagIds?:
+					| { id: string; fields: Record<string, any> }[]
+					| null
+					| undefined
+			}
+			coupon?: {
+				enabled: boolean
+				percentageDiscount?: string | undefined
+				expires?: Date | undefined
+			}
+		},
+		userId: string,
+	): Promise<ContentResource | null>
+	createEventSeries(
+		input: {
+			eventSeries: {
+				type: 'event-series'
+				fields: {
+					title: string
+					description?: string | undefined
+					tagIds?:
+						| { id: string; fields: { label: string; name: string } }[]
+						| null
+						| undefined
+				}
+				sharedFields: {
+					price: number | null | undefined
+					quantity: number | null | undefined
+				}
+			}
+			childEvents: Array<{
+				type: 'event'
+				fields: {
+					title: string
+					startsAt: Date | null | undefined
+					endsAt: Date | null | undefined
+					description?: string | undefined
+					tagIds?:
+						| { id: string; fields: { label: string; name: string } }[]
+						| null
+						| undefined
+				}
+			}>
+			coupon?: {
+				enabled: boolean
+				percentageDiscount?: string | undefined
+				expires?: Date | undefined
+			}
+		},
+		userId: string,
+	): Promise<{
+		eventSeries: ContentResource
+		childEvents: ContentResource[]
+	}>
+	createCoupon(input: {
+		quantity: string
+		maxUses: number
+		expires: Date | null
+		restrictedToProductId: string | null
+		percentageDiscount: string
+		status: number
+		default: boolean
+		fields: Record<string, any>
+	}): Promise<string[]>
 	getVideoResource(id: string | null | undefined): Promise<VideoResource | null>
 	updateContentResourceFields(options: {
 		id: string
@@ -168,6 +262,12 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	createPurchaseTransfer: async () => {
 		return Promise.resolve()
+	},
+	createCoupon: async (input) => {
+		return []
+	},
+	addResourceToProduct: async (options) => {
+		return null
 	},
 	incrementCouponUsedCount(_) {
 		return Promise.resolve()
@@ -414,6 +514,15 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	createContentResource: async (resource) => {
 		return resource as ContentResource
+	},
+	getEvent: async (_) => {
+		return null
+	},
+	createEvent: async (_) => {
+		return null
+	},
+	createEventSeries: async (_) => {
+		return { eventSeries: null as any, childEvents: [] }
 	},
 	getContentResource: async (_) => {
 		return null
