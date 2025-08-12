@@ -111,6 +111,14 @@ export async function createCoupon(input: CouponInput) {
 		const merchantCouponId =
 			await createOrFindMerchantCoupon(percentageDiscount)
 
+		if (!merchantCouponId) {
+			await log.error('coupon.creation_failed', {
+				reason: 'Invalid discount percentage',
+				percentageDiscount: input.percentageDiscount,
+			})
+			return []
+		}
+
 		const codesArray: string[] = []
 		await db.transaction(async (trx) => {
 			for (let i = 0; i < Number(input.quantity); i++) {
