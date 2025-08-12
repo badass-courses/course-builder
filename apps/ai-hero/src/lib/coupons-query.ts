@@ -1,12 +1,15 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { db } from '@/db'
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
+import { courseBuilderAdapter, db } from '@/db'
 import { coupon, merchantCoupon as merchantCouponTable } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { and, eq } from 'drizzle-orm'
+import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
 const CouponInputSchema = z.object({
@@ -15,58 +18,117 @@ const CouponInputSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentageDiscount: z.string(),
+	status: z.number().default(1),
+	default: z.boolean().default(false),
+	fields: z.record(z.any()).default({}),
 })
 
-const findClosestDiscount = function (percentOff: number) {
-	// we want a fraction so if it is whole number, we make it fractional
-	percentOff = percentOff <= 1 ? percentOff : percentOff / 100
-	return [1, 0.95, 0.9, 0.75, 0.6, 0.5, 0.4, 0.25, 0.1].reduce((a, b) => {
-		let aDiff = Math.abs(a - percentOff)
-		let bDiff = Math.abs(b - percentOff)
-
-		if (aDiff === bDiff) {
-			// Choose largest vs smallest (> vs <)
-			return a > b ? a : b
-		} else {
-			return bDiff < aDiff ? b : a
-		}
-	})
-}
-
 export type CouponInput = z.infer<typeof CouponInputSchema>
+
+/**
+ * Creates a merchant coupon in Stripe and the database if it doesn't exist
+ * @param percentageDiscount - The percentage discount as a decimal (e.g., 0.25 for 25%)
+ * @returns The merchant coupon ID
+ */
+async function createOrFindMerchantCoupon(
+	percentageDiscount: number,
+): Promise<string | null> {
+	if (percentageDiscount >= 1) {
+		return null
+	}
+
+	const percentageForStripe = Math.floor(percentageDiscount * 100)
+
+	const existingMerchantCoupon = await db.query.merchantCoupon.findFirst({
+		where: and(
+			eq(merchantCouponTable.percentageDiscount, percentageDiscount.toString()),
+			eq(merchantCouponTable.type, 'special'),
+		),
+	})
+
+	if (existingMerchantCoupon) {
+		await log.info('coupon.merchant_coupon.found', {
+			merchantCouponId: existingMerchantCoupon.id,
+			percentageDiscount: percentageDiscount.toString(),
+		})
+		return existingMerchantCoupon.id
+	}
+
+	const merchantAccountRecord = await courseBuilderAdapter.getMerchantAccount({
+		provider: 'stripe',
+	})
+	if (!merchantAccountRecord) {
+		await log.error('coupon.merchant_coupon.no_account', {
+			percentageDiscount: percentageDiscount.toString(),
+		})
+		throw new Error('No merchant account found')
+	}
+
+	try {
+		// Create the coupon in Stripe
+		const stripeCouponId =
+			await stripeProvider.options.paymentsAdapter.createCoupon({
+				duration: 'forever',
+				name: `special ${percentageForStripe}%`,
+				percent_off: percentageForStripe,
+				metadata: {
+					type: 'special',
+				},
+			})
+
+		// Create the merchant coupon in the database
+		const merchantCouponId = `kcd_${uuidv4()}`
+		await db.insert(merchantCouponTable).values({
+			id: merchantCouponId,
+			merchantAccountId: merchantAccountRecord.id,
+			status: 1,
+			identifier: stripeCouponId,
+			percentageDiscount: percentageDiscount.toString(),
+			type: 'special',
+		})
+
+		await log.info('coupon.merchant_coupon.created', {
+			merchantCouponId,
+			stripeCouponId,
+			percentageDiscount: percentageDiscount.toString(),
+		})
+
+		return merchantCouponId
+	} catch (error) {
+		await log.error('coupon.merchant_coupon.creation_failed', {
+			percentageDiscount: percentageDiscount.toString(),
+			error: error instanceof Error ? error.message : 'Unknown error',
+		})
+		throw error
+	}
+}
 
 export async function createCoupon(input: CouponInput) {
 	const { ability } = await getServerAuthSession()
 	if (ability.can('create', 'Content')) {
-		const percentageDiscount = findClosestDiscount(
-			Number(input.percentageDiscount) * 100,
-		)
+		const percentageDiscount = Number(input.percentageDiscount)
 
-		const merchantCoupon =
-			percentageDiscount < 1
-				? await db.query.merchantCoupon.findFirst({
-						where: and(
-							eq(
-								merchantCouponTable.percentageDiscount,
-								percentageDiscount.toString(),
-							),
-							eq(merchantCouponTable.type, 'special'),
-						),
-					})
-				: null
+		const merchantCouponId =
+			await createOrFindMerchantCoupon(percentageDiscount)
 
 		const codesArray: string[] = []
 		await db.transaction(async (trx) => {
-			// insert coupon for CouponInput quantity
 			for (let i = 0; i < Number(input.quantity); i++) {
 				const id = `coupon_${guid()}`
 				await trx.insert(coupon).values({
 					...input,
-					merchantCouponId: merchantCoupon?.id,
+					merchantCouponId,
 					id,
 				})
-				codesArray.push(`${env.COURSEBUILDER_URL}/?coupon=${id}`)
+				codesArray.push(id)
 			}
+		})
+
+		await log.info('coupon.created', {
+			quantity: input.quantity,
+			percentageDiscount: input.percentageDiscount,
+			merchantCouponId,
+			couponIds: codesArray,
 		})
 
 		revalidatePath('/admin/coupons')
