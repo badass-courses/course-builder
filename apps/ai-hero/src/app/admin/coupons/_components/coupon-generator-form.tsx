@@ -66,6 +66,10 @@ const CouponGeneratorForm = ({
 	const products = use(productsLoader)
 
 	const expiresAtDateTime = form.watch('expires')?.setHours(23, 59, 0, 0)
+	/**
+	 * Handles form submission to create new coupons
+	 * @param values - The form values from the coupon generator form
+	 */
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		form.reset()
 		const codes = await createCoupon({
@@ -74,6 +78,9 @@ const CouponGeneratorForm = ({
 			expires: values.expires,
 			restrictedToProductId: values.restrictedToProductId,
 			percentageDiscount: (Number(values.percentOff) / 100).toString(),
+			status: 1,
+			default: false,
+			fields: {},
 		})
 		setCodes(codes)
 		router.refresh()
