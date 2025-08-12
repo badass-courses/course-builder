@@ -1,5 +1,7 @@
 import React from 'react'
+import { notFound } from 'next/navigation'
 import LayoutClient from '@/components/layout-client'
+import { getServerAuthSession } from '@/server/auth'
 import {
 	DollarSign,
 	FileText,
@@ -20,6 +22,11 @@ const AdminLayout = async ({
 	children: React.ReactNode
 	params: Promise<{ module: string }>
 }) => {
+	const { ability } = await getServerAuthSession()
+
+	if (ability.cannot('manage', 'all')) {
+		notFound()
+	}
 	return (
 		<LayoutClient>
 			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
