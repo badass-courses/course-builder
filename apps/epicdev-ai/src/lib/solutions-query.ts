@@ -1,12 +1,13 @@
 'use server'
 
-import { revalidateTag } from 'next/cache'
+import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
 	contentResourceResource,
 	contentResourceVersion as contentResourceVersionTable,
 } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { generateContentHash } from '@/lib/post-utils'
 import {
 	NewSolutionInputSchema,
@@ -17,6 +18,7 @@ import {
 } from '@/lib/solution'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
+import { redis } from '@/server/redis-client'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, asc, desc, eq, isNull, or, sql } from 'drizzle-orm'
@@ -75,9 +77,17 @@ export async function getSolutionForLesson(lessonId: string) {
 			},
 		})
 
-		if (!solution) return null
+		const parsedSolution = SolutionSchema.safeParse(solution)
 
-		return SolutionSchema.parse(solution)
+		if (!parsedSolution.success) {
+			log.error('solution.getForLesson.error', {
+				lessonId,
+				error: parsedSolution.error,
+			})
+			return null
+		}
+
+		return parsedSolution.data
 	} catch (error) {
 		log.error('solution.getForLesson.error', {
 			error,
@@ -87,31 +97,45 @@ export async function getSolutionForLesson(lessonId: string) {
 	}
 }
 
+export const getCachedSolution = unstable_cache(
+	async (slug: string) => getSolution(slug),
+	['solution'],
+	{ revalidate: 3600, tags: ['solution'] },
+)
 /**
  * Get solution by ID or slug
  */
 export async function getSolution(solutionSlugOrId: string) {
-	const solution = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					solutionSlugOrId,
+	const cachedSolution = await redis.get(
+		`solution:${env.NEXT_PUBLIC_APP_NAME}:${solutionSlugOrId}`,
+	)
+
+	const solution = cachedSolution
+		? cachedSolution
+		: await db.query.contentResource.findFirst({
+				where: and(
+					or(
+						eq(
+							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+							solutionSlugOrId,
+						),
+						eq(contentResource.id, solutionSlugOrId),
+					),
+					eq(contentResource.type, 'solution'),
+					isNull(contentResource.deletedAt),
 				),
-				eq(contentResource.id, solutionSlugOrId),
-			),
-			eq(contentResource.type, 'solution'),
-			isNull(contentResource.deletedAt),
-		),
-		with: {
-			resources: {
-				where: isNull(contentResourceResource.deletedAt),
 				with: {
-					resource: true,
+					resources: {
+						with: {
+							resource: {
+								columns: {
+									type: true,
+								},
+							},
+						},
+					},
 				},
-			},
-		},
-	})
+			})
 
 	if (!solution) {
 		return null
@@ -121,9 +145,17 @@ export async function getSolution(solutionSlugOrId: string) {
 	if (!parsedSolution.success) {
 		log.error('solution.parse.error', {
 			error: parsedSolution.error,
-			solutionId: solution.id,
+			solutionId: solutionSlugOrId,
 		})
 		return null
+	}
+
+	if (!cachedSolution) {
+		await redis.set(
+			`solution:${env.NEXT_PUBLIC_APP_NAME}:${solutionSlugOrId}`,
+			solution,
+			{ ex: 10 },
+		)
 	}
 
 	return parsedSolution.data
