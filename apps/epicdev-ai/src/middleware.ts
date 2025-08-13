@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { auth } from './server/auth'
+import { auth, getServerAuthSession } from './server/auth'
 import { AuthUser, determineOrgAccess } from './utils/determine-org-access'
 
 const COOKIE_OPTIONS = {
