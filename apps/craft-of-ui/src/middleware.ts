@@ -16,7 +16,7 @@ export default auth(async function middleware(req) {
 	const isAdmin = user?.roles?.some((role) => role.name === 'admin')
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-		if (!user || isAdmin) {
+		if (!user || !isAdmin) {
 			return NextResponse.rewrite(new URL('/not-found', req.url))
 		} else {
 			if (pathname === '/admin') {
