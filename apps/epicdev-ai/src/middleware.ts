@@ -1,7 +1,35 @@
 import { NextResponse } from 'next/server'
 
 import { auth } from './server/auth'
-import { AuthUser, determineOrgAccess } from './utils/determine-org-access'
+import {
+	determineOrgAccess,
+	type OrganizationRole,
+} from './utils/determine-org-access'
+
+type Role = {
+	id: string
+	organizationId: string | null
+	name: string
+	description: string | null
+	active: boolean
+	createdAt: string
+	updatedAt: string
+	deletedAt: string | null
+}
+
+type ReqUser = {
+	id: string
+	name: string
+	role: string
+	email: string
+	fields: Record<string, any>
+	emailVerified: '2025-08-13T21:03:33.891Z'
+	image: null
+	createdAt: '2025-04-29T22:11:12.094Z'
+	roles: Role[]
+	organizationRoles: OrganizationRole[]
+	entitlements: []
+}
 
 const COOKIE_OPTIONS = {
 	httpOnly: true,
@@ -12,12 +40,7 @@ const COOKIE_OPTIONS = {
 } as const
 
 export default auth(async function middleware(req) {
-	const user = req.auth?.user as AuthUser | undefined
-	console.log(
-		'middleware----',
-		{ user },
-		user?.roles?.some((role) => role.name === 'admin'),
-	)
+	const user = req.auth?.user as ReqUser | undefined
 	const isAdmin = user?.roles?.some((role) => role.name === 'admin')
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
