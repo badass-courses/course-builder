@@ -1,26 +1,19 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-import { getServerAuthSession } from './server/auth'
+import { auth } from './server/auth'
 
-/**
- * Middleware to protect admin routes. Redirects non-admin users away from `/admin`.
- */
-export default async function middleware(req: NextRequest) {
+export default auth(async function middleware(req) {
+	const user = req.auth?.user as any | undefined
+	const isAdmin = user?.roles?.some((role) => role.name === 'admin')
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-		const session = await getServerAuthSession()
-		const ability = session?.ability
-		if (!ability || ability.cannot('manage', 'all')) {
+		if (!user || isAdmin) {
 			return NextResponse.rewrite(new URL('/not-found', req.url))
-		} else {
-			if (pathname === '/admin') {
-				return NextResponse.redirect(new URL('/admin/dashboard', req.url))
-			}
 		}
 	}
 
 	return NextResponse.next()
-}
+})
 
 export const config = {
 	matcher: [

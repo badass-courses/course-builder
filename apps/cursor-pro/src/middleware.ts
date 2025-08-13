@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { auth, getServerAuthSession } from './server/auth'
+import { auth } from './server/auth'
 import { AuthUser, determineOrgAccess } from './utils/determine-org-access'
 
 const COOKIE_OPTIONS = {
@@ -14,10 +14,9 @@ const COOKIE_OPTIONS = {
 export default auth(async function middleware(req) {
 	const user = req.auth?.user as AuthUser | undefined
 	const pathname = req.nextUrl.pathname
+	const isAdmin = user?.roles?.some((role) => role.name === 'admin')
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-		const session = await getServerAuthSession()
-		const ability = session?.ability
-		if (!ability || ability.cannot('manage', 'all')) {
+		if (!user || isAdmin) {
 			return NextResponse.rewrite(new URL('/not-found', req.url))
 		} else {
 			if (pathname === '/admin') {
