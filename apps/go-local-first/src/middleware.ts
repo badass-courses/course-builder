@@ -1,8 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
 import { getServerAuthSession } from './server/auth'
 
-export default async function middleware(req) {
+/**
+ * Middleware to protect admin routes. Redirects non-admin users away from `/admin`.
+ */
+export default async function middleware(req: NextRequest) {
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
 		const { ability } = await getServerAuthSession()
