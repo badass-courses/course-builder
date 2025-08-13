@@ -1,4 +1,5 @@
 import React from 'react'
+import { notFound } from 'next/navigation'
 import {
 	Sidebar,
 	SidebarContent,
@@ -8,6 +9,7 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { getServerAuthSession } from '@/server/auth'
 import { MailIcon, MicIcon, TagIcon } from 'lucide-react'
 
 const adminSidebar = [
@@ -29,6 +31,11 @@ const adminSidebar = [
 ]
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('manage', 'all')) {
+		notFound()
+	}
+
 	return (
 		<SidebarProvider>
 			<Sidebar className="pt-24">
