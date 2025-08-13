@@ -8,8 +8,9 @@ import { getServerAuthSession } from './server/auth'
 export default async function middleware(req: NextRequest) {
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-		const { ability } = await getServerAuthSession()
-		if (ability.cannot('manage', 'all')) {
+		const session = await getServerAuthSession()
+		const ability = session?.ability
+		if (!ability || ability.cannot('manage', 'all')) {
 			return NextResponse.rewrite(new URL('/not-found', req.url))
 		} else {
 			if (pathname === '/admin') {
