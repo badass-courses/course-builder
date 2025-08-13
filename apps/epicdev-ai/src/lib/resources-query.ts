@@ -1,12 +1,13 @@
 'use server'
 
 import { courseBuilderAdapter } from '@/db'
-import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 
-import { RESOURCE_UPDATED_EVENT } from '../inngest/events/resource-management'
+import { triggerCohortEntitlementSync } from './cohort-update-trigger'
+import { upsertPostToTypeSense } from './typesense-query'
 
 export async function updateResource(input: {
 	id: string
@@ -18,6 +19,10 @@ export async function updateResource(input: {
 	const user = session?.user
 
 	if (!user || !ability.can('update', 'Content')) {
+		await log.error('resource.update.unauthorized', {
+			resourceId: input.id,
+			userId: user?.id,
+		})
 		throw new Error('Unauthorized')
 	}
 
@@ -26,8 +31,30 @@ export async function updateResource(input: {
 	)
 
 	if (!currentResource) {
-		console.warn(`Resource with id ${input.id} not found for update.`)
-		return null
+		await log.info('resource.create.started', {
+			resourceId: input.id,
+			type: input.type,
+			userId: user.id,
+		})
+
+		const newResource = await courseBuilderAdapter.createContentResource(input)
+
+		if (newResource) {
+			try {
+				await upsertPostToTypeSense(newResource, 'save')
+				await log.info('resource.typesense.indexed', {
+					resourceId: newResource.id,
+					action: 'save',
+				})
+			} catch (error) {
+				await log.error('resource.typesense.index.failed', {
+					error: getErrorMessage(error),
+					resourceId: newResource.id,
+				})
+			}
+		}
+
+		return newResource
 	}
 
 	let resourceSlug = input.fields.slug
@@ -35,49 +62,66 @@ export async function updateResource(input: {
 	if (input.fields.title !== currentResource?.fields?.title) {
 		const splitSlug = currentResource?.fields?.slug.split('~') || ['', guid()]
 		resourceSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('resource.update.slug.changed', {
+			resourceId: input.id,
+			oldSlug: currentResource.fields?.slug,
+			newSlug: resourceSlug,
+			userId: user.id,
+		})
 	}
 
-	const updatedFields = {
-		...currentResource.fields,
-		...input.fields,
-		slug: resourceSlug,
-		...(input.fields.image && {
-			image: input.fields.image,
-		}),
-	}
-
-	await courseBuilderAdapter.updateContentResourceFields({
-		id: currentResource.id,
-		fields: updatedFields,
-	})
-
-	const updatedResource = await courseBuilderAdapter.getContentResource(
-		currentResource.id,
-	)
-
-	if (!updatedResource) {
-		console.error(`Failed to fetch updated resource: ${currentResource.id}`)
-		return null
-	}
-
-	try {
-		console.log(
-			`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
-		)
-		const result = await inngest.send({
-			name: RESOURCE_UPDATED_EVENT,
-			data: {
-				id: updatedResource.id,
-				type: updatedResource.type,
+	const updatedResource =
+		await courseBuilderAdapter.updateContentResourceFields({
+			id: currentResource.id,
+			fields: {
+				...currentResource.fields,
+				...input.fields,
+				slug: resourceSlug,
+				...(input.fields.image && {
+					image: input.fields.image,
+				}),
 			},
 		})
-		console.log(
-			`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedResource.id} (type: ${updatedResource.type})`,
-			result,
-		)
-	} catch (error) {
-		console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
+
+	if (updatedResource) {
+		try {
+			await upsertPostToTypeSense(updatedResource, 'save')
+			await log.info('resource.update.typesense.success', {
+				resourceId: input.id,
+				action: 'save',
+				userId: user.id,
+			})
+		} catch (error) {
+			await log.error('resource.update.typesense.failed', {
+				resourceId: input.id,
+				error: getErrorMessage(error),
+				userId: user.id,
+			})
+		}
+	}
+
+	await log.info('resource.update.success', {
+		resourceId: input.id,
+		userId: user.id,
+		changes: Object.keys(input.fields),
+	})
+
+	// Trigger entitlement sync for cohorts
+	if (input.type === 'cohort') {
+		try {
+			await triggerCohortEntitlementSync(input.id, {})
+		} catch (error) {
+			await log.error('cohort.entitlement_sync.trigger_failed', {
+				cohortId: input.id,
+				error: error instanceof Error ? error.message : String(error),
+			})
+		}
 	}
 
 	return updatedResource
+}
+
+function getErrorMessage(error: unknown): string {
+	if (error instanceof Error) return error.message
+	return String(error)
 }

@@ -37,6 +37,16 @@ export function WorkshopLessonItem({
 		subject('Content', { id: resource.id }),
 	)
 
+	const renderCompletionStatus = () => {
+		return isLessonCompleted ? (
+			<Check className="text-primary absolute left-3 size-4" />
+		) : (
+			<span className="absolute left-3 pl-1 text-xs tabular-nums opacity-75">
+				{index}
+			</span>
+		)
+	}
+
 	return (
 		<li key={resource?.id} className="relative w-full">
 			{canViewLesson ? (
@@ -50,13 +60,7 @@ export function WorkshopLessonItem({
 						parentType: 'workshop',
 					})}
 				>
-					{isLessonCompleted ? (
-						<Check className="text-primary absolute left-3 size-4" />
-					) : (
-						<span className="absolute left-3 pl-1 text-xs tabular-nums opacity-75">
-							{index}
-						</span>
-					)}
+					{renderCompletionStatus()}
 					{resource?.fields?.title}
 				</Link>
 			) : (
@@ -66,13 +70,7 @@ export function WorkshopLessonItem({
 						className,
 					)}
 				>
-					{isLessonCompleted ? (
-						<Check className="text-primary absolute left-3 size-4" />
-					) : (
-						<span className="absolute left-3 pl-1 text-xs tabular-nums opacity-75">
-							{index}
-						</span>
-					)}
+					{renderCompletionStatus()}
 					{resource?.fields?.title}
 					<Lock
 						className="absolute right-5 w-3 text-gray-500"

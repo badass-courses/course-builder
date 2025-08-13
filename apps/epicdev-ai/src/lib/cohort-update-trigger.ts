@@ -48,7 +48,6 @@ export async function triggerResourceAddedSync(
 	cohortId: string,
 	resourceId: string,
 	position: number,
-	resourceType: string,
 ) {
 	return triggerCohortEntitlementSync(cohortId, {
 		resourcesAdded: [{ resourceId, position }],

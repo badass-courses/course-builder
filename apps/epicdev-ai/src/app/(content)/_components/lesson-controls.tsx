@@ -1,5 +1,3 @@
-'use server'
-
 import React, { use } from 'react'
 import { cookies } from 'next/headers'
 import Link from 'next/link'

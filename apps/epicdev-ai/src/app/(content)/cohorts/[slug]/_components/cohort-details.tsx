@@ -12,6 +12,10 @@ import { formatInTimeZone } from 'date-fns-tz'
 
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
+/**
+ * Renders cohort details including date, time, and location information
+ * with timezone-aware formatting and optional timezone conversion link.
+ */
 export const CohortDetails: React.FC<{
 	cohort: Cohort
 }> = ({ cohort }) => {

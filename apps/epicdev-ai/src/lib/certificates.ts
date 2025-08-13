@@ -36,10 +36,6 @@ export async function checkCohortCertificateEligibility(
 			return { hasCompletedCohort: false, date: null }
 		}
 
-		if (modules.length === 0) {
-			return { hasCompletedCohort: false, date: null }
-		}
-
 		const moduleCompletionPromises = modules.map((module) =>
 			hasUserCompletedAllLessons(userId, module.id),
 		)
