@@ -1,5 +1,4 @@
 import React from 'react'
-import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
 import {
 	ResourceFormConfig,
 	type BaseTool,
