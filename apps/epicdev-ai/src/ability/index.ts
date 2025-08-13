@@ -1,5 +1,5 @@
 import { Lesson } from '@/lib/lessons'
-import { Module } from '@/lib/module'
+import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
 	createMongoAbility,
@@ -82,6 +82,7 @@ type Actions =
 
 type Subjects =
 	| 'RegionRestriction'
+	| 'PendingOpenAccess'
 	| 'Team'
 	| 'Content'
 	| 'User'
@@ -104,6 +105,10 @@ type GetAbilityOptions = {
 	user?: User
 }
 
+const hasRole = ({ user, role }: { user?: User | null; role: string }) => {
+	return Boolean(user?.roles?.map((role) => role.name).includes(role))
+}
+
 /**
  * serializable CASL rules object
  *
@@ -114,17 +119,21 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
 
 	if (options.user) {
-		if (options.user.roles?.map((role) => role.name).includes('admin')) {
+		if (hasRole({ user: options.user, role: 'admin' })) {
 			can('manage', 'all')
 		}
 
-		if (options.user.roles?.map((role) => role.name).includes('contributor')) {
+		if (hasRole({ user: options.user, role: 'contributor' })) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: options.user.id } })
 			can('save', 'Content', { createdById: { $eq: options.user.id } })
 			can('publish', 'Content', { createdById: { $eq: options.user.id } })
 			can('archive', 'Content', { createdById: { $eq: options.user.id } })
 			can('unpublish', 'Content', { createdById: { $eq: options.user.id } })
+		}
+
+		if (hasRole({ user: options.user, role: 'reviewer' })) {
+			can('read', 'Content')
 		}
 
 		can(['read', 'update'], 'User', { id: options.user.id })
@@ -176,29 +185,12 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 				}
 			})
 		}
-
-		// Entitlement-based permissions
-		options.user.entitlements?.forEach((entitlement) => {
-			if (entitlement.type === 'cohort_content_access') {
-				can('read', 'Content', {
-					id: { $in: entitlement.metadata.contentIds },
-					status: 'published',
-				})
-			}
-
-			if (entitlement.type === 'cohort_discord_role') {
-				can('invite', 'Discord')
-			}
-		})
 	}
 
-	//  Publicly visible and published posts are readable by anyone.
-	can('read', 'Content', {
-		type: 'post',
-		'fields.state': 'published',
-		'fields.visibility': { $in: ['public', 'unlisted'] },
-		createdAt: { $lte: new Date() },
-	})
+	// can('read', 'Content', {
+	// 	createdAt: { $lte: new Date() },
+	// 	status: { $in: ['review', 'published'] },
+	// })
 
 	return rules
 }
@@ -207,18 +199,31 @@ type ViewerAbilityInput = {
 	user?: User | null
 	subscriber?: any
 	lesson?: Lesson
-	module?: Module
+	module?: Workshop
 	section?: ContentResource
 	isSolution?: boolean
 	country?: string
 	purchases?: Purchase[]
+	entitlementTypes?: {
+		id: string
+		name: string
+	}[]
+	allModuleResourceIds?: string[]
 }
 
 export function defineRulesForPurchases(
 	viewerAbilityInput: ViewerAbilityInput,
 ) {
 	const { can, rules } = new AbilityBuilder<AppAbility>(createMongoAbility)
-	const { user, country, purchases = [], module } = viewerAbilityInput
+	const {
+		user,
+		country,
+		purchases = [],
+		module,
+		lesson,
+		entitlementTypes,
+		allModuleResourceIds,
+	} = viewerAbilityInput
 
 	if (user) {
 		can('update', 'User', {
@@ -227,13 +232,17 @@ export function defineRulesForPurchases(
 	}
 
 	if (user) {
-		if (user.roles?.map((role) => role.name).includes('admin')) {
+		if (hasRole({ user, role: 'admin' })) {
 			can('manage', 'all')
 		}
 
-		if (user.roles?.map((role) => role.name).includes('contributor')) {
+		if (hasRole({ user, role: 'contributor' })) {
 			can('create', 'Content')
 			can('manage', 'Content', { createdById: { $eq: user.id } })
+		}
+
+		if (hasRole({ user, role: 'reviewer' })) {
+			can('read', 'Content')
 		}
 
 		can(['read', 'update'], 'User', { id: user.id })
@@ -268,10 +277,6 @@ export function defineRulesForPurchases(
 			return { valid: false, reason: 'unknown' }
 		})
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content')
-		}
-
 		if (
 			userHasPurchaseWithAccess.some(
 				(purchase) => purchase.reason === 'region_restricted',
@@ -305,27 +310,83 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	if (canViewTutorial(viewerAbilityInput)) {
-		can('read', 'Content')
-	}
+	// if (canViewTutorial(viewerAbilityInput)) {
+	// 	can('read', 'Content')
+	// }
 
-	if (user?.roles?.map((role) => role.name).includes('admin')) {
+	if (hasRole({ user, role: 'admin' })) {
 		can('manage', 'all')
 		can('create', 'Content')
 		can('read', 'Content')
 	}
 
+	const cohortEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'cohort_content_access',
+	)
+
+	// check workshop in cohort
+	if (user?.entitlements && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id) {
+				// Grant access to the workshop itself
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+				})
+
+				// Check module start date
+				const moduleStartsAt = module?.fields?.startsAt
+				const moduleStarted =
+					!moduleStartsAt || new Date(moduleStartsAt) < new Date()
+
+				// If user has access to this specific workshop, grant access to lessons only if started
+				if (entitlement.metadata.contentIds?.includes(module.id)) {
+					if (moduleStarted) {
+						can('read', 'Content', {
+							id: { $in: allModuleResourceIds },
+						})
+					} else {
+						can('read', 'PendingOpenAccess')
+					}
+				}
+			}
+		})
+	}
+
+	// lesson check
+	// TODO: validate
+	const lessonModule = module?.resources?.find(
+		(resource) => resource.resourceId === lesson?.id,
+	)
+	if (user?.entitlements && lessonModule) {
+		const moduleStartsAt = module?.fields?.startsAt
+		const moduleStarted =
+			moduleStartsAt && new Date(moduleStartsAt) < new Date()
+
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === cohortEntitlementType?.id && moduleStarted) {
+				can('read', 'Content', {
+					id: { $in: allModuleResourceIds },
+				})
+			} else if (
+				entitlement.type === cohortEntitlementType?.id &&
+				!moduleStarted
+			) {
+				can('read', 'PendingOpenAccess')
+			}
+		})
+	}
+
 	return rules
 }
 
-const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
-	const contentIsTutorial = module?.type === 'tutorial'
-	const viewer = user || subscriber
-	const emailIsNotRequiredToWatch =
-		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
+// const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
+// 	const contentIsTutorial = module?.type === 'tutorial'
+// 	const viewer = user || subscriber
+// 	const emailIsNotRequiredToWatch =
+// 		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
 
-	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
-}
+// 	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
+// }
 
 const canViewTip = ({ lesson }: ViewerAbilityInput) => {
 	return lesson?.type === 'tip'
@@ -358,7 +419,7 @@ const isFreelyVisible = ({
 			lesson?.type === 'lesson') &&
 		lesson.id === lessons?.[0]?.resourceId
 
-	return isFirstLesson && lesson && !isSolution
+	return false //isFirstLesson && lesson && !isSolution
 }
 
 /**

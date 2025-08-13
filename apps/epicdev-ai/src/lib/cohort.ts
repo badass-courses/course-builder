@@ -7,6 +7,8 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { WorkshopSchema } from './workshops'
+
 /**
  * @description Schema for cohort-based learning experiences
  */
@@ -25,7 +27,7 @@ export const CohortSchema = ContentResourceSchema.merge(
 			cohortTier: z.enum(['standard', 'premium', 'vip']).optional(),
 			maxSeats: z.number().int().positive().optional(),
 			discordRoleId: z.string().optional(),
-			image: z.string().url().optional(),
+			image: z.string().optional(),
 			socialImage: z
 				.object({
 					type: z.string(),

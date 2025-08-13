@@ -8,11 +8,11 @@ import {
 	contentResourceResource,
 	products as productTable,
 } from '@/db/schema'
-import { Module, ModuleSchema } from '@/lib/module'
 import {
+	CohortResource,
+	MinimalWorkshopSchema,
 	NavigationLessonSchema,
 	NavigationPostSchema,
-	NavigationResource,
 	NavigationSectionSchema,
 	QueryResultRowSchema,
 	ResourceRawSchema,
@@ -21,9 +21,12 @@ import {
 	WorkshopNavigation,
 	WorkshopNavigationSchema,
 	WorkshopRawSchema,
+	WorkshopSchema,
+	type CohortInfo,
 	type ResourceRaw,
 	type SectionRaw,
 	type SolutionRaw,
+	type Workshop,
 	type WorkshopRaw,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
@@ -39,6 +42,8 @@ import {
 	productSchema,
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
+
+import { upsertPostToTypeSense } from './typesense-query'
 
 /**
  * Fetches workshop navigation data with a single efficient query
@@ -60,6 +65,37 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			WHERE cr.type = ${moduleType}
 				AND JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${moduleSlugOrId}
 			LIMIT 1
+		),
+		cohorts AS (
+			-- Get cohorts that contain this workshop
+			SELECT DISTINCT
+				cr.id as cohortId,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as cohortSlug,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as cohortTitle,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.startsAt')) as startsAt,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.endsAt')) as endsAt,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.timezone')) as timezone,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.cohortTier')) as cohortTier,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.maxSeats')) as maxSeats
+			FROM ${contentResource} as cr
+			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceOfId
+			WHERE cr.type = 'cohort'
+				AND crr.resourceId IN (SELECT id FROM workshop)
+		),
+		cohort_resources AS (
+			-- Get resources for each cohort
+			SELECT
+				cr.id as resourceId,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as resourceSlug,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as resourceTitle,
+				cr.type as resourceType,
+				crr.position as resourcePosition,
+				crr.resourceOfId as cohortId,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.startsAt')) as startsAt
+			FROM ${contentResource} as cr
+			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
+			JOIN cohorts ON cohorts.cohortId = crr.resourceOfId
+			WHERE cr.type IN ('workshop', 'tutorial')
 		),
 		sections AS (
 			-- Get all sections with their positions
@@ -86,9 +122,9 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN workshop ON workshop.id = crr.resourceOfId
 			WHERE (cr.type = 'lesson' OR cr.type = 'post')
-			
+
 			UNION ALL
-			
+
 			-- Get resources within sections
 			SELECT
 				cr.id,
@@ -115,13 +151,36 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			WHERE cr.type = 'solution'
 		)
 		-- Get all data in separate result sets without complex ordering
-		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId FROM workshop
+		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			NULL as resourceType, NULL as resourcePosition
+		FROM workshop
 		UNION ALL
-		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId FROM sections
+		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId,
+			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			NULL as resourceType, NULL as resourcePosition
+		FROM sections
 		UNION ALL
-		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId FROM resources
+		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId,
+			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			type as resourceType, NULL as resourcePosition
+		FROM resources
 		UNION ALL
-		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId FROM solutions
+		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
+			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			NULL as resourceType, NULL as resourcePosition
+		FROM solutions
+		UNION ALL
+		SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+			cohortId, cohortSlug, cohortTitle, startsAt, endsAt, timezone, cohortTier, maxSeats,
+			NULL as resourceType, NULL as resourcePosition
+		FROM cohorts
+		UNION ALL
+		SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position,
+			NULL as sectionId, NULL as resourceId,
+			cohortId, NULL as cohortSlug, NULL as cohortTitle, startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			resourceType, resourcePosition
+		FROM cohort_resources
 	`
 
 	const result = await db.execute(query)
@@ -164,11 +223,11 @@ async function getAllWorkshopLessonsWithSectionInfo(
 		.map((row) =>
 			ResourceRawSchema.parse({
 				id: row.id,
-				slug: row.slug,
+				slug: row.slug || '',
 				title: row.title,
 				position: row.position,
-				// We need to determine if it's a post or lesson
-				type: row.slug.includes('post') ? 'post' : 'lesson',
+				// Use the real resource type from the DB
+				type: row.resourceType,
 				sectionId: row.sectionId,
 			}),
 		)
@@ -184,12 +243,57 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			}),
 		)
 
+	const cohortRows = validatedRows.filter((row) => row.type === 'cohort')
+
+	const cohortResourceRows = validatedRows.filter(
+		(row) => row.type === 'cohort_resource',
+	)
+
+	// Group cohort resources by cohort ID
+	const cohortResourcesByCohortId: Map<string, CohortResource[]> =
+		cohortResourceRows.reduce((acc, row) => {
+			// Only allow 'workshop' or 'tutorial' for cohort resources
+			if (row.resourceType === 'workshop' || row.resourceType === 'tutorial') {
+				if (!acc.has(row.cohortId!)) {
+					acc.set(row.cohortId!, [])
+				}
+				const resource = {
+					id: row.id!,
+					slug: row.slug!,
+					title: row.title!,
+					position: row.resourcePosition!,
+					type: row.resourceType,
+					startsAt: row.startsAt || null,
+				}
+				acc.get(row.cohortId!)!.push(resource)
+			}
+			return acc
+		}, new Map<string, CohortResource[]>())
+
+	// Sort resources within each cohort by position
+	cohortResourcesByCohortId.forEach((resources) => {
+		resources.sort((a, b) => a.position - b.position)
+	})
+
+	const cohorts = cohortRows.map((row) => ({
+		id: row.cohortId!,
+		slug: row.cohortSlug!,
+		title: row.cohortTitle!,
+		startsAt: row.startsAt,
+		endsAt: row.endsAt,
+		timezone: row.timezone!,
+		cohortTier: row.cohortTier,
+		maxSeats: row.maxSeats,
+		resources: cohortResourcesByCohortId.get(row.cohortId!) || [],
+	}))
+
 	// Transform the raw data into the navigation structure
 	return transformToNavigationStructure(
 		workshop,
 		sections,
 		resources,
 		solutions,
+		cohorts,
 	)
 }
 
@@ -201,6 +305,7 @@ function transformToNavigationStructure(
 	sections: SectionRaw[],
 	resources: ResourceRaw[],
 	solutions: SolutionRaw[],
+	cohorts: CohortInfo[],
 ): WorkshopNavigation {
 	// Create a map of solutions by lesson ID for quick lookup
 	const solutionsByLessonId = solutions.reduce((acc, solution) => {
@@ -314,6 +419,7 @@ function transformToNavigationStructure(
 		title: workshop.title,
 		coverImage: workshop.coverImage,
 		resources: allResources,
+		cohorts,
 	}
 
 	return WorkshopNavigationSchema.parse(workshopNavigation)
@@ -338,14 +444,50 @@ export async function getWorkshopNavigation(
 }
 
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
+	// This query finds a product associated with a workshop in two ways:
+	// 1. Direct association: Workshop -> Product
+	// 2. Indirect via cohort: Workshop -> Cohort -> Product
+	//
+	// It prioritizes direct associations (priority=1) over cohort associations (priority=2)
+	// and returns only the first matching product
+
 	const query = sql`
-		SELECT p.*
-		FROM ${contentResource} cr
-		LEFT JOIN ${contentResourceProduct} crp ON cr.id = crp.resourceId
-		LEFT JOIN ${productTable} p ON crp.productId = p.id
-		WHERE cr.id = ${workshopIdOrSlug}
-			OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug}
-		LIMIT 1;`
+WITH ProductCandidates AS (
+    -- Directly associated product
+    SELECT
+        p.*,
+        1 as priority
+    FROM ${contentResource} cr
+    LEFT JOIN ${contentResourceProduct} crp ON cr.id = crp.resourceId
+    LEFT JOIN ${productTable} p ON crp.productId = p.id
+    WHERE
+        (cr.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug})
+        AND cr.type = 'workshop'
+        AND p.id IS NOT NULL
+
+    UNION ALL
+
+    -- Product associated via a cohort
+    SELECT
+        p_cohort.*,
+        2 as priority
+    FROM ${contentResource} cr_workshop -- The workshop itself
+    -- Link workshop to its parent resource (which we'll check is a cohort)
+    JOIN ${contentResourceResource} crr_workshop_to_parent ON cr_workshop.id = crr_workshop_to_parent.resourceId
+    -- The parent resource, ensuring it's a cohort
+    JOIN ${contentResource} cr_cohort ON crr_workshop_to_parent.resourceOfId = cr_cohort.id AND cr_cohort.type = 'cohort'
+    -- Link cohort to product
+    LEFT JOIN ${contentResourceProduct} crp_cohort ON cr_cohort.id = crp_cohort.resourceId
+    LEFT JOIN ${productTable} p_cohort ON crp_cohort.productId = p_cohort.id
+    WHERE
+        (cr_workshop.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_workshop.fields, '$.slug')) = ${workshopIdOrSlug})
+        AND cr_workshop.type = 'workshop' -- Ensure the initial resource is a workshop
+        AND p_cohort.id IS NOT NULL
+)
+SELECT *
+FROM ProductCandidates
+ORDER BY priority ASC
+LIMIT 1;`
 	const results = await db.execute(query)
 
 	const parsedProduct = productSchema.safeParse(results.rows[0])
@@ -377,6 +519,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 			eq(contentResource.type, 'workshop'),
 		),
 		columns: {
+			id: true,
 			type: true,
 			fields: true,
 		},
@@ -389,7 +532,7 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 		return null
 	}
 
-	return workshop
+	return MinimalWorkshopSchema.parse(workshop)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
@@ -448,13 +591,15 @@ export async function getWorkshop(moduleSlugOrId: string) {
 		},
 	})
 
-	const parsedWorkshop = ModuleSchema.safeParse(workshop)
+	const parsedWorkshop = WorkshopSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
 		return null
 	}
 
-	return parsedWorkshop.data
+	const workshopData = parsedWorkshop.data
+
+	return workshopData
 }
 
 export async function getAllWorkshops() {
@@ -495,7 +640,7 @@ export async function getAllWorkshops() {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const parsedWorkshops = z.array(ModuleSchema).safeParse(workshops)
+	const parsedWorkshops = z.array(WorkshopSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
 		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
 		throw new Error('Error parsing workshop')
@@ -568,7 +713,10 @@ export const updateResourcePosition = async ({
 	return result
 }
 
-export async function updateWorkshop(input: Module) {
+export async function updateWorkshop(input: Partial<Workshop>) {
+	if (!input.id) {
+		throw new Error('ID is required')
+	}
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('update', 'Content')) {
@@ -583,9 +731,66 @@ export async function updateWorkshop(input: Module) {
 
 	let workshopSlug = currentWorkshop.fields.slug
 
-	if (input.fields.title !== currentWorkshop.fields.title) {
+	if (
+		input.fields?.title !== currentWorkshop.fields.title &&
+		input.fields?.slug?.includes('~')
+	) {
 		const splitSlug = currentWorkshop?.fields.slug.split('~') || ['', guid()]
 		workshopSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
+		await log.info('post.update.slug.changed', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	} else if (input.fields?.slug !== currentWorkshop.fields.slug) {
+		if (!input.fields?.slug) {
+			throw new Error('Slug is required')
+		}
+		workshopSlug = input.fields?.slug
+		await log.info('post.update.slug.manual', {
+			postId: input.id,
+			oldSlug: currentWorkshop.fields.slug,
+			newSlug: workshopSlug,
+			userId: user.id,
+		})
+	}
+
+	try {
+		await upsertPostToTypeSense(
+			{
+				id: currentWorkshop.id,
+				organizationId: currentWorkshop.organizationId,
+				type: currentWorkshop.type,
+				createdAt: currentWorkshop.createdAt,
+				updatedAt: new Date(),
+				deletedAt: currentWorkshop.deletedAt,
+				createdById: currentWorkshop.createdById,
+				resources: currentWorkshop.resources as any,
+				createdByOrganizationMembershipId:
+					currentWorkshop.createdByOrganizationMembershipId,
+				fields: {
+					...currentWorkshop.fields,
+					...input.fields,
+					description: input.fields.description || '',
+					slug: workshopSlug,
+				},
+			},
+			'save',
+		)
+		await log.info('post.update.typesense.success', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('🔍 Post updated in Typesense')
+	} catch (error) {
+		await log.error('post.update.typesense.failed', {
+			workshopId: currentWorkshop.id,
+			action: 'save',
+			userId: user.id,
+		})
+		console.log('❌ Error updating post in Typesense', error)
 	}
 
 	const updatedWorkshop =
@@ -594,6 +799,7 @@ export async function updateWorkshop(input: Module) {
 			fields: {
 				...currentWorkshop.fields,
 				...input.fields,
+				updatedAt: new Date(),
 				slug: workshopSlug,
 			},
 		})
@@ -602,7 +808,7 @@ export async function updateWorkshop(input: Module) {
 	revalidateTag('workshops')
 	revalidateTag(currentWorkshop.id)
 	revalidatePath('/workshops')
-	revalidatePath(`/workshops/${currentWorkshop.fields.slug}`)
+	revalidatePath(`/workshops/${workshopSlug}`)
 
 	return {
 		...updatedWorkshop,
@@ -655,7 +861,7 @@ export async function getWorkshopsForLesson(lessonId: string) {
 				AND section.type = 'section'
 				AND crr_lesson.resourceId = ${lessonId}
 		)
-		SELECT 
+		SELECT
 			id,
 			type,
 			fields,
@@ -672,13 +878,11 @@ export async function getWorkshopsForLesson(lessonId: string) {
 	`
 
 	const result = await db.execute(query)
-	console.log('parsedWorkshops result', result.rows)
 	if (!result.rows.length) {
 		return []
 	}
 
 	const parsedWorkshops = z.array(ContentResourceSchema).safeParse(result.rows)
-	console.log('parsedWorkshops', parsedWorkshops)
 	if (!parsedWorkshops.success) {
 		await log.error('getWorkshopsForLesson.parseError', {
 			lessonId,

@@ -4,16 +4,17 @@ import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
 import { getLesson } from '@/lib/lessons-query'
-import { Module } from '@/lib/module'
-import { getModule } from '@/lib/modules-query'
+import { getCachedMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
+import { subject } from '@casl/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
 // Import type without implementation
 import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { getResourceSection } from './get-resource-section'
+import { getWorkshopResourceIds } from './get-workshop-resource-ids'
 
 // Provide the actual implementation directly
 export async function getCurrentAbilityRules({
@@ -38,7 +39,7 @@ export async function getCurrentAbilityRules({
 	const { session } = await getServerAuthSession()
 
 	const lessonResource = lessonId && (await getLesson(lessonId))
-	const moduleResource = moduleId ? await getModule(moduleId) : null
+	const moduleResource = moduleId ? await getWorkshop(moduleId) : null
 
 	const sectionResource =
 		lessonResource &&
@@ -48,6 +49,12 @@ export async function getCurrentAbilityRules({
 	const purchases = await courseBuilderAdapter.getPurchasesForUser(
 		session?.user?.id,
 	)
+
+	const allModuleResourceIds = moduleResource
+		? getWorkshopResourceIds(moduleResource)
+		: []
+
+	const entitlementTypes = await db.query.entitlementTypes.findMany()
 
 	const currentMembership =
 		session?.user && organizationId
@@ -67,6 +74,7 @@ export async function getCurrentAbilityRules({
 						isNull(entitlements.expiresAt),
 						gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 					),
+					isNull(entitlements.deletedAt),
 				),
 			})
 		: []
@@ -82,6 +90,7 @@ export async function getCurrentAbilityRules({
 			})),
 		},
 		country,
+		entitlementTypes,
 		isSolution: false,
 		...(convertkitSubscriber && {
 			subscriber: convertkitSubscriber,
@@ -90,40 +99,47 @@ export async function getCurrentAbilityRules({
 		...(moduleResource && { module: moduleResource }),
 		...(sectionResource ? { section: sectionResource } : {}),
 		...(purchases && { purchases: purchases }),
+		allModuleResourceIds,
 	})
-}
-
-export async function getViewingAbilityForResource(
-	lessonId: string,
-	moduleId: string,
-) {
-	const abilityRules = await getCurrentAbilityRules({
-		lessonId,
-		moduleId,
-	})
-	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
-	return canView
 }
 
 export async function getAbilityForResource(
-	lessonId: string,
+	lessonId: string | undefined,
 	moduleId: string,
-): Promise<AbilityForResource> {
+): Promise<
+	Omit<AbilityForResource, 'canView'> & {
+		canViewWorkshop: boolean
+		canViewLesson: boolean
+		isPendingOpenAccess: boolean
+	}
+> {
 	const abilityRules = await getCurrentAbilityRules({
 		lessonId,
 		moduleId,
 	})
+	const workshop = await getCachedMinimalWorkshop(moduleId)
+	const lesson = lessonId ? await getLesson(lessonId) : null
+
 	const ability = createAppAbility(abilityRules || [])
-	const canView = ability.can('read', 'Content')
+
+	const canViewWorkshop = workshop
+		? ability.can('read', subject('Content', { id: workshop.id }))
+		: false
+
+	const canViewLesson = lesson?.id
+		? ability.can('read', subject('Content', { id: lesson.id }))
+		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')
+	const isPendingOpenAccess = ability.can('read', 'PendingOpenAccess')
 	const canCreate = ability.can('create', 'Content')
 
 	return {
-		canView,
+		canViewWorkshop,
+		canViewLesson,
 		canInviteTeam,
 		isRegionRestricted,
+		isPendingOpenAccess,
 		canCreate,
 	}
 }
