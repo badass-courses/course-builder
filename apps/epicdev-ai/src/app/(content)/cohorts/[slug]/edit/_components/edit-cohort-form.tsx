@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
@@ -14,6 +13,7 @@ import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import {
+	DateTimePicker,
 	FormField,
 	FormItem,
 	FormLabel,
