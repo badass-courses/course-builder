@@ -64,7 +64,7 @@ export const CohortPricingWidgetContainer: React.FC<
 	return (
 		<>
 			{product && product.status === 1 && isOpenEnrollment && (
-				<div className={cn('border-b px-5 pb-5', className)}>
+				<div className={cn('px-5 pb-5', className)}>
 					{pricingWidgetOptions?.withImage && (
 						<div className="mb-3 flex w-full items-center justify-center">
 							<CldImage

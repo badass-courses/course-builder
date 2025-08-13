@@ -423,7 +423,7 @@ export default async function CohortPage(props: {
 					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
 						{fields?.image && (
 							<CldImage
-								className="hidden lg:flex"
+								className="hidden rounded-t-lg lg:flex"
 								width={383}
 								height={204}
 								src={fields?.image}
