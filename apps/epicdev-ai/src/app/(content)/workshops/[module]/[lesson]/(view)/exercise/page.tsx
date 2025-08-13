@@ -1,6 +1,6 @@
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { LessonProvider } from '@/app/(content)/tutorials/[module]/[lesson]/_components/lesson-context'
+import { LessonProvider } from '@/app/(content)/workshops/_components/lesson-context'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
 import { getLesson } from '@/lib/lessons-query'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
