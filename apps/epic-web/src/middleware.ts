@@ -13,12 +13,11 @@ const COOKIE_OPTIONS = {
 
 export default auth(async function middleware(req) {
 	const user = req.auth?.user as AuthUser | undefined
-	if (!user) return NextResponse.next()
-
 	const pathname = req.nextUrl.pathname
 	if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-		const { ability } = await getServerAuthSession()
-		if (ability.cannot('manage', 'all')) {
+		const session = await getServerAuthSession()
+		const ability = session?.ability
+		if (!ability || ability.cannot('manage', 'all')) {
 			return NextResponse.rewrite(new URL('/not-found', req.url))
 		} else {
 			if (pathname === '/admin') {
@@ -26,6 +25,7 @@ export default auth(async function middleware(req) {
 			}
 		}
 	}
+	if (!user) return NextResponse.next()
 
 	const currentOrgId = req.cookies.get('organizationId')?.value
 	const response = NextResponse.next()
