@@ -36,7 +36,8 @@ export const EventDetails: React.FC<{
 	return (
 		<div
 			className={cn('flex flex-col px-5 pt-5', {
-				'border-t-2': event.resourceProducts.length > 0,
+				'border-t-2':
+					event?.resourceProducts && event?.resourceProducts?.length > 0,
 			})}
 		>
 			<h3 className="font-heading pb-4 text-2xl font-bold">Event Details</h3>

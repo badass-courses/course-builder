@@ -13,7 +13,7 @@ export async function generateMetadata() {
 
 export default function NotFound() {
 	return (
-		<LayoutClient>
+		<LayoutClient withContainer>
 			<main className="flex min-h-[calc(100vh-var(--nav-height))] w-full flex-col items-center justify-center pb-16">
 				<h1 className="fluid-3xl font-semibold">Not Found</h1>
 				<p className="pb-8 pt-4">
