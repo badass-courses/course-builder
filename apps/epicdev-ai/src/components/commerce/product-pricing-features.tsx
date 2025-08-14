@@ -1,5 +1,3 @@
-import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
-import type { WorkshopNavigation } from '@/lib/workshops'
 import {
 	BadgeCheck,
 	Check,
@@ -10,9 +8,8 @@ import {
 	Percent,
 	Speaker,
 } from 'lucide-react'
+import pluralize from 'pluralize'
 
-import { Product } from '@coursebuilder/core/schemas'
-import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { Icon } from '../brand/icons'
@@ -67,7 +64,7 @@ export const ProductPricingFeatures = ({
 			<ul className="flex w-full flex-col gap-2">
 				<li className="flex items-center gap-2">
 					<ListVideo className="h-4 w-4" />
-					{workshops.length} Workshops
+					{workshops.length} {pluralize('Workshop', workshops.length)}
 				</li>
 				<li className="flex items-center gap-2">
 					<Speaker className="h-4 w-4" />

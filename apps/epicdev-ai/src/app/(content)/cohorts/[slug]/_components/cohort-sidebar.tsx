@@ -41,13 +41,16 @@ export const CohortSidebar = ({
 			<div
 				ref={buySectionRef}
 				id="buy"
-				className="relative flex w-full flex-col gap-3 bg-white md:max-w-sm"
+				className="relative flex w-full flex-col gap-3 md:max-w-sm"
 			>
 				<div
 					ref={sidebarRef}
-					className={cn('dark:bg-muted/50 rounded-lg border bg-white', {
-						'top-3 md:sticky': sticky && windowHeight - 63 > height,
-					})}
+					className={cn(
+						'dark:bg-muted-foreground/5 rounded-lg border bg-white dark:border-transparent',
+						{
+							'top-3 md:sticky': sticky && windowHeight - 63 > height,
+						},
+					)}
 				>
 					{children}
 				</div>

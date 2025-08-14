@@ -288,9 +288,9 @@ export default async function CohortPage(props: {
 					</div>
 				) : null}
 
-				<div className="flex flex-col lg:flex-row">
+				<div className="flex flex-col gap-10 lg:flex-row">
 					<div className="w-full">
-						<header className="flex w-full flex-col items-center justify-between pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
+						<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 							{fields?.image && (
 								<CldImage
 									className="flex w-full lg:hidden"
@@ -302,7 +302,7 @@ export default async function CohortPage(props: {
 							)}
 							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-									<span className="text-xs font-medium uppercase tracking-wider">
+									<span className="text-primary font-mono text-xs font-semibold uppercase">
 										Cohort-based Course
 									</span>
 									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
@@ -315,7 +315,7 @@ export default async function CohortPage(props: {
 							)} */}
 								</div>
 
-								<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
+								<h1 className="text-balance text-3xl font-bold sm:text-4xl lg:text-5xl">
 									{fields.title}
 								</h1>
 								{fields.description && (
@@ -330,11 +330,11 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						</header>
-						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
+						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none py-10">
 							{content}
 						</article>
 
-						<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
+						<div className="mt-2 border-t py-8">
 							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
 							<ul className="flex flex-col gap-3">
 								{workshops.map((workshop, index) => {

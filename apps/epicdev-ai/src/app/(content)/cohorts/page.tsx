@@ -26,18 +26,15 @@ export const metadata: Metadata = {
 	title: 'Cohorts hosted by Matt Pocock',
 }
 
-export default async function EventIndexPage() {
+export default async function CohortsIndexPage() {
 	const { ability } = await getServerAuthSession()
 
 	return (
 		<LayoutClient withContainer>
 			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0">
 				<div className="max-w-(--breakpoint-md) w-full px-5 py-16">
-					<h1 className="font-heading text-center text-5xl font-bold">
-						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-							Live
-						</span>{' '}
-						<span className="text-gray-100">Cohorts</span>
+					<h1 className="text-center text-5xl font-bold">
+						<span className="">Cohorts</span>
 					</h1>
 				</div>
 				<CohortsList />
@@ -120,7 +117,7 @@ async function CohortsList() {
 							)}
 							<div className="w-full">
 								<CardHeader className="mb-2 p-0">
-									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
+									<CardTitle className="text-lg font-semibold sm:text-2xl">
 										<Link
 											href={`/cohorts/${cohort.fields.slug || cohort.id}`}
 											className="w-full text-balance hover:underline"
@@ -140,7 +137,7 @@ async function CohortsList() {
 									</CardContent>
 								)}
 								<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
-									<Contributor className="text-sm font-light" />
+									<Contributor className="text-sm" />
 									<div className="flex items-center gap-2">
 										{ability.can('create', 'Content') && (
 											<>
