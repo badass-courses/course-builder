@@ -12,6 +12,7 @@ import { Post } from '@/lib/posts'
 import { getCachedPost, getPost } from '@/lib/posts-query'
 import { getTranscript } from '@/lib/transcript-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getOGImageUrlForResourceAPI } from '@/utils/get-og-image-url-for-resource'
 import { subject } from '@casl/ability'
 import toast from 'react-hot-toast'
 import ReactMarkdown from 'react-markdown'
@@ -35,8 +36,23 @@ export async function generateMetadata(
 		return parent as Metadata
 	}
 
+	const ogImageUrl =
+		post.fields?.ogImage ||
+		getOGImageUrlForResourceAPI({
+			id: post.id,
+			fields: { slug: post.fields?.slug || post.id },
+			updatedAt: post.updatedAt,
+		})
+
 	return {
 		title: post.fields?.title,
+		openGraph: {
+			images: [
+				{
+					url: ogImageUrl,
+				},
+			],
+		},
 	}
 }
 
