@@ -30,6 +30,7 @@ import 'server-only'
 import { EggheadApiError } from '@/errors/egghead-api-error'
 import { POST_CREATED_EVENT } from '@/inngest/events/post-created'
 import { inngest } from '@/inngest/inngest.server'
+import { getOGImageUrlForResourceAPI } from '@/utils/get-og-image-url-for-resource'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 import { ContentResource } from '@coursebuilder/core/schemas'

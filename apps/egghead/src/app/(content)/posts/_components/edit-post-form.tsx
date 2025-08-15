@@ -86,6 +86,7 @@ export function EditPostForm({
 				description: post.fields?.description ?? '',
 				github: post.fields?.github ?? '',
 				gitpod: post.fields?.gitpod ?? '',
+				ogImage: post.fields?.ogImage ?? '',
 			},
 		},
 	})

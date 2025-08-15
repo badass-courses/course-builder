@@ -63,6 +63,7 @@ export const env = createEnv({
 		POSTMARK_KEY: z.string().optional(),
 		SLACK_TOKEN: z.string().optional(),
 		SLACK_DEFAULT_CHANNEL_ID: z.string().optional(),
+		EGGHEAD_PUBLIC_URL: z.string().optional(),
 	},
 
 	/**
@@ -126,6 +127,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SITE_TITLE: process.env.NEXT_PUBLIC_SITE_TITLE,
 		SLACK_TOKEN: process.env.SLACK_TOKEN,
 		SLACK_DEFAULT_CHANNEL_ID: process.env.SLACK_DEFAULT_CHANNEL_ID,
+		EGGHEAD_PUBLIC_URL: process.env.EGGHEAD_PUBLIC_URL,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
