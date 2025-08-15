@@ -2,18 +2,64 @@ import { db } from '@/db'
 import { entitlements, organizationMemberships, purchases } from '@/db/schema'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
+import { guid } from '@coursebuilder/adapter-drizzle/mysql'
+
 export type EntitlementType =
 	| 'cohort_content_access'
 	| 'cohort_discord_role'
 	| 'subscription_tier'
 
+export enum EntitlementSourceType {
+	PURCHASE = 'PURCHASE',
+	SUBSCRIPTION = 'SUBSCRIPTION',
+	MANUAL = 'MANUAL',
+}
+
 export type EntitlementSource =
-	| { type: 'PURCHASE'; id: string }
-	| { type: 'SUBSCRIPTION'; id: string }
-	| { type: 'MANUAL'; id: string }
+	| { type: EntitlementSourceType.PURCHASE; id: string }
+	| { type: EntitlementSourceType.SUBSCRIPTION; id: string }
+	| { type: EntitlementSourceType.MANUAL; id: string }
 
 /**
- * Get all active entitlements for an organization member
+ * Soft delete all entitlements for a user when a refund occurs
+ * @param userId - The ID of the user whose entitlements should be soft deleted
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForUser(userId: string) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(and(eq(entitlements.userId, userId), isNull(entitlements.deletedAt)))
+
+	return result
+}
+
+/**
+ * Soft delete entitlements for a specific purchase when a refund occurs
+ * @param purchaseId - The ID of the purchase whose entitlements should be soft deleted
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForPurchase(purchaseId: string) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceId, purchaseId),
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
+}
+
+/**
+ * Get all active entitlements for an organization member (excluding soft deleted ones)
  * @param organizationMembershipId - The ID of the organization membership to get entitlements for
  * @returns An array of entitlements
  */
@@ -60,7 +106,8 @@ export async function allocateEntitlementToMember(
 			throw new Error('Invalid membership')
 		}
 
-		const purchaseId = source.type === 'PURCHASE' ? source.id : null
+		const purchaseId =
+			source.type === EntitlementSourceType.PURCHASE ? source.id : null
 		if (!purchaseId) {
 			throw new Error('Invalid source for allocation')
 		}
@@ -161,4 +208,102 @@ export async function hasAvailableSeatsForPurchase(
 		.then((ents) => ents.length)
 
 	return allocatedEntitlementsCount < purchase.fields.seats
+}
+
+/**
+ * Creates a cohort entitlement for a user for a specific resource in a cohort.
+ * This should be used by all flows (purchase, transfer, redeem, etc.)
+ * @returns The ID of the created entitlement
+ */
+export async function createCohortEntitlement({
+	id,
+	userId,
+	resourceId,
+	organizationId,
+	organizationMembershipId,
+	entitlementType,
+	sourceId,
+	sourceType,
+	metadata = {},
+}: {
+	id?: string
+	userId: string
+	resourceId?: string
+	organizationId: string
+	organizationMembershipId: string
+	entitlementType: string
+	sourceId: string
+	sourceType: string
+	metadata?: Record<string, any>
+}): Promise<string> {
+	const entitlementId =
+		id ?? (resourceId ? `${resourceId}-${guid()}` : `entitlement-${guid()}`)
+
+	// Only add contentIds if resourceId is provided and not null
+	const finalMetadata = {
+		...metadata,
+		...(resourceId && { contentIds: [resourceId] }),
+	}
+
+	await db.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType,
+		sourceId,
+		metadata: finalMetadata,
+	})
+	return entitlementId
+}
+
+/**
+ * Creates a cohort entitlement for a user for a specific resource in a cohort within a transaction.
+ * This should be used when you need to create entitlements as part of a larger transaction.
+ * @returns The ID of the created entitlement
+ */
+export async function createCohortEntitlementInTransaction(
+	tx: any,
+	{
+		userId,
+		resourceId,
+		sourceId,
+		organizationId,
+		organizationMembershipId,
+		entitlementType,
+		sourceType,
+		metadata = {},
+	}: {
+		userId: string
+		resourceId?: string
+		organizationId: string
+		organizationMembershipId: string
+		entitlementType: string
+		sourceId: string
+		sourceType: string
+		metadata?: Record<string, any>
+	},
+): Promise<string> {
+	const entitlementId = resourceId
+		? `${resourceId}-${guid()}`
+		: `entitlement-${guid()}`
+
+	// Only add contentIds if resourceId is provided and not null
+	const finalMetadata = {
+		...metadata,
+		...(resourceId && { contentIds: [resourceId] }),
+	}
+
+	await tx.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType,
+		sourceId,
+		metadata: finalMetadata,
+	})
+	return entitlementId
 }

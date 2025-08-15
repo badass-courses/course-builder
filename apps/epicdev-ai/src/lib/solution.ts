@@ -21,7 +21,7 @@ export const SolutionSchema = ContentResourceSchema.merge(
 		updatedAt: z.coerce.date().nullable(),
 		deletedAt: z.coerce.date().nullable(),
 		fields: z.object({
-			title: z.string().min(2).max(90),
+			title: z.string().min(0).max(90),
 			body: z.string().optional(),
 			slug: z.string(),
 			description: z.string().optional(),
@@ -29,7 +29,9 @@ export const SolutionSchema = ContentResourceSchema.merge(
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
-			videoResourceId: z.string().nullable().optional(),
+			videoResourceId: z.string().nullish(),
+			thumbnailTime: z.number().nullish(),
+			optional: z.boolean().nullish().default(false),
 		}),
 		resources: z.array(z.any()).default([]).nullable(),
 	}),
@@ -51,6 +53,7 @@ export const SolutionUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.default('unlisted'),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
+		optional: z.boolean().nullish().default(false),
 	}),
 	tags: PostTagsSchema,
 })
@@ -68,6 +71,7 @@ export const NewSolutionInputSchema = z.object({
 	thumbnailTime: z.number().nullish(),
 	createdById: z.string(),
 	parentLessonId: z.string(),
+	optional: z.boolean().nullish().default(false),
 })
 
 export type NewSolutionInput = z.infer<typeof NewSolutionInputSchema>

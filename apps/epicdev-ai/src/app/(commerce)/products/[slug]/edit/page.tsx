@@ -20,9 +20,5 @@ export default async function PromptEditPage(props: {
 		notFound()
 	}
 
-	return (
-		<LayoutClient>
-			<EditProductForm key={product.fields?.slug} product={product} />
-		</LayoutClient>
-	)
+	return <EditProductForm key={product.fields?.slug} product={product} />
 }

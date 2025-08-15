@@ -25,7 +25,9 @@ export function ActiveEventButton({ className }: { className?: string }) {
 			>
 				<Link href={getResourcePath('event', firstEvent.fields.slug, 'view')}>
 					{/* <Marquee className="max-w-24 [--duration:20s]"> */}
-					<span className="text-sm font-semibold">Get Ticket</span>
+					<span className="text-sm font-semibold dark:text-white">
+						Get Ticket
+					</span>
 					{/* </Marquee> */}
 				</Link>
 			</Button>

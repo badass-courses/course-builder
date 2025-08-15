@@ -12,6 +12,7 @@ import { usersRouter } from '@/trpc/api/routers/users'
 import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createTRPCRouter } from '@/trpc/api/trpc'
 
+import { emailsRouter } from './routers/emails'
 import { tagsRouter } from './routers/tags'
 import { typesenseRouter } from './routers/typesense'
 
@@ -35,6 +36,7 @@ export const appRouter = createTRPCRouter({
 	deviceVerification: deviceVerificationRouter,
 	typesense: typesenseRouter,
 	tags: tagsRouter,
+	emails: emailsRouter,
 })
 
 // export type definition of API

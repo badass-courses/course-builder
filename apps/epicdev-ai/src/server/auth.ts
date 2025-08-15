@@ -231,7 +231,6 @@ export const authOptions: NextAuthConfig = {
 
 			const headersList = await headers()
 			const organizationId = headersList.get('x-organization-id')
-
 			const role = dbUser?.role || 'user'
 
 			const organizationRoles =
@@ -245,6 +244,7 @@ export const authOptions: NextAuthConfig = {
 							eq(organizationMemberships.organizationId, organizationId),
 							eq(organizationMemberships.userId, user.id),
 						),
+						orderBy: (om, { asc }) => [asc(om.createdAt)],
 					})
 				: null
 
@@ -256,6 +256,7 @@ export const authOptions: NextAuthConfig = {
 								isNull(entitlements.expiresAt),
 								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 							),
+							isNull(entitlements.deletedAt),
 						),
 					})
 				: []

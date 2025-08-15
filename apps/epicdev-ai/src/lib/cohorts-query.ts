@@ -4,6 +4,7 @@ import {
 	contentResource,
 	contentResourceResource,
 	entitlements as entitlementsTable,
+	entitlementTypes,
 	organizationMemberships,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -12,6 +13,7 @@ import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import type { User } from '@coursebuilder/core/schemas'
 
 import { CohortAccess, CohortSchema } from './cohort'
+import { WorkshopSchema } from './workshops'
 
 export async function getCohort(cohortIdOrSlug: string) {
 	const cohortData = await db.query.contentResource.findFirst({
@@ -28,7 +30,16 @@ export async function getCohort(cohortIdOrSlug: string) {
 		with: {
 			resources: {
 				with: {
-					resource: true,
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: [asc(contentResourceResource.position)],
+							},
+						},
+					},
 				},
 				orderBy: [asc(contentResourceResource.position)],
 			},
@@ -57,6 +68,45 @@ export async function getCohort(cohortIdOrSlug: string) {
 }
 
 /**
+ * Get all modules in a cohort
+ * @param cohortId - The ID of the cohort to get modules for
+ * @returns An array of modules
+ */
+export async function getAllWorkshopsInCohort(cohortId: string) {
+	try {
+		const results = await db
+			.select()
+			.from(contentResourceResource)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceResource.resourceId),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'workshop'),
+					eq(contentResourceResource.resourceOfId, cohortId),
+				),
+			)
+			.orderBy(asc(contentResourceResource.position))
+
+		return results.map((r) => {
+			const parsed = WorkshopSchema.safeParse(r.ContentResource)
+			if (!parsed.success) {
+				console.error(
+					'Failed to parse workshop:',
+					parsed.error,
+					r.ContentResource,
+				)
+				throw new Error(`Invalid workshop data for cohort ${cohortId}`)
+			}
+			return parsed.data
+		})
+	} catch (error) {
+		console.error('Failed to get workshops in cohort:', error)
+		throw error
+	}
+}
+/**
  * Check if a user has access to a cohort
  * @param organizationId - The ID of the organization to check cohort access for
  * @param userId - The ID of the user to check cohort access for
@@ -79,10 +129,19 @@ export async function checkCohortAccess(
 	if (!membership) {
 		return null // User is not a member of the organization
 	}
+
+	const cohortEntitlementType = await db.query.entitlementTypes.findFirst({
+		where: eq(entitlementTypes.name, 'cohort_content_access'),
+	})
+
+	if (!cohortEntitlementType) {
+		return null // Cohort entitlement type not found
+	}
+
 	const validEntitlements = await db.query.entitlements.findMany({
 		where: and(
 			eq(entitlementsTable.organizationMembershipId, membership.id), // Use membershipId
-			eq(entitlementsTable.entitlementType, 'cohort_content_access'),
+			eq(entitlementsTable.entitlementType, cohortEntitlementType.id),
 			or(
 				isNull(entitlementsTable.expiresAt),
 				gt(entitlementsTable.expiresAt, sql`CURRENT_TIMESTAMP`),
@@ -92,7 +151,7 @@ export async function checkCohortAccess(
 	})
 
 	const cohortEntitlement = validEntitlements.find(
-		(e) => e.metadata?.cohortSlug === cohortSlug,
+		(e) => e.sourceType === 'cohort',
 	)
 
 	if (!cohortEntitlement || !cohortEntitlement.metadata) return null
