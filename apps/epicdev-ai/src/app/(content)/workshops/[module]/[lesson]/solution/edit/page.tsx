@@ -53,16 +53,16 @@ export default async function SolutionEditPage({
 			})
 		}
 	}
-
+	console.log({ solution })
 	return (
-		<LayoutClient>
-			<EditSolutionForm
-				key={solution?.id || `new-solution-${lessonData.id}`}
-				solution={solution}
-				lessonId={lessonData.id}
-				defaultSlug={defaultSlug}
-				videoResource={videoResource}
-			/>
-		</LayoutClient>
+		// <LayoutClient>
+		<EditSolutionForm
+			key={solution?.id || `new-solution-${lessonData.id}`}
+			solution={solution}
+			lessonId={lessonData.id}
+			defaultSlug={defaultSlug}
+			videoResource={videoResource}
+		/>
+		// </LayoutClient>
 	)
 }

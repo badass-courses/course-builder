@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { ContentVideoResourceField } from '@/components/content/content-video-resource-field'
 import { env } from '@/env.mjs'
-import { useSocket } from '@/hooks/use-socket'
 import {
 	VIDEO_ATTACHED_EVENT,
 	VIDEO_DETACHED_EVENT,
@@ -23,6 +22,7 @@ import {
 	type ContentResource,
 } from '@coursebuilder/core/schemas'
 import { useToast } from '@coursebuilder/ui'
+import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
 /**
  * A specialized video resource field component for lessons
@@ -47,6 +47,7 @@ export const LessonVideoResourceField: React.FC<{
 
 	useSocket({
 		room: lesson.id,
+		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
 		onMessage: async (messageEvent) => {
 			try {
 				const message = JSON.parse(messageEvent.data)
