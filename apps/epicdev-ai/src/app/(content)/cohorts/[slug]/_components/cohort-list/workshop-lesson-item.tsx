@@ -7,8 +7,13 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import { api } from '@/trpc/react'
 import { subject } from '@casl/ability'
 import { Check, Lock } from 'lucide-react'
+import type { z } from 'zod'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import {
+	ResourceStateSchema,
+	ResourceVisibilitySchema,
+} from '@coursebuilder/core/schemas/content-resource-schema'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
@@ -28,8 +33,8 @@ export function WorkshopLessonItem({
 	index: number
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
-	workshopState: 'published' | 'draft'
-	workshopVisibility: 'public' | 'unlisted'
+	workshopState: z.infer<typeof ResourceStateSchema>
+	workshopVisibility: z.infer<typeof ResourceVisibilitySchema>
 }) {
 	const { moduleProgress } = useModuleProgress()
 	const isLessonCompleted = moduleProgress?.completedLessons.some(
