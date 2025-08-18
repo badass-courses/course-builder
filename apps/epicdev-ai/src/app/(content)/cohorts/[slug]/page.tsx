@@ -295,7 +295,7 @@ export default async function CohortPage(props: {
 						<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 							{fields?.image && (
 								<CldImage
-									className="flex w-full lg:hidden"
+									className="flex w-full rounded-lg lg:hidden"
 									width={383}
 									height={204}
 									src={fields?.image}

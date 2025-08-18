@@ -116,7 +116,7 @@ export const CohortPricingWidgetContainer: React.FC<
 					aria-hidden="true"
 					width={130}
 					height={130}
-					className="rotate-12"
+					className=""
 				/>
 			</div>
 		)
