@@ -1,5 +1,6 @@
 'use client'
 
+import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { CldImage } from '@/components/cld-image'
@@ -16,8 +17,8 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import type { CohortPageProps } from './cohort-page-props'
 
 export const CohortPricingWidgetContainer: React.FC<
-	CohortPageProps & { className?: string }
-> = ({ className, ...props }) => {
+	CohortPageProps & { className?: string; searchParams?: ParsedUrlQuery }
+> = ({ className, searchParams, ...props }) => {
 	const {
 		cohort,
 		mdx,
@@ -28,13 +29,14 @@ export const CohortPricingWidgetContainer: React.FC<
 		pricingDataLoader,
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
+
 		...commerceProps
 	} = props
 	const { fields } = cohort
 	const { startsAt, endsAt, timezone } = fields
 	const product = products && products[0]
 	const { openEnrollment, closeEnrollment } = product?.fields || {}
-
+	const { allowPurchase } = searchParams || {}
 	// Properly handle timezone comparison - get current time in PT to compare with PT stored date
 	const tz = timezone || 'America/Los_Angeles'
 	const nowInPT = new Date(
@@ -126,7 +128,7 @@ export const CohortPricingWidgetContainer: React.FC<
 		<SubscribeToConvertkitForm
 			fields={waitlistCkFields}
 			actionLabel="Join Waitlist"
-			className="w-ful relative z-10 mt-5 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:text-base [&_input]:h-12 [&_input]:text-lg"
+			className="w-ful [&_button]:from-primary relative z-10 mt-5 flex flex-col items-center justify-center gap-2 [&_button]:mt-1 [&_button]:h-12 [&_button]:w-full [&_button]:cursor-pointer [&_button]:bg-gradient-to-b [&_button]:to-indigo-800 [&_button]:text-base [&_button]:shadow-md [&_input]:h-12 [&_input]:text-lg"
 			successMessage={
 				<p className="inline-flex items-center text-center text-lg font-medium">
 					<CheckCircle className="text-primary mr-2 size-5" /> You are on the
@@ -156,7 +158,7 @@ export const CohortPricingWidgetContainer: React.FC<
 
 	return (
 		<>
-			{enrollmentState.type === 'open' ? (
+			{enrollmentState.type === 'open' || allowPurchase ? (
 				<div className={cn('px-5 pb-5', className)}>
 					{renderImage()}
 					<p className="opacit-50 -mb-7 flex w-full items-center justify-center pt-5 text-center text-base">

@@ -570,7 +570,10 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						) : ALLOW_PURCHASE ? (
-							<CohortPricingWidgetContainer {...cohortProps} />
+							<CohortPricingWidgetContainer
+								{...cohortProps}
+								searchParams={searchParams}
+							/>
 						) : null}
 					</CohortSidebar>
 				</div>
