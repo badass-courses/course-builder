@@ -23,7 +23,7 @@ const LessonLayout = async (props: {
 	return (
 		<ActiveHeadingProvider>
 			<LayoutClient withContainer>
-				<div className="flex min-w-0">
+				<div className="flex min-w-0 gap-3">
 					<WorkshopResourceList
 						currentLessonSlug={params.lesson}
 						className="hidden lg:block"

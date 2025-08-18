@@ -109,15 +109,12 @@ export function WorkshopResourceList(props: Props) {
 			aria-expanded={!isSidebarCollapsed}
 			aria-controls="workshop-navigation"
 			aria-label="Workshop navigation"
-			className={cn(
-				'bg-muted/50 relative w-full max-w-xs shrink-0 border-r',
-				className,
-				{
-					'border-r': !isSidebarCollapsed,
-					'hover:bg-muted/80 w-8 cursor-pointer transition [&_div]:hidden':
-						isSidebarCollapsed && isCollapsible,
-				},
-			)}
+			className={cn('relative w-full max-w-xs shrink-0 border-r', className, {
+				'border-r': !isSidebarCollapsed,
+				'hover:bg-muted/80 w-8 cursor-pointer transition [&_div]:hidden':
+					isSidebarCollapsed && isCollapsible,
+				'bg-background overflow-hidden rounded-lg border': isCollapsible,
+			})}
 		>
 			<TooltipProvider>
 				{isSidebarCollapsed && isCollapsible && (
@@ -177,7 +174,7 @@ export function WorkshopResourceList(props: Props) {
 									<div className="flex items-center gap-0.5">
 										<Link
 											href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
-											className="text-foreground text-base font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
+											className="text-primary max-w-[260px] truncate overflow-ellipsis text-base font-normal underline hover:underline"
 										>
 											{cohort ? cohort.title : 'Workshops'}
 										</Link>
@@ -192,7 +189,6 @@ export function WorkshopResourceList(props: Props) {
 									<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 								</div>
 							</div>
-							<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 						</div>
 					)}
 					<ScrollArea
@@ -364,15 +360,16 @@ const LessonResource = ({
 					{(() => {
 						// Base styles shared by both link and non-link variants
 						const baseStyles = cn(
-							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium transition ease-out',
 							{
 								// Active state
-								'bg-muted text-primary border-gray-200':
+								'bg-muted dark:bg-foreground/5 text-primary border-gray-200':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
-								'hover:bg-muted hover:text-primary':
+								'dark:hover:bg-foreground/10 hover:bg-muted hover:text-primary':
 									canViewLesson && !isActiveLesson && !isActiveGroup,
-								'hover:bg-foreground/10': canViewLesson && isActiveGroup,
+								'dark:hover:bg-foreground/10 hover:bg-muted':
+									canViewLesson && isActiveGroup,
 							},
 						)
 

@@ -73,7 +73,7 @@ export async function LessonPage({
 					lesson={lesson}
 					problem={problem}
 				/>
-				<div className="max-w-(--breakpoint-xl) container relative pb-16 sm:pb-24 md:px-10 lg:px-14">
+				<div className="container relative max-w-4xl pb-16 sm:px-5 sm:pb-24">
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
@@ -212,7 +212,7 @@ async function PlayerContainer({
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="dark relative flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
+				className="dark relative flex flex-col items-center justify-center overflow-hidden rounded-t-lg border-b bg-black text-white dark:text-white"
 			>
 				{thumbnailUrl && (
 					<Image
