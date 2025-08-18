@@ -6,7 +6,7 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import Spinner from '@/components/spinner'
 import { getFirstLessonSlug, MinimalWorkshop } from '@/lib/workshops'
 import { formatInTimeZone } from 'date-fns-tz'
-import { Github } from 'lucide-react'
+import { Github, LockIcon } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -52,17 +52,15 @@ export function StartLearningWorkshopButton({
 		)
 
 		return (
-			<Button
-				size="lg"
+			<div
 				className={cn(
-					'text-foreground before:bg-primary-foreground relative h-14 w-full rounded-none text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] hover:cursor-not-allowed sm:max-w-[277px]',
+					'text-foreground before:bg-primary-foreground relative flex h-14 w-full items-center justify-center rounded-none px-5 text-sm font-medium sm:w-auto',
 					className,
-					'border-r bg-transparent',
+					'bg-transparent sm:border-r',
 				)}
-				disabled
 			>
-				Available {formattedDate} (PT)
-			</Button>
+				<LockIcon className="mr-2 size-4" /> Available {formattedDate} (PT)
+			</div>
 		)
 	}
 
@@ -126,11 +124,10 @@ export function GetAccessButton({
 		<Button
 			size="lg"
 			className={cn(
-				'before:bg-primary-foreground relative h-14 w-full rounded-none text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] sm:max-w-[180px]',
+				'from-primary relative h-14 w-full rounded-none bg-gradient-to-b to-indigo-800 text-sm font-semibold sm:max-w-[180px]',
 				className,
 				{
-					'text-primary-foreground bg-primary hover:bg-primary/80 border-r':
-						!canView,
+					'border-r text-white': !canView,
 				},
 			)}
 			asChild

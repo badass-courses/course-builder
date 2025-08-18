@@ -15,9 +15,13 @@ export default function WorkshopBreadcrumb() {
 
 	return (
 		<div className="inline-flex items-center gap-2">
-			<Button asChild variant="link" className="p-0 text-lg font-normal">
-				<Link href={`/cohorts/${cohort.slug}`}>{cohort?.title}</Link>
-			</Button>
+			<Link
+				className="text-primary max-w-xs truncate overflow-ellipsis p-0 text-lg font-normal underline underline-offset-2 sm:max-w-full"
+				href={`/cohorts/${cohort.slug}`}
+			>
+				{cohort?.title}
+			</Link>
+
 			<span className="opacity-50">/</span>
 		</div>
 	)

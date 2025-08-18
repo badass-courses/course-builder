@@ -101,16 +101,21 @@ export default async function ModulePage(props: Props) {
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
-	const Links = ({ children }: { children?: React.ReactNode }) => {
+	const Links = ({
+		children,
+		className,
+	}: {
+		children?: React.ReactNode
+		className?: string
+	}) => {
 		return (
-			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
-				<div
-					aria-hidden="true"
-					className="via-foreground/10 to-muted bg-linear-to-r absolute -bottom-px right-0 h-px w-2/3 from-transparent"
-				/>
-				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat sm:w-8 lg:w-10 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]" />
-
+			<div
+				className={cn(
+					'relative w-full grid-cols-6 items-center overflow-hidden rounded-lg rounded-br-none border md:grid',
+					className,
+				)}
+			>
+				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y sm:divide-y-0">
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
@@ -123,7 +128,7 @@ export default async function ModulePage(props: Props) {
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
-										className="h-14 w-full rounded-none px-5 md:w-auto md:border-r"
+										className="hover:bg-muted h-14 w-full rounded-none px-5 ease-out md:w-auto md:border-r"
 										variant="ghost"
 										size="lg"
 									>
@@ -153,7 +158,7 @@ export default async function ModulePage(props: Props) {
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] flex w-full items-center justify-center gap-2 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat p-3 text-center dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]">
+					<div className="flex w-full items-center justify-center gap-2 rounded-lg border p-3 text-center">
 						<Construction className="h-4 w-4" />{' '}
 						<p className="text-sm font-medium capitalize">
 							{workshop.fields?.visibility} {workshop.type}
@@ -166,8 +171,8 @@ export default async function ModulePage(props: Props) {
 					imageUrl={workshop.fields?.coverImage?.url}
 					slug={params.module}
 				/>
-				<header className="relative flex items-center justify-center overflow-hidden md:px-8 lg:px-10">
-					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
+				<header className="relative flex items-center justify-center overflow-hidden">
+					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
 							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
@@ -202,14 +207,14 @@ export default async function ModulePage(props: Props) {
 						<ContentTitle />
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
-						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
+						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none py-10 md:pr-10">
 							{workshop.fields?.body ? (
 								<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
 							) : (
 								<p>No description found.</p>
 							)}
 						</article>
-						<div className="bg-muted/50 col-span-2 flex flex-col border-l">
+						<div className="col-span-2 flex flex-col border-x">
 							<WorkshopResourceList
 								isCollapsible={false}
 								className="border-r-0! w-full max-w-none"
@@ -219,7 +224,9 @@ export default async function ModulePage(props: Props) {
 							/>
 						</div>
 					</div>
-					{workshop?.fields?.body && <Links />}
+					{workshop?.fields?.body && (
+						<Links className="rounded-br-lg rounded-tr-none" />
+					)}
 				</>
 			</main>
 		</LayoutClient>

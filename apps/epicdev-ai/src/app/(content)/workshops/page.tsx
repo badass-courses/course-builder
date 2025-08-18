@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Hero Workshops by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Workshops by ${config.author}`)}`,
 			},
 		],
 	},
@@ -38,15 +38,7 @@ export const metadata: Metadata = {
 export default async function Workshops(props: {
 	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
-	const searchParams = await props.searchParams
 	const { ability } = await getServerAuthSession()
-	const {
-		allowPurchase,
-		pricingDataLoader,
-		product,
-		commerceProps,
-		hasPurchased,
-	} = await getPricingProps({ searchParams })
 
 	return (
 		<LayoutClient withContainer>
@@ -68,25 +60,6 @@ export default async function Workshops(props: {
 								</Button>
 							</div>
 						) : null}
-						{product && allowPurchase && (
-							<section id="buy" className="mt-16">
-								{!hasPurchased && (
-									<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
-										Get Access Today
-									</h2>
-								)}
-								<div className="flex items-center justify-center border-y">
-									<div className="bg-background flex w-full max-w-md flex-col border-x p-8">
-										<PricingWidget
-											quantityAvailable={-1}
-											pricingDataLoader={pricingDataLoader}
-											commerceProps={{ ...commerceProps }}
-											product={product}
-										/>
-									</div>
-								</div>
-							</section>
-						)}
 					</div>
 				</div>
 			</main>
