@@ -19,6 +19,8 @@ export function WorkshopLessonItem({
 	index,
 	ability,
 	abilityStatus,
+	workshopState,
+	workshopVisibility,
 }: {
 	resource: ContentResource
 	workshopSlug: string
@@ -26,6 +28,8 @@ export function WorkshopLessonItem({
 	index: number
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
+	workshopState: 'published' | 'draft'
+	workshopVisibility: 'public' | 'unlisted'
 }) {
 	const { moduleProgress } = useModuleProgress()
 	const isLessonCompleted = moduleProgress?.completedLessons.some(
@@ -49,7 +53,9 @@ export function WorkshopLessonItem({
 
 	return (
 		<li key={resource?.id} className="relative w-full">
-			{canViewLesson ? (
+			{canViewLesson &&
+			workshopState === 'published' &&
+			workshopVisibility === 'public' ? (
 				<Link
 					className={cn(
 						'text-foreground/90 hover:text-primary hover:bg-muted/50 inline-flex w-full items-center py-2.5 pl-10 pr-10 text-base font-medium transition ease-in-out',

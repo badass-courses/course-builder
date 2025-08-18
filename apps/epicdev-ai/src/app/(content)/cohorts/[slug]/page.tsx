@@ -23,7 +23,7 @@ import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { differenceInCalendarDays } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, Construction } from 'lucide-react'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -34,6 +34,8 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
+	Alert,
+	AlertTitle,
 	Button,
 } from '@coursebuilder/ui'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
@@ -335,88 +337,118 @@ export default async function CohortPage(props: {
 						</article>
 
 						<div className="mt-2 border-t py-8">
-							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
+							<h2 className="mb-5 text-2xl font-semibold sm:text-3xl">
+								Contents
+							</h2>
 							<ul className="flex flex-col gap-3">
-								{workshops.map((workshop, index) => {
-									// Determine end date and timezone for the workshop
-									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-									const workshopTimezone = workshop.fields.timezone || PT
+								{workshops.length === 0 ? (
+									<li className="flex items-center">
+										<Alert
+											variant="default"
+											className="text-muted-foreground flex items-center"
+										>
+											<Construction className="!text-primary size-4" />
+											<AlertTitle>Workshops TBA</AlertTitle>
+										</Alert>
+									</li>
+								) : (
+									<>
+										{workshops.map((workshop, index) => {
+											// Determine end date and timezone for the workshop
+											// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+											const workshopTimezone = workshop.fields.timezone || PT
 
-									// Format workshop date/time range (only start)
-									const {
-										dateString: workshopDateString,
-										timeString: workshopTimeString,
-									} = formatCohortDateRange(
-										workshop.fields.startsAt,
-										null, // Pass null for end date
-										workshopTimezone,
-									)
+											// Format workshop date/time range (only start)
+											const {
+												dateString: workshopDateString,
+												timeString: workshopTimeString,
+											} = formatCohortDateRange(
+												workshop.fields.startsAt,
+												null, // Pass null for end date
+												workshopTimezone,
+											)
 
-									// Calculate Day number
-									let dayNumber: number | null = null
-									if (cohortStartDate && workshop.fields.startsAt) {
-										const workshopStartDate = new Date(workshop.fields.startsAt)
-										// Calculate difference, add 1, and ensure it's at least 1
-										dayNumber = Math.max(
-											1,
-											differenceInCalendarDays(
-												workshopStartDate,
-												cohortStartDate,
-											) + 1,
-										)
-									}
-									const moduleProgressLoader = getModuleProgressForUser(
-										workshop.fields.slug,
-									)
-									return (
-										<li key={workshop.id}>
-											<ModuleProgressProvider
-												moduleProgressLoader={moduleProgressLoader}
-											>
-												<Accordion
-													type="multiple"
-													defaultValue={[`${workshop.id}-body`]}
-												>
-													<AccordionItem
-														value={`${workshop.id}-body`}
-														className="bg-card shadow-xs rounded border pl-4 pr-1"
+											// Calculate Day number
+											let dayNumber: number | null = null
+											if (cohortStartDate && workshop.fields.startsAt) {
+												const workshopStartDate = new Date(
+													workshop.fields.startsAt,
+												)
+												// Calculate difference, add 1, and ensure it's at least 1
+												dayNumber = Math.max(
+													1,
+													differenceInCalendarDays(
+														workshopStartDate,
+														cohortStartDate,
+													) + 1,
+												)
+											}
+											const moduleProgressLoader = getModuleProgressForUser(
+												workshop.fields.slug,
+											)
+											return (
+												<li key={workshop.id}>
+													<ModuleProgressProvider
+														moduleProgressLoader={moduleProgressLoader}
 													>
-														<div className="relative flex items-center justify-between">
-															<Link
-																className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
-																href={getResourcePath(
-																	'workshop',
-																	workshop.fields.slug,
-																	'view',
-																)}
+														<Accordion
+															type="multiple"
+															defaultValue={[`${workshop.id}-body`]}
+														>
+															<AccordionItem
+																value={`${workshop.id}-body`}
+																className="bg-card shadow-xs rounded border pl-4 pr-1"
 															>
-																{workshop.fields.title}{' '}
-																<div className="mt-1 text-sm font-normal opacity-80">
-																	Available from {workshopDateString}
+																<div className="relative flex items-center justify-between">
+																	{workshop.fields.state === 'published' &&
+																	workshop.fields.visibility === 'public' ? (
+																		<Link
+																			className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																			href={getResourcePath(
+																				'workshop',
+																				workshop.fields.slug,
+																				'view',
+																			)}
+																		>
+																			{workshop.fields.title}{' '}
+																			<div className="mt-1 text-sm font-normal opacity-80">
+																				Available from {workshopDateString}
+																			</div>
+																		</Link>
+																	) : (
+																		<div className="text-foreground flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight">
+																			{workshop.fields.title}{' '}
+																			<div className="mt-1 text-sm font-normal opacity-80">
+																				Available from {workshopDateString}
+																			</div>
+																		</div>
+																	)}
+																	<AccordionTrigger
+																		aria-label="Toggle lessons"
+																		className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+																	/>
 																</div>
-															</Link>
-															<AccordionTrigger
-																aria-label="Toggle lessons"
-																className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
-															/>
-														</div>
-														<AccordionContent className="pb-2">
-															{/* Display formatted workshop date/time */}
-															<div className="text-muted-foreground text-sm">
-																{/* {dayNumber !== null && (
+																<AccordionContent className="pb-2">
+																	{/* Display formatted workshop date/time */}
+																	<div className="text-muted-foreground text-sm">
+																		{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-															</div>
-															<ol className="list-inside list-none">
-																<WorkshopListRowRenderer workshop={workshop} />
-															</ol>
-														</AccordionContent>
-													</AccordionItem>
-												</Accordion>
-											</ModuleProgressProvider>
-										</li>
-									)
-								})}
+																	</div>
+																	<ol className="list-inside list-none">
+																		<WorkshopListRowRenderer
+																			workshop={workshop}
+																		/>
+																	</ol>
+																</AccordionContent>
+															</AccordionItem>
+														</Accordion>
+													</ModuleProgressProvider>
+												</li>
+											)
+										})}
+									</>
+								)}
 							</ul>
 						</div>
 					</div>
@@ -434,80 +466,103 @@ export default async function CohortPage(props: {
 						{hasPurchasedCurrentProduct ? (
 							<div>
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
-									Workshops
+									Contents
 								</div>
 								<ol className="flex flex-col">
-									{workshops.map((workshop, index) => {
-										// Determine end date and timezone for the workshop
-										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-										const workshopTimezone = workshop.fields.timezone || PT
+									{workshops.length === 0 ? (
+										<li className="flex items-center">
+											<Alert
+												variant="default"
+												className="text-muted-foreground flex items-center"
+											>
+												<Construction className="!text-primary size-4" />
+												<AlertTitle>Workshops TBA</AlertTitle>
+											</Alert>
+										</li>
+									) : (
+										<>
+											{workshops.map((workshop, index) => {
+												// Determine end date and timezone for the workshop
+												// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+												const workshopTimezone = workshop.fields.timezone || PT
 
-										// Format workshop date/time range (only start)
-										const {
-											dateString: workshopDateString,
-											timeString: workshopTimeString,
-										} = formatCohortDateRange(
-											workshop.fields.startsAt,
-											null, // Pass null for end date
-											workshopTimezone,
-										)
+												// Format workshop date/time range (only start)
+												const {
+													dateString: workshopDateString,
+													timeString: workshopTimeString,
+												} = formatCohortDateRange(
+													workshop.fields.startsAt,
+													null, // Pass null for end date
+													workshopTimezone,
+												)
 
-										// Calculate Day number
-										let dayNumber: number | null = null
-										if (cohortStartDate && workshop.fields.startsAt) {
-											const workshopStartDate = new Date(
-												workshop.fields.startsAt,
-											)
-											// Calculate difference, add 1, and ensure it's at least 1
-											dayNumber = Math.max(
-												1,
-												differenceInCalendarDays(
-													workshopStartDate,
-													cohortStartDate,
-												) + 1,
-											)
-										}
-										const moduleProgressLoader = getModuleProgressForUser(
-											workshop.fields.slug,
-										)
-										return (
-											<li key={workshop.id}>
-												<ModuleProgressProvider
-													moduleProgressLoader={moduleProgressLoader}
-												>
-													<Accordion type="multiple">
-														<AccordionItem value={workshop.id}>
-															<div className="relative flex items-center justify-between">
-																<Link
-																	className="text-foreground/90 hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium transition ease-in-out"
-																	href={getResourcePath(
-																		'workshop',
-																		workshop.fields.slug,
-																		'view',
-																	)}
-																>
-																	{workshop.fields.title.includes(':')
-																		? workshop.fields.title.split(':')[1]
-																		: workshop.fields.title}
-																</Link>
-																<AccordionTrigger
-																	aria-label="Toggle lessons"
-																	className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
-																/>
-															</div>
-															<AccordionContent>
-																<ol className="divide-border list-inside list-none divide-y">
-																	<WorkshopListRowRenderer
-																		workshop={workshop}
-																	/>
-																</ol>
-															</AccordionContent>
-														</AccordionItem>
-													</Accordion>
-												</ModuleProgressProvider>
-											</li>
-										)
-									})}
+												// Calculate Day number
+												let dayNumber: number | null = null
+												if (cohortStartDate && workshop.fields.startsAt) {
+													const workshopStartDate = new Date(
+														workshop.fields.startsAt,
+													)
+													// Calculate difference, add 1, and ensure it's at least 1
+													dayNumber = Math.max(
+														1,
+														differenceInCalendarDays(
+															workshopStartDate,
+															cohortStartDate,
+														) + 1,
+													)
+												}
+												const moduleProgressLoader = getModuleProgressForUser(
+													workshop.fields.slug,
+												)
+												return (
+													<li key={workshop.id}>
+														<ModuleProgressProvider
+															moduleProgressLoader={moduleProgressLoader}
+														>
+															<Accordion type="multiple">
+																<AccordionItem value={workshop.id}>
+																	<div className="relative flex items-center justify-between">
+																		{workshop.fields.state === 'published' &&
+																		workshop.fields.visibility === 'public' ? (
+																			<Link
+																				className="text-foreground/90 hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium transition ease-in-out"
+																				href={getResourcePath(
+																					'workshop',
+																					workshop.fields.slug,
+																					'view',
+																				)}
+																			>
+																				{workshop.fields.title.includes(':')
+																					? workshop.fields.title.split(':')[1]
+																					: workshop.fields.title}
+																			</Link>
+																		) : (
+																			<div className="text-foreground/90 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium">
+																				{workshop.fields.title.includes(':')
+																					? workshop.fields.title.split(':')[1]
+																					: workshop.fields.title}
+																			</div>
+																		)}
+																		<AccordionTrigger
+																			aria-label="Toggle lessons"
+																			className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+																		/>
+																	</div>
+																	<AccordionContent>
+																		<ol className="divide-border list-inside list-none divide-y">
+																			<WorkshopListRowRenderer
+																				workshop={workshop}
+																			/>
+																		</ol>
+																	</AccordionContent>
+																</AccordionItem>
+															</Accordion>
+														</ModuleProgressProvider>
+													</li>
+												)
+											})}
+										</>
+									)}
 								</ol>
 								<Certificate
 									isCompleted={hasCompletedCohort}

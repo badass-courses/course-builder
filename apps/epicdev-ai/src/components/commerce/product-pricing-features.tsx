@@ -64,7 +64,9 @@ export const ProductPricingFeatures = ({
 			<ul className="flex w-full flex-col gap-2">
 				<li className="flex items-center gap-2">
 					<ListVideo className="h-4 w-4" />
-					{workshops.length} {pluralize('Workshop', workshops.length)}
+					{workshops.length > 0
+						? `${workshops.length} ${pluralize('Workshop', workshops.length)}`
+						: `Workshops TBA`}
 				</li>
 				<li className="flex items-center gap-2">
 					<Speaker className="h-4 w-4" />

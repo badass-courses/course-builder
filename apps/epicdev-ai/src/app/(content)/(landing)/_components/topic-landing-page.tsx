@@ -127,10 +127,10 @@ export default async function TopicPage({
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
 						{pageBody}
 					</article>
-					<section className="mt-5 border-t pt-8">
+					<section className="mt-5 block border-t pt-8 lg:hidden">
 						<UpcomingEvents />
 					</section>
-					<section className="mt-10 hidden flex-col gap-4 pt-8 lg:flex">
+					{/* <section className="mt-10 hidden flex-col gap-4 pt-8 lg:flex">
 						<h2 className="w-full text-2xl font-semibold">
 							None of these dates work for you? Get notified when new dates are
 							announced:
@@ -140,11 +140,11 @@ export default async function TopicPage({
 							title={pageTitle}
 							actionLabel="Get Notified"
 						/>
-					</section>
+					</section> */}
 					{pastEvents.length > 0 && (
 						<section className="mt-5 pt-8 lg:border-t">
 							<h2 className="mb-4 text-2xl font-semibold">Past Events</h2>
-							<div className="space-y-4 opacity-50">
+							<div className="space-y-4 opacity-75">
 								{pastEvents.map((event) => renderEvent(event, false))}
 							</div>
 						</section>

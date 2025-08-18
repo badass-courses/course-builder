@@ -32,6 +32,8 @@ export function WorkshopLessonList({ workshop }: { workshop: Workshop }) {
 						key={resource.id}
 						resource={resource}
 						workshopSlug={workshop.fields.slug}
+						workshopState={workshop.fields.state}
+						workshopVisibility={workshop.fields.visibility}
 						ability={ability}
 						abilityStatus={abilityStatus}
 					/>
