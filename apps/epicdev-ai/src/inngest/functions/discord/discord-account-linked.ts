@@ -1,6 +1,6 @@
 import { UserSchema } from '@/ability'
 import { db } from '@/db'
-import { accounts, users } from '@/db/schema'
+import { accounts, entitlements, entitlementTypes, users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { inngest } from '@/inngest/inngest.server'
@@ -22,15 +22,13 @@ export const discordAccountLinked = inngest.createFunction(
 		const { account, profile } = event.data
 
 		const user = await step.run('get user', async () => {
-			return UserSchema.parse(
-				db.query.users.findFirst({
-					where: eq(users.id, event.user.id),
-					with: {
-						accounts: true,
-						purchases: true,
-					},
-				}),
-			)
+			return await db.query.users.findFirst({
+				where: eq(users.id, event.user.id),
+				with: {
+					accounts: true,
+					purchases: true,
+				},
+			})
 		})
 
 		if (!user) throw new Error('No user found')
@@ -77,17 +75,42 @@ export const discordAccountLinked = inngest.createFunction(
 				)
 			})
 
+			const cohortDiscordRoleEntitlementType = await step.run(
+				`get cohort discord role entitlement type`,
+				async () => {
+					return await db.query.entitlementTypes.findFirst({
+						where: eq(entitlementTypes.name, 'cohort_discord_role'),
+					})
+				},
+			)
+
+			const userDiscordEntitlements = await step.run(
+				'get user discord entitlements',
+				async () => {
+					if (!cohortDiscordRoleEntitlementType) {
+						return []
+					}
+
+					return db.query.entitlements.findMany({
+						where: and(
+							eq(entitlements.userId, user.id),
+							eq(
+								entitlements.entitlementType,
+								cohortDiscordRoleEntitlementType.id,
+							),
+						),
+					})
+				},
+			)
+
 			await step.run('update basic discord roles for user', async () => {
 				if ('user' in discordMember) {
-					const { hasActiveSubscription } = await getSubscriptionStatus(user.id)
+					const discordIds = userDiscordEntitlements.map(
+						(entitlement) => entitlement.metadata?.discordRoleId,
+					)
 
 					const roles = Array.from(
-						new Set([
-							...discordMember.roles,
-							...(hasActiveSubscription
-								? [env.DISCORD_SUBSCRIBER_ROLE_ID]
-								: []),
-						]),
+						new Set([...discordMember.roles, ...discordIds]),
 					)
 
 					return await fetchAsDiscordBot(

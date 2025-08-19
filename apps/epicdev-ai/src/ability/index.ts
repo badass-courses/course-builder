@@ -326,9 +326,11 @@ export function defineRulesForPurchases(
 
 	// check workshop in cohort
 	if (user?.entitlements && module?.id) {
+		console.log('user.entitlements', user.entitlements)
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === cohortEntitlementType?.id) {
 				// Grant access to the workshop itself
+
 				can('read', 'Content', {
 					id: { $in: entitlement.metadata.contentIds },
 				})
@@ -357,6 +359,7 @@ export function defineRulesForPurchases(
 	const lessonModule = module?.resources?.find(
 		(resource) => resource.resourceId === lesson?.id,
 	)
+
 	if (user?.entitlements && lessonModule) {
 		const moduleStartsAt = module?.fields?.startsAt
 		const moduleStarted =

@@ -56,7 +56,7 @@ export function WorkshopResourceList(props: Props) {
 		api.ability.getCurrentAbilityRules.useQuery(
 			{
 				moduleId: workshopNavigation?.id,
-				lessonId: props.currentLessonSlug,
+				// lessonId: props.currentLessonSlug,
 			},
 			{
 				enabled: !!workshopNavigation?.id,
@@ -338,7 +338,7 @@ const LessonResource = ({
 
 	const canViewLesson = ability.can(
 		'read',
-		subject('Content', { id: lesson.id }),
+		subject('Content', { id: moduleId }),
 	)
 
 	const canCreate = ability.can('create', 'Content')
