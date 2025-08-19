@@ -64,7 +64,9 @@ export function StartLearningWorkshopButton({
 		)
 	}
 
-	return null
+	if (!canView) {
+		return null
+	}
 
 	// preview not available
 	return (
@@ -72,7 +74,7 @@ export function StartLearningWorkshopButton({
 			<Button
 				size="lg"
 				className={cn(
-					'before:bg-primary-foreground relative h-14 w-full rounded-none text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] sm:max-w-[180px]',
+					'from-primary relative h-14 w-full rounded-none bg-gradient-to-b to-indigo-800 text-sm font-medium text-white sm:max-w-[180px]',
 					className,
 					{
 						'text-foreground hover:bg-secondary border-r bg-transparent before:hidden sm:max-w-[120px]':
