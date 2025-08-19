@@ -11,6 +11,7 @@ export function EditPostClient({
 	videoResourceId,
 	tagLoader,
 	instructorLoader,
+	latestLessonsLoader,
 	isAdmin,
 	courseSlug,
 	courseContext,
@@ -20,6 +21,7 @@ export function EditPostClient({
 	videoResourceId: string | null | undefined
 	tagLoader: any
 	instructorLoader: any
+	latestLessonsLoader: any
 	isAdmin: boolean
 	courseSlug: string
 	courseContext?: any
@@ -39,6 +41,7 @@ export function EditPostClient({
 			videoResourceId={videoResourceId}
 			tagLoader={tagLoader}
 			instructorLoader={instructorLoader}
+			latestLessonsLoader={latestLessonsLoader}
 			isAdmin={isAdmin}
 			onResourceEdit={handleResourceEdit}
 			courseContext={courseContext}
