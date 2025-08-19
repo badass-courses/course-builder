@@ -276,7 +276,7 @@ export default async function CohortPage(props: {
 					</div>
 				)}
 				{hasPurchasedCurrentProduct ? (
-					<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">
+					<div className="bg-background mb-5 flex w-full flex-col items-center justify-between gap-3 rounded-lg border p-3 text-left sm:flex-row">
 						<div className="flex items-center">
 							<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
 							You have purchased a ticket to this cohort.
@@ -466,7 +466,7 @@ export default async function CohortPage(props: {
 						{hasPurchasedCurrentProduct ? (
 							<div>
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
-									Contents
+									Workshops
 								</div>
 								<ol className="flex flex-col">
 									{workshops.length === 0 ? (
@@ -564,10 +564,12 @@ export default async function CohortPage(props: {
 										</>
 									)}
 								</ol>
-								<Certificate
-									isCompleted={hasCompletedCohort}
-									resourceSlugOrId={cohort.fields?.slug}
-								/>
+								<div className="bg-muted/50 p-5 pt-5">
+									<Certificate
+										isCompleted={hasCompletedCohort}
+										resourceSlugOrId={cohort.fields?.slug}
+									/>
+								</div>
 							</div>
 						) : ALLOW_PURCHASE ? (
 							<CohortPricingWidgetContainer

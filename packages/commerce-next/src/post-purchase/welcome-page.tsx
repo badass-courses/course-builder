@@ -5,6 +5,8 @@ import Image from 'next/image.js'
 import Link from 'next/link.js'
 import { useRouter } from 'next/navigation.js'
 import MuxPlayer from '@mux/mux-player-react'
+import { format, isAfter } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import pluralize from 'pluralize'
@@ -214,6 +216,16 @@ const Header = ({
 		return 'Welcome to '
 	}
 
+	const cohortStartDate =
+		product?.type === 'cohort' &&
+		product?.resources?.[0]?.resource?.fields?.startsAt
+	const cohortStartDateFormatted = cohortStartDate
+		? format(new Date(cohortStartDate), 'MMMM d, yyyy h:mm a z')
+		: null
+
+	const isInFuture =
+		cohortStartDate && isAfter(new Date(cohortStartDate), new Date())
+
 	return (
 		<header>
 			<div className="flex flex-col items-center gap-10 pb-8 sm:flex-row">
@@ -249,11 +261,16 @@ const Header = ({
 										</Button>
 									)}
 									{product?.type === 'cohort' && (
-										<Button asChild>
+										<Button
+											asChild
+											variant={isInFuture ? 'outline' : 'default'}
+										>
 											<Link
 												href={`/${pluralize(product.type)}/${productResources?.[0]?.fields?.slug}`}
 											>
-												Start Learning
+												{isInFuture
+													? `Cohort starts on ${cohortStartDateFormatted}`
+													: 'Start Learning'}
 											</Link>
 										</Button>
 									)}
