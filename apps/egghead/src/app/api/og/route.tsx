@@ -286,7 +286,7 @@ export async function GET(request: Request) {
 									: ''}
 							</div>
 							<div
-								tw={`${resource?.type === 'post' ? 'text-[72px]' : 'text-[64px]'} text-white leading-tight pr-16 max-w-[900px]`}
+								tw={`text-[64px] text-white leading-tight pr-16 max-w-[900px] line-clamp-3`}
 							>
 								{title}
 							</div>
