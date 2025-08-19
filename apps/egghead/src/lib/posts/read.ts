@@ -571,3 +571,42 @@ export async function countAllMinimalPostsForUser(
 
 	return result[0]?.count ?? 0
 }
+
+/**
+ * Get latest lessons for a specific user (for preloading in UI)
+ */
+export async function getLatestLessonsForUser(
+	userId: string,
+	limit: number = 10,
+	excludeIds: string[] = [],
+) {
+	const whereConditions = [
+		eq(contentResource.type, 'post'),
+		eq(contentResource.createdById, userId),
+		sql`JSON_EXTRACT(${contentResource.fields}, '$.postType') = 'lesson'`,
+	]
+
+	// Exclude specific IDs if provided
+	if (excludeIds.length > 0) {
+		whereConditions.push(
+			sql`${contentResource.id} NOT IN (${sql.join(
+				excludeIds.map((id) => sql`${id}`),
+				sql`, `,
+			)})`,
+		)
+	}
+
+	const lessons = await db.query.contentResource.findMany({
+		where: and(...whereConditions),
+		orderBy: desc(contentResource.createdAt),
+		limit,
+	})
+
+	const lessonsParsed = z.array(ContentResourceSchema).safeParse(lessons)
+	if (!lessonsParsed.success) {
+		console.error('Error parsing latest lessons', lessonsParsed.error)
+		return []
+	}
+
+	return lessonsParsed.data
+}
