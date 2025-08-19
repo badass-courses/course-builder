@@ -5183,6 +5183,9 @@ importers:
       react-resizable-panels:
         specifier: ^2.1.7
         version: 2.1.7(react-dom@19.1.0)(react@19.1.0)
+      react-rewards:
+        specifier: ^2.1.0
+        version: 2.1.0(react-dom@19.1.0)(react@19.1.0)
       react-stately:
         specifier: ^3.33.0
         version: 3.36.1(react@19.1.0)

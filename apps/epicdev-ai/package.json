@@ -180,6 +180,7 @@
 		"react-instantsearch-nextjs": "0.4",
 		"react-markdown": "9.0.3",
 		"react-resizable-panels": "^2.1.7",
+		"react-rewards": "^2.1.0",
 		"react-stately": "^3.33.0",
 		"react-use": "^17.5.0",
 		"react-wrap-balancer": "^0.2.4",

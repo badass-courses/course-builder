@@ -5,6 +5,7 @@ import { useReducer } from 'react'
 import { useRouter } from 'next/navigation'
 import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
+import LayoutClient from '@/components/layout-client'
 import {
 	getInitialTreeState,
 	treeStateReducer,
@@ -15,12 +16,12 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import {
 	addResourceToProduct,
 	archiveProduct,
-	removeResourceFromProduct,
 	updateProduct,
 } from '@/lib/products-query'
 import { api } from '@/trpc/react'
 import { User } from '@auth/core/types'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { parseAbsolute } from '@internationalized/date'
 import { ChevronsUpDown, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -32,6 +33,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 import { ContentResourceProduct } from '@coursebuilder/core/schemas/content-resource-schema'
 import {
 	Button,
+	DateTimePicker,
 	FormControl,
 	FormDescription,
 	FormField,
@@ -128,7 +130,7 @@ function ComboboxDemo({
 								{/*		value === resource.id ? 'opacity-100' : 'opacity-0',*/}
 								{/*	)}*/}
 								{/*/>*/}
-								{resource.fields?.title}
+								{resource.fields?.title} ({resource.type})
 							</CommandItem>
 						))}
 					</CommandGroup>
@@ -154,6 +156,12 @@ export function EditProductForm({ product }: { product: Product }) {
 				},
 				visibility: product.fields.visibility || 'public',
 				state: product.fields.state || 'draft',
+				openEnrollment: product.fields.openEnrollment
+					? new Date(product.fields.openEnrollment).toISOString()
+					: null,
+				closeEnrollment: product.fields.closeEnrollment
+					? new Date(product.fields.closeEnrollment).toISOString()
+					: null,
 			},
 		},
 	})
@@ -258,24 +266,6 @@ export function EditProductForm({ product }: { product: Product }) {
 			/>
 			<FormField
 				control={form.control}
-				name="fields.slug"
-				render={({ field }) => {
-					return (
-						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Slug</FormLabel>
-							<FormDescription className="mt-2 text-sm">
-								Short with keywords is best.
-							</FormDescription>
-							<FormControl>
-								<Input {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)
-				}}
-			/>
-			<FormField
-				control={form.control}
 				name="type"
 				render={({ field }) => {
 					return (
@@ -301,6 +291,64 @@ export function EditProductForm({ product }: { product: Product }) {
 						</FormItem>
 					)
 				}}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.openEnrollment"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Open Enrollment</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.closeEnrollment"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">
+							Close Enrollment
+						</FormLabel>
+						<DateTimePicker
+							{...field}
+							value={
+								!!field.value
+									? parseAbsolute(
+											new Date(field.value).toISOString(),
+											'America/Los_Angeles',
+										)
+									: null
+							}
+							onChange={(date) => {
+								field.onChange(
+									!!date ? date.toDate('America/Los_Angeles') : null,
+								)
+							}}
+							shouldCloseOnSelect={false}
+							granularity="minute"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
 			/>
 			<FormField
 				control={form.control}
@@ -354,9 +402,6 @@ export function EditProductForm({ product }: { product: Product }) {
 				rootResourceId={product.id}
 				state={state}
 				updateState={updateState}
-				onResourceRemove={async (itemId, listId) => {
-					await removeResourceFromProduct(itemId, listId)
-				}}
 			/>
 			<FormField
 				control={form.control}
@@ -469,7 +514,7 @@ function EditProductFormDesktop({
 	}
 
 	return (
-		<>
+		<LayoutClient withContainer={false}>
 			<EditProductActionBar
 				resource={product}
 				resourcePath={getResourcePath(product.fields?.slug)}
@@ -505,6 +550,7 @@ function EditProductFormDesktop({
 				<ResizableHandle />
 				<ResizablePanel
 					id="edit-resources-body-panel"
+					// order={isShowingMdxPreview ? 3 : 2}
 					order={2}
 					defaultSize={55}
 					className="flex min-h-full md:min-h-full"
@@ -519,7 +565,7 @@ function EditProductFormDesktop({
 						/>
 					</ScrollArea>
 				</ResizablePanel>
-				<ResizableHandle />
+				{/* <ResizableHandle /> */}
 				<EditResourcesToolPanel
 					resource={{ ...product, ...form.getValues() }}
 					availableWorkflows={availableWorkflows}
@@ -529,7 +575,7 @@ function EditProductFormDesktop({
 					tools={tools}
 				/>
 			</EditResourcePanelGroup>
-		</>
+		</LayoutClient>
 	)
 }
 

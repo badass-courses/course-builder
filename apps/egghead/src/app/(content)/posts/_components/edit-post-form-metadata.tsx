@@ -22,6 +22,7 @@ import {
 import { EggheadTag } from '@/lib/tags'
 import { CompactInstructor } from '@/lib/users'
 import { api } from '@/trpc/react'
+import { getOGImageUrlForResourceAPI } from '@/utils/get-og-image-url-for-resource'
 import { RefreshCcw } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
@@ -55,6 +56,7 @@ import AdvancedTagSelectorWithPrimary from '@coursebuilder/ui/resources-crud/tag
 
 import InstructorSelector from './instructor-selector'
 import { MetadataFieldAccess } from './metadata-field-access'
+import { MetadataFieldogImage } from './metadata-field-social-image'
 
 export const PostMetadataFormFields: React.FC<{
 	form: UseFormReturn<z.infer<typeof PostSchema>>
@@ -343,6 +345,8 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+
+			<MetadataFieldogImage form={form} post={post} hidden={false} />
 
 			<MetadataFieldVisibility form={form} />
 			<MetadataFieldAccess form={form} />

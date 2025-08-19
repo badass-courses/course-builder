@@ -8,6 +8,10 @@ import {
 	EmailSendBroadcast,
 } from '@/inngest/events/email-send-broadcast'
 import {
+	ENSURE_PERSONAL_ORGANIZATION_EVENT,
+	EnsurePersonalOrganization,
+} from '@/inngest/events/ensure-personal-organization'
+import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
@@ -52,6 +56,12 @@ import {
 	NewSubscriptionCreated,
 } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { createInngestMiddleware } from '@coursebuilder/core/inngest/create-inngest-middleware'
+import type {
+	PURCHASE_TRANSFERRED_API_EVENT,
+	PURCHASE_TRANSFERRED_EVENT,
+	PurchaseTransferred,
+	PurchaseTransferredApi,
+} from '@coursebuilder/core/inngest/purchase-transfer/event-purchase-transferred'
 import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 	StripeCheckoutSessionCompleted,
@@ -60,6 +70,10 @@ import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
+import {
+	COHORT_UPDATED_EVENT,
+	CohortUpdatedPayload,
+} from './events/cohort-management'
 import {
 	CONCEPT_SELECTED,
 	CONCEPT_TAGS_REQUESTED,
@@ -83,6 +97,10 @@ import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
 } from './functions/create-user-organization'
+import {
+	USER_ADDED_TO_COHORT_EVENT,
+	UserAddedToCohort,
+} from './functions/discord/add-cohort-role-discord'
 
 // Create a client to send and receive events
 export type Events = {
@@ -105,8 +123,13 @@ export type Events = {
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
+	[PURCHASE_TRANSFERRED_EVENT]: PurchaseTransferred
+	[PURCHASE_TRANSFERRED_API_EVENT]: PurchaseTransferredApi
 	[RESOURCE_CREATED_EVENT]: ResourceCreated
 	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
+	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
+	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
+	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 }
 
 const callbackBase =

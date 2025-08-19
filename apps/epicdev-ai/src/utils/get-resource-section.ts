@@ -1,10 +1,10 @@
-import { Module } from '@/lib/module'
+import type { Workshop } from '@/lib/workshops'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getResourceSection(
 	resourceId: string,
-	moduleResource?: Module | null,
+	moduleResource?: Workshop | null,
 ): Promise<ContentResource | null> {
 	if (!moduleResource?.resources) return null
 	let sectionData = null

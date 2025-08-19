@@ -2,11 +2,19 @@ import * as React from 'react'
 import { type Metadata } from 'next'
 import { Landing } from '@/app/_components/landing'
 import { coursebuilder } from '@/coursebuilder/course-builder-config'
+import { env } from '@/env.mjs'
 
 export const metadata: Metadata = {
 	title: 'egghead Post Builder',
 	description:
 		'egghead Post Builder for building egghead courses with Course Builder',
+	openGraph: {
+		images: [
+			{
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent('egghead Post Builder - Build Professional Programming Content')}`,
+			},
+		],
+	},
 }
 
 export default async function PlaygroundPage() {

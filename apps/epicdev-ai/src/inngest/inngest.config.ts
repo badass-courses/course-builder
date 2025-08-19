@@ -1,13 +1,17 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purchased-convertkit'
+import { addCohortRoleDiscord } from '@/inngest/functions/discord/add-cohort-role-discord'
 import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
+import { ensurePersonalOrganizationWorkflow } from '@/inngest/functions/ensure-personal-organization'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
 import { sendWelcomeEmail } from '@/inngest/functions/post-purchase-automation/send-welcome-email'
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
+import { refundEntitlements } from '@/inngest/functions/refund/refund-entitlements'
+import { sendWorkshopAccessEmails } from '@/inngest/functions/send-workshop-access-emails'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { unlistPastEvents } from '@/inngest/functions/unlist-past-events'
 import { userCreated } from '@/inngest/functions/user-created'
@@ -53,6 +57,7 @@ export const inngestConfig = {
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
 		createUserOrganizations,
+		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,
 		videoResourceDetached,
 		sendWelcomeEmail,
@@ -61,5 +66,8 @@ export const inngestConfig = {
 		handleRefundAndRemoveFromCalendar,
 		unlistPastEvents,
 		eventReminderBroadcast,
+		addCohortRoleDiscord,
+		sendWorkshopAccessEmails,
+		refundEntitlements,
 	],
 }
