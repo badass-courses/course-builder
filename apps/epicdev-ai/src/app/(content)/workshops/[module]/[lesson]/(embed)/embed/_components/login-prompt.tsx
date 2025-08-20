@@ -24,7 +24,7 @@ export function LoginPrompt({
 	workshopProduct,
 }: LoginPromptProps) {
 	// Try to get parent URL for better callback experience
-	let callbackUrl = `${window.location.origin}/workshops/${moduleSlug}/${lessonSlug}`
+	let callbackUrl: string = `${window.location.origin}/workshops/${moduleSlug}/${lessonSlug}`
 
 	try {
 		// Try to access parent location (will work if same origin)
@@ -93,6 +93,7 @@ export function LoginPrompt({
 					<a
 						href={resourceUrl}
 						target="_blank"
+						rel="noopener noreferrer"
 						onClick={() => {
 							track('clicked: enroll now from login prompt', {
 								lessonSlug,
@@ -107,6 +108,7 @@ export function LoginPrompt({
 					<a
 						href={loginUrl}
 						target="_blank"
+						rel="noopener noreferrer"
 						onClick={() => {
 							track('clicked: embed login prompt', {
 								lessonSlug,
