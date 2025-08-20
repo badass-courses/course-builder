@@ -29,6 +29,7 @@ import {
 	getCachedMinimalPostsForUser,
 	getCachedPost,
 	getCoursesForPost,
+	getLatestLessonsForUser,
 	getPost,
 	getPostTags,
 	searchLessons,
@@ -67,6 +68,7 @@ export {
 	getPostTags,
 	getCoursesForPost,
 	getAllPostIds,
+	getLatestLessonsForUser,
 	countAllMinimalPosts,
 	countAllMinimalPostsForUser,
 
