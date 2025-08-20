@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import type { AppAbility } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -12,7 +13,7 @@ import {
 	NewLessonInputSchema,
 	type LessonAction,
 } from '@/lib/lessons'
-import { Ability, subject } from '@casl/ability'
+import { subject } from '@casl/ability'
 import { and, asc, eq, inArray, or, sql } from 'drizzle-orm'
 
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
@@ -39,7 +40,7 @@ export class LessonError extends Error {
 	}
 }
 
-export async function getLesson(slugOrId: string, ability: Ability) {
+export async function getLesson(slugOrId: string, ability: AppAbility) {
 	console.log('🔍 Querying lesson with slugOrId:', slugOrId)
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -114,7 +115,7 @@ export async function getLessonById({
 	ability,
 }: {
 	id: string
-	ability: Ability
+	ability: AppAbility
 }) {
 	console.log('🔍 Getting lesson by ID:', id)
 	const lesson = await getLesson(id, ability)
@@ -140,7 +141,7 @@ export async function createLesson({
 }: {
 	data: any
 	userId: string
-	ability: Ability
+	ability: AppAbility
 }) {
 	if (ability.cannot('create', 'Content')) {
 		throw new LessonError('Unauthorized', 401)
@@ -189,7 +190,7 @@ export async function getLessons({
 	slug,
 }: {
 	userId?: string
-	ability: Ability
+	ability: AppAbility
 	slug?: string | null
 }) {
 	if (slug) {
@@ -228,7 +229,7 @@ export async function updateLesson({
 	data: unknown
 	action: unknown
 	userId: string
-	ability: Ability
+	ability: AppAbility
 }) {
 	console.log('🔄 Processing lesson update request:', {
 		id,
@@ -377,7 +378,7 @@ export async function deleteLesson({
 	ability,
 }: {
 	id: string
-	ability: Ability
+	ability: AppAbility
 }) {
 	if (!id) {
 		throw new LessonError('Missing lesson ID', 400)
