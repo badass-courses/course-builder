@@ -1,4 +1,5 @@
-import { Ability, subject } from '@casl/ability'
+import type { AppAbility } from '@/ability'
+import { subject } from '@casl/ability'
 
 import { getLesson } from '../lessons/lessons.service'
 import type { NewSolutionInput, SolutionUpdate } from '../solution'
@@ -19,7 +20,10 @@ export class SolutionError extends Error {
 	}
 }
 
-export async function getSolutionForLesson(lessonId: string, ability: Ability) {
+export async function getSolutionForLesson(
+	lessonId: string,
+	ability: AppAbility,
+) {
 	const lesson = await getLesson(lessonId, ability)
 	if (!lesson) {
 		console.log('❌ Lesson not found:', lessonId)
@@ -43,7 +47,7 @@ export async function getSolutionForLesson(lessonId: string, ability: Ability) {
 
 export async function updateSolutionForLesson(
 	lessonId: string,
-	ability: Ability,
+	ability: AppAbility,
 	data: SolutionUpdate,
 	userId: string,
 ) {
@@ -79,7 +83,7 @@ export async function updateSolutionForLesson(
 
 export async function createSolutionForLesson(
 	lessonId: string,
-	ability: Ability,
+	ability: AppAbility,
 	data: NewSolutionInput,
 	userId: string,
 ) {
@@ -117,7 +121,7 @@ export async function createSolutionForLesson(
 
 export async function deleteSolutionForLesson(
 	lessonId: string,
-	ability: Ability,
+	ability: AppAbility,
 	userId: string,
 ) {
 	const lesson = await getLesson(lessonId, ability)
