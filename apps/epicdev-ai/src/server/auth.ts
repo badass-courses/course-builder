@@ -11,6 +11,7 @@ import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
 import TwitterProvider from '@auth/core/providers/twitter'
+import type { CookiesOptions } from '@auth/core/types'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
 
@@ -124,6 +125,37 @@ async function refreshDiscordToken(account: { refresh_token: string | null }) {
 	}
 }
 
+const VERCEL_DEPLOYMENT = !!process.env.VERCEL_URL
+
+const authCookies: Partial<CookiesOptions> = {
+	sessionToken: {
+		name: `${VERCEL_DEPLOYMENT ? '__Secure-' : ''}next-auth.session-token`,
+		options: {
+			httpOnly: true,
+			sameSite: 'none',
+			path: '/',
+			secure: true,
+		},
+	},
+	callbackUrl: {
+		name: `${VERCEL_DEPLOYMENT ? '__Secure-' : ''}next-auth.callback-url`,
+		options: {
+			sameSite: 'none',
+			path: '/',
+			secure: true,
+		},
+	},
+	csrfToken: {
+		name: `${VERCEL_DEPLOYMENT ? '__Host-' : ''}next-auth.csrf-token`,
+		options: {
+			httpOnly: true,
+			sameSite: 'none',
+			path: '/',
+			secure: true,
+		},
+	},
+}
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -163,6 +195,7 @@ export const authOptions: NextAuthConfig = {
 			cookieStore.delete('organizationId')
 		},
 	},
+	cookies: authCookies,
 	callbacks: {
 		session: async ({ session, user }) => {
 			const dbUser = await db.query.users.findFirst({
