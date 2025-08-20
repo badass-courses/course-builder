@@ -79,27 +79,27 @@ export function EmbedVideoPlayer({
 				addLessonProgress: addLessonProgress,
 			})
 		},
-		onTimeUpdate: () => {
-			// Optional: Track progress milestones
-			const currentTime = playerRef.current?.currentTime
-			const duration = playerRef.current?.duration
+		// onTimeUpdate: () => {
+		// 	// Optional: Track progress milestones
+		// 	const currentTime = playerRef.current?.currentTime
+		// 	const duration = playerRef.current?.duration
 
-			if (currentTime && duration) {
-				const progress = (currentTime / duration) * 100
+		// 	if (currentTime && duration) {
+		// 		const progress = (currentTime / duration) * 100
 
-				// Track 25%, 50%, 75% milestones
-				if ([25, 50, 75].includes(Math.floor(progress))) {
-					track('progress: embed video', {
-						resourceSlug: resource.fields?.slug,
-						resourceType: resource.type,
-						moduleSlug,
-						userId: user.id,
-						progress: Math.floor(progress),
-						context: 'embed',
-					})
-				}
-			}
-		},
+		// 		// Track 25%, 50%, 75% milestones
+		// 		if ([25, 50, 75].includes(Math.floor(progress))) {
+		// 			track('progress: embed video', {
+		// 				resourceSlug: resource.fields?.slug,
+		// 				resourceType: resource.type,
+		// 				moduleSlug,
+		// 				userId: user.id,
+		// 				progress: Math.floor(progress),
+		// 				context: 'embed',
+		// 			})
+		// 		}
+		// 	}
+		// },
 	}
 
 	return (
