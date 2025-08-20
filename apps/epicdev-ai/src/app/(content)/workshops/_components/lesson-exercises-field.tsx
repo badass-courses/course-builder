@@ -69,9 +69,7 @@ export default function LessonExercisesField({
 	const { data: session } = useSession()
 	const exercisePathRef = useRef<HTMLInputElement>(null)
 	const editExercisePathRef = useRef<HTMLInputElement>(null)
-	const [editExercisePaths, setEditExercisePaths] = useState<
-		Record<string, string>
-	>({})
+	const [editExercisePath, setEditExercisePath] = useState('')
 
 	return (
 		<section
