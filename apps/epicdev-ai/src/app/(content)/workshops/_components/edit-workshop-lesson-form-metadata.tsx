@@ -39,6 +39,7 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { TagField } from '../../posts/_components/tag-field'
+import LessonExercisesField from './lesson-exercises-field'
 import { LessonVideoResourceField } from './lesson-video-resource-field'
 
 export const LessonMetadataFormFields: React.FC<{
@@ -203,6 +204,7 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
+			<LessonExercisesField form={form} lesson={lesson} />
 			{/* Solution Section */}
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
@@ -286,6 +288,14 @@ export const LessonMetadataFormFields: React.FC<{
 								Add Solution
 							</Link>
 						</Button>
+					</div>
+				)}
+				{!solutionResource && (
+					<div
+						className="text-muted-foreground py-2 text-center text-sm opacity-75"
+						role="status"
+					>
+						No solution added to this lesson yet.
 					</div>
 				)}
 			</div>

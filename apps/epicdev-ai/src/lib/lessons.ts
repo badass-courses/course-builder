@@ -29,6 +29,11 @@ export const LessonSchema = ContentResourceSchema.merge(
 			gitpod: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
 			optional: z.boolean().nullish().default(false),
+			workshopApp: z
+				.object({
+					path: z.string().optional(),
+				})
+				.optional(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 		tags: PostTagsSchema,
