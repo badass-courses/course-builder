@@ -337,7 +337,7 @@ export const WorkshopFieldsSchema = z.object({
 		.optional(),
 	workshopApp: z
 		.object({
-			port: z.number().optional(),
+			port: z.string().optional(),
 			externalUrl: z.string().optional(),
 		})
 		.optional(),

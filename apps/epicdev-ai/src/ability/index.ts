@@ -326,7 +326,6 @@ export function defineRulesForPurchases(
 
 	// check workshop in cohort
 	if (user?.entitlements && module?.id) {
-		console.log('user.entitlements', user.entitlements)
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === cohortEntitlementType?.id) {
 				// Grant access to the workshop itself

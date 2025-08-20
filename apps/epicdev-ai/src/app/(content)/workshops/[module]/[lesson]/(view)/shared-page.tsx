@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-player'
 import { LessonControls } from '@/app/(content)/_components/lesson-controls'
@@ -10,6 +11,7 @@ import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
+import type { Exercise } from '@/lib/exercises'
 import type { Lesson } from '@/lib/lessons'
 import {
 	getLessonMuxPlaybackId,
@@ -22,6 +24,7 @@ import {
 	getAbilityForResource,
 	type AbilityForResource,
 } from '@/utils/get-current-ability-rules'
+import { joinUrlPath } from '@/utils/url'
 
 import { Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -35,6 +38,7 @@ export async function LessonPage({
 	params,
 	lessonType = 'lesson',
 	workshop,
+	exercise,
 }: {
 	params: { module: string; lesson: string }
 	exerciseLoader?: Promise<Lesson | null> | null | undefined
@@ -43,6 +47,7 @@ export async function LessonPage({
 	searchParams: { [key: string]: string | string[] | undefined }
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	workshop: MinimalWorkshop | null
+	exercise?: Exercise | null
 }) {
 	if (!lesson) {
 		notFound()
@@ -60,14 +65,39 @@ export async function LessonPage({
 	return (
 		<ActiveHeadingProvider>
 			<main className="w-full">
-				<PlayerContainer
-					lesson={lesson}
-					searchParams={searchParams}
-					params={params}
-					lessonType={lessonType}
-					workshop={workshop}
-					ability={ability}
-				/>
+				{lessonType === 'exercise' ? (
+					<div className="bg-card flex aspect-video h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-b">
+						<div className="flex flex-col items-center justify-center gap-4">
+							<h2 className="text-2xl font-bold">Stop! 😅</h2>
+							<p className="text-center text-lg">This is not a video course.</p>
+							<p className="text-center text-lg">
+								This workshop is intended to be worked through by completing
+								hands on exercises in your local development environment. It's
+								not meant for passive consumption.
+							</p>
+
+							<Link
+								target="_blank"
+								rel="noopener noreferrer"
+								href={joinUrlPath(
+									workshop?.fields.workshopApp?.externalUrl || '',
+									exercise?.fields.workshopApp?.path || '',
+								)}
+							>
+								Open in Workshop App
+							</Link>
+						</div>
+					</div>
+				) : (
+					<PlayerContainer
+						lesson={lesson}
+						searchParams={searchParams}
+						params={params}
+						lessonType={lessonType}
+						workshop={workshop}
+						ability={ability}
+					/>
+				)}
 				<LessonControls
 					abilityLoader={abilityLoader}
 					lesson={lesson}

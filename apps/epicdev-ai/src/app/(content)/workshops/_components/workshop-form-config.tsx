@@ -128,6 +128,10 @@ export function createWorkshopFormConfig(
 				endsAt: workshop?.fields?.endsAt
 					? new Date(workshop.fields.endsAt).toISOString()
 					: undefined,
+				workshopApp: workshop?.fields?.workshopApp || {
+					externalUrl: '',
+					port: '',
+				},
 			},
 		}),
 

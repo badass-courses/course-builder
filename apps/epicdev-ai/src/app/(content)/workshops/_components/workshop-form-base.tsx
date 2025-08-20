@@ -150,6 +150,38 @@ export function WorkshopFormBase(
 					</FormItem>
 				)}
 			/>
+			<div className="flex flex-col gap-2 px-5">
+				<div>
+					<h2 className="text-lg font-bold">Workshop App Settings</h2>
+					<p className="text-muted-foreground text-sm">
+						These settings are used to configure the workshop app.
+					</p>
+				</div>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="">
+							<FormLabel className="text-base font-bold">
+								External URL
+							</FormLabel>
+							<Input {...field} value={field.value || ''} />
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.workshopApp.externalUrl"
+				/>
+				<FormField
+					control={form.control}
+					render={({ field }) => (
+						<FormItem className="">
+							<FormLabel className="text-base font-bold">Port</FormLabel>
+							<Input {...field} value={field.value || ''} />
+							<FormMessage />
+						</FormItem>
+					)}
+					name="fields.workshopApp.port"
+				/>
+			</div>
 			<FormField
 				control={form.control}
 				render={({ field }) => (

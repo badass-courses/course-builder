@@ -1,7 +1,8 @@
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
+import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, isNull, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { ContentResourceResourceSchema } from '@coursebuilder/core/schemas'
@@ -11,6 +12,7 @@ import {
 	type NewExerciseInput,
 	type UpdateExerciseInput,
 } from './exercises'
+import { getCachedLesson } from './lessons-query'
 
 export async function getExercise(exerciseId: string) {
 	const exercise = await db.query.contentResource.findFirst({
@@ -144,4 +146,72 @@ export async function updateExercise(
 			updatedAt: new Date(),
 		})
 		.where(eq(contentResource.id, exerciseId))
+}
+
+/**
+ * Get an exercise for a specific lesson
+ */
+export async function getExerciseForLesson(lessonId: string) {
+	log.info('exercise.getForLesson', { lessonId })
+
+	// Use a direct SQL query to get the exercise linked to the lesson
+	const query = sql`
+		SELECT e.*
+		FROM ${contentResource} AS e
+		JOIN ${contentResourceResource} AS crr ON e.id = crr.resourceId
+		WHERE crr.resourceOfId = ${lessonId}
+		  AND e.type = 'exercise'
+		  AND e.deletedAt IS NULL
+		  AND crr.deletedAt IS NULL
+		LIMIT 1;
+	`
+
+	try {
+		const result = await db.execute(query)
+
+		if (!result.rows.length) {
+			log.error('exercise.getForLesson.error', {
+				lessonId,
+				error: 'No exercise found',
+			})
+			return null
+		}
+
+		// Get the full exercise with its resources
+		// Type assertion to handle the SQL result properly
+		const exerciseId = (result.rows[0] as { id: string }).id
+
+		const exercise = await db.query.contentResource.findFirst({
+			where: and(
+				eq(contentResource.id, exerciseId),
+				isNull(contentResource.deletedAt),
+			),
+			with: {
+				resources: {
+					where: isNull(contentResourceResource.deletedAt),
+					with: {
+						resource: true,
+					},
+				},
+			},
+		})
+		console.log('exercise', { exercise })
+		const parsedExercise = ExerciseSchema.safeParse(exercise)
+
+		if (!parsedExercise.success) {
+			log.error('exercise.getForLesson.error', {
+				lessonId,
+				error: parsedExercise.error,
+			})
+			return null
+		}
+
+		return parsedExercise.data
+	} catch (error) {
+		log.error('exercise.getForLesson.error', {
+			error,
+			lessonId,
+		})
+		return null
+	}
 }
