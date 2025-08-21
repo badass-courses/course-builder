@@ -33,7 +33,7 @@ export async function createCoreExercise(input: NewExerciseInput) {
 		fields: {
 			workshopApp: input.workshopApp,
 		},
-		createdById: input.createdById,
+		createdById: input.createdById ?? '',
 		createdAt: new Date(),
 	})
 
