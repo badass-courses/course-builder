@@ -13,12 +13,20 @@ export const NavigationLessonSchema = z.object({
 	type: z.literal('lesson'),
 	resources: z
 		.array(
-			z.object({
-				id: z.string(),
-				slug: z.string(),
-				title: z.string(),
-				type: z.literal('solution'),
-			}),
+			z.discriminatedUnion('type', [
+				z.object({
+					id: z.string(),
+					slug: z.string(),
+					title: z.string(),
+					type: z.literal('solution'),
+				}),
+				z.object({
+					id: z.string(),
+					slug: z.string().nullish(),
+					title: z.string().nullish(),
+					type: z.literal('exercise'),
+				}),
+			]),
 		)
 		.optional()
 		.default([]),
@@ -147,6 +155,13 @@ export type SolutionRaw = {
 	resourceId: string
 }
 
+export type ExerciseRaw = {
+	id: string
+	slug?: string | null
+	title?: string | null
+	resourceId: string
+}
+
 // Schema for raw database results
 export const WorkshopRawSchema = z.object({
 	id: z.string(),
@@ -175,6 +190,13 @@ export const SolutionRawSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
+	resourceId: z.string(),
+})
+
+export const ExerciseRawSchema = z.object({
+	id: z.string(),
+	slug: z.string().nullish(),
+	title: z.string().nullish(),
 	resourceId: z.string(),
 })
 
@@ -255,6 +277,27 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 		.extend({
 			...SolutionRawSchema.shape,
 			coverImage: z.null(), // Solutions don't have coverImage
+			position: z.null(),
+			sectionId: z.null(),
+			cohortId: z.null(),
+			cohortSlug: z.null(),
+			cohortTitle: z.null(),
+			startsAt: z.null(),
+			endsAt: z.null(),
+			timezone: z.null(),
+			cohortTier: z.null(),
+			maxSeats: z.null(),
+			resourceType: z.null(),
+			resourcePosition: z.null(),
+		}),
+	// Exercise row
+	z
+		.object({
+			type: z.literal('exercise'),
+		})
+		.extend({
+			...ExerciseRawSchema.shape,
+			coverImage: z.null(), // Exercises don't have coverImage
 			position: z.null(),
 			sectionId: z.null(),
 			cohortId: z.null(),

@@ -26,7 +26,7 @@ import {
 } from '@/utils/get-current-ability-rules'
 import { joinUrlPath } from '@/utils/url'
 
-import { Skeleton } from '@coursebuilder/ui'
+import { Button, Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { LessonBody } from '../../../_components/lesson-body'
@@ -66,11 +66,15 @@ export async function LessonPage({
 		<ActiveHeadingProvider>
 			<main className="w-full">
 				{lessonType === 'exercise' ? (
-					<div className="bg-card flex aspect-video h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-b">
-						<div className="flex flex-col items-center justify-center gap-4">
-							<h2 className="text-2xl font-bold">Stop! 😅</h2>
-							<p className="text-center text-lg">This is not a video course.</p>
-							<p className="text-center text-lg">
+					<div className="dark:bg-muted bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-x border-b border-t p-10 md:aspect-video">
+						<div className="flex max-w-lg flex-col items-center justify-center gap-4 text-center">
+							<h2 className="text-2xl font-bold">
+								Stop! <span aria-hidden="true">😅</span>
+							</h2>
+							<p className="text-center text-base">
+								This is not a video course.
+							</p>
+							<p className="text-balance text-center text-base">
 								This workshop is intended to be worked through by completing
 								hands on exercises in your local development environment. It's
 								not meant for passive consumption.
@@ -78,20 +82,44 @@ export async function LessonPage({
 
 							{workshop?.fields?.workshopApp?.externalUrl &&
 							exercise?.fields?.workshopApp?.path ? (
-								<Link
-									target="_blank"
-									rel="noopener noreferrer"
-									href={joinUrlPath(
-										workshop.fields.workshopApp.externalUrl,
-										exercise.fields.workshopApp.path,
-									)}
-								>
-									Open in Workshop App
-								</Link>
+								<div className="mt-5 flex w-full max-w-xs flex-col items-center gap-2 text-center">
+									<Button
+										asChild
+										className="w-full"
+										size="lg"
+										variant="outline"
+									>
+										<Link
+											target="_blank"
+											rel="noopener noreferrer"
+											href={'/get-started'}
+										>
+											Setup Workshop App
+										</Link>
+									</Button>
+									<div className="flex w-full flex-col gap-2">
+										<Button asChild className="w-full" size="lg">
+											<Link
+												target="_blank"
+												rel="noopener noreferrer"
+												href={joinUrlPath(
+													workshop.fields.workshopApp.externalUrl,
+													exercise.fields.workshopApp.path,
+												)}
+											>
+												Open in Local Workshop App
+											</Link>
+										</Button>
+										<p className="text-foreground/80 text-xs">
+											Must be running on localhost:
+											{workshop.fields.workshopApp?.port || '5639'}
+										</p>
+									</div>
+								</div>
 							) : (
 								<p className="text-muted-foreground text-sm">
-									Exercise link unavailable — missing Workshop App
-									configuration.
+									Exercise link unavailable — missing workshop app configuration
+									or exercise.
 								</p>
 							)}
 						</div>

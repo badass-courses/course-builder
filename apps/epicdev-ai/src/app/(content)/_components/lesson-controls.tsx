@@ -12,6 +12,7 @@ import type { AbilityForResource } from '@coursebuilder/utils-auth/current-abili
 
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { AutoPlayToggle } from './autoplay-toggle'
+import LessonControlsNextUp from './lesson-controls-next-up'
 import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
 
 export const LessonControls = async ({
@@ -44,6 +45,9 @@ export const LessonControls = async ({
 
 	const hasSolution = lesson.resources?.some(
 		(resource) => resource.resource.type === 'solution',
+	)
+	const hasExercise = lesson.resources?.some(
+		(resource) => resource.resource.type === 'exercise',
 	)
 
 	const isProblemLesson = lesson.type === 'lesson' && hasSolution
@@ -80,18 +84,7 @@ export const LessonControls = async ({
 					</Button>
 				)}
 			</div>
-			{isProblemLesson && (
-				<Button
-					asChild
-					variant="outline"
-					className="hover:bg-muted/50 border-l-border h-full rounded-none border-0 border-l bg-transparent"
-				>
-					<Link href={`${lesson.fields.slug}/solution`} prefetch>
-						Solution
-						<ArrowRight className="text-muted-foreground ml-2 h-4 w-4" />
-					</Link>
-				</Button>
-			)}
+			{isProblemLesson && <LessonControlsNextUp currentLesson={lesson} />}
 			<React.Suspense fallback={null}>
 				{(session?.user || ckSubscriber) &&
 				((lesson.type === 'lesson' && !isProblemLesson) ||

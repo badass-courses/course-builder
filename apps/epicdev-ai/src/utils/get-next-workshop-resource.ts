@@ -34,7 +34,7 @@ export function getNextWorkshopResource(
 		resource: NavigationResource,
 		isInSection = false,
 	) => {
-		// Add the resource itself
+		// Add the resource itself (lesson/post)
 		flattenedNavResources.push({
 			id: resource.id,
 			slug: resource.slug,
@@ -42,21 +42,24 @@ export function getNextWorkshopResource(
 			type: resource.type,
 		})
 
-		// Add solutions if this is a lesson with solutions
+		// Add solutions (exercises are just URL states, not separate resources)
 		if (
 			resource.type === 'lesson' &&
 			'resources' in resource &&
 			resource.resources?.length > 0
 		) {
-			resource.resources.forEach((solution) => {
-				flattenedNavResources.push({
-					id: solution.id,
-					slug: resource.slug, // Use parent lesson's slug for solution
-					title: solution.title,
-					type: solution.type,
-					parentId: resource.id,
-					parentSlug: resource.slug,
-				})
+			resource.resources.forEach((childResource) => {
+				// Only add actual solution resources
+				if (childResource.type === 'solution') {
+					flattenedNavResources.push({
+						id: childResource.id,
+						slug: childResource.slug || resource.slug,
+						title: childResource.title || resource.title,
+						type: childResource.type,
+						parentId: resource.id,
+						parentSlug: resource.slug,
+					})
+				}
 			})
 		}
 	}

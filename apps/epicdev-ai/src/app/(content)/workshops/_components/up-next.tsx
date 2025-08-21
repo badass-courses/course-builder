@@ -2,8 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { env } from '@/env.mjs'
+import { usePathname, useRouter } from 'next/navigation'
 import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { ArrowRight } from 'lucide-react'
@@ -18,24 +17,16 @@ import { useWorkshopNavigation } from './workshop-navigation-provider'
 
 // Component just for prefetching the next resource
 function PrefetchNextResource({
-	nextResource,
-	workshopSlug,
+	nextResourceUrl,
 }: {
-	nextResource: { type: string; slug: string } | null
-	workshopSlug: string | null
+	nextResourceUrl: string | null
 }) {
 	const router = useRouter()
 
 	React.useEffect(() => {
-		if (!nextResource || !workshopSlug) return
-
-		router.prefetch(
-			getResourcePath(nextResource.type, nextResource.slug, 'view', {
-				parentType: 'workshop',
-				parentSlug: workshopSlug,
-			}),
-		)
-	}, [router, nextResource, workshopSlug])
+		if (!nextResourceUrl) return
+		router.prefetch(nextResourceUrl)
+	}, [router, nextResourceUrl])
 
 	return null
 }
@@ -56,85 +47,71 @@ export default function UpNext({
 	>
 }) {
 	const navigation = useWorkshopNavigation()
+	const pathname = usePathname()
 	const [isPending, startTransition] = React.useTransition()
 	const { data: session } = useSession()
 	const ability = React.use(abilityLoader)
 	const canView = ability?.canViewLesson
 	const { moduleProgress, addLessonProgress } = useModuleProgress()
 
+	// Determine current context from URL
+	const getCurrentContext = () => {
+		if (pathname.endsWith('/exercise')) {
+			return 'exercise'
+		} else if (pathname.endsWith('/solution')) {
+			return 'solution'
+		} else {
+			return 'lesson' // or could be 'post', but for completion logic, treat as lesson
+		}
+	}
+
+	const currentContext = getCurrentContext()
+
 	if (!navigation) {
 		return null
 	}
 
-	const { nextResource } = getAdjacentWorkshopResources(
-		navigation,
-		currentResourceId,
-	)
+	const { nextResource, isExerciseNext, isSolutionNext } =
+		getAdjacentWorkshopResources(navigation, currentResourceId, currentContext)
 
 	// If there's no next resource, don't render anything
 	if (!nextResource) {
 		return null
 	}
 
-	// Helper function to find if current resource is a solution and get its parent lesson
-	const findParentLessonForSolution = (resourceId: string) => {
-		for (const resource of navigation.resources) {
-			if (resource.type === 'lesson' && resource.resources) {
-				const solutionResource = resource.resources.find(
-					(r) => r.id === resourceId && r.type === 'solution',
-				)
-				if (solutionResource) {
-					return resource
-				}
-			}
-		}
-		return null
-	}
-
-	// Helper function to check if a lesson has a solution
-	const lessonHasSolution = (lessonId: string) => {
-		const lesson = navigation.resources.find(
-			(r) => r.id === lessonId && r.type === 'lesson',
-		)
-		return (
-			lesson?.type === 'lesson' &&
-			lesson.resources &&
-			lesson.resources.length > 0 &&
-			lesson.resources.some((r: any) => r.type === 'solution')
-		)
-	}
-
 	// Determine what should be completed and if we should complete anything
 	const getCompletionLogic = () => {
-		const parentLesson = findParentLessonForSolution(currentResourceId)
+		const currentResource = findCurrentResource(currentResourceId)
 
-		if (parentLesson) {
-			// Current resource is a solution, complete the parent lesson
+		if (currentContext === 'solution') {
+			// We're on a solution page - complete the lesson
 			return {
 				shouldComplete: true,
-				resourceToComplete: parentLesson.id,
-				resourceSlugForRevalidation: parentLesson.slug,
+				resourceToComplete: currentResourceId, // The lesson ID
+				resourceSlugForRevalidation: currentResource?.slug || null,
 			}
-		}
-
-		// Current resource is not a solution, check if it's a lesson
-		const currentResource = navigation.resources.find(
-			(r) => r.id === currentResourceId,
-		)
-		if (currentResource?.type === 'lesson') {
-			if (lessonHasSolution(currentResourceId)) {
-				// Lesson has a solution, don't complete it
+		} else if (currentContext === 'exercise') {
+			// We're on an exercise page - don't complete yet, solution comes next
+			return {
+				shouldComplete: false,
+				resourceToComplete: null,
+				resourceSlugForRevalidation: null,
+			}
+		} else if (currentContext === 'lesson') {
+			// We're on a lesson page - only complete if no exercises or solutions follow
+			if (isExerciseNext || isSolutionNext) {
+				// Lesson has next steps, don't complete it yet
 				return {
 					shouldComplete: false,
 					resourceToComplete: null,
 					resourceSlugForRevalidation: null,
 				}
 			} else {
-				// Regular lesson without solution, complete normally
+				// Regular lesson without next steps, complete normally
 				return {
 					shouldComplete: true,
 					resourceToComplete: currentResourceId,
-					resourceSlugForRevalidation: currentResource.slug,
+					resourceSlugForRevalidation: currentResource?.slug || null,
 				}
 			}
 		}
@@ -147,10 +124,25 @@ export default function UpNext({
 		}
 	}
 
-	const completionLogic = getCompletionLogic()
+	// Helper to find current resource
+	const findCurrentResource = (resourceId: string) => {
+		for (const resource of navigation.resources) {
+			if (resource.id === resourceId) {
+				return resource
+			}
+			if (resource.type === 'section') {
+				const sectionResource = resource.resources.find(
+					(r) => r.id === resourceId,
+				)
+				if (sectionResource) {
+					return sectionResource
+				}
+			}
+		}
+		return null
+	}
 
-	// For solution resources, we need to use the parent lesson's slug
-	const nextResourceSlug = nextResource.slug
+	const completionLogic = getCompletionLogic()
 
 	const isCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
@@ -161,19 +153,27 @@ export default function UpNext({
 		),
 	)
 
-	const upNextText = lessonHasSolution(currentResourceId)
-		? `View Kent's Solution`
-		: 'Up Next'
+	// Determine the "Up Next" text based on what's next
+	const upNextText = isExerciseNext
+		? 'Continue to Exercise'
+		: isSolutionNext
+			? "View Kent's Solution"
+			: 'Up Next'
+
+	// Generate the URL using the resource info from getAdjacentWorkshopResources
+	const nextUrl = getResourcePath(
+		nextResource.type,
+		nextResource.slug,
+		'view',
+		{
+			parentType: 'workshop',
+			parentSlug: navigation.slug,
+		},
+	)
 
 	return (
 		<>
-			<PrefetchNextResource
-				nextResource={{
-					type: nextResource.type,
-					slug: nextResourceSlug,
-				}}
-				workshopSlug={navigation.slug}
-			/>
+			<PrefetchNextResource nextResourceUrl={nextUrl} />
 			<nav
 				className={cn(
 					'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
@@ -181,20 +181,12 @@ export default function UpNext({
 				)}
 				aria-label={upNextText}
 			>
-				<h2 className="fluid-2xl mb-3 font-semibold">{upNextText}:</h2>
+				<h2 className="fluid-xl mb-3 font-semibold">{upNextText}:</h2>
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link
 							className="dark:text-primary text-primary flex w-full items-center justify-center gap-2 text-center text-lg hover:underline lg:text-xl"
-							href={getResourcePath(
-								nextResource.type,
-								nextResourceSlug,
-								'view',
-								{
-									parentType: 'workshop',
-									parentSlug: navigation.slug,
-								},
-							)}
+							href={nextUrl}
 							onClick={async () => {
 								if (
 									!isCompleted &&

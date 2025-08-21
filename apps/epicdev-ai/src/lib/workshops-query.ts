@@ -10,6 +10,7 @@ import {
 } from '@/db/schema'
 import {
 	CohortResource,
+	ExerciseRawSchema,
 	MinimalWorkshopSchema,
 	NavigationLessonSchema,
 	NavigationPostSchema,
@@ -23,6 +24,7 @@ import {
 	WorkshopRawSchema,
 	WorkshopSchema,
 	type CohortInfo,
+	type ExerciseRaw,
 	type ResourceRaw,
 	type SectionRaw,
 	type SolutionRaw,
@@ -149,6 +151,18 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN resources ON resources.id = crr.resourceOfId AND resources.type = 'lesson'
 			WHERE cr.type = 'solution'
+		),
+		exercises AS (
+			-- Get exercises for lessons
+			SELECT
+				cr.id,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as slug,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as title,
+				crr.resourceOfId as resourceId
+			FROM ${contentResource} as cr
+			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
+			JOIN resources ON resources.id = crr.resourceOfId AND resources.type = 'lesson'
+			WHERE cr.type = 'exercise'
 		)
 		-- Get all data in separate result sets without complex ordering
 		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
@@ -170,6 +184,11 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM solutions
+		UNION ALL
+		SELECT 'exercise' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
+			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+			NULL as resourceType, NULL as resourcePosition
+		FROM exercises
 		UNION ALL
 		SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
 			cohortId, cohortSlug, cohortTitle, startsAt, endsAt, timezone, cohortTier, maxSeats,
@@ -243,6 +262,17 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			}),
 		)
 
+	const exercises = validatedRows
+		.filter((row) => row.type === 'exercise')
+		.map((row) =>
+			ExerciseRawSchema.parse({
+				id: row.id,
+				slug: row.slug,
+				title: row.title,
+				resourceId: row.resourceId,
+			}),
+		)
+
 	const cohortRows = validatedRows.filter((row) => row.type === 'cohort')
 
 	const cohortResourceRows = validatedRows.filter(
@@ -293,6 +323,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 		sections,
 		resources,
 		solutions,
+		exercises,
 		cohorts,
 	)
 }
@@ -305,6 +336,7 @@ function transformToNavigationStructure(
 	sections: SectionRaw[],
 	resources: ResourceRaw[],
 	solutions: SolutionRaw[],
+	exercises: ExerciseRaw[],
 	cohorts: CohortInfo[],
 ): WorkshopNavigation {
 	// Create a map of solutions by lesson ID for quick lookup
@@ -320,6 +352,20 @@ function transformToNavigationStructure(
 		})
 		return acc
 	}, new Map<string, { id: string; slug: string; title: string; type: 'solution' }[]>())
+
+	// Create a map of exercises by lesson ID for quick lookup
+	const exercisesByLessonId = exercises.reduce((acc, exercise) => {
+		if (!acc.has(exercise.resourceId)) {
+			acc.set(exercise.resourceId, [])
+		}
+		acc.get(exercise.resourceId)!.push({
+			id: exercise.id,
+			slug: exercise.slug || '',
+			title: exercise.title || '',
+			type: 'exercise' as const,
+		})
+		return acc
+	}, new Map<string, { id: string; slug: string; title: string; type: 'exercise' }[]>())
 
 	// Group resources by section first, without sorting
 	const topLevelResources: ResourceRaw[] = []
@@ -347,27 +393,28 @@ function transformToNavigationStructure(
 
 	// Transform top-level resources to NavigationResource objects
 	const navigationTopLevelResources = topLevelResources.map((resource) => {
-		const resourceSolutions =
-			resource.type === 'lesson'
-				? solutionsByLessonId.get(resource.id) || []
-				: []
+		if (resource.type === 'lesson') {
+			const resourceSolutions = solutionsByLessonId.get(resource.id) || []
+			const resourceExercises = exercisesByLessonId.get(resource.id) || []
+			const allResources = [...resourceExercises, ...resourceSolutions]
 
-		return resource.type === 'lesson'
-			? NavigationLessonSchema.parse({
-					id: resource.id,
-					slug: resource.slug,
-					title: resource.title,
-					position: resource.position,
-					type: 'lesson',
-					resources: resourceSolutions,
-				})
-			: NavigationPostSchema.parse({
-					id: resource.id,
-					slug: resource.slug,
-					title: resource.title,
-					position: resource.position,
-					type: 'post',
-				})
+			return NavigationLessonSchema.parse({
+				id: resource.id,
+				slug: resource.slug,
+				title: resource.title,
+				position: resource.position,
+				type: 'lesson',
+				resources: allResources,
+			})
+		} else {
+			return NavigationPostSchema.parse({
+				id: resource.id,
+				slug: resource.slug,
+				title: resource.title,
+				position: resource.position,
+				type: 'post',
+			})
+		}
 	})
 
 	// Map sections to navigation sections with their resources
@@ -376,27 +423,28 @@ function transformToNavigationStructure(
 
 		// Transform each resource in the section to a NavigationResource
 		const sectionNavigationResources = sectionRawResources.map((resource) => {
-			const resourceSolutions =
-				resource.type === 'lesson'
-					? solutionsByLessonId.get(resource.id) || []
-					: []
+			if (resource.type === 'lesson') {
+				const resourceSolutions = solutionsByLessonId.get(resource.id) || []
+				const resourceExercises = exercisesByLessonId.get(resource.id) || []
+				const allResources = [...resourceExercises, ...resourceSolutions]
 
-			return resource.type === 'lesson'
-				? NavigationLessonSchema.parse({
-						id: resource.id,
-						slug: resource.slug,
-						title: resource.title,
-						position: resource.position,
-						type: 'lesson',
-						resources: resourceSolutions,
-					})
-				: NavigationPostSchema.parse({
-						id: resource.id,
-						slug: resource.slug,
-						title: resource.title,
-						position: resource.position,
-						type: 'post',
-					})
+				return NavigationLessonSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'lesson',
+					resources: allResources,
+				})
+			} else {
+				return NavigationPostSchema.parse({
+					id: resource.id,
+					slug: resource.slug,
+					title: resource.title,
+					position: resource.position,
+					type: 'post',
+				})
+			}
 		})
 
 		return NavigationSectionSchema.parse({
