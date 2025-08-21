@@ -49,6 +49,7 @@ export type EditPostFormProps = {
 	videoResourceId: string | null | undefined
 	tagLoader: Promise<EggheadTag[]>
 	instructorLoader: Promise<CompactInstructor[]>
+	latestLessonsLoader?: Promise<any[]>
 	form: UseFormReturn<z.infer<typeof PostSchema>>
 	children?: React.ReactNode
 	availableWorkflows?: { value: string; label: string; default?: boolean }[]
@@ -62,6 +63,7 @@ export function EditPostForm({
 	videoResourceId,
 	tagLoader,
 	instructorLoader,
+	latestLessonsLoader,
 	isAdmin,
 	onResourceEdit,
 	courseContext,
@@ -132,18 +134,23 @@ export function EditPostForm({
 								<>
 									<ResourceResourcesList
 										resource={courseContext}
+										latestLessonsLoader={latestLessonsLoader}
 										onItemEdit={onResourceEdit}
 									/>
 									{post?.resources?.length && post?.resources?.length > 0 && (
 										<div className="ml-5 mt-4">
 											<h3 className="text-lg font-bold">{post.fields.title}</h3>
-											<ResourceResourcesList resource={post} />
+											<ResourceResourcesList
+												resource={post}
+												latestLessonsLoader={latestLessonsLoader}
+											/>
 										</div>
 									)}
 								</>
 							) : (
 								<ResourceResourcesList
 									resource={post}
+									latestLessonsLoader={latestLessonsLoader}
 									onItemEdit={onResourceEdit}
 								/>
 							)}

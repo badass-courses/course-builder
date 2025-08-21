@@ -47,9 +47,11 @@ function formReducer(state: FormState, action: FormAction): FormState {
 
 export function ResourceResourcesList({
 	resource,
+	latestLessonsLoader,
 	onItemEdit,
 }: {
 	resource: ContentResource
+	latestLessonsLoader?: Promise<any[]>
 	onItemEdit?: ({
 		itemId,
 		item,
@@ -218,24 +220,6 @@ export function ResourceResourcesList({
 				}
 			/>
 			<div className="flex flex-col gap-1">
-				{formState.activeForm === 'lesson' && (
-					<CreatePostForm
-						resourceType="post"
-						onCreate={handleResourceCreated}
-						createPost={createPost}
-						restrictToPostType="lesson"
-						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
-					/>
-				)}
-				{formState.activeForm === 'existing_lesson' && (
-					<SearchExistingLessons
-						onSelect={handleResourceCreated}
-						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
-						existingResourceIds={
-							resource.resources?.map((item) => item.resource?.id) ?? []
-						}
-					/>
-				)}
 				{resource?.fields?.postType === 'course' && (
 					<div className="flex gap-1 px-5">
 						<Button
@@ -254,6 +238,27 @@ export function ResourceResourcesList({
 						>
 							+ add existing lesson
 						</Button>
+					</div>
+				)}
+				{formState.activeForm === 'existing_lesson' && (
+					<SearchExistingLessons
+						onSelect={handleResourceCreated}
+						onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
+						existingResourceIds={
+							resource.resources?.map((item) => item.resource?.id) ?? []
+						}
+						latestLessonsLoader={latestLessonsLoader}
+					/>
+				)}
+				{formState.activeForm === 'lesson' && (
+					<div className="px-5">
+						<CreatePostForm
+							resourceType="post"
+							onCreate={handleResourceCreated}
+							createPost={createPost}
+							restrictToPostType="lesson"
+							onCancel={() => formDispatch({ type: 'HIDE_FORM' })}
+						/>
 					</div>
 				)}
 			</div>

@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { Layout } from '@/components/app/layout'
 import Spinner from '@/components/spinner'
 import { courseBuilderAdapter } from '@/db'
-import { getPost } from '@/lib/posts-query'
+import { getLatestLessonsForUser, getPost } from '@/lib/posts-query'
 import { getAllEggheadTagsCached, getTags } from '@/lib/tags-query'
 import { getCachedEggheadInstructors } from '@/lib/users'
 import { getServerAuthSession } from '@/server/auth'
@@ -29,8 +29,9 @@ export default async function PostPage(props: {
 }) {
 	const params = await props.params
 	const searchParams = await props.searchParams
-	const { ability } = await getServerAuthSession()
+	const { ability, session } = await getServerAuthSession()
 	const isAdmin = ability.can('manage', 'all')
+	const userId = session?.user?.id
 
 	// Get the main post (could be course or regular post)
 	const mainPost = await getPost(params.slug)
@@ -76,6 +77,15 @@ export default async function PostPage(props: {
 	const tagLoader = getTags()
 	const instructorLoader = getCachedEggheadInstructors()
 
+	// Get existing resource IDs to exclude from latest lessons
+	const existingResourceIds =
+		postToEdit.resources?.map((item) => item.resource?.id).filter(Boolean) ?? []
+
+	// Load latest lessons for user (only if user is logged in)
+	const latestLessonsLoader = userId
+		? getLatestLessonsForUser(userId, 10, existingResourceIds)
+		: Promise.resolve([])
+
 	return (
 		<Layout>
 			<React.Suspense
@@ -87,6 +97,7 @@ export default async function PostPage(props: {
 					videoResourceId={videoResource?.id}
 					tagLoader={tagLoader}
 					instructorLoader={instructorLoader}
+					latestLessonsLoader={latestLessonsLoader}
 					isAdmin={isAdmin}
 					courseSlug={params.slug}
 					courseContext={courseContext}
