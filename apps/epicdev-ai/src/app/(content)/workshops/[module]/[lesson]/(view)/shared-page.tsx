@@ -66,7 +66,7 @@ export async function LessonPage({
 		<ActiveHeadingProvider>
 			<main className="w-full">
 				{lessonType === 'exercise' ? (
-					<div className="bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-b p-10 md:aspect-video">
+					<div className="dark:bg-muted bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-x border-b border-t p-10 md:aspect-video">
 						<div className="flex max-w-lg flex-col items-center justify-center gap-4 text-center">
 							<h2 className="text-2xl font-bold">
 								Stop! <span aria-hidden="true">😅</span>
