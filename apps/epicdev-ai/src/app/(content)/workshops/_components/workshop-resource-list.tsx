@@ -324,13 +324,18 @@ const LessonResource = ({
 		lesson.resources?.find((resource) => resource.type === 'solution')
 	const isActiveSolution =
 		lesson.slug === params.lesson && pathname.includes('/solution')
+	const isOnExercise = pathname.includes('/exercise')
+	const isActiveExercise =
+		lesson.slug === params.lesson && pathname.includes('/exercise')
 
-	const isActiveLesson = lesson.slug === params.lesson && !isOnSolution
+	const isActiveLesson =
+		lesson.slug === params.lesson && !isOnSolution && !isOnExercise
 	const isActiveGroup =
 		(isActiveLesson &&
 			lesson.type === 'lesson' &&
 			lesson?.resources?.length > 0) ||
-		isActiveSolution
+		isActiveSolution ||
+		isActiveExercise
 
 	const isCompleted = moduleProgress?.completedLessons?.some(
 		(progress) => progress.resourceId === lesson.id && progress.completedAt,
@@ -448,6 +453,23 @@ const LessonResource = ({
 							href={`/workshops/${params.module}/${lesson.slug}`}
 						>
 							Problem
+						</Link>
+					</li>
+					<li data-active={isActiveExercise ? 'true' : 'false'}>
+						<Link
+							className={cn(
+								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								{
+									'pl-9': true,
+									'bg-foreground/10 text-primary border-gray-200':
+										isActiveExercise,
+									'hover:text-primary': !isActiveExercise,
+								},
+							)}
+							prefetch={true}
+							href={`/workshops/${params.module}/${lesson.slug}/exercise`}
+						>
+							Exercise
 						</Link>
 					</li>
 					<li data-active={isActiveSolution ? 'true' : 'false'}>

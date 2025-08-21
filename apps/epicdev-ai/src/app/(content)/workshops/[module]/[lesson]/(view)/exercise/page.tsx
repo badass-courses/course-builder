@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { LessonProvider } from '@/app/(content)/workshops/_components/lesson-context'
 import { LessonPage } from '@/app/(content)/workshops/[module]/[lesson]/(view)/shared-page'
+import { getExerciseForLesson } from '@/lib/exercises-query'
 import { getLesson } from '@/lib/lessons-query'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -41,6 +42,7 @@ export default async function LessonExercisePage(props: {
 	const params = await props.params
 	const lesson = await getLesson(params.lesson)
 	const workshop = await getCachedMinimalWorkshop(params.module)
+	const exercise = lesson ? await getExerciseForLesson(lesson.id) : null
 
 	return (
 		<LessonProvider lesson={lesson}>
@@ -49,6 +51,8 @@ export default async function LessonExercisePage(props: {
 				lesson={lesson}
 				params={params}
 				workshop={workshop}
+				lessonType="exercise"
+				exercise={exercise}
 			/>
 		</LessonProvider>
 	)
