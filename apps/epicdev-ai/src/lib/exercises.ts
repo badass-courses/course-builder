@@ -33,7 +33,7 @@ export const NewExerciseInputSchema = z.object({
 		})
 		.optional(),
 	parentResourceId: z.string(),
-	createdById: z.string(),
+	createdById: z.string().optional(),
 })
 
 export type NewExerciseInput = z.infer<typeof NewExerciseInputSchema>

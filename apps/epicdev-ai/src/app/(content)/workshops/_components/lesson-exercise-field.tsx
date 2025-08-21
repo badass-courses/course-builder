@@ -147,7 +147,6 @@ export default function LessonExerciseField({
 												workshopApp: {
 													path: exercisePathRef.current?.value,
 												},
-												createdById: session?.user?.id ?? '',
 											})
 										}}
 										aria-describedby={
