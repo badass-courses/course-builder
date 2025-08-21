@@ -225,7 +225,10 @@ async function handleOnVideoEnded({
 		if (bingeMode && nextResource && playerRef?.current) {
 			dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			// playerRef.current.playbackId = nextLessonPlaybackId
-			if (nextResource.type !== 'solution') {
+			if (
+				nextResource.type !== 'solution' &&
+				nextResource.type !== 'exercise'
+			) {
 				console.log(
 					'setting lesson complete',
 					isSolution ? prevResource : currentResource,
