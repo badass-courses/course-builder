@@ -70,7 +70,15 @@ export const CompletedLessonOverlay: React.FC<{
 		nextResource: nextLesson,
 		prevResource: prevLesson,
 		isSolutionNext,
-	} = getAdjacentWorkshopResources(workshopNavigation, resource?.id as string)
+	} = getAdjacentWorkshopResources(
+		workshopNavigation,
+		resource?.id as string,
+		usePathname().endsWith('/exercise')
+			? 'exercise'
+			: usePathname().endsWith('/solution')
+				? 'solution'
+				: 'lesson',
+	)
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
@@ -300,6 +308,11 @@ const ContinueButton: React.FC<{
 					if (nextResource.type === 'solution') {
 						return router.push(
 							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+						)
+					}
+					if (nextResource.type === 'exercise') {
+						return router.push(
+							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/exercise`,
 						)
 					}
 					return router.push(

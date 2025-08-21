@@ -319,9 +319,7 @@ const LessonResource = ({
 	const params = useParams()
 	const pathname = usePathname()
 	const isOnSolution = pathname.includes('/solution')
-	const solution =
-		lesson.type === 'lesson' &&
-		lesson.resources?.find((resource) => resource.type === 'solution')
+
 	const isActiveSolution =
 		lesson.slug === params.lesson && pathname.includes('/solution')
 	const isOnExercise = pathname.includes('/exercise')
@@ -347,6 +345,14 @@ const LessonResource = ({
 	)
 
 	const canCreate = ability.can('create', 'Content')
+	const hasExercise =
+		(lesson?.type === 'lesson' &&
+			lesson.resources?.some((r) => r.type === 'exercise')) ||
+		false
+	const hasSolution =
+		(lesson?.type === 'lesson' &&
+			lesson.resources?.some((r) => r.type === 'solution')) ||
+		false
 
 	return (
 		<li
@@ -436,7 +442,7 @@ const LessonResource = ({
 					) : null}
 				</div>
 			</div>
-			{solution && isActiveGroup && (
+			{(hasSolution || hasExercise) && isActiveGroup && (
 				<ul>
 					<li data-active={isActiveLesson ? 'true' : 'false'}>
 						<Link
@@ -455,40 +461,44 @@ const LessonResource = ({
 							Problem
 						</Link>
 					</li>
-					<li data-active={isActiveExercise ? 'true' : 'false'}>
-						<Link
-							className={cn(
-								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
-								{
-									'pl-9': true,
-									'bg-foreground/10 text-primary border-gray-200':
-										isActiveExercise,
-									'hover:text-primary': !isActiveExercise,
-								},
-							)}
-							prefetch={true}
-							href={`/workshops/${params.module}/${lesson.slug}/exercise`}
-						>
-							Exercise
-						</Link>
-					</li>
-					<li data-active={isActiveSolution ? 'true' : 'false'}>
-						<Link
-							className={cn(
-								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
-								{
-									'pl-9': true,
-									'bg-foreground/10 text-primary border-gray-200':
-										isActiveSolution,
-									'hover:text-primary': !isActiveSolution,
-								},
-							)}
-							prefetch={true}
-							href={`/workshops/${params.module}/${lesson.slug}/solution`}
-						>
-							Solution
-						</Link>
-					</li>
+					{hasExercise && (
+						<li data-active={isActiveExercise ? 'true' : 'false'}>
+							<Link
+								className={cn(
+									'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+									{
+										'pl-9': true,
+										'bg-foreground/10 text-primary border-gray-200':
+											isActiveExercise,
+										'hover:text-primary': !isActiveExercise,
+									},
+								)}
+								prefetch={true}
+								href={`/workshops/${params.module}/${lesson.slug}/exercise`}
+							>
+								Exercise
+							</Link>
+						</li>
+					)}
+					{hasSolution && (
+						<li data-active={isActiveSolution ? 'true' : 'false'}>
+							<Link
+								className={cn(
+									'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+									{
+										'pl-9': true,
+										'bg-foreground/10 text-primary border-gray-200':
+											isActiveSolution,
+										'hover:text-primary': !isActiveSolution,
+									},
+								)}
+								prefetch={true}
+								href={`/workshops/${params.module}/${lesson.slug}/solution`}
+							>
+								Solution
+							</Link>
+						</li>
+					)}
 				</ul>
 			)}
 		</li>

@@ -126,6 +126,31 @@ const resourcePaths: Record<string, ResourcePathConfig> = {
 			return `/posts/${slug}/edit`
 		},
 	},
+	exercise: {
+		view: (slug, context) => {
+			if (context?.parentType === 'workshop') {
+				const parentSlug = context.parentSlug || context.getParentSlug?.()
+				if (!parentSlug) {
+					console.warn('No parent slug found for workshop lesson')
+					return `/${slug}`
+				}
+				return `/workshops/${parentSlug}/${slug}/exercise`
+			}
+
+			return `/${slug}`
+		},
+		edit: (slug, context) => {
+			if (context?.parentType === 'workshop') {
+				const parentSlug = context.parentSlug || context.getParentSlug?.()
+				if (!parentSlug) {
+					console.warn('No parent slug found for workshop lesson')
+					return `/posts/${slug}/edit`
+				}
+				return `/workshops/${parentSlug}/${slug}/edit`
+			}
+			return `/posts/${slug}/edit`
+		},
+	},
 }
 
 /**

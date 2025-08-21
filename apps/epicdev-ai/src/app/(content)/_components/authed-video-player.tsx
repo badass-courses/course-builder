@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { use } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMuxPlayer } from '@/hooks/use-mux-player'
 import {
 	handleTextTrackChange,
@@ -82,9 +82,15 @@ export function AuthedVideoPlayer({
 
 	const navigation = useWorkshopNavigation()
 
+	const pathname = usePathname()
 	const { nextResource, prevResource } = getAdjacentWorkshopResources(
 		navigation,
 		currentResource.id,
+		pathname.endsWith('/exercise')
+			? 'exercise'
+			: pathname.endsWith('/solution')
+				? 'solution'
+				: 'lesson',
 	)
 
 	const isProblemLesson = Boolean(
