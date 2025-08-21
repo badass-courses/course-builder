@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 
 		// Use a background image
 		const backgroundImageUrl =
-			'https://res.cloudinary.com/epic-web/image/upload/v1755501469/ai-card-bg_2x.jpg'
+			'https://res.cloudinary.com/epic-web/image/upload/v1755775295/card-bg_2x.jpg'
 
 		return new ImageResponse(
 			(
@@ -110,7 +110,9 @@ export async function GET(request: Request) {
 					{/* Main content area */}
 					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
 						<div tw="flex flex-col items-start">
-							<div tw="text-[54px] text-white max-w-[640px] leading-tight mb-4 font-bold">
+							<div
+								tw={`text-[${title && title.length > 43 ? '54px' : '80px'}] text-white max-w-[640px] leading-[1.1] mb-6 font-bold`}
+							>
 								{title}
 							</div>
 							<div
@@ -127,11 +129,7 @@ export async function GET(request: Request) {
 									<span tw="text-[50px] mr-5">Save {discountPercentage}%</span>{' '}
 									for a limited time!
 								</div>
-							) : (
-								<div tw="flex items-center justify-center bg-[#FF6CE2] text-black px-8 py-4 rounded-md text-[32px] font-bold">
-									Be the Architect of Intelligent Experiences
-								</div>
-							)}
+							) : null}
 						</div>
 					</main>
 				</div>

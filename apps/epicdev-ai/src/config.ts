@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/epic-web/image/upload/v1744263842/epicdev.ai/card_2x.jpg`,
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Be%20the%20Architect%20of%20Intelligent%20Experiences`, // `https://res.cloudinary.com/epic-web/image/upload/v1744263842/epicdev.ai/card_2x.jpg`,
 				width: 1200,
 				height: 630,
 			},
