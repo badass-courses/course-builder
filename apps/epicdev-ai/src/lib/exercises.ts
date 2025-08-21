@@ -2,18 +2,19 @@ import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-export const ExerciseSchema = ContentResourceSchema.merge(
-	z.object({
-		fields: z.object({
+export const ExerciseSchema = ContentResourceSchema.extend({
+	type: z.literal('exercise'),
+	fields: z
+		.object({
 			workshopApp: z
 				.object({
 					path: z.string().optional(),
 				})
 				.optional(),
-		}),
-	}),
-)
-
+		})
+		.nullish()
+		.default({}),
+})
 export type Exercise = z.infer<typeof ExerciseSchema>
 
 export const ExerciseUpdateSchema = z.object({

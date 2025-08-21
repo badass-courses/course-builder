@@ -76,16 +76,24 @@ export async function LessonPage({
 								not meant for passive consumption.
 							</p>
 
-							<Link
-								target="_blank"
-								rel="noopener noreferrer"
-								href={joinUrlPath(
-									workshop?.fields.workshopApp?.externalUrl || '',
-									exercise?.fields.workshopApp?.path || '',
-								)}
-							>
-								Open in Workshop App
-							</Link>
+							{workshop?.fields?.workshopApp?.externalUrl &&
+							exercise?.fields?.workshopApp?.path ? (
+								<Link
+									target="_blank"
+									rel="noopener noreferrer"
+									href={joinUrlPath(
+										workshop.fields.workshopApp.externalUrl,
+										exercise.fields.workshopApp.path,
+									)}
+								>
+									Open in Workshop App
+								</Link>
+							) : (
+								<p className="text-muted-foreground text-sm">
+									Exercise link unavailable — missing Workshop App
+									configuration.
+								</p>
+							)}
 						</div>
 					</div>
 				) : (

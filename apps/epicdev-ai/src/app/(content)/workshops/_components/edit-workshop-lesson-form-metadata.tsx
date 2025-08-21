@@ -39,7 +39,7 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { TagField } from '../../posts/_components/tag-field'
-import LessonExercisesField from './lesson-exercises-field'
+import LessonExerciseField from './lesson-exercise-field'
 import { LessonVideoResourceField } from './lesson-video-resource-field'
 
 export const LessonMetadataFormFields: React.FC<{
@@ -204,11 +204,11 @@ export const LessonMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<LessonExercisesField form={form} lesson={lesson} />
+			<LessonExerciseField form={form} lesson={lesson} />
 			{/* Solution Section */}
-			<div className="px-5">
+			<div className="flex flex-col gap-2 px-5">
 				<div className="flex items-center justify-between gap-2">
-					<label className="text-lg font-bold">Solution</label>
+					<h2 className="text-lg font-bold">Solution</h2>
 				</div>
 
 				{solutionLoading ? (
@@ -229,30 +229,43 @@ export const LessonMetadataFormFields: React.FC<{
 					</div>
 				) : solutionResource ? (
 					<div className="">
-						<div className="flex flex-col items-start gap-2">
+						<div className="flex w-full items-center gap-3 rounded-lg border p-3">
 							<Link
-								href={`/workshops/${module}/${lessonSlug}/solution/edit`}
-								className="font-medium underline"
+								href={`/workshops/${module}/${lessonSlug}/solution`}
+								className="text-muted-foreground group min-w-0 flex-1 text-sm font-medium"
 							>
-								{solutionResource.fields.title}
+								<div className="text-foreground truncate group-hover:underline">
+									{solutionResource.fields.title}
+								</div>
+								<div className="text-muted-foreground truncate text-sm">
+									{solutionResource.fields.body || 'No content yet.'}
+								</div>
 							</Link>
-							<div className="mb-2 flex items-center space-x-2">
-								<Button variant="secondary" size="sm" asChild>
+							<div className="flex flex-shrink-0 items-center space-x-2">
+								<Button
+									size="icon"
+									variant="outline"
+									onClick={() => {
+										if (
+											confirm('Are you sure you want to delete this solution?')
+										) {
+											deleteSolutionMutation.mutate({
+												solutionId: solutionResource.id,
+											})
+										}
+									}}
+								>
+									<Trash className="size-4" strokeWidth={1.5} />
+								</Button>
+								<Button variant="outline" asChild>
 									<Link
 										href={`/workshops/${module}/${lessonSlug}/solution/edit`}
 									>
-										<PencilIcon className="mr-1 size-3" />
-										Edit Solution
+										<PencilIcon className="size-4" strokeWidth={1.5} />
+										Edit
 									</Link>
 								</Button>
 							</div>
-						</div>
-						<div className="bg-muted mb-2 rounded-md p-4">
-							<ScrollArea className="h-[300px]">
-								<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-									{solutionResource.fields.body || 'No solution content yet.'}
-								</ReactMarkdown>
-							</ScrollArea>
 						</div>
 
 						{solutionResource.fields.description && (
@@ -263,20 +276,6 @@ export const LessonMetadataFormFields: React.FC<{
 								</ReactMarkdown>
 							</div>
 						)}
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => {
-								if (confirm('Are you sure you want to delete this solution?')) {
-									deleteSolutionMutation.mutate({
-										solutionId: solutionResource.id,
-									})
-								}
-							}}
-						>
-							<Trash className="mr-1 size-3" />
-							Remove
-						</Button>
 					</div>
 				) : (
 					<div className="mt-1">

@@ -9,6 +9,11 @@ export function joinUrlPath(baseUrl: string, path: string): string {
 		return baseUrl || path || ''
 	}
 
+	// If `path` is already an absolute URL, prefer it as-is
+	if (/^https?:\/\//i.test(path)) {
+		return path
+	}
+
 	// Remove trailing slash from base URL
 	const normalizedBase = baseUrl.replace(/\/+$/, '')
 

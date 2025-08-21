@@ -22,7 +22,7 @@ import {
 	useToast,
 } from '@coursebuilder/ui'
 
-export default function LessonExercisesField({
+export default function LessonExerciseField({
 	form,
 	lesson,
 }: {
@@ -73,12 +73,12 @@ export default function LessonExercisesField({
 
 	return (
 		<section
-			className="flex flex-col gap-2 p-5"
+			className="flex flex-col gap-2 px-5"
 			aria-labelledby="exercises-heading"
 		>
 			<div className="flex w-full flex-col gap-1">
 				<h2 id="exercises-heading" className="text-lg font-bold">
-					Exercises
+					Exercise
 				</h2>
 				{(!exercises || exercises.length === 0) && (
 					<Dialog>
@@ -198,14 +198,21 @@ export default function LessonExercisesField({
 										<span className="sr-only">Updating exercise...</span>
 									</div>
 								)}
-								<span id={`exercise-${exercise.id}-label`}>
-									Exercise: {exercise.fields.workshopApp?.path}
+								<span
+									className="text-muted-foreground text-sm"
+									id={`exercise-${exercise.id}-label`}
+								>
+									Workshop App exercise path:
+									<br />{' '}
+									<span className="text-foreground font-bold">
+										{exercise?.fields?.workshopApp?.path}
+									</span>
 								</span>
 							</div>
 							<div
 								className="flex items-center gap-2"
 								role="group"
-								aria-label={`Actions for exercise ${exercise.fields.workshopApp?.path}`}
+								aria-label={`Actions for exercise ${exercise?.fields?.workshopApp?.path}`}
 							>
 								<Dialog>
 									<DialogTrigger asChild>
@@ -213,7 +220,7 @@ export default function LessonExercisesField({
 											variant="outline"
 											size="icon"
 											disabled={['pending'].includes(removeExerciseStatus)}
-											aria-label={`Delete exercise ${exercise.fields.workshopApp?.path}`}
+											aria-label={`Delete exercise ${exercise?.fields?.workshopApp?.path}`}
 										>
 											{['pending'].includes(removeExerciseStatus) ? (
 												<>
@@ -232,7 +239,7 @@ export default function LessonExercisesField({
 									<DialogContent aria-describedby="delete-exercise-description">
 										<DialogHeader>
 											<DialogTitle>
-												Delete Exercise: {exercise.fields.workshopApp?.path}
+												Delete Exercise: {exercise?.fields?.workshopApp?.path}
 											</DialogTitle>
 										</DialogHeader>
 										<div id="delete-exercise-description">
@@ -265,10 +272,10 @@ export default function LessonExercisesField({
 											variant="outline"
 											onClick={() =>
 												setEditExercisePath(
-													exercise.fields.workshopApp?.path || '',
+													exercise?.fields?.workshopApp?.path || '',
 												)
 											}
-											aria-label={`Edit exercise ${exercise.fields.workshopApp?.path}`}
+											aria-label={`Edit exercise ${exercise?.fields?.workshopApp?.path}`}
 										>
 											<Pencil
 												className="size-4"
@@ -281,7 +288,7 @@ export default function LessonExercisesField({
 									<DialogContent aria-describedby="edit-exercise-description">
 										<DialogHeader>
 											<DialogTitle>
-												Edit Exercise: {exercise.fields.workshopApp?.path}
+												Edit Exercise: {exercise?.fields?.workshopApp?.path}
 											</DialogTitle>
 										</DialogHeader>
 										<div id="edit-exercise-description" className="sr-only">
@@ -314,7 +321,7 @@ export default function LessonExercisesField({
 												<Button
 													disabled={
 														editExercisePath ===
-															exercise.fields.workshopApp?.path ||
+															exercise?.fields?.workshopApp?.path ||
 														updateExerciseStatus === 'pending'
 													}
 													onClick={() => {

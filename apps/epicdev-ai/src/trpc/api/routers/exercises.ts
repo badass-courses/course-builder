@@ -8,7 +8,11 @@ import {
 	removeAndDetachExerciseFromResource,
 	updateExercise,
 } from '@/lib/exercises-query'
-import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from '@/trpc/api/trpc'
 import { z } from 'zod'
 
 export const exercisesRouter = createTRPCRouter({
@@ -21,12 +25,15 @@ export const exercisesRouter = createTRPCRouter({
 		.query(async ({ input }) => {
 			return await getResourceExercises(input.resourceId)
 		}),
-	createAndAttachExerciseToResource: publicProcedure
+	createAndAttachExerciseToResource: protectedProcedure
 		.input(NewExerciseInputSchema)
-		.mutation(async ({ input }) => {
-			return await createAndAttachExerciseToLesson(input)
+		.mutation(async ({ input, ctx }) => {
+			return await createAndAttachExerciseToLesson({
+				...input,
+				createdById: ctx.session.user.id,
+			})
 		}),
-	removeAndDetachExerciseFromResource: publicProcedure
+	removeAndDetachExerciseFromResource: protectedProcedure
 		.input(z.object({ exerciseId: z.string(), parentId: z.string() }))
 		.mutation(async ({ input }) => {
 			return await removeAndDetachExerciseFromResource(
@@ -34,7 +41,7 @@ export const exercisesRouter = createTRPCRouter({
 				input.parentId,
 			)
 		}),
-	updateExercise: publicProcedure
+	updateExercise: protectedProcedure
 		.input(
 			z.object({
 				exerciseId: z.string(),

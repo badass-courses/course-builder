@@ -18,6 +18,7 @@ export async function getExercise(exerciseId: string) {
 	const exercise = await db.query.contentResource.findFirst({
 		where: eq(contentResource.id, exerciseId),
 	})
+	if (!exercise) return null
 	const parsedExercise = ExerciseSchema.parse(exercise)
 	return parsedExercise
 }
@@ -113,8 +114,8 @@ export async function removeAndDetachExerciseFromResource(
 	exerciseId: string,
 	parentId: string,
 ) {
-	await removeCoreExercise(exerciseId)
 	await removeExerciseFromResource(exerciseId, parentId)
+	await removeCoreExercise(exerciseId)
 }
 
 export async function removeExerciseFromResource(
@@ -135,14 +136,21 @@ export async function updateExercise(
 	exerciseId: string,
 	input: UpdateExerciseInput,
 ) {
+	const existing = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, exerciseId),
+	})
+	const prevFields = existing?.fields ?? {}
+	const nextFields = {
+		...prevFields,
+		workshopApp: {
+			...(prevFields.workshopApp ?? {}),
+			path: input.workshopApp?.path,
+		},
+	}
 	await db
 		.update(contentResource)
 		.set({
-			fields: {
-				workshopApp: {
-					path: input.workshopApp?.path,
-				},
-			},
+			fields: nextFields,
 			updatedAt: new Date(),
 		})
 		.where(eq(contentResource.id, exerciseId))
@@ -195,7 +203,7 @@ export async function getExerciseForLesson(lessonId: string) {
 				},
 			},
 		})
-		console.log('exercise', { exercise })
+
 		const parsedExercise = ExerciseSchema.safeParse(exercise)
 
 		if (!parsedExercise.success) {
