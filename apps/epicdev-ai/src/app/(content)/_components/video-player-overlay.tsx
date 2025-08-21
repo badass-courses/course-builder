@@ -66,6 +66,7 @@ export const CompletedLessonOverlay: React.FC<{
 }) => {
 	const { playerRef } = action
 	const workshopNavigation = useWorkshopNavigation()
+	const pathname = usePathname()
 	const {
 		nextResource: nextLesson,
 		prevResource: prevLesson,
@@ -73,9 +74,9 @@ export const CompletedLessonOverlay: React.FC<{
 	} = getAdjacentWorkshopResources(
 		workshopNavigation,
 		resource?.id as string,
-		usePathname().endsWith('/exercise')
+		pathname.endsWith('/exercise')
 			? 'exercise'
-			: usePathname().endsWith('/solution')
+			: pathname.endsWith('/solution')
 				? 'solution'
 				: 'lesson',
 	)
