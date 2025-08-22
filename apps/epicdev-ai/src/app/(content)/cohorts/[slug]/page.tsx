@@ -290,7 +290,7 @@ export default async function CohortPage(props: {
 					</div>
 				) : null}
 
-				<div className="flex flex-col gap-10 lg:flex-row">
+				<div className="flex flex-col gap-10 pb-16 lg:flex-row">
 					<div className="w-full">
 						<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 							{fields?.image && (
@@ -302,9 +302,9 @@ export default async function CohortPage(props: {
 									alt={fields?.title}
 								/>
 							)}
-							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-5 md:items-start md:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-									<span className="text-primary font-mono text-xs font-semibold uppercase">
+									<span className="font-heading text-primary text-sm font-bold uppercase">
 										Cohort-based Course
 									</span>
 									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
@@ -317,11 +317,11 @@ export default async function CohortPage(props: {
 							)} */}
 								</div>
 
-								<h1 className="text-balance text-3xl font-bold sm:text-4xl lg:text-5xl">
+								<h1 className="font-heading leading-tighter sm:leading-tighter lg:leading-tighter text-balance text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg mt-5 text-balance font-light">
+									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-semibold tracking-tight">
 										{fields.description}
 									</h2>
 								)}
@@ -335,9 +335,8 @@ export default async function CohortPage(props: {
 						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none py-10">
 							{content}
 						</article>
-
-						<div className="mt-2 border-t py-8">
-							<h2 className="mb-5 text-2xl font-semibold sm:text-3xl">
+						<div className="mt-2">
+							<h2 className="mb-5 text-2xl font-extrabold tracking-tight sm:text-3xl">
 								Contents
 							</h2>
 							<ul className="flex flex-col gap-3">
@@ -397,7 +396,7 @@ export default async function CohortPage(props: {
 														>
 															<AccordionItem
 																value={`${workshop.id}-body`}
-																className="bg-card shadow-xs rounded border pl-4 pr-1"
+																className="bg-card rounded-lg border pl-4 pr-1 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 															>
 																<div className="relative flex items-center justify-between">
 																	{workshop.fields.state === 'published' &&

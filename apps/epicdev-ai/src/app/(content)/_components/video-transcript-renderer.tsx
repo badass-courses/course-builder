@@ -45,12 +45,12 @@ export function Transcript({
 		<Accordion type="single" collapsible className="">
 			<AccordionItem
 				value="transcript"
-				className="rounded border bg-transparent p-5"
+				className="bg-muted border-border rounded-lg border-x border-y border-b last:border-b"
 			>
-				<AccordionTrigger className="flex w-full items-center justify-start gap-2 text-lg font-medium sm:text-xl">
-					<FileText className="size-4 opacity-75" /> Video Transcript
+				<AccordionTrigger className="font-heading hover:text-primary flex w-full items-center justify-between gap-2 px-3 py-2 text-lg font-bold tracking-tight hover:no-underline sm:text-xl [&[data-state=open]>svg]:rotate-180">
+					Video Transcript
 				</AccordionTrigger>
-				<AccordionContent>
+				<AccordionContent className="px-3">
 					<ReactMarkdown
 						components={{
 							p: ({ children }) =>

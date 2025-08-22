@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { Lesson } from '@/lib/lessons'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
@@ -58,7 +58,7 @@ const LessonControlsNextUp = ({ currentLesson }: { currentLesson: Lesson }) => {
 						prefetch
 					>
 						Solution
-						<ArrowRight className="text-muted-foreground ml-2 h-4 w-4" />
+						<ChevronRight className="text-muted-foreground h-4 w-4" />
 					</Link>
 				</Button>
 			)}
@@ -81,7 +81,7 @@ const LessonControlsNextUp = ({ currentLesson }: { currentLesson: Lesson }) => {
 						prefetch
 					>
 						Exercise
-						<ArrowRight className="text-muted-foreground ml-2 h-4 w-4" />
+						<ChevronRight className="text-muted-foreground h-4 w-4" />
 					</Link>
 				</Button>
 			)}

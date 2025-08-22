@@ -55,7 +55,7 @@ export const LessonControls = async ({
 	return (
 		<div
 			className={cn(
-				'bg-card mb-8 flex h-10 w-full items-center justify-between overflow-hidden rounded-b-lg border-x border-b sm:h-12',
+				'bg-card mb-5 mt-3 flex h-10 w-full items-center justify-between overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] sm:h-12',
 				className,
 			)}
 		>

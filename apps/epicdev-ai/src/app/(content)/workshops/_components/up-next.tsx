@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronRight } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -155,7 +155,7 @@ export default function UpNext({
 
 	// Determine the "Up Next" text based on what's next
 	const upNextText = isExerciseNext
-		? 'Continue to Exercise'
+		? 'Up Next'
 		: isSolutionNext
 			? "View Kent's Solution"
 			: 'Up Next'
@@ -176,16 +176,18 @@ export default function UpNext({
 			<PrefetchNextResource nextResourceUrl={nextUrl} />
 			<nav
 				className={cn(
-					'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
+					'bg-card mt-3 flex w-full flex-col items-center rounded-lg border px-5 py-10 text-center shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]',
 					className,
 				)}
 				aria-label={upNextText}
 			>
-				<h2 className="fluid-xl mb-3 font-semibold">{upNextText}:</h2>
+				<h2 className="fluid-xl font-heading mb-3 font-bold tracking-tight">
+					{upNextText}:
+				</h2>
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link
-							className="dark:text-primary text-primary flex w-full items-center justify-center gap-2 text-center text-lg hover:underline lg:text-xl"
+							className="dark:text-primary text-primary font-heading flex w-full items-center justify-center gap-2 text-center text-lg font-semibold tracking-tight hover:underline lg:text-xl"
 							href={nextUrl}
 							onClick={async () => {
 								if (
@@ -205,7 +207,7 @@ export default function UpNext({
 							}}
 						>
 							{nextResource.title}
-							<ArrowRight className="hidden w-4 sm:block" />
+							<ChevronRight className="relative hidden w-4 translate-y-[1px] sm:block" />
 						</Link>
 						{!session?.user && (
 							<span className="text-muted-foreground mt-4">

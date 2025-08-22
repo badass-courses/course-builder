@@ -103,16 +103,23 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background/50 border-foreground/5 sticky top-8 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:mb-10 sm:border-transparent sm:px-0"
+			className={
+				(cn(
+					'bg-background/50 border-foreground/5 top-2 z-50 mb-5 flex w-full min-w-[200px] max-w-3xl flex-col rounded-full border px-3 backdrop-blur-lg sm:relative sm:mx-auto sm:mb-10 sm:border-transparent sm:px-0',
+				),
+				{
+					// sticky: true,
+				})
+			}
 			aria-label="On this page"
 		>
-			<div className="max-w-(--breakpoint-xl) mx-auto flex w-full items-center">
+			<div className="mx-auto mb-5 flex w-full max-w-3xl items-center">
 				<button
 					onClick={() => {
 						setIsOpen(!isOpen)
 					}}
 					aria-expanded={isOpen}
-					className="flex h-10 items-center justify-start gap-1 px-0 text-sm sm:text-base"
+					className="text-primary flex h-10 items-center justify-start gap-1 px-0 text-sm sm:text-base"
 				>
 					<div>
 						<AlignLeft className="size-4" />

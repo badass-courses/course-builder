@@ -54,9 +54,9 @@ export function StartLearningWorkshopButton({
 		return (
 			<div
 				className={cn(
-					'text-foreground before:bg-primary-foreground relative flex h-14 w-full items-center justify-center rounded-none px-5 text-sm font-medium sm:w-auto',
+					'text-foreground relative flex h-12 w-full items-center justify-center rounded-lg px-5 text-sm font-medium sm:w-auto',
 					className,
-					'bg-transparent sm:border-r',
+					'bg-muted border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]',
 				)}
 			>
 				<LockIcon className="mr-2 size-4" /> Available {formattedDate} (PT)
@@ -74,7 +74,7 @@ export function StartLearningWorkshopButton({
 			<Button
 				size="lg"
 				className={cn(
-					'from-primary relative h-14 w-full rounded-none bg-gradient-to-b to-indigo-800 text-sm font-medium text-white sm:max-w-[180px]',
+					'from-primary relative w-full rounded-lg bg-gradient-to-b to-indigo-800 text-sm font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]',
 					className,
 					{
 						'text-foreground hover:bg-secondary border-r bg-transparent before:hidden sm:max-w-[120px]':
@@ -126,7 +126,7 @@ export function GetAccessButton({
 		<Button
 			size="lg"
 			className={cn(
-				'from-primary relative h-14 w-full rounded-none bg-gradient-to-b to-indigo-800 text-sm font-semibold sm:max-w-[180px]',
+				'from-primary relative h-12 w-full rounded-lg bg-gradient-to-b to-indigo-800 text-sm font-semibold shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] transition ease-out hover:brightness-110 md:w-auto',
 				className,
 				{
 					'border-r text-white': !canView,
@@ -135,7 +135,20 @@ export function GetAccessButton({
 			asChild
 		>
 			<Link prefetch href={`/cohorts/${cohort?.slug}`}>
-				Get Access
+				<span className="relative z-10 drop-shadow-md dark:text-white">
+					Get Access
+				</span>
+				<div
+					style={{
+						backgroundSize: '200% 100%',
+						animationDuration: '2s',
+						animationIterationCount: 'infinite',
+						animationTimingFunction: 'linear',
+						animationFillMode: 'forwards',
+						animationDelay: '2s',
+					}}
+					className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+				/>
 			</Link>
 		</Button>
 	)
@@ -145,7 +158,7 @@ export function StartLearningWorkshopButtonSkeleton() {
 	return (
 		<Button
 			size="lg"
-			className='text-foreground/75 before:bg-primary-foreground relative flex h-14 w-full gap-2 rounded-none border-r bg-transparent text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] hover:bg-transparent sm:max-w-[277px]'
+			className="text-foreground/75 bg-card relative flex h-12 gap-2 rounded-lg border text-sm font-medium shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] hover:bg-transparent"
 		>
 			<Spinner className="w-3" /> Checking your access...
 		</Button>
@@ -163,7 +176,7 @@ export function ContentTitle(
 	// if (!canView) return null
 
 	return (
-		<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
+		<div className="col-span-2 hidden items-center border-l pl-5 text-base font-medium md:flex">
 			Content
 		</div>
 	)
@@ -176,7 +189,7 @@ export function WorkshopGitHubRepoLink({ githubUrl }: { githubUrl?: string }) {
 			asChild
 			size="lg"
 			variant="ghost"
-			className="flex h-14 w-full items-center gap-2 rounded-none border-r"
+			className="hover:text-primary flex h-12 w-full items-center gap-2 rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 		>
 			<Link href={githubUrl} target="_blank" rel="noopener noreferrer">
 				<Github className="size-4" /> GitHub

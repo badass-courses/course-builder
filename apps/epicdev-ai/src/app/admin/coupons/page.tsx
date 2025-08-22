@@ -48,7 +48,7 @@ export default async function AdminCouponPage() {
 	})
 
 	return (
-		<main className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col gap-5 px-5 pt-10 lg:gap-10">
+		<main className="mx-auto flex w-full flex-col gap-5 px-5 pt-10 lg:gap-10">
 			<h1 className="fluid-3xl font-heading font-bold">Coupons</h1>
 			<section className="">
 				<h2 className="fluid-xl font-heading mb-8 font-bold">Create new</h2>

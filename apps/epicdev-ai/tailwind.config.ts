@@ -1,4 +1,3 @@
-import { color } from 'framer-motion'
 import colors from 'tailwindcss/colors'
 import defaultTheme from 'tailwindcss/defaultTheme'
 
@@ -9,14 +8,14 @@ module.exports = {
 	darkMode: ['class'],
 	content: [
 		'./src/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/primitives/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/index.tsx',
+		// './node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/index.tsx',
 		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
@@ -35,7 +34,7 @@ module.exports = {
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.slate,
+				gray: colors.neutral,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -68,6 +67,7 @@ module.exports = {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
+					muted: 'hsl(var(--card-muted))',
 				},
 			},
 			borderRadius: {
@@ -77,7 +77,7 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
-				heading: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+				heading: ['var(--font-proxima-soft)', ...defaultTheme.fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
 			},
 			keyframes: {
@@ -112,11 +112,12 @@ module.exports = {
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
 							fontWeight: 700,
+							fontFamily: 'var(--font-proxima-soft)',
 							color: theme('colors.foreground'),
 						},
 						ul: {
 							listStylePosition: 'outside',
-							listStyleType: 'square',
+							listStyleType: 'circle',
 						},
 						'ul > li': {
 							color: theme('colors.foreground'),

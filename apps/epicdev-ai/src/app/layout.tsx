@@ -16,6 +16,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
+import { proximaSoft } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -73,7 +74,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
+					className={`relative ${geist.variable} ${geistMono.variable} ${proximaSoft.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
@@ -82,8 +83,10 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
+								forcedTheme="light"
+								themes={['light']}
 								defaultTheme="light"
-								enableSystem={true}
+								enableSystem={false}
 								disableTransitionOnChange
 							>
 								<HolyLoader

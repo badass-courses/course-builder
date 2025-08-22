@@ -64,13 +64,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	return (
 		<div
 			className={cn('flex items-stretch lg:hidden', {
-				'fixed right-8 top-[33px]': !isEditRoute,
+				'fixed right-6 top-2': !isEditRoute,
 				'absolute -top-5 right-0': isEditRoute,
 			})}
 		>
 			<Button
 				variant="ghost"
-				className="bg-background flex h-10 items-center justify-center rounded-full border px-3"
+				className="bg-card text-foreground flex h-12 w-12 items-center justify-center rounded-lg border p-0"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>

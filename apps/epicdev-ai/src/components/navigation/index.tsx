@@ -23,9 +23,11 @@ import { UserMenu } from './user-menu'
 const Navigation = ({
 	withContainer,
 	highlightedResource,
+	className,
 }: {
 	withContainer?: boolean
 	highlightedResource?: { path: string; title: string }
+	className?: string
 }) => {
 	const links = useNavLinks()
 	const pathname = usePathname()
@@ -53,64 +55,66 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'h-(--nav-height) relative z-50 flex w-full items-center justify-between print:hidden',
+				'h-(--nav-height) bg-card ring-gray-800/7.5 relative z-50 mb-3 mt-2 flex w-full items-center justify-between rounded-lg px-1.5 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ring-1 print:hidden',
 				{
-					'px-5': !withContainer,
+					// 'px-5': !withContainer,
 				},
+				className,
 			)}
 		>
-			<div className="bg-linear-to-r absolute inset-x-0 -top-6 h-12 -rotate-3 from-violet-300 via-pink-300 to-sky-300 opacity-50 blur-3xl dark:opacity-40" />
+			<div className="bg-linear-to-r absolute inset-x-0 -top-6 -z-10 h-12 -rotate-3 from-violet-300 via-pink-300 to-sky-300 opacity-50 blur-3xl dark:opacity-40" />
 			<div
-				className={cn('relative flex w-full items-center justify-center', {
+				className={cn('relative flex w-full items-center justify-between', {
 					// container: !isEditRoute,
 				})}
 			>
-				<span
-					className="flex items-center justify-center"
-					// onContextMenu={(e) => {
-					// 	e.preventDefault()
-					// 	router.push('/brand')
-					// }}
-				>
-					<Button
-						asChild
-						variant="ghost"
-						className="h-10 p-0 text-lg hover:bg-transparent"
+				<div className="flex items-center">
+					<span
+						className="flex items-center justify-center"
+						// onContextMenu={(e) => {
+						// 	e.preventDefault()
+						// 	router.push('/brand')
+						// }}
 					>
-						<Link
-							prefetch
-							tabIndex={isRoot ? -1 : 0}
-							href="/"
-							className="font-heading absolute left-0 flex items-center justify-center gap-2 pr-5 text-lg font-semibold leading-none transition"
+						<Button
+							asChild
+							variant="ghost"
+							className="h-12 rounded-none p-0 text-lg hover:bg-transparent"
 						>
-							<Logo className="origin-left scale-[1.15]" />
-						</Link>
-					</Button>
-				</span>
-				{links.length > 0 && (
-					<nav
-						className={cn(
-							'ring-gray-800/7.5 absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
-							{
-								'hidden lg:flex': true, // links.length > 3,
-							},
-						)}
-						aria-label={`Navigation header with ${links.length} links`}
-					>
-						<ul className="flex items-center">
-							{links.map((link) => {
-								return (
-									<NavLinkItem
-										className="text-base font-medium [&_span]:flex [&_span]:items-center"
-										key={link.href || link.label}
-										{...link}
-									/>
-								)
-							})}
-						</ul>
-					</nav>
-				)}
-
+							<Link
+								prefetch
+								tabIndex={isRoot ? -1 : 0}
+								href="/"
+								className="font-heading flex items-center justify-center pr-4 text-xl font-semibold leading-none transition"
+							>
+								<Logo className="origin-left scale-[1]" />
+							</Link>
+						</Button>
+					</span>
+					{links.length > 0 && (
+						<nav
+							className={cn(
+								// 'ring-gray-800/7.5 absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
+								{
+									'hidden lg:flex': true, // links.length > 3,
+								},
+							)}
+							aria-label={`Navigation header with ${links.length} links`}
+						>
+							<ul className="flex items-center">
+								{links.map((link) => {
+									return (
+										<NavLinkItem
+											className="text-base font-medium [&_span]:flex [&_span]:items-center"
+											key={link.href || link.label}
+											{...link}
+										/>
+									)
+								})}
+							</ul>
+						</nav>
+					)}
+				</div>
 				<nav
 					className="absolute right-0 flex items-center"
 					aria-label={`User navigation`}

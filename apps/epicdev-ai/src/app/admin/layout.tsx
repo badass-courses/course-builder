@@ -4,6 +4,7 @@ import {
 	DollarSign,
 	FileText,
 	Flag,
+	LayoutDashboard,
 	ListChecks,
 	Mail,
 	Presentation,
@@ -21,32 +22,36 @@ const AdminLayout = async ({
 	params: Promise<{ module: string }>
 }) => {
 	return (
-		<LayoutClient>
-			<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[250px_1fr]">
-				<div className="hidden border-r border-t md:block">
+		<LayoutClient withContainer>
+			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-5 md:grid">
+				<div className="bg-card col-span-2 hidden overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] md:block">
 					<div className="flex h-full max-h-screen flex-col gap-2">
 						<nav className="">
 							<ul>
 								<li className="divide-border flex flex-col divide-y">
+									<NavItem href="/admin">
+										<LayoutDashboard className="h-4 w-4" />
+										Dashboard
+									</NavItem>
 									<NavItem href="/admin/pages">
 										<FileText className="h-4 w-4" />
 										Pages
-									</NavItem>
-									<NavItem href="/events">
-										<Presentation className="h-4 w-4" />
-										Events
 									</NavItem>
 									<NavItem href="/products">
 										<DollarSign className="h-4 w-4" />
 										Products
 									</NavItem>
-									<NavItem href="/lists">
-										<ListChecks className="h-4 w-4" />
-										Lists
-									</NavItem>
 									<NavItem href="/admin/coupons">
 										<TicketIcon className="h-4 w-4" />
 										Coupons
+									</NavItem>
+									<NavItem href="/events">
+										<Presentation className="h-4 w-4" />
+										Events
+									</NavItem>
+									<NavItem href="/lists">
+										<ListChecks className="h-4 w-4" />
+										Lists
 									</NavItem>
 									<NavItem href="/admin/tags">
 										<TagIcon className="h-4 w-4" />
@@ -65,7 +70,7 @@ const AdminLayout = async ({
 						</nav>
 					</div>
 				</div>
-				<div className="flex flex-col">{children}</div>
+				<div className="col-span-10 flex flex-col">{children}</div>
 			</div>
 		</LayoutClient>
 	)

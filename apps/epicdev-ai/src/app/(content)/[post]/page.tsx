@@ -193,7 +193,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full text-center font-bold dark:text-white">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full text-center font-extrabold tracking-tight dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,

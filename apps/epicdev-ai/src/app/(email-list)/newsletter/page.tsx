@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function NewsletterPage() {
 	return (
 		<LayoutClient withContainer>
-			<main className="pb-16 pt-3">
+			<main className="flex h-full flex-grow flex-col items-center justify-center pb-16 pt-3">
 				<PrimaryNewsletterCta
 					trackProps={{
 						event: 'subscribed',

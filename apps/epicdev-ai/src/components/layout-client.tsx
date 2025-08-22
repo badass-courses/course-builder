@@ -15,6 +15,7 @@ export default function LayoutClient({
 	withContainer = false,
 	highlightedResource,
 	className,
+	navigationClassName,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
@@ -23,6 +24,7 @@ export default function LayoutClient({
 		path: string
 		title: string
 	}
+	navigationClassName?: string
 }) {
 	return (
 		<div className="flex min-h-screen flex-col">
@@ -30,7 +32,7 @@ export default function LayoutClient({
 				className={cn(
 					'',
 					{
-						'mx-auto w-full max-w-[1200px] flex-grow px-8 sm:px-10':
+						'mx-auto w-full max-w-[1200px] flex-grow px-6 sm:px-10':
 							withContainer,
 					},
 					className,
@@ -47,6 +49,7 @@ export default function LayoutClient({
 				<div className="from-background to-background/0 bg-linear-to-t absolute inset-0 -z-10 hidden h-80 w-full opacity-100 dark:flex" />
 				<div className="">
 					<Navigation
+						className={navigationClassName}
 						highlightedResource={highlightedResource}
 						withContainer={withContainer}
 					/>

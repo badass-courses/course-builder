@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
 		const postsWithCompletions = await getPostsWithCompletionCounts()
 
 		return (
-			<div className="mx-auto w-full max-w-screen-lg px-4">
+			<div className="mx-auto w-full max-w-screen-lg">
 				<div className="mb-8 grid grid-cols-3 items-center gap-5">
 					<div className="bg-card flex aspect-square h-full w-full flex-col items-center justify-center gap-1 rounded-lg border p-5 shadow sm:gap-2">
 						<div className="text-3xl font-bold tabular-nums sm:text-4xl">
@@ -143,7 +143,7 @@ export default async function AdminDashboardPage() {
 	} catch (error) {
 		console.error(error)
 		return (
-			<div className="mx-auto w-full max-w-screen-lg px-4">
+			<div className="mx-auto w-full max-w-screen-lg">
 				<div className="py-8 text-center">
 					<h1 className="mb-2 text-2xl font-bold">Dashboard Error</h1>
 					<p className="text-muted-foreground">

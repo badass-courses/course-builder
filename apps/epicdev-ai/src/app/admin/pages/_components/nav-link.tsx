@@ -19,7 +19,7 @@ export const NavItem = ({
 		<Link
 			href={href}
 			className={cn(
-				'text-muted-foreground hover:text-foreground hover:bg-foreground/5 ease-in-ou flex items-center gap-3 px-5 py-5 text-sm font-medium transition duration-300',
+				'text-muted-foreground hover:text-foreground hover:bg-card-muted font-heading flex items-center gap-3 px-5 py-3 text-sm font-semibold transition duration-300 ease-out',
 				{
 					'[&_svg]:text-primary text-foreground bg-foreground/5': isActive,
 				},

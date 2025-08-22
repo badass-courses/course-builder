@@ -18,7 +18,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 				// height="218"
 				fill="none"
 				viewBox="0 0 186 218"
-				className="relative mr-1.5 size-8 -translate-y-0.5 text-[#251356] dark:text-[#DCDDF7]"
+				className="relative mr-1 size-9 -translate-y-0.5 text-[#251356] dark:text-[#DCDDF7]"
 			>
 				<path
 					fill="url(#a)"
@@ -45,7 +45,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 
 			<span className="flex flex-col leading-tight text-[#251356] dark:text-[#DCDDF7]">
 				<div>
-					Epic <span className="font-mono">AI</span>
+					Epic <span className="text-violet-500 dark:text-violet-400">AI</span>
 				</div>
 				{withSubtitle && (
 					<span className="text-muted-foreground text-xs font-normal opacity-80">

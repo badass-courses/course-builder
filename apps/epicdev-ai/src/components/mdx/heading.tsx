@@ -54,7 +54,7 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 		<Component ref={ref} id={slug} className="scroll-mt-5">
 			<Link
 				href={`#${slug}`}
-				className="text-inherit! w-full font-semibold no-underline"
+				className="text-inherit! w-full font-extrabold no-underline"
 			>
 				{children}
 			</Link>

@@ -15,7 +15,9 @@ export const Contributor: React.FC<{
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<ContributorImage imageSize={imageSize} />
 			<div className="flex flex-col">
-				<span className="text-foreground/90">{config.author}</span>
+				<span className="text-foreground/90 font-heading text-lg font-bold">
+					{config.author}
+				</span>
 				{withBio && (
 					<p className="text-foreground/75 text-sm">
 						I make the world a better place by teaching people like you how to
@@ -45,7 +47,10 @@ export const ContributorImage = ({
 			width={imageSize}
 			height={imageSize}
 			priority
-			className={cn('bg-muted rounded-full', className)}
+			className={cn(
+				'bg-muted ring-gray-800/7.5 rounded-full ring-1',
+				className,
+			)}
 		/>
 	)
 }
