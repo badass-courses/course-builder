@@ -78,7 +78,7 @@ export const cohortFormConfig: ResourceFormConfig<Cohort, typeof CohortSchema> =
 			listEditorConfig: {
 				title: (
 					<div>
-						<span className="flex text-lg font-bold">Workshops</span>
+						<span className="flex text-lg font-semibold">Workshops</span>
 						<span className="text-muted-foreground mt-2 font-normal">
 							Add and organize workshops in this cohort.
 						</span>

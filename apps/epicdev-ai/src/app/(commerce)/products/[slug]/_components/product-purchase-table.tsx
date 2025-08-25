@@ -175,7 +175,7 @@ export default function ProductPurchasesTable({
 	return (
 		<div className="m-4 space-y-4 sm:my-12">
 			<div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-				<h2 className="text-2xl font-bold">Product Purchases</h2>
+				<h2 className="text-2xl font-semibold">Product Purchases</h2>
 				<div className="flex-1" />
 				<div className="relative w-full max-w-sm">
 					<Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />

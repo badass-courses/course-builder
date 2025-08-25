@@ -49,7 +49,7 @@ export default async function ProfilePage() {
 			<LayoutClient withContainer>
 				<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
 					<header className="w-full md:max-w-[230px]">
-						<h1 className="fluid-xl text-center font-bold md:text-left">
+						<h1 className="fluid-xl text-center font-semibold md:text-left">
 							Your Profile
 						</h1>
 					</header>

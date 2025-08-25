@@ -4,9 +4,6 @@ import * as React from 'react'
 import { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
-import LayoutClient from '@/components/layout-client'
-import Navigation from '@/components/navigation'
-import Footer from '@/components/navigation/footer'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -16,6 +13,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
+import { gibson } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -73,7 +71,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${geist.variable} ${geistMono.variable} antialised font-sans`}
+					className={`relative ${geist.variable} ${geistMono.variable} ${gibson.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
@@ -82,8 +80,10 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
+								forcedTheme="light"
+								themes={['light']}
 								defaultTheme="light"
-								enableSystem={true}
+								enableSystem={false}
 								disableTransitionOnChange
 							>
 								<HolyLoader

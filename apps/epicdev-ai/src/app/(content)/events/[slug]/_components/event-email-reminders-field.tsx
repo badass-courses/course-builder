@@ -69,7 +69,7 @@ export default function EmailEventRemindersField({
 
 	return (
 		<div className="px-5">
-			<div className="mb-2 text-lg font-bold">Reminder Emails</div>
+			<div className="mb-2 text-lg font-semibold">Reminder Emails</div>
 			<ul className="flex flex-col gap-2">
 				{currentReminderEmails?.map((currentReminderEmail) => {
 					// Find the specific ref that connects this event to this email
@@ -138,7 +138,7 @@ export default function EmailEventRemindersField({
 				</DialogTrigger>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
 							<Mail className="mr-1 size-4" /> Reminder Email for This Event
 						</DialogTitle>
 						<DialogDescription>
@@ -233,7 +233,7 @@ function EmailReminderItem({
 				</DialogTrigger>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
 							<Mail className="mr-1 size-4" /> {email.fields?.title}
 						</DialogTitle>
 						<DialogDescription>
@@ -300,7 +300,7 @@ function CreateOrUpdateEmailReminderForm({
 	form: UseFormReturn<ReminderEmailForm>
 	onSubmit: (data: ReminderEmailForm) => void
 }) {
-	const { theme } = useTheme()
+	const { theme, forcedTheme } = useTheme()
 	const [editorView, setEditorView] = React.useState<EditorView | null>(null)
 	const insertAtCursor = (text: string) => {
 		if (editorView) {
@@ -393,7 +393,7 @@ function CreateOrUpdateEmailReminderForm({
 								<FormLabel>Email Body (markdown)</FormLabel>
 								<MarkdownEditor
 									theme={
-										(theme === 'dark'
+										(forcedTheme === 'dark' || theme === 'dark'
 											? CourseBuilderEditorThemeDark
 											: CourseBuilderEditorThemeLight) ||
 										CourseBuilderEditorThemeDark

@@ -111,11 +111,11 @@ export default async function ModulePage(props: Props) {
 		return (
 			<div
 				className={cn(
-					'relative w-full grid-cols-6 items-center overflow-hidden rounded-lg rounded-br-none border md:grid',
+					'relative flex w-full items-center justify-center md:h-12 md:justify-start',
 					className,
 				)}
 			>
-				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y sm:divide-y-0">
+				<div className="col-span-4 flex h-full w-full flex-wrap items-center justify-center gap-2 md:justify-start">
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
@@ -123,16 +123,16 @@ export default async function ModulePage(props: Props) {
 							moduleSlug={params.module}
 							workshop={workshop}
 						/>
-						<div className="w-full items-center sm:flex sm:w-auto">
+						<div className="w-full items-center gap-2 sm:flex md:w-auto">
 							<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
-										className="hover:bg-muted h-14 w-full rounded-none px-5 ease-out md:w-auto md:border-r"
+										className="hover:text-primary bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
 										variant="ghost"
 										size="lg"
 									>
-										<Share2 className="mr-2 w-3" /> Share
+										<Share2 className="w-3" /> Share
 									</Button>
 								</DialogTrigger>
 								<DialogContent>
@@ -156,7 +156,7 @@ export default async function ModulePage(props: Props) {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="flex min-h-screen w-full flex-col">
+			<main className="flex w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
 					<div className="flex w-full items-center justify-center gap-2 rounded-lg border p-3 text-center">
 						<Construction className="h-4 w-4" />{' '}
@@ -172,10 +172,10 @@ export default async function ModulePage(props: Props) {
 					slug={params.module}
 				/>
 				<header className="relative flex items-center justify-center overflow-hidden">
-					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
+					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
-							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
@@ -203,30 +203,33 @@ export default async function ModulePage(props: Props) {
 				</header>
 
 				<>
-					<Links>
-						<ContentTitle />
-					</Links>
-					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
-						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none py-10 md:pr-10">
-							{workshop.fields?.body ? (
-								<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-							) : (
-								<p>No description found.</p>
-							)}
-						</article>
-						<div className="col-span-2 flex flex-col border-x">
-							<WorkshopResourceList
-								isCollapsible={false}
-								className="border-r-0! w-full max-w-none"
-								withHeader={false}
-								maxHeight="h-auto"
-								wrapperClassName="overflow-hidden pb-0"
-							/>
+					<div className="mx-auto flex w-full grow grid-cols-6 flex-col gap-5 md:grid">
+						<div className="col-span-4">
+							<Links />
+							<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-8">
+								{workshop.fields?.body ? (
+									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+								) : (
+									<p>No description found.</p>
+								)}
+							</article>
+						</div>
+						<div className="col-span-2">
+							<h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
+								Contents
+							</h2>
+							<div className="bg-card flex flex-col rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+								<WorkshopResourceList
+									isCollapsible={false}
+									className="border-r-0! w-full max-w-none"
+									withHeader={false}
+									maxHeight="h-auto"
+									wrapperClassName="overflow-hidden pb-0"
+								/>
+							</div>
 						</div>
 					</div>
-					{workshop?.fields?.body && (
-						<Links className="rounded-br-lg rounded-tr-none" />
-					)}
+					{workshop?.fields?.body && <Links className="mb-24 mt-20" />}
 				</>
 			</main>
 		</LayoutClient>

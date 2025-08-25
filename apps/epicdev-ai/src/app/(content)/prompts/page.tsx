@@ -34,7 +34,7 @@ export default async function PromptsIndexPage() {
 				</div>
 			) : null}
 			<div className="flex flex-col space-y-4 p-5 sm:p-10">
-				<h2 className="text-lg font-bold">Prompts</h2>
+				<h2 className="text-lg font-semibold">Prompts</h2>
 				{prompts.map((prompt) => (
 					<Card key={prompt.id}>
 						<CardHeader>

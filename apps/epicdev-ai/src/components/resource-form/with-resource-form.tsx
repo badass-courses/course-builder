@@ -226,7 +226,7 @@ export function withResourceForm<
 ) {
 	return function ResourceForm({ resource }: { resource: T }) {
 		const { data: session } = useSession()
-		const { theme } = useTheme()
+		const { theme, forcedTheme } = useTheme()
 
 		console.debug('withResourceForm resource:', {
 			resource,
@@ -340,7 +340,7 @@ export function withResourceForm<
 					hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 					user={session?.user}
 					tools={tools}
-					theme={theme}
+					theme={forcedTheme || theme}
 				>
 					<Component resource={resource} form={form} />
 				</ResourceFormComponent>

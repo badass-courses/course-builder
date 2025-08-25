@@ -46,7 +46,9 @@ export function WorkshopResourceList(props: Props) {
 	const className = 'className' in props ? props.className : ''
 	const withHeader = 'withHeader' in props ? props.withHeader : true
 	const maxHeight =
-		'maxHeight' in props ? props.maxHeight : 'h-[calc(100vh-var(--nav-height))]'
+		'maxHeight' in props
+			? props.maxHeight
+			: 'max-h-[calc(100vh-var(--nav-height))]'
 	const isCollapsible = 'isCollapsible' in props ? props.isCollapsible : true
 
 	const workshopNavigation = useWorkshopNavigation()
@@ -109,11 +111,12 @@ export function WorkshopResourceList(props: Props) {
 			aria-expanded={!isSidebarCollapsed}
 			aria-controls="workshop-navigation"
 			aria-label="Workshop navigation"
-			className={cn('relative w-full max-w-xs shrink-0 border-r', className, {
-				'border-r': !isSidebarCollapsed,
-				'hover:bg-muted/80 w-8 cursor-pointer transition [&_div]:hidden':
+			className={cn('relative w-full max-w-xs shrink-0 text-sm', className, {
+				'': !isSidebarCollapsed,
+				'w-8 cursor-pointer transition [&_div]:hidden':
 					isSidebarCollapsed && isCollapsible,
-				'bg-background overflow-hidden rounded-lg border': isCollapsible,
+				// 'bg-card overflow-hidden rounded-t-lg border-x border-t shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]':
+				// 	isCollapsible,
 			})}
 		>
 			<TooltipProvider>
@@ -127,7 +130,12 @@ export function WorkshopResourceList(props: Props) {
 						</Tooltip>
 					</span>
 				)}
-				<div className={cn('sticky top-0 overflow-hidden', maxHeight)}>
+				<div
+					className={cn('sticky top-3 overflow-hidden', maxHeight, {
+						'bg-card rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]':
+							isCollapsible,
+					})}
+				>
 					{withHeader && (
 						<div
 							ref={ref as any}
@@ -174,14 +182,14 @@ export function WorkshopResourceList(props: Props) {
 									<div className="flex items-center gap-0.5">
 										<Link
 											href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
-											className="text-primary max-w-[260px] truncate overflow-ellipsis text-base font-normal underline hover:underline"
+											className="max-w-[260px] truncate overflow-ellipsis text-sm font-normal underline hover:underline"
 										>
 											{cohort ? cohort.title : 'Workshops'}
 										</Link>
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>
 									<Link
-										className="font-heading text-balance text-lg font-bold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"
+										className="font-heading text-balance text-lg font-semibold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"
 										href={`/workshops/${workshopNavigation.slug}`}
 									>
 										{workshopNavigation.title}
@@ -221,9 +229,9 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight',
+														'bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight hover:bg-gray-100',
 														{
-															'bg-muted': isActiveGroup,
+															'bg-gray-100': isActiveGroup,
 														},
 													)}
 												>
@@ -360,7 +368,7 @@ const LessonResource = ({
 			className={cn(
 				'',
 				{
-					'bg-muted': isActiveGroup,
+					'bg-card-muted': isActiveGroup,
 				},
 				className,
 			)}
@@ -374,13 +382,12 @@ const LessonResource = ({
 							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium transition ease-out',
 							{
 								// Active state
-								'bg-muted dark:bg-foreground/5 text-primary border-gray-200':
+								'bg-card-muted dark:bg-muted text-primary border-gray-200':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
-								'dark:hover:bg-foreground/10 hover:bg-muted hover:text-primary':
+								'dark:hover:bg-foreground/10 hover:text-primary':
 									canViewLesson && !isActiveLesson && !isActiveGroup,
-								'dark:hover:bg-foreground/10 hover:bg-muted':
-									canViewLesson && isActiveGroup,
+								'dark:hover:bg-foreground/10': canViewLesson && isActiveGroup,
 							},
 						)
 
@@ -394,7 +401,7 @@ const LessonResource = ({
 									>
 										<Check
 											aria-hidden="true"
-											className="text-primary relative h-4 w-4 translate-y-1"
+											className="relative h-4 w-4 translate-y-1 text-teal-500 dark:text-teal-300"
 										/>
 									</div>
 								) : (
@@ -405,7 +412,7 @@ const LessonResource = ({
 										{index + 1}
 									</span>
 								)}
-								<span className="w-full text-base">{lesson.title}</span>
+								<span className="w-full font-semibold">{lesson.title}</span>
 								{abilityStatus === 'success' && !canViewLesson && (
 									<Lock
 										className="absolute right-5 w-3 text-gray-500"
@@ -417,7 +424,7 @@ const LessonResource = ({
 
 						return canViewLesson ? (
 							<Link
-								className={cn('hover:bg-muted', baseStyles)}
+								className={cn('hover:text-primary', baseStyles)}
 								href={`/workshops/${params.module}/${lesson.slug}`}
 								prefetch
 							>
@@ -447,11 +454,10 @@ const LessonResource = ({
 					<li data-active={isActiveLesson ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								'relative flex w-full items-baseline py-3 pl-3 pr-10 pt-2 font-medium',
 								{
 									'pl-9': true,
-									'bg-foreground/10 text-primary border-gray-200':
-										isActiveLesson,
+									'text-primary border-gray-200': isActiveLesson,
 									'hover:text-primary': !isActiveLesson,
 								},
 							)}
@@ -465,11 +471,10 @@ const LessonResource = ({
 						<li data-active={isActiveExercise ? 'true' : 'false'}>
 							<Link
 								className={cn(
-									'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-2 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
 									{
 										'pl-9': true,
-										'bg-foreground/10 text-primary border-gray-200':
-											isActiveExercise,
+										'text-primary border-gray-200': isActiveExercise,
 										'hover:text-primary': !isActiveExercise,
 									},
 								)}
@@ -484,11 +489,10 @@ const LessonResource = ({
 						<li data-active={isActiveSolution ? 'true' : 'false'}>
 							<Link
 								className={cn(
-									'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-2 pb-4 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
 									{
 										'pl-9': true,
-										'bg-foreground/10 text-primary border-gray-200':
-											isActiveSolution,
+										'text-primary border-gray-200': isActiveSolution,
 										'hover:text-primary': !isActiveSolution,
 									},
 								)}

@@ -106,10 +106,10 @@ export const PrimaryNewsletterCta: React.FC<
 							className="mx-auto mb-5"
 						/>
 					)}
-					<h2 className="sm:fluid-2xl fluid-xl text-balance text-center font-bold">
+					<h2 className="sm:fluid-2xl fluid-2xl text-balance text-center font-semibold leading-tight tracking-tight">
 						{title}
 					</h2>
-					<h3 className="text-balance pt-5 text-center font-sans text-base font-normal opacity-90 sm:text-lg lg:text-xl">
+					<h3 className="text-primary max-w-md text-balance pt-5 text-center font-sans text-base font-normal leading-tight sm:text-lg lg:text-xl">
 						{byline}
 					</h3>
 				</div>

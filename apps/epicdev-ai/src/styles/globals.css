@@ -1,11 +1,10 @@
 @import '@code-hike/mdx/dist/index.css' layer(base);
-@import './primary-newsletter-cta.css' layer(utilities);
+@import './primary-newsletter-cta.css' layer(base);
 @import './tip-newsletter-cta.css' layer(utilities);
 @import './commerce.css' layer(base);
 @import './login.css' layer(utilities);
 
 @import 'tailwindcss';
-
 @config '../../tailwind.config.ts';
 
 /*
@@ -28,7 +27,7 @@
 
 @layer base {
 	:root {
-		--nav-height: 6rem;
+		--nav-height: 48px;
 		--command-bar-height: 2.25rem;
 		--pane-layout-height: calc(
 			100vh - var(--nav-height) - var(--command-bar-height)
@@ -37,26 +36,28 @@
 			100vh - var(--nav-height) - var(--command-bar-height) - 30px
 		);
 
-		--background: 0 0% 100%;
-		--foreground: 256 54% 13%;
+		--background: 260 100% 99%;
+		--foreground: 244 47% 20%;
 		--card: 0 0% 100%;
 		--card-foreground: 0 0% 10%;
+		--card-muted: 260 30% 98%;
 		--popover: 0 0% 100%;
 		--popover-foreground: 0 0% 10%;
 		--primary: 259 75% 65%;
 		--primary-foreground: 0 0% 100%;
 		--secondary: 259 30% 93%;
 		--secondary-foreground: 256 54% 13%;
-		--muted: 256 25% 97%;
+		--muted: 260 40% 96%;
 		--muted-foreground: 256 64% 20%;
 		--accent: 0 0% 92%;
 		--accent-foreground: 0 0% 5%;
 		--destructive: 0 50% 50%;
 		--destructive-foreground: 32 5% 99%;
-		--border: 256 11% 94%;
+		--border: 262 38% 92%;
 		--input: 256 15% 90%;
 		--ring: 259 75% 65%;
 		--radius: 0.7rem;
+
 		color-scheme: light;
 
 		/* codehike theme */
@@ -114,7 +115,7 @@
 		--secondary: 240 25% 18%;
 		--secondary-foreground: 0 0% 100%;
 
-		--muted: 240 25% 7%;
+		--muted: 240 18% 14%;
 		--muted-foreground: 254 64% 90%;
 
 		--accent: 240 19% 15%;
@@ -176,7 +177,7 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-heading text-balance font-bold;
+		@apply font-heading text-balance font-semibold leading-tight tracking-tight;
 	}
 
 	body {

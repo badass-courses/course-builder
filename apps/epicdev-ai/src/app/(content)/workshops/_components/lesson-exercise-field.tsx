@@ -77,7 +77,7 @@ export default function LessonExerciseField({
 			aria-labelledby="exercises-heading"
 		>
 			<div className="flex w-full flex-col gap-1">
-				<h2 id="exercises-heading" className="text-lg font-bold">
+				<h2 id="exercises-heading" className="text-lg font-semibold">
 					Exercise
 				</h2>
 				{(!exercises || exercises.length === 0) && (
@@ -203,7 +203,7 @@ export default function LessonExerciseField({
 								>
 									Workshop App exercise path:
 									<br />{' '}
-									<span className="text-foreground font-bold">
+									<span className="text-foreground font-semibold">
 										{exercise?.fields?.workshopApp?.path}
 									</span>
 								</span>

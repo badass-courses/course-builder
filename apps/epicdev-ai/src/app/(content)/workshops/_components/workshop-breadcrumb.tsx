@@ -16,13 +16,13 @@ export default function WorkshopBreadcrumb() {
 	return (
 		<div className="inline-flex items-center gap-2">
 			<Link
-				className="text-primary max-w-xs truncate overflow-ellipsis p-0 text-lg font-normal underline underline-offset-2 sm:max-w-full"
+				className="text-primary max-w-xs truncate overflow-ellipsis p-0 text-base font-normal hover:underline sm:max-w-full"
 				href={`/cohorts/${cohort.slug}`}
 			>
 				{cohort?.title}
 			</Link>
 
-			<span className="opacity-50">/</span>
+			<span className="text-violet-700 opacity-25 dark:text-violet-400">/</span>
 		</div>
 	)
 }

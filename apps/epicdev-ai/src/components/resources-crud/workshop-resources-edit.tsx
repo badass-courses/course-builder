@@ -85,7 +85,7 @@ export default function WorkshopResourcesEdit({
 
 	return (
 		<>
-			<span className="px-5 text-lg font-bold">Resources</span>
+			<span className="px-5 text-lg font-semibold">Resources</span>
 			<Tree
 				rootResource={workshop as ContentResource}
 				rootResourceId={workshop.id}

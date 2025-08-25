@@ -57,7 +57,7 @@ export function CreateProductForm({
 					render={({ field, fieldState }) => {
 						return (
 							<FormItem>
-								<FormLabel className="text-lg font-bold">Name</FormLabel>
+								<FormLabel className="text-lg font-semibold">Name</FormLabel>
 								<FormDescription className="mt-2 text-sm">
 									A name should summarize the product and explain what it is
 									about succinctly.
@@ -76,7 +76,7 @@ export function CreateProductForm({
 					render={({ field, fieldState }) => {
 						return (
 							<FormItem>
-								<FormLabel className="text-lg font-bold">
+								<FormLabel className="text-lg font-semibold">
 									Quantity Available
 								</FormLabel>
 								<FormDescription className="mt-2 text-sm">
@@ -96,7 +96,7 @@ export function CreateProductForm({
 					render={({ field, fieldState }) => {
 						return (
 							<FormItem>
-								<FormLabel className="text-lg font-bold">Price</FormLabel>
+								<FormLabel className="text-lg font-semibold">Price</FormLabel>
 								<FormDescription className="mt-2 text-sm">
 									The price of the product in USD.
 								</FormDescription>

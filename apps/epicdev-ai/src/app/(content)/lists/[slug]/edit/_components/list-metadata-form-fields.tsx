@@ -42,7 +42,7 @@ export const ListMetadataFormFields: React.FC<{
 				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription>
 							A title should summarize the post and explain what it is about
 							clearly.
@@ -57,7 +57,7 @@ export const ListMetadataFormFields: React.FC<{
 				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormLabel className="text-lg font-semibold">Slug</FormLabel>
 						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
@@ -70,7 +70,7 @@ export const ListMetadataFormFields: React.FC<{
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Type</FormLabel>
+							<FormLabel className="text-lg font-semibold">Type</FormLabel>
 							<Select
 								onValueChange={field.onChange}
 								defaultValue={field.value || 'nextUp'}
@@ -99,7 +99,7 @@ export const ListMetadataFormFields: React.FC<{
 				name="fields.description"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
+						<FormLabel className="text-lg font-semibold">
 							SEO Description ({`${field.value?.length ?? '0'} / 160`})
 						</FormLabel>
 						<FormDescription>
@@ -145,7 +145,7 @@ export const ListMetadataFormFields: React.FC<{
 				name="fields.github"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<FormLabel className="text-lg font-semibold">GitHub</FormLabel>
 						<FormDescription>
 							Direct link to the GitHub file associated with the post.
 						</FormDescription>
@@ -159,7 +159,7 @@ export const ListMetadataFormFields: React.FC<{
 				name="fields.gitpod"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
+						<FormLabel className="text-lg font-semibold">Gitpod</FormLabel>
 						<FormDescription>
 							Gitpod link to start a new workspace with the post.
 						</FormDescription>

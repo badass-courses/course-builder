@@ -1,4 +1,3 @@
-import { color } from 'framer-motion'
 import colors from 'tailwindcss/colors'
 import defaultTheme from 'tailwindcss/defaultTheme'
 
@@ -35,7 +34,7 @@ module.exports = {
 				'2xl': '1820px',
 			},
 			colors: {
-				gray: colors.slate,
+				gray: colors.neutral,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -68,6 +67,7 @@ module.exports = {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))',
+					muted: 'hsl(var(--card-muted))',
 				},
 			},
 			borderRadius: {
@@ -77,7 +77,7 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
-				heading: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
+				heading: ['var(--font-gibson)', ...defaultTheme.fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
 			},
 			keyframes: {
@@ -111,12 +111,18 @@ module.exports = {
 						},
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
-							fontWeight: 700,
+							fontWeight: 600,
+							fontFamily: 'var(--font-gibson)',
 							color: theme('colors.foreground'),
 						},
 						ul: {
 							listStylePosition: 'outside',
-							listStyleType: 'square',
+							// listStyleType: 'circle',
+							listStyleType: 'disc',
+							// marker color
+							marker: {
+								color: theme('colors.primary.DEFAULT'),
+							},
 						},
 						'ul > li': {
 							color: theme('colors.foreground'),

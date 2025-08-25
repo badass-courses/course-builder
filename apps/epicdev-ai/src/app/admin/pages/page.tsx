@@ -27,7 +27,7 @@ export default async function PagesIndexPage() {
 		<main className="flex w-full justify-between p-10">
 			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 				<div className="mb-5 flex w-full items-center justify-between">
-					<h1 className="fluid-3xl font-heading font-bold">Pages</h1>
+					<h1 className="fluid-3xl font-heading font-semibold">Pages</h1>
 					<Button asChild className="gap-1">
 						<Link href={`/admin/pages/new`}>
 							<FilePlus2 className="h-4 w-4" />

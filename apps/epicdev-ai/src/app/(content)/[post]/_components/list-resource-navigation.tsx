@@ -81,7 +81,7 @@ export default function ListResourceNavigation({
 				{withHeader && (
 					<div className="bg-muted/50 relative flex flex-col border-b p-5">
 						<Link
-							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-bold hover:underline"
+							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-semibold hover:underline"
 							href={`/${list.fields.slug}`}
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
@@ -181,7 +181,7 @@ export function MobileListResourceNavigation() {
 					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
 					<Link
 						href={`/${list?.fields?.slug}`}
-						className="fluid-lg inline-flex px-5 pb-5 pt-10 font-bold"
+						className="fluid-lg inline-flex px-5 pb-5 pt-10 font-semibold"
 					>
 						{list?.fields?.title}
 					</Link>

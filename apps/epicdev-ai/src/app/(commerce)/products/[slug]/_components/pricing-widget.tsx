@@ -76,7 +76,7 @@ export const PricingWidget: React.FC<{
 							<Pricing.TeamQuantityInput />
 						</>
 					)}
-					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative my-3 w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-bold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
+					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative my-3 w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-semibold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
 						{ctaLabel}
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />

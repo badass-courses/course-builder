@@ -111,7 +111,7 @@ export async function GET(request: Request) {
 					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
 						<div tw="flex flex-col items-start">
 							<div
-								tw={`text-[${title && title.length > 43 ? '54px' : '80px'}] text-white max-w-[640px] leading-[1.1] mb-6 font-bold`}
+								tw={`text-[${title && title.length > 43 ? '54px' : '80px'}] text-white max-w-[640px] leading-[1.1] mb-6 font-semibold`}
 							>
 								{title}
 							</div>
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
 							</div>
 
 							{discountPercentage ? (
-								<div tw="flex items-center justify-center bg-[#FF6CE2] text-black px-10 py-5 rounded-md text-[34px] font-bold">
+								<div tw="flex items-center justify-center bg-[#FF6CE2] text-black px-10 py-5 rounded-md text-[34px] font-semibold">
 									<span tw="text-[50px] mr-5">Save {discountPercentage}%</span>{' '}
 									for a limited time!
 								</div>

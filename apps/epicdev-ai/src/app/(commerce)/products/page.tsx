@@ -27,7 +27,7 @@ export default async function ProductsPage() {
 				</div>
 			) : null}
 			<div className="flex flex-col space-y-4">
-				<h2 className="text-lg font-bold">Products</h2>
+				<h2 className="text-lg font-semibold">Products</h2>
 				{products.map((product) => (
 					<Card key={product.id}>
 						<CardHeader>

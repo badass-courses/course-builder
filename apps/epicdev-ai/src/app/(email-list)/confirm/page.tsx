@@ -14,7 +14,7 @@ export default async function ConfirmSubscriptionPage() {
 		<LayoutClient withContainer>
 			<main className="min-h-(--pane-layout-height) container flex flex-grow flex-col items-center justify-center px-5 py-24">
 				<div className="flex w-full max-w-4xl flex-col items-center justify-center text-center font-light">
-					<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-extrabold sm:text-5xl">
+					<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-semibold sm:text-5xl">
 						Confirm your email address
 					</h1>
 					<div className="prose sm:prose-lg prose-p:text-balance mx-auto leading-relaxed opacity-80">

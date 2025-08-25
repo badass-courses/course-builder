@@ -80,7 +80,7 @@ export async function GET(request: Request) {
 						</div>
 
 						<div tw="flex flex-col">
-							<div tw="text-6xl font-bold leading-tight text-[#1D0F42] max-w-[500px]">
+							<div tw="text-6xl font-semibold leading-tight text-[#1D0F42] max-w-[500px]">
 								{title}
 							</div>
 						</div>
@@ -90,7 +90,9 @@ export async function GET(request: Request) {
 					<div tw="flex flex-col p-16 w-1/2 justify-center">
 						<div tw="flex flex-col h-full bg-white/80 rounded-2xl  shadow-xl">
 							<div tw="flex flex-col px-8 py-2 mb-2 border-b border-gray-200 rounded-t-2xl">
-								<h3 tw="text-3xl font-bold text-[#1D0F42]">Upcoming Dates</h3>
+								<h3 tw="text-3xl font-semibold text-[#1D0F42]">
+									Upcoming Dates
+								</h3>
 							</div>
 
 							{upcomingEvents.length > 0 ? (

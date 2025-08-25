@@ -62,7 +62,7 @@ export function AddToList({ lists, post }: { lists: List[]; post: Post }) {
 	return (
 		<div className="px-5">
 			<div className="mb-2 flex w-full items-baseline justify-between">
-				<FormLabel className="text-lg font-bold">Lists</FormLabel>
+				<FormLabel className="text-lg font-semibold">Lists</FormLabel>
 				<Button
 					variant="ghost"
 					size="sm"

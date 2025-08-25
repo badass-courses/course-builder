@@ -151,7 +151,7 @@ const BaseSolutionForm = ({
 				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription>A clear title for this solution.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
@@ -164,7 +164,7 @@ const BaseSolutionForm = ({
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<div className="flex items-center justify-between">
-							<FormLabel className="text-lg font-bold">
+							<FormLabel className="text-lg font-semibold">
 								SEO Description
 							</FormLabel>
 							<Button

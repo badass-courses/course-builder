@@ -177,7 +177,7 @@ export function createWorkshopFormConfig(
 			listEditorConfig: {
 				title: (
 					<div>
-						<span className="flex text-lg font-bold">Resources</span>
+						<span className="flex text-lg font-semibold">Resources</span>
 						<span className="text-muted-foreground mt-2 font-normal">
 							Add and organize resources in this workshop.
 						</span>

@@ -14,7 +14,7 @@ export default function MDXLivePreview() {
 	return (
 		<div className="bg-background max-w-(--breakpoint-xl) w-full">
 			<div className="flex items-center justify-between border-b px-5 py-3">
-				<h3 className="flex text-lg font-bold">Preview</h3>
+				<h3 className="flex text-lg font-semibold">Preview</h3>
 				<Button variant="ghost" onClick={togglePreviewPanel} size="icon">
 					<X className="h-5 w-5" />
 				</Button>

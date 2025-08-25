@@ -36,7 +36,7 @@ import SearchConfig from './search-config'
 
 const PageResourcesTitle = () => (
 	<div>
-		<span className="flex text-lg font-bold">Resources</span>
+		<span className="flex text-lg font-semibold">Resources</span>
 		<span className="text-muted-foreground mt-2 font-normal">
 			Attach resources to this page to create a curated collection that can be
 			displayed in any order.
@@ -168,7 +168,7 @@ export function EditPagesForm({ page }: { page: Page }) {
 				),
 				toolComponent: (
 					<div className="mt-3 px-5">
-						<h3 className="mb-3 inline-flex text-xl font-bold">
+						<h3 className="mb-3 inline-flex text-xl font-semibold">
 							MDX Components
 						</h3>
 						<PageBlocks />

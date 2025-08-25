@@ -75,12 +75,7 @@ module.exports = {
 			screens: {
 				'2xl': '1820px',
 			},
-			typography: (theme) => ({
-				DEFAULT: {
-					css: {},
-				},
-			}),
 		},
 	},
-	plugins: [require('@tailwindcss/typography')],
+	plugins: [],
 }

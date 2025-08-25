@@ -46,7 +46,7 @@ export const CohortSidebar = ({
 				<div
 					ref={sidebarRef}
 					className={cn(
-						'dark:bg-muted-foreground/5 rounded-lg border bg-white dark:border-transparent',
+						'dark:bg-muted-foreground/5 rounded-lg border bg-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] dark:border-transparent',
 						{
 							'top-3 md:sticky': sticky && windowHeight - 63 > height,
 						},
@@ -91,14 +91,31 @@ export const CohortSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-4 transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-3 shadow-[0px_-8px_38px_-14px_rgba(0,_0,_0,_0.1)] transition-opacity duration-300 md:hidden',
 				className,
 			)}
 		>
-			<p>{eventDateString}</p>
+			<p className="font-heading text-sm font-medium">{eventDateString}</p>
 			<Button asChild>
-				<Link href="#buy" onClick={handleScrollToBuy}>
-					Enroll today
+				<Link
+					className="dark:bg-primary font-heading dark:hover:bg-primary/90 from-primary relative cursor-pointer rounded-lg bg-gradient-to-b to-indigo-800 text-base font-semibold tracking-tight shadow-xl transition duration-300 ease-out hover:bg-blue-700 hover:brightness-110"
+					href="#buy"
+					onClick={handleScrollToBuy}
+				>
+					<span className="relative z-10 drop-shadow-md dark:text-white">
+						Enroll
+					</span>
+					<div
+						style={{
+							backgroundSize: '200% 100%',
+							animationDuration: '2s',
+							animationIterationCount: 'infinite',
+							animationTimingFunction: 'linear',
+							animationFillMode: 'forwards',
+							animationDelay: '2s',
+						}}
+						className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+					/>
 				</Link>
 			</Button>
 		</div>

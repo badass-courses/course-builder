@@ -104,7 +104,9 @@ async function PromptTitle({
 	const prompt = await promptLoader
 
 	return (
-		<h1 className="text-3xl font-bold sm:text-4xl">{prompt?.fields?.title}</h1>
+		<h1 className="text-3xl font-semibold sm:text-4xl">
+			{prompt?.fields?.title}
+		</h1>
 	)
 }
 

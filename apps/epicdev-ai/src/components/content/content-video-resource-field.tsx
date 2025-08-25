@@ -431,7 +431,9 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 						/>
 						{!videoResource?.id && (
 							<div className="flex items-baseline gap-3 border-b px-5 py-2">
-								<FormLabel className="text-base font-bold">{label}</FormLabel>
+								<FormLabel className="text-base font-semibold">
+									{label}
+								</FormLabel>
 								{!required && (
 									<FormDescription className="pb-0">
 										Add a video for this content (optional).

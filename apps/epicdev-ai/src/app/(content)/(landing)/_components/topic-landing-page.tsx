@@ -115,15 +115,17 @@ export default async function TopicPage({
 					<WorkshopActionBar page={page} />
 				</React.Suspense>
 				<div className="col-span-8 flex w-full flex-col">
-					<header className="flex flex-col items-center text-center sm:items-start sm:text-left">
-						<h1 className="text-3xl font-bold sm:text-4xl">{pageTitle}</h1>
+					<header className="flex flex-col items-center py-10 text-center sm:items-start sm:text-left">
+						<h1 className="text-3xl font-semibold sm:text-4xl lg:text-5xl">
+							{pageTitle}
+						</h1>
 						{page?.fields?.description && (
 							<p className="text-muted-foreground mb-4 mt-4 text-balance text-lg sm:text-xl">
 								{page?.fields?.description}
 							</p>
 						)}
+						<Contributor className="mt-5 justify-center sm:justify-start" />
 					</header>
-					<Contributor className="justify-center sm:justify-start" />
 					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
 						{pageBody}
 					</article>

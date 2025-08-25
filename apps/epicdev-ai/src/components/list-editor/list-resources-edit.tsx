@@ -255,7 +255,7 @@ export default function ListResourcesEdit({
 						</div>
 					</div>
 					<TreeWithSearch />
-					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
+					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-semibold">
 						Body
 					</div>
 				</div>

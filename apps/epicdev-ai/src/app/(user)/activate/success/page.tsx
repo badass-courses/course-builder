@@ -12,7 +12,7 @@ export default function ActivateSuccess() {
 						name="Checkmark"
 						className="mb-5 h-8 w-8 text-emerald-500 dark:text-emerald-300"
 					/>
-					<h1 className="text-2xl font-bold sm:text-3xl">
+					<h1 className="text-2xl font-semibold sm:text-3xl">
 						Device Activation Successful
 					</h1>
 					<p className="py-4 text-gray-600 dark:text-gray-400">

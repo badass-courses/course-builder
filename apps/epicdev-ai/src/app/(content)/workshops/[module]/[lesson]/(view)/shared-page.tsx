@@ -66,9 +66,9 @@ export async function LessonPage({
 		<ActiveHeadingProvider>
 			<main className="w-full">
 				{lessonType === 'exercise' ? (
-					<div className="dark:bg-muted bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-t-lg border-x border-b border-t p-10 md:aspect-video">
+					<div className="dark:bg-muted bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-lg border-x border-b border-t p-10 md:aspect-video">
 						<div className="flex max-w-lg flex-col items-center justify-center gap-4 text-center">
-							<h2 className="text-2xl font-bold">
+							<h2 className="text-2xl font-semibold">
 								Stop! <span aria-hidden="true">😅</span>
 							</h2>
 							<p className="text-center text-base">
@@ -278,7 +278,7 @@ async function PlayerContainer({
 		<VideoPlayerOverlayProvider>
 			<section
 				aria-label="video"
-				className="dark relative flex flex-col items-center justify-center overflow-hidden rounded-t-lg border-b bg-black text-white dark:text-white"
+				className="dark relative -mx-8 flex flex-col items-center justify-center overflow-hidden bg-black text-white sm:mx-0 sm:rounded-lg dark:text-white"
 			>
 				{thumbnailUrl && (
 					<Image
@@ -316,7 +316,7 @@ async function PlayerContainer({
 						)}
 					</WorkshopPricing>
 					<AuthedVideoPlayer
-						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
+						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 						muxPlaybackId={muxPlaybackId}
 						// playbackIdLoader={playbackIdLoader}
 						resource={lesson}
@@ -342,7 +342,7 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 			>
 				{lesson.type}
 			</Badge> */}
-			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-bold dark:text-white">
+			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-semibold tracking-tight dark:text-white">
 				{lesson.fields?.title}
 			</h1>
 		</div>

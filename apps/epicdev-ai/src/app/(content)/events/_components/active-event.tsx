@@ -21,7 +21,7 @@ export function ActiveEventButton({ className }: { className?: string }) {
 		<div className={cn('', className)}>
 			<Button
 				asChild
-				className="from-primary dark:from-primary bg-linear-to-b to-indigo-800 text-white shadow-lg shadow-indigo-800/20 dark:to-indigo-600 dark:text-black"
+				className="from-primary font-heading dark:from-primary bg-linear-to-b to-indigo-800 text-white shadow-lg shadow-indigo-800/20 dark:to-indigo-600 dark:text-black"
 			>
 				<Link href={getResourcePath('event', firstEvent.fields.slug, 'view')}>
 					{/* <Marquee className="max-w-24 [--duration:20s]"> */}
@@ -70,7 +70,7 @@ export function ActiveEventBanner({ className }: { className?: string }) {
 				</div>
 			)}
 			<div className="flex flex-col items-start justify-center gap-4 p-5">
-				<h2 className="text-2xl font-bold">{event.fields.title}</h2>
+				<h2 className="text-2xl font-semibold">{event.fields.title}</h2>
 				<p className="text-muted-foreground text-sm">
 					{event.fields.description}
 				</p>

@@ -27,7 +27,7 @@ export default async function ListsPage() {
 	return (
 		<LayoutClient withContainer className="">
 			<main>
-				<h1 className="fluid-2xl font-bold">Lists</h1>
+				<h1 className="fluid-2xl font-semibold">Lists</h1>
 				<div className="flex flex-col gap-5">
 					<ListsTable canCreateContent={canCreateContent} lists={lists} />
 					<div className="flex flex-col gap-5 py-5">

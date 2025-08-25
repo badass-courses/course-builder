@@ -290,7 +290,7 @@ export default async function CohortPage(props: {
 					</div>
 				) : null}
 
-				<div className="flex flex-col gap-10 lg:flex-row">
+				<div className="flex flex-col gap-10 pb-16 lg:flex-row">
 					<div className="w-full">
 						<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 							{fields?.image && (
@@ -302,9 +302,9 @@ export default async function CohortPage(props: {
 									alt={fields?.title}
 								/>
 							)}
-							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-5 md:items-start md:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-									<span className="text-primary font-mono text-xs font-semibold uppercase">
+									<span className="text-foreground/80 font-mono text-xs font-semibold uppercase sm:text-sm">
 										Cohort-based Course
 									</span>
 									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
@@ -317,11 +317,11 @@ export default async function CohortPage(props: {
 							)} */}
 								</div>
 
-								<h1 className="text-balance text-3xl font-bold sm:text-4xl lg:text-5xl">
+								<h1 className="font-heading leading-tighter text-balance text-3xl font-semibold tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl lg:leading-tight">
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg mt-5 text-balance font-light">
+									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-normal tracking-tight">
 										{fields.description}
 									</h2>
 								)}
@@ -335,9 +335,8 @@ export default async function CohortPage(props: {
 						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none py-10">
 							{content}
 						</article>
-
-						<div className="mt-2 border-t py-8">
-							<h2 className="mb-5 text-2xl font-semibold sm:text-3xl">
+						<div className="mt-2">
+							<h2 className="mb-5 text-2xl font-semibold tracking-tight sm:text-3xl">
 								Contents
 							</h2>
 							<ul className="flex flex-col gap-3">
@@ -397,7 +396,7 @@ export default async function CohortPage(props: {
 														>
 															<AccordionItem
 																value={`${workshop.id}-body`}
-																className="bg-card shadow-xs rounded border pl-4 pr-1"
+																className="bg-card border-b! rounded-lg border pl-4 pr-1 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 															>
 																<div className="relative flex items-center justify-between">
 																	{workshop.fields.state === 'published' &&
@@ -410,25 +409,46 @@ export default async function CohortPage(props: {
 																				'view',
 																			)}
 																		>
-																			{workshop.fields.title}{' '}
-																			<div className="mt-1 text-sm font-normal opacity-80">
-																				Available from {workshopDateString}
+																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
+																				<div className="font-bold">
+																					{workshop.fields.title}
+																				</div>{' '}
+																				<div className="text-sm font-medium">
+																					Available from {workshopDateString}
+																				</div>
 																			</div>
+																			{workshop.fields.description && (
+																				<p className="mt-1 text-sm font-normal opacity-80">
+																					{workshop.fields.description}
+																				</p>
+																			)}
 																		</Link>
 																	) : (
 																		<div className="text-foreground flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight">
-																			{workshop.fields.title}{' '}
-																			<div className="mt-1 text-sm font-normal opacity-80">
-																				Available from {workshopDateString}
+																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
+																				<div className="font-bold">
+																					{workshop.fields.title}
+																				</div>{' '}
+																				<div className="text-sm font-medium">
+																					Available from {workshopDateString}
+																				</div>
 																			</div>
+																			{workshop.fields.description && (
+																				<p className="mt-1 text-sm font-normal opacity-80">
+																					{workshop.fields.description}
+																				</p>
+																			)}
 																		</div>
 																	)}
-																	<AccordionTrigger
-																		aria-label="Toggle lessons"
-																		className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
-																	/>
+																	{workshop.resources &&
+																		workshop.resources.length > 0 && (
+																			<AccordionTrigger
+																				aria-label="Toggle lessons"
+																				className="bg-secondary hover:bg-foreground/20 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
+																			/>
+																		)}
 																</div>
-																<AccordionContent className="pb-2">
+																<AccordionContent className="border-b pb-2">
 																	{/* Display formatted workshop date/time */}
 																	<div className="text-muted-foreground text-sm">
 																		{/* {dayNumber !== null && (

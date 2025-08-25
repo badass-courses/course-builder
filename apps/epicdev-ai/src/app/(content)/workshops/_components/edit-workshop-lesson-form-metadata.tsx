@@ -157,7 +157,7 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription>
 							A title should summarize the tip and explain what it is about
 							clearly.
@@ -172,7 +172,7 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormLabel className="text-lg font-semibold">Slug</FormLabel>
 						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
@@ -185,7 +185,7 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.optional"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="flex items-center gap-2 text-lg font-bold">
+						<FormLabel className="flex items-center gap-2 text-lg font-semibold">
 							<Checkbox
 								name={field.name}
 								ref={field.ref}
@@ -208,7 +208,7 @@ export const LessonMetadataFormFields: React.FC<{
 			{/* Solution Section */}
 			<div className="flex flex-col gap-2 px-5">
 				<div className="flex items-center justify-between gap-2">
-					<h2 className="text-lg font-bold">Solution</h2>
+					<h2 className="text-lg font-semibold">Solution</h2>
 				</div>
 
 				{solutionLoading ? (
@@ -304,7 +304,7 @@ export const LessonMetadataFormFields: React.FC<{
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<div className="flex items-center justify-between">
-							<FormLabel className="text-lg font-bold">
+							<FormLabel className="text-lg font-semibold">
 								SEO Description
 							</FormLabel>
 							<Button
@@ -343,7 +343,7 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.github"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<FormLabel className="text-lg font-semibold">GitHub</FormLabel>
 						<FormDescription>
 							Direct link to the GitHub file associated with the lesson.
 						</FormDescription>
@@ -357,7 +357,7 @@ export const LessonMetadataFormFields: React.FC<{
 				name="fields.gitpod"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
+						<FormLabel className="text-lg font-semibold">Gitpod</FormLabel>
 						<FormDescription>
 							Gitpod link to start a new workspace with the lesson.
 						</FormDescription>
