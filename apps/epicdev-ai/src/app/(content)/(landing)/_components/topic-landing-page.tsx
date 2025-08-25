@@ -116,7 +116,7 @@ export default async function TopicPage({
 				</React.Suspense>
 				<div className="col-span-8 flex w-full flex-col">
 					<header className="flex flex-col items-center py-10 text-center sm:items-start sm:text-left">
-						<h1 className="text-3xl font-semibold sm:text-4xl lg:text-5xl">
+						<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
 							{pageTitle}
 						</h1>
 						{page?.fields?.description && (

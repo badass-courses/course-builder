@@ -36,7 +36,7 @@ export default async function AlreadySubscribedPage() {
 			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
 				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 					<div className="text-center">
-						<h1 className="text-3xl font-semibold sm:text-4xl">
+						<h1 className="text-3xl font-bold sm:text-4xl">
 							You're Already Subscribed!
 						</h1>
 						<p className="text-muted-foreground mt-4 text-lg">

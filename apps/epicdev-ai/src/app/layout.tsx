@@ -13,7 +13,7 @@ import { env } from '@/env.mjs'
 import { getProduct } from '@/lib/products-query'
 import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
-import { gibson } from '@/utils/load-fonts'
+import { vastagoGrotesk } from '@/utils/load-fonts'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
 import HolyLoader from 'holy-loader'
@@ -71,7 +71,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${geist.variable} ${geistMono.variable} ${gibson.variable} antialised font-sans`}
+					className={`relative ${geist.variable} ${geistMono.variable} ${vastagoGrotesk.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

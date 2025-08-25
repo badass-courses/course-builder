@@ -137,7 +137,7 @@ function PageLoading() {
 		<LayoutClient withContainer>
 			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
 				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-					<h1 className="text-center text-lg font-medium sm:text-xl lg:text-2xl">
+					<h1 className="text-center text-lg font-bold sm:text-xl lg:text-2xl">
 						Validating Your Subscription, Hang Tight...
 					</h1>
 					<div className="mx-auto">

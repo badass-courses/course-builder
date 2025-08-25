@@ -317,11 +317,11 @@ export default async function CohortPage(props: {
 							)} */}
 								</div>
 
-								<h1 className="font-heading leading-tighter text-balance text-3xl font-semibold tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl lg:leading-tight">
+								<h1 className="font-heading leading-tighter text-balance text-3xl font-bold tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl lg:leading-tight">
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-normal tracking-tight">
+									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-medium tracking-tight">
 										{fields.description}
 									</h2>
 								)}

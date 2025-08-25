@@ -30,7 +30,7 @@ const ThanksRedeem = async (props: {
 		<LayoutClient withContainer>
 			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
 				<div className="mx-auto flex w-full max-w-2xl flex-col justify-center gap-5 text-center">
-					<h1 className="w-full text-balance text-2xl font-semibold sm:text-3xl">
+					<h1 className="w-full text-balance text-2xl font-bold sm:text-3xl">
 						Success! Please check your inbox for a login link.
 					</h1>
 					<LoginLink.Root

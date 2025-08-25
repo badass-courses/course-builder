@@ -20,7 +20,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 			>
 				<div className="flex h-full grow flex-col gap-4">
 					<div className="flex flex-col gap-2">
-						<span className="sm:fluid-xl fluid-lg font-heading group-hover:text-primary pr-5 font-semibold tracking-tight transition ease-out sm:tracking-tight">
+						<span className="sm:fluid-xl fluid-lg font-heading group-hover:text-primary pr-5 font-bold tracking-tight transition ease-out sm:tracking-tight">
 							<Highlight
 								attribute="title"
 								hit={hit as any}

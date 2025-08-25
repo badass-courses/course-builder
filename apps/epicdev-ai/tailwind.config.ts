@@ -8,15 +8,15 @@ module.exports = {
 	darkMode: ['class'],
 	content: [
 		'./src/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/primitives/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}',
-		'./node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
+		// './node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/index.tsx',
-		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
+		// './node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
 		fluidTypography: {
@@ -77,7 +77,10 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
-				heading: ['var(--font-gibson)', ...defaultTheme.fontFamily.sans],
+				heading: [
+					'var(--font-vastago-grotesk)',
+					...defaultTheme.fontFamily.sans,
+				],
 				mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
 			},
 			keyframes: {
@@ -112,12 +115,11 @@ module.exports = {
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
 							fontWeight: 600,
-							fontFamily: 'var(--font-gibson)',
+							fontFamily: 'var(--font-vastago-grotesk)',
 							color: theme('colors.foreground'),
 						},
 						ul: {
 							listStylePosition: 'outside',
-							// listStyleType: 'circle',
 							listStyleType: 'disc',
 							// marker color
 							marker: {

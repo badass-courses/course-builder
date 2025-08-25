@@ -1,79 +1,54 @@
 import localFont from 'next/font/local'
 
-export const gibson = localFont({
+export const vastagoGrotesk = localFont({
 	preload: true,
 	display: 'auto',
-	variable: '--font-gibson',
+	variable: '--font-vastago-grotesk',
 	src: [
 		{
-			path: '../styles/fonts/canada-type-gibson_100_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Thin.woff2',
 			weight: '100',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_100_italic.woff2',
-			weight: '100',
-			style: 'italic',
+			path: '../styles/fonts/VastagoGrotesk-ExtraLight.woff2',
+			weight: '200',
+			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_300_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Light.woff2',
 			weight: '300',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_300_italic.woff2',
-			weight: '300',
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/canada-type-gibson_400_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Regular.woff2',
 			weight: '400',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_400_italic.woff2',
-			weight: '400',
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/canada-type-gibson_500_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Medium.woff2',
 			weight: '500',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_500_italic.woff2',
-			weight: '500',
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/canada-type-gibson_600_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-SemiBold.woff2',
 			weight: '600',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_600_italic.woff2',
-			weight: '600',
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/canada-type-gibson_700_normal.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Bold.woff2',
 			weight: '700',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_700_italic.woff2',
-			weight: '700',
-			style: 'italic',
-		},
-		{
-			path: '../styles/fonts/canada-type-gibson_900_normal.woff2',
-			weight: '900',
+			path: '../styles/fonts/VastagoGrotesk-Heavy.woff2',
+			weight: '800',
 			style: 'normal',
 		},
 		{
-			path: '../styles/fonts/canada-type-gibson_900_italic.woff2',
+			path: '../styles/fonts/VastagoGrotesk-Black.woff2',
 			weight: '900',
-			style: 'italic',
+			style: 'normal',
 		},
 	],
 })

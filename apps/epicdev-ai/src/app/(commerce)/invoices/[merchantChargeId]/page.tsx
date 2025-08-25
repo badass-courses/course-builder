@@ -138,7 +138,7 @@ const Invoice = async (props: {
 						>
 							<ChevronLeft className="h-3 w-3" /> Invoices
 						</Link>
-						<h1 className="font-text text-center text-lg font-medium leading-tight sm:text-left sm:text-xl">
+						<h1 className="font-text text-center text-lg font-bold leading-tight sm:text-left sm:text-xl">
 							Your Invoice for {product.name}
 						</h1>
 						<div className="flex flex-col items-center gap-2 pt-3 sm:flex-row">

@@ -175,11 +175,11 @@ export default async function ModulePage(props: Props) {
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
-							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
-								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-base lg:prose-lg mt-3">
 									<p>{workshop.fields?.description}</p>
 								</div>
 							)}

@@ -24,10 +24,10 @@ const PurchaseTransferPage = async (props: {
 			<main className="mx-auto flex w-full flex-grow flex-col items-center justify-center px-5 py-24 sm:py-32">
 				{purchaseTransfer?.transferState === 'INITIATED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-semibold">
+						<h1 className="text-center text-3xl font-bold">
 							👋 Welcome to {process.env.NEXT_PUBLIC_SITE_TITLE}
 						</h1>
-						<h2 className="text-center text-xl font-semibold">
+						<h2 className="text-center text-xl font-bold">
 							You've been invited by{' '}
 							{purchaseTransfer?.sourceUser?.name ||
 								purchaseTransfer?.sourceUser?.email ||
@@ -82,10 +82,10 @@ const PurchaseTransferPage = async (props: {
 				)}
 				{purchaseTransfer?.transferState === 'COMPLETED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-semibold">
+						<h1 className="text-center text-3xl font-bold">
 							Purchase Transfer Completed
 						</h1>
-						<h2 className="text-center text-xl font-semibold">
+						<h2 className="text-center text-xl font-bold">
 							The license transfer from{' '}
 							{purchaseTransfer?.sourceUser?.name ||
 								purchaseTransfer?.sourceUser?.email ||
@@ -96,7 +96,7 @@ const PurchaseTransferPage = async (props: {
 				)}
 				{purchaseTransfer?.transferState === 'CANCELED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-semibold">
+						<h1 className="text-center text-3xl font-bold">
 							Purchase Transfer Canceled
 						</h1>
 						<p className="text-center">
