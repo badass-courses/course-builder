@@ -74,7 +74,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative ${inter.variable} ${dmSerifText.variable} antialised font-sans`}
+					className={`antialised relative ${inter.variable} ${dmSerifText.variable} font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
