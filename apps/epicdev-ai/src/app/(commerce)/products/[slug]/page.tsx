@@ -118,7 +118,7 @@ async function ProductTitle({
 }) {
 	const product = await productLoader
 
-	return <h1 className="text-3xl font-bold sm:text-4xl">{product?.name}</h1>
+	return <h1 className="text-3xl font-semibold sm:text-4xl">{product?.name}</h1>
 }
 
 export default async function ProductPage({

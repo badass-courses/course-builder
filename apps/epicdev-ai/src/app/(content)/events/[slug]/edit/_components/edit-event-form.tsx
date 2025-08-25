@@ -205,7 +205,7 @@ export function EditEventForm({
 					),
 					toolComponent: (
 						<div className="mt-3 px-5">
-							<h3 className="mb-3 inline-flex text-xl font-bold">
+							<h3 className="mb-3 inline-flex text-xl font-semibold">
 								MDX Components
 							</h3>
 							<PageBlocks />
@@ -322,7 +322,7 @@ const EventFormFields = ({
 				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription>
 							A title should summarize the post and explain what it is about
 							clearly.
@@ -337,7 +337,7 @@ const EventFormFields = ({
 				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormLabel className="text-lg font-semibold">Slug</FormLabel>
 						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
@@ -353,7 +353,7 @@ const EventFormFields = ({
 				name="fields.startsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Starts at</FormLabel>
+						<FormLabel className="text-lg font-semibold">Starts at</FormLabel>
 						<DateTimePicker
 							aria-label="Starts At"
 							{...field}
@@ -382,7 +382,7 @@ const EventFormFields = ({
 				name="fields.endsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Ends at</FormLabel>
+						<FormLabel className="text-lg font-semibold">Ends at</FormLabel>
 						<DateTimePicker
 							aria-label="Ends At"
 							{...field}
@@ -411,7 +411,7 @@ const EventFormFields = ({
 				name="fields.timezone"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
+						<FormLabel className="text-lg font-semibold">Timezone</FormLabel>
 						<Input {...field} readOnly disabled value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
@@ -420,7 +420,7 @@ const EventFormFields = ({
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">
-						<FormLabel className="inline-flex items-center text-lg font-bold">
+						<FormLabel className="inline-flex items-center text-lg font-semibold">
 							<Calendar className="mr-1 size-4" /> Event Details
 						</FormLabel>
 						<FormDescription>
@@ -431,7 +431,7 @@ const EventFormFields = ({
 				</DialogTrigger>
 				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
 							<Calendar className="mr-1 size-4" /> Event Details
 						</DialogTitle>
 						<DialogDescription>
@@ -470,7 +470,7 @@ const EventFormFields = ({
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">
-						<FormLabel className="inline-flex items-center text-lg font-bold">
+						<FormLabel className="inline-flex items-center text-lg font-semibold">
 							Attendee Instructions
 						</FormLabel>
 						<FormDescription>
@@ -485,7 +485,7 @@ const EventFormFields = ({
 				</DialogTrigger>
 				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
 							Attendee Instructions
 						</DialogTitle>
 						<DialogDescription>
@@ -527,7 +527,7 @@ const EventFormFields = ({
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<div className="flex items-center justify-between">
-							<FormLabel className="text-lg font-bold leading-none">
+							<FormLabel className="text-lg font-semibold leading-none">
 								SEO Description
 								<br />
 								<span className="text-muted-foreground text-sm tabular-nums">

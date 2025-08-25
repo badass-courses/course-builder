@@ -177,7 +177,7 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-heading text-balance font-extrabold leading-tight tracking-tight;
+		@apply font-heading text-balance font-semibold leading-tight tracking-tight;
 	}
 
 	body {

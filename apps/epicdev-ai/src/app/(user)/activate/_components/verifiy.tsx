@@ -16,7 +16,9 @@ export default function Verify({ userCode }: { userCode: string }) {
 		<main className="mx-auto flex w-full max-w-lg flex-grow flex-col items-center justify-center pb-24 pt-16">
 			<div className="flex w-full flex-col items-center rounded p-5 text-center">
 				<Fingerprint animate={animate} />
-				<h1 className="text-2xl font-bold sm:text-3xl">Device Confirmation</h1>
+				<h1 className="text-2xl font-semibold sm:text-3xl">
+					Device Confirmation
+				</h1>
 				<p className="py-4 text-gray-600 dark:text-gray-400">
 					Please confirm this is the code displayed in your app
 				</p>

@@ -47,7 +47,7 @@ export function WorkshopFormBase(
 				control={form.control}
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription className="mt-2 text-sm">
 							A title should summarize the tip and explain what it is about
 							clearly.
@@ -63,7 +63,7 @@ export function WorkshopFormBase(
 				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormLabel className="text-lg font-semibold">Slug</FormLabel>
 						<Input {...field} />
 						<FormMessage />
 					</FormItem>
@@ -75,7 +75,7 @@ export function WorkshopFormBase(
 				control={form.control}
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Description</FormLabel>
+						<FormLabel className="text-lg font-semibold">Description</FormLabel>
 						<Textarea {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
@@ -87,7 +87,7 @@ export function WorkshopFormBase(
 				name="fields.startsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Starts at</FormLabel>
+						<FormLabel className="text-lg font-semibold">Starts at</FormLabel>
 						<DateTimePicker
 							{...field}
 							value={
@@ -116,7 +116,7 @@ export function WorkshopFormBase(
 				name="fields.endsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Ends at</FormLabel>
+						<FormLabel className="text-lg font-semibold">Ends at</FormLabel>
 						<DateTimePicker
 							{...field}
 							value={
@@ -144,7 +144,7 @@ export function WorkshopFormBase(
 				name="fields.timezone"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Timezone</FormLabel>
+						<FormLabel className="text-lg font-semibold">Timezone</FormLabel>
 						<Input {...field} readOnly disabled />
 						<FormMessage />
 					</FormItem>
@@ -152,7 +152,7 @@ export function WorkshopFormBase(
 			/>
 			<div className="flex flex-col gap-2 px-5">
 				<div>
-					<h2 className="text-lg font-bold">Workshop App Settings</h2>
+					<h2 className="text-lg font-semibold">Workshop App Settings</h2>
 					<p className="text-muted-foreground text-sm">
 						These settings are used to configure the workshop app.
 					</p>
@@ -161,7 +161,7 @@ export function WorkshopFormBase(
 					control={form.control}
 					render={({ field }) => (
 						<FormItem className="">
-							<FormLabel className="text-base font-bold">
+							<FormLabel className="text-base font-semibold">
 								External URL
 							</FormLabel>
 							<Input {...field} value={field.value || ''} />
@@ -174,7 +174,7 @@ export function WorkshopFormBase(
 					control={form.control}
 					render={({ field }) => (
 						<FormItem className="">
-							<FormLabel className="text-base font-bold">Port</FormLabel>
+							<FormLabel className="text-base font-semibold">Port</FormLabel>
 							<Input {...field} value={field.value || ''} />
 							<FormMessage />
 						</FormItem>
@@ -186,7 +186,7 @@ export function WorkshopFormBase(
 				control={form.control}
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<FormLabel className="text-lg font-semibold">GitHub</FormLabel>
 						<Input {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
@@ -194,7 +194,7 @@ export function WorkshopFormBase(
 				name="fields.github"
 			/>
 			<div className="px-5">
-				<FormLabel className="text-lg font-bold">Cover Image</FormLabel>
+				<FormLabel className="text-lg font-semibold">Cover Image</FormLabel>
 				{form.watch('fields.coverImage.url') && (
 					<img src={form.watch('fields.coverImage.url')} alt="Cover" />
 				)}

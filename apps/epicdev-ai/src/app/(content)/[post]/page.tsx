@@ -152,7 +152,7 @@ export default async function PostPage(props: {
 			</div>
 			{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 						<section id="buy">
-							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-semibold">
 								Get Really Good At Node.js
 							</h2>
 							<div className="flex items-center justify-center border-y">
@@ -193,7 +193,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full text-center font-extrabold tracking-tight dark:text-white">
+		<h1 className="sm:fluid-3xl fluid-2xl mb-4 w-full text-center font-semibold tracking-tight dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,

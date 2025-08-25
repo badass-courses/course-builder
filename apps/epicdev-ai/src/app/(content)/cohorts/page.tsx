@@ -33,7 +33,7 @@ export default async function CohortsIndexPage() {
 		<LayoutClient withContainer>
 			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0">
 				<div className="max-w-(--breakpoint-md) w-full px-5 py-16">
-					<h1 className="text-center text-5xl font-bold">
+					<h1 className="text-center text-5xl font-semibold">
 						<span className="">Cohorts</span>
 					</h1>
 				</div>

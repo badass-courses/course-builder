@@ -70,7 +70,7 @@ export function ActiveEventBanner({ className }: { className?: string }) {
 				</div>
 			)}
 			<div className="flex flex-col items-start justify-center gap-4 p-5">
-				<h2 className="text-2xl font-bold">{event.fields.title}</h2>
+				<h2 className="text-2xl font-semibold">{event.fields.title}</h2>
 				<p className="text-muted-foreground text-sm">
 					{event.fields.description}
 				</p>

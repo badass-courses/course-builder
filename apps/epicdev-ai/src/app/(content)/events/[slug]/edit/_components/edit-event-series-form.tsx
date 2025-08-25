@@ -71,7 +71,7 @@ const EventResourcesTitle = () => {
 				<div className="mb-5 border-b pb-5">
 					<div className="flex items-start gap-2">
 						<div className="flex-1">
-							<div className="text-lg font-bold">Series Event</div>
+							<div className="text-lg font-semibold">Series Event</div>
 							<div className="text-sm">
 								This parent event contains {excludedIds.length} child event
 								{excludedIds.length !== 1 ? 's' : ''}. Individual events remain
@@ -81,7 +81,7 @@ const EventResourcesTitle = () => {
 					</div>
 				</div>
 			)}
-			<span className="flex text-lg font-bold">Resources</span>
+			<span className="flex text-lg font-semibold">Resources</span>
 			<span className="text-muted-foreground mt-2 font-normal">
 				Attach other events to this event to create a series.
 			</span>
@@ -243,7 +243,7 @@ export function EditEventSeriesForm({
 					),
 					toolComponent: (
 						<div className="mt-3 px-5">
-							<h3 className="mb-3 inline-flex text-xl font-bold">
+							<h3 className="mb-3 inline-flex text-xl font-semibold">
 								MDX Components
 							</h3>
 							<PageBlocks />
@@ -360,7 +360,7 @@ const EventFormFields = ({
 				name="fields.title"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Title</FormLabel>
+						<FormLabel className="text-lg font-semibold">Title</FormLabel>
 						<FormDescription>
 							A title should summarize the post and explain what it is about
 							clearly.
@@ -375,7 +375,7 @@ const EventFormFields = ({
 				name="fields.slug"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Slug</FormLabel>
+						<FormLabel className="text-lg font-semibold">Slug</FormLabel>
 						<FormDescription>Short with keywords is best.</FormDescription>
 						<Input {...field} />
 						<FormMessage />
@@ -389,7 +389,7 @@ const EventFormFields = ({
 			<Dialog>
 				<DialogTrigger asChild>
 					<div className="px-5">
-						<FormLabel className="inline-flex items-center text-lg font-bold">
+						<FormLabel className="inline-flex items-center text-lg font-semibold">
 							Attendee Instructions
 						</FormLabel>
 						<FormDescription>
@@ -404,7 +404,7 @@ const EventFormFields = ({
 				</DialogTrigger>
 				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
 					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-bold">
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
 							Attendee Instructions
 						</DialogTitle>
 						<DialogDescription>
@@ -446,7 +446,7 @@ const EventFormFields = ({
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<div className="flex items-center justify-between">
-							<FormLabel className="text-lg font-bold leading-none">
+							<FormLabel className="text-lg font-semibold leading-none">
 								SEO Description
 								<br />
 								<span className="text-muted-foreground text-sm tabular-nums">

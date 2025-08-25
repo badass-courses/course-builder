@@ -154,7 +154,7 @@ export async function EmbedVideoPage({
 				moduleSlug={moduleSlug}
 				isAuthenticated={false}
 			>
-				<div className="flex h-full w-full items-center justify-center text-3xl font-bold">
+				<div className="flex h-full w-full items-center justify-center text-3xl font-semibold">
 					{resourceType === 'solution' ? 'Solution' : 'Lesson'} Not Found
 				</div>
 			</EmbedContainer>

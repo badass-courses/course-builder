@@ -75,14 +75,14 @@ const FeaturedGrid = ({
 	if (!posts?.length) return null
 
 	return (
-		<div className="h-[calc(360px-(var(--nav-height)+20px))] px-2 pt-10 sm:h-[calc(320px-(var(--nav-height)+20px))]">
+		<div className="h-[calc(360px-(var(--nav-height)+20px))] px-2 pt-5 sm:h-[calc(320px-(var(--nav-height)+20px))] sm:pt-10">
 			<div className="grid grid-cols-1">
 				{/* Primary hero */}
 				{primary && (
 					<PostTeaser
 						isHighlighted
 						post={primary}
-						className="**:data-card:text-foreground **:data-card:bg-transparent! **:data-card:p-0 hover:**:data-title:text-primary sm:**:data-title:fluid-2xl **:data-title:fluid-xl **:data-title:text-foreground sm:**:data-card:p-0 **:data-card:border-0 **:data-title:font-bold **:data-title:transition dark:**:data-card:bg-transparent dark:**:data-card:border-0 dark relative z-10 h-full w-full shadow-none"
+						className="**:data-card:text-foreground **:data-card:bg-transparent! **:data-card:p-0 hover:**:data-title:text-primary sm:**:data-title:fluid-2xl **:data-title:fluid-xl **:data-title:text-foreground sm:**:data-card:p-0 **:data-card:border-0 **:data-title:font-semibold **:data-title:transition dark:**:data-card:bg-transparent dark:**:data-card:border-0 dark relative z-10 h-full w-full shadow-none"
 					/>
 				)}
 
@@ -257,7 +257,7 @@ const PostTeaser: React.FC<{
 								)}
 							<CardTitle
 								data-title=""
-								className="fluid-xl font-heading font-bold leading-tight tracking-tight"
+								className="fluid-xl font-heading font-semibold leading-tight tracking-tight"
 							>
 								{title}
 							</CardTitle>
@@ -289,7 +289,7 @@ const PostTeaser: React.FC<{
 					<div>
 						<CardFooter
 							data-footer=""
-							className="mt-4 flex flex-col items-start justify-between gap-1.5 p-0 text-sm sm:mt-8 sm:flex-row sm:items-center"
+							className="mt-4 flex flex-col items-start justify-between gap-5 p-0 text-sm sm:mt-8 sm:flex-row sm:items-center"
 						>
 							<div className="flex flex-wrap items-center gap-4">
 								<Contributor className="flex-shrink-0 [&_img]:size-8 sm:[&_img]:size-10" />

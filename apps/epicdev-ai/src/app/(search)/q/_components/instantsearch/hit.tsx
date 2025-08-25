@@ -15,12 +15,12 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 		<li className="bg-card rounded-lg border px-6 py-2 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
 			<Link
 				prefetch
-				className="group flex flex-col items-baseline justify-between gap-2 py-5 transition ease-out sm:py-5 md:flex-row"
+				className="group flex h-full flex-col py-5 transition ease-out sm:py-5"
 				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
-				<div className="flex h-full flex-col gap-2">
+				<div className="flex h-full grow flex-col gap-4">
 					<div className="flex flex-col gap-2">
-						<span className="sm:fluid-xl fluid-lg font-heading group-hover:text-primary pr-5 font-extrabold tracking-tight transition ease-out sm:tracking-tight">
+						<span className="sm:fluid-xl fluid-lg font-heading group-hover:text-primary pr-5 font-semibold tracking-tight transition ease-out sm:tracking-tight">
 							<Highlight
 								attribute="title"
 								hit={hit as any}
@@ -54,7 +54,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 							/>
 						)}
 					</div>
-					<div className="mt-3 flex w-full flex-wrap items-center justify-between gap-4">
+					<div className="mt-auto flex w-full flex-wrap items-center justify-between gap-4">
 						<Contributor className="flex text-sm [&_img]:w-7" />
 						{/* <div className="text-muted-foreground flex flex-row flex-wrap gap-3 text-sm capitalize">
 							{hit.type && (

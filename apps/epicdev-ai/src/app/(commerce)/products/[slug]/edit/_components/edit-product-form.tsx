@@ -251,7 +251,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Name</FormLabel>
+							<FormLabel className="text-lg font-semibold">Name</FormLabel>
 							<FormDescription className="mt-2 text-sm">
 								A name should summarize the product and explain what it is about
 								succinctly.
@@ -270,7 +270,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Type</FormLabel>
+							<FormLabel className="text-lg font-semibold">Type</FormLabel>
 							<FormDescription className="mt-2 text-sm">
 								What type of product is this? Live or self-paced?
 							</FormDescription>
@@ -297,7 +297,9 @@ export function EditProductForm({ product }: { product: Product }) {
 				name="fields.openEnrollment"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Open Enrollment</FormLabel>
+						<FormLabel className="text-lg font-semibold">
+							Open Enrollment
+						</FormLabel>
 						<DateTimePicker
 							{...field}
 							value={
@@ -325,7 +327,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				name="fields.closeEnrollment"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">
+						<FormLabel className="text-lg font-semibold">
 							Close Enrollment
 						</FormLabel>
 						<DateTimePicker
@@ -356,7 +358,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">
+							<FormLabel className="text-lg font-semibold">
 								Quantity Available
 							</FormLabel>
 							<FormDescription className="mt-2 text-sm">
@@ -376,7 +378,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Price</FormLabel>
+							<FormLabel className="text-lg font-semibold">Price</FormLabel>
 							<FormDescription className="mt-2 text-sm">
 								The price of the product in USD.
 							</FormDescription>
@@ -389,7 +391,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				}}
 			/>
 			<div className="flex flex-col gap-3 px-5">
-				<div className="text-lg font-bold">Product Resources</div>
+				<div className="text-lg font-semibold">Product Resources</div>
 				<ComboboxDemo
 					onSelect={(value) => {
 						handleResourceAdded(value)
@@ -409,7 +411,9 @@ export function EditProductForm({ product }: { product: Product }) {
 				render={({ field }) => {
 					return (
 						<FormItem className="px-5">
-							<FormLabel className="text-lg font-bold">Description</FormLabel>
+							<FormLabel className="text-lg font-semibold">
+								Description
+							</FormLabel>
 							<FormDescription className="mt-2 text-sm">
 								The product’s description, meant to be displayable to the
 								customer. Use this field to optionally store a long form
@@ -429,7 +433,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				name="fields.image.url"
 				render={({ field }) => (
 					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Image</FormLabel>
+						<FormLabel className="text-lg font-semibold">Image</FormLabel>
 						<FormDescription>Preview</FormDescription>
 						{form.watch('fields.image.url') && (
 							<img

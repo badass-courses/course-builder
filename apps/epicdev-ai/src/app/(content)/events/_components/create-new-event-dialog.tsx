@@ -74,7 +74,7 @@ export default function CreateNewEventDialog({
 				</DialogTrigger>
 				<DialogContent className="max-h-[90vh] overflow-y-auto">
 					<DialogHeader className="border-b pb-4">
-						<DialogTitle className="text-xl font-bold">
+						<DialogTitle className="text-xl font-semibold">
 							Create Event(s)
 						</DialogTitle>
 						<DialogDescription>

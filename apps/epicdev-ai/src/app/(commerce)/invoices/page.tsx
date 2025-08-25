@@ -14,7 +14,7 @@ const Invoices = async () => {
 		<LayoutClient withContainer>
 			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col">
 				<div className="max-w-(--breakpoint-md) mx-auto flex h-full w-full flex-grow flex-col items-center py-16">
-					<h1 className="font-heading mb-16 text-3xl font-bold">
+					<h1 className="font-heading mb-16 text-3xl font-semibold">
 						{purchases.length > 0 ? 'Your Invoices' : 'No invoices'}
 					</h1>
 					<ul className="flex w-full flex-col">

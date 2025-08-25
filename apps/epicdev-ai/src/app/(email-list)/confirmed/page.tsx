@@ -7,7 +7,7 @@ export default async function ConfirmedSubscriptionPage() {
 		<LayoutClient withContainer>
 			<main className="min-h-(--pane-layout-height) container flex flex-grow flex-col items-center justify-center">
 				<div className="max-w-lg text-center font-light">
-					<h1 className="font-heading py-8 text-4xl font-bold lg:text-5xl">
+					<h1 className="font-heading py-8 text-4xl font-semibold lg:text-5xl">
 						You&apos;re Confirmed!
 					</h1>
 					<p className="mx-auto pb-8 leading-relaxed sm:text-xl">

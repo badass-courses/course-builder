@@ -107,7 +107,7 @@ const Home = async (props: Props) => {
 					</Link>
 				)}
 				<header>
-					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-extrabold leading-tight tracking-tight dark:text-white">
+					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-semibold leading-tight tracking-tight dark:text-white">
 						{page?.fields?.title || 'Title'}
 					</h1>
 				</header>

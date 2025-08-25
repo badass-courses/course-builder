@@ -154,7 +154,7 @@ export default async function EventPage(props: {
 					<span>{IS_SERIES ? 'Event Series' : 'Event'}</span>
 				</Link>
 				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
-					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
+					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-semibold">
 						{title}
 					</h1>
 					{description && (

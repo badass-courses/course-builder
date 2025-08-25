@@ -68,7 +68,7 @@ export async function LessonPage({
 				{lessonType === 'exercise' ? (
 					<div className="dark:bg-muted bg-card flex h-full max-h-[75vh] w-full items-center justify-center overflow-hidden rounded-lg border-x border-b border-t p-10 md:aspect-video">
 						<div className="flex max-w-lg flex-col items-center justify-center gap-4 text-center">
-							<h2 className="text-2xl font-bold">
+							<h2 className="text-2xl font-semibold">
 								Stop! <span aria-hidden="true">😅</span>
 							</h2>
 							<p className="text-center text-base">
@@ -342,7 +342,7 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 			>
 				{lesson.type}
 			</Badge> */}
-			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-extrabold tracking-tight dark:text-white">
+			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-semibold tracking-tight dark:text-white">
 				{lesson.fields?.title}
 			</h1>
 		</div>

@@ -175,7 +175,7 @@ export default async function ModulePage(props: Props) {
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
-							<h1 className="fluid-3xl w-full text-center font-extrabold tracking-tight md:text-left dark:text-white">
+							<h1 className="fluid-3xl w-full text-center font-semibold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
@@ -215,7 +215,7 @@ export default async function ModulePage(props: Props) {
 							</article>
 						</div>
 						<div className="col-span-2">
-							<h2 className="font-heading flex h-12 items-center text-2xl font-bold tracking-tight">
+							<h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
 								Contents
 							</h2>
 							<div className="bg-card flex flex-col rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">

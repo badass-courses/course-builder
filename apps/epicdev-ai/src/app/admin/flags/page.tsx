@@ -25,7 +25,7 @@ export default async function FeatureFlagsPage() {
 		<div className="container py-8">
 			<div className="flex flex-col gap-8">
 				<div>
-					<h1 className="text-4xl font-bold">Feature Flags</h1>
+					<h1 className="text-4xl font-semibold">Feature Flags</h1>
 					<p className="text-muted-foreground mt-2">
 						Manage feature flags for the application.
 					</p>

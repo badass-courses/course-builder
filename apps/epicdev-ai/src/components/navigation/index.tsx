@@ -79,7 +79,7 @@ const Navigation = ({
 						<Button
 							asChild
 							variant="ghost"
-							className="h-12 rounded-none p-0 text-lg hover:bg-transparent"
+							className="hover:bg-transparent! h-12 rounded-none p-0 text-lg"
 						>
 							<Link
 								prefetch

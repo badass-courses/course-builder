@@ -98,7 +98,7 @@ export const CohortSidebarMobile = ({
 			<p className="font-heading text-sm font-medium">{eventDateString}</p>
 			<Button asChild>
 				<Link
-					className="dark:bg-primary font-heading dark:hover:bg-primary/90 from-primary relative cursor-pointer rounded-lg bg-gradient-to-b to-indigo-800 text-base font-bold tracking-tight shadow-xl transition duration-300 ease-out hover:bg-blue-700 hover:brightness-110"
+					className="dark:bg-primary font-heading dark:hover:bg-primary/90 from-primary relative cursor-pointer rounded-lg bg-gradient-to-b to-indigo-800 text-base font-semibold tracking-tight shadow-xl transition duration-300 ease-out hover:bg-blue-700 hover:brightness-110"
 					href="#buy"
 					onClick={handleScrollToBuy}
 				>

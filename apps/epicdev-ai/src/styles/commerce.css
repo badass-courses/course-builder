@@ -34,7 +34,7 @@ body {
 							@apply hidden;
 						}
 						[data-name-badge] {
-							@apply pb-2 text-center text-sm font-extrabold uppercase;
+							@apply pb-2 text-center text-sm font-semibold uppercase;
 						}
 						[data-title] {
 							@apply px-5 text-center text-xl font-black sm:text-2xl;
@@ -51,10 +51,10 @@ body {
 						[data-price-container] {
 							@apply flex items-center justify-center gap-0.5 pt-6;
 							sup {
-								@apply align-sub text-base font-bold opacity-75;
+								@apply align-sub text-base font-semibold opacity-75;
 							}
 							[data-price] {
-								@apply flex text-4xl font-bold;
+								@apply flex text-4xl font-semibold;
 							}
 							span {
 								@apply pl-0.5 align-super opacity-75;
@@ -153,7 +153,7 @@ body {
 							}
 						}
 						[data-unavailable] {
-							@apply py-4 text-center text-lg font-bold text-blue-500;
+							@apply py-4 text-center text-lg font-semibold text-blue-500;
 						}
 						[data-price-container] {
 							@apply pt-0;
@@ -229,7 +229,7 @@ body {
 											@apply mr-3 opacity-80;
 										}
 										input {
-											@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-bold ring-blue-500 dark:border-gray-800 dark:bg-gray-950;
+											@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-semibold ring-blue-500 dark:border-gray-800 dark:bg-gray-950;
 										}
 										button {
 											@apply flex h-full items-center justify-center rounded bg-gray-200/60 px-3 py-2 font-mono sm:hidden;
@@ -409,7 +409,7 @@ body {
 									@apply flex pb-4;
 								}
 								li {
-									@apply before:text-primary flex items-start before:pr-2 before:font-bold before:content-['✓'];
+									@apply before:text-primary flex items-start before:pr-2 before:font-semibold before:content-['✓'];
 								}
 								p {
 									@apply text-foreground text-base;
@@ -477,7 +477,7 @@ body {
 							@apply font-heading -mt-3 text-base font-semibold opacity-60;
 						}
 						[data-price] {
-							@apply text-foreground font-heading flex text-6xl font-bold;
+							@apply text-foreground font-heading flex text-6xl font-semibold;
 						}
 						span {
 							@apply font-heading mt-1 pl-0.5 align-sub text-base opacity-60;
@@ -542,13 +542,13 @@ body {
 					}
 
 					[data-purchased] {
-						@apply font-heading flex items-center gap-2 pt-1 text-2xl font-bold;
+						@apply font-heading flex items-center gap-2 pt-1 text-2xl font-semibold;
 						svg {
 							@apply text-foreground h-6 w-6 opacity-65;
 						}
 					}
 					[data-unavailable] {
-						@apply py-4 text-center text-lg font-bold text-blue-500;
+						@apply py-4 text-center text-lg font-semibold text-blue-500;
 					}
 					[data-sr-convertkit-subscribe-form] {
 						@apply flex w-full flex-col gap-2 text-left;
@@ -614,7 +614,7 @@ body {
 										@apply text-foreground mr-3 opacity-100;
 									}
 									input {
-										@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-bold ring-blue-500 dark:border-white/5 dark:bg-gray-800;
+										@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-semibold ring-blue-500 dark:border-white/5 dark:bg-gray-800;
 									}
 									button {
 										@apply flex h-full items-center justify-center rounded bg-gray-200/60 px-3 py-2 font-mono sm:hidden;
@@ -739,7 +739,7 @@ body {
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center text-lg font-bold text-blue-500;
+					@apply py-4 text-center text-lg font-semibold text-blue-500;
 				}
 
 				#team-upgrade-pricing-inline {
@@ -782,7 +782,7 @@ body {
 									@apply mr-3 opacity-80;
 								}
 								input {
-									@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-bold ring-blue-500;
+									@apply max-w-[70px] rounded-md border border-gray-200 bg-gray-200/60 py-2 pl-3 font-mono font-semibold ring-blue-500;
 								}
 								button {
 									@apply flex h-full items-center justify-center rounded bg-gray-200/60 px-3 py-2 font-mono sm:hidden;
@@ -910,7 +910,7 @@ body {
 					}
 				}
 				[data-unavailable] {
-					@apply py-4 text-center text-lg font-bold text-blue-400;
+					@apply py-4 text-center text-lg font-semibold text-blue-400;
 				}
 			}
 			[data-purchase-container] {
@@ -945,7 +945,7 @@ body {
 									@apply mr-3;
 								}
 								input {
-									@apply max-w-[70px] rounded-md border border-gray-600 bg-gray-800 py-2 pl-3 font-mono font-bold ring-blue-500;
+									@apply max-w-[70px] rounded-md border border-gray-600 bg-gray-800 py-2 pl-3 font-mono font-semibold ring-blue-500;
 								}
 								button {
 									@apply flex h-full items-center justify-center rounded bg-gray-700/50 px-3 py-2 font-mono sm:hidden;
@@ -1065,7 +1065,7 @@ body {
 						}
 					}
 					[data-percent-off] {
-						@apply font-extrabold;
+						@apply font-semibold;
 					}
 				}
 			}

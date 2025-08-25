@@ -15,7 +15,7 @@ export const Contributor: React.FC<{
 		<div className={cn('flex items-center gap-2 font-normal', className)}>
 			<ContributorImage imageSize={imageSize} />
 			<div className="flex flex-col">
-				<span className="text-foreground/90 font-heading text-lg font-bold">
+				<span className="text-foreground/90 font-heading text-base font-medium">
 					{config.author}
 				</span>
 				{withBio && (

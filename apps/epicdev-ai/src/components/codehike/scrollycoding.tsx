@@ -54,7 +54,7 @@ export default function Scrollycoding(props: any) {
 							selectOn={['click', 'scroll']}
 							className="data-[selected=true]:border-primary hover:bg-secondary prose-headings:first-of-type:mt-5 group relative -mx-5 flex cursor-pointer items-start border-l-2 pl-9 pr-5 transition duration-100 ease-in-out hover:rounded data-[selected=false]:hover:border-gray-700 sm:mx-0 sm:pl-5 lg:pl-6"
 						>
-							<div className="bg-secondary group-data-[selected=true]:bg-primary group-data-[selected=true]:border-primary group-data-[selected=true]:text-primary-foreground absolute left-1 top-5 flex size-7 flex-shrink-0 origin-center scale-90 items-center justify-center rounded-full border-2 text-xs font-bold shadow-xl sm:left-[-15px] sm:top-7 sm:size-7 sm:text-xs lg:scale-100">
+							<div className="bg-secondary group-data-[selected=true]:bg-primary group-data-[selected=true]:border-primary group-data-[selected=true]:text-primary-foreground absolute left-1 top-5 flex size-7 flex-shrink-0 origin-center scale-90 items-center justify-center rounded-full border-2 text-xs font-semibold shadow-xl sm:left-[-15px] sm:top-7 sm:size-7 sm:text-xs lg:scale-100">
 								{i + 1}
 							</div>
 							{step._data?.header && renderHeading(step._data.header)}

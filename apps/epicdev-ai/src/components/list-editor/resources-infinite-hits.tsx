@@ -100,7 +100,7 @@ export function ResourcesInfiniteHits({
 						)}
 					</>
 				) : (
-					<span className="text-lg font-bold">Add to list</span>
+					<span className="text-lg font-semibold">Add to list</span>
 				)}
 			</div>
 			<div className="border-b px-5 pb-4">

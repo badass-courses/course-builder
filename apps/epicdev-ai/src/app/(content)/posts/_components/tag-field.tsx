@@ -100,7 +100,7 @@ export const TagField: React.FC<TagFieldProps> = ({
 	return (
 		<div className="px-5">
 			<div className="flex w-full items-baseline justify-between">
-				<FormLabel className="text-lg font-bold">{label}</FormLabel>
+				<FormLabel className="text-lg font-semibold">{label}</FormLabel>
 				{showEditButton && (
 					<Button
 						variant="ghost"

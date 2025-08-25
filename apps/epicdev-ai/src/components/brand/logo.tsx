@@ -8,7 +8,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 	return (
 		<div
 			className={cn(
-				'text-foreground flex items-center font-bold tracking-tight',
+				'text-foreground flex items-center font-semibold tracking-tight',
 				className,
 			)}
 		>

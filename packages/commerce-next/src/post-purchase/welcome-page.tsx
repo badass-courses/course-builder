@@ -240,7 +240,7 @@ const Header = ({
 					</div>
 				)}
 				<div className="flex w-full flex-col items-center text-center sm:items-start sm:text-left">
-					<h1 className="font-text w-full text-3xl font-bold sm:text-3xl lg:text-4xl">
+					<h1 className="font-text w-full text-3xl font-semibold sm:text-3xl lg:text-4xl">
 						<div className="text-primary pb-2 text-sm font-normal uppercase">
 							{getWelcomeMessageForProductType(purchase?.product?.type)}
 						</div>

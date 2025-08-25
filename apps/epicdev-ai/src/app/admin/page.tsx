@@ -28,7 +28,7 @@ export default async function AdminDashboardPage() {
 			<div className="mx-auto w-full max-w-screen-lg">
 				<div className="mb-8 grid grid-cols-3 items-center gap-5">
 					<div className="bg-card flex aspect-square h-full w-full flex-col items-center justify-center gap-1 rounded-lg border p-5 shadow sm:gap-2">
-						<div className="text-3xl font-bold tabular-nums sm:text-4xl">
+						<div className="text-3xl font-semibold tabular-nums sm:text-4xl">
 							{formSubscriptions.total_count.toLocaleString()}
 						</div>
 						<div className="text-center font-mono text-xs font-semibold uppercase tracking-wide">
@@ -49,7 +49,7 @@ export default async function AdminDashboardPage() {
 					</div>
 
 					<div className="bg-card flex aspect-square h-full w-full flex-col items-center justify-center gap-1 rounded-lg border p-5 shadow sm:gap-2">
-						<div className="text-3xl font-bold tabular-nums sm:text-4xl">
+						<div className="text-3xl font-semibold tabular-nums sm:text-4xl">
 							{totalRegisteredUsersCount.toLocaleString()}
 						</div>
 						<div className="text-center font-mono text-xs font-semibold uppercase tracking-wide">
@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
 					</div>
 
 					<div className="bg-card flex aspect-square h-full w-full flex-col items-center justify-center gap-1 rounded-lg border p-5 shadow sm:gap-2">
-						<div className="text-3xl font-bold tabular-nums sm:text-4xl">
+						<div className="text-3xl font-semibold tabular-nums sm:text-4xl">
 							{totalPurchases.toLocaleString()}
 						</div>
 						<div className="text-center font-mono text-xs font-semibold uppercase tracking-wide">
@@ -68,7 +68,7 @@ export default async function AdminDashboardPage() {
 				</div>
 
 				<div className="mb-8">
-					<h2 className="mb-4 text-2xl font-bold">Products & Sales</h2>
+					<h2 className="mb-4 text-2xl font-semibold">Products & Sales</h2>
 					<div className="grid grid-cols-1 gap-2 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
 						{productsWithPurchases.map((product) => (
 							<Link
@@ -85,7 +85,7 @@ export default async function AdminDashboardPage() {
 									</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<div className="text-2xl font-bold tabular-nums">
+									<div className="text-2xl font-semibold tabular-nums">
 										{Number(product.validPurchaseCount).toLocaleString()}
 									</div>
 									{product.type === 'live' && (
@@ -105,7 +105,7 @@ export default async function AdminDashboardPage() {
 				</div>
 
 				<div className="mb-8">
-					<h2 className="mb-4 text-2xl font-bold">Posts & Completions</h2>
+					<h2 className="mb-4 text-2xl font-semibold">Posts & Completions</h2>
 					<div className="grid grid-cols-1 gap-2">
 						{postsWithCompletions.map((post) => (
 							<Link
@@ -118,7 +118,7 @@ export default async function AdminDashboardPage() {
 								className="bg-card border-border relative flex items-center justify-between rounded-lg border p-4 transition-all ease-in-out hover:-translate-y-1 hover:shadow"
 							>
 								<div className="flex items-center gap-5">
-									<div className="min-w-[3ch] text-center text-2xl font-bold tabular-nums">
+									<div className="min-w-[3ch] text-center text-2xl font-semibold tabular-nums">
 										{Number(post.completionCount).toLocaleString()}
 									</div>
 									<h3 className="text-base font-semibold leading-tight">
@@ -145,7 +145,7 @@ export default async function AdminDashboardPage() {
 		return (
 			<div className="mx-auto w-full max-w-screen-lg">
 				<div className="py-8 text-center">
-					<h1 className="mb-2 text-2xl font-bold">Dashboard Error</h1>
+					<h1 className="mb-2 text-2xl font-semibold">Dashboard Error</h1>
 					<p className="text-muted-foreground">
 						Failed to load dashboard data. Please try again later.
 					</p>

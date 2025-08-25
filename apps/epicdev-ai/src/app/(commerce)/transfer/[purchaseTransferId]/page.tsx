@@ -24,7 +24,7 @@ const PurchaseTransferPage = async (props: {
 			<main className="mx-auto flex w-full flex-grow flex-col items-center justify-center px-5 py-24 sm:py-32">
 				{purchaseTransfer?.transferState === 'INITIATED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-bold">
+						<h1 className="text-center text-3xl font-semibold">
 							👋 Welcome to {process.env.NEXT_PUBLIC_SITE_TITLE}
 						</h1>
 						<h2 className="text-center text-xl font-semibold">
@@ -51,7 +51,7 @@ const PurchaseTransferPage = async (props: {
 								>
 									<button
 										type="submit"
-										className="w-full rounded bg-blue-600 px-4 py-2 font-bold text-white hover:bg-blue-700"
+										className="w-full rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
 										disabled={!purchaseTransfer}
 									>
 										accept this transfer
@@ -82,7 +82,7 @@ const PurchaseTransferPage = async (props: {
 				)}
 				{purchaseTransfer?.transferState === 'COMPLETED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-bold">
+						<h1 className="text-center text-3xl font-semibold">
 							Purchase Transfer Completed
 						</h1>
 						<h2 className="text-center text-xl font-semibold">
@@ -96,7 +96,7 @@ const PurchaseTransferPage = async (props: {
 				)}
 				{purchaseTransfer?.transferState === 'CANCELED' && (
 					<div className="flex w-full max-w-xl flex-col gap-3">
-						<h1 className="text-center text-3xl font-bold">
+						<h1 className="text-center text-3xl font-semibold">
 							Purchase Transfer Canceled
 						</h1>
 						<p className="text-center">

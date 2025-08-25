@@ -20,7 +20,7 @@ export const ImageResourceBrowser = () => {
 
 	return (
 		<div className="py-5">
-			<h3 className="inline-flex px-5 text-xl font-bold">Media Browser</h3>
+			<h3 className="inline-flex px-5 text-xl font-semibold">Media Browser</h3>
 			{images.length > 0 ? (
 				<div className="grid grid-cols-3 gap-1 px-5">
 					{images.map((asset) => {

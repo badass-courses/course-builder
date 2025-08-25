@@ -77,7 +77,7 @@ module.exports = {
 			},
 			fontFamily: {
 				sans: ['var(--font-geist)', ...defaultTheme.fontFamily.sans],
-				heading: ['var(--font-proxima-soft)', ...defaultTheme.fontFamily.sans],
+				heading: ['var(--font-gibson)', ...defaultTheme.fontFamily.sans],
 				mono: ['var(--font-geist-mono)', ...defaultTheme.fontFamily.mono],
 			},
 			keyframes: {
@@ -111,13 +111,18 @@ module.exports = {
 						},
 						p: { fontWeight: 400 },
 						'h1, h2, h3, h4': {
-							fontWeight: 700,
-							fontFamily: 'var(--font-proxima-soft)',
+							fontWeight: 600,
+							fontFamily: 'var(--font-gibson)',
 							color: theme('colors.foreground'),
 						},
 						ul: {
 							listStylePosition: 'outside',
-							listStyleType: 'circle',
+							// listStyleType: 'circle',
+							listStyleType: 'disc',
+							// marker color
+							marker: {
+								color: theme('colors.primary.DEFAULT'),
+							},
 						},
 						'ul > li': {
 							color: theme('colors.foreground'),

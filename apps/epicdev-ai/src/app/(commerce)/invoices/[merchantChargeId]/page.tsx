@@ -159,7 +159,7 @@ const Invoice = async (props: {
 						<div className="px-10 py-16">
 							<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-0">
 								<div className="col-span-2 flex items-center">
-									<span className="font-text pl-2 text-2xl font-bold">
+									<span className="font-text pl-2 text-2xl font-semibold">
 										<Logo className="w-40 text-black" />
 									</span>
 								</div>
@@ -180,7 +180,7 @@ const Invoice = async (props: {
 							</div>
 							<div className="grid grid-cols-3 gap-5 pb-64">
 								<div className="col-span-2">
-									<p className="mb-2 text-2xl font-bold">Invoice</p>
+									<p className="mb-2 text-2xl font-semibold">Invoice</p>
 									Invoice ID: <strong>{params.merchantChargeId}</strong>
 									<br />
 									Created: <strong>{date}</strong>

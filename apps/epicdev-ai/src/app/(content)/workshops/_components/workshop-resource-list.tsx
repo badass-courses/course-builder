@@ -189,7 +189,7 @@ export function WorkshopResourceList(props: Props) {
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>
 									<Link
-										className="font-heading text-balance text-lg font-bold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"
+										className="font-heading text-balance text-lg font-semibold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"
 										href={`/workshops/${workshopNavigation.slug}`}
 									>
 										{workshopNavigation.title}

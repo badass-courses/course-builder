@@ -121,7 +121,7 @@ const EditProfileForm: React.FC<{
 					</fieldset>
 					{(discordProvider || githubProvider) && (
 						<div>
-							<h3 className="mt-5 pb-2 text-lg font-bold">Accounts</h3>
+							<h3 className="mt-5 pb-2 text-lg font-semibold">Accounts</h3>
 							{discordProvider && (
 								<fieldset className="w-full">
 									<ul className="divide-y border-b">

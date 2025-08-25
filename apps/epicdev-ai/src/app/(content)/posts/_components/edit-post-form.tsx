@@ -81,7 +81,7 @@ export function EditPostForm({
 					),
 					toolComponent: (
 						<div className="mt-3 px-5">
-							<h3 className="mb-3 inline-flex text-xl font-bold">
+							<h3 className="mb-3 inline-flex text-xl font-semibold">
 								MDX Components
 							</h3>
 							<PageBlocks />

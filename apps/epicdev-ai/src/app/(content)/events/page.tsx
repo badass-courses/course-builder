@@ -33,7 +33,7 @@ export default async function EventIndexPage() {
 		<LayoutClient withContainer>
 			<main className="pb-16">
 				<div className="mx-auto w-full pb-10 pt-16">
-					<h1 className="font-heading fluid-3xl text-center font-bold">
+					<h1 className="font-heading fluid-3xl text-center font-semibold">
 						Epic AI Events & Live Workshops
 					</h1>
 				</div>
