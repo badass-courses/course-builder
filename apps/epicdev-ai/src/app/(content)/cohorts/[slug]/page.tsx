@@ -440,10 +440,13 @@ export default async function CohortPage(props: {
 																			)}
 																		</div>
 																	)}
-																	<AccordionTrigger
-																		aria-label="Toggle lessons"
-																		className="bg-secondary hover:bg-foreground/20 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
-																	/>
+																	{workshop.resources &&
+																		workshop.resources.length > 0 && (
+																			<AccordionTrigger
+																				aria-label="Toggle lessons"
+																				className="bg-secondary hover:bg-foreground/20 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
+																			/>
+																		)}
 																</div>
 																<AccordionContent className="border-b pb-2">
 																	{/* Display formatted workshop date/time */}
