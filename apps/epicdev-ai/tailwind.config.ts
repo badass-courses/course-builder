@@ -8,15 +8,15 @@ module.exports = {
 	darkMode: ['class'],
 	content: [
 		'./src/**/*.{ts,tsx,mdx}',
-		// './node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
-		// './node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
-		// './node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/chat-assistant/**/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/codemirror/**/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/hooks/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/primitives/**/*.{ts,tsx,mdx}',
-		// './node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}',
-		// './node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
+		'./node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}',
 		'./node_modules/@coursebuilder/ui/index.tsx',
-		// './node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
+		'./node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}',
 	],
 	theme: {
 		fluidTypography: {
