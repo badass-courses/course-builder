@@ -142,7 +142,7 @@ function ComboboxDemo({
 
 export function EditProductForm({ product }: { product: Product }) {
 	const { data: session } = useSession()
-	const { theme } = useTheme()
+	const { theme, forcedTheme } = useTheme()
 	const form = useForm<z.infer<typeof productSchema>>({
 		resolver: zodResolver(productSchema),
 		defaultValues: {
@@ -243,7 +243,7 @@ export function EditProductForm({ product }: { product: Product }) {
 					),
 				},
 			]}
-			theme={theme}
+			theme={forcedTheme || theme}
 		>
 			<FormField
 				control={form.control}

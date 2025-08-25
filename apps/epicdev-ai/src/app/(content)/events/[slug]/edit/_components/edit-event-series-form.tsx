@@ -286,7 +286,7 @@ const EventFormFields = ({
 }: ResourceFormProps<EventSeries, typeof EventSeriesSchema> & {
 	videoResource: VideoResource | null
 }) => {
-	const { theme } = useTheme()
+	const { theme, forcedTheme } = useTheme()
 	const [isGeneratingDescription, setIsGeneratingDescription] =
 		React.useState(false)
 
@@ -419,7 +419,7 @@ const EventFormFields = ({
 							<FormItem>
 								<MarkdownEditor
 									theme={
-										(theme === 'dark'
+										(forcedTheme === 'dark' || theme === 'dark'
 											? CourseBuilderEditorThemeDark
 											: CourseBuilderEditorThemeLight) ||
 										CourseBuilderEditorThemeDark

@@ -24,7 +24,7 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 	height,
 	...props
 }) => {
-	const { theme, systemTheme } = useTheme()
+	const { theme, systemTheme, forcedTheme } = useTheme()
 	const [url, setUrl] = useState<string | null>(null)
 	const [mounted, setMounted] = useState(false)
 
@@ -34,10 +34,10 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 
 	useEffect(() => {
 		if (!mounted) return
-		const currentTheme = theme === 'system' ? systemTheme : theme
+		const currentTheme = forcedTheme || theme === 'system' ? systemTheme : theme
 		const url = currentTheme === 'dark' ? urls.dark : urls.light
 		setUrl(url)
-	}, [theme, systemTheme, urls, mounted])
+	}, [theme, systemTheme, urls, mounted, forcedTheme])
 
 	if (!mounted || !url) {
 		return (

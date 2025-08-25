@@ -300,7 +300,7 @@ function CreateOrUpdateEmailReminderForm({
 	form: UseFormReturn<ReminderEmailForm>
 	onSubmit: (data: ReminderEmailForm) => void
 }) {
-	const { theme } = useTheme()
+	const { theme, forcedTheme } = useTheme()
 	const [editorView, setEditorView] = React.useState<EditorView | null>(null)
 	const insertAtCursor = (text: string) => {
 		if (editorView) {
@@ -393,7 +393,7 @@ function CreateOrUpdateEmailReminderForm({
 								<FormLabel>Email Body (markdown)</FormLabel>
 								<MarkdownEditor
 									theme={
-										(theme === 'dark'
+										(forcedTheme === 'dark' || theme === 'dark'
 											? CourseBuilderEditorThemeDark
 											: CourseBuilderEditorThemeLight) ||
 										CourseBuilderEditorThemeDark

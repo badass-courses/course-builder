@@ -321,7 +321,7 @@ export default async function CohortPage(props: {
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-light tracking-tight">
+									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-normal tracking-tight">
 										{fields.description}
 									</h2>
 								)}
@@ -409,22 +409,40 @@ export default async function CohortPage(props: {
 																				'view',
 																			)}
 																		>
-																			{workshop.fields.title}{' '}
-																			<div className="mt-1 text-sm font-normal opacity-80">
-																				Available from {workshopDateString}
+																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
+																				<div className="font-bold">
+																					{workshop.fields.title}
+																				</div>{' '}
+																				<div className="text-sm font-medium">
+																					Available from {workshopDateString}
+																				</div>
 																			</div>
+																			{workshop.fields.description && (
+																				<p className="mt-1 text-sm font-normal opacity-80">
+																					{workshop.fields.description}
+																				</p>
+																			)}
 																		</Link>
 																	) : (
 																		<div className="text-foreground flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight">
-																			{workshop.fields.title}{' '}
-																			<div className="mt-1 text-sm font-normal opacity-80">
-																				Available from {workshopDateString}
+																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
+																				<div className="font-bold">
+																					{workshop.fields.title}
+																				</div>{' '}
+																				<div className="text-sm font-medium">
+																					Available from {workshopDateString}
+																				</div>
 																			</div>
+																			{workshop.fields.description && (
+																				<p className="mt-1 text-sm font-normal opacity-80">
+																					{workshop.fields.description}
+																				</p>
+																			)}
 																		</div>
 																	)}
 																	<AccordionTrigger
 																		aria-label="Toggle lessons"
-																		className="bg-secondary hover:bg-foreground/20 absolute right-2 top-3 z-10 flex size-6 items-center justify-center rounded py-0"
+																		className="bg-secondary hover:bg-foreground/20 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
 																	/>
 																</div>
 																<AccordionContent className="border-b pb-2">
