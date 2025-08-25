@@ -48,7 +48,7 @@
 		"@coursebuilder/email-templates": "^1.0.6",
 		"@coursebuilder/next": "workspace:^",
 		"@coursebuilder/nodash": "workspace:^",
-		"@coursebuilder/ui": "^2.0.7",
+		"@coursebuilder/ui": "^2.0.8",
 		"@coursebuilder/utils-ai": "1.0.1",
 		"@coursebuilder/utils-aws": "1.0.0",
 		"@coursebuilder/utils-browser": "1.0.0",
