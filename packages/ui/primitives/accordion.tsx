@@ -63,8 +63,15 @@ function AccordionContent({
 	)
 }
 
-function AccordionHeader() {
-	return <></>
+function AccordionHeader({
+	className,
+	children,
+}: React.ComponentProps<typeof AccordionPrimitive.Header>) {
+	return (
+		<AccordionPrimitive.Header className={cn('flex', className)}>
+			{children}
+		</AccordionPrimitive.Header>
+	)
 }
 
 export {
