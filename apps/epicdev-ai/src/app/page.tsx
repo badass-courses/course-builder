@@ -87,7 +87,8 @@ const Home = async (props: Props) => {
 		(resource) => resource.resource.type === 'videoResource',
 	)
 
-	const newContentType = firstPageResource.postType || firstPageResource.type
+	const newContentType =
+		firstPageResource && (firstPageResource.postType || firstPageResource.type)
 
 	return (
 		<LayoutClient
