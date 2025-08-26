@@ -24,12 +24,12 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     SELECT DISTINCT
       workshop.id AS workshop_id,
       workshop.type AS workshop_type,
-      workshop.fields->>'$.slug' AS workshop_slug,
-      workshop.fields->>'$.title' AS workshop_title,
-      workshop.fields->>'$.description' AS workshop_description,
+      JSON_EXTRACT(workshop.fields, '$.slug') AS workshop_slug,
+      JSON_EXTRACT(workshop.fields, '$.title') AS workshop_title,
+      JSON_EXTRACT(workshop.fields, '$.description') AS workshop_description,
       COALESCE(sections.id, top_level_lessons.id) AS section_or_lesson_id,
-      COALESCE(sections.fields->>'$.slug', top_level_lessons.fields->>'$.slug') AS section_or_lesson_slug,
-      COALESCE(sections.fields->>'$.title', top_level_lessons.fields->>'$.title') AS section_or_lesson_title,
+      COALESCE(JSON_EXTRACT(sections.fields, '$.slug'), JSON_EXTRACT(top_level_lessons.fields, '$.slug')) AS section_or_lesson_slug,
+      COALESCE(JSON_EXTRACT(sections.fields, '$.title'), JSON_EXTRACT(top_level_lessons.fields, '$.title')) AS section_or_lesson_title,
       COALESCE(section_relations.position, top_level_lesson_relations.position) AS section_or_lesson_position,
       CASE
           WHEN COALESCE(sections.id, top_level_lessons.id) IS NULL THEN workshop.type
@@ -37,12 +37,18 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
           ELSE lessons.\`type\`
       END AS item_type,
       lessons.id AS lesson_id,
-      lessons.fields->>'$.slug' AS lesson_slug,
-      lessons.fields->>'$.title' AS lesson_title,
-      lessons.fields->>'$.description' AS lesson_description,
+      JSON_EXTRACT(lessons.fields, '$.slug') AS lesson_slug,
+      JSON_EXTRACT(lessons.fields, '$.title') AS lesson_title,
+      JSON_EXTRACT(lessons.fields, '$.description') AS lesson_description,
       lesson_relations.position AS lesson_position
     FROM
-      ${contentResource} AS workshop
+      (
+        SELECT * FROM ${contentResource} 
+        WHERE type IN ('workshop', 'tutorial')
+        AND JSON_EXTRACT(fields, '$.state') = 'published'
+        AND JSON_EXTRACT(fields, '$.visibility') = 'public'
+        AND deletedAt IS NULL
+      ) AS workshop
     LEFT JOIN ${contentResourceResource} AS section_relations
       ON workshop.id = section_relations.resourceOfId
     LEFT JOIN ${contentResource} AS sections
@@ -56,8 +62,6 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
     LEFT JOIN ${contentResource} AS top_level_lessons
       ON top_level_lessons.id = top_level_lesson_relations.resourceId
       AND (top_level_lessons.type = 'lesson' OR top_level_lessons.type = 'exercise')
-    WHERE
-      workshop.type = 'workshop' or workshop.\`type\` = 'tutorial'
     ORDER BY
       COALESCE(section_relations.position, top_level_lesson_relations.position),
       lesson_relations.position
@@ -71,7 +75,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 		if (!workshopsAndTutorials.has(item.workshop_id)) {
 			workshopsAndTutorials.add(item.workshop_id)
 			sitemapEntries.push({
-				url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}`,
+				url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}`,
 				title: item.workshop_title,
 				description: item.workshop_description || '',
 				lastModified: new Date(),
@@ -87,7 +91,7 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 			const slug = item.lesson_slug || item.section_or_lesson_slug
 			if (slug) {
 				sitemapEntries.push({
-					url: `${process.env.COURSEBUILDER_URL}${item.workshop_type}s/${item.workshop_slug}/${slug}`,
+					url: `${process.env.COURSEBUILDER_URL}/${item.workshop_type}s/${item.workshop_slug}/${slug}`,
 					title: item.lesson_title || item.section_or_lesson_title,
 					description: item.lesson_description || '',
 					lastModified: new Date(),
@@ -103,16 +107,16 @@ export default async function sitemap(): Promise<SitemapEntry[]> {
 	SELECT
 		cr.id,
 		cr.type,
-		cr.fields->>'$.slug' AS slug,
-		cr.fields->>'$.title' AS title,
-		cr.fields->>'$.description' AS description,
+		JSON_EXTRACT(cr.fields, '$.slug') AS slug,
+		JSON_EXTRACT(cr.fields, '$.title') AS title,
+		JSON_EXTRACT(cr.fields, '$.description') AS description,
 		cr.updatedAt
 	FROM
 		${contentResource} cr
 	WHERE
 		cr.type IN ('post', 'list')
-		AND cr.fields->>'$.state' = 'published'
-		AND cr.fields->>'$.visibility' = 'public'
+		AND JSON_EXTRACT(cr.fields, '$.state') = 'published'
+		AND JSON_EXTRACT(cr.fields, '$.visibility') = 'public'
 		AND cr.deletedAt IS NULL
 	ORDER BY
 		cr.type, cr.updatedAt DESC
