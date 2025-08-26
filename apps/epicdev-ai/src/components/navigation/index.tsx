@@ -149,7 +149,7 @@ const Navigation = ({
 							/>
 						)} */}
 						<UserMenu />
-						<ActiveEventButton className="flex items-center" />
+						<ActiveEventButton className="flex items-center pl-2" />
 						{/* <ThemeToggle className="" /> */}
 					</ul>
 				</nav>

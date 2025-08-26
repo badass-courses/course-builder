@@ -277,7 +277,7 @@ export default async function CohortPage(props: {
 					</div>
 				)}
 				{hasPurchasedCurrentProduct ? (
-					<div className="bg-background mb-5 flex w-full flex-col items-center justify-between gap-3 rounded-lg border p-3 text-left sm:flex-row">
+					<div className="bg-card mb-5 flex w-full flex-col items-center justify-between gap-3 rounded-lg border p-3 text-left sm:flex-row">
 						<div className="flex items-center">
 							<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
 							You have purchased a ticket to this cohort.
@@ -461,13 +461,13 @@ export default async function CohortPage(props: {
 																		workshop.resources.length > 0 && (
 																			<AccordionTrigger
 																				aria-label="Toggle lessons"
-																				className="bg-secondary hover:bg-foreground/20 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
+																				className="bg-secondary hover:bg-foreground/20 [&_svg]:translate-y-0.3 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
 																			/>
 																		)}
 																</div>
 																{workshop.resources &&
 																	workshop.resources.length > 0 && (
-																		<AccordionContent className="border-b pb-2">
+																		<AccordionContent className="border-b-0 pb-2">
 																			{/* Display formatted workshop date/time */}
 																			<div className="text-muted-foreground text-sm">
 																				{/* {dayNumber !== null && (
@@ -505,7 +505,7 @@ export default async function CohortPage(props: {
 						{/* <CohortDetails cohort={cohort} /> */}
 						{hasPurchasedCurrentProduct ? (
 							<div>
-								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
+								<div className="flex h-12 items-center border-b border-dotted px-2.5 py-2 text-lg font-semibold">
 									Workshops
 								</div>
 								<ol className="flex flex-col">
@@ -565,7 +565,7 @@ export default async function CohortPage(props: {
 																		{workshop.fields.state === 'published' &&
 																		workshop.fields.visibility === 'public' ? (
 																			<Link
-																				className="text-foreground/90 hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium transition ease-in-out"
+																				className="text-foreground hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold transition ease-in-out"
 																				href={getResourcePath(
 																					'workshop',
 																					workshop.fields.slug,
@@ -577,19 +577,20 @@ export default async function CohortPage(props: {
 																					: workshop.fields.title}
 																			</Link>
 																		) : (
-																			<div className="text-foreground/90 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium">
+																			<div className="text-foreground flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold">
 																				{workshop.fields.title.includes(':')
 																					? workshop.fields.title.split(':')[1]
 																					: workshop.fields.title}
 																			</div>
 																		)}
+
 																		<AccordionTrigger
 																			aria-label="Toggle lessons"
-																			className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+																			className="bg-secondary hover:bg-foreground/20 [&_svg]:translate-y-0.3 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
 																		/>
 																	</div>
 																	<AccordionContent>
-																		<ol className="divide-border list-inside list-none divide-y">
+																		<ol className="divide-border list-inside list-none divide-y border-b">
 																			<WorkshopListRowRenderer
 																				workshop={workshop}
 																			/>
@@ -604,7 +605,7 @@ export default async function CohortPage(props: {
 										</>
 									)}
 								</ol>
-								<div className="bg-muted/50 p-5 pt-5">
+								<div className="bg-muted/50 border-t p-5 pt-5">
 									<Certificate
 										isCompleted={hasCompletedCohort}
 										resourceSlugOrId={cohort.fields?.slug}
