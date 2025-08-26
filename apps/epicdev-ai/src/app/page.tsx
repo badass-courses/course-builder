@@ -83,6 +83,12 @@ const Home = async (props: Props) => {
 		postType: page.resources[0]?.resource?.fields?.postType,
 	}
 
+	const pageVideoResource = page?.resources?.find(
+		(resource) => resource.resource.type === 'videoResource',
+	)
+
+	const newContentType = firstPageResource.postType || firstPageResource.type
+
 	return (
 		<LayoutClient
 			className="static"
@@ -92,7 +98,7 @@ const Home = async (props: Props) => {
 			<main className="flex w-full flex-col items-center justify-center">
 				{firstPageResource && (
 					<Link
-						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-full border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
+						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
 						href={getResourcePath(
 							firstPageResource.type,
 							firstPageResource.path,
@@ -101,16 +107,35 @@ const Home = async (props: Props) => {
 						prefetch
 					>
 						<span className="truncate text-ellipsis">
-							New {firstPageResource.postType || firstPageResource.type}:{' '}
+							New {newContentType === 'cohort' ? 'course' : newContentType}:{' '}
 							<span className="underline">{firstPageResource?.title}</span>
 						</span>
 					</Link>
 				)}
-				<header>
-					<h1 className="sm:fluid-3xl fluid-2xl mb-6 w-full pt-10 text-center font-bold leading-tight tracking-tight dark:text-white">
-						{page?.fields?.title || 'Title'}
-					</h1>
-				</header>
+				<section
+					id="home-page-video"
+					className="flex w-full flex-col-reverse items-center gap-5 pb-10 pt-3 md:flex-row md:gap-10 md:pb-16 md:pt-10"
+				>
+					<div className="flex max-w-xl flex-col">
+						<h1 className="sm:fluid-3xl fluid-2xl w-full text-center font-bold leading-tight tracking-tight md:text-left dark:text-white">
+							{page?.fields?.title || 'Title'}
+						</h1>
+						{page?.fields?.description && (
+							<h2 className="text-primary mt-3 text-center font-sans text-lg font-normal md:text-left lg:text-xl">
+								{page.fields.description}
+							</h2>
+						)}
+					</div>
+
+					{pageVideoResource && (
+						<MDXVideo
+							className="mb-0 w-full max-w-full shadow-2xl shadow-violet-600/20"
+							resourceId={pageVideoResource.resource.id}
+							thumbnailTime={pageVideoResource.resource.fields.thumbnailTime}
+							poster={pageVideoResource.resource.fields.poster}
+						/>
+					)}
+				</section>
 				<article
 					className={cn(
 						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',

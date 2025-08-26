@@ -46,13 +46,14 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	)
 
 	const styles = {
-		nav: 'text-foreground font-heading relative hover:no-underline [&_svg]:text-foreground/80 hover:text-primary hover:[&_svg]:text-primary [&_svg]:transition flex h-full items-center px-2 w-full justify-start text-lg sm:text-sm transition sm:px-3',
+		nav: 'text-foreground font-heading rounded-none relative hover:no-underline [&_svg]:text-foreground/80 hover:text-primary hover:[&_svg]:text-primary [&_svg]:transition flex h-full items-center px-2 w-full justify-start text-lg sm:text-sm transition sm:px-4 ease-out hover:bg-violet-300/10',
 		menu: 'text-foreground font-heading flex w-full items-center justify-start text-xl hover:no-underline hover:text-primary px-3 sm:text-sm',
 	}
 
 	return (
 		<li className="flex items-stretch">
 			<Button
+				data-nav-link=""
 				className={cn(
 					styles[variant],
 					{

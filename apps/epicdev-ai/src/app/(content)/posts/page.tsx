@@ -198,7 +198,10 @@ export default async function PostsIndexPage() {
 
 	return (
 		<>
-			<LayoutClient navigationClassName="bg-transparent dark" withContainer>
+			<LayoutClient
+				navigationClassName="bg-transparent [&_ul]:divide-x-0 [&_[data-logo]]:border-r-0 dark [&_[data-nav-link]]:hover:bg-transparent [&_[data-mobile-nav-trigger]]:bg-white/80 [&_[data-mobile-nav-trigger]]:text-black"
+				withContainer
+			>
 				<main className="mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full flex-col lg:flex-row">
 					<div className="mx-auto flex w-full flex-col pb-24">
 						<FeaturedGrid posts={featuredContent} />

@@ -38,6 +38,7 @@ import {
 	AlertTitle,
 	Button,
 } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
@@ -304,7 +305,7 @@ export default async function CohortPage(props: {
 							)}
 							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-5 md:items-start md:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-									<span className="text-foreground/80 font-mono text-xs font-semibold uppercase sm:text-sm">
+									<span className="text-foreground/80 font-heading text-xs font-semibold uppercase sm:text-xs">
 										Cohort-based Course
 									</span>
 									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
@@ -339,7 +340,7 @@ export default async function CohortPage(props: {
 							<h2 className="mb-5 text-2xl font-semibold tracking-tight sm:text-3xl">
 								Contents
 							</h2>
-							<ul className="flex flex-col gap-3">
+							<ul className="flex flex-col gap-2">
 								{workshops.length === 0 ? (
 									<li className="flex items-center">
 										<Alert
@@ -396,13 +397,20 @@ export default async function CohortPage(props: {
 														>
 															<AccordionItem
 																value={`${workshop.id}-body`}
-																className="bg-card border-b! rounded-lg border pl-4 pr-1 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+																className="bg-card border-b! rounded-lg border px-4 pb-1 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 															>
 																<div className="relative flex items-center justify-between">
 																	{workshop.fields.state === 'published' &&
 																	workshop.fields.visibility === 'public' ? (
 																		<Link
-																			className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																			className={cn(
+																				'text-foreground hover:text-primary flex flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out',
+																				{
+																					'max-w-[90%]':
+																						workshop.resources &&
+																						workshop.resources.length > 0,
+																				},
+																			)}
 																			href={getResourcePath(
 																				'workshop',
 																				workshop.fields.slug,
@@ -413,7 +421,7 @@ export default async function CohortPage(props: {
 																				<div className="font-bold">
 																					{workshop.fields.title}
 																				</div>{' '}
-																				<div className="text-sm font-medium">
+																				<div className="text-primary text-sm font-medium">
 																					Available from {workshopDateString}
 																				</div>
 																			</div>
@@ -424,12 +432,21 @@ export default async function CohortPage(props: {
 																			)}
 																		</Link>
 																	) : (
-																		<div className="text-foreground flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight">
+																		<div
+																			className={cn(
+																				'text-foreground flex flex-col py-2 pt-3 text-lg font-semibold leading-tight',
+																				{
+																					'max-w-[90%]':
+																						workshop.resources &&
+																						workshop.resources.length > 0,
+																				},
+																			)}
+																		>
 																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
 																				<div className="font-bold">
 																					{workshop.fields.title}
 																				</div>{' '}
-																				<div className="text-sm font-medium">
+																				<div className="text-primary text-sm font-medium">
 																					Available from {workshopDateString}
 																				</div>
 																			</div>
@@ -448,19 +465,22 @@ export default async function CohortPage(props: {
 																			/>
 																		)}
 																</div>
-																<AccordionContent className="border-b pb-2">
-																	{/* Display formatted workshop date/time */}
-																	<div className="text-muted-foreground text-sm">
-																		{/* {dayNumber !== null && (
+																{workshop.resources &&
+																	workshop.resources.length > 0 && (
+																		<AccordionContent className="border-b pb-2">
+																			{/* Display formatted workshop date/time */}
+																			<div className="text-muted-foreground text-sm">
+																				{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-																	</div>
-																	<ol className="list-inside list-none">
-																		<WorkshopListRowRenderer
-																			workshop={workshop}
-																		/>
-																	</ol>
-																</AccordionContent>
+																			</div>
+																			<ol className="list-inside list-none">
+																				<WorkshopListRowRenderer
+																					workshop={workshop}
+																				/>
+																			</ol>
+																		</AccordionContent>
+																	)}
 															</AccordionItem>
 														</Accordion>
 													</ModuleProgressProvider>

@@ -42,6 +42,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoice = ability.can('read', 'Invoice')
+	const isAdmin = ability.can('manage', 'all')
 
 	const userAvatar = sessionData?.user?.image ? (
 		<Image
@@ -70,6 +71,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		>
 			<Button
 				variant="ghost"
+				data-mobile-nav-trigger=""
 				className="bg-card/80 text-foreground flex h-12 w-12 items-center justify-center rounded-lg p-0 shadow-sm backdrop-blur-md"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -115,7 +117,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									/>
 								)}
 
-								{canViewTeam && (
+								{canViewTeam && !isAdmin && (
 									<NavLinkItem className="" label="Invite Team" href="/team" />
 								)}
 								{canViewInvoice && (
@@ -136,10 +138,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								)}
 							</ul>
 						</div>
-
-						<div className="flex w-full flex-col items-start justify-start border-t px-5 pt-3">
-							{sessionStatus === 'authenticated' && (
-								<>
+						{sessionStatus === 'authenticated' && (
+							<>
+								<div className="flex w-full flex-col items-start justify-start border-t px-5 pt-3">
 									<NavLinkItem
 										className="pl-4"
 										href="#"
@@ -149,10 +150,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 											<ArrowRightEndOnRectangleIcon className="mr-2 h-5 w-5" />
 										}
 									/>
-								</>
-							)}
-							<ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" />
-						</div>
+									{/* <ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" /> */}
+								</div>
+							</>
+						)}
 					</nav>
 				</SheetContent>
 			</Sheet>

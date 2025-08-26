@@ -34,7 +34,7 @@ export const UserMenu = () => {
 		ability.can('read', 'Team') && !ability.can('manage', 'all')
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoice = ability.can('read', 'Invoice')
-
+	const isAdmin = ability.can('manage', 'all')
 	if (sessionStatus === 'loading') {
 		return (
 			<div className="flex items-stretch">
@@ -67,10 +67,10 @@ export const UserMenu = () => {
 
 	return (
 		<>
-			{canViewTeam && (
+			{canViewTeam && !isAdmin && (
 				<NavLinkItem label="Invite Team" className="sm:px-2" href="/team" />
 			)}
-			<li className="hidden items-stretch sm:flex">
+			<li className="hidden h-full items-center sm:flex">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button

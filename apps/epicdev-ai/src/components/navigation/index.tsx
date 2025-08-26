@@ -64,13 +64,14 @@ const Navigation = ({
 		>
 			<div className="bg-linear-to-r absolute inset-x-0 -top-6 -z-10 h-12 -rotate-3 from-violet-300 via-pink-300 to-sky-300 opacity-50 blur-3xl dark:opacity-40" />
 			<div
-				className={cn('relative flex w-full items-center justify-between', {
+				className={cn('relative flex w-full items-stretch justify-between', {
 					// container: !isEditRoute,
 				})}
 			>
 				<div className="flex items-center">
 					<span
-						className="flex items-center justify-center"
+						data-logo=""
+						className="flex items-center justify-center border-r"
 						// onContextMenu={(e) => {
 						// 	e.preventDefault()
 						// 	router.push('/brand')
@@ -85,7 +86,7 @@ const Navigation = ({
 								prefetch
 								tabIndex={isRoot ? -1 : 0}
 								href="/"
-								className="font-heading flex items-center justify-center pr-4 text-xl font-semibold leading-none transition"
+								className="font-heading flex items-center justify-center pr-3 text-xl font-semibold leading-none transition"
 							>
 								<Logo className="origin-left scale-[1]" />
 							</Link>
@@ -96,12 +97,12 @@ const Navigation = ({
 							className={cn(
 								// 'ring-gray-800/7.5 absolute items-center rounded-full border border-white/50 bg-white/50 px-1 text-sm font-medium text-gray-800 shadow-lg shadow-gray-800/5 ring-1 backdrop-blur-xl dark:border-white/5 dark:bg-white/5',
 								{
-									'hidden lg:flex': true, // links.length > 3,
+									'hidden h-full items-stretch lg:flex': true, // links.length > 3,
 								},
 							)}
 							aria-label={`Navigation header with ${links.length} links`}
 						>
-							<ul className="flex items-center">
+							<ul className="divide-border flex h-full items-stretch divide-x">
 								{links.map((link) => {
 									return (
 										<NavLinkItem
@@ -116,7 +117,7 @@ const Navigation = ({
 					)}
 				</div>
 				<nav
-					className="absolute right-0 flex items-center"
+					className="absolute right-0 flex h-full items-stretch"
 					aria-label={`User navigation`}
 				>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
@@ -126,7 +127,7 @@ const Navigation = ({
 							</Button>
 						</div>
 					)} */}
-					<ul className="hidden items-center lg:flex">
+					<ul className="divide-border hidden h-full items-stretch divide-x lg:flex">
 						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
 								label="Feedback"
@@ -148,7 +149,7 @@ const Navigation = ({
 							/>
 						)} */}
 						<UserMenu />
-						<ActiveEventButton className="" />
+						<ActiveEventButton className="flex items-center" />
 						{/* <ThemeToggle className="" /> */}
 					</ul>
 				</nav>

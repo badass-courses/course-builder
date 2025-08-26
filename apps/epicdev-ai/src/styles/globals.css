@@ -219,5 +219,14 @@
 }
 
 mux-player::part(center play button) {
-	@apply sm:scale-50 sm:bg-black/50;
+	@apply sm:scale-50 xl:bg-black/50;
+}
+
+#home-page-video {
+	/* only desktop */
+	@media (width >= 80rem) {
+		mux-player::part(center play button) {
+			@apply absolute bottom-0 left-0;
+		}
+	}
 }

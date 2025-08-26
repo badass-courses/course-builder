@@ -11,72 +11,28 @@ export function useNavLinks() {
 	// 	api.contentResources.getPublishedResourcesLength.useQuery()
 
 	return [
-		{
-			href: '/posts',
-			label: (
-				<>
-					<AcademicCapIcon className="text-muted-foreground mr-1 size-5" />
-					Learn
-				</>
-			),
-
-			// label: (
-			// 	<span className="relative">
-			// 		Posts
-			// 		{publishedResourcesLength && publishedResourcesLength > 0 && (
-			// 			<div
-			// 				className="text-primary absolute -right-3 -top-0.5 flex items-center justify-center rounded-full font-mono text-[8px] font-semibold saturate-50"
-			// 				aria-label={`${publishedResourcesLength} scheduled`}
-			// 			>
-			// 				{publishedResourcesLength}
-			// 			</div>
-			// 		)}
-			// 	</span>
-			// ),
-		},
-		{
-			href: '/mcp-workshops',
-			label: (
-				<>
-					<Calendar className="text-muted-foreground mr-2 size-4" />
-					MCP Workshops
-				</>
-			),
-		},
-		{
-			href: '/newsletter',
-			label: (
-				<>
-					<Newspaper className="text-muted-foreground mr-2 size-4" />
-					Newsletter
-				</>
-			),
-		},
 		// {
-		// 	href: '/workshops',
-		// 	label: 'Pro Workshops',
-		// },
-		// {
-		// 	href: '/tutorials',
-		// 	label: 'Tutorials',
-		// },
-		// {
-		// 	href: '/articles',
-		// 	label: 'Articles',
-		// },
-		// {
-		// 	href: '/events',
+		// 	href: '/cohorts/build-real-world-ai-connected-apps-with-the-model-context-protocol',
 		// 	label: (
 		// 		<>
-		// 			Events
-		// 			{availableEvents && availableEvents.length > 0 && (
-		// 				<div
-		// 					className="mb-1 ml-1 h-1 w-1 rounded-full bg-rose-400"
-		// 					aria-label={`${availableEvents.length} scheduled`}
-		// 				/>
-		// 			)}
+		// 			Course
+		// 			<div className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold">
+		// 				New
+		// 			</div>
 		// 		</>
 		// 	),
 		// },
+		{
+			href: '/posts',
+			label: 'Posts',
+		},
+		{
+			href: '/mcp-workshops',
+			label: 'Live Workshops',
+		},
+		{
+			href: '/newsletter',
+			label: 'Newsletter',
+		},
 	] as NavLinkItem[]
 }
