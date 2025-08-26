@@ -25,6 +25,9 @@ export default function Footer() {
 				<nav>
 					<ul className="flex flex-col flex-wrap items-center gap-4 sm:flex-row sm:gap-8">
 						{links.map((link) => {
+							if (!link.href) {
+								return null
+							}
 							return (
 								<li key={link.href}>
 									<Link
