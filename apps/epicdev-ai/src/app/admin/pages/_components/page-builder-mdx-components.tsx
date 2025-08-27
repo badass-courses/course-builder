@@ -131,7 +131,7 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 py-5',
+				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 pt-5',
 				className,
 			)}
 		>
