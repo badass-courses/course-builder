@@ -161,7 +161,7 @@ const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
+				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 dark:border-gray-800 border-gray-200 mt-5 py-2 pl-5 italic gap-2',
 			centered:
 				'flex text-center font-heading text-balance flex-col items-center justify-center border-none dark:text-white',
 		},
@@ -285,6 +285,16 @@ const data = {
 				authorName: 'John Doe',
 				authorAvatar: 'http://res.cloudinary.com/TODO',
 				children: 'This is my feedback',
+			},
+		},
+		{
+			name: 'Testimonial',
+			component: Testimonial,
+			props: {
+				authorName: 'John Doe',
+				authorAvatar: 'http://res.cloudinary.com/TODO',
+				children: 'This is my feedback',
+				variant: 'centered',
 			},
 		},
 	],
@@ -441,12 +451,15 @@ Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's activel
 					{data.testimonial.map((item, index) => {
 						return (
 							<BlockItem
-								key={item.name}
-								item={item}
+								key={`${item.name}-${item.props.variant}-${index}`}
+								item={{
+									...item,
+									name: `${item.name} (${item.props.variant || 'default'})`,
+								}}
 								onDragStart={(e) =>
 									e.dataTransfer.setData(
 										'text/plain',
-										`<${item.name} authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
+										`<${item.name} variant="${item.props.variant || 'default'}" authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
 									)
 								}
 							/>
