@@ -115,7 +115,7 @@ export default async function ModulePage(props: Props) {
 					className,
 				)}
 			>
-				<div className="col-span-4 flex h-full w-full flex-wrap items-center justify-center gap-2 md:justify-start">
+				<div className="flex h-full w-full flex-wrap items-center justify-center gap-2 md:justify-start">
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
@@ -172,8 +172,8 @@ export default async function ModulePage(props: Props) {
 					slug={params.module}
 				/>
 				<header className="relative flex items-center justify-center overflow-hidden">
-					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-5 md:gap-10 md:pt-5 lg:gap-5">
-						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
+					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-8 md:gap-8 md:pt-8 lg:gap-10">
+						<div className="col-span-5 flex shrink-0 flex-col items-center md:items-start">
 							<WorkshopBreadcrumb />
 							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
 								{workshop.fields?.title}
@@ -183,11 +183,12 @@ export default async function ModulePage(props: Props) {
 									<p>{workshop.fields?.description}</p>
 								</div>
 							)}
-							<div className="mt-5 flex items-center gap-2">
+							<Links className="mt-5" />
+							{/* <div className="mt-5 flex items-center gap-2">
 								<Contributor />
-							</div>
+							</div> */}
 						</div>
-						<div className="col-span-2">
+						<div className="col-span-3">
 							{workshop.fields?.coverImage?.url && (
 								<WorkshopImage imageUrl={workshop.fields.coverImage.url} />
 							)}
@@ -203,10 +204,12 @@ export default async function ModulePage(props: Props) {
 				</header>
 
 				<>
-					<div className="mx-auto flex w-full grow grid-cols-6 flex-col gap-5 md:grid">
-						<div className="col-span-4">
-							<Links />
-							<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-8">
+					<div className="mx-auto flex w-full grow grid-cols-8 flex-col gap-5 md:grid lg:gap-10">
+						<div className="col-span-5">
+							<article className="prose sm:prose-lg lg:prose-base prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-8 lg:pt-10">
+								<h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75 sm:mb-6 lg:mb-6">
+									Description
+								</h2>
 								{workshop.fields?.body ? (
 									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
 								) : (
@@ -214,7 +217,7 @@ export default async function ModulePage(props: Props) {
 								)}
 							</article>
 						</div>
-						<div className="col-span-2">
+						<div className="col-span-3">
 							<h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
 								Contents
 							</h2>
@@ -229,7 +232,7 @@ export default async function ModulePage(props: Props) {
 							</div>
 						</div>
 					</div>
-					{workshop?.fields?.body && <Links className="mb-24 mt-20" />}
+					{workshop?.fields?.body && <Links className="mb-20 mt-10" />}
 				</>
 			</main>
 		</LayoutClient>

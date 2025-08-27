@@ -214,7 +214,7 @@ export function WorkshopResourceList(props: Props) {
 							className={cn('flex flex-col', wrapperClassName)}
 							defaultValue={sectionId || resources[0]?.id}
 						>
-							<ol className="">
+							<ol className="divide-border divide-y">
 								{resources.map((resource: NavigationResource, i: number) => {
 									const isActiveGroup =
 										(resource.type === 'section' ||
@@ -262,7 +262,7 @@ export function WorkshopResourceList(props: Props) {
 									) : (
 										// top-level lessons
 										<LessonResource
-											className={cn('border-b')}
+											className={cn('')}
 											lesson={resource}
 											index={i}
 											moduleProgress={moduleProgress}

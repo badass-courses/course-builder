@@ -74,7 +74,7 @@ export function StartLearningWorkshopButton({
 			<Button
 				size="lg"
 				className={cn(
-					'from-primary relative w-full rounded-lg bg-gradient-to-b to-indigo-800 text-sm font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]',
+					'from-primary relative h-12 w-full rounded-lg bg-gradient-to-b to-indigo-800 text-sm font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] md:w-auto',
 					className,
 					{
 						'text-foreground hover:bg-secondary border-r bg-transparent before:hidden sm:max-w-[120px]':

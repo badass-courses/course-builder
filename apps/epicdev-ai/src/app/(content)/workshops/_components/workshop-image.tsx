@@ -31,7 +31,7 @@ export default function WorkshopImage({ imageUrl }: { imageUrl: string }) {
 				src={imageUrl}
 				width={480}
 				height={270}
-				className="rounded-lg shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 dark:brightness-90"
+				className="ring-gray-800/7.5 rounded-lg shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.2)] ring-1 brightness-100 transition duration-300 ease-in-out group-hover:brightness-105 dark:brightness-90"
 				sizes="(max-width: 768px) 100vw, 480px"
 			/>
 			<div className="bg-background/80 absolute flex items-center justify-center rounded-full p-2 backdrop-blur-md">
