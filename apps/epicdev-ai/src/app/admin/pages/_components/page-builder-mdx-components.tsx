@@ -130,8 +130,9 @@ const Instructor = ({
 }) => {
 	return (
 		<section
+			data-instructor=""
 			className={cn(
-				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 pt-5',
+				'prose-headings:my-0 prose-p:text-violet-950 prose-headings:text-violet-950 bg-muted relative flex w-full flex-col items-center gap-3 rounded-lg border p-5 sm:gap-10 sm:p-10',
 				className,
 			)}
 		>
@@ -141,7 +142,7 @@ const Instructor = ({
 				alt={config.author}
 				width={1280}
 				height={854}
-				className="mb-0! flex-shrink-0 rounded-md"
+				className="mb-0! mt-0! w-full flex-shrink-0 rounded-md"
 			/>
 
 			<div className="">

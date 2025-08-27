@@ -207,7 +207,7 @@ const Home = async (props: Props) => {
 				</section>
 				<article
 					className={cn(
-						'prose dark:prose-invert lg:prose-lg sm:prose-lg mx-auo prose-p:max-w-3xl prose-headings:max-w-3xl prose-img:max-w-3xl prose-p:mx-auto prose-headings:mx-auto prose-img:mx-auto w-full max-w-4xl pb-10',
+						'prose dark:prose-invert lg:prose-lg sm:prose-lg mx-auo prose-p:max-w-3xl prose-headings:max-w-3xl prose-img:max-w-3xl prose-p:mx-auto prose-headings:mx-auto prose-img:mx-auto w-full max-w-4xl pb-10 [&_[data-instructor]]:mx-auto [&_[data-instructor]]:max-w-3xl',
 					)}
 				>
 					{page?.fields?.body ? (
