@@ -28,7 +28,7 @@
 			}
 		}
 		[data-button] {
-			@apply from-primary bg-linear-to-b mt-4 h-14 w-full to-indigo-600 text-base font-medium transition dark:to-indigo-500;
+			@apply from-primary font-heading dark:from-primary bg-linear-to-b mt-5 h-14 w-full to-indigo-800 font-semibold text-white shadow-lg shadow-indigo-800/20 dark:to-indigo-600 dark:text-black;
 		}
 	}
 	[data-separator] {

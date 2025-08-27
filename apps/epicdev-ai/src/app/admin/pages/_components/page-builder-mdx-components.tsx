@@ -1,15 +1,19 @@
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 import Image from 'next/image'
+import { FaqItem } from '@/app/faq/_components/faq-item'
 import { CldImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
+import type { Page } from '@/lib/pages'
+import { formatFaq } from '@/utils/format-faq'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
 
+import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 const YouTubeVideo = ({ videoId }: { videoId: string }) => {
@@ -156,9 +160,9 @@ const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
+				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
 			centered:
-				'flex text-center text-balance flex-col items-center justify-center border-none dark:text-white',
+				'flex text-center font-heading text-balance flex-col items-center justify-center border-none dark:text-white',
 		},
 	},
 	defaultVariants: {
@@ -191,7 +195,7 @@ const Testimonial = ({
 							src={authorAvatar}
 						/>
 					)}
-					<span className="text-sm">{authorName}</span>
+					<span className="font-sans text-sm">{authorName}</span>
 				</div>
 			)}
 		</blockquote>
@@ -475,6 +479,37 @@ Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's activel
 	)
 }
 
+const FAQ = ({
+	faqPageLoader,
+	className,
+}: {
+	faqPageLoader: Promise<Page | null>
+	className?: string
+}) => {
+	const faqPage = use(faqPageLoader)
+	if (!faqPage) return null
+	const formattedQuestions = formatFaq(faqPage?.fields?.body || '')
+	if (!formattedQuestions.length) return null
+
+	return (
+		<div className={cn('flex flex-col gap-5 pt-0', className)}>
+			<h2 className="mb-5 px-5">FAQ</h2>
+			<Accordion type="multiple" className="not-prose flex w-full flex-col">
+				<ul className="divide-border flex flex-col gap-0 divide-y">
+					{formattedQuestions.map(({ question, answer }) => (
+						<FaqItem
+							className="rounded-none border-none bg-transparent shadow-none hover:bg-transparent dark:border-none dark:bg-transparent dark:hover:bg-transparent"
+							question={question}
+							answer={answer}
+							key={question}
+						/>
+					))}
+				</ul>
+			</Accordion>
+		</div>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -501,4 +536,5 @@ export {
 	SubscribeForm,
 	Callout,
 	YouTubeVideo,
+	FAQ,
 }

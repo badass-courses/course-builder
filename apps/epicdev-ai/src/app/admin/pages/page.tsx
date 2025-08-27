@@ -60,13 +60,16 @@ const PageTeaser: React.FC<{
 			<Link
 				href={`/admin/pages/${page.fields.slug}/edit`}
 				passHref
-				className="hover:bg-card flex w-full flex-col items-start justify-between gap-5 p-5 transition ease-in-out sm:flex-row"
+				className="group flex w-full flex-col items-start justify-between gap-5 p-5 transition ease-in-out sm:flex-row"
 				prefetch
 			>
 				<FileText className="text-primary relative size-5 flex-shrink-0 translate-y-0.5" />
 				<div className="w-full">
-					<div className="fluid-lg flex w-full flex-wrap items-baseline gap-1 font-semibold">
+					<div className="font-heading fluid-lg flex w-full flex-wrap items-baseline gap-1 font-semibold group-hover:underline">
 						{title}
+					</div>
+					<div className="text-primary text-sm font-medium">
+						{page.fields.slug}
 					</div>
 					{description && (
 						<div className="text-muted-foreground mt-3 text-sm">
