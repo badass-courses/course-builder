@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
 		const fontData = await fetch(
 			new URL(
-				'../../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
+				'../../../../../public/fonts/VastagoGrotesk-Bold.ttf',
 				import.meta.url,
 			),
 		).then((res) => res.arrayBuffer())

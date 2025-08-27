@@ -493,7 +493,7 @@ const FAQ = ({
 
 	return (
 		<div className={cn('flex flex-col gap-5 pt-0', className)}>
-			<h2 className="mb-5 px-5">FAQ</h2>
+			<h2 className="mb-0! px-3 sm:px-5">FAQ</h2>
 			<Accordion type="multiple" className="not-prose flex w-full flex-col">
 				<ul className="divide-border flex flex-col gap-0 divide-y">
 					{formattedQuestions.map(({ question, answer }) => (
