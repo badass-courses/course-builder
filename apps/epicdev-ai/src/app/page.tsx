@@ -225,10 +225,11 @@ const Home = async (props: Props) => {
 												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 											>
 												<PricingWidgetServer
-													// DEV
-													productId="product-30fvh"
-													// PROD
-													// productId="TODO"
+													productId={
+														process.env.NODE_ENV === 'development'
+															? 'product-30fvh'
+															: 'product-zir2q'
+													}
 													searchParams={searchParams}
 													{...props}
 												/>
