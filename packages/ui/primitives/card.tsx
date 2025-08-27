@@ -1,5 +1,4 @@
 import * as React from 'react'
-import Balancer from 'react-wrap-balancer'
 
 import { cn } from '../utils/cn'
 
@@ -56,7 +55,7 @@ const CardDescription = React.forwardRef<
 		className={cn('text-muted-foreground text-sm', className)}
 		{...props}
 	>
-		<Balancer>{children}</Balancer>
+		{children}
 	</div>
 ))
 CardDescription.displayName = 'CardDescription'

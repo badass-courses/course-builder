@@ -1,8 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link.js'
-import { DocumentTextIcon } from '@heroicons/react/24/solid'
 import { format } from 'date-fns'
-import { ChevronRightIcon } from 'lucide-react'
 
 import { Purchase } from '@coursebuilder/core/schemas'
 import {
@@ -29,7 +27,7 @@ export const InvoiceCard: React.FC<{
 				<CardTitle>
 					<Link href={invoiceRoutePath}>Invoice: {purchase.product.name}</Link>
 				</CardTitle>
-				<CardDescription>
+				<CardDescription className="flex items-center gap-2">
 					<span className="after:content-['・']">
 						{Intl.NumberFormat('en-US', {
 							style: 'currency',

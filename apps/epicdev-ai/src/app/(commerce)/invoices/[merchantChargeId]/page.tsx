@@ -129,19 +129,21 @@ const Invoice = async (props: {
 
 	return (
 		<LayoutClient withContainer>
-			<div className="container">
-				<main className="max-w-(--breakpoint-md) mx-auto w-full">
-					<div className="flex flex-col justify-between pb-5 pt-10 print:hidden">
-						<Link
-							href="/invoices"
-							className="mb-5 inline-flex items-center gap-1 text-sm opacity-75 transition hover:opacity-100"
-						>
-							<ChevronLeft className="h-3 w-3" /> Invoices
-						</Link>
-						<h1 className="font-text text-center text-lg font-bold leading-tight sm:text-left sm:text-xl">
+			<div className="flex grid-cols-12 flex-col gap-5 pt-5 lg:grid lg:gap-10">
+				<nav className="col-span-2 flex items-center justify-center lg:items-start lg:justify-start">
+					<Link
+						href="/invoices"
+						className="font-heading inline-flex items-center gap-1 text-base font-medium transition ease-out hover:underline"
+					>
+						<ChevronLeft className="size-4" /> Invoices
+					</Link>
+				</nav>
+				<main className="max-w-(--breakpoint-lg) col-span-8 mx-auto w-full">
+					<div className="flex flex-col justify-between pb-5 print:hidden">
+						<h1 className="font-text text-center text-xl font-bold leading-tight lg:text-left">
 							Your Invoice for {product.name}
 						</h1>
-						<div className="flex flex-col items-center gap-2 pt-3 sm:flex-row">
+						<div className="flex flex-col items-center gap-2 pt-3 lg:flex-row">
 							<Suspense>
 								<InvoicePrintButton />
 							</Suspense>
@@ -155,9 +157,9 @@ const Invoice = async (props: {
 							)}
 						</div>
 					</div>
-					<div className="rounded-t-md border bg-white pr-12 text-gray-900 print:border-none print:shadow-none">
+					<div className="rounded-t-md border bg-white pr-8 text-gray-900 print:border-none print:shadow-none">
 						<div className="px-10 py-16">
-							<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-0">
+							<div className="flex w-full grid-cols-3 flex-col items-start justify-between gap-8 sm:grid sm:gap-5">
 								<div className="col-span-2 flex items-center">
 									<span className="font-text pl-2 text-2xl font-semibold">
 										<Logo className="w-40 text-black" />
