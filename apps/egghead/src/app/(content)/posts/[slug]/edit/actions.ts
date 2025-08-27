@@ -41,9 +41,8 @@ export const onPostSave = async (resource: ContentResource) => {
 	const post = await courseBuilderAdapter.getContentResource(resource.id)
 	revalidateTag('posts')
 	revalidatePath(`/${post?.fields?.slug}`)
-	redirect(`/${resource.fields?.slug}`)
 }
 
 export const onPostPublish = async (resource: ContentResource) => {
-	redirect(`/${resource.fields?.slug}?published=true`)
+	console.log('published')
 }
