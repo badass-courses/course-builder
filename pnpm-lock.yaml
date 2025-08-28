@@ -853,7 +853,7 @@ importers:
         specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.14
+        specifier: ^0.0.15
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.6
@@ -868,7 +868,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -1539,7 +1539,7 @@ importers:
         specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.14
+        specifier: ^0.0.15
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.6
@@ -1554,7 +1554,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3426,7 +3426,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -3787,7 +3787,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -5485,7 +5485,7 @@ importers:
         specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/commerce-next':
-        specifier: ^0.0.14
+        specifier: ^0.0.15
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
         specifier: 1.0.6
@@ -5500,7 +5500,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -6354,7 +6354,7 @@ importers:
         specifier: workspace:*
         version: link:../nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.7
+        specifier: ^2.0.8
         version: link:../ui
       '@heroicons/react':
         specifier: ^2.0.18
