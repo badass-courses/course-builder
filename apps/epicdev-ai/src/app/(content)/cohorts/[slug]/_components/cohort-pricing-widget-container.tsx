@@ -3,7 +3,6 @@
 import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
-import { CldImage } from '@/components/cld-image'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
 import { track } from '@/utils/analytics'
@@ -29,9 +28,10 @@ export const CohortPricingWidgetContainer: React.FC<
 		pricingDataLoader,
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
-
+		couponFromCode,
 		...commerceProps
 	} = props
+
 	const { fields } = cohort
 	const { startsAt, endsAt, timezone } = fields
 	const product = products && products[0]
