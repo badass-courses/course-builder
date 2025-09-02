@@ -3,7 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
-import { coupon, merchantCoupon as merchantCouponTable } from '@/db/schema'
+import {
+	coupon,
+	merchantCoupon as merchantCouponTable,
+	products,
+} from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -11,6 +15,8 @@ import { guid } from '@/utils/guid'
 import { and, eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
+
+import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 
 const CouponInputSchema = z.object({
 	quantity: z.string(),
@@ -144,4 +150,67 @@ export async function createCoupon(input: CouponInput) {
 	}
 
 	return []
+}
+/**
+ * Returns the loyalty coupon code for the user based on the number of purchases they have made
+ * @param purchaseCount - The number of purchases the user has made
+ * @returns The loyalty coupon code
+ */
+function getLoyaltyCouponCode(purchaseCount: number): string | null {
+	switch (purchaseCount) {
+		case 1:
+			return env.COUPON_CODE_LOYALTY_1 || null
+		case 2:
+			return env.COUPON_CODE_LOYALTY_2 || null
+		default:
+			return null
+	}
+}
+
+/**
+ * Returns the loyalty coupon for the user based on the number of purchases they have made
+ * @param userId - The user's ID
+ * @returns The loyalty coupon
+ */
+export async function getLoyaltyCouponForUser(userId: string) {
+	if (!env.COUPON_CODE_LOYALTY_1 || !env.COUPON_CODE_LOYALTY_2) {
+		return undefined
+	}
+
+	const { getPurchasesForUser } = courseBuilderAdapter
+
+	const userPurchases = await getPurchasesForUser(userId)
+
+	const liveProducts = await db
+		.select()
+		.from(products)
+		.where(eq(products.type, 'live'))
+
+	const liveProductIds = liveProducts.map((product) => product.id)
+
+	const userLiveProductPurchases = userPurchases.filter((purchase) =>
+		liveProductIds.includes(purchase.productId),
+	)
+
+	const couponCodeForUserWhoPurchasedLiveProduct = getLoyaltyCouponCode(
+		userLiveProductPurchases.length,
+	)
+
+	const couponFromCode =
+		couponCodeForUserWhoPurchasedLiveProduct &&
+		(await getCouponForCode(
+			couponCodeForUserWhoPurchasedLiveProduct,
+			[],
+			courseBuilderAdapter,
+		))
+
+	if (!couponFromCode) {
+		return undefined
+	}
+
+	return {
+		...couponFromCode,
+		default: true,
+		status: 1,
+	}
 }
