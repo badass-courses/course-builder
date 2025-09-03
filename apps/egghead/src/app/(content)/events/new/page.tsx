@@ -29,11 +29,7 @@ export default async function NewEventPage() {
 
 	async function handleSuccess(result: any) {
 		'use server'
-		if (result.type === 'single' && result.event) {
-			redirect(`/events/${result.event.fields.slug}`)
-		} else if (result.type === 'series' && result.eventSeries) {
-			redirect(`/events/${result.eventSeries.fields.slug}`)
-		}
+		redirect('/admin/events')
 	}
 
 	return (

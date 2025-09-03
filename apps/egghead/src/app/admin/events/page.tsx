@@ -1,12 +1,17 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { getAllEvents } from '@/lib/events-query'
+import {
+	getActiveEvents,
+	getAllEvents,
+	getPastEventIds,
+} from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import { format } from 'date-fns'
 import { CalendarIcon, PlusCircleIcon } from 'lucide-react'
 
 import {
+	Badge,
 	Button,
 	Card,
 	CardContent,
@@ -26,7 +31,93 @@ export default async function AdminEventsPage() {
 		redirect('/')
 	}
 
-	const events = await getAllEvents()
+	const [allEvents, activeEvents, pastEventIds] = await Promise.all([
+		getAllEvents(),
+		getActiveEvents(),
+		getPastEventIds(),
+	])
+
+	const pastEvents = allEvents.filter((event) =>
+		pastEventIds.includes(event.id),
+	)
+
+	const renderEventCard = (event: any, isPast = false) => (
+		<Card key={event.id}>
+			<CardHeader>
+				<div className="flex items-start justify-between">
+					<div>
+						<div className="flex items-center gap-2">
+							<CardTitle>{event.fields.title}</CardTitle>
+							{isPast && <Badge variant="secondary">Past</Badge>}
+						</div>
+						<p className="text-muted-foreground mt-1 text-sm">
+							{event.type === 'event-series' ? 'Event Series' : 'Single Event'}
+						</p>
+					</div>
+					<div className="flex gap-2">
+						<Link href={`/events/${event.fields.slug}`}>
+							<Button variant="outline" size="sm">
+								View
+							</Button>
+						</Link>
+						<Link href={`/events/${event.fields.slug}/edit`}>
+							<Button variant="outline" size="sm">
+								Edit
+							</Button>
+						</Link>
+					</div>
+				</div>
+			</CardHeader>
+			<CardContent>
+				<div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
+					<div>
+						<p className="text-muted-foreground">State</p>
+						<p className="font-medium capitalize">
+							{event.fields.state || 'draft'}
+						</p>
+					</div>
+					<div>
+						<p className="text-muted-foreground">Visibility</p>
+						<p className="font-medium capitalize">
+							{event.fields.visibility || 'unlisted'}
+						</p>
+					</div>
+					{event.fields.startsAt && (
+						<div>
+							<p className="text-muted-foreground">Start Date</p>
+							<p className="font-medium">
+								{format(new Date(event.fields.startsAt), 'PP')}
+							</p>
+						</div>
+					)}
+					{event.fields.price !== undefined && (
+						<div>
+							<p className="text-muted-foreground">Price</p>
+							<p className="font-medium">
+								{event.fields.price === 0 ? 'Free' : `$${event.fields.price}`}
+							</p>
+						</div>
+					)}
+					{event.fields.quantity !== undefined && (
+						<div>
+							<p className="text-muted-foreground">Capacity</p>
+							<p className="font-medium">
+								{event.fields.quantity === -1
+									? 'Unlimited'
+									: `${event.fields.quantity} seats`}
+							</p>
+						</div>
+					)}
+					<div>
+						<p className="text-muted-foreground">Created</p>
+						<p className="font-medium">
+							{format(new Date(event.createdAt), 'PP')}
+						</p>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+	)
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -40,7 +131,7 @@ export default async function AdminEventsPage() {
 				</Link>
 			</div>
 
-			{events.length === 0 ? (
+			{allEvents.length === 0 ? (
 				<Card>
 					<CardContent className="py-12 text-center">
 						<CalendarIcon className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
@@ -54,85 +145,32 @@ export default async function AdminEventsPage() {
 					</CardContent>
 				</Card>
 			) : (
-				<div className="space-y-4">
-					{events.map((event) => (
-						<Card key={event.id}>
-							<CardHeader>
-								<div className="flex items-start justify-between">
-									<div>
-										<CardTitle>{event.fields.title}</CardTitle>
-										<p className="text-muted-foreground mt-1 text-sm">
-											{event.type === 'event-series'
-												? 'Event Series'
-												: 'Single Event'}
-										</p>
-									</div>
-									<div className="flex gap-2">
-										<Link href={`/events/${event.fields.slug}`}>
-											<Button variant="outline" size="sm">
-												View
-											</Button>
-										</Link>
-										<Link href={`/events/${event.fields.slug}/edit`}>
-											<Button variant="outline" size="sm">
-												Edit
-											</Button>
-										</Link>
-									</div>
-								</div>
-							</CardHeader>
-							<CardContent>
-								<div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
-									<div>
-										<p className="text-muted-foreground">State</p>
-										<p className="font-medium capitalize">
-											{event.fields.state || 'draft'}
-										</p>
-									</div>
-									<div>
-										<p className="text-muted-foreground">Visibility</p>
-										<p className="font-medium capitalize">
-											{event.fields.visibility || 'unlisted'}
-										</p>
-									</div>
-									{event.fields.startsAt && (
-										<div>
-											<p className="text-muted-foreground">Start Date</p>
-											<p className="font-medium">
-												{format(new Date(event.fields.startsAt), 'PP')}
-											</p>
-										</div>
-									)}
-									{event.fields.price !== undefined && (
-										<div>
-											<p className="text-muted-foreground">Price</p>
-											<p className="font-medium">
-												{event.fields.price === 0
-													? 'Free'
-													: `$${event.fields.price}`}
-											</p>
-										</div>
-									)}
-									{event.fields.quantity !== undefined && (
-										<div>
-											<p className="text-muted-foreground">Capacity</p>
-											<p className="font-medium">
-												{event.fields.quantity === -1
-													? 'Unlimited'
-													: `${event.fields.quantity} seats`}
-											</p>
-										</div>
-									)}
-									<div>
-										<p className="text-muted-foreground">Created</p>
-										<p className="font-medium">
-											{format(new Date(event.createdAt), 'PP')}
-										</p>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					))}
+				<div className="space-y-8">
+					{/* Active Events Section */}
+					{activeEvents.length > 0 && (
+						<div>
+							<div className="mb-4 flex items-center gap-2">
+								<h2 className="text-xl font-semibold">Active Events</h2>
+								<Badge variant="default">{activeEvents.length}</Badge>
+							</div>
+							<div className="space-y-4">
+								{activeEvents.map((event) => renderEventCard(event))}
+							</div>
+						</div>
+					)}
+
+					{/* Past Events Section */}
+					{pastEvents.length > 0 && (
+						<div>
+							<div className="mb-4 flex items-center gap-2">
+								<h2 className="text-xl font-semibold">Past Events</h2>
+								<Badge variant="secondary">{pastEvents.length}</Badge>
+							</div>
+							<div className="space-y-4">
+								{pastEvents.map((event) => renderEventCard(event, true))}
+							</div>
+						</div>
+					)}
 				</div>
 			)}
 		</div>
