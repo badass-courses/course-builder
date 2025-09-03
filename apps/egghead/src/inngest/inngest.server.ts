@@ -38,6 +38,12 @@ import {
 } from './events/instructor-invite-created'
 import { POST_CREATED_EVENT, PostCreated } from './events/post-created'
 import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+	ResourceCreated,
+	ResourceUpdated,
+} from './events/resource-management'
+import {
 	TIPS_UPDATED_EVENT,
 	TipsUpdated,
 } from './functions/migrate-tips-to-posts'
@@ -63,6 +69,8 @@ export type Events = {
 	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
 	[INSTRUCTOR_INVITE_COMPLETED_EVENT]: InstructorInviteCompleted
 	[EGGHEAD_COURSE_CREATED_EVENT]: EggheadCourseCreated
+	[RESOURCE_CREATED_EVENT]: ResourceCreated
+	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
 }
 
 const callbackBase =
