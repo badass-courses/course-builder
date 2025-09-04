@@ -439,7 +439,7 @@ export default async function CohortPage(props: {
 																	) : (
 																		<div
 																			className={cn(
-																				'text-foreground flex flex-col py-2 pt-3 text-lg font-semibold leading-tight',
+																				'text-foreground flex w-full flex-col py-2 pt-3 text-lg font-semibold leading-tight',
 																				{
 																					'max-w-[90%]':
 																						workshop.resources &&
