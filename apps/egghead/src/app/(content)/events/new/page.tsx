@@ -17,14 +17,24 @@ export default async function NewEventPage() {
 
 	async function handleCreateEvent(data: EventFormData) {
 		'use server'
-		const event = await createEvent(data)
-		return event
+		try {
+			const event = await createEvent(data)
+			return event
+		} catch (error) {
+			console.error('Error in handleCreateEvent:', error)
+			throw error
+		}
 	}
 
 	async function handleCreateEventSeries(data: EventSeriesFormData) {
 		'use server'
-		const result = await createEventSeries(data)
-		return result
+		try {
+			const result = await createEventSeries(data)
+			return result
+		} catch (error) {
+			console.error('Error in handleCreateEventSeries:', error)
+			throw error
+		}
 	}
 
 	async function handleSuccess(result: any) {

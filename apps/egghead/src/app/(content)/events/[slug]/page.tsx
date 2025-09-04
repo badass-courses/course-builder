@@ -24,7 +24,8 @@ interface EventPageProps {
 export async function generateMetadata({
 	params,
 }: EventPageProps): Promise<Metadata> {
-	const event = await getCachedEventOrEventSeries(params.slug)
+	const resolvedParams = await params
+	const event = await getCachedEventOrEventSeries(resolvedParams.slug)
 
 	if (!event) {
 		return {
@@ -45,7 +46,8 @@ export async function generateMetadata({
 }
 
 export default async function EventPage({ params }: EventPageProps) {
-	const event = await getCachedEventOrEventSeries(params.slug)
+	const resolvedParams = await params
+	const event = await getCachedEventOrEventSeries(resolvedParams.slug)
 	const { session, ability } = await getServerAuthSession()
 
 	if (!event) {
@@ -78,7 +80,7 @@ export default async function EventPage({ params }: EventPageProps) {
 			{/* Admin actions */}
 			{canEdit && (
 				<div className="mb-4 flex justify-end gap-2">
-					<Link href={`/events/${params.slug}/edit`}>
+					<Link href={`/events/${resolvedParams.slug}/edit`}>
 						<Button variant="outline" size="sm">
 							Edit Event
 						</Button>

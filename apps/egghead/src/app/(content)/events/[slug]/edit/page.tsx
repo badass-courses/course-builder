@@ -11,13 +11,14 @@ interface EditEventPageProps {
 }
 
 export default async function EditEventPage({ params }: EditEventPageProps) {
+	const resolvedParams = await params
 	const { session, ability } = await getServerAuthSession()
 
 	if (!ability.can('update', 'Content')) {
 		redirect('/')
 	}
 
-	const event = await getEventOrEventSeries(params.slug)
+	const event = await getEventOrEventSeries(resolvedParams.slug)
 
 	if (!event) {
 		notFound()
