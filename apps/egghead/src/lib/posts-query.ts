@@ -30,6 +30,7 @@ import {
 	getCachedPost,
 	getCoursesForPost,
 	getLatestLessonsForUser,
+	getMinimalProductInfoWithoutUser,
 	getPost,
 	getPostTags,
 	searchLessons,
@@ -84,6 +85,7 @@ export {
 	writePostUpdateToDatabase,
 	deletePostFromDatabase,
 	getVideoDuration,
+	getMinimalProductInfoWithoutUser,
 
 	// Playlist operations
 	addEggheadLessonToPlaylist,

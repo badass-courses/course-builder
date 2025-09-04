@@ -2,21 +2,34 @@
 
 import { revalidateTag, unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
+	products,
+	purchases,
 } from '@/db/schema'
-import { Post, PostSchema } from '@/lib/posts'
+import {
+	Post,
+	PostSchema,
+	ProductForPostPropsSchema,
+	type ProductForPostProps,
+} from '@/lib/posts'
 import { createNewPostVersion } from '@/lib/posts-version-query'
+import { getPricingData } from '@/lib/pricing-query'
 import { EggheadTag, EggheadTagSchema } from '@/lib/tags'
 // Helper functions that need to be imported
 import { getServerAuthSession } from '@/server/auth'
-import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { ContentResourceSchema } from '@coursebuilder/core/schemas'
+import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
+import {
+	ContentResourceSchema,
+	productSchema,
+} from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
 import { logger } from '../utils/logger'
@@ -609,4 +622,71 @@ export async function getLatestLessonsForUser(
 	}
 
 	return lessonsParsed.data
+}
+
+export async function getMinimalProductInfoWithoutUser(
+	postId: string,
+): Promise<ProductForPostProps | null> {
+	const contentProduct = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, postId),
+	})
+
+	const product = await courseBuilderAdapter.getProduct(
+		contentProduct?.productId,
+	)
+	if (!product) {
+		return null
+	}
+
+	const productParsed = productSchema.parse(product)
+
+	const pricingDataLoader = getPricingData({
+		productId: productParsed.id,
+	})
+
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				allowPurchase: 'true',
+			},
+			userId: null,
+			products: [productParsed],
+		},
+		courseBuilderAdapter,
+	)
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, productParsed.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const props = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	return ProductForPostPropsSchema.parse(props)
 }
