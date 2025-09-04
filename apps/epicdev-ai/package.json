@@ -192,6 +192,7 @@
 		"sanitize-html": "^2.13.0",
 		"schema-dts": "^1.1.2",
 		"shortid": "^2.2.16",
+		"starfield-react": "3.1.0-dev-5",
 		"styled-components": "~5.2.3",
 		"superjson": "^2.2.1",
 		"swr": "^2.2.4",
