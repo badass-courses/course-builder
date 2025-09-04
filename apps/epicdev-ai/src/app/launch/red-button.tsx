@@ -34,9 +34,8 @@ export default function RedButton({
 		setIsPressed(true)
 		setShake(true)
 		reward()
-		// setConfettiKey((prevKey) => prevKey + 1) // Force confetti re-render
 		setStarfieldSpeed(20)
-
+		setIsRipping(true)
 		// Sequence of animations
 		setTimeout(() => setShake(false), 500) // Stop shaking after 500ms
 		setTimeout(() => setIsPressed(false), 250)
@@ -58,9 +57,9 @@ export default function RedButton({
 				}
 
 				// Skip Y.js protocol messages
-				if (messageData.includes('\u0000')) {
-					return
-				}
+				// if (messageData.includes('\u0000')) {
+				// 	return
+				// }
 
 				const data = JSON.parse(messageData)
 				if (data.name === 'launch.initiated') {
@@ -77,9 +76,9 @@ export default function RedButton({
 		if (canPress) {
 			letItRip()
 
-			setTimeout(() => {
-				router.push('/cohorts/master-mcp')
-			}, 3000)
+			// setTimeout(() => {
+			// 	router.push('/cohorts/master-mcp')
+			// }, 5000)
 		}
 	}
 
@@ -109,7 +108,7 @@ export default function RedButton({
 				epicai.pro/launch
 			</h1>
 			<button
-				disabled={isRipping}
+				// disabled={isRipping}
 				type="submit"
 				onClick={handleClick}
 				className={`font-heading relative flex size-80 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-red-500 to-red-700 text-4xl font-bold text-white ${

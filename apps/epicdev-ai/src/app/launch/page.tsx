@@ -29,7 +29,7 @@ export default async function LaunchPage() {
 				action={async () => {
 					'use server'
 					if (canPress) {
-						launch()
+						await launch()
 					}
 				}}
 			>
