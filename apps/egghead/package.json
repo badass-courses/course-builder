@@ -126,10 +126,10 @@
 		"uuid": "^9.0.1",
 		"y-partykit": "^0.0.28",
 		"yjs": "^13.6.10",
-		"zod": "^3.22.4"
+		"zod": "^3.22.4",
+		"@internationalized/date": "3.7.0"
 	},
 	"devDependencies": {
-		"@internationalized/date": "3.7.0",
 		"@tailwindcss/postcss": "^4.1.11",
 		"@tailwindcss/typography": "^0.5.16",
 		"@types/node": "^20.12.5",
