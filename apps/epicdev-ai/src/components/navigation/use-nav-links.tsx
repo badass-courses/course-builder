@@ -9,17 +9,13 @@ export function useNavLinks() {
 	// const { data: availableEvents, status } = api.events.get.useQuery()
 	// const { data: publishedResourcesLength, status } =
 	// 	api.contentResources.getPublishedResourcesLength.useQuery()
-
-	return [
+	const initialLinks = [
 		{
-			href: '/cohorts/build-real-world-ai-connected-apps-with-the-model-context-protocol',
+			href: '/cohorts/master-mcp',
 			label: (
 				<>
 					Course
-					<div
-						aria-hidden="true"
-						className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold"
-					>
+					<div className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold">
 						New
 					</div>
 				</>
@@ -38,4 +34,5 @@ export function useNavLinks() {
 			label: 'Newsletter',
 		},
 	] as NavLinkItem[]
+	return initialLinks
 }

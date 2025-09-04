@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
 	ResourceFormProps,
@@ -9,7 +10,7 @@ import {
 } from '@/components/resource-form/with-resource-form'
 import { Cohort, CohortSchema } from '@/lib/cohort'
 import { parseAbsolute } from '@internationalized/date'
-import { ImagePlusIcon, VideoIcon } from 'lucide-react'
+import { ImagePlusIcon, LayoutTemplate, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import {
@@ -151,6 +152,21 @@ export const EditCohortForm = ({ resource }: { resource: Cohort }) => {
 						belongsToResourceId={resource.id}
 						uploadDirectory={`cohorts`}
 					/>
+				),
+			},
+			{
+				id: 'MDX Components',
+				label: 'MDX Components',
+				icon: () => (
+					<LayoutTemplate strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: (
+					<div className="mt-3 px-5">
+						<h3 className="mb-3 inline-flex text-xl font-semibold">
+							MDX Components
+						</h3>
+						<PageBlocks />
+					</div>
 				),
 			},
 			{

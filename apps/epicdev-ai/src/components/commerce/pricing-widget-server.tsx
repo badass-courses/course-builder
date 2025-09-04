@@ -5,6 +5,7 @@ import { CohortPricingWidgetContainer } from '@/app/(content)/cohorts/[slug]/_co
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getCohort } from '@/lib/cohorts-query'
+import { getLoyaltyCouponForUser } from '@/lib/coupons-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -13,7 +14,7 @@ import { CheckCircle } from 'lucide-react'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
+import { Purchase } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export async function PricingWidgetServer({
@@ -126,6 +127,8 @@ export async function PricingWidgetServer({
 
 	if (!cohort) return null
 
+	const loyaltyCoupon = user?.id ? await getLoyaltyCouponForUser(user.id) : null
+
 	return productProps.hasPurchasedCurrentProduct ? (
 		<div className="flex w-full flex-col items-center justify-center gap-2 px-10 pt-3 text-center text-lg sm:flex-row">
 			<CheckCircle className="size-4 shrink-0 text-emerald-600 dark:text-emerald-300" />{' '}
@@ -146,6 +149,16 @@ export async function PricingWidgetServer({
 				className="**:aria-[live='polite']:text-5xl w-full border-b-0 pt-5"
 				{...productProps}
 				{...productProps.commerceProps}
+				couponFromCode={
+					loyaltyCoupon
+						? loyaltyCoupon
+						: productProps.commerceProps.couponFromCode
+				}
+				couponIdFromCoupon={
+					loyaltyCoupon
+						? loyaltyCoupon.id
+						: productProps.commerceProps.couponIdFromCoupon
+				}
 				workshops={workshops}
 				cohort={cohort}
 				pricingWidgetOptions={{

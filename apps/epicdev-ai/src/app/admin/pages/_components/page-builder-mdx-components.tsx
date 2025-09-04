@@ -130,8 +130,9 @@ const Instructor = ({
 }) => {
 	return (
 		<section
+			data-instructor=""
 			className={cn(
-				'prose-headings:my-0 relative flex w-full flex-col items-center gap-10 py-5',
+				'prose-headings:my-0 prose-p:text-violet-950 prose-headings:text-violet-950 bg-muted relative flex w-full flex-col items-center gap-3 rounded-lg border p-5 sm:gap-10 sm:p-10',
 				className,
 			)}
 		>
@@ -141,7 +142,7 @@ const Instructor = ({
 				alt={config.author}
 				width={1280}
 				height={854}
-				className="mb-0! flex-shrink-0 rounded-md"
+				className="mb-0! mt-0! w-full flex-shrink-0 rounded-md"
 			/>
 
 			<div className="">
@@ -160,7 +161,7 @@ const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 border-primary pl-5 italic gap-2',
+				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 dark:border-gray-800 border-gray-200 mt-5 py-2 pl-5 italic gap-2',
 			centered:
 				'flex text-center font-heading text-balance flex-col items-center justify-center border-none dark:text-white',
 		},
@@ -284,6 +285,16 @@ const data = {
 				authorName: 'John Doe',
 				authorAvatar: 'http://res.cloudinary.com/TODO',
 				children: 'This is my feedback',
+			},
+		},
+		{
+			name: 'Testimonial',
+			component: Testimonial,
+			props: {
+				authorName: 'John Doe',
+				authorAvatar: 'http://res.cloudinary.com/TODO',
+				children: 'This is my feedback',
+				variant: 'centered',
 			},
 		},
 	],
@@ -440,12 +451,15 @@ Kent C. Dodds is a world renowned speaker, teacher, and trainer and he's activel
 					{data.testimonial.map((item, index) => {
 						return (
 							<BlockItem
-								key={item.name}
-								item={item}
+								key={`${item.name}-${item.props.variant}-${index}`}
+								item={{
+									...item,
+									name: `${item.name} (${item.props.variant || 'default'})`,
+								}}
 								onDragStart={(e) =>
 									e.dataTransfer.setData(
 										'text/plain',
-										`<${item.name} authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
+										`<${item.name} variant="${item.props.variant || 'default'}" authorName="John Doe" authorAvatar="http://res.cloudinary.com/TODO">This is my feedback</${item.name}>`,
 									)
 								}
 							/>
@@ -493,7 +507,7 @@ const FAQ = ({
 
 	return (
 		<div className={cn('flex flex-col gap-5 pt-0', className)}>
-			<h2 className="mb-5 px-5">FAQ</h2>
+			<h2 className="mb-0! px-3 sm:px-5">FAQ</h2>
 			<Accordion type="multiple" className="not-prose flex w-full flex-col">
 				<ul className="divide-border flex flex-col gap-0 divide-y">
 					{formattedQuestions.map(({ question, answer }) => (

@@ -157,19 +157,41 @@ const Home = async (props: Props) => {
 				)}
 				<section
 					id="home-page-video"
-					className="flex w-full flex-col-reverse items-center gap-5 pb-10 pt-3 md:flex-row md:gap-10 md:pb-16 md:pt-10"
+					className={cn(
+						'relative flex w-full flex-col-reverse items-center gap-5 pb-10 pt-3 md:flex-row md:gap-10 md:pb-16 md:pt-10 lg:pb-24 lg:pt-16',
+						{
+							'justify-center pt-8': !pageVideoResource,
+						},
+					)}
 				>
-					<div className="flex max-w-xl flex-col">
-						<h1 className="sm:fluid-3xl fluid-2xl w-full text-center font-bold leading-tight tracking-tight md:text-left dark:text-white">
+					<div
+						className={cn('flex max-w-xl flex-col', {
+							'items-center justify-center': !pageVideoResource,
+						})}
+					>
+						<h1
+							className={cn(
+								'sm:fluid-3xl fluid-3xl w-full text-center font-bold leading-tight tracking-tight md:text-left dark:text-white',
+								{
+									'md:text-center': !pageVideoResource,
+								},
+							)}
+						>
 							{page?.fields?.title || 'Title'}
 						</h1>
 						{page?.fields?.description && (
-							<h2 className="text-primary mt-3 text-center font-sans text-lg font-normal md:text-left lg:text-xl">
+							<h2
+								className={cn(
+									'text-primary mt-3 text-center font-sans text-lg font-normal leading-relaxed md:text-left lg:text-xl',
+									{
+										'md:text-center': !pageVideoResource,
+									},
+								)}
+							>
 								{page.fields.description}
 							</h2>
 						)}
 					</div>
-
 					{pageVideoResource && (
 						<MDXVideo
 							className="mb-0 w-full max-w-full shadow-2xl shadow-violet-600/20"
@@ -178,10 +200,14 @@ const Home = async (props: Props) => {
 							poster={pageVideoResource.resource.fields.poster}
 						/>
 					)}
+					<div
+						className="bg-linear-to-r absolute inset-x-0 bottom-24 -z-10 h-12 -rotate-3 from-violet-300 via-pink-300 to-sky-300 opacity-50 blur-3xl dark:opacity-40"
+						aria-hidden="true"
+					/>
 				</section>
 				<article
 					className={cn(
-						'prose dark:prose-invert lg:prose-xl sm:prose-lg mx-auo w-full max-w-3xl pb-10',
+						'prose dark:prose-invert lg:prose-lg sm:prose-lg mx-auo prose-p:max-w-3xl prose-headings:max-w-3xl prose-img:max-w-3xl prose-p:mx-auto prose-headings:mx-auto prose-img:mx-auto w-full max-w-4xl pb-10 [&_[data-instructor]]:mx-auto [&_[data-instructor]]:max-w-3xl',
 					)}
 				>
 					{page?.fields?.body ? (

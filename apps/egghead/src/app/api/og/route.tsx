@@ -159,7 +159,7 @@ export async function GET(request: Request) {
 						background: 'linear-gradient(to top right, #111827, #374151)',
 					}}
 				>
-					<div tw="flex items-center absolute left-20 top-16 justify-center h-12 w-48">
+					<div tw="flex items-center absolute right-16 bottom-16 justify-center h-12 w-48">
 						<svg
 							width="100%"
 							height="100%"

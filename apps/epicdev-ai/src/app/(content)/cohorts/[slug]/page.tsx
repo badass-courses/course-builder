@@ -14,6 +14,7 @@ import { env } from '@/env.mjs'
 import { checkCohortCertificateEligibility } from '@/lib/certificates'
 import { Cohort } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
+import { getLoyaltyCouponForUser } from '@/lib/coupons-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
 import type { Workshop } from '@/lib/workshops'
@@ -240,6 +241,10 @@ export default async function CohortPage(props: {
 		: null
 
 	const { content } = await compileMDX(cohort.fields.body || '')
+
+	const loyaltyCoupon = user?.id
+		? await getLoyaltyCouponForUser(user.id)
+		: undefined
 
 	return (
 		<LayoutClient withContainer>
@@ -615,6 +620,14 @@ export default async function CohortPage(props: {
 						) : ALLOW_PURCHASE ? (
 							<CohortPricingWidgetContainer
 								{...cohortProps}
+								couponFromCode={
+									loyaltyCoupon ? loyaltyCoupon : cohortProps.couponFromCode
+								}
+								couponIdFromCoupon={
+									loyaltyCoupon
+										? loyaltyCoupon.id
+										: cohortProps.couponIdFromCoupon
+								}
 								searchParams={searchParams}
 							/>
 						) : null}

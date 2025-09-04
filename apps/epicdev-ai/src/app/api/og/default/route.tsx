@@ -17,14 +17,14 @@ export async function GET(request: Request) {
 		// Get the font for text rendering
 		const BOLD_fontData = await fetch(
 			new URL(
-				'../../../../../public/fonts/79122e33-d8c9-4b2c-8add-f48bd7b317e0.ttf',
+				'../../../../../public/fonts/VastagoGrotesk-Bold.ttf',
 				import.meta.url,
 			),
 		).then((res) => res.arrayBuffer())
 
 		const LIGHT_fontData = await fetch(
 			new URL(
-				'../../../../../public/fonts/315bef49-c1fe-41b3-8818-d8bf3f419ec0.ttf',
+				'../../../../../public/fonts/VastagoGrotesk-Regular.ttf',
 				import.meta.url,
 			),
 		).then((res) => res.arrayBuffer())
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
 		return new ImageResponse(
 			(
 				<div
-					tw="flex h-full w-full bg-white flex-col relative"
+					tw="flex bg-white flex-col "
 					style={{
 						fontFamily: 'HeadingFont',
 						background: '#574FEE',
@@ -108,26 +108,38 @@ export async function GET(request: Request) {
 					</div> */}
 
 					{/* Main content area */}
-					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
-						<div tw="flex flex-col items-start">
-							<div
-								tw={`text-[${title && title.length > 43 ? '54px' : '80px'}] text-white max-w-[640px] leading-[1.1] mb-6 font-semibold`}
-							>
-								{title}
+					<main
+						tw="flex p-24 pb-24 justify-between z-10 flex-col w-full grow items-start"
+						style={{
+							height: 630,
+						}}
+					>
+						<div tw="flex flex-col h-full justify-between grow items-start">
+							<div tw="flex flex-col">
+								<div
+									tw={`text-[${title && title.length > 43 ? '56px' : '62px'}] text-white max-w-[700px] leading-[1.1] mb-6 font-semibold`}
+								>
+									{title}
+								</div>
+								<div
+									tw="text-[34px] text-white/75 leading-tight"
+									style={{
+										fontFamily: 'TextFont',
+									}}
+								>
+									with Kent C. Dodds
+								</div>
 							</div>
-							<div
-								tw="text-[34px] text-white/75 max-w-[600px] leading-tight mb-12"
-								style={{
-									fontFamily: 'TextFont',
-								}}
-							>
-								with Kent C. Dodds
-							</div>
-
 							{discountPercentage ? (
-								<div tw="flex items-center justify-center bg-[#FF6CE2] text-black px-10 py-5 rounded-md text-[34px] font-semibold">
-									<span tw="text-[50px] mr-5">Save {discountPercentage}%</span>{' '}
-									for a limited time!
+								<div tw="flex items-center justify-center bg-black text-gray-50 px-10 shadow-xl py-5 rounded-lg text-[30px] font-semibold">
+									<span tw="text-[40px] mr-5">Save {discountPercentage}%</span>{' '}
+									<span
+										style={{
+											fontFamily: 'TextFont',
+										}}
+									>
+										for a limited time!
+									</span>
 								</div>
 							) : null}
 						</div>
