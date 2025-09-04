@@ -962,8 +962,7 @@ export function mySqlDrizzleAdapter(
 				.optional()
 				.parse(
 					await client.query.merchantCustomer.findFirst({
-						where: (merchantCustomer, { eq }) =>
-							eq(merchantCustomer.identifier, options.identifier),
+						where: eq(merchantCustomer.identifier, options.identifier),
 					}),
 				)
 
@@ -1563,7 +1562,10 @@ export function mySqlDrizzleAdapter(
 			return adapter.getProduct(currentProduct.id)
 		},
 		async createProduct(input: NewProduct) {
-			if (!paymentProvider) throw new Error('Payment provider not found')
+			if (!paymentProvider) {
+				throw new Error('Payment provider not found')
+			}
+
 			const merchantAccount = merchantAccountSchema.nullish().parse(
 				await client.query.merchantAccount.findFirst({
 					where: (merchantAccount, { eq }) =>
@@ -1633,6 +1635,7 @@ export function mySqlDrizzleAdapter(
 			})
 
 			const newMerchantPriceId = `mprice_${v4()}`
+
 			await client.insert(merchantPrice).values({
 				id: newMerchantPriceId,
 				merchantAccountId: merchantAccount.id,
@@ -2522,6 +2525,10 @@ export function mySqlDrizzleAdapter(
 
 			return parsedResource.data
 		},
+		// The "referencedTable" error occurs when Drizzle ORM tries to resolve foreign key relationships
+		// between tables. The relationship chain is: ContentResource -> ContentResourceProduct -> Product -> Price
+		// This error often occurs when table names are prefixed (e.g., with NEXT_PUBLIC_APP_NAME) and there's
+		// a mismatch between expected and actual table names in the database.
 		async getEvent(
 			eventIdOrSlug: string,
 			options?: {

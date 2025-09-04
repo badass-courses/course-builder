@@ -19,6 +19,7 @@ import {
 	type EventSeries,
 	type EventSeriesFormData,
 } from '@/lib/events'
+import { getMinimalProductInfoWithoutUser } from '@/lib/posts-query'
 import { upsertPostToTypeSense } from '@/lib/typesense/post'
 import { getServerAuthSession } from '@/server/auth'
 import { guid } from '@/utils/guid'
@@ -78,18 +79,23 @@ export async function getEventOrEventSeries(eventIdOrSlug: string) {
 }
 
 export async function getAllEvents() {
-	const events = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'event'),
-	})
+	try {
+		const events = await db.query.contentResource.findMany({
+			where: eq(contentResource.type, 'event'),
+		})
 
-	const parsedEvents = z.array(EventSchema).safeParse(events)
+		const parsedEvents = z.array(EventSchema).safeParse(events)
 
-	if (!parsedEvents.success) {
-		console.error('Error parsing events', events)
+		if (!parsedEvents.success) {
+			console.error('Error parsing events', events)
+			return []
+		}
+
+		return parsedEvents.data
+	} catch (error) {
+		console.error('Error in getAllEvents:', error)
 		return []
 	}
-
-	return parsedEvents.data
 }
 
 export async function getEventSeries(eventSeriesIdOrSlug: string) {
@@ -155,25 +161,25 @@ export async function updateEvent(
 			new: eventSlug,
 		})
 	}
-
-	try {
-		await upsertPostToTypeSense(
-			{
-				...currentEvent,
-				resources: [],
-				fields: {
-					...currentEvent.fields,
-					...input.fields,
-					description: input.fields?.description || '',
-					slug: eventSlug,
-				},
-			},
-			action,
-		)
-		console.log('🔍 Event updated in Typesense')
-	} catch (error) {
-		console.log('❌ Error updating event in Typesense', error)
-	}
+	// TODO: consider indexing in egghead.next
+	// try {
+	// 	await upsertPostToTypeSense(
+	// 		{
+	// 			...currentEvent,
+	// 			resources: [],
+	// 			fields: {
+	// 				...currentEvent.fields,
+	// 				...input.fields,
+	// 				description: input.fields?.description || '',
+	// 				slug: eventSlug,
+	// 			},
+	// 		},
+	// 		action,
+	// 	)
+	// 	console.log('🔍 Event updated in Typesense')
+	// } catch (error) {
+	// 	console.log('❌ Error updating event in Typesense', error)
+	// }
 
 	try {
 		const updatedEvent = await courseBuilderAdapter.updateContentResourceFields(
@@ -235,44 +241,41 @@ export async function getPastEventIds(): Promise<string[]> {
 export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 	const actualEvents = await getAllEvents()
 
+	const postsAsEvents = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'post'),
+			// eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'event'),
+		),
+	})
+
+	const allEventLikeItems = [...actualEvents, ...postsAsEvents]
 	const excludedEventIds: string[] = []
 	const now = new Date()
 
-	for (const item of actualEvents) {
+	for (const item of allEventLikeItems) {
+		// Ensure fields is not null, which it shouldn't be based on schema defaults
 		const fields = item.fields || {}
 		if (fields.endsAt && new Date(fields.endsAt) < now) {
 			excludedEventIds.push(item.id)
 			continue
 		}
 
-		// If there's no endsAt, check startsAt for past events
+		// If there's no endsAt, check startsAt for past events (e.g., all-day events that have passed)
 		if (!fields.endsAt && fields.startsAt && new Date(fields.startsAt) < now) {
 			excludedEventIds.push(item.id)
 			continue
 		}
 
-		// Check for sold out events
-		const productData = await db.query.contentResourceProduct.findFirst({
-			where: eq(contentResourceProduct.resourceId, item.id),
-			with: {
-				product: {
-					with: {
-						purchases: {
-							where: eq(purchases.status, 'Valid'),
-						},
-					},
-				},
-			},
-		})
+		const productInfo = await getMinimalProductInfoWithoutUser(item.id)
 
-		if (productData?.product) {
-			const quantity = productData.product.quantityAvailable
-			const purchaseCount = productData.product.purchases?.length || 0
-
-			// Check if sold out
-			if (quantity !== null && quantity !== -1 && purchaseCount >= quantity) {
-				excludedEventIds.push(item.id)
-			}
+		// we can sell more seats than we have available via coupons or team seats,
+		// so we need to check if the total quantity is -1 (which means unlimited)
+		if (
+			productInfo &&
+			productInfo.quantityAvailable <= 0 &&
+			productInfo.totalQuantity !== -1
+		) {
+			excludedEventIds.push(item.id)
 		}
 	}
 
@@ -280,49 +283,59 @@ export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 }
 
 export async function getActiveEvents() {
-	const excludedEventIds = await getSoldOutOrPastEventIds()
+	try {
+		const excludedEventIds = await getSoldOutOrPastEventIds()
 
-	const events = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'event'),
-			excludedEventIds.length > 0
-				? sql`${contentResource.id} NOT IN ${excludedEventIds}`
-				: undefined,
-		),
-		orderBy: asc(sql`JSON_EXTRACT (${contentResource.fields}, "$.startsAt")`),
-		with: {
-			resources: {
-				with: {
-					resource: true,
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-			tags: {
-				with: {
-					tag: true,
-				},
-				orderBy: asc(contentResourceTag.position),
-			},
-			resourceProducts: {
-				with: {
-					product: {
-						with: {
-							price: true,
-						},
-					},
-				},
-			},
-		},
-	})
+		// Simplified query without complex relationships to avoid referencedTable error
+		const events = await db.query.contentResource.findMany({
+			where: and(
+				eq(contentResource.type, 'event'),
+				excludedEventIds.length > 0
+					? sql`${contentResource.id} NOT IN ${excludedEventIds}`
+					: undefined,
+			),
+			orderBy: asc(sql`JSON_EXTRACT (${contentResource.fields}, "$.startsAt")`),
+			// Temporarily remove complex relationships to avoid referencedTable error
+			// TODO: Fix the database schema issue and re-enable these relationships
+			/*
+                       with: {
+                               resources: {
+                                       with: {
+                                               resource: true,
+                                       },
+                                       orderBy: asc(contentResourceResource.position),
+                               },
+                               tags: {
+                                       with: {
+                                               tag: true,
+                                       },
+                                       orderBy: asc(contentResourceTag.position),
+                               },
+                               resourceProducts: {
+                                       with: {
+                                               product: {
+                                                       with: {
+                                                               price: true,
+                                                       },
+                                               },
+                                       },
+                               },
+                       },
+                       */
+		})
 
-	const parsedEvents = z.array(EventSchema).safeParse(events)
+		const parsedEvents = z.array(EventSchema).safeParse(events)
 
-	if (!parsedEvents.success) {
-		console.error('Error parsing active events', events)
+		if (!parsedEvents.success) {
+			console.error('Error parsing active events', events)
+			return []
+		}
+
+		return parsedEvents.data
+	} catch (error) {
+		console.error('Error in getActiveEvents:', error)
 		return []
 	}
-
-	return parsedEvents.data
 }
 
 export async function createEvent(input: EventFormData) {
@@ -331,16 +344,22 @@ export async function createEvent(input: EventFormData) {
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
-	const event = await courseBuilderAdapter.createEvent(input, user.id)
 
-	if (!event) {
-		throw new Error('Failed to create event')
+	try {
+		const event = await courseBuilderAdapter.createEvent(input, user.id)
+
+		if (!event) {
+			throw new Error('Failed to create event')
+		}
+
+		//await upsertPostToTypeSense(event, 'save')
+		revalidateTag('events')
+
+		return event
+	} catch (error) {
+		console.error('Error creating event:', error)
+		throw error
 	}
-
-	//await upsertPostToTypeSense(event, 'save')
-	revalidateTag('events')
-
-	return event
 }
 
 /**
@@ -374,14 +393,15 @@ export async function createEventSeries(input: EventSeriesFormData) {
 		const { eventSeries, childEvents } = result
 
 		// Update TypeSense
-		try {
-			await upsertPostToTypeSense(eventSeries, 'save')
-			for (const childEvent of childEvents) {
-				await upsertPostToTypeSense(childEvent, 'save')
-			}
-		} catch (error) {
-			console.error('Error updating TypeSense', error)
-		}
+		// TODO: consider indexing in egghead.next
+		// try {
+		// 	await upsertPostToTypeSense(eventSeries, 'save')
+		// 	for (const childEvent of childEvents) {
+		// 		await upsertPostToTypeSense(childEvent, 'save')
+		// 	}
+		// } catch (error) {
+		// 	console.error('❌ [EGGHEAD] Error updating TypeSense', error)
+		// }
 
 		console.log('Event series created', {
 			eventSeriesId: eventSeries.id,
@@ -392,7 +412,7 @@ export async function createEventSeries(input: EventSeriesFormData) {
 
 		return { eventSeries, childEvents }
 	} catch (error) {
-		console.error('Failed to create event series', error)
+		console.error('Error creating event series:', error)
 		throw error
 	}
 }
