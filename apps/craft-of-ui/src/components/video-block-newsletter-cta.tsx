@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
+import { SubscribeToConvertkitForm } from '@/convertkit'
 import { Subscriber } from '@/schemas/subscriber'
 import { track } from '@/utils/analytics'
 import {
@@ -44,8 +44,7 @@ export const VideoBlockNewsletterCta: React.FC<
 	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
 		if (subscriber) {
 			track(trackProps.event as string, trackProps.params)
-			const redirectUrl = redirectUrlBuilder(subscriber, '/confirm')
-			router.push(redirectUrl)
+			// No redirect - let the form handle inline success response
 		}
 	}
 
