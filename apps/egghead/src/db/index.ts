@@ -1,3 +1,4 @@
+import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { mysqlTable } from '@/db/mysql-table'
 import { env } from '@/env.mjs'
 import { Client } from '@planetscale/database'
@@ -17,4 +18,4 @@ export const db = drizzle(
 
 export const courseBuilderAdapter = DrizzleAdapter<
 	MySqlDatabase<any, any, any>
->(db, mysqlTable)
+>(db, mysqlTable, stripeProvider)

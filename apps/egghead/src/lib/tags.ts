@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+// Egghead tag schema - this is what we use
 export const EggheadApiTagSchema = z.object({
 	id: z.number(),
 	label: z.string(),
@@ -30,3 +31,6 @@ export const EggheadTagSchema = z.object({
 })
 
 export type EggheadTag = z.infer<typeof EggheadTagSchema>
+
+// Export as Tag for component compatibility
+export type Tag = EggheadTag

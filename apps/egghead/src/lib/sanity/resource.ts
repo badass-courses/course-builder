@@ -17,6 +17,11 @@ import { createSanityArrayElementReference, keyGenerator } from './utils'
  * @returns The Sanity resource document, or null if not found
  */
 export async function getSanityResourceForPost(post: any) {
+	// Events don't have Sanity resources
+	if (post.type === 'event') {
+		return null
+	}
+
 	const postType = post.fields.postType
 
 	if (postType === 'lesson') {
@@ -93,11 +98,21 @@ export async function writeTagsToSanityResource(postId: string) {
 		throw new Error(`Post with id ${postId} not found.`)
 	}
 
+	// Events don't have Sanity resources and don't need to be synced to Sanity
+	if (post.type === 'event') {
+		console.log(`Skipping Sanity sync for event ${postId} - no Sanity resource`)
+		return
+	}
+
 	// Get the appropriate Sanity resource based on post type
 	const sanityResource = await getSanityResourceForPost(post)
 
 	if (!sanityResource) {
-		throw new Error(`Sanity resource for post with id ${postId} not found.`)
+		// For posts that don't have Sanity resources, skip the sync instead of throwing an error
+		console.log(
+			`Skipping Sanity sync for ${post.type} ${postId} - no Sanity resource found`,
+		)
+		return
 	}
 
 	// Create versioned software libraries
