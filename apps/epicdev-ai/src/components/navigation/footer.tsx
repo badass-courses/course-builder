@@ -41,7 +41,7 @@ export default function Footer() {
 						})}
 					</ul>
 				</nav>
-				{/* <ThemeToggle className="" /> */}
+				<ThemeToggle className="" />
 			</div>
 			<p className="text-center text-xs text-violet-200 opacity-75">
 				Copyright © {new Date().getFullYear()} EpicAI.pro

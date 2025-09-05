@@ -111,20 +111,12 @@ export default async function EventPage(props: {
 			resource.type === 'videoResource',
 	)
 
-	const { content: eventBody } = await compileMDX(
-		body || '',
-
-		{
-			EventPricing: (props) => <EventPricing post={event} {...props} />,
-			BuyTicketButton: (props) => (
-				<EventPricingButton
-					post={event}
-					{...props}
-					className="hidden lg:flex"
-				/>
-			),
-		},
-	)
+	const { content: eventBody } = await compileMDX(body || '', {
+		EventPricing: (props) => <EventPricing post={event} {...props} />,
+		BuyTicketButton: (props) => (
+			<EventPricingButton post={event} {...props} className="hidden lg:flex" />
+		),
+	})
 
 	const IS_SERIES = Boolean(
 		event.resources?.length && event.resources?.length > 1,
