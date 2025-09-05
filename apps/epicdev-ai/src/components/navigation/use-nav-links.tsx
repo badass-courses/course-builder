@@ -10,17 +10,17 @@ export function useNavLinks() {
 	// const { data: publishedResourcesLength, status } =
 	// 	api.contentResources.getPublishedResourcesLength.useQuery()
 	const initialLinks = [
-		// {
-		// 	href: '/cohorts/build-real-world-ai-connected-apps-with-the-model-context-protocol',
-		// 	label: (
-		// 		<>
-		// 			Course
-		// 			<div className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold">
-		// 				New
-		// 			</div>
-		// 		</>
-		// 	),
-		// },
+		{
+			href: '/cohorts/master-mcp',
+			label: (
+				<>
+					Course
+					<div className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold">
+						New
+					</div>
+				</>
+			),
+		},
 		{
 			href: '/posts',
 			label: 'Posts',
@@ -34,34 +34,5 @@ export function useNavLinks() {
 			label: 'Newsletter',
 		},
 	] as NavLinkItem[]
-	const [links, setLinks] = React.useState(initialLinks)
-	const { data: isCommerceEnabled, status: isCommerceEnabledStatus } =
-		api.featureFlags.getCommerceEnabled.useQuery(undefined, {
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchInterval: false,
-			refetchIntervalInBackground: false,
-		})
-
-	React.useEffect(() => {
-		if (isCommerceEnabled && isCommerceEnabledStatus === 'success') {
-			setLinks([
-				...links,
-				{
-					href: '/cohorts/master-mcp',
-					label: (
-						<>
-							Course
-							<div className="bg-primary text-primary-foreground relative ml-1 -rotate-2 rounded px-1 py-0.5 text-xs font-semibold">
-								New
-							</div>
-						</>
-					),
-				},
-			])
-		}
-	}, [isCommerceEnabled, isCommerceEnabledStatus, setLinks])
-
-	return links
+	return initialLinks
 }
