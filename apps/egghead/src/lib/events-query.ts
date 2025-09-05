@@ -96,7 +96,12 @@ export async function getAllEvents() {
 		console.error('Error parsing events', events)
 		return []
 	}
+	if (!parsedEvents.success) {
+		console.error('Error parsing events', events)
+		return []
+	}
 
+	return parsedEvents.data
 	return parsedEvents.data
 }
 
@@ -135,7 +140,7 @@ export async function updateEvent(
 	const currentEvent = await getEventOrEventSeries(input.id)
 
 	if (!currentEvent) {
-		await console.error('event.update.notfound', {
+		console.error('event.update.notfound', {
 			eventId: input.id,
 			userId: user?.id,
 			action,
@@ -144,7 +149,7 @@ export async function updateEvent(
 	}
 
 	if (!user || !ability.can(action, subject('Content', currentEvent))) {
-		await console.error('event.update.unauthorized', {
+		console.error('event.update.unauthorized', {
 			eventId: input.id,
 			userId: user?.id,
 			action,
@@ -160,7 +165,7 @@ export async function updateEvent(
 	) {
 		const splitSlug = currentEvent.fields.slug.split('~') || ['', guid()]
 		eventSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
-		await console.log('event.update.slug.changed', {
+		console.log('event.update.slug.changed', {
 			eventId: input.id,
 			oldSlug: currentEvent.fields.slug,
 			newSlug: eventSlug,
@@ -168,7 +173,7 @@ export async function updateEvent(
 		})
 	} else if (input?.fields?.slug !== currentEvent.fields.slug) {
 		eventSlug = input?.fields?.slug || ''
-		await console.log('event.update.slug.manual', {
+		console.log('event.update.slug.manual', {
 			eventId: input.id,
 			oldSlug: currentEvent.fields.slug,
 			newSlug: eventSlug,
@@ -190,17 +195,15 @@ export async function updateEvent(
 		// 	},
 		// 	action,
 		// )
-		await console.log('event.update.typesense.success', {
+		console.log('event.update.typesense.success', {
 			eventId: input.id,
 			action,
 			userId: user.id,
 		})
 		console.log('🔍 Event updated in Typesense')
 	} catch (error) {
-		await console.error('event.update.typesense.failed', {
+		console.error('event.update.typesense.failed', {
 			eventId: input.id,
-			error: getErrorMessage(error),
-			stack: getErrorStack(error),
 			action,
 			userId: user.id,
 		})
@@ -224,7 +227,7 @@ export async function updateEvent(
 			return null
 		}
 
-		await console.log('event.update.success', {
+		console.log('event.update.success', {
 			eventId: input.id,
 			action,
 			userId: user.id,
@@ -250,12 +253,28 @@ export async function updateEvent(
 		} catch (error) {
 			console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
 		}
+		try {
+			console.log(
+				`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+			)
+			const result = await inngest.send({
+				name: RESOURCE_UPDATED_EVENT,
+				data: {
+					id: updatedEvent.id,
+					type: updatedEvent.type,
+				},
+			})
+			console.log(
+				`Dispatched ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,
+				result,
+			)
+		} catch (error) {
+			console.error(`Error dispatching ${RESOURCE_UPDATED_EVENT}`, error)
+		}
 		return updatedEvent
 	} catch (error) {
-		await console.error('event.update.failed', {
+		console.error('event.update.failed', {
 			eventId: input.id,
-			error: getErrorMessage(error),
-			stack: getErrorStack(error),
 			action,
 			userId: user.id,
 		})
@@ -271,8 +290,15 @@ export async function updateEvent(
  *  - `fields.startsAt` (if `endsAt` is not present) for past all-day or multi-day events.
  *  - Product availability via `getProductForPost` to identify sold-out events.
  * @returns {Promise<string[]>} A promise that resolves to an array of excluded event/post IDs.
+ * Retrieves a list of event and event-like post IDs that are either past or sold out.
+ * This is used to filter these items from search results or recommendations.
+ * It checks:
+ *  - `fields.endsAt` to determine if an event has concluded.
+ *  - `fields.startsAt` (if `endsAt` is not present) for past all-day or multi-day events.
+ *  - Product availability via `getProductForPost` to identify sold-out events.
+ * @returns {Promise<string[]>} A promise that resolves to an array of excluded event/post IDs.
  */
-export async function getPastEventIds(): Promise<string[]> {
+export async function getPastEventIds() {
 	const actualEvents = await getAllEvents()
 
 	const postsAsEvents = await db.query.contentResource.findMany({
@@ -281,8 +307,10 @@ export async function getPastEventIds(): Promise<string[]> {
 			// eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.postType")`, 'event'),
 		),
 	})
-
-	const allEventLikeItems = [...actualEvents, ...postsAsEvents]
+	const allEventLikeItems: Array<{ id: string; fields: any }> = [
+		...(actualEvents as any[]),
+		...(postsAsEvents as any[]),
+	]
 	const excludedEventIds: string[] = []
 	const now = new Date()
 
@@ -294,6 +322,7 @@ export async function getPastEventIds(): Promise<string[]> {
 			continue
 		}
 
+		// If there's no endsAt, check startsAt for past events (e.g., all-day events that have passed)
 		// If there's no endsAt, check startsAt for past events (e.g., all-day events that have passed)
 		if (!fields.endsAt && fields.startsAt && new Date(fields.startsAt) < now) {
 			excludedEventIds.push(item.id)
@@ -312,6 +341,13 @@ export async function getPastEventIds(): Promise<string[]> {
  *  - `fields.startsAt` (if `endsAt` is not present) for past all-day or multi-day events.
  *  - Product availability via `getProductForPost` to identify sold-out events.
  * @returns {Promise<string[]>} A promise that resolves to an array of excluded event/post IDs.
+ * Retrieves a list of event and event-like post IDs that are either past or sold out.
+ * This is used to filter these items from search results or recommendations.
+ * It checks:
+ *  - `fields.endsAt` to determine if an event has concluded.
+ *  - `fields.startsAt` (if `endsAt` is not present) for past all-day or multi-day events.
+ *  - Product availability via `getProductForPost` to identify sold-out events.
+ * @returns {Promise<string[]>} A promise that resolves to an array of excluded event/post IDs.
  */
 export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 	const actualEvents = await getAllEvents()
@@ -323,7 +359,10 @@ export async function getSoldOutOrPastEventIds(): Promise<string[]> {
 		),
 	})
 
-	const allEventLikeItems = [...actualEvents, ...postsAsEvents]
+	const allEventLikeItems: Array<{ id: string; fields: any }> = [
+		...(actualEvents as any[]),
+		...(postsAsEvents as any[]),
+	]
 	const excludedEventIds: string[] = []
 	const now = new Date()
 
@@ -439,7 +478,12 @@ export async function getActiveEvents() {
 		console.error('Error parsing active events', events)
 		return []
 	}
+	if (!parsedEvents.success) {
+		console.error('Error parsing active events', events)
+		return []
+	}
 
+	return parsedEvents.data
 	return parsedEvents.data
 }
 export async function createEvent(input: EventFormData) {
@@ -450,6 +494,9 @@ export async function createEvent(input: EventFormData) {
 	}
 	const event = await courseBuilderAdapter.createEvent(input, user.id)
 
+	if (!event) {
+		throw new Error('Failed to create event')
+	}
 	if (!event) {
 		throw new Error('Failed to create event')
 	}
@@ -475,6 +522,7 @@ export async function createEvent(input: EventFormData) {
 
 /**
  * Create an event series with multiple child events
+ * The event series has the product association and acts as a container
  * The event series has the product association and acts as a container
  */
 export async function createEventSeries(input: EventSeriesFormData) {
@@ -532,7 +580,7 @@ export async function createEventSeries(input: EventSeriesFormData) {
 				})
 			}
 		} catch (error) {
-			await console.error('event.series.inngest.failed', {
+			console.error('event.series.inngest.failed', {
 				eventSeriesId: eventSeries.id,
 				error: getErrorMessage(error),
 				stack: getErrorStack(error),
@@ -547,7 +595,7 @@ export async function createEventSeries(input: EventSeriesFormData) {
 		// 		await upsertPostToTypeSense(childEvent, 'save')
 		// 	}
 		// } catch (error) {
-		// 	await console.error('event.series.typesense.failed', {
+		// 	console.error('event.series.typesense.failed', {
 		// 		eventSeriesId: eventSeries.id,
 		// 		error: getErrorMessage(error),
 		// 		stack: getErrorStack(error),
@@ -556,14 +604,14 @@ export async function createEventSeries(input: EventSeriesFormData) {
 		// }
 
 		// Logging for successful creation
-		await console.log('event.series.created', {
+		console.log('event.series.created', {
 			eventSeriesId: eventSeries.id,
 			userId: user.id,
 			childEventCount: childEvents.length,
 		})
 
 		for (let i = 0; i < childEvents.length; i++) {
-			await console.log('event.series.child.created', {
+			console.log('event.series.child.created', {
 				childEventId: childEvents[i]!.id,
 				eventSeriesId: eventSeries.id,
 				position: i,
@@ -571,7 +619,7 @@ export async function createEventSeries(input: EventSeriesFormData) {
 			})
 		}
 
-		await console.log('event.series.completed', {
+		console.log('event.series.completed', {
 			eventSeriesId: eventSeries.id,
 			childEventIds: childEvents.map((e) => e.id),
 			userId: user.id,
@@ -579,7 +627,7 @@ export async function createEventSeries(input: EventSeriesFormData) {
 
 		return { eventSeries, childEvents }
 	} catch (error) {
-		await console.error('event.series.creation.failed', {
+		console.error('event.series.creation.failed', {
 			error: getErrorMessage(error),
 			stack: getErrorStack(error),
 			userId: user.id,
@@ -613,7 +661,7 @@ export async function attachReminderEmailToEvent(
 		})
 
 		if (!emailResource) {
-			await console.error('event.reminder-email.attach.invalid-email', {
+			console.error('event.reminder-email.attach.invalid-email', {
 				eventId,
 				emailResourceId,
 				error: 'Email resource not found or not of type email',
@@ -708,13 +756,13 @@ export async function attachReminderEmailToEvent(
 
 		// Log success after transaction completes
 		if (result.detachedCount > 0) {
-			await console.log('event.reminder-email.existing-detached', {
+			console.log('event.reminder-email.existing-detached', {
 				eventId,
 				detachedCount: result.detachedCount,
 			})
 		}
 
-		await console.log('event.reminder-email.attached', {
+		console.log('event.reminder-email.attached', {
 			eventId,
 			emailResourceId,
 			hoursInAdvance: finalHoursInAdvance,
@@ -722,7 +770,7 @@ export async function attachReminderEmailToEvent(
 
 		return result.insertResult
 	} catch (error) {
-		await console.error('event.reminder-email.attach.failed', {
+		console.error('event.reminder-email.attach.failed', {
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
 			eventId,
@@ -756,14 +804,14 @@ export async function detachReminderEmailFromEvent(
 				),
 			)
 
-		await console.log('event.reminder-email.detached', {
+		console.log('event.reminder-email.detached', {
 			eventId,
 			emailResourceId,
 		})
 
 		return true
 	} catch (error) {
-		await console.error('event.reminder-email.detach.failed', {
+		console.error('event.reminder-email.detach.failed', {
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
 			eventId,
@@ -799,7 +847,7 @@ export async function getEventReminderEmail(eventId: string) {
 
 		return reminderEmail?.resource || null
 	} catch (error) {
-		await console.error('event.reminder-email.get.failed', {
+		console.error('event.reminder-email.get.failed', {
 			error: error instanceof Error ? error.message : String(error),
 			eventId,
 		})
@@ -957,7 +1005,7 @@ export async function updateReminderEmailHours(
 				),
 			)
 
-		await console.log('event.reminder-email.hours-updated', {
+		console.log('event.reminder-email.hours-updated', {
 			eventId,
 			emailResourceId,
 			hoursInAdvance,
@@ -965,7 +1013,7 @@ export async function updateReminderEmailHours(
 
 		return result
 	} catch (error) {
-		await console.error('event.reminder-email.hours-update.failed', {
+		console.error('event.reminder-email.hours-update.failed', {
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
 			eventId,
@@ -999,6 +1047,7 @@ export async function getEventPurchasers(
 		// If no products found, check if this event is a child of an event-series
 		if (eventProducts.length === 0) {
 			// Check if this event is a child resource of an event-series
+			// Check if this event is a child resource of an event-series
 			const parentEventSeries =
 				await db.query.contentResourceResource.findFirst({
 					where: eq(contentResourceResource.resourceId, eventId),
@@ -1008,7 +1057,7 @@ export async function getEventPurchasers(
 				})
 
 			if (parentEventSeries?.resourceOf?.type === 'event-series') {
-				await console.log('event.subscribers.checking-parent-series', {
+				console.log('event.subscribers.checking-parent-series', {
 					eventId,
 					parentEventSeriesId: parentEventSeries.resourceOfId,
 					message:
@@ -1029,7 +1078,7 @@ export async function getEventPurchasers(
 		}
 
 		if (eventProducts.length === 0) {
-			await console.log('event.subscribers.no-products', {
+			console.log('event.subscribers.no-products', {
 				eventId,
 				message:
 					'No products associated with this event or its parent event-series',
@@ -1051,7 +1100,7 @@ export async function getEventPurchasers(
 		})
 
 		if (eventPurchases.length === 0) {
-			await console.log('event.subscribers.no-purchases', {
+			console.log('event.subscribers.no-purchases', {
 				eventId,
 				productIds,
 				message: 'No purchases found for event products',
@@ -1059,6 +1108,7 @@ export async function getEventPurchasers(
 			return []
 		}
 
+		// Extract unique users (in case someone bought multiple products for the same event)
 		// Extract unique users (in case someone bought multiple products for the same event)
 		const uniqueUsers = new Map<
 			string,
@@ -1077,7 +1127,7 @@ export async function getEventPurchasers(
 
 		const subscribers = Array.from(uniqueUsers.values())
 
-		await console.log('event.subscribers.found', {
+		console.log('event.subscribers.found', {
 			eventId,
 			productIds,
 			totalPurchases: eventPurchases.length,
@@ -1091,7 +1141,7 @@ export async function getEventPurchasers(
 
 		return subscribers
 	} catch (error) {
-		await console.error('event.subscribers.error', {
+		console.error('event.subscribers.error', {
 			eventId,
 			error: getErrorMessage(error),
 			stack: getErrorStack(error),
