@@ -1,3 +1,6 @@
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -9,6 +12,8 @@ import {
 import { productSchema } from '@coursebuilder/core/schemas/index'
 import type { EventSeriesFormData } from '@coursebuilder/ui/event-creation/create-event-form'
 
+import { EmailSchema } from './emails'
+
 export {
 	type EventSeriesFormData,
 	type EventFormData,
@@ -18,10 +23,10 @@ export {
  * @description Event-specific field validation schema
  */
 export const EventFieldsSchema = z.object({
-	startsAt: z.string().datetime().nullable().optional(),
-	endsAt: z.string().datetime().nullable().optional(),
+	startsAt: z.string().datetime().nullish(),
+	endsAt: z.string().datetime().nullish(),
 	timezone: z.string().default('America/Los_Angeles').nullish(),
-	attendeeInstructions: z.string().nullable().optional(),
+	attendeeInstructions: z.string().nullish(),
 })
 
 /**
@@ -31,8 +36,12 @@ export const EventSchema = ContentResourceSchema.merge(
 	z.object({
 		videoResourceId: z.string().optional().nullable(),
 		tags: z.array(z.any()).default([]),
+		resourceProducts: z
+			.array(ContentResourceProductSchema)
+			.default([])
+			.nullish(),
 		fields: z.object({
-			body: z.string().nullable().optional(),
+			body: z.string().nullish(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			details: z.string().optional(),
@@ -64,7 +73,7 @@ export const EventSeriesSchema = ContentResourceSchema.merge(
 		videoResourceId: z.string().optional().nullable(),
 		tags: z.array(z.any()).default([]),
 		fields: z.object({
-			body: z.string().nullable().optional(),
+			body: z.string().nullish(),
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
 			slug: z.string(),
@@ -78,7 +87,7 @@ export const EventSeriesSchema = ContentResourceSchema.merge(
 				})
 				.optional(),
 			thumbnailTime: z.number().nullish(),
-			attendeeInstructions: z.string().nullable().optional(),
+			attendeeInstructions: z.string().nullish(),
 		}),
 	}),
 )
