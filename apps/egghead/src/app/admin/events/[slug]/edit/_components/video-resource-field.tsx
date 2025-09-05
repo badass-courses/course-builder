@@ -10,10 +10,6 @@ import {
 	VIDEO_DETACHED_EVENT,
 } from '@/inngest/events/video-attachment'
 import type { Event, EventSeries } from '@/lib/events'
-import { updateEvent } from '@/lib/events-query'
-import type { Post } from '@/lib/posts'
-import { updatePost } from '@/lib/posts-query'
-import { updateResource } from '@/lib/resources-query'
 import { getVideoResource } from '@/lib/video-resource-query'
 import type { UseFormReturn } from 'react-hook-form'
 

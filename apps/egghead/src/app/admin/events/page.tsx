@@ -58,11 +58,6 @@ export default async function AdminEventsPage() {
 							</p>
 						</div>
 						<div className="flex gap-2">
-							<Link href={`/admin/events/${event.fields.slug}`}>
-								<Button variant="outline" size="sm">
-									View
-								</Button>
-							</Link>
 							<Link href={`/admin/events/${event.fields.slug}/edit`}>
 								<Button variant="outline" size="sm">
 									Edit
@@ -150,7 +145,7 @@ export default async function AdminEventsPage() {
 				) : (
 					<div className="space-y-8">
 						{/* Active Events Section */}
-						{activeEvents?.length > 0 && (
+						{activeEvents && activeEvents?.length > 0 && (
 							<div>
 								<div className="mb-4 flex items-center gap-2">
 									<h2 className="text-xl font-semibold">Active Events</h2>
@@ -163,7 +158,7 @@ export default async function AdminEventsPage() {
 						)}
 
 						{/* Past Events Section */}
-						{pastEvents?.length > 0 && (
+						{pastEvents && pastEvents?.length > 0 && (
 							<div>
 								<div className="mb-4 flex items-center gap-2">
 									<h2 className="text-xl font-semibold">Past Events</h2>

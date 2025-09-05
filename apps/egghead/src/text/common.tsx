@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import config from '@/config'
 
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
@@ -77,9 +76,9 @@ export default {
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
 		`Level up with ${moduleTitle}`,
 	'video-block-newsletter-description': `
-In exchange for your email address, you'll get full access to this and other free ${config.defaultTitle} tutorials.
+In exchange for your email address, you'll get full access to this and other free egghead tutorials.
 
-Why? First and foremost, your inbox allows us to directly communicate about the latest ${config.defaultTitle} material. This includes free tutorials, NextJS Tips, and periodic update about trends, tools, and NextJS happenings that I'm excited about.
+Why? First and foremost, your inbox allows us to directly communicate about the latest egghead material. This includes free tutorials, NextJS Tips, and periodic update about trends, tools, and NextJS happenings that I'm excited about.
 
 In addition to the piles of free NextJS content, you'll get the earliest access and best discounts to the paid courses when they launch.
 

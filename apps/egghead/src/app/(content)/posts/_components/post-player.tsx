@@ -3,7 +3,10 @@
 import * as React from 'react'
 import { use } from 'react'
 import Spinner from '@/components/spinner'
-import { type MuxPlayerProps } from '@mux/mux-player-react'
+import {
+	MuxPlayerRefAttributes,
+	type MuxPlayerProps,
+} from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react/lazy'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
