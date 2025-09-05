@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { PricingWidget } from '@/app/(commerce)/products/[slug]/_components/pricing-widget'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
+import type { Cohort } from '@/lib/cohort'
 import type { Event } from '@/lib/events'
 import { api } from '@/trpc/react'
+import { formatInTimeZone } from 'date-fns-tz'
 import { BadgeCheck, ExternalLink } from 'lucide-react'
 import { type CountdownRenderProps } from 'react-countdown'
 
@@ -15,6 +17,7 @@ import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { usePricing } from '@coursebuilder/commerce-next/pricing/pricing-context'
+import type { PropsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import type {
 	CommerceProps,
@@ -75,7 +78,8 @@ export const FullPricingWidget: React.FC<PricingComponentProps> = ({
 					withTitle: false,
 					withImage: false,
 					withGuaranteeBadge: false,
-					isLiveEvent: true,
+					isLiveEvent: false,
+					isCohort: true,
 					teamQuantityLimit:
 						quantityAvailable >= 0 && quantityAvailable > 5
 							? 5
@@ -102,7 +106,7 @@ const PurchasedTicketInfo = ({ centered }: { centered?: boolean }) => {
 			<div className="inline-flex items-baseline gap-2 sm:items-center">
 				<BadgeCheck className="text-primary size-4 flex-shrink-0 sm:size-5" />
 				<p className="text-primary">
-					Ticket purchased. We sent the details of the event to your email.{' '}
+					Cohort purchased. We sent the details of the cohort to your email.{' '}
 					<Link
 						target="_blank"
 						href="/invoices"
@@ -215,21 +219,21 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 				)}
 			>
 				<div className="flex flex-col items-start gap-2">
-					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-semibold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-						Buy Ticket
-						<span className="bg-primary-foreground/30 mx-5 h-full w-px" />
-						<div className="flex items-baseline">
+					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-semibold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:cursor-pointer hover:hue-rotate-[8deg]">
+						<span className="relative z-10">Register Now</span>
+						<span className="bg-primary-foreground/30 mx-3 h-full w-px" />
+						<div className="relative z-10 flex items-baseline">
 							{status === 'pending' ? (
 								<Spinner className="w-5" />
 							) : (
 								<>
-									<sup className="text-xs leading-tight opacity-50">US</sup>
+									<sup className="text-[10px] leading-tight opacity-50">US</sup>
 									<span className="font-semibold tabular-nums">
 										{formatUsd(finalPrice).dollars}
 									</span>
 									{savings > 0 && !isSoldOut && (
 										<>
-											<span className="ml-1 text-lg font-normal line-through opacity-90">
+											<span className="ml-1 text-sm font-normal line-through opacity-90">
 												{formatUsd(fullPrice).dollars}
 											</span>
 										</>
@@ -237,10 +241,21 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 								</>
 							)}
 						</div>
+						<div
+							style={{
+								backgroundSize: '200% 100%',
+								animationDuration: '2s',
+								animationIterationCount: 'infinite',
+								animationTimingFunction: 'linear',
+								animationFillMode: 'forwards',
+								animationDelay: '2s',
+							}}
+							className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+						/>
 					</Pricing.BuyButton>
 				</div>
 			</div>
-			<div
+			{/* <div
 				className={cn('mt-2 flex items-center', centered && 'justify-center')}
 			>
 				<Pricing.TeamQuantityInput
@@ -296,7 +311,7 @@ const BuyButton = ({ centered }: { centered?: boolean }) => {
 						</>
 					)}
 				</>
-			)}
+			)} */}
 		</>
 	)
 }
@@ -387,7 +402,7 @@ const CardPricing = () => {
 				</div>
 				<div className="flex flex-col items-start gap-2">
 					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative w-auto min-w-[170px] origin-bottom rounded-md to-indigo-800 px-5 py-4 text-base font-semibold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-						Buy Ticket
+						Register Now
 					</Pricing.BuyButton>
 				</div>
 			</div>
@@ -428,62 +443,36 @@ export const withEventPricing = (
 	PricingComponent: React.ComponentType<PricingComponentProps>,
 ) => {
 	return function WithEventPricing({
-		event,
+		pricingProps,
+		cohort,
 		pricingOptions,
+		pricingDataLoader,
 		centered = false,
 		className,
 	}: {
-		event: Event
+		pricingProps: PropsForCommerce
+		cohort: Cohort
 		pricingOptions?: Partial<PricingOptions>
+		pricingDataLoader: Promise<PricingData>
 		centered?: boolean
 		className?: string
 	}) {
 		const { coupon } = React.useContext(CouponContext)
 
-		const { data: pricingProps, status } =
-			api.pricing.getPostProductPricing.useQuery(
-				{
-					postSlugOrId: event.id,
-				},
-				{
-					refetchOnWindowFocus: false,
-					refetchOnMount: false,
-				},
-			)
-
-		if (status === 'pending') {
-			return (
-				<div
-					className={cn(
-						'text-muted-foreground flex items-center gap-1 py-5 text-base',
-						centered && 'flex items-center justify-center',
-						className,
-					)}
-				>
-					<Spinner className="w-5" /> Loading ticket...
-				</div>
-			)
-		}
-
 		if (!pricingProps) {
 			return null
 		}
 
-		const {
-			product,
-			quantityAvailable,
-			hasPurchasedCurrentProduct,
-			pricingDataLoader,
-		} = pricingProps
 		const commerceProps = {
 			...pricingProps,
-			products: [product],
 			couponFromCode: coupon,
 			couponIdFromCoupon: coupon?.id,
 		}
 
 		const purchasedProductIds =
 			commerceProps?.purchases?.map((purchase) => purchase.productId) || []
+
+		const product = pricingProps.products[0]
 
 		if (!product) return null
 
@@ -493,25 +482,43 @@ export const withEventPricing = (
 			withGuaranteeBadge: false,
 			isLiveEvent: true,
 			teamQuantityLimit:
-				quantityAvailable >= 0 && quantityAvailable > 5
+				product.quantityAvailable >= 0 && product.quantityAvailable > 5
 					? 5
-					: quantityAvailable < 0
+					: product.quantityAvailable < 0
 						? 100
-						: quantityAvailable,
+						: product.quantityAvailable,
 			isPPPEnabled: true,
-			cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
+			cancelUrl: `${env.NEXT_PUBLIC_URL}/cohorts/${product.fields?.slug || product.id}`,
 			...pricingOptions,
 		}
-		const isPastEvent =
-			product.type === 'live' &&
-			event.fields?.startsAt &&
-			new Date(event.fields?.startsAt) < new Date()
+		const { openEnrollment, closeEnrollment } = product?.fields || {}
+		const { startsAt, endsAt, timezone } = cohort?.fields
+		const tz = timezone || 'America/Los_Angeles'
+		const nowInPT = new Date(
+			formatInTimeZone(new Date(), tz, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+		)
+		const isOpenEnrollment = openEnrollment
+			? new Date(openEnrollment) < nowInPT &&
+				(closeEnrollment ? new Date(closeEnrollment) > nowInPT : true)
+			: false
+
+		// Check if enrollment hasn't opened yet
+		const enrollmentNotOpenYet = openEnrollment
+			? new Date(openEnrollment) > nowInPT
+			: false
+
+		// Check if cohort has actually started (different from enrollment status)
+		const hasStarted = startsAt ? new Date(startsAt) <= nowInPT : false
+
+		const hasPurchasedCurrentProduct = commerceProps?.purchases?.some(
+			(purchase) => purchase.productId === product.id,
+		)
 
 		return (
 			<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-				{isPastEvent ? (
-					<div className="flex w-full items-center justify-center py-5">
-						Not Available
+				{hasStarted ? (
+					<div className="font-heading flex w-full items-center justify-center py-5 text-lg font-medium">
+						The Cohort Has Started
 					</div>
 				) : (
 					<PricingComponent
@@ -519,7 +526,7 @@ export const withEventPricing = (
 						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
 						commerceProps={commerceProps}
 						product={product}
-						quantityAvailable={quantityAvailable}
+						quantityAvailable={product.quantityAvailable}
 						pricingDataLoader={pricingDataLoader}
 						pricingWidgetOptions={defaultPricingOptions}
 						className={className}

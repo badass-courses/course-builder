@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { launch } from '@/app/launch/actions'
 import RedButton from '@/app/launch/red-button'
 import { commerceEnabled } from '@/flags'
@@ -25,11 +26,15 @@ export default async function LaunchPage() {
 
 	return (
 		<div>
+			<Script
+				async
+				src="https://cursor-party.vojtaholik.partykit.dev/cursors.js"
+			/>
 			<form
 				action={async () => {
 					'use server'
 					if (canPress) {
-						launch()
+						await launch()
 					}
 				}}
 			>

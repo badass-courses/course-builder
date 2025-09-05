@@ -72,7 +72,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 			<Button
 				variant="ghost"
 				data-mobile-nav-trigger=""
-				className="bg-card/80 text-foreground flex h-12 w-12 items-center justify-center rounded-lg p-0 shadow-sm backdrop-blur-md"
+				className="ring-gray-800/7.5 bg-card/80 text-foreground flex h-12 w-12 items-center justify-center rounded-lg p-0 shadow-sm ring-1 backdrop-blur-md"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>

@@ -132,7 +132,7 @@ const Instructor = ({
 		<section
 			data-instructor=""
 			className={cn(
-				'prose-headings:my-0 prose-p:text-violet-950 prose-headings:text-violet-950 bg-muted relative flex w-full flex-col items-center gap-3 rounded-lg border p-5 sm:gap-10 sm:p-10',
+				'prose-headings:my-0 dark:prose-p:text-violet-100 prose-p:text-violet-950 prose-headings:text-violet-950 dark:prose-headings:text-violet-100 bg-muted relative flex w-full flex-col items-center gap-3 rounded-lg border p-5 sm:gap-10 sm:p-10',
 				className,
 			)}
 		>
