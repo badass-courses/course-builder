@@ -41,6 +41,7 @@ import {
 	Alert,
 	AlertTitle,
 	Button,
+	Card,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
@@ -260,6 +261,16 @@ export default async function CohortPage(props: {
 				}}
 				{...props}
 			/>
+		),
+		WorkshopCard: (props) => (
+			<Card
+				className={cn(
+					'[&_strong]:text-primary mb-3 px-5 pt-5 md:px-8 md:pt-8 [&_h3]:first-of-type:mb-0 [&_h3]:first-of-type:mt-0 [&_h3]:first-of-type:pt-0',
+					props.className,
+				)}
+			>
+				{props.children}
+			</Card>
 		),
 	})
 
