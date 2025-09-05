@@ -303,7 +303,7 @@ export const handleRefundAndRemoveFromCalendar = inngest.createFunction(
 	},
 	{ event: REFUND_PROCESSED_EVENT },
 	async ({ event, step, logger }) => {
-		const chargeId = event.data.stripeChargeId || event.data.merchantChargeId
+		const chargeId = event.data.merchantChargeId
 		if (!chargeId) {
 			logger.error('No chargeId found in the event data.', { event })
 			throw new NonRetriableError('Refund processed event is missing chargeId.')
