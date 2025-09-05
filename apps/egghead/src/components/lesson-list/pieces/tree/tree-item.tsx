@@ -366,7 +366,7 @@ const TreeItem = memo(function TreeItem({
 							? toggleOpen
 							: () => {
 									if (item.type === 'event') {
-										router.push(`/events/${item.id}/edit`)
+										router.push(`/admin/events/${item.id}/edit`)
 										return
 									}
 								}

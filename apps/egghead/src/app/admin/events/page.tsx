@@ -58,7 +58,7 @@ export default async function AdminEventsPage() {
 							</p>
 						</div>
 						<div className="flex gap-2">
-							<Link href={`/events/${event.fields.slug}`}>
+							<Link href={`/admin/events/${event.fields.slug}`}>
 								<Button variant="outline" size="sm">
 									View
 								</Button>

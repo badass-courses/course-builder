@@ -163,7 +163,7 @@ const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 
 		return initialValues as z.infer<typeof EventSchema> // Assert type compatibility
 	},
-	getResourcePath: (slug?: string) => `/events/${slug}`,
+	getResourcePath: (slug?: string) => `/admin/events/${slug}`,
 	// Use the wrapper function here
 	updateResource: updateEventResource,
 	onSave: onEventSave,

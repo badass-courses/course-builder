@@ -84,7 +84,7 @@ function EventCard({
 	const endDate = event.fields.endsAt ? new Date(event.fields.endsAt) : null
 
 	return (
-		<Link href={`/events/${event.fields.slug}`}>
+		<Link href={`/admin/events/${event.fields.slug}`}>
 			<Card
 				className={`transition-shadow hover:shadow-lg ${isPast ? 'opacity-60' : ''}`}
 			>
