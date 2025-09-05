@@ -1100,7 +1100,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.1.8)(mysql2@3.14.0)(pg@8.14.1)(react@19.1.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.1.8)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.1.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.1.0)
@@ -1446,7 +1446,7 @@ importers:
         version: 5.6.0(@planetscale/database@1.19.0)(@types/node@20.17.30)(typescript@5.4.5)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.1.8)(mysql2@3.14.0)(pg@8.14.1)(react@19.1.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.1.8)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.1.0)
       mysql2:
         specifier: ^3.6.1
         version: 3.14.0
@@ -1771,7 +1771,7 @@ importers:
         version: 2.0.1(date-fns@2.30.0)
       drizzle-orm:
         specifier: 0.36.0
-        version: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.1.8)(mysql2@3.14.0)(pg@8.14.1)(react@19.1.0)
+        version: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.1.8)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.1.0)
       formik:
         specifier: 2.2.9
         version: 2.2.9(react@19.1.0)
@@ -3413,6 +3413,9 @@ importers:
       '@casl/ability':
         specifier: ^6.5.0
         version: 6.7.3
+      '@codemirror/view':
+        specifier: ^6.36.2
+        version: 6.38.1
       '@coursebuilder/adapter-drizzle':
         specifier: 1.0.4
         version: link:../../packages/adapter-drizzle
@@ -3542,6 +3545,9 @@ importers:
       '@types/uuid':
         specifier: 9.0.8
         version: 9.0.8
+      '@uiw/react-markdown-editor':
+        specifier: ^6.1.2
+        version: 6.1.2(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(@types/react@19.1.8)(codemirror@6.0.1)(react-dom@19.1.0)(react@19.1.0)
       '@uploadthing/react':
         specifier: 7.1.5
         version: 7.1.5(next@15.4.2-canary.14)(react@19.1.0)(uploadthing@7.4.4)
@@ -3572,6 +3578,12 @@ importers:
       framer-motion:
         specifier: ^12.0.0-alpha.1
         version: 12.6.3(react-dom@19.1.0)(react@19.1.0)
+      google-auth-library:
+        specifier: ^9.15.1
+        version: 9.15.1(encoding@0.1.13)
+      googleapis:
+        specifier: ^148.0.0
+        version: 148.0.0(encoding@0.1.13)
       human-readable-ids:
         specifier: ^1.0.4
         version: 1.0.4
@@ -3581,6 +3593,9 @@ importers:
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.1.0)
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
       memoize-one:
         specifier: ^6.0.0
         version: 6.0.0
@@ -10057,7 +10072,7 @@ packages:
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
     dev: false
 
@@ -10066,7 +10081,7 @@ packages:
     dependencies:
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
     dev: false
 
@@ -10116,7 +10131,7 @@ packages:
       '@codemirror/lang-javascript': 6.2.3
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/css': 1.1.11
       '@lezer/html': 1.3.10
@@ -10136,7 +10151,7 @@ packages:
       '@codemirror/language': 6.11.0
       '@codemirror/lint': 6.8.5
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/javascript': 1.4.21
     dev: false
@@ -10165,7 +10180,7 @@ packages:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
@@ -10178,7 +10193,7 @@ packages:
       '@codemirror/lang-html': 6.4.9
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/markdown': 1.4.2
     dev: false
@@ -10257,7 +10272,7 @@ packages:
       '@codemirror/autocomplete': 6.18.6
       '@codemirror/language': 6.11.0
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/xml': 1.0.6
     dev: false
@@ -10305,7 +10320,7 @@ packages:
     resolution: {integrity: sha512-A7+f++LodNNc1wGgoRDTt78cOwWm9KVezApgjOMp1W4hM0898nsqBXwF+sbePE7ZRcjN7Sa1Z5m2oN27XkmEjQ==}
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.2
@@ -10333,7 +10348,7 @@ packages:
     resolution: {integrity: sha512-s3n3KisH7dx3vsoeGMxsbRAgKe4O1vbrnKBClm99PU0fWxmxsx5rR2PfqQgIt+2MMJBHbiJ5rfIdLYfB9NNvsA==}
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       crelt: 1.0.6
     dev: false
 
@@ -10341,7 +10356,7 @@ packages:
     resolution: {integrity: sha512-RMdPdmsrUf53pb2VwflKGHEe1XVM07hI7vV2ntgw1dmqhimpatSJKva4VA9h4TLUDOD4EIF02201oZurpnEFsg==}
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
       crelt: 1.0.6
     dev: false
 
@@ -21002,12 +21017,40 @@ packages:
       '@codemirror/view': 6.36.5
     dev: false
 
+  /@uiw/codemirror-extensions-basic-setup@4.23.10(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1):
+    resolution: {integrity: sha512-zpbmSeNs3OU/f/Eyd6brFnjsBUYwv2mFjWxlAsIRSwTlW+skIT60rQHFBSfsj/5UVSxSLWVeUYczN7AyXvgTGQ==}
+    peerDependencies:
+      '@codemirror/autocomplete': '>=6.0.0'
+      '@codemirror/commands': '>=6.0.0'
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/lint': '>=6.0.0'
+      '@codemirror/search': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/commands': 6.8.1
+      '@codemirror/language': 6.11.2
+      '@codemirror/lint': 6.8.5
+      '@codemirror/search': 6.5.10
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.1
+    dev: false
+
   /@uiw/codemirror-extensions-events@4.23.10(@codemirror/view@6.36.5):
     resolution: {integrity: sha512-WvVdpTl6gZdt8u8oLtKON9kmw6yoRE3qy3t85vK4NXMibyjrGt26zvFyBjjmfO6dkfTy78X0oHrwub7TY5RIHg==}
     peerDependencies:
       '@codemirror/view': '>=6.0.0'
     dependencies:
       '@codemirror/view': 6.36.5
+    dev: false
+
+  /@uiw/codemirror-extensions-events@4.23.10(@codemirror/view@6.38.1):
+    resolution: {integrity: sha512-WvVdpTl6gZdt8u8oLtKON9kmw6yoRE3qy3t85vK4NXMibyjrGt26zvFyBjjmfO6dkfTy78X0oHrwub7TY5RIHg==}
+    peerDependencies:
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/view': 6.38.1
     dev: false
 
   /@uiw/codemirror-themes@4.23.10(@codemirror/language@6.11.0)(@codemirror/state@6.5.2)(@codemirror/view@6.36.5):
@@ -21032,6 +21075,18 @@ packages:
       '@codemirror/language': 6.11.2
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.36.5
+    dev: false
+
+  /@uiw/codemirror-themes@4.23.10(@codemirror/language@6.11.2)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1):
+    resolution: {integrity: sha512-dU0UgEEgEXCAYpxuVDQ6fovE82XsqgHZckTJOH6Bs8xCi3Z7dwBKO4pXuiA8qGDwTOXOMjSzfi+pRViDm7OfWw==}
+    peerDependencies:
+      '@codemirror/language': '>=6.0.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+    dependencies:
+      '@codemirror/language': 6.11.2
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.1
     dev: false
 
   /@uiw/copy-to-clipboard@1.0.17:
@@ -21082,6 +21137,33 @@ packages:
       '@codemirror/theme-one-dark': 6.1.3
       '@codemirror/view': 6.36.5
       '@uiw/codemirror-extensions-basic-setup': 4.23.10(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/view@6.36.5)
+      codemirror: 6.0.1
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    transitivePeerDependencies:
+      - '@codemirror/autocomplete'
+      - '@codemirror/language'
+      - '@codemirror/lint'
+      - '@codemirror/search'
+    dev: false
+
+  /@uiw/react-codemirror@4.23.10(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(codemirror@6.0.1)(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-AbN4eVHOL4ckRuIXpZxkzEqL/1ChVA+BSdEnAKjIB68pLQvKsVoYbiFP8zkXkYc4+Fcgq5KbAjvYqdo4ewemKw==}
+    peerDependencies:
+      '@babel/runtime': '>=7.11.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/theme-one-dark': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+      codemirror: '>=6.0.0'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@babel/runtime': 7.27.6
+      '@codemirror/commands': 6.8.1
+      '@codemirror/state': 6.5.2
+      '@codemirror/theme-one-dark': 6.1.3
+      '@codemirror/view': 6.38.1
+      '@uiw/codemirror-extensions-basic-setup': 4.23.10(@codemirror/autocomplete@6.18.6)(@codemirror/commands@6.8.1)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
       codemirror: 6.0.1
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -21150,13 +21232,42 @@ packages:
       - supports-color
     dev: false
 
+  /@uiw/react-markdown-editor@6.1.2(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(@types/react@19.1.8)(codemirror@6.0.1)(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-nC1EnPBzJdVdmi+8+R/8Tr4hoj5ewjpguVjOxz448c4TF9bieqCQEb9Ivar5tGkduEOV0xFkcKupp4nhkGHI6A==}
+    peerDependencies:
+      '@babel/runtime': '>=7.10.0'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      '@babel/runtime': 7.27.6
+      '@codemirror/lang-markdown': 6.3.2
+      '@codemirror/language-data': 6.5.1
+      '@uiw/codemirror-extensions-events': 4.23.10(@codemirror/view@6.38.1)
+      '@uiw/codemirror-themes': 4.23.10(@codemirror/language@6.11.2)(@codemirror/state@6.5.2)(@codemirror/view@6.38.1)
+      '@uiw/react-codemirror': 4.23.10(@babel/runtime@7.27.6)(@codemirror/autocomplete@6.18.6)(@codemirror/language@6.11.2)(@codemirror/lint@6.8.5)(@codemirror/search@6.5.10)(@codemirror/state@6.5.2)(@codemirror/theme-one-dark@6.1.3)(@codemirror/view@6.38.1)(codemirror@6.0.1)(react-dom@19.1.0)(react@19.1.0)
+      '@uiw/react-markdown-preview': 5.1.3(@types/react@19.1.8)(react-dom@19.1.0)(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    transitivePeerDependencies:
+      - '@codemirror/autocomplete'
+      - '@codemirror/language'
+      - '@codemirror/lint'
+      - '@codemirror/search'
+      - '@codemirror/state'
+      - '@codemirror/theme-one-dark'
+      - '@codemirror/view'
+      - '@types/react'
+      - codemirror
+      - supports-color
+    dev: false
+
   /@uiw/react-markdown-preview@5.1.3(@types/react@19.1.8)(react-dom@19.1.0)(react@19.1.0):
     resolution: {integrity: sha512-jV02wO4XHWFk54kz7sLqOkdPgJLttSfKLyen47XgjcyGgQXU2I4WJBygmdpV2AT9m/MiQ8qrN1Y+E5Syv9ZDpw==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.27.6
       '@uiw/copy-to-clipboard': 1.0.17
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
@@ -23101,7 +23212,7 @@ packages:
       '@codemirror/lint': 6.8.5
       '@codemirror/search': 6.5.10
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.36.5
+      '@codemirror/view': 6.38.1
     dev: false
 
   /collapse-white-space@2.1.0:
@@ -24632,7 +24743,7 @@ packages:
       drizzle-orm: '>=0.23.13'
       zod: '*'
     dependencies:
-      drizzle-orm: 0.36.0(@planetscale/database@1.19.0)(@types/pg@8.11.11)(@types/react@19.1.8)(mysql2@3.14.0)(pg@8.14.1)(react@19.1.0)
+      drizzle-orm: 0.36.0(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@types/react@19.1.8)(better-sqlite3@9.4.3)(mysql2@3.14.0)(react@19.1.0)
       zod: 3.24.2
     dev: false
 
