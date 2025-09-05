@@ -55,7 +55,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'h-(--nav-height) bg-card ring-gray-800/7.5 relative z-50 mb-3 mt-2 flex w-full items-center justify-between rounded-lg px-1.5 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ring-1 print:hidden',
+				'h-(--nav-height) bg-card ring-gray-800/7.5 relative z-50 mb-3 mt-2 flex w-full items-center justify-between rounded-lg px-1.5 pl-0 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ring-1 print:hidden',
 				{
 					// 'px-5': !withContainer,
 				},
@@ -80,9 +80,10 @@ const Navigation = ({
 						<Button
 							asChild
 							variant="ghost"
-							className="hover:bg-transparent! h-12 rounded-none p-0 text-lg"
+							className="hover:bg-violet-300/10! h-12 rounded-l-lg rounded-r-none p-0 pl-1.5 text-lg"
 						>
 							<Link
+								data-nav-link=""
 								prefetch
 								tabIndex={isRoot ? -1 : 0}
 								href="/"

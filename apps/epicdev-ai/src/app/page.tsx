@@ -253,7 +253,7 @@ const Home = async (props: Props) => {
 												<PricingWidgetServer
 													productId={
 														process.env.NODE_ENV === 'development'
-															? 'product-30fvh'
+															? 'product-zir2q' // 'product-30fvh'
 															: 'product-zir2q'
 													}
 													searchParams={searchParams}

@@ -27,7 +27,10 @@ import { count, eq } from 'drizzle-orm'
 import { CheckCircle, Construction } from 'lucide-react'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
-import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
+import {
+	propsForCommerce,
+	type PropsForCommerce,
+} from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 import {
@@ -38,12 +41,17 @@ import {
 	Alert,
 	AlertTitle,
 	Button,
+	Card,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import {
+	BuyTicketButton,
+	EventPricingButton,
+} from '../../events/[slug]/_components/inline-event-pricing'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import { CohortPageProps } from './_components/cohort-page-props'
@@ -240,7 +248,31 @@ export default async function CohortPage(props: {
 			})
 		: null
 
-	const { content } = await compileMDX(cohort.fields.body || '')
+	const { content } = await compileMDX(cohort.fields.body || '', {
+		RegisterNow: (props) => (
+			<EventPricingButton
+				cohort={cohort}
+				pricingDataLoader={cohortProps.pricingDataLoader}
+				pricingProps={cohortProps as PropsForCommerce}
+				centered={false}
+				pricingOptions={{
+					withTitle: false,
+					withImage: false,
+				}}
+				{...props}
+			/>
+		),
+		WorkshopCard: (props) => (
+			<Card
+				className={cn(
+					'[&_strong]:text-primary mb-3 px-5 pt-5 md:px-8 md:pt-8 [&_h3]:first-of-type:mb-0 [&_h3]:first-of-type:mt-0 [&_h3]:first-of-type:pt-0',
+					props.className,
+				)}
+			>
+				{props.children}
+			</Card>
+		),
+	})
 
 	const loyaltyCoupon = user?.id
 		? await getLoyaltyCouponForUser(user.id)
@@ -327,7 +359,7 @@ export default async function CohortPage(props: {
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg font-heading text-primary mt-3 text-balance font-medium tracking-tight">
+									<h2 className="font-heading text-primary mt-3 text-lg font-medium tracking-tight sm:text-xl lg:text-[1.25rem]">
 										{fields.description}
 									</h2>
 								)}
@@ -343,7 +375,7 @@ export default async function CohortPage(props: {
 						</article>
 						<div className="mt-2">
 							<h2 className="mb-5 text-2xl font-semibold tracking-tight sm:text-3xl">
-								Contents
+								Your Learning Schedule
 							</h2>
 							<ul className="flex flex-col gap-2">
 								{workshops.length === 0 ? (
@@ -439,7 +471,7 @@ export default async function CohortPage(props: {
 																	) : (
 																		<div
 																			className={cn(
-																				'text-foreground flex flex-col py-2 pt-3 text-lg font-semibold leading-tight',
+																				'text-foreground flex w-full flex-col py-2 pt-3 text-lg font-semibold leading-tight',
 																				{
 																					'max-w-[90%]':
 																						workshop.resources &&

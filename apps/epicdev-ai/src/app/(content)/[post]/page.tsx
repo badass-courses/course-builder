@@ -6,14 +6,19 @@ import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
+import { courseBuilderAdapter, db } from '@/db'
+import { products } from '@/db/schema'
+import { commerceEnabled } from '@/flags'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getCachedPostOrList } from '@/lib/posts-query'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import { getCachedVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { and, eq } from 'drizzle-orm'
 import { ChevronLeft, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -65,9 +70,39 @@ export default async function PostPage(props: {
 	const primaryVideoId = primaryVideo?.resource.id
 
 	const videoDetails = await getCachedVideoResource(primaryVideoId)
+	const isCommerceEnabled = await commerceEnabled()
+	const allCohortProducts = await db.query.products.findMany({
+		where: and(eq(products.status, 1), eq(products.type, 'cohort')),
+	})
+	const productIds = allCohortProducts.map((p) => p.id)
+
+	let defaultCoupon = null
+	if (productIds.length > 0) {
+		const coupons = await courseBuilderAdapter.getDefaultCoupon(productIds)
+		if (coupons?.defaultCoupon) {
+			defaultCoupon = coupons.defaultCoupon
+		}
+	}
+
+	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
 	return (
 		<main className="w-full">
+			{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+				<Link
+					className="text-primary dark:border-foreground/5 mx-auto mb-2 flex max-w-full items-center justify-between gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-2 text-xs font-medium shadow-md shadow-violet-600/10 sm:justify-center sm:pr-1 sm:text-sm dark:bg-violet-500/20 dark:shadow-none"
+					href={saleBannerData.productPath}
+					prefetch
+				>
+					<div className="flex flex-col sm:block">
+						<span className="font-bold">Save {saleBannerData.percentOff}%</span>{' '}
+						on {saleBannerData.productName}.{' '}
+					</div>
+					<div className="bg-linear-to-b font-heading from-primary ml-1 rounded-sm to-indigo-800 px-2 py-0.5 text-sm font-semibold text-white transition ease-out group-hover:underline">
+						Get Your Ticket
+					</div>
+				</Link>
+			) : null}
 			{primaryVideo && (
 				<PlayerContainer videoDetails={videoDetails} post={post} />
 			)}

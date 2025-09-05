@@ -5237,6 +5237,9 @@ importers:
       shortid:
         specifier: ^2.2.16
         version: 2.2.17
+      starfield-react:
+        specifier: 3.1.0-dev-5
+        version: 3.1.0-dev-5(react-dom@19.1.0)(react@19.1.0)
       styled-components:
         specifier: ~5.2.3
         version: 5.2.3(@babel/core@7.28.0)(react-dom@19.1.0)(react-is@19.1.0)(react@19.1.0)
@@ -34707,6 +34710,16 @@ packages:
       as-table: 1.0.55
       get-source: 2.0.12
     dev: true
+
+  /starfield-react@3.1.0-dev-5(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-M4WwiThU1xKgTetMjojX2vS9uyOJqdfhf7kFBNPZA6NHjZb12XwMxEeSQqDpwG4ANdd6pLqBYXKjFdKYePcZ7Q==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
 
   /statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
