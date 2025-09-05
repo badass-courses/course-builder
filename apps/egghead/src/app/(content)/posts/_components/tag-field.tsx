@@ -89,11 +89,8 @@ export const TagField: React.FC<TagFieldProps> = ({
 
 	const handleCreateTag = (tag: Tag) => {
 		createTag({
-			...tag,
 			type: 'topic',
-			id: guid(),
-			createdAt: new Date(),
-			updatedAt: new Date(),
+			fields: tag.fields,
 		})
 	}
 

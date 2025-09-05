@@ -198,6 +198,11 @@ export async function addTagToPost(postId: string, tagId: string) {
 			})
 			.where(eq(contentResource.id, postId))
 	}
+
+	// Revalidate cache for events
+	if (post?.type === 'event') {
+		revalidateTag('events')
+	}
 }
 
 /**
@@ -273,6 +278,11 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 				},
 			})
 			.where(eq(contentResource.id, postId))
+	}
+
+	// Revalidate cache for events
+	if (post?.type === 'event') {
+		revalidateTag('events')
 	}
 }
 

@@ -11,6 +11,11 @@ import { getPost } from '@/lib/posts-query'
  * @returns The resource info object or undefined
  */
 function getResourceInfo(post: Post): EggheadResource | undefined {
+	// Events don't have egghead resource IDs and don't need to be synced to Egghead
+	if (post.type === 'event') {
+		return undefined
+	}
+
 	if (post.fields.eggheadLessonId) {
 		return {
 			id: post.fields.eggheadLessonId,
@@ -66,7 +71,11 @@ export async function removeLegacyTaggingsOnEgghead(postId: string) {
 
 	const eggheadResource = getResourceInfo(post)
 	if (!eggheadResource) {
-		throw new Error(`No egghead resource found for post ${postId}.`)
+		// Events and other resources without egghead IDs don't need to be synced to Egghead
+		console.log(
+			`Skipping Egghead sync for ${post.type} ${postId} - no egghead resource ID`,
+		)
+		return
 	}
 
 	return eggheadPgQuery(
@@ -88,7 +97,11 @@ export async function writeLegacyTaggingsToEgghead(postId: string) {
 
 	const eggheadResource = getResourceInfo(post)
 	if (!eggheadResource) {
-		throw new Error(`No egghead resource found for post ${postId}.`)
+		// Events and other resources without egghead IDs don't need to be synced to Egghead
+		console.log(
+			`Skipping Egghead sync for ${post.type} ${postId} - no egghead resource ID`,
+		)
+		return
 	}
 
 	if (!post.tags || post.tags.length === 0) {
