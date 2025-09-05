@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function EventsPage() {
 	const events = await getActiveEvents()
 	const allEvents = await getAllEvents()
-	const pastEvents = allEvents.filter((event) => {
+	const pastEvents = allEvents?.filter((event) => {
 		const now = new Date()
 		if (event.fields.endsAt) {
 			return new Date(event.fields.endsAt) < now
@@ -34,12 +34,12 @@ export default async function EventsPage() {
 				</p>
 			</div>
 
-			{events.length > 0 ? (
+			{events?.length > 0 ? (
 				<div className="space-y-8">
 					<section>
 						<h2 className="mb-4 text-2xl font-semibold">Upcoming Events</h2>
 						<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-							{events.map((event) => (
+							{events?.map((event) => (
 								<EventCard key={event.id} event={event} />
 							))}
 						</div>

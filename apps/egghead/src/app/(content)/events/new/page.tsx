@@ -39,7 +39,7 @@ export default async function NewEventPage() {
 
 	async function handleSuccess(result: any) {
 		'use server'
-		redirect('/admin/events')
+		redirect(`/admin/events/${result.event.fields?.slug}/edit`)
 	}
 
 	return (

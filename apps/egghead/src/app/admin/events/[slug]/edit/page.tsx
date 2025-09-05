@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { getCachedEventOrEventSeries } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 
-import { EditEventForm } from '../_components/edit-event-form'
+import { EditEventForm } from './_components/edit-event-form'
 
 interface EditEventPageProps {
 	params: {
@@ -25,7 +25,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
 	}
 
 	return (
-		<div className="container mx-auto max-w-4xl px-4 py-8">
+		<div className="">
 			<h1 className="mb-8 text-3xl font-bold">Edit Event</h1>
 			<EditEventForm event={event} />
 		</div>

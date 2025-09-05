@@ -38,7 +38,7 @@ export default async function AdminEventsPage() {
 			getPastEventIds(),
 		])
 
-		const pastEvents = allEvents.filter((event) =>
+		const pastEvents = allEvents?.filter((event) =>
 			pastEventIds.includes(event.id),
 		)
 
@@ -63,7 +63,7 @@ export default async function AdminEventsPage() {
 									View
 								</Button>
 							</Link>
-							<Link href={`/events/${event.fields.slug}/edit`}>
+							<Link href={`/admin/events/${event.fields.slug}/edit`}>
 								<Button variant="outline" size="sm">
 									Edit
 								</Button>
@@ -134,7 +134,7 @@ export default async function AdminEventsPage() {
 					</Link>
 				</div>
 
-				{allEvents.length === 0 ? (
+				{allEvents?.length === 0 ? (
 					<Card>
 						<CardContent className="py-12 text-center">
 							<CalendarIcon className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
@@ -150,20 +150,20 @@ export default async function AdminEventsPage() {
 				) : (
 					<div className="space-y-8">
 						{/* Active Events Section */}
-						{activeEvents.length > 0 && (
+						{activeEvents?.length > 0 && (
 							<div>
 								<div className="mb-4 flex items-center gap-2">
 									<h2 className="text-xl font-semibold">Active Events</h2>
-									<Badge variant="default">{activeEvents.length}</Badge>
+									<Badge variant="default">{activeEvents?.length}</Badge>
 								</div>
 								<div className="space-y-4">
-									{activeEvents.map((event) => renderEventCard(event))}
+									{activeEvents?.map((event) => renderEventCard(event))}
 								</div>
 							</div>
 						)}
 
 						{/* Past Events Section */}
-						{pastEvents.length > 0 && (
+						{pastEvents?.length > 0 && (
 							<div>
 								<div className="mb-4 flex items-center gap-2">
 									<h2 className="text-xl font-semibold">Past Events</h2>
