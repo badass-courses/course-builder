@@ -962,7 +962,8 @@ export function mySqlDrizzleAdapter(
 				.optional()
 				.parse(
 					await client.query.merchantCustomer.findFirst({
-						where: eq(merchantCustomer.identifier, options.identifier),
+						where: (merchantCustomer, { eq }) =>
+							eq(merchantCustomer.identifier, options.identifier),
 					}),
 				)
 
