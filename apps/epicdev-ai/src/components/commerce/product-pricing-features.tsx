@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import {
 	BadgeCheck,
 	Check,
@@ -17,19 +18,34 @@ import { Icon } from '../brand/icons'
 export const ProductPricingFeatures = ({
 	workshops,
 	className,
+	isMinified = false,
 }: {
 	workshops: {
 		title: string
 		slug: string
 	}[]
 	className?: string
+	isMinified?: boolean
 }) => {
 	return (
-		<div
+		<motion.div
 			className={cn(
 				'not-prose relative mt-5 flex w-full max-w-xs flex-col items-center text-base',
 				className,
 			)}
+			animate={{
+				height: isMinified ? 0 : 'auto',
+				opacity: isMinified ? 0 : 1,
+				marginTop: isMinified ? 0 : 20,
+			}}
+			initial={false}
+			transition={{
+				duration: 0.3,
+				ease: 'easeInOut',
+			}}
+			style={{
+				overflow: 'hidden',
+			}}
 		>
 			{/* <strong className="mb-3 flex items-center text-center text-sm font-medium uppercase">
 				<span className="relative z-10 bg-white px-3 py-1 dark:bg-[#0F0F0F]">
@@ -118,6 +134,6 @@ export const ProductPricingFeatures = ({
 					Completion Certificate
 				</li>
 			</ul>
-		</div>
+		</motion.div>
 	)
 }

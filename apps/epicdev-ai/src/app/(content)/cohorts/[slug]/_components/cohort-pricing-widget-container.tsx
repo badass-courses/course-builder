@@ -16,7 +16,12 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import type { CohortPageProps } from './cohort-page-props'
 
 export const CohortPricingWidgetContainer: React.FC<
-	CohortPageProps & { className?: string; searchParams?: ParsedUrlQuery }
+	CohortPageProps & {
+		className?: string
+		searchParams?: ParsedUrlQuery
+		isScrolling?: boolean
+		isMinified?: boolean
+	}
 > = ({ className, searchParams, ...props }) => {
 	const {
 		cohort,
@@ -29,6 +34,8 @@ export const CohortPricingWidgetContainer: React.FC<
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
 		couponFromCode,
+		isScrolling,
+		isMinified,
 		...commerceProps
 	} = props
 
@@ -184,6 +191,8 @@ export const CohortPricingWidgetContainer: React.FC<
 						{eventDateString}
 					</p>
 					<PricingWidget
+						isScrolling={isScrolling}
+						isMinified={isMinified}
 						className="border-b-0"
 						workshops={workshops}
 						product={product}

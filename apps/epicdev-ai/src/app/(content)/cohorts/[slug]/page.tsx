@@ -529,143 +529,18 @@ export default async function CohortPage(props: {
 							</ul>
 						</div>
 					</div>
-					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
-						{fields?.image && (
-							<CldImage
-								className="hidden rounded-t-lg lg:flex"
-								width={383}
-								height={204}
-								src={fields?.image}
-								alt={fields?.title}
-							/>
-						)}
-						{/* <CohortDetails cohort={cohort} /> */}
-						{hasPurchasedCurrentProduct ? (
-							<div>
-								<div className="flex h-12 items-center border-b border-dotted px-2.5 py-2 text-lg font-semibold">
-									Workshops
-								</div>
-								<ol className="flex flex-col">
-									{workshops.length === 0 ? (
-										<li className="flex items-center">
-											<Alert
-												variant="default"
-												className="text-muted-foreground flex items-center"
-											>
-												<Construction className="!text-primary size-4" />
-												<AlertTitle>Workshops TBA</AlertTitle>
-											</Alert>
-										</li>
-									) : (
-										<>
-											{workshops.map((workshop, index) => {
-												// Determine end date and timezone for the workshop
-												// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-												const workshopTimezone = workshop.fields.timezone || PT
-
-												// Format workshop date/time range (only start)
-												const {
-													dateString: workshopDateString,
-													timeString: workshopTimeString,
-												} = formatCohortDateRange(
-													workshop.fields.startsAt,
-													null, // Pass null for end date
-													workshopTimezone,
-												)
-
-												// Calculate Day number
-												let dayNumber: number | null = null
-												if (cohortStartDate && workshop.fields.startsAt) {
-													const workshopStartDate = new Date(
-														workshop.fields.startsAt,
-													)
-													// Calculate difference, add 1, and ensure it's at least 1
-													dayNumber = Math.max(
-														1,
-														differenceInCalendarDays(
-															workshopStartDate,
-															cohortStartDate,
-														) + 1,
-													)
-												}
-												const moduleProgressLoader = getModuleProgressForUser(
-													workshop.fields.slug,
-												)
-												return (
-													<li key={workshop.id}>
-														<ModuleProgressProvider
-															moduleProgressLoader={moduleProgressLoader}
-														>
-															<Accordion type="multiple">
-																<AccordionItem value={workshop.id}>
-																	<div className="relative flex items-center justify-between">
-																		{workshop.fields.state === 'published' &&
-																		workshop.fields.visibility === 'public' ? (
-																			<Link
-																				className="text-foreground hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold transition ease-in-out"
-																				href={getResourcePath(
-																					'workshop',
-																					workshop.fields.slug,
-																					'view',
-																				)}
-																			>
-																				{workshop.fields.title.includes(':')
-																					? workshop.fields.title.split(':')[1]
-																					: workshop.fields.title}
-																			</Link>
-																		) : (
-																			<div className="text-foreground flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold">
-																				{workshop.fields.title.includes(':')
-																					? workshop.fields.title.split(':')[1]
-																					: workshop.fields.title}
-																			</div>
-																		)}
-
-																		<AccordionTrigger
-																			aria-label="Toggle lessons"
-																			className="bg-secondary hover:bg-foreground/20 [&_svg]:translate-y-0.3 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
-																		/>
-																	</div>
-																	<AccordionContent>
-																		<ol className="divide-border list-inside list-none divide-y border-b">
-																			<WorkshopListRowRenderer
-																				workshop={workshop}
-																			/>
-																		</ol>
-																	</AccordionContent>
-																</AccordionItem>
-															</Accordion>
-														</ModuleProgressProvider>
-													</li>
-												)
-											})}
-										</>
-									)}
-								</ol>
-								<div className="bg-muted/50 border-t p-5 pt-5">
-									<Certificate
-										isCompleted={hasCompletedCohort}
-										resourceSlugOrId={cohort.fields?.slug}
-									/>
-								</div>
-							</div>
-						) : ALLOW_PURCHASE ? (
-							<CohortPricingWidgetContainer
-								{...cohortProps}
-								couponFromCode={
-									loyaltyCoupon ? loyaltyCoupon : cohortProps.couponFromCode
-								}
-								couponIdFromCoupon={
-									loyaltyCoupon
-										? loyaltyCoupon.id
-										: cohortProps.couponIdFromCoupon
-								}
-								searchParams={searchParams}
-							/>
-						) : null}
-					</CohortSidebar>
+					<CohortSidebar
+						cohort={cohort}
+						loyaltyCoupon={loyaltyCoupon}
+						allowPurchase={ALLOW_PURCHASE}
+						workshops={workshops}
+						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+						sticky={!hasPurchasedCurrentProduct}
+						hasCompletedCohort={hasCompletedCohort}
+						cohortProps={cohortProps}
+						searchParams={searchParams}
+					/>
 				</div>
-				{/* <CohortSidebarMobile cohort={cohort} /> */}
 			</main>
 		</LayoutClient>
 	)

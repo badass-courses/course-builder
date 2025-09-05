@@ -31,6 +31,8 @@ export const PricingWidget: React.FC<{
 		slug: string
 	}[]
 	className?: string
+	isScrolling?: boolean
+	isMinified?: boolean
 }> = ({
 	product,
 	commerceProps,
@@ -39,6 +41,8 @@ export const PricingWidget: React.FC<{
 	quantityAvailable,
 	workshops,
 	className,
+	isScrolling,
+	isMinified,
 }) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -87,7 +91,10 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle className="bg-muted mt-5 max-w-sm rounded p-5" />
 				</Pricing.Details>
 			</Pricing.Product>
-			<ProductPricingFeatures workshops={workshops ?? []} />
+			<ProductPricingFeatures
+				isMinified={isMinified}
+				workshops={workshops ?? []}
+			/>
 		</Pricing.Root>
 	)
 }
