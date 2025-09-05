@@ -5,7 +5,17 @@ import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
+import {
+	RESOURCE_CREATED_EVENT,
+	ResourceCreated,
+} from '@/inngest/events/resource-management'
 import { USER_CREATED_EVENT, UserCreated } from '@/inngest/events/user-created'
+import {
+	VIDEO_ATTACHED_EVENT,
+	VIDEO_DETACHED_EVENT,
+	VideoAttached,
+	VideoDetached,
+} from '@/inngest/events/video-attachment'
 import { authOptions } from '@/server/auth'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
@@ -63,6 +73,9 @@ export type Events = {
 	[INSTRUCTOR_INVITE_CREATED_EVENT]: InstructorInviteCreated
 	[INSTRUCTOR_INVITE_COMPLETED_EVENT]: InstructorInviteCompleted
 	[EGGHEAD_COURSE_CREATED_EVENT]: EggheadCourseCreated
+	[VIDEO_ATTACHED_EVENT]: VideoAttached
+	[VIDEO_DETACHED_EVENT]: VideoDetached
+	[RESOURCE_CREATED_EVENT]: ResourceCreated
 }
 
 const callbackBase =

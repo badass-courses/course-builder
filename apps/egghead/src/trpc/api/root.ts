@@ -6,6 +6,7 @@ import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createCallerFactory, createTRPCRouter } from '@/trpc/api/trpc'
 
 import { deviceVerificationRouter } from './routers/device-verification'
+import { eventsRouter } from './routers/events'
 
 /**
  * This is the primary router for your server.
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
 	videoResources: videoResourceRouter,
 	contentResources: contentResourceRouter,
 	deviceVerification: deviceVerificationRouter,
+	events: eventsRouter,
 })
 
 // export type definition of API

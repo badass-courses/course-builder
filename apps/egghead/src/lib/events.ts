@@ -1,3 +1,7 @@
+import { db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
+import { log } from '@/server/logger'
+import { and, eq, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -8,6 +12,8 @@ import {
 } from '@coursebuilder/core/schemas/content-resource-schema'
 import { productSchema } from '@coursebuilder/core/schemas/index'
 import type { EventSeriesFormData } from '@coursebuilder/ui/event-creation/create-event-form'
+
+import { EmailSchema } from './emails'
 
 export {
 	type EventSeriesFormData,
