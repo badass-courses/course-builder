@@ -6,9 +6,9 @@ import { getServerAuthSession } from '@/server/auth'
 import { EditEventForm } from './_components/edit-event-form'
 
 interface EditEventPageProps {
-	params: {
+	params: Promise<{
 		slug: string
-	}
+	}>
 }
 
 export default async function EditEventPage({ params }: EditEventPageProps) {
