@@ -15,6 +15,7 @@ import { getCachedPostOrList } from '@/lib/posts-query'
 import { getSaleBannerData } from '@/lib/sale-banner'
 import { getCachedVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -35,6 +36,7 @@ import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+import { PostBodyErrorBoundary } from './_components/post-body-error-boundary'
 import PostTranscript from './_components/post-transcript'
 
 export const experimental_ppr = true
@@ -149,7 +151,9 @@ export default async function PostPage(props: {
 						{post?.type === 'post' && post?.fields?.body && (
 							<PostToC markdown={post?.fields?.body} />
 						)}
-						<PostBody post={post} />
+						<PostBodyErrorBoundary post={post}>
+							<PostBody post={post} />
+						</PostBodyErrorBoundary>
 						{/* {listSlugFromParam && (
 									<PostProgressToggle
 										className="flex w-full items-center justify-center"
@@ -215,15 +219,27 @@ async function PostBody({ post }: { post: Post | null }) {
 		return null
 	}
 
-	const { content } = await compileMDX(post.fields.body)
+	try {
+		const { content } = await compileMDX(post.fields.body)
 
-	return (
-		<div className="">
-			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
-				{content}
-			</article>
-		</div>
-	)
+		return (
+			<div className="">
+				<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
+					{content}
+				</article>
+			</div>
+		)
+	} catch (error) {
+		// Log the error on the server side where it belongs
+		log.error('MDX compilation failed', {
+			error: error instanceof Error ? error.message : String(error),
+			postId: post.id,
+			postSlug: post.fields.slug,
+		})
+
+		// Re-throw the error so the error boundary can catch it
+		throw error
+	}
 }
 
 async function PostTitle({ post }: { post: Post | null }) {
