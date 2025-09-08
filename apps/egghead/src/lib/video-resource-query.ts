@@ -375,3 +375,23 @@ export async function detachVideoResourceFromPost(
 		return false
 	}
 }
+
+export async function getResourceOfVideoResource(
+	videoResourceId: VideoResource['id'],
+) {
+	const lessonVideoContentResourceResource =
+		await db.query.contentResourceResource.findFirst({
+			where: eq(contentResourceResource.resourceId, videoResourceId),
+		})
+
+	return await db.query.contentResource.findFirst({
+		where: and(
+			eq(
+				contentResource.id,
+				lessonVideoContentResourceResource?.resourceOfId || '',
+			),
+			eq(contentResource.type, 'post'),
+		),
+		orderBy: desc(contentResource.createdAt),
+	})
+}
