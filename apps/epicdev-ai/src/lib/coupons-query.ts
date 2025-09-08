@@ -39,12 +39,9 @@ export type CouponInput = z.infer<typeof CouponInputSchema>
 async function createOrFindMerchantCoupon(
 	percentageDiscount: number,
 ): Promise<string | null> {
-	if (percentageDiscount >= 1) {
-		return null
-	}
-
 	const percentageForStripe = Math.floor(percentageDiscount * 100)
 
+	// Check for existing merchant coupon first
 	const existingMerchantCoupon = await db.query.merchantCoupon.findFirst({
 		where: and(
 			eq(merchantCouponTable.percentageDiscount, percentageDiscount.toString()),
@@ -60,6 +57,7 @@ async function createOrFindMerchantCoupon(
 		return existingMerchantCoupon.id
 	}
 
+	// Get merchant account for creating new coupon
 	const merchantAccountRecord = await courseBuilderAdapter.getMerchantAccount({
 		provider: 'stripe',
 	})
@@ -71,7 +69,7 @@ async function createOrFindMerchantCoupon(
 	}
 
 	try {
-		// Create the coupon in Stripe
+		// Create the coupon in Stripe (works for any percentage including 100%)
 		const stripeCouponId =
 			await stripeProvider.options.paymentsAdapter.createCoupon({
 				duration: 'forever',
@@ -114,39 +112,41 @@ export async function createCoupon(input: CouponInput) {
 	if (ability.can('create', 'Content')) {
 		const percentageDiscount = Number(input.percentageDiscount)
 
-		const merchantCouponId =
-			await createOrFindMerchantCoupon(percentageDiscount)
+		try {
+			// For 100% off coupons, merchantCouponId will be null (no Stripe integration needed)
+			const merchantCouponId =
+				await createOrFindMerchantCoupon(percentageDiscount)
 
-		if (!merchantCouponId) {
-			await log.error('coupon.creation_failed', {
-				reason: 'Invalid discount percentage',
-				percentageDiscount: input.percentageDiscount,
+			const codesArray: string[] = []
+			await db.transaction(async (trx) => {
+				for (let i = 0; i < Number(input.quantity); i++) {
+					const id = `coupon_${guid()}`
+					await trx.insert(coupon).values({
+						...input,
+						merchantCouponId,
+						id,
+					})
+					codesArray.push(id)
+				}
 			})
-			return []
+
+			await log.info('coupon.created', {
+				quantity: input.quantity,
+				percentageDiscount: input.percentageDiscount,
+				merchantCouponId: merchantCouponId || 'null_for_100_percent_off',
+				couponIds: codesArray,
+			})
+
+			revalidatePath('/admin/coupons')
+			return codesArray
+		} catch (error) {
+			await log.error('coupon.creation_failed', {
+				reason: 'Exception during coupon creation',
+				percentageDiscount: input.percentageDiscount,
+				error: error instanceof Error ? error.message : 'Unknown error',
+			})
+			throw error
 		}
-
-		const codesArray: string[] = []
-		await db.transaction(async (trx) => {
-			for (let i = 0; i < Number(input.quantity); i++) {
-				const id = `coupon_${guid()}`
-				await trx.insert(coupon).values({
-					...input,
-					merchantCouponId,
-					id,
-				})
-				codesArray.push(id)
-			}
-		})
-
-		await log.info('coupon.created', {
-			quantity: input.quantity,
-			percentageDiscount: input.percentageDiscount,
-			merchantCouponId,
-			couponIds: codesArray,
-		})
-
-		revalidatePath('/admin/coupons')
-		return codesArray
 	}
 
 	return []
