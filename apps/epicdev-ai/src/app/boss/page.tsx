@@ -10,6 +10,7 @@ import CopyToClipboard from './components/copy-to-clipboard'
 const PAGE_SLUG = 'boss-letter'
 
 export async function generateMetadata(
+	props: {},
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const page = await getCachedPage(PAGE_SLUG)
