@@ -38,18 +38,18 @@ export async function updateResource(input: {
 		const newResource = await courseBuilderAdapter.createContentResource(input)
 
 		if (newResource) {
-			try {
-				await upsertPostToTypeSense(newResource, 'save')
-				console.log('resource.typesense.indexed', {
-					resourceId: newResource.id,
-					action: 'save',
-				})
-			} catch (error) {
-				console.error('resource.typesense.index.failed', {
-					error: getErrorMessage(error),
-					resourceId: newResource.id,
-				})
-			}
+			// try {
+			// 	await upsertPostToTypeSense(newResource, 'save')
+			// 	console.log('resource.typesense.indexed', {
+			// 		resourceId: newResource.id,
+			// 		action: 'save',
+			// 	})
+			// } catch (error) {
+			// 	console.error('resource.typesense.index.failed', {
+			// 		error: getErrorMessage(error),
+			// 		resourceId: newResource.id,
+			// 	})
+			// }
 		}
 
 		return newResource
@@ -82,20 +82,20 @@ export async function updateResource(input: {
 		})
 
 	if (updatedResource) {
-		try {
-			await upsertPostToTypeSense(updatedResource, 'save')
-			console.log('resource.update.typesense.success', {
-				resourceId: input.id,
-				action: 'save',
-				userId: user.id,
-			})
-		} catch (error) {
-			console.error('resource.update.typesense.failed', {
-				resourceId: input.id,
-				error: getErrorMessage(error),
-				userId: user.id,
-			})
-		}
+		// try {
+		// 	await upsertPostToTypeSense(updatedResource, 'save')
+		// 	console.log('resource.update.typesense.success', {
+		// 		resourceId: input.id,
+		// 		action: 'save',
+		// 		userId: user.id,
+		// 	})
+		// } catch (error) {
+		// 	console.error('resource.update.typesense.failed', {
+		// 		resourceId: input.id,
+		// 		error: getErrorMessage(error),
+		// 		userId: user.id,
+		// 	})
+		// }
 	}
 
 	console.log('resource.update.success', {
