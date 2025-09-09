@@ -2,7 +2,6 @@
 
 import { courseBuilderAdapter } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
-import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
 
@@ -18,7 +17,7 @@ export async function updateResource(input: {
 	const user = session?.user
 
 	if (!user || !ability.can('update', 'Content')) {
-		await log.error('resource.update.unauthorized', {
+		console.error('resource.update.unauthorized', {
 			resourceId: input.id,
 			userId: user?.id,
 		})
@@ -30,7 +29,7 @@ export async function updateResource(input: {
 	)
 
 	if (!currentResource) {
-		await log.info('resource.create.started', {
+		console.log('resource.create.started', {
 			resourceId: input.id,
 			type: input.type,
 			userId: user.id,
@@ -41,12 +40,12 @@ export async function updateResource(input: {
 		if (newResource) {
 			try {
 				await upsertPostToTypeSense(newResource, 'save')
-				await log.info('resource.typesense.indexed', {
+				console.log('resource.typesense.indexed', {
 					resourceId: newResource.id,
 					action: 'save',
 				})
 			} catch (error) {
-				await log.error('resource.typesense.index.failed', {
+				console.error('resource.typesense.index.failed', {
 					error: getErrorMessage(error),
 					resourceId: newResource.id,
 				})
@@ -61,7 +60,7 @@ export async function updateResource(input: {
 	if (input.fields.title !== currentResource?.fields?.title) {
 		const splitSlug = currentResource?.fields?.slug.split('~') || ['', guid()]
 		resourceSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
-		await log.info('resource.update.slug.changed', {
+		console.log('resource.update.slug.changed', {
 			resourceId: input.id,
 			oldSlug: currentResource.fields?.slug,
 			newSlug: resourceSlug,
@@ -85,13 +84,13 @@ export async function updateResource(input: {
 	if (updatedResource) {
 		try {
 			await upsertPostToTypeSense(updatedResource, 'save')
-			await log.info('resource.update.typesense.success', {
+			console.log('resource.update.typesense.success', {
 				resourceId: input.id,
 				action: 'save',
 				userId: user.id,
 			})
 		} catch (error) {
-			await log.error('resource.update.typesense.failed', {
+			console.error('resource.update.typesense.failed', {
 				resourceId: input.id,
 				error: getErrorMessage(error),
 				userId: user.id,
@@ -99,7 +98,7 @@ export async function updateResource(input: {
 		}
 	}
 
-	await log.info('resource.update.success', {
+	console.log('resource.update.success', {
 		resourceId: input.id,
 		userId: user.id,
 		changes: Object.keys(input.fields),
