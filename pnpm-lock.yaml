@@ -3414,7 +3414,7 @@ importers:
         specifier: ^6.5.0
         version: 6.7.3
       '@codemirror/view':
-        specifier: 6.36.5
+        specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/adapter-drizzle':
         specifier: workspace:*
