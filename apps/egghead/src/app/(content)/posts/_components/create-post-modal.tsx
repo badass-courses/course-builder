@@ -141,13 +141,7 @@ export function CreatePostModal({
 						</DialogTitle>
 					</DialogHeader>
 				)}
-				<CreatePost
-					onResourceCreated={handleResourceCreated}
-					defaultResourceType={defaultResourceType}
-					availableResourceTypes={availableResourceTypes}
-					topLevelResourceTypes={topLevelResourceTypes}
-					uploadEnabled={uploadEnabled}
-				/>
+				<CreatePost />
 			</DialogContent>
 		</Dialog>
 	)

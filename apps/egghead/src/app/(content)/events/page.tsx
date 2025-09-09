@@ -34,7 +34,7 @@ export default async function EventsPage() {
 				</p>
 			</div>
 
-			{events?.length > 0 ? (
+			{events?.length && events?.length > 0 ? (
 				<div className="space-y-8">
 					<section>
 						<h2 className="mb-4 text-2xl font-semibold">Upcoming Events</h2>
@@ -45,7 +45,7 @@ export default async function EventsPage() {
 						</div>
 					</section>
 
-					{pastEvents.length > 0 && (
+					{pastEvents?.length && pastEvents?.length > 0 && (
 						<section className="mt-12">
 							<h2 className="text-muted-foreground mb-4 text-2xl font-semibold">
 								Past Events
