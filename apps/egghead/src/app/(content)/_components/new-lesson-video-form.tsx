@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { addVideoResourceToLesson } from '@/lib/lessons-query'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 
 import { PostUploader } from '../posts/_components/post-uploader'
