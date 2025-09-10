@@ -120,7 +120,7 @@ export function GetAccessButton({
 	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
 	const cohort = workshopNavigation?.cohorts[0]
-	if (canView) return null
+	if (canView || !cohort) return null
 
 	return (
 		<Button
