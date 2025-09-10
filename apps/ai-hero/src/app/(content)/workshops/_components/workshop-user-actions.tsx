@@ -44,7 +44,7 @@ export function StartLearningWorkshopButton({
 	const { canViewWorkshop: canView, isPendingOpenAccess } =
 		React.use(abilityLoader)
 
-	if (isPendingOpenAccess) {
+	if (isPendingOpenAccess && workshop?.fields?.startsAt) {
 		const formattedDate = formatInTimeZone(
 			new Date(workshop?.fields?.startsAt || ''),
 			'America/Los_Angeles',

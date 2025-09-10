@@ -45,10 +45,10 @@ export function Transcript({
 		<Accordion type="single" collapsible className="">
 			<AccordionItem
 				value="transcript"
-				className="rounded border bg-transparent p-5"
+				className="last:border-b-1 rounded border bg-transparent px-5"
 			>
 				<AccordionTrigger className="flex w-full items-center justify-start gap-2 text-lg font-medium sm:text-xl">
-					<FileText className="size-4 opacity-75" /> Video Transcript
+					<FileText className="rotate-0! size-4 opacity-75" /> Video Transcript
 				</AccordionTrigger>
 				<AccordionContent>
 					<ReactMarkdown
