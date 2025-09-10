@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { Post } from '@/lib/posts/types'
 import { getOGImageUrlForResourceAPI } from '@/utils/get-og-image-url-for-resource'
 import type { UseFormReturn } from 'react-hook-form'
 
@@ -16,16 +15,21 @@ import { Label } from '@coursebuilder/ui/primitives/label'
 /**
  * Renders a form field for editing the social image metadata, with an optional editable input for custom URL.
  * @param {UseFormReturn<any>} form - The form instance from react-hook-form.
- * @param {Post} post - A Post
+ * @param {OgImageResource} post - Resource with id, updatedAt, optional slug
  * @param {boolean} [hidden=true] - Whether the custom input should be hidden by default.
  */
+type OgImageResource = {
+	id: string
+	updatedAt?: Date | string | null
+	fields?: { slug?: string | null } | null
+}
 export function MetadataFieldogImage({
 	form,
 	post,
 	hidden = true,
 }: {
 	form: UseFormReturn<any>
-	post: Post
+	post: OgImageResource
 	hidden?: boolean
 }) {
 	const [isEditing, setIsEditing] = React.useState(false) // Toggle for showing input

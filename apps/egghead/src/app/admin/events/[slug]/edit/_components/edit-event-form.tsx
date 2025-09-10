@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { MetadataFieldogImage } from '@/app/(content)/posts/_components/metadata-field-social-image'
 import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
 import { TagField } from '@/app/(content)/posts/_components/tag-field'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
@@ -555,10 +556,10 @@ const EventFormFields = ({
 					</FormItem>
 				)}
 			/>
-			<MetadataFieldSocialImage
+			<MetadataFieldogImage
 				form={form}
-				// Ensure form.getValues() is safe to call
-				currentSocialImage={getOGImageUrlForResource(form.getValues() as Event)}
+				post={form.getValues() as Event}
+				hidden={false}
 			/>
 		</>
 	)
