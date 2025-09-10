@@ -225,13 +225,20 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight',
+														'hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
 														{
 															'bg-muted': isActiveGroup,
 														},
 													)}
 												>
-													<h3 className="pr-2">{resource.title}</h3>
+													<div className="flex w-full items-center">
+														<h3 className="pr-2">{resource.title}</h3>
+														{resource.resources.length > 0 && (
+															<span className="self-end text-sm font-normal opacity-50">
+																({resource.resources.length})
+															</span>
+														)}
+													</div>
 												</AccordionTrigger>
 												{resource.resources.length > 0 && (
 													// section lessons
