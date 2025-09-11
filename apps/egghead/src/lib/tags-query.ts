@@ -12,6 +12,7 @@ import {
 	EggheadDbTagSchema,
 	EggheadTag,
 	EggheadTagSchema,
+	Tag,
 } from './tags'
 
 /*
@@ -40,7 +41,7 @@ CREATE TABLE "public"."tags" (
 );
 */
 
-export async function getTags(): Promise<EggheadTag[]> {
+export async function getTags(): Promise<Tag[]> {
 	const tags = await db.query.tag.findMany()
 	return z.array(EggheadTagSchema).parse(tags)
 }
@@ -99,55 +100,43 @@ const CreateTagSchema = z.object({
 	fields: z.object({
 		name: z.string(),
 		label: z.string(),
-		description: z.string().nullable(),
+		description: z.string().nullish(),
 		slug: z.string(),
-		image_url: z.string().url().nullable(),
-		contexts: z.array(z.string()),
-		url: z.string().nullable(),
-		popularity_order: z.number().nullable(),
+		image_url: z.string().url().nullish(),
+		contexts: z.array(z.string()).nullish(),
+		url: z.string().nullish(),
+		popularity_order: z.number().nullish(),
 	}),
 })
 
 type CreateTagInput = z.infer<typeof CreateTagSchema>
 
-export async function createTag(input: CreateTagInput): Promise<EggheadTag> {
+export async function createTag(input: CreateTagInput): Promise<Tag> {
 	// Validate input
 	const validatedInput = CreateTagSchema.parse(input)
 
-	// Insert into PostgreSQL
-	const pgResult = await eggheadPgQuery(
-		`
-    INSERT INTO tags (name, label, description, slug, image_file_name, url, context, popularity_order)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING id, updated_at
-  `,
-		[
-			validatedInput.fields.name,
-			validatedInput.fields.label,
-			validatedInput.fields.description,
-			validatedInput.fields.slug,
-			validatedInput.fields.image_url,
-			validatedInput.fields.url,
-			validatedInput.fields.contexts.join(','),
-			validatedInput.fields.popularity_order,
-		],
-	)
+	// Generate a unique ID for the new tag
+	const id = `tag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-	const { id, updated_at } = pgResult.rows[0]
-
-	// Construct the tag object
+	// Create egghead tag
 	const newTag: EggheadTag = {
-		id: `tag_${id}`,
+		id,
 		type: 'topic',
 		fields: {
-			...validatedInput.fields,
-			id: Number(id),
+			name: validatedInput.fields.name,
+			label: validatedInput.fields.label,
+			description: validatedInput.fields.description ?? null,
+			slug: validatedInput.fields.slug,
+			image_url: validatedInput.fields.image_url ?? null,
+			contexts: validatedInput.fields.contexts ?? [],
+			url: validatedInput.fields.url ?? null,
+			popularity_order: validatedInput.fields.popularity_order ?? null,
 		},
-		createdAt: updated_at,
-		updatedAt: updated_at,
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	}
 
-	// Insert into Drizzle ORM database
+	// Insert into database
 	await db.insert(tagTable).values(newTag)
 
 	return newTag

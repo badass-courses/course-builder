@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { productSchema } from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 
 // Schema exports
@@ -105,3 +106,18 @@ export const MinimalPostSchema = z.object({
 		)
 		.optional(),
 })
+
+export const ProductForPostPropsSchema = z.object({
+	availableBonuses: z.array(z.any()).default([]),
+	purchaseCount: z.number().optional(),
+	quantityAvailable: z.number().default(-1),
+	totalQuantity: z.number().optional(),
+	product: productSchema,
+	pricingDataLoader: z.any(),
+	purchases: z.array(z.any()).optional(),
+	hasPurchasedCurrentProduct: z.boolean().optional(),
+	existingPurchase: z.any().optional(),
+	session: z.any().optional(),
+})
+
+export type ProductForPostProps = z.infer<typeof ProductForPostPropsSchema>
