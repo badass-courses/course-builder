@@ -755,7 +755,8 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 			userId: user.id,
 		})
 	}
-
+	// invalidate lesson cache
+	revalidateTag('lesson')
 	try {
 		await upsertPostToTypeSense(
 			{
