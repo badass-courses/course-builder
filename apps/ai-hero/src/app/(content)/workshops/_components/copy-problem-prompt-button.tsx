@@ -55,18 +55,16 @@ export function CopyProblemPromptButton({
 
 	const isSolutionLesson = lesson?.type === 'solution'
 
-	const body = isSolutionLesson ? problem?.fields?.body : lesson.fields?.body
+	const prompt = problem?.fields?.prompt || lesson.fields?.prompt
 
-	const isProblemOrSolution = isSolutionLesson || isProblemLesson
-
-	if (!isProblemOrSolution) {
+	if (!prompt) {
 		return null
 	}
 
 	const handleCopy = async () => {
 		// Access body via lesson.fields.body
-		if (body) {
-			await navigator.clipboard.writeText(body)
+		if (prompt) {
+			await navigator.clipboard.writeText(prompt)
 			track('Problem Prompt Copied', { lessonId: lesson.id })
 			setCopied(true)
 			setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds
