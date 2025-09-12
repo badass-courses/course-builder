@@ -57,6 +57,7 @@ export const createWorkshopLessonFormConfig = (
 			gitpod: lesson?.fields?.gitpod || '',
 			thumbnailTime: lesson?.fields?.thumbnailTime || 0,
 			optional: lesson?.fields?.optional || false,
+			prompt: lesson?.fields?.prompt || '',
 		},
 		tags: lesson?.tags || [],
 	}),
@@ -91,6 +92,7 @@ export const createWorkshopLessonFormConfig = (
 					github: resource.fields?.github || '',
 					thumbnailTime: resource.fields?.thumbnailTime || 0,
 					optional: resource.fields?.optional || false,
+					prompt: resource.fields?.prompt || '',
 				},
 				tags: resource.tags || [],
 			}
@@ -144,6 +146,7 @@ export const createWorkshopLessonFormConfig = (
 				github: resource.fields.github || '',
 				thumbnailTime: resource.fields.thumbnailTime || 0,
 				optional: resource.fields.optional || false,
+				prompt: resource.fields.prompt || '',
 			},
 			tags: resource.tags || [],
 		}

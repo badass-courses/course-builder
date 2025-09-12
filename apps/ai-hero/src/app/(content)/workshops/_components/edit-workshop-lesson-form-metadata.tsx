@@ -1,21 +1,24 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { ContentVideoResourceField } from '@/components/content/content-video-resource-field'
 import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Lesson, type LessonSchema } from '@/lib/lessons'
 import { api } from '@/trpc/react'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { EditorView, type Command } from '@codemirror/view'
+import MarkdownEditor, { ICommand } from '@uiw/react-markdown-editor'
 import {
 	Pencil,
 	PencilIcon,
 	Plus,
 	PlusCircle,
+	PlusIcon,
 	Sparkles,
 	Trash,
 } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import type { UseFormReturn } from 'react-hook-form'
 import ReactMarkdown from 'react-markdown'
 import { z } from 'zod'
@@ -24,6 +27,11 @@ import { VideoResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Checkbox,
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
 	FormDescription,
 	FormField,
 	FormItem,
@@ -33,6 +41,10 @@ import {
 	ScrollArea,
 	Textarea,
 } from '@coursebuilder/ui'
+import {
+	CourseBuilderEditorThemeDark,
+	CourseBuilderEditorThemeLight,
+} from '@coursebuilder/ui/codemirror/editor'
 import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
@@ -125,6 +137,8 @@ export const LessonMetadataFormFields: React.FC<{
 		})
 	}
 
+	const { theme } = useTheme()
+
 	return (
 		<>
 			{/* Video Section */}
@@ -179,6 +193,50 @@ export const LessonMetadataFormFields: React.FC<{
 				)}
 			/>
 			<TagField resource={lesson} showEditButton />
+			<FormField
+				control={form.control}
+				name="fields.prompt"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">Prompt</FormLabel>
+						<FormDescription>Used by the "Copy prompt" button.</FormDescription>
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button variant="outline" className="w-full max-w-full">
+									{field.value ? (
+										<PencilIcon className="mr-1 size-3" />
+									) : (
+										<PlusIcon className="mr-1 size-3" />
+									)}
+									<span className="truncate overflow-ellipsis">
+										{field.value || 'Add Prompt'}
+									</span>
+								</Button>
+							</DialogTrigger>
+							<DialogContent className="flex max-h-[80vh] min-h-[300px] w-full flex-col">
+								<DialogHeader>
+									<DialogTitle>Lesson Prompt</DialogTitle>
+								</DialogHeader>
+								<MarkdownEditor
+									className="w-full overflow-y-auto"
+									value={field.value || ''}
+									minHeight="300px"
+									onChange={(value) => field.onChange(value)}
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+								/>
+							</DialogContent>
+						</Dialog>
+
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 			<FormField
 				control={form.control}
 				name="fields.optional"
