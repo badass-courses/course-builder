@@ -1,5 +1,3 @@
-import SubscribeToConvertkitForm, {
-	redirectUrlBuilder,
-} from './convertkit-subscribe-form'
+import SubscribeToConvertkitForm from './convertkit-subscribe-form'
 
-export { SubscribeToConvertkitForm, redirectUrlBuilder }
+export { SubscribeToConvertkitForm }
