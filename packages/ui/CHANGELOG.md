@@ -1,5 +1,17 @@
 # @coursebuilder/ui
 
+## 2.0.8
+
+### Patch Changes
+
+- [#549](https://github.com/badass-courses/course-builder/pull/549)
+  [`14a6804`](https://github.com/badass-courses/course-builder/commit/14a68045e0051ce54fb129ff5bce37a371788f3d)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade accordion to
+  latest
+
+- [`9a1d398`](https://github.com/badass-courses/course-builder/commit/9a1d398b6471b4a17764a5c8bbe6648926fd8014)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - style tweaks
+
 ## 2.0.7
 
 ### Patch Changes
