@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { revalidateTag } from 'next/cache'
 import { useRouter } from 'next/navigation'
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import type { Workshop, WorkshopRaw, WorkshopSchema } from '@/lib/workshops'
@@ -28,6 +29,8 @@ export function EditWorkshopForm({ workshop }: { workshop: Workshop }) {
 					// Use the workshop slug and path
 					router.push(`/workshops/${resource.fields?.slug}/edit`)
 				}
+				// invalidate lesson cache
+				revalidateTag('lesson')
 			},
 			// You might need to re-define or adjust customTools here if they were
 			// dependent on props passed to EditWorkshopForm, though in this case
