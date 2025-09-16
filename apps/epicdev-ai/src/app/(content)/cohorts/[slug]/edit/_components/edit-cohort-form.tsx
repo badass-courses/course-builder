@@ -24,6 +24,7 @@ import {
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 
 import { cohortFormConfig } from './cohort-form-config'
+import { OfficeHoursField } from './office-hours-field'
 
 /**
  * Cohort form fields component
@@ -130,6 +131,8 @@ function CohortFormFields({
 					</FormItem>
 				)}
 			/>
+
+			<OfficeHoursField form={form} cohort={resource} />
 		</EditResourcesMetadataFields>
 	)
 }
