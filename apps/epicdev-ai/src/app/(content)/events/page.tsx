@@ -84,7 +84,12 @@ async function EventsList() {
 		.array(z.union([EventSchema, EventSeriesSchema]))
 		.parse(eventsModule)
 
-	const events = [...parsedEventsModule].filter((event) => {
+	// Filter out office hours events (they have eventType: 'office-hours' in their fields)
+	const nonOfficeHourEvents = parsedEventsModule.filter((event) => {
+		return event?.fields?.eventType !== 'office-hours'
+	})
+
+	const events = [...nonOfficeHourEvents].filter((event) => {
 		if (ability.can('create', 'Content')) {
 			return event
 		} else {
@@ -92,7 +97,7 @@ async function EventsList() {
 		}
 	})
 
-	const publicEvents = [...eventsModule].filter(
+	const publicEvents = [...nonOfficeHourEvents].filter(
 		(event) => event?.fields?.visibility === 'public',
 	)
 

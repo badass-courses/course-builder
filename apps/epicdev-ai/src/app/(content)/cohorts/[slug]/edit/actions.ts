@@ -12,6 +12,10 @@ import {
 
 import { ContentResource } from '@coursebuilder/core/schemas'
 
+const isError = (error: unknown): error is Error => {
+	return error instanceof Error
+}
+
 export const onCohortSave = async (resource: ContentResource) => {
 	'use server'
 	revalidatePath(`/cohorts/${resource.fields?.slug}`)
@@ -31,7 +35,10 @@ export async function createOfficeHourEventsAction(
 		return { success: true, eventIds: createdEventIds }
 	} catch (error) {
 		console.error('Server action error:', error)
-		return { success: false, error: error.message }
+		return {
+			success: false,
+			error: isError(error) ? error.message : 'Unknown error',
+		}
 	}
 }
 
@@ -46,7 +53,10 @@ export async function updateOfficeHourEventAction(
 		return { success: true }
 	} catch (error) {
 		console.error('Server action error:', error)
-		return { success: false, error: error.message }
+		return {
+			success: false,
+			error: isError(error) ? error.message : 'Unknown error',
+		}
 	}
 }
 
@@ -61,6 +71,9 @@ export async function deleteOfficeHourEventAction(
 		return { success: true }
 	} catch (error) {
 		console.error('Server action error:', error)
-		return { success: false, error: error.message }
+		return {
+			success: false,
+			error: isError(error) ? error.message : 'Unknown error',
+		}
 	}
 }

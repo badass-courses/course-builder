@@ -9,6 +9,8 @@ import {
 	organizationMemberships,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { RESOURCE_CREATED_EVENT } from '@/inngest/events/resource-management'
+import { inngest } from '@/inngest/inngest.server'
 import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -315,17 +317,19 @@ export async function createOfficeHourEvents(
 				fields: {
 					title: event.title,
 					description: event.description || '',
-					slug: `${cohort.fields.slug}-office-hours-${event.id}`,
+					slug: `${cohort.fields?.slug || cohort.id}-office-hours-${event.id}`,
 					state: 'published',
 					visibility: 'unlisted',
 					startsAt: event.startsAt,
 					endsAt: event.endsAt,
-					timezone: cohort.fields.timezone || 'America/Los_Angeles',
+					timezone: cohort.fields?.timezone || 'America/Los_Angeles',
 					attendeeInstructions: event.attendeeInstructions || '',
 					status: event.status,
+					// Add metadata to identify this as an office hours event
+					eventType: 'office-hours',
+					cohortId: cohortId,
 				},
 				createdById: cohort.createdById,
-				updatedById: cohort.updatedById,
 			})
 
 			// Link event to cohort via contentResourceResource
@@ -344,13 +348,35 @@ export async function createOfficeHourEvents(
 				})
 			}
 
+			// Send Inngest event to trigger calendar sync
+			try {
+				console.log(
+					`Dispatching ${RESOURCE_CREATED_EVENT} for office hours event: ${eventId} (type: event)`,
+				)
+				await inngest.send({
+					name: RESOURCE_CREATED_EVENT,
+					data: {
+						id: eventId,
+						type: 'event',
+					},
+				})
+			} catch (inngestError) {
+				console.error(
+					`Error dispatching ${RESOURCE_CREATED_EVENT} for office hours event ${eventId}:`,
+					inngestError,
+				)
+				// Don't fail the entire creation if Inngest dispatch fails
+			}
+
 			createdEventIds.push(eventId)
 		}
 
 		return createdEventIds
 	} catch (error) {
 		console.error('Failed to create office hour events:', error)
-		throw new Error(`Failed to create office hour events: ${error.message}`)
+		throw new Error(
+			`Failed to create office hour events: ${error instanceof Error ? error.message : String(error)}`,
+		)
 	}
 }
 
@@ -394,9 +420,31 @@ export async function updateOfficeHourEvent(
 				updatedAt: new Date(),
 			})
 			.where(eq(contentResource.id, eventId))
+
+		// Send Inngest event to trigger calendar sync for updates
+		try {
+			console.log(
+				`Dispatching resource/updated for office hours event: ${eventId} (type: event)`,
+			)
+			await inngest.send({
+				name: 'resource/updated',
+				data: {
+					id: eventId,
+					type: 'event',
+				},
+			})
+		} catch (inngestError) {
+			console.error(
+				`Error dispatching resource/updated for office hours event ${eventId}:`,
+				inngestError,
+			)
+			// Don't fail the entire update if Inngest dispatch fails
+		}
 	} catch (error) {
 		console.error('Failed to update office hour event:', error)
-		throw new Error(`Failed to update office hour event: ${error.message}`)
+		throw new Error(
+			`Failed to update office hour event: ${error instanceof Error ? error.message : String(error)}`,
+		)
 	}
 }
 
@@ -445,7 +493,9 @@ export async function deleteOfficeHourEvent(
 			)
 	} catch (error) {
 		console.error('Failed to delete office hour event:', error)
-		throw new Error(`Failed to delete office hour event: ${error.message}`)
+		throw new Error(
+			`Failed to delete office hour event: ${error instanceof Error ? error.message : String(error)}`,
+		)
 	}
 }
 
@@ -487,7 +537,9 @@ export async function getOfficeHourEvents(
 		})
 	} catch (error) {
 		console.error('Failed to get office hour events:', error)
-		throw new Error(`Failed to get office hour events: ${error.message}`)
+		throw new Error(
+			`Failed to get office hour events: ${error instanceof Error ? error.message : String(error)}`,
+		)
 	}
 }
 
@@ -523,6 +575,8 @@ export async function enableCohortOfficeHours(cohortId: string): Promise<void> {
 			.where(eq(contentResource.id, cohortId))
 	} catch (error) {
 		console.error('Failed to enable office hours:', error)
-		throw new Error(`Failed to enable office hours: ${error.message}`)
+		throw new Error(
+			`Failed to enable office hours: ${error instanceof Error ? error.message : String(error)}`,
+		)
 	}
 }

@@ -28,6 +28,8 @@ export const EventFieldsSchema = z.object({
 	endsAt: z.string().datetime().nullable().optional(),
 	timezone: z.string().default('America/Los_Angeles').nullish(),
 	attendeeInstructions: z.string().nullable().optional(),
+	eventType: z.enum(['standard', 'office-hours']).optional(),
+	cohortId: z.string().optional(),
 })
 
 /**

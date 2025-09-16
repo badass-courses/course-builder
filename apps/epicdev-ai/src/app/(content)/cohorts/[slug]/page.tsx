@@ -536,6 +536,7 @@ export default async function CohortPage(props: {
 								<OfficeHoursSection
 									events={cohort.fields.officeHours.events}
 									hasPurchased={hasPurchasedCurrentProduct}
+									canEdit={ability.can('update', 'Content')}
 								/>
 							)}
 					</div>

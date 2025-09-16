@@ -37,6 +37,7 @@ function CohortFormFields({
 
 	return (
 		<EditResourcesMetadataFields form={form}>
+			<OfficeHoursField form={form} cohort={resource} />
 			<div className="px-5">
 				<FormLabel>Cover Image</FormLabel>
 				{form.watch('fields.image') && <img src={form.watch('fields.image')} />}
@@ -131,8 +132,6 @@ function CohortFormFields({
 					</FormItem>
 				)}
 			/>
-
-			<OfficeHoursField form={form} cohort={resource} />
 		</EditResourcesMetadataFields>
 	)
 }

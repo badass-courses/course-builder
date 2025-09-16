@@ -7,6 +7,7 @@ import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
 import { getEventOrEventSeries } from '@/lib/events-query'
@@ -14,6 +15,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { formatInTimeZone } from 'date-fns-tz'
+import { eq } from 'drizzle-orm'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 import { z } from 'zod'
 
@@ -76,6 +78,43 @@ export default async function EventPage(props: {
 		notFound()
 	}
 
+	// Handle office hours events separately
+	const isOfficeHours = event?.fields?.eventType === 'office-hours'
+	const { ability, session } = await getServerAuthSession()
+	let cohort = null
+	let hasAccess = false
+
+	if (isOfficeHours && event?.fields?.cohortId) {
+		// Get the cohort this office hours belongs to
+		cohort = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, event.fields.cohortId),
+			with: {
+				resourceProducts: {
+					with: {
+						product: true,
+					},
+				},
+			},
+		})
+
+		// Check if user has purchased the cohort
+		if (session?.user?.id && cohort) {
+			const cohortProduct = cohort.resourceProducts?.[0]?.product
+			if (cohortProduct) {
+				const purchase = await courseBuilderAdapter.getPurchaseForProduct({
+					userId: session.user.id,
+					productId: cohortProduct.id,
+				})
+				hasAccess = !!purchase
+			}
+		}
+
+		// Admins always have access
+		if (ability.can('update', 'Content')) {
+			hasAccess = true
+		}
+	}
+
 	const productParsed = productSchema.safeParse(
 		first(event.resourceProducts)?.product,
 	)
@@ -112,10 +151,16 @@ export default async function EventPage(props: {
 	)
 
 	const { content: eventBody } = await compileMDX(body || '', {
-		EventPricing: (props) => <EventPricing post={event} {...props} />,
-		BuyTicketButton: (props) => (
-			<EventPricingButton post={event} {...props} className="hidden lg:flex" />
-		),
+		EventPricing: (props) =>
+			!isOfficeHours ? <EventPricing post={event} {...props} /> : null,
+		BuyTicketButton: (props) =>
+			!isOfficeHours ? (
+				<EventPricingButton
+					post={event}
+					{...props}
+					className="hidden lg:flex"
+				/>
+			) : null,
 	})
 
 	const IS_SERIES = Boolean(
@@ -140,10 +185,20 @@ export default async function EventPage(props: {
 					/>
 				</React.Suspense>
 				<Link
-					href="/events"
+					href={
+						isOfficeHours && cohort
+							? `/cohorts/${cohort.fields?.slug}`
+							: '/events'
+					}
 					className="bg-primary/20 text-primary mb-2 inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-sm font-semibold"
 				>
-					<span>{IS_SERIES ? 'Event Series' : 'Event'}</span>
+					<span>
+						{isOfficeHours
+							? 'Cohort Office Hours'
+							: IS_SERIES
+								? 'Event Series'
+								: 'Event'}
+					</span>
 				</Link>
 				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
 					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
@@ -157,40 +212,66 @@ export default async function EventPage(props: {
 				</div>
 			</header>
 			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12">
-				<div className="col-span-8 flex w-full flex-col">
-					{/* Attendee instructions with purchase data promise */}
-					<React.Suspense fallback={null}>
-						<AttendeeInstructions
-							attendeeInstructions={attendeeInstructions}
-							purchaseDataPromise={purchaseDataPromise}
-						/>
-					</React.Suspense>
-					{hasVideo && <PlayerContainer event={event} />}
-					<Contributor className="justify-center sm:justify-start" />
-					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
-						{eventBody}
-					</article>
-				</div>
-				<EventSidebar>
-					<EventDetails events={IS_SERIES ? events || [event] : [event]} />
-					<React.Suspense
-						fallback={
-							<div className="flex items-center justify-center p-6 py-12">
-								<Spinner className="size-8" />
+				{isOfficeHours && !hasAccess ? (
+					<div className="col-span-12">
+						<div className="mx-auto max-w-2xl text-center">
+							<div className="bg-card rounded-lg border p-8 shadow-sm">
+								<h2 className="mb-4 text-2xl font-bold">Cohort Members Only</h2>
+								<p className="text-muted-foreground mb-6">
+									This office hours session is part of the{' '}
+									{cohort?.fields?.title || 'cohort'} program. To access this
+									content, you need to purchase the cohort.
+								</p>
+								{cohort && (
+									<Button asChild size="lg">
+										<Link href={`/cohorts/${cohort.fields?.slug}`}>
+											View Cohort Details
+										</Link>
+									</Button>
+								)}
 							</div>
-						}
-					>
-						<PurchasedTicketInfo
-							event={event}
-							eventDate={eventDate}
-							IS_SERIES={IS_SERIES}
-							purchaseDataPromise={purchaseDataPromise}
-						/>
-						<EventPricingWidgetClient
-							purchaseDataPromise={purchaseDataPromise}
-						/>
-					</React.Suspense>
-				</EventSidebar>
+						</div>
+					</div>
+				) : (
+					<>
+						<div className="col-span-8 flex w-full flex-col">
+							{/* Attendee instructions with purchase data promise */}
+							<React.Suspense fallback={null}>
+								<AttendeeInstructions
+									attendeeInstructions={attendeeInstructions}
+									purchaseDataPromise={purchaseDataPromise}
+								/>
+							</React.Suspense>
+							{hasVideo && <PlayerContainer event={event} />}
+							<Contributor className="justify-center sm:justify-start" />
+							<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
+								{eventBody}
+							</article>
+						</div>
+						<EventSidebar>
+							<EventDetails events={IS_SERIES ? events || [event] : [event]} />
+							{!isOfficeHours && (
+								<React.Suspense
+									fallback={
+										<div className="flex items-center justify-center p-6 py-12">
+											<Spinner className="size-8" />
+										</div>
+									}
+								>
+									<PurchasedTicketInfo
+										event={event}
+										eventDate={eventDate}
+										IS_SERIES={IS_SERIES}
+										purchaseDataPromise={purchaseDataPromise}
+									/>
+									<EventPricingWidgetClient
+										purchaseDataPromise={purchaseDataPromise}
+									/>
+								</React.Suspense>
+							)}
+						</EventSidebar>
+					</>
+				)}
 			</main>
 		</LayoutClient>
 	)

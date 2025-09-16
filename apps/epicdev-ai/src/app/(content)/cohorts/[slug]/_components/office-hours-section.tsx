@@ -1,12 +1,14 @@
 'use client'
 
 import * as React from 'react'
+import Link from 'next/link'
 import { OfficeHourEvent } from '@/lib/cohort'
 import { format, isPast } from 'date-fns'
-import { Calendar, Clock, Users } from 'lucide-react'
+import { Calendar, Clock, Edit, Users } from 'lucide-react'
 
 import {
 	Badge,
+	Button,
 	Card,
 	CardContent,
 	CardDescription,
@@ -17,11 +19,13 @@ import {
 interface OfficeHoursSectionProps {
 	events: OfficeHourEvent[]
 	hasPurchased?: boolean
+	canEdit?: boolean
 }
 
 export function OfficeHoursSection({
 	events,
 	hasPurchased = false,
+	canEdit = false,
 }: OfficeHoursSectionProps) {
 	if (!events || events.length === 0) {
 		return null
@@ -58,6 +62,7 @@ export function OfficeHoursSection({
 									key={event.id}
 									event={event}
 									hasPurchased={hasPurchased}
+									canEdit={canEdit}
 								/>
 							))}
 						</div>
@@ -75,6 +80,7 @@ export function OfficeHoursSection({
 									key={event.id}
 									event={event}
 									hasPurchased={hasPurchased}
+									canEdit={canEdit}
 									isPast={true}
 								/>
 							))}
@@ -94,12 +100,14 @@ export function OfficeHoursSection({
 interface OfficeHourEventCardProps {
 	event: OfficeHourEvent
 	hasPurchased?: boolean
+	canEdit?: boolean
 	isPast?: boolean
 }
 
 function OfficeHourEventCard({
 	event,
 	hasPurchased = false,
+	canEdit = false,
 	isPast = false,
 }: OfficeHourEventCardProps) {
 	const startDate = new Date(event.startsAt)
@@ -120,9 +128,23 @@ function OfficeHourEventCard({
 							{format(startDate, 'EEEE, MMMM d, yyyy')}
 						</CardDescription>
 					</div>
-					<Badge variant={isPast ? 'outline' : 'default'} className="text-xs">
-						{isPast ? 'Completed' : event.status}
-					</Badge>
+					<div className="flex items-center gap-2">
+						{canEdit && (
+							<Button asChild size="sm" variant="ghost" className="size-8 p-0">
+								<Link
+									href={`/events/${event.id}/edit`}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									<Edit className="size-4" />
+									<span className="sr-only">Edit office hours event</span>
+								</Link>
+							</Button>
+						)}
+						<Badge variant={isPast ? 'outline' : 'default'} className="text-xs">
+							{isPast ? 'Completed' : event.status}
+						</Badge>
+					</div>
 				</div>
 			</CardHeader>
 			<CardContent className="pt-0">
