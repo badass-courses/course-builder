@@ -35,7 +35,7 @@ export async function getSolutionForLesson(
 		throw new SolutionError('Unauthorized', 401)
 	}
 
-	const solution = await getSolutionForLessonQuery(lessonId)
+	const solution = await getSolutionForLessonQuery(lesson.id)
 
 	if (!solution) {
 		console.log('❌ Solution not found:', lessonId)

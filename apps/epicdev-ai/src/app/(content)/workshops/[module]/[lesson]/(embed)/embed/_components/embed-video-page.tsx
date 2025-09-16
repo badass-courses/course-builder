@@ -11,10 +11,15 @@ import {
 	getSolutionForLesson,
 	getVideoResourceForSolution,
 } from '@/lib/solutions-query'
-import { getWorkshopProduct } from '@/lib/workshops-query'
+import {
+	getCachedMinimalWorkshop,
+	getWorkshopCohort,
+	getWorkshopProduct,
+} from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
+import { formatInTimeZone } from 'date-fns-tz'
 import { eq, sql } from 'drizzle-orm'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -109,6 +114,12 @@ export async function EmbedVideoPage({
 	// Get workshop product for purchase deadline information
 	const workshopProduct = await getWorkshopProduct(moduleSlug)
 
+	// Get workshop resource for startsAt information
+	const workshopResource = await getCachedMinimalWorkshop(moduleSlug)
+
+	// Get cohort resource if this workshop is part of a cohort
+	const cohortResource = await getWorkshopCohort(moduleSlug)
+
 	// Check permissions
 	if (!user || !abilityForResource.canViewLesson) {
 		await log.info('embed_video_unauthorized_access', {
@@ -127,6 +138,10 @@ export async function EmbedVideoPage({
 					lessonSlug={lessonSlug}
 					moduleSlug={moduleSlug}
 					workshopProduct={workshopProduct}
+					workshopResource={workshopResource}
+					cohortResource={cohortResource}
+					hasAccess={!!user && abilityForResource.canViewLesson}
+					isAdmin={abilityForResource.canCreate}
 				/>
 				{thumbnailUrl && (
 					<Image
@@ -138,6 +153,53 @@ export async function EmbedVideoPage({
 				)}
 			</EmbedContainer>
 		)
+	}
+
+	// Check if user has access but workshop hasn't started yet (unless they're an admin)
+	const startsAt = workshopResource?.fields?.startsAt
+	if (startsAt && !abilityForResource.canCreate) {
+		// Properly handle timezone comparison - get current time in workshop timezone to compare with stored date
+		const timezone = workshopResource?.fields?.timezone || 'America/Los_Angeles'
+		const nowInTZ = new Date(
+			formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+		)
+		const startsAtDate = new Date(startsAt)
+
+		if (startsAtDate > nowInTZ) {
+			await log.info('embed_video_workshop_not_opened_yet', {
+				lessonSlug,
+				moduleSlug,
+				resourceType,
+				userId: user.id,
+				workshopStartsAt: startsAt,
+			})
+
+			return (
+				<EmbedContainer
+					lessonSlug={lessonSlug}
+					moduleSlug={moduleSlug}
+					isAuthenticated={!!user}
+				>
+					<LoginPrompt
+						lessonSlug={lessonSlug}
+						moduleSlug={moduleSlug}
+						workshopProduct={workshopProduct}
+						workshopResource={workshopResource}
+						cohortResource={cohortResource}
+						hasAccess={true}
+						isAdmin={abilityForResource.canCreate}
+					/>
+					{thumbnailUrl && (
+						<Image
+							fill
+							className="blur-xs pointer-events-none absolute inset-0 z-0 h-full w-full select-none bg-cover opacity-20"
+							src={thumbnailUrl}
+							alt="thumbnail"
+						/>
+					)}
+				</EmbedContainer>
+			)
+		}
 	}
 
 	// Validate resource and playback ID

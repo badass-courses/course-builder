@@ -8,6 +8,7 @@ import {
 	contentResourceResource,
 	products as productTable,
 } from '@/db/schema'
+import { CohortSchema } from '@/lib/cohort'
 import {
 	CohortResource,
 	ExerciseRawSchema,
@@ -546,6 +547,40 @@ LIMIT 1;`
 	}
 
 	return parsedProduct.data
+}
+
+export async function getWorkshopCohort(workshopIdOrSlug: string) {
+	// This query finds the cohort associated with a workshop
+	// Workshop -> Cohort relationship via contentResourceResource table
+
+	const query = sql`
+	SELECT cr_cohort.*
+	FROM ${contentResource} cr_workshop
+	-- Link workshop to its parent resource (which should be a cohort)
+	JOIN ${contentResourceResource} crr ON cr_workshop.id = crr.resourceId
+	-- The parent resource, ensuring it's a cohort
+	JOIN ${contentResource} cr_cohort ON crr.resourceOfId = cr_cohort.id AND cr_cohort.type = 'cohort'
+	WHERE
+		(cr_workshop.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_workshop.fields, '$.slug')) = ${workshopIdOrSlug})
+		AND cr_workshop.type = 'workshop'
+	LIMIT 1;`
+
+	const results = await db.execute(query)
+	const result = results.rows[0]
+
+	if (!result) {
+		return null
+	}
+
+	// Parse and return the typed cohort resource
+	const parsedCohort = CohortSchema.safeParse(result)
+
+	if (!parsedCohort.success) {
+		console.debug('Error parsing cohort', parsedCohort.error)
+		return null
+	}
+
+	return parsedCohort.data
 }
 
 export const getCachedMinimalWorkshop = unstable_cache(
