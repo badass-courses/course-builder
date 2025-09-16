@@ -394,31 +394,189 @@ function EditOfficeHourForm({
 	event: OfficeHourEvent
 	cohortId: string
 }) {
-	// This would be similar to CreateOfficeHourForm but pre-populated with event data
-	// For now, just show the event details
+	const [isUpdating, setIsUpdating] = React.useState(false)
+
+	const editForm = useForm<OfficeHourForm>({
+		resolver: zodResolver(OfficeHourFormSchema),
+		defaultValues: {
+			title: event.title,
+			startsAt: event.startsAt,
+			endsAt: event.endsAt,
+			description: event.description || '',
+			attendeeInstructions: event.attendeeInstructions || '',
+		},
+	})
+
+	const watchedStartsAt = editForm.watch('startsAt')
+
+	// Auto-update end time when start time changes
+	React.useEffect(() => {
+		if (watchedStartsAt) {
+			const originalDuration =
+				new Date(event.endsAt).getTime() - new Date(event.startsAt).getTime()
+			const startDate = new Date(watchedStartsAt)
+			const endDate = new Date(startDate.getTime() + originalDuration)
+			editForm.setValue('endsAt', endDate.toISOString())
+		}
+	}, [watchedStartsAt, editForm, event.startsAt, event.endsAt])
+
+	const handleUpdateOfficeHour = async (data: OfficeHourForm) => {
+		setIsUpdating(true)
+		try {
+			const result = await updateOfficeHourEventAction(event.id, {
+				title: data.title,
+				startsAt: data.startsAt,
+				endsAt: data.endsAt,
+				description: data.description,
+				attendeeInstructions: data.attendeeInstructions,
+			})
+
+			if (result.success) {
+				// Force page reload to refresh data
+				window.location.reload()
+			} else {
+				console.error('Failed to update office hour:', result.error)
+			}
+		} catch (error) {
+			console.error('Error updating office hour:', error)
+		} finally {
+			setIsUpdating(false)
+		}
+	}
+
 	return (
-		<div className="space-y-4">
-			<div>
-				<strong>Title:</strong> {event.title}
-			</div>
-			<div>
-				<strong>Time:</strong>{' '}
-				{format(new Date(event.startsAt), 'MMM d, yyyy h:mm a')} -{' '}
-				{format(new Date(event.endsAt), 'h:mm a')} PT
-			</div>
-			{event.description && (
-				<div>
-					<strong>Description:</strong> {event.description}
+		<Form {...editForm}>
+			<form className="flex flex-col gap-4">
+				<FormField
+					control={editForm.control}
+					name="title"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Title</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="Office Hours - MMM d, yyyy" />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<div className="grid grid-cols-2 gap-4">
+					<FormField
+						control={editForm.control}
+						name="startsAt"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Starts At (PT)</FormLabel>
+								<FormControl>
+									<DateTimePicker
+										{...field}
+										value={
+											field.value
+												? parseAbsolute(
+														new Date(field.value).toISOString(),
+														'America/Los_Angeles',
+													)
+												: null
+										}
+										onChange={(date) => {
+											field.onChange(
+												date
+													? date.toDate('America/Los_Angeles').toISOString()
+													: '',
+											)
+										}}
+										shouldCloseOnSelect={false}
+										granularity="minute"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={editForm.control}
+						name="endsAt"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Ends At (PT)</FormLabel>
+								<FormControl>
+									<DateTimePicker
+										{...field}
+										value={
+											field.value
+												? parseAbsolute(
+														new Date(field.value).toISOString(),
+														'America/Los_Angeles',
+													)
+												: null
+										}
+										onChange={(date) => {
+											field.onChange(
+												date
+													? date.toDate('America/Los_Angeles').toISOString()
+													: '',
+											)
+										}}
+										shouldCloseOnSelect={false}
+										granularity="minute"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</div>
-			)}
-			{event.attendeeInstructions && (
-				<div>
-					<strong>Instructions:</strong> {event.attendeeInstructions}
-				</div>
-			)}
-			<p className="text-muted-foreground text-sm">
-				Edit functionality coming soon...
-			</p>
-		</div>
+
+				<FormField
+					control={editForm.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Description (optional)</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									placeholder="Brief description of what will be covered..."
+									rows={3}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={editForm.control}
+					name="attendeeInstructions"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Instructions for Attendees (optional)</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									placeholder="Meeting link, preparation instructions, etc..."
+									rows={3}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<DialogFooter>
+					<DialogTrigger asChild>
+						<Button
+							type="button"
+							onClick={() => editForm.handleSubmit(handleUpdateOfficeHour)()}
+							disabled={isUpdating}
+						>
+							{isUpdating ? 'Updating...' : 'Update Office Hours'}
+						</Button>
+					</DialogTrigger>
+				</DialogFooter>
+			</form>
+		</Form>
 	)
 }
