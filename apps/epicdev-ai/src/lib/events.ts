@@ -87,6 +87,8 @@ export const EventSeriesSchema = ContentResourceSchema.merge(
 				.optional(),
 			thumbnailTime: z.number().nullish(),
 			attendeeInstructions: z.string().nullable().optional(),
+			eventType: z.enum(['standard', 'office-hours']).optional(),
+			cohortId: z.string().optional(),
 		}),
 	}),
 )

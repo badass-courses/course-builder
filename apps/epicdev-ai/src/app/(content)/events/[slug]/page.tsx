@@ -7,7 +7,11 @@ import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	purchases,
+} from '@/db/schema'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
 import { getEventOrEventSeries } from '@/lib/events-query'
@@ -15,7 +19,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { formatInTimeZone } from 'date-fns-tz'
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 import { z } from 'zod'
 
@@ -101,9 +105,12 @@ export default async function EventPage(props: {
 		if (session?.user?.id && cohort) {
 			const cohortProduct = cohort.resourceProducts?.[0]?.product
 			if (cohortProduct) {
-				const purchase = await courseBuilderAdapter.getPurchaseForProduct({
-					userId: session.user.id,
-					productId: cohortProduct.id,
+				const purchase = await db.query.purchases.findFirst({
+					where: and(
+						eq(purchases.userId, session.user.id),
+						eq(purchases.productId, cohortProduct.id),
+						eq(purchases.status, 'Valid'),
+					),
 				})
 				hasAccess = !!purchase
 			}
