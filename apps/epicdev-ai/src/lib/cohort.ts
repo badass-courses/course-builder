@@ -34,6 +34,35 @@ export const CohortSchema = ContentResourceSchema.merge(
 					url: z.string().url(),
 				})
 				.optional(),
+			officeHours: z
+				.object({
+					enabled: z.boolean().default(false),
+					events: z
+						.array(
+							z.object({
+								id: z.string(),
+								title: z.string(),
+								startsAt: z.string().datetime(),
+								endsAt: z.string().datetime(),
+								description: z.string().optional(),
+								attendeeInstructions: z.string().optional(),
+								status: z
+									.enum(['draft', 'scheduled', 'completed'])
+									.default('draft'),
+							}),
+						)
+						.optional(),
+					defaultDuration: z.number().default(60), // minutes
+					autoCreate: z.boolean().default(true),
+					recurringSchedule: z
+						.object({
+							dayOfWeek: z.number().min(0).max(6), // 0 = Sunday
+							time: z.string(), // HH:mm format
+							frequency: z.enum(['weekly', 'biweekly']).default('weekly'),
+						})
+						.optional(),
+				})
+				.optional(),
 		}),
 	}),
 )
@@ -62,6 +91,35 @@ export const PublishableCohortSchema = CohortSchema.extend({
 			.object({
 				type: z.string(),
 				url: z.string().url(),
+			})
+			.optional(),
+		officeHours: z
+			.object({
+				enabled: z.boolean().default(false),
+				events: z
+					.array(
+						z.object({
+							id: z.string(),
+							title: z.string(),
+							startsAt: z.string().datetime(),
+							endsAt: z.string().datetime(),
+							description: z.string().optional(),
+							attendeeInstructions: z.string().optional(),
+							status: z
+								.enum(['draft', 'scheduled', 'completed'])
+								.default('draft'),
+						}),
+					)
+					.optional(),
+				defaultDuration: z.number().default(60),
+				autoCreate: z.boolean().default(true),
+				recurringSchedule: z
+					.object({
+						dayOfWeek: z.number().min(0).max(6),
+						time: z.string(),
+						frequency: z.enum(['weekly', 'biweekly']).default('weekly'),
+					})
+					.optional(),
 			})
 			.optional(),
 	}),
@@ -110,4 +168,42 @@ export type CohortAccess = {
 	contentIds: string[]
 	expiresAt: Date | null
 	discordRoleId?: string
+}
+
+/**
+ * @description Office hour event status
+ */
+export type OfficeHourEventStatus = 'draft' | 'scheduled' | 'completed'
+
+/**
+ * @description Single office hour event
+ */
+export type OfficeHourEvent = {
+	id: string
+	title: string
+	startsAt: string
+	endsAt: string
+	description?: string
+	attendeeInstructions?: string
+	status: OfficeHourEventStatus
+}
+
+/**
+ * @description Recurring schedule configuration for office hours
+ */
+export type RecurringSchedule = {
+	dayOfWeek: number // 0 = Sunday, 1 = Monday, etc.
+	time: string // HH:mm format
+	frequency: 'weekly' | 'biweekly'
+}
+
+/**
+ * @description Office hours configuration for a cohort
+ */
+export type OfficeHours = {
+	enabled: boolean
+	events?: OfficeHourEvent[]
+	defaultDuration: number // minutes
+	autoCreate: boolean
+	recurringSchedule?: RecurringSchedule
 }
