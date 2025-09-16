@@ -127,6 +127,7 @@ export async function EmbedVideoPage({
 					lessonSlug={lessonSlug}
 					moduleSlug={moduleSlug}
 					workshopProduct={workshopProduct}
+					hasAccess={!!user && abilityForResource.canViewLesson}
 				/>
 				{thumbnailUrl && (
 					<Image
@@ -138,6 +139,47 @@ export async function EmbedVideoPage({
 				)}
 			</EmbedContainer>
 		)
+	}
+
+	// Check if user has access but workshop hasn't started yet
+	const { startsAt } = workshopProduct?.fields || {}
+	if (startsAt) {
+		const timezone = 'America/Los_Angeles'
+		const now = new Date()
+		const startsAtDate = new Date(startsAt)
+
+		if (startsAtDate > now) {
+			await log.info('embed_video_workshop_not_opened_yet', {
+				lessonSlug,
+				moduleSlug,
+				resourceType,
+				userId: user.id,
+				workshopStartsAt: startsAt,
+			})
+
+			return (
+				<EmbedContainer
+					lessonSlug={lessonSlug}
+					moduleSlug={moduleSlug}
+					isAuthenticated={!!user}
+				>
+					<LoginPrompt
+						lessonSlug={lessonSlug}
+						moduleSlug={moduleSlug}
+						workshopProduct={workshopProduct}
+						hasAccess={true}
+					/>
+					{thumbnailUrl && (
+						<Image
+							fill
+							className="blur-xs pointer-events-none absolute inset-0 z-0 h-full w-full select-none bg-cover opacity-20"
+							src={thumbnailUrl}
+							alt="thumbnail"
+						/>
+					)}
+				</EmbedContainer>
+			)
+		}
 	}
 
 	// Validate resource and playback ID

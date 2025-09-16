@@ -12,6 +12,7 @@ type LoginPromptProps = {
 	lessonSlug: string
 	moduleSlug: string
 	workshopProduct?: Product | null
+	hasAccess?: boolean
 }
 
 /**
@@ -22,6 +23,7 @@ export function LoginPrompt({
 	lessonSlug,
 	moduleSlug,
 	workshopProduct,
+	hasAccess = false,
 }: LoginPromptProps) {
 	// Try to get parent URL for better callback experience
 	let callbackUrl: string = `${window.location.origin}/workshops/${moduleSlug}/${lessonSlug}`
@@ -40,18 +42,24 @@ export function LoginPrompt({
 
 	const loginUrl = `${env.NEXT_PUBLIC_URL}/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
 	const resourceUrl = workshopProduct
-		? getResourcePath(workshopProduct.type, workshopProduct.fields.slug, 'view')
-		: getResourcePath('workshop', moduleSlug, 'view')
+		? `${env.NEXT_PUBLIC_URL}${getResourcePath(workshopProduct.type, workshopProduct.fields.slug, 'view')}`
+		: `${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`
 
 	// Check if this is a cohort product with limited enrollment
-	const { openEnrollment, closeEnrollment } = workshopProduct?.fields || {}
+	const { openEnrollment, closeEnrollment, startsAt } =
+		workshopProduct?.fields || {}
 	const isLimitedCohort = Boolean(openEnrollment || closeEnrollment)
 
-	// Calculate purchase deadline
+	// Calculate purchase deadline, enrollment status, and workshop start status
 	let purchaseDeadlineMessage = null
+	let enrollmentClosed = false
+	let workshopNotStarted = false
+	let workshopStartMessage = null
+
+	const timezone = 'America/Los_Angeles' // Default timezone
+	const now = new Date()
+
 	if (isLimitedCohort && closeEnrollment) {
-		const timezone = 'America/Los_Angeles' // Default timezone
-		const now = new Date()
 		const closesAt = new Date(closeEnrollment)
 
 		if (closesAt > now) {
@@ -66,6 +74,27 @@ export function LoginPrompt({
 					<strong className="font-medium">{deadlineString}</strong>
 				</>
 			)
+		} else {
+			enrollmentClosed = true
+		}
+	}
+
+	// Check if user has access but workshop hasn't started yet
+	if (hasAccess && startsAt) {
+		const startsAtDate = new Date(startsAt)
+		if (startsAtDate > now) {
+			workshopNotStarted = true
+			const startDateString = formatInTimeZone(
+				startsAtDate,
+				timezone,
+				"MMM dd, yyyy 'at' h:mm a zzz",
+			)
+			workshopStartMessage = (
+				<>
+					Workshop starts{' '}
+					<strong className="font-medium">{startDateString}</strong>
+				</>
+			)
 		}
 	}
 
@@ -77,11 +106,18 @@ export function LoginPrompt({
 						<LockClosedIcon className="h-7 w-7 text-indigo-300" />
 					</div>
 					<h2 className="mb-2 text-xl font-semibold text-white">
-						Access Required
+						{workshopNotStarted ? 'Workshop Not Opened Yet' : 'Access Required'}
 					</h2>
 					<p className="text-sm text-white/80">
-						Log in or buy access to view this video.
+						{workshopNotStarted
+							? "You have access to this workshop, but it hasn't opened yet."
+							: enrollmentClosed
+								? 'This cohort has already started and is no longer accepting new enrollments.'
+								: 'Log in or buy access to view this video.'}
 					</p>
+					{workshopStartMessage && (
+						<p className="mt-1 text-sm text-white/80">{workshopStartMessage}</p>
+					)}
 					{purchaseDeadlineMessage && (
 						<p className="mt-1 text-sm text-white/80">
 							{purchaseDeadlineMessage}
@@ -90,36 +126,98 @@ export function LoginPrompt({
 				</div>
 
 				<div className="space-y-3">
-					<a
-						href={resourceUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						onClick={() => {
-							track('clicked: enroll now from login prompt', {
-								lessonSlug,
-								moduleSlug,
-								context: 'embed',
-							})
-						}}
-						className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
-					>
-						<span className="drop-shadow-sm">Enroll Now</span>
-					</a>
-					<a
-						href={loginUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						onClick={() => {
-							track('clicked: embed login prompt', {
-								lessonSlug,
-								moduleSlug,
-								context: 'embed',
-							})
-						}}
-						className="block w-full rounded-lg border border-white/50 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
-					>
-						<span className="drop-shadow-sm">Log In to Restore Purchase</span>
-					</a>
+					{workshopNotStarted ? (
+						<>
+							<a
+								href={`${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => {
+									track('clicked: go to workshop from not opened yet', {
+										lessonSlug,
+										moduleSlug,
+										context: 'embed',
+									})
+								}}
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+							>
+								<span className="drop-shadow-sm">Go to Workshop</span>
+							</a>
+						</>
+					) : enrollmentClosed ? (
+						<>
+							<a
+								href="/cohorts"
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => {
+									track(
+										'clicked: view upcoming cohorts from closed enrollment',
+										{
+											lessonSlug,
+											moduleSlug,
+											context: 'embed',
+										},
+									)
+								}}
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+							>
+								<span className="drop-shadow-sm">View Upcoming Cohorts</span>
+							</a>
+							<a
+								href={loginUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => {
+									track('clicked: embed login prompt', {
+										lessonSlug,
+										moduleSlug,
+										context: 'embed',
+									})
+								}}
+								className="block w-full rounded-lg border border-white/50 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
+							>
+								<span className="drop-shadow-sm">
+									Log In to Restore Purchase
+								</span>
+							</a>
+						</>
+					) : (
+						<>
+							<a
+								href={resourceUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => {
+									track('clicked: enroll now from login prompt', {
+										lessonSlug,
+										moduleSlug,
+										context: 'embed',
+									})
+								}}
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+							>
+								<span className="drop-shadow-sm">Enroll Now</span>
+							</a>
+							<a
+								href={loginUrl}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={() => {
+									track('clicked: embed login prompt', {
+										lessonSlug,
+										moduleSlug,
+										context: 'embed',
+									})
+								}}
+								className="block w-full rounded-lg border border-white/50 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
+							>
+								<span className="drop-shadow-sm">
+									Log In to Restore Purchase
+								</span>
+							</a>
+						</>
+					)}
 					{/* <p className="text-xs text-white/80">
 						This will open the login page in a new tab
 					</p> */}
