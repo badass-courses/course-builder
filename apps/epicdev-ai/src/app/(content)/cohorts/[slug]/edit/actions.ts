@@ -6,6 +6,7 @@ import { OfficeHourEvent } from '@/lib/cohort'
 import {
 	createOfficeHourEvents,
 	deleteOfficeHourEvent,
+	enableCohortOfficeHours,
 	updateOfficeHourEvent,
 } from '@/lib/cohorts-query'
 
@@ -24,6 +25,8 @@ export async function createOfficeHourEventsAction(
 	'use server'
 	try {
 		const createdEventIds = await createOfficeHourEvents(cohortId, events)
+		// Enable office hours in the cohort if not already enabled
+		await enableCohortOfficeHours(cohortId)
 		revalidatePath(`/cohorts/[slug]/edit`, 'page')
 		return { success: true, eventIds: createdEventIds }
 	} catch (error) {

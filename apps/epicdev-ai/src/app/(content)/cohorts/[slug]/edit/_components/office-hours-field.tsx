@@ -5,20 +5,15 @@ import { Cohort, OfficeHourEvent } from '@/lib/cohort'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
 import { format } from 'date-fns'
-import { Clock, Plus, Trash } from 'lucide-react'
+import { Clock, Edit2, Plus, Trash, X } from 'lucide-react'
 import { useForm, UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
 	Button,
+	Card,
+	CardContent,
 	DateTimePicker,
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
 	Form,
 	FormControl,
 	FormField,
@@ -53,8 +48,10 @@ interface OfficeHoursFieldProps {
 
 export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 	const [isCreating, setIsCreating] = React.useState(false)
-	const [editingEvent, setEditingEvent] =
-		React.useState<OfficeHourEvent | null>(null)
+	const [showCreateForm, setShowCreateForm] = React.useState(false)
+	const [editingEventId, setEditingEventId] = React.useState<string | null>(
+		null,
+	)
 
 	const events = cohort.fields.officeHours?.events || []
 
@@ -68,6 +65,25 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 			attendeeInstructions: '',
 		},
 	})
+
+	// Set smart defaults when showing create form
+	React.useEffect(() => {
+		if (showCreateForm) {
+			const now = new Date()
+			const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+			const startTime = new Date(nextWeek)
+			startTime.setHours(14, 0, 0, 0) // 2 PM Pacific
+
+			const endTime = new Date(startTime.getTime() + 60 * 60 * 1000) // 1 hour later
+
+			createOfficeHourForm.setValue('startsAt', startTime.toISOString())
+			createOfficeHourForm.setValue('endsAt', endTime.toISOString())
+			createOfficeHourForm.setValue(
+				'title',
+				`Office Hours - ${format(startTime, 'MMM d, yyyy')}`,
+			)
+		}
+	}, [showCreateForm, createOfficeHourForm])
 
 	const handleCreateOfficeHour = async (data: OfficeHourForm) => {
 		setIsCreating(true)
@@ -90,8 +106,9 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 				form.setValue('fields.officeHours.events', updatedEvents)
 				form.setValue('fields.officeHours.enabled', true)
 
-				// Reset the create form
+				// Reset the create form and hide it
 				createOfficeHourForm.reset()
+				setShowCreateForm(false)
 			} else {
 				console.error('Failed to create office hour:', result.error)
 			}
@@ -117,58 +134,84 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 		}
 	}
 
+	const handleCancelCreate = () => {
+		setShowCreateForm(false)
+		createOfficeHourForm.reset()
+	}
+
 	return (
 		<div className="px-5">
-			<div className="mb-2 text-lg font-semibold">Office Hours</div>
-			<ul className="flex flex-col gap-2">
+			<div className="mb-4 flex items-center justify-between">
+				<h2 className="text-lg font-semibold">Office Hours</h2>
+				{!showCreateForm && (
+					<Button
+						variant="secondary"
+						size="sm"
+						onClick={() => setShowCreateForm(true)}
+					>
+						<Plus className="mr-1 size-4" /> Add Office Hours
+					</Button>
+				)}
+			</div>
+
+			<div className="space-y-3">
+				{/* Create Form - Inline */}
+				{showCreateForm && (
+					<Card className="border-primary/30 bg-card/50">
+						<CardContent className="pt-6">
+							<div className="mb-4 flex items-center justify-between">
+								<h3 className="flex items-center text-base font-semibold">
+									<Clock className="mr-2 size-4" />
+									Schedule New Office Hours
+								</h3>
+								<Button variant="ghost" size="sm" onClick={handleCancelCreate}>
+									<X className="size-4" />
+								</Button>
+							</div>
+
+							<CreateOfficeHourForm
+								form={createOfficeHourForm}
+								onSubmit={handleCreateOfficeHour}
+								onCancel={handleCancelCreate}
+								isCreating={isCreating}
+							/>
+						</CardContent>
+					</Card>
+				)}
+
+				{/* Existing Events List */}
 				{events.map((event) => (
 					<OfficeHourItem
 						key={event.id}
 						event={event}
-						cohortId={cohort.id}
 						onDelete={() => handleDeleteEvent(event.id)}
-						onEdit={setEditingEvent}
+						isEditing={editingEventId === event.id}
+						onEditToggle={() =>
+							setEditingEventId(editingEventId === event.id ? null : event.id)
+						}
 					/>
 				))}
-			</ul>
 
-			<Dialog modal={true}>
-				<DialogTrigger asChild>
-					<Button className="mt-2" variant="secondary">
-						<Plus className="size-4" /> Add Office Hours
-					</Button>
-				</DialogTrigger>
-				<DialogContent className="max-w-2xl">
-					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-semibold">
-							<Clock className="mr-1 size-4" /> Schedule Office Hours
-						</DialogTitle>
-						<DialogDescription>
-							Schedule office hours for cohort participants. Times are in
-							Pacific timezone.
-						</DialogDescription>
-					</DialogHeader>
-					<CreateOfficeHourForm
-						form={createOfficeHourForm}
-						onSubmit={handleCreateOfficeHour}
-						isCreating={isCreating}
-					/>
-				</DialogContent>
-			</Dialog>
+				{events.length === 0 && !showCreateForm && (
+					<p className="text-muted-foreground text-sm">
+						No office hours scheduled yet.
+					</p>
+				)}
+			</div>
 		</div>
 	)
 }
 
 function OfficeHourItem({
 	event,
-	cohortId,
 	onDelete,
-	onEdit,
+	isEditing,
+	onEditToggle,
 }: {
 	event: OfficeHourEvent
-	cohortId: string
 	onDelete: () => void
-	onEdit: (event: OfficeHourEvent) => void
+	isEditing: boolean
+	onEditToggle: () => void
 }) {
 	const startDate = new Date(event.startsAt)
 	const endDate = new Date(event.endsAt)
@@ -177,68 +220,66 @@ function OfficeHourItem({
 	)
 
 	return (
-		<li className="border-primary/50 bg-card/50 flex items-center justify-between gap-2 rounded-md border px-3 py-2 shadow-sm">
-			<Dialog modal={true}>
-				<DialogTrigger>
-					<div className="flex flex-col items-start">
-						<span className="text-primary inline-flex cursor-pointer items-center gap-2 text-left font-semibold transition-colors hover:underline">
-							{event.title}
-						</span>
-						<div className="flex flex-col text-left">
-							<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
-								{format(startDate, 'MMM d, yyyy')} at{' '}
-								{format(startDate, 'h:mm a')} - {format(endDate, 'h:mm a')} PT
-							</span>
-							<span className="text-muted-foreground text-sm">
-								{duration} minutes
-							</span>
+		<Card className={isEditing ? 'border-primary' : ''}>
+			<CardContent className="pt-6">
+				{!isEditing ? (
+					<div>
+						<div className="flex items-start justify-between">
+							<div className="flex-1">
+								<h3 className="font-semibold">{event.title}</h3>
+								<div className="text-muted-foreground mt-1 space-y-1 text-sm">
+									<p>
+										{format(startDate, 'MMM d, yyyy')} at{' '}
+										{format(startDate, 'h:mm a')} - {format(endDate, 'h:mm a')}{' '}
+										PT
+									</p>
+									<p>{duration} minutes</p>
+								</div>
+								{event.description && (
+									<p className="mt-2 text-sm">{event.description}</p>
+								)}
+								{event.attendeeInstructions && (
+									<div className="mt-2">
+										<p className="text-muted-foreground text-xs font-medium">
+											Instructions:
+										</p>
+										<p className="text-sm">{event.attendeeInstructions}</p>
+									</div>
+								)}
+							</div>
+							<div className="flex items-center gap-2">
+								<Button size="sm" variant="ghost" onClick={onEditToggle}>
+									<Edit2 className="size-4" />
+								</Button>
+								<Button size="sm" variant="ghost" onClick={onDelete}>
+									<Trash className="size-4" />
+								</Button>
+							</div>
 						</div>
 					</div>
-				</DialogTrigger>
-				<DialogContent className="max-w-2xl">
-					<DialogHeader>
-						<DialogTitle className="inline-flex items-center text-lg font-semibold">
-							<Clock className="mr-1 size-4" /> {event.title}
-						</DialogTitle>
-						<DialogDescription>
-							Edit this office hours session.
-						</DialogDescription>
-					</DialogHeader>
-					<EditOfficeHourForm event={event} cohortId={cohortId} />
-				</DialogContent>
-			</Dialog>
-			<div className="flex items-center gap-2">
-				<Button size="sm" variant="outline" type="button" onClick={onDelete}>
-					<Trash className="size-4" />
-				</Button>
-			</div>
-		</li>
+				) : (
+					<EditOfficeHourForm
+						event={event}
+						onCancel={onEditToggle}
+						onSuccess={onEditToggle}
+					/>
+				)}
+			</CardContent>
+		</Card>
 	)
 }
 
 function CreateOfficeHourForm({
 	form,
 	onSubmit,
+	onCancel,
 	isCreating,
 }: {
 	form: UseFormReturn<OfficeHourForm>
 	onSubmit: (data: OfficeHourForm) => void
+	onCancel: () => void
 	isCreating: boolean
 }) {
-	// Set smart defaults
-	React.useEffect(() => {
-		const now = new Date()
-		const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-		const startTime = new Date(nextWeek)
-		startTime.setHours(14, 0, 0, 0) // 2 PM Pacific
-
-		const endTime = new Date(startTime.getTime() + 60 * 60 * 1000) // 1 hour later
-
-		form.setValue('startsAt', startTime.toISOString())
-		form.setValue('endsAt', endTime.toISOString())
-		form.setValue('title', `Office Hours - ${format(startTime, 'MMM d, yyyy')}`)
-	}, [form])
-
 	const watchedStartsAt = form.watch('startsAt')
 
 	// Auto-update end time when start time changes
@@ -252,7 +293,7 @@ function CreateOfficeHourForm({
 
 	return (
 		<Form {...form}>
-			<form className="flex flex-col gap-4">
+			<div className="space-y-4">
 				<FormField
 					control={form.control}
 					name="title"
@@ -267,12 +308,12 @@ function CreateOfficeHourForm({
 					)}
 				/>
 
-				<div className="grid grid-cols-2 gap-4">
+				<div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
 					<FormField
 						control={form.control}
 						name="startsAt"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="min-w-0 flex-1">
 								<FormLabel>Starts At (PT)</FormLabel>
 								<FormControl>
 									<DateTimePicker
@@ -305,7 +346,7 @@ function CreateOfficeHourForm({
 						control={form.control}
 						name="endsAt"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="min-w-0 flex-1">
 								<FormLabel>Ends At (PT)</FormLabel>
 								<FormControl>
 									<DateTimePicker
@@ -371,28 +412,31 @@ function CreateOfficeHourForm({
 					)}
 				/>
 
-				<DialogFooter>
-					<DialogTrigger asChild>
-						<Button
-							type="button"
-							onClick={() => form.handleSubmit(onSubmit)()}
-							disabled={isCreating}
-						>
-							{isCreating ? 'Creating...' : 'Create Office Hours'}
-						</Button>
-					</DialogTrigger>
-				</DialogFooter>
-			</form>
+				<div className="flex justify-end gap-2">
+					<Button type="button" variant="outline" onClick={onCancel}>
+						Cancel
+					</Button>
+					<Button
+						type="button"
+						disabled={isCreating}
+						onClick={() => form.handleSubmit(onSubmit)()}
+					>
+						{isCreating ? 'Creating...' : 'Create Office Hours'}
+					</Button>
+				</div>
+			</div>
 		</Form>
 	)
 }
 
 function EditOfficeHourForm({
 	event,
-	cohortId,
+	onCancel,
+	onSuccess,
 }: {
 	event: OfficeHourEvent
-	cohortId: string
+	onCancel: () => void
+	onSuccess: () => void
 }) {
 	const [isUpdating, setIsUpdating] = React.useState(false)
 
@@ -432,6 +476,7 @@ function EditOfficeHourForm({
 			})
 
 			if (result.success) {
+				onSuccess()
 				// Force page reload to refresh data
 				window.location.reload()
 			} else {
@@ -446,7 +491,7 @@ function EditOfficeHourForm({
 
 	return (
 		<Form {...editForm}>
-			<form className="flex flex-col gap-4">
+			<div className="space-y-4">
 				<FormField
 					control={editForm.control}
 					name="title"
@@ -461,12 +506,12 @@ function EditOfficeHourForm({
 					)}
 				/>
 
-				<div className="grid grid-cols-2 gap-4">
+				<div className="flex flex-col gap-4 sm:flex-row sm:gap-4">
 					<FormField
 						control={editForm.control}
 						name="startsAt"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="min-w-0 flex-1">
 								<FormLabel>Starts At (PT)</FormLabel>
 								<FormControl>
 									<DateTimePicker
@@ -499,7 +544,7 @@ function EditOfficeHourForm({
 						control={editForm.control}
 						name="endsAt"
 						render={({ field }) => (
-							<FormItem>
+							<FormItem className="min-w-0 flex-1">
 								<FormLabel>Ends At (PT)</FormLabel>
 								<FormControl>
 									<DateTimePicker
@@ -565,18 +610,19 @@ function EditOfficeHourForm({
 					)}
 				/>
 
-				<DialogFooter>
-					<DialogTrigger asChild>
-						<Button
-							type="button"
-							onClick={() => editForm.handleSubmit(handleUpdateOfficeHour)()}
-							disabled={isUpdating}
-						>
-							{isUpdating ? 'Updating...' : 'Update Office Hours'}
-						</Button>
-					</DialogTrigger>
-				</DialogFooter>
-			</form>
+				<div className="flex justify-end gap-2">
+					<Button type="button" variant="outline" onClick={onCancel}>
+						Cancel
+					</Button>
+					<Button
+						type="button"
+						disabled={isUpdating}
+						onClick={() => editForm.handleSubmit(handleUpdateOfficeHour)()}
+					>
+						{isUpdating ? 'Updating...' : 'Update Office Hours'}
+					</Button>
+				</div>
+			</div>
 		</Form>
 	)
 }

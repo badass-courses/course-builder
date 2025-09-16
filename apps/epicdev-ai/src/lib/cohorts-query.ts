@@ -57,6 +57,14 @@ export async function getCohort(cohortIdOrSlug: string) {
 		},
 	})
 
+	// Filter out event type resources from the main resources list
+	// Events (office hours) should be handled separately
+	if (cohortData && cohortData.resources) {
+		cohortData.resources = cohortData.resources.filter(
+			(r) => r.resource?.type !== 'event',
+		)
+	}
+
 	const parsedCohort = CohortSchema.safeParse(cohortData)
 	if (!parsedCohort.success) {
 		console.error('Error parsing cohort:', {
@@ -66,17 +74,23 @@ export async function getCohort(cohortIdOrSlug: string) {
 		return null
 	}
 
-	// Fetch office hour events if cohort has office hours enabled
-	if (parsedCohort.data.fields.officeHours?.enabled) {
-		try {
-			const officeHourEvents = await getOfficeHourEvents(parsedCohort.data.id)
+	// Always fetch office hour events for cohorts
+	try {
+		const officeHourEvents = await getOfficeHourEvents(parsedCohort.data.id)
 
-			// Merge the events into the cohort data
-			parsedCohort.data.fields.officeHours.events = officeHourEvents
-		} catch (error) {
-			console.error('Failed to fetch office hour events:', error)
-			// Don't fail the whole request if office hours can't be loaded
+		// Initialize officeHours if not present
+		if (!parsedCohort.data.fields.officeHours) {
+			parsedCohort.data.fields.officeHours = {
+				enabled: officeHourEvents.length > 0,
+				events: [],
+			}
 		}
+
+		// Merge the events into the cohort data
+		parsedCohort.data.fields.officeHours.events = officeHourEvents
+	} catch (error) {
+		console.error('Failed to fetch office hour events:', error)
+		// Don't fail the whole request if office hours can't be loaded
 	}
 
 	return parsedCohort.data
@@ -474,5 +488,41 @@ export async function getOfficeHourEvents(
 	} catch (error) {
 		console.error('Failed to get office hour events:', error)
 		throw new Error(`Failed to get office hour events: ${error.message}`)
+	}
+}
+
+/**
+ * Enable office hours for a cohort
+ * @param cohortId - The ID of the cohort to enable office hours for
+ */
+export async function enableCohortOfficeHours(cohortId: string): Promise<void> {
+	try {
+		const cohort = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, cohortId),
+		})
+
+		if (!cohort) {
+			throw new Error(`Cohort not found: ${cohortId}`)
+		}
+
+		// Update the cohort fields to enable office hours
+		const updatedFields = {
+			...cohort.fields,
+			officeHours: {
+				...(cohort.fields?.officeHours || {}),
+				enabled: true,
+			},
+		}
+
+		await db
+			.update(contentResource)
+			.set({
+				fields: updatedFields,
+				updatedAt: new Date(),
+			})
+			.where(eq(contentResource.id, cohortId))
+	} catch (error) {
+		console.error('Failed to enable office hours:', error)
+		throw new Error(`Failed to enable office hours: ${error.message}`)
 	}
 }
