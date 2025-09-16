@@ -1,7 +1,4 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"cSpell.words": ["coursebuilder"],
-	"workbench.colorCustomizations": {
-		"activityBar.activeBorder": "#1D1830"
-	}
+	"cSpell.words": ["coursebuilder"]
 }
