@@ -2,6 +2,11 @@
 
 import * as React from 'react'
 import { Cohort, OfficeHourEvent } from '@/lib/cohort'
+import {
+	createOfficeHourEventsAction,
+	deleteOfficeHourEventAction,
+	updateOfficeHourEventAction,
+} from '../actions'
 import { format } from 'date-fns'
 import {
 	Calendar,
@@ -139,28 +144,46 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 			current.setDate(current.getDate() + 7)
 		}
 
-		// Update form with generated events
-		form.setValue('fields.officeHours.events', generatedEvents)
-		form.setValue('fields.officeHours.enabled', true)
-		form.setValue('fields.officeHours.defaultDuration', durationMinutes)
+		// Create events in database using server action
+		const result = await createOfficeHourEventsAction(
+			cohort.id,
+			generatedEvents,
+		)
 
-		setHasGeneratedEvents(true)
-		setShowEventList(true)
+		if (result.success) {
+			// Update form with generated events
+			form.setValue('fields.officeHours.events', generatedEvents)
+			form.setValue('fields.officeHours.enabled', true)
+			form.setValue('fields.officeHours.defaultDuration', durationMinutes)
 
-		console.log(`Generated ${generatedEvents.length} office hour events`)
+			setHasGeneratedEvents(true)
+			setShowEventList(true)
+
+			console.log(`Generated ${generatedEvents.length} office hour events`)
+		} else {
+			console.error('Failed to create office hour events:', result.error)
+			// You might want to show a toast or error message to the user here
+		}
 	}, [cohort, selectedDay, startTime, duration, form])
 
 	const deleteEvent = React.useCallback(
-		(eventId: string) => {
-			const updatedEvents = events.filter((event) => event.id !== eventId)
-			form.setValue('fields.officeHours.events', updatedEvents)
+		async (eventId: string) => {
+			const result = await deleteOfficeHourEventAction(cohort.id, eventId)
 
-			if (updatedEvents.length === 0) {
-				setHasGeneratedEvents(false)
-				setShowEventList(false)
+			if (result.success) {
+				const updatedEvents = events.filter((event) => event.id !== eventId)
+				form.setValue('fields.officeHours.events', updatedEvents)
+
+				if (updatedEvents.length === 0) {
+					setHasGeneratedEvents(false)
+					setShowEventList(false)
+				}
+			} else {
+				console.error('Failed to delete office hour event:', result.error)
+				// You might want to show a toast or error message to the user here
 			}
 		},
-		[events, form],
+		[events, form, cohort.id],
 	)
 
 	const handleOfficeHoursToggle = React.useCallback(

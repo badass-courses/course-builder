@@ -66,6 +66,19 @@ export async function getCohort(cohortIdOrSlug: string) {
 		return null
 	}
 
+	// Fetch office hour events if cohort has office hours enabled
+	if (parsedCohort.data.fields.officeHours?.enabled) {
+		try {
+			const officeHourEvents = await getOfficeHourEvents(parsedCohort.data.id)
+
+			// Merge the events into the cohort data
+			parsedCohort.data.fields.officeHours.events = officeHourEvents
+		} catch (error) {
+			console.error('Failed to fetch office hour events:', error)
+			// Don't fail the whole request if office hours can't be loaded
+		}
+	}
+
 	return parsedCohort.data
 }
 

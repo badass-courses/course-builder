@@ -58,6 +58,7 @@ import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
 import ConnectDiscordButton from './_components/connect-discord-button'
+import { OfficeHoursSection } from './_components/office-hours-section'
 
 export async function generateMetadata(
 	props: {
@@ -528,6 +529,15 @@ export default async function CohortPage(props: {
 								)}
 							</ul>
 						</div>
+
+						{/* Office Hours Section */}
+						{cohort.fields.officeHours?.enabled &&
+							cohort.fields.officeHours?.events && (
+								<OfficeHoursSection
+									events={cohort.fields.officeHours.events}
+									hasPurchased={hasPurchasedCurrentProduct}
+								/>
+							)}
 					</div>
 					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
 						{fields?.image && (
