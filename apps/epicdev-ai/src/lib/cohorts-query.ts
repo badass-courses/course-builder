@@ -2,6 +2,7 @@ import { db } from '@/db'
 import {
 	accounts as accountsTable,
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
 	entitlements as entitlementsTable,
 	entitlementTypes,
@@ -9,10 +10,11 @@ import {
 } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { v4 as uuidv4 } from 'uuid'
 
 import type { User } from '@coursebuilder/core/schemas'
 
-import { CohortAccess, CohortSchema } from './cohort'
+import { CohortAccess, CohortSchema, OfficeHourEvent } from './cohort'
 import { WorkshopSchema } from './workshops'
 
 export async function getCohort(cohortIdOrSlug: string) {
@@ -245,4 +247,219 @@ async function addDiscordRole(accessToken: string, roleId: string) {
 			},
 		},
 	)
+}
+
+/**
+ * Create office hour events for a cohort
+ * @param cohortId - The ID of the cohort to create events for
+ * @param events - Array of office hour events to create
+ * @returns Array of created event IDs
+ */
+export async function createOfficeHourEvents(
+	cohortId: string,
+	events: OfficeHourEvent[],
+): Promise<string[]> {
+	try {
+		// Get the cohort and its associated product
+		const cohort = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, cohortId),
+			with: {
+				resourceProducts: {
+					with: {
+						product: true,
+					},
+				},
+			},
+		})
+
+		if (!cohort) {
+			throw new Error(`Cohort not found: ${cohortId}`)
+		}
+
+		const createdEventIds: string[] = []
+
+		for (const event of events) {
+			// Create event as a contentResource
+			const eventId = uuidv4()
+
+			await db.insert(contentResource).values({
+				id: eventId,
+				type: 'event',
+				fields: {
+					title: event.title,
+					description: event.description || '',
+					slug: `${cohort.fields.slug}-office-hours-${event.id}`,
+					state: 'published',
+					visibility: 'unlisted',
+					startsAt: event.startsAt,
+					endsAt: event.endsAt,
+					timezone: cohort.fields.timezone || 'America/Los_Angeles',
+					attendeeInstructions: event.attendeeInstructions || '',
+					status: event.status,
+				},
+				createdById: cohort.createdById,
+				updatedById: cohort.updatedById,
+			})
+
+			// Link event to cohort via contentResourceResource
+			await db.insert(contentResourceResource).values({
+				resourceOfId: cohortId,
+				resourceId: eventId,
+				position: 0, // Office hours don't need specific ordering
+			})
+
+			// Associate event with cohort's product(s) if they exist
+			for (const resourceProduct of cohort.resourceProducts) {
+				await db.insert(contentResourceProduct).values({
+					productId: resourceProduct.productId,
+					resourceId: eventId,
+					position: 0,
+				})
+			}
+
+			createdEventIds.push(eventId)
+		}
+
+		return createdEventIds
+	} catch (error) {
+		console.error('Failed to create office hour events:', error)
+		throw new Error(`Failed to create office hour events: ${error.message}`)
+	}
+}
+
+/**
+ * Update an existing office hour event
+ * @param eventId - The ID of the event to update
+ * @param updates - Partial event data to update
+ */
+export async function updateOfficeHourEvent(
+	eventId: string,
+	updates: Partial<OfficeHourEvent>,
+): Promise<void> {
+	try {
+		const existingEvent = await db.query.contentResource.findFirst({
+			where: and(
+				eq(contentResource.id, eventId),
+				eq(contentResource.type, 'event'),
+			),
+		})
+
+		if (!existingEvent) {
+			throw new Error(`Event not found: ${eventId}`)
+		}
+
+		const updatedFields = {
+			...existingEvent.fields,
+			...(updates.title && { title: updates.title }),
+			...(updates.description && { description: updates.description }),
+			...(updates.startsAt && { startsAt: updates.startsAt }),
+			...(updates.endsAt && { endsAt: updates.endsAt }),
+			...(updates.attendeeInstructions && {
+				attendeeInstructions: updates.attendeeInstructions,
+			}),
+			...(updates.status && { status: updates.status }),
+		}
+
+		await db
+			.update(contentResource)
+			.set({
+				fields: updatedFields,
+				updatedAt: new Date(),
+			})
+			.where(eq(contentResource.id, eventId))
+	} catch (error) {
+		console.error('Failed to update office hour event:', error)
+		throw new Error(`Failed to update office hour event: ${error.message}`)
+	}
+}
+
+/**
+ * Delete an office hour event
+ * @param cohortId - The ID of the cohort the event belongs to
+ * @param eventId - The ID of the event to delete
+ */
+export async function deleteOfficeHourEvent(
+	cohortId: string,
+	eventId: string,
+): Promise<void> {
+	try {
+		// Verify the event belongs to the cohort
+		const relationship = await db.query.contentResourceResource.findFirst({
+			where: and(
+				eq(contentResourceResource.resourceOfId, cohortId),
+				eq(contentResourceResource.resourceId, eventId),
+			),
+		})
+
+		if (!relationship) {
+			throw new Error(`Event ${eventId} not found in cohort ${cohortId}`)
+		}
+
+		// Remove event-product associations
+		await db
+			.delete(contentResourceProduct)
+			.where(eq(contentResourceProduct.resourceId, eventId))
+
+		// Remove cohort-event relationship
+		await db
+			.delete(contentResourceResource)
+			.where(
+				and(
+					eq(contentResourceResource.resourceOfId, cohortId),
+					eq(contentResourceResource.resourceId, eventId),
+				),
+			)
+
+		// Delete the event itself
+		await db
+			.delete(contentResource)
+			.where(
+				and(eq(contentResource.id, eventId), eq(contentResource.type, 'event')),
+			)
+	} catch (error) {
+		console.error('Failed to delete office hour event:', error)
+		throw new Error(`Failed to delete office hour event: ${error.message}`)
+	}
+}
+
+/**
+ * Get all office hour events for a cohort
+ * @param cohortId - The ID of the cohort to get events for
+ * @returns Array of office hour events
+ */
+export async function getOfficeHourEvents(
+	cohortId: string,
+): Promise<OfficeHourEvent[]> {
+	try {
+		const results = await db
+			.select()
+			.from(contentResourceResource)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceResource.resourceId),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'event'),
+					eq(contentResourceResource.resourceOfId, cohortId),
+				),
+			)
+			.orderBy(asc(sql`JSON_EXTRACT(${contentResource.fields}, "$.startsAt")`))
+
+		return results.map((r) => {
+			const event = r.ContentResource
+			return {
+				id: event.id,
+				title: event.fields.title || '',
+				startsAt: event.fields.startsAt || '',
+				endsAt: event.fields.endsAt || '',
+				description: event.fields.description || '',
+				attendeeInstructions: event.fields.attendeeInstructions || '',
+				status: event.fields.status || 'draft',
+			} as OfficeHourEvent
+		})
+	} catch (error) {
+		console.error('Failed to get office hour events:', error)
+		throw new Error(`Failed to get office hour events: ${error.message}`)
+	}
 }
