@@ -1,6 +1,7 @@
 'use client'
 
 import { env } from '@/env.mjs'
+import type { Cohort } from '@/lib/cohort'
 import { track } from '@/utils/analytics'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -15,7 +16,9 @@ type LoginPromptProps = {
 	workshopResource?: {
 		fields?: { startsAt?: string | null; timezone?: string }
 	} | null
+	cohortResource?: Cohort | null
 	hasAccess?: boolean
+	isAdmin?: boolean
 }
 
 /**
@@ -27,7 +30,9 @@ export function LoginPrompt({
 	moduleSlug,
 	workshopProduct,
 	workshopResource,
+	cohortResource,
 	hasAccess = false,
+	isAdmin = false,
 }: LoginPromptProps) {
 	// Try to get parent URL for better callback experience
 	let callbackUrl: string = `${window.location.origin}/workshops/${moduleSlug}/${lessonSlug}`
@@ -45,9 +50,19 @@ export function LoginPrompt({
 	}
 
 	const loginUrl = `${env.NEXT_PUBLIC_URL}/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
-	const resourceUrl = workshopProduct
-		? `${env.NEXT_PUBLIC_URL}${getResourcePath(workshopProduct.type, workshopProduct.fields.slug, 'view')}`
-		: `${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`
+
+	// Determine the correct resource URL based on product type and cohort availability
+	let resourceUrl: string
+	if (workshopProduct?.type === 'cohort' && cohortResource?.fields?.slug) {
+		// For cohort products, use the cohort slug
+		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath(cohortResource.type, cohortResource.fields.slug, 'view')}`
+	} else if (workshopProduct) {
+		// For other products, use the product slug
+		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath(workshopProduct.type, workshopProduct.fields.slug, 'view')}`
+	} else {
+		// Fallback to workshop path
+		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`
+	}
 
 	// Check if this is a cohort product with limited enrollment
 	const { openEnrollment, closeEnrollment } = workshopProduct?.fields || {}
@@ -89,8 +104,8 @@ export function LoginPrompt({
 		}
 	}
 
-	// Check if user has access but workshop hasn't started yet
-	if (hasAccess && startsAt) {
+	// Check if user has access but workshop hasn't started yet (admins bypass this check)
+	if (hasAccess && startsAt && !isAdmin) {
 		const startsAtDate = new Date(startsAt)
 		if (startsAtDate > nowInTZ) {
 			workshopNotStarted = true

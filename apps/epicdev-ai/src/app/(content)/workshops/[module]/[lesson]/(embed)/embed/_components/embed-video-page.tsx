@@ -13,6 +13,7 @@ import {
 } from '@/lib/solutions-query'
 import {
 	getCachedMinimalWorkshop,
+	getWorkshopCohort,
 	getWorkshopProduct,
 } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -116,6 +117,9 @@ export async function EmbedVideoPage({
 	// Get workshop resource for startsAt information
 	const workshopResource = await getCachedMinimalWorkshop(moduleSlug)
 
+	// Get cohort resource if this workshop is part of a cohort
+	const cohortResource = await getWorkshopCohort(moduleSlug)
+
 	// Check permissions
 	if (!user || !abilityForResource.canViewLesson) {
 		await log.info('embed_video_unauthorized_access', {
@@ -135,7 +139,9 @@ export async function EmbedVideoPage({
 					moduleSlug={moduleSlug}
 					workshopProduct={workshopProduct}
 					workshopResource={workshopResource}
+					cohortResource={cohortResource}
 					hasAccess={!!user && abilityForResource.canViewLesson}
+					isAdmin={abilityForResource.canCreate}
 				/>
 				{thumbnailUrl && (
 					<Image
@@ -149,9 +155,9 @@ export async function EmbedVideoPage({
 		)
 	}
 
-	// Check if user has access but workshop hasn't started yet
+	// Check if user has access but workshop hasn't started yet (unless they're an admin)
 	const startsAt = workshopResource?.fields?.startsAt
-	if (startsAt) {
+	if (startsAt && !abilityForResource.canCreate) {
 		// Properly handle timezone comparison - get current time in workshop timezone to compare with stored date
 		const timezone = workshopResource?.fields?.timezone || 'America/Los_Angeles'
 		const nowInTZ = new Date(
@@ -179,7 +185,9 @@ export async function EmbedVideoPage({
 						moduleSlug={moduleSlug}
 						workshopProduct={workshopProduct}
 						workshopResource={workshopResource}
+						cohortResource={cohortResource}
 						hasAccess={true}
+						isAdmin={abilityForResource.canCreate}
 					/>
 					{thumbnailUrl && (
 						<Image
