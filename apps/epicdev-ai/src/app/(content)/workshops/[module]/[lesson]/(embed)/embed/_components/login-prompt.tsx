@@ -12,6 +12,9 @@ type LoginPromptProps = {
 	lessonSlug: string
 	moduleSlug: string
 	workshopProduct?: Product | null
+	workshopResource?: {
+		fields?: { startsAt?: string | null; timezone?: string }
+	} | null
 	hasAccess?: boolean
 }
 
@@ -23,6 +26,7 @@ export function LoginPrompt({
 	lessonSlug,
 	moduleSlug,
 	workshopProduct,
+	workshopResource,
 	hasAccess = false,
 }: LoginPromptProps) {
 	// Try to get parent URL for better callback experience
@@ -46,9 +50,11 @@ export function LoginPrompt({
 		: `${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`
 
 	// Check if this is a cohort product with limited enrollment
-	const { openEnrollment, closeEnrollment, startsAt } =
-		workshopProduct?.fields || {}
+	const { openEnrollment, closeEnrollment } = workshopProduct?.fields || {}
 	const isLimitedCohort = Boolean(openEnrollment || closeEnrollment)
+
+	// Get workshop start date from workshop resource
+	const startsAt = workshopResource?.fields?.startsAt
 
 	// Calculate purchase deadline, enrollment status, and workshop start status
 	let purchaseDeadlineMessage = null
@@ -56,13 +62,17 @@ export function LoginPrompt({
 	let workshopNotStarted = false
 	let workshopStartMessage = null
 
-	const timezone = 'America/Los_Angeles' // Default timezone
-	const now = new Date()
+	// Use workshop timezone if available, fallback to default
+	const timezone = workshopResource?.fields?.timezone || 'America/Los_Angeles'
+	// Properly handle timezone comparison - get current time in workshop timezone to compare with stored dates
+	const nowInTZ = new Date(
+		formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+	)
 
 	if (isLimitedCohort && closeEnrollment) {
 		const closesAt = new Date(closeEnrollment)
 
-		if (closesAt > now) {
+		if (closesAt > nowInTZ) {
 			const deadlineString = formatInTimeZone(
 				closesAt,
 				timezone,
@@ -82,7 +92,7 @@ export function LoginPrompt({
 	// Check if user has access but workshop hasn't started yet
 	if (hasAccess && startsAt) {
 		const startsAtDate = new Date(startsAt)
-		if (startsAtDate > now) {
+		if (startsAtDate > nowInTZ) {
 			workshopNotStarted = true
 			const startDateString = formatInTimeZone(
 				startsAtDate,

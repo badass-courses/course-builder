@@ -11,10 +11,14 @@ import {
 	getSolutionForLesson,
 	getVideoResourceForSolution,
 } from '@/lib/solutions-query'
-import { getWorkshopProduct } from '@/lib/workshops-query'
+import {
+	getCachedMinimalWorkshop,
+	getWorkshopProduct,
+} from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
+import { formatInTimeZone } from 'date-fns-tz'
 import { eq, sql } from 'drizzle-orm'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -109,6 +113,9 @@ export async function EmbedVideoPage({
 	// Get workshop product for purchase deadline information
 	const workshopProduct = await getWorkshopProduct(moduleSlug)
 
+	// Get workshop resource for startsAt information
+	const workshopResource = await getCachedMinimalWorkshop(moduleSlug)
+
 	// Check permissions
 	if (!user || !abilityForResource.canViewLesson) {
 		await log.info('embed_video_unauthorized_access', {
@@ -127,6 +134,7 @@ export async function EmbedVideoPage({
 					lessonSlug={lessonSlug}
 					moduleSlug={moduleSlug}
 					workshopProduct={workshopProduct}
+					workshopResource={workshopResource}
 					hasAccess={!!user && abilityForResource.canViewLesson}
 				/>
 				{thumbnailUrl && (
@@ -142,13 +150,16 @@ export async function EmbedVideoPage({
 	}
 
 	// Check if user has access but workshop hasn't started yet
-	const { startsAt } = workshopProduct?.fields || {}
+	const startsAt = workshopResource?.fields?.startsAt
 	if (startsAt) {
-		const timezone = 'America/Los_Angeles'
-		const now = new Date()
+		// Properly handle timezone comparison - get current time in workshop timezone to compare with stored date
+		const timezone = workshopResource?.fields?.timezone || 'America/Los_Angeles'
+		const nowInTZ = new Date(
+			formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+		)
 		const startsAtDate = new Date(startsAt)
 
-		if (startsAtDate > now) {
+		if (startsAtDate > nowInTZ) {
 			await log.info('embed_video_workshop_not_opened_yet', {
 				lessonSlug,
 				moduleSlug,
@@ -167,6 +178,7 @@ export async function EmbedVideoPage({
 						lessonSlug={lessonSlug}
 						moduleSlug={moduleSlug}
 						workshopProduct={workshopProduct}
+						workshopResource={workshopResource}
 						hasAccess={true}
 					/>
 					{thumbnailUrl && (
