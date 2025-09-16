@@ -2,49 +2,49 @@
 
 import * as React from 'react'
 import { Cohort, OfficeHourEvent } from '@/lib/cohort'
-import {
-	createOfficeHourEventsAction,
-	deleteOfficeHourEventAction,
-	updateOfficeHourEventAction,
-} from '../actions'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { parseAbsolute } from '@internationalized/date'
 import { format } from 'date-fns'
-import {
-	Calendar,
-	ChevronDown,
-	Pencil,
-	Plus,
-	Settings,
-	Trash,
-} from 'lucide-react'
-import { UseFormReturn } from 'react-hook-form'
+import { Clock, Plus, Trash } from 'lucide-react'
+import { useForm, UseFormReturn } from 'react-hook-form'
+import { z } from 'zod'
 
 import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-	Badge,
 	Button,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+	DateTimePicker,
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+	Form,
+	FormControl,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
-	Label,
-	ScrollArea,
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-	Switch,
 	Textarea,
 } from '@coursebuilder/ui'
+
+import {
+	createOfficeHourEventsAction,
+	deleteOfficeHourEventAction,
+	updateOfficeHourEventAction,
+} from '../actions'
+
+// Schema for the office hour form
+const OfficeHourFormSchema = z.object({
+	title: z.string().min(1, 'Title is required'),
+	startsAt: z.string().datetime(),
+	endsAt: z.string().datetime(),
+	description: z.string().optional(),
+	attendeeInstructions: z.string().optional(),
+})
+
+type OfficeHourForm = z.infer<typeof OfficeHourFormSchema>
 
 interface OfficeHoursFieldProps {
 	form: UseFormReturn<Cohort>
@@ -52,329 +52,373 @@ interface OfficeHoursFieldProps {
 }
 
 export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
-	// State management
-	const [officeHoursEnabled, setOfficeHoursEnabled] = React.useState(
-		cohort.fields.officeHours?.enabled || false,
-	)
-	const [hasGeneratedEvents, setHasGeneratedEvents] = React.useState(
-		(cohort.fields.officeHours?.events?.length || 0) > 0,
-	)
+	const [isCreating, setIsCreating] = React.useState(false)
 	const [editingEvent, setEditingEvent] =
 		React.useState<OfficeHourEvent | null>(null)
 
-	// Form state for quick setup
-	const [selectedDay, setSelectedDay] = React.useState('wednesday')
-	const [startTime, setStartTime] = React.useState('14:00')
-	const [duration, setDuration] = React.useState('60')
-
 	const events = cohort.fields.officeHours?.events || []
 
-	const generateWeeklyOfficeHours = React.useCallback(() => {
-		if (!cohort.fields.startsAt || !cohort.fields.endsAt) {
-			console.warn(
-				'Cohort start and end dates are required to generate office hours',
-			)
-			return
+	const createOfficeHourForm = useForm<OfficeHourForm>({
+		resolver: zodResolver(OfficeHourFormSchema),
+		defaultValues: {
+			title: '',
+			startsAt: '',
+			endsAt: '',
+			description: '',
+			attendeeInstructions: '',
+		},
+	})
+
+	const handleCreateOfficeHour = async (data: OfficeHourForm) => {
+		setIsCreating(true)
+		try {
+			const newEvent: OfficeHourEvent = {
+				id: `office-hours-${Date.now()}`,
+				title: data.title,
+				startsAt: data.startsAt,
+				endsAt: data.endsAt,
+				description: data.description,
+				attendeeInstructions: data.attendeeInstructions,
+				status: 'scheduled',
+			}
+
+			const result = await createOfficeHourEventsAction(cohort.id, [newEvent])
+
+			if (result.success) {
+				// Update form with new event
+				const updatedEvents = [...events, newEvent]
+				form.setValue('fields.officeHours.events', updatedEvents)
+				form.setValue('fields.officeHours.enabled', true)
+
+				// Reset the create form
+				createOfficeHourForm.reset()
+			} else {
+				console.error('Failed to create office hour:', result.error)
+			}
+		} catch (error) {
+			console.error('Error creating office hour:', error)
+		} finally {
+			setIsCreating(false)
 		}
+	}
 
-		const cohortStart = new Date(cohort.fields.startsAt)
-		const cohortEnd = new Date(cohort.fields.endsAt)
-		const durationMinutes = parseInt(duration)
-
-		// Map day names to numbers (0 = Sunday)
-		const dayMap: Record<string, number> = {
-			sunday: 0,
-			monday: 1,
-			tuesday: 2,
-			wednesday: 3,
-			thursday: 4,
-			friday: 5,
-			saturday: 6,
-		}
-
-		const targetDayOfWeek = dayMap[selectedDay]
-		const generatedEvents: OfficeHourEvent[] = []
-
-		// Find first occurrence of target day
-		let current = new Date(cohortStart)
-		while (current.getDay() !== targetDayOfWeek) {
-			current.setDate(current.getDate() + 1)
-		}
-
-		// Generate weekly events
-		while (current <= cohortEnd) {
-			const [hours, minutes] = startTime.split(':').map(Number)
-			const eventStart = new Date(current)
-			eventStart.setHours(hours, minutes, 0, 0)
-
-			const eventEnd = new Date(eventStart)
-			eventEnd.setMinutes(eventEnd.getMinutes() + durationMinutes)
-
-			const eventId = `office-hours-${format(eventStart, 'yyyy-MM-dd')}`
-
-			generatedEvents.push({
-				id: eventId,
-				title: `Office Hours - ${format(eventStart, 'MMM d, yyyy')}`,
-				startsAt: eventStart.toISOString(),
-				endsAt: eventEnd.toISOString(),
-				description: `Weekly office hours for cohort participants`,
-				status: 'scheduled' as const,
-			})
-
-			// Move to next week
-			current.setDate(current.getDate() + 7)
-		}
-
-		// Create events in database using server action
-		const result = await createOfficeHourEventsAction(
-			cohort.id,
-			generatedEvents,
-		)
-
-		if (result.success) {
-			// Update form with generated events
-			form.setValue('fields.officeHours.events', generatedEvents)
-			form.setValue('fields.officeHours.enabled', true)
-			form.setValue('fields.officeHours.defaultDuration', durationMinutes)
-
-			setHasGeneratedEvents(true)
-			setShowEventList(true)
-
-			console.log(`Generated ${generatedEvents.length} office hour events`)
-		} else {
-			console.error('Failed to create office hour events:', result.error)
-			// You might want to show a toast or error message to the user here
-		}
-	}, [cohort, selectedDay, startTime, duration, form])
-
-	const deleteEvent = React.useCallback(
-		async (eventId: string) => {
+	const handleDeleteEvent = async (eventId: string) => {
+		try {
 			const result = await deleteOfficeHourEventAction(cohort.id, eventId)
 
 			if (result.success) {
 				const updatedEvents = events.filter((event) => event.id !== eventId)
 				form.setValue('fields.officeHours.events', updatedEvents)
-
-				if (updatedEvents.length === 0) {
-					setHasGeneratedEvents(false)
-					setShowEventList(false)
-				}
 			} else {
 				console.error('Failed to delete office hour event:', result.error)
-				// You might want to show a toast or error message to the user here
 			}
-		},
-		[events, form, cohort.id],
+		} catch (error) {
+			console.error('Error deleting office hour:', error)
+		}
+	}
+
+	return (
+		<div className="px-5">
+			<div className="mb-2 text-lg font-semibold">Office Hours</div>
+			<ul className="flex flex-col gap-2">
+				{events.map((event) => (
+					<OfficeHourItem
+						key={event.id}
+						event={event}
+						cohortId={cohort.id}
+						onDelete={() => handleDeleteEvent(event.id)}
+						onEdit={setEditingEvent}
+					/>
+				))}
+			</ul>
+
+			<Dialog modal={true}>
+				<DialogTrigger asChild>
+					<Button className="mt-2" variant="secondary">
+						<Plus className="size-4" /> Add Office Hours
+					</Button>
+				</DialogTrigger>
+				<DialogContent className="max-w-2xl">
+					<DialogHeader>
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
+							<Clock className="mr-1 size-4" /> Schedule Office Hours
+						</DialogTitle>
+						<DialogDescription>
+							Schedule office hours for cohort participants. Times are in
+							Pacific timezone.
+						</DialogDescription>
+					</DialogHeader>
+					<CreateOfficeHourForm
+						form={createOfficeHourForm}
+						onSubmit={handleCreateOfficeHour}
+						isCreating={isCreating}
+					/>
+				</DialogContent>
+			</Dialog>
+		</div>
 	)
+}
 
-	const handleOfficeHoursToggle = React.useCallback(
-		(enabled: boolean) => {
-			setOfficeHoursEnabled(enabled)
-			form.setValue('fields.officeHours.enabled', enabled)
-
-			if (!enabled) {
-				// Reset all related state
-				setHasGeneratedEvents(false)
-				setEditingEvent(null)
-			}
-		},
-		[form],
+function OfficeHourItem({
+	event,
+	cohortId,
+	onDelete,
+	onEdit,
+}: {
+	event: OfficeHourEvent
+	cohortId: string
+	onDelete: () => void
+	onEdit: (event: OfficeHourEvent) => void
+}) {
+	const startDate = new Date(event.startsAt)
+	const endDate = new Date(event.endsAt)
+	const duration = Math.round(
+		(endDate.getTime() - startDate.getTime()) / (1000 * 60),
 	)
 
 	return (
-		<div className="space-y-4 px-5">
-			{/* Basic Toggle */}
-			<FormField
-				control={form.control}
-				name="fields.officeHours.enabled"
-				render={({ field }) => (
-					<FormItem>
-						<div className="flex items-center justify-between">
-							<div>
-								<FormLabel className="text-lg font-bold">
-									Office Hours
-								</FormLabel>
-								<p className="text-muted-foreground text-sm">
-									Schedule regular office hours for cohort participants
-								</p>
-							</div>
-							<Switch
-								checked={field.value || officeHoursEnabled}
-								onCheckedChange={(checked) => {
-									field.onChange(checked)
-									handleOfficeHoursToggle(checked)
-								}}
-							/>
+		<li className="border-primary/50 bg-card/50 flex items-center justify-between gap-2 rounded-md border px-3 py-2 shadow-sm">
+			<Dialog modal={true}>
+				<DialogTrigger>
+					<div className="flex flex-col items-start">
+						<span className="text-primary inline-flex cursor-pointer items-center gap-2 text-left font-semibold transition-colors hover:underline">
+							{event.title}
+						</span>
+						<div className="flex flex-col text-left">
+							<span className="text-muted-foreground inline-flex items-center gap-2 text-sm">
+								{format(startDate, 'MMM d, yyyy')} at{' '}
+								{format(startDate, 'h:mm a')} - {format(endDate, 'h:mm a')} PT
+							</span>
+							<span className="text-muted-foreground text-sm">
+								{duration} minutes
+							</span>
 						</div>
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
+					</div>
+				</DialogTrigger>
+				<DialogContent className="max-w-2xl">
+					<DialogHeader>
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
+							<Clock className="mr-1 size-4" /> {event.title}
+						</DialogTitle>
+						<DialogDescription>
+							Edit this office hours session.
+						</DialogDescription>
+					</DialogHeader>
+					<EditOfficeHourForm event={event} cohortId={cohortId} />
+				</DialogContent>
+			</Dialog>
+			<div className="flex items-center gap-2">
+				<Button size="sm" variant="outline" type="button" onClick={onDelete}>
+					<Trash className="size-4" />
+				</Button>
+			</div>
+		</li>
+	)
+}
 
-			{/* Quick Setup (when enabled) */}
-			{officeHoursEnabled && (
-				<Card>
-					<CardHeader>
-						<CardTitle>Quick Setup</CardTitle>
-						<CardDescription>
-							Generate weekly office hours for your cohort duration
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="grid gap-4">
-							{/* Day and time selectors */}
-							<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-								<div>
-									<Label>Day of Week</Label>
-									<Select value={selectedDay} onValueChange={setSelectedDay}>
-										<SelectTrigger>
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											{[
-												'Monday',
-												'Tuesday',
-												'Wednesday',
-												'Thursday',
-												'Friday',
-											].map((day) => (
-												<SelectItem key={day} value={day.toLowerCase()}>
-													{day}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
-								<div>
-									<Label>Start Time</Label>
-									<Input
-										type="time"
-										value={startTime}
-										onChange={(e) => setStartTime(e.target.value)}
+function CreateOfficeHourForm({
+	form,
+	onSubmit,
+	isCreating,
+}: {
+	form: UseFormReturn<OfficeHourForm>
+	onSubmit: (data: OfficeHourForm) => void
+	isCreating: boolean
+}) {
+	// Set smart defaults
+	React.useEffect(() => {
+		const now = new Date()
+		const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+		const startTime = new Date(nextWeek)
+		startTime.setHours(14, 0, 0, 0) // 2 PM Pacific
+
+		const endTime = new Date(startTime.getTime() + 60 * 60 * 1000) // 1 hour later
+
+		form.setValue('startsAt', startTime.toISOString())
+		form.setValue('endsAt', endTime.toISOString())
+		form.setValue('title', `Office Hours - ${format(startTime, 'MMM d, yyyy')}`)
+	}, [form])
+
+	const watchedStartsAt = form.watch('startsAt')
+
+	// Auto-update end time when start time changes
+	React.useEffect(() => {
+		if (watchedStartsAt) {
+			const startDate = new Date(watchedStartsAt)
+			const endDate = new Date(startDate.getTime() + 60 * 60 * 1000) // 1 hour later
+			form.setValue('endsAt', endDate.toISOString())
+		}
+	}, [watchedStartsAt, form])
+
+	return (
+		<Form {...form}>
+			<form className="flex flex-col gap-4">
+				<FormField
+					control={form.control}
+					name="title"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Title</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="Office Hours - MMM d, yyyy" />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<div className="grid grid-cols-2 gap-4">
+					<FormField
+						control={form.control}
+						name="startsAt"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Starts At (PT)</FormLabel>
+								<FormControl>
+									<DateTimePicker
+										{...field}
+										value={
+											field.value
+												? parseAbsolute(
+														new Date(field.value).toISOString(),
+														'America/Los_Angeles',
+													)
+												: null
+										}
+										onChange={(date) => {
+											field.onChange(
+												date
+													? date.toDate('America/Los_Angeles').toISOString()
+													: '',
+											)
+										}}
+										shouldCloseOnSelect={false}
+										granularity="minute"
 									/>
-								</div>
-								<div>
-									<Label>Duration</Label>
-									<Select value={duration} onValueChange={setDuration}>
-										<SelectTrigger>
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="30">30 min</SelectItem>
-											<SelectItem value="60">1 hour</SelectItem>
-											<SelectItem value="90">90 min</SelectItem>
-											<SelectItem value="120">2 hours</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-
-							<Button
-								type="button"
-								onClick={generateWeeklyOfficeHours}
-								className="w-full"
-								disabled={!cohort.fields.startsAt || !cohort.fields.endsAt}
-							>
-								<Calendar className="mr-2 h-4 w-4" />
-								Generate Weekly Office Hours
-							</Button>
-
-							{!cohort.fields.startsAt ||
-								(!cohort.fields.endsAt && (
-									<p className="text-muted-foreground text-center text-sm">
-										Set cohort start and end dates first
-									</p>
-								))}
-						</div>
-					</CardContent>
-				</Card>
-			)}
-
-			{/* Event List (when events exist) */}
-			{events.length > 0 && (
-				<Card>
-					<CardHeader>
-						<div className="flex items-center justify-between">
-							<CardTitle>Scheduled Office Hours</CardTitle>
-							<Badge variant="secondary">{events.length} sessions</Badge>
-						</div>
-					</CardHeader>
-					<CardContent>
-						<div className="space-y-2">
-							{events.slice(0, 5).map((event) => (
-								<div
-									key={event.id}
-									className="flex items-center justify-between rounded border p-3"
-								>
-									<div className="flex-1">
-										<div className="font-medium">
-											{format(new Date(event.startsAt), 'MMM d, yyyy')}
-										</div>
-										<div className="text-muted-foreground text-sm">
-											{format(new Date(event.startsAt), 'h:mm a')} -{' '}
-											{format(new Date(event.endsAt), 'h:mm a')}
-										</div>
-									</div>
-									<div className="flex gap-1">
-										<Button
-											size="sm"
-											variant="ghost"
-											type="button"
-											onClick={() => setEditingEvent(event)}
-										>
-											<Pencil className="h-3 w-3" />
-										</Button>
-										<Button
-											size="sm"
-											variant="ghost"
-											type="button"
-											onClick={() => deleteEvent(event.id)}
-										>
-											<Trash className="h-3 w-3" />
-										</Button>
-									</div>
-								</div>
-							))}
-							{events.length > 5 && (
-								<p className="text-muted-foreground text-center text-sm">
-									And {events.length - 5} more sessions...
-								</p>
-							)}
-						</div>
-
-						{/* Additional Options */}
-						{events.length > 0 && (
-							<Accordion type="single" collapsible className="mt-4">
-								<AccordionItem value="advanced-options">
-									<AccordionTrigger className="text-sm">
-										Advanced Options
-									</AccordionTrigger>
-									<AccordionContent>
-										<div className="space-y-4 pt-2">
-											<div>
-												<Label>Default Instructions for Attendees</Label>
-												<Textarea
-													placeholder="Instructions shown to all office hour attendees..."
-													className="mt-2"
-												/>
-											</div>
-											<div className="flex gap-2">
-												<Button variant="outline" size="sm" type="button">
-													<Plus className="mr-2 h-3 w-3" />
-													Add Single Event
-												</Button>
-												<Button variant="outline" size="sm" type="button">
-													Bulk Edit Times
-												</Button>
-											</div>
-										</div>
-									</AccordionContent>
-								</AccordionItem>
-							</Accordion>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
 						)}
-					</CardContent>
-				</Card>
+					/>
+
+					<FormField
+						control={form.control}
+						name="endsAt"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Ends At (PT)</FormLabel>
+								<FormControl>
+									<DateTimePicker
+										{...field}
+										value={
+											field.value
+												? parseAbsolute(
+														new Date(field.value).toISOString(),
+														'America/Los_Angeles',
+													)
+												: null
+										}
+										onChange={(date) => {
+											field.onChange(
+												date
+													? date.toDate('America/Los_Angeles').toISOString()
+													: '',
+											)
+										}}
+										shouldCloseOnSelect={false}
+										granularity="minute"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Description (optional)</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									placeholder="Brief description of what will be covered..."
+									rows={3}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="attendeeInstructions"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Instructions for Attendees (optional)</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									placeholder="Meeting link, preparation instructions, etc..."
+									rows={3}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<DialogFooter>
+					<DialogTrigger asChild>
+						<Button
+							type="button"
+							onClick={() => form.handleSubmit(onSubmit)()}
+							disabled={isCreating}
+						>
+							{isCreating ? 'Creating...' : 'Create Office Hours'}
+						</Button>
+					</DialogTrigger>
+				</DialogFooter>
+			</form>
+		</Form>
+	)
+}
+
+function EditOfficeHourForm({
+	event,
+	cohortId,
+}: {
+	event: OfficeHourEvent
+	cohortId: string
+}) {
+	// This would be similar to CreateOfficeHourForm but pre-populated with event data
+	// For now, just show the event details
+	return (
+		<div className="space-y-4">
+			<div>
+				<strong>Title:</strong> {event.title}
+			</div>
+			<div>
+				<strong>Time:</strong>{' '}
+				{format(new Date(event.startsAt), 'MMM d, yyyy h:mm a')} -{' '}
+				{format(new Date(event.endsAt), 'h:mm a')} PT
+			</div>
+			{event.description && (
+				<div>
+					<strong>Description:</strong> {event.description}
+				</div>
 			)}
+			{event.attendeeInstructions && (
+				<div>
+					<strong>Instructions:</strong> {event.attendeeInstructions}
+				</div>
+			)}
+			<p className="text-muted-foreground text-sm">
+				Edit functionality coming soon...
+			</p>
 		</div>
 	)
 }
