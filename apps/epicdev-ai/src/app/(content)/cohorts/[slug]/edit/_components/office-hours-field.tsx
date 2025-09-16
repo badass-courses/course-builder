@@ -19,6 +19,10 @@ import {
 import { UseFormReturn } from 'react-hook-form'
 
 import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
 	Badge,
 	Button,
 	Card,
@@ -26,9 +30,6 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -42,13 +43,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 	Switch,
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
 	Textarea,
 } from '@coursebuilder/ui'
-import { cn } from '@coursebuilder/ui/utils/cn'
 
 interface OfficeHoursFieldProps {
 	form: UseFormReturn<Cohort>
@@ -56,17 +52,13 @@ interface OfficeHoursFieldProps {
 }
 
 export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
-	// Progressive disclosure state management
+	// State management
 	const [officeHoursEnabled, setOfficeHoursEnabled] = React.useState(
 		cohort.fields.officeHours?.enabled || false,
 	)
 	const [hasGeneratedEvents, setHasGeneratedEvents] = React.useState(
 		(cohort.fields.officeHours?.events?.length || 0) > 0,
 	)
-	const [showEventList, setShowEventList] = React.useState(false)
-	const [showAdvancedOptions, setShowAdvancedOptions] = React.useState(false)
-	const [advancedOpen, setAdvancedOpen] = React.useState(false)
-	const [showManualAdd, setShowManualAdd] = React.useState(false)
 	const [editingEvent, setEditingEvent] =
 		React.useState<OfficeHourEvent | null>(null)
 
@@ -76,17 +68,6 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 	const [duration, setDuration] = React.useState('60')
 
 	const events = cohort.fields.officeHours?.events || []
-
-	// Smart defaults based on cohort data
-	const suggestedStartTime = React.useMemo(() => {
-		// Analyze existing events to suggest a time
-		return '14:00' // 2 PM default
-	}, [cohort])
-
-	const suggestedDayOfWeek = React.useMemo(() => {
-		// Avoid conflicts with existing workshops
-		return 'wednesday'
-	}, [cohort.resources])
 
 	const generateWeeklyOfficeHours = React.useCallback(() => {
 		if (!cohort.fields.startsAt || !cohort.fields.endsAt) {
@@ -194,9 +175,6 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 			if (!enabled) {
 				// Reset all related state
 				setHasGeneratedEvents(false)
-				setShowEventList(false)
-				setShowAdvancedOptions(false)
-				setShowManualAdd(false)
 				setEditingEvent(null)
 			}
 		},
@@ -205,19 +183,21 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 
 	return (
 		<div className="space-y-4 px-5">
-			{/* Level 1: Basic Toggle (Always Visible) */}
-			<div className="flex items-center justify-between">
-				<div>
-					<Label>Office Hours</Label>
-					<p className="text-muted-foreground text-sm">
-						Schedule regular office hours for cohort participants
-					</p>
-				</div>
-				<FormField
-					control={form.control}
-					name="fields.officeHours.enabled"
-					render={({ field }) => (
-						<FormItem>
+			{/* Basic Toggle */}
+			<FormField
+				control={form.control}
+				name="fields.officeHours.enabled"
+				render={({ field }) => (
+					<FormItem>
+						<div className="flex items-center justify-between">
+							<div>
+								<FormLabel className="text-lg font-bold">
+									Office Hours
+								</FormLabel>
+								<p className="text-muted-foreground text-sm">
+									Schedule regular office hours for cohort participants
+								</p>
+							</div>
 							<Switch
 								checked={field.value || officeHoursEnabled}
 								onCheckedChange={(checked) => {
@@ -225,15 +205,15 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 									handleOfficeHoursToggle(checked)
 								}}
 							/>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-			</div>
+						</div>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
 
-			{/* Level 2: Quick Setup (Revealed when enabled) */}
+			{/* Quick Setup (when enabled) */}
 			{officeHoursEnabled && (
-				<Card className="mt-4">
+				<Card>
 					<CardHeader>
 						<CardTitle>Quick Setup</CardTitle>
 						<CardDescription>
@@ -242,31 +222,29 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 					</CardHeader>
 					<CardContent>
 						<div className="grid gap-4">
-							{/* Day selector */}
-							<div>
-								<Label>Day of Week</Label>
-								<Select value={selectedDay} onValueChange={setSelectedDay}>
-									<SelectTrigger>
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										{[
-											'Monday',
-											'Tuesday',
-											'Wednesday',
-											'Thursday',
-											'Friday',
-										].map((day) => (
-											<SelectItem key={day} value={day.toLowerCase()}>
-												{day}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
-
-							{/* Time selector */}
-							<div className="grid grid-cols-2 gap-2">
+							{/* Day and time selectors */}
+							<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+								<div>
+									<Label>Day of Week</Label>
+									<Select value={selectedDay} onValueChange={setSelectedDay}>
+										<SelectTrigger>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											{[
+												'Monday',
+												'Tuesday',
+												'Wednesday',
+												'Thursday',
+												'Friday',
+											].map((day) => (
+												<SelectItem key={day} value={day.toLowerCase()}>
+													{day}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</div>
 								<div>
 									<Label>Start Time</Label>
 									<Input
@@ -301,31 +279,20 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 								Generate Weekly Office Hours
 							</Button>
 
-							{!cohort.fields.startsAt || !cohort.fields.endsAt ? (
-								<p className="text-muted-foreground text-center text-sm">
-									Set cohort start and end dates first
-								</p>
-							) : null}
-
-							{/* Show customize link after generation */}
-							{hasGeneratedEvents && (
-								<Button
-									type="button"
-									variant="ghost"
-									onClick={() => setShowAdvancedOptions(true)}
-									className="text-sm"
-								>
-									Customize individual sessions →
-								</Button>
-							)}
+							{!cohort.fields.startsAt ||
+								(!cohort.fields.endsAt && (
+									<p className="text-muted-foreground text-center text-sm">
+										Set cohort start and end dates first
+									</p>
+								))}
 						</div>
 					</CardContent>
 				</Card>
 			)}
 
-			{/* Level 3: Event List Management (Revealed after quick setup or manual trigger) */}
-			{(hasGeneratedEvents || showEventList) && (
-				<Card className="mt-4">
+			{/* Event List (when events exist) */}
+			{events.length > 0 && (
+				<Card>
 					<CardHeader>
 						<div className="flex items-center justify-between">
 							<CardTitle>Scheduled Office Hours</CardTitle>
@@ -333,199 +300,80 @@ export function OfficeHoursField({ form, cohort }: OfficeHoursFieldProps) {
 						</div>
 					</CardHeader>
 					<CardContent>
-						<ScrollArea className="h-[300px]">
-							<div className="space-y-2">
-								{events.map((event) => (
-									<div
-										key={event.id}
-										className="flex items-center justify-between rounded border p-2"
-									>
-										<div className="flex-1">
-											<div className="font-medium">
-												{format(new Date(event.startsAt), 'MMM d, yyyy')}
-											</div>
-											<div className="text-muted-foreground text-sm">
-												{format(new Date(event.startsAt), 'h:mm a')} -{' '}
-												{format(new Date(event.endsAt), 'h:mm a')}
-											</div>
+						<div className="space-y-2">
+							{events.slice(0, 5).map((event) => (
+								<div
+									key={event.id}
+									className="flex items-center justify-between rounded border p-3"
+								>
+									<div className="flex-1">
+										<div className="font-medium">
+											{format(new Date(event.startsAt), 'MMM d, yyyy')}
 										</div>
-										<div className="flex gap-1">
-											<Button
-												size="sm"
-												variant="ghost"
-												type="button"
-												onClick={() => setEditingEvent(event)}
-											>
-												<Pencil className="h-3 w-3" />
-											</Button>
-											<Button
-												size="sm"
-												variant="ghost"
-												type="button"
-												onClick={() => deleteEvent(event.id)}
-											>
-												<Trash className="h-3 w-3" />
-											</Button>
+										<div className="text-muted-foreground text-sm">
+											{format(new Date(event.startsAt), 'h:mm a')} -{' '}
+											{format(new Date(event.endsAt), 'h:mm a')}
 										</div>
 									</div>
-								))}
-							</div>
-						</ScrollArea>
-
-						{/* Advanced options trigger */}
-						<div className="mt-4 flex gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								type="button"
-								onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-							>
-								<Settings className="mr-2 h-3 w-3" />
-								Advanced Options
-							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								type="button"
-								onClick={() => setShowManualAdd(true)}
-							>
-								<Plus className="mr-2 h-3 w-3" />
-								Add Single Event
-							</Button>
+									<div className="flex gap-1">
+										<Button
+											size="sm"
+											variant="ghost"
+											type="button"
+											onClick={() => setEditingEvent(event)}
+										>
+											<Pencil className="h-3 w-3" />
+										</Button>
+										<Button
+											size="sm"
+											variant="ghost"
+											type="button"
+											onClick={() => deleteEvent(event.id)}
+										>
+											<Trash className="h-3 w-3" />
+										</Button>
+									</div>
+								</div>
+							))}
+							{events.length > 5 && (
+								<p className="text-muted-foreground text-center text-sm">
+									And {events.length - 5} more sessions...
+								</p>
+							)}
 						</div>
-					</CardContent>
-				</Card>
-			)}
 
-			{/* Level 4: Advanced Options (Hidden by default, revealed on demand) */}
-			{showAdvancedOptions && (
-				<Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
-					<CollapsibleTrigger asChild>
-						<Button
-							variant="ghost"
-							className="w-full justify-between"
-							type="button"
-						>
-							<span>Advanced Configuration</span>
-							<ChevronDown
-								className={cn(
-									'h-4 w-4 transition-transform',
-									advancedOpen && 'rotate-180 transform',
-								)}
-							/>
-						</Button>
-					</CollapsibleTrigger>
-					<CollapsibleContent>
-						<Card>
-							<CardContent className="pt-6">
-								<Tabs defaultValue="bulk">
-									<TabsList className="grid w-full grid-cols-3">
-										<TabsTrigger value="bulk">Bulk Actions</TabsTrigger>
-										<TabsTrigger value="templates">Templates</TabsTrigger>
-										<TabsTrigger value="settings">Settings</TabsTrigger>
-									</TabsList>
-
-									<TabsContent value="bulk" className="space-y-4">
-										{/* Bulk operations */}
-										<div className="space-y-2">
-											<Label>Bulk Time Adjustment</Label>
-											<div className="flex gap-2">
-												<Input type="number" placeholder="Minutes to shift" />
-												<Button variant="outline" type="button">
-													Shift All Events
-												</Button>
-											</div>
-										</div>
-
-										<div className="space-y-2">
-											<Label>Recurring Pattern</Label>
-											<Select>
-												<SelectTrigger>
-													<SelectValue placeholder="Select pattern" />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="weekly">Weekly</SelectItem>
-													<SelectItem value="biweekly">Bi-weekly</SelectItem>
-													<SelectItem value="custom">
-														Custom schedule
-													</SelectItem>
-												</SelectContent>
-											</Select>
-										</div>
-									</TabsContent>
-
-									<TabsContent value="templates" className="space-y-4">
-										{/* Save/load templates */}
-										<div className="space-y-2">
-											<Label>Save as Template</Label>
-											<div className="flex gap-2">
-												<Input placeholder="Template name" />
-												<Button variant="outline" type="button">
-													Save
-												</Button>
-											</div>
-										</div>
-
-										<div className="space-y-2">
-											<Label>Load Template</Label>
-											<Select>
-												<SelectTrigger>
-													<SelectValue placeholder="Select template" />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="weekly-standard">
-														Weekly Standard
-													</SelectItem>
-													<SelectItem value="biweekly-extended">
-														Bi-weekly Extended
-													</SelectItem>
-												</SelectContent>
-											</Select>
-										</div>
-									</TabsContent>
-
-									<TabsContent value="settings" className="space-y-4">
-										{/* Event defaults */}
-										<div className="space-y-4">
+						{/* Additional Options */}
+						{events.length > 0 && (
+							<Accordion type="single" collapsible className="mt-4">
+								<AccordionItem value="advanced-options">
+									<AccordionTrigger className="text-sm">
+										Advanced Options
+									</AccordionTrigger>
+									<AccordionContent>
+										<div className="space-y-4 pt-2">
 											<div>
-												<Label>Default Instructions</Label>
+												<Label>Default Instructions for Attendees</Label>
 												<Textarea
-													placeholder="Instructions shown to attendees..."
-													className="min-h-[100px]"
+													placeholder="Instructions shown to all office hour attendees..."
+													className="mt-2"
 												/>
 											</div>
-
-											<div>
-												<Label>Calendar Integration</Label>
-												<div className="flex items-center space-x-2">
-													<Switch />
-													<Label className="font-normal">
-														Auto-create calendar events
-													</Label>
-												</div>
-											</div>
-
-											<div>
-												<Label>Reminder Settings</Label>
-												<Select defaultValue="24">
-													<SelectTrigger>
-														<SelectValue />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectItem value="0">No reminder</SelectItem>
-														<SelectItem value="1">1 hour before</SelectItem>
-														<SelectItem value="24">24 hours before</SelectItem>
-														<SelectItem value="48">48 hours before</SelectItem>
-													</SelectContent>
-												</Select>
+											<div className="flex gap-2">
+												<Button variant="outline" size="sm" type="button">
+													<Plus className="mr-2 h-3 w-3" />
+													Add Single Event
+												</Button>
+												<Button variant="outline" size="sm" type="button">
+													Bulk Edit Times
+												</Button>
 											</div>
 										</div>
-									</TabsContent>
-								</Tabs>
-							</CardContent>
-						</Card>
-					</CollapsibleContent>
-				</Collapsible>
+									</AccordionContent>
+								</AccordionItem>
+							</Accordion>
+						)}
+					</CardContent>
+				</Card>
 			)}
 		</div>
 	)
