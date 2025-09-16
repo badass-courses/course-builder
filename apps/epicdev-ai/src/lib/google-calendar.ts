@@ -87,6 +87,27 @@ function isBase64(str: string): boolean {
 export async function createGoogleCalendarEvent(
 	eventDetails: calendar_v3.Schema$Event,
 ): Promise<calendar_v3.Schema$Event> {
+	// Check if calendar sync should be skipped
+	if (env.SKIP_CALENDAR_SYNC) {
+		const mockEventId = `mock-event-${Date.now()}`
+		console.log(
+			`[SKIP_CALENDAR_SYNC] Would create Google Calendar event: ${eventDetails.summary}`,
+		)
+		console.log(
+			'[SKIP_CALENDAR_SYNC] Event details:',
+			JSON.stringify(eventDetails, null, 2),
+		)
+		console.log('[SKIP_CALENDAR_SYNC] Mock event ID:', mockEventId)
+		// Return a mock response with the event details and generated ID
+		return {
+			...eventDetails,
+			id: mockEventId,
+			status: 'confirmed',
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+		}
+	}
+
 	let authClient
 	let calendar
 	try {
@@ -145,6 +166,25 @@ export async function updateGoogleCalendarEvent(
 	if (!calendarEventId) {
 		throw new Error('Missing calendarEventId for update.')
 	}
+
+	// Check if calendar sync should be skipped
+	if (env.SKIP_CALENDAR_SYNC) {
+		console.log(
+			`[SKIP_CALENDAR_SYNC] Would update Google Calendar event: ${calendarEventId}`,
+		)
+		console.log(
+			'[SKIP_CALENDAR_SYNC] Update details:',
+			JSON.stringify(eventDetails, null, 2),
+		)
+		// Return a mock response with the updated event details
+		return {
+			...eventDetails,
+			id: calendarEventId,
+			status: 'confirmed',
+			updated: new Date().toISOString(),
+		} as calendar_v3.Schema$Event
+	}
+
 	try {
 		const authClient = getAuthClient()
 		const calendar = google.calendar({ version: 'v3', auth: authClient })
@@ -201,6 +241,22 @@ export async function getGoogleCalendarEvent(
 	if (!calendarEventId) {
 		throw new Error('Missing calendarEventId for get.')
 	}
+
+	// Check if calendar sync should be skipped
+	if (env.SKIP_CALENDAR_SYNC) {
+		console.log(
+			`[SKIP_CALENDAR_SYNC] Would get Google Calendar event: ${calendarEventId}`,
+		)
+		// Return a mock event
+		return {
+			id: calendarEventId,
+			status: 'confirmed',
+			summary: `Mock Event ${calendarEventId}`,
+			created: new Date().toISOString(),
+			updated: new Date().toISOString(),
+		}
+	}
+
 	try {
 		const authClient = getAuthClient()
 		const calendar = google.calendar({ version: 'v3', auth: authClient })
@@ -237,6 +293,20 @@ export async function addUserToGoogleCalendarEvent(
 	calendarEventId: string,
 	userEmail: string,
 ) {
+	// Check if calendar sync should be skipped
+	if (env.SKIP_CALENDAR_SYNC) {
+		console.log(`[SKIP_CALENDAR_SYNC] Would add user to Google Calendar event`)
+		console.log(`[SKIP_CALENDAR_SYNC] Event ID: ${calendarEventId}`)
+		console.log(`[SKIP_CALENDAR_SYNC] User email: ${userEmail}`)
+		// Return a mock response
+		return {
+			id: calendarEventId,
+			status: 'confirmed',
+			attendees: [{ email: userEmail }],
+			updated: new Date().toISOString(),
+		}
+	}
+
 	const authClient = getAuthClient()
 	const calendar = google.calendar({ version: 'v3', auth: authClient })
 
@@ -266,6 +336,22 @@ export async function removeUserFromGoogleCalendarEvent(
 	calendarEventId: string,
 	userEmail: string,
 ) {
+	// Check if calendar sync should be skipped
+	if (env.SKIP_CALENDAR_SYNC) {
+		console.log(
+			`[SKIP_CALENDAR_SYNC] Would remove user from Google Calendar event`,
+		)
+		console.log(`[SKIP_CALENDAR_SYNC] Event ID: ${calendarEventId}`)
+		console.log(`[SKIP_CALENDAR_SYNC] User email: ${userEmail}`)
+		// Return a mock response
+		return {
+			id: calendarEventId,
+			status: 'confirmed',
+			attendees: [],
+			updated: new Date().toISOString(),
+		}
+	}
+
 	const authClient = getAuthClient()
 	const calendar = google.calendar({ version: 'v3', auth: authClient })
 
