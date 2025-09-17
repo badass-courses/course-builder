@@ -13,7 +13,7 @@ import { getProduct } from '@/lib/products-query'
 import { getProductPurchaseData } from '@/lib/products/products.service'
 import { getServerAuthSession } from '@/server/auth'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { count, eq } from 'drizzle-orm'
+import { and, count, eq } from 'drizzle-orm'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, Purchase } from '@coursebuilder/core/schemas'
@@ -98,11 +98,13 @@ async function ProductPurchaseDetails({
 		offset,
 	})
 
-	// Get purchase count for calendar invite section
+	// Get purchase count for calendar invite section (only Valid purchases)
 	const { count: purchaseCount } = await db
 		.select({ count: count() })
 		.from(purchases)
-		.where(eq(purchases.productId, product.id))
+		.where(
+			and(eq(purchases.productId, product.id), eq(purchases.status, 'Valid')),
+		)
 		.then((res) => res[0] ?? { count: 0 })
 
 	// Get calendar invite status for cohort products
