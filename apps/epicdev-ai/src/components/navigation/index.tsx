@@ -55,7 +55,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'h-(--nav-height) bg-card ring-gray-800/7.5 relative z-50 mb-3 mt-2 flex w-full items-center justify-between rounded-lg px-1.5 pl-0 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ring-1 print:hidden',
+				'h-(--nav-height) bg-card ring-gray-800/7.5 relative z-50 mb-3 mt-2 flex w-full items-center justify-between rounded-lg shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ring-1 print:hidden',
 				{
 					// 'px-5': !withContainer,
 				},
@@ -150,7 +150,7 @@ const Navigation = ({
 							/>
 						)} */}
 						<UserMenu />
-						<ActiveEventButton className="flex items-center pl-2" />
+						{/* <ActiveEventButton className="flex items-center pl-2" /> */}
 						{/* <ThemeToggle className="" /> */}
 					</ul>
 				</nav>
