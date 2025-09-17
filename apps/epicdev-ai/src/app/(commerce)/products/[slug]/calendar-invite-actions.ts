@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { contentResourceProduct, contentResourceResource } from '@/db/schema'
-import { BULK_CALENDAR_INVITE_EVENT } from '@/inngest/functions/bulk-calendar-invites'
+import { BULK_CALENDAR_INVITE_EVENT } from '@/inngest/events/bulk-calendar-invites'
 import { EVENT_HOST_EMAIL } from '@/inngest/functions/calendar-sync'
 import { inngest } from '@/inngest/inngest.server'
 import { getEventOrEventSeries } from '@/lib/events-query'

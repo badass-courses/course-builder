@@ -12,23 +12,12 @@ import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { NonRetriableError } from 'inngest'
 
+import {
+	BULK_CALENDAR_INVITE_EVENT,
+	type BulkCalendarInviteSent,
+} from '../events/bulk-calendar-invites'
 import { inngest } from '../inngest.server'
 
-/**
- * Custom event for bulk calendar invite processing
- */
-export const BULK_CALENDAR_INVITE_EVENT = 'calendar/bulk-invite-requested'
-
-export type BulkCalendarInvitePayload = {
-	name: typeof BULK_CALENDAR_INVITE_EVENT
-	data: {
-		productId: string
-		requestedBy: {
-			id: string
-			email: string
-		}
-	}
-}
 /**
  * Gets office hours events associated with a product
  */
@@ -112,7 +101,7 @@ export const processBulkCalendarInvites = inngest.createFunction(
 		name: 'Process Bulk Calendar Invites',
 	},
 	{ event: BULK_CALENDAR_INVITE_EVENT },
-	async ({ event, step }: { event: BulkCalendarInvitePayload; step: any }) => {
+	async ({ event, step }: { event: BulkCalendarInviteSent; step: any }) => {
 		const { productId, requestedBy } = event.data
 
 		await log.info('bulk_calendar_invites.started', {
@@ -226,10 +215,16 @@ export const processBulkCalendarInvites = inngest.createFunction(
 						// Get existing attendees (excluding host)
 						const existingAttendees =
 							await getGoogleCalendarEventAttendees(calendarId)
+
+						// Skip this event if we can't get attendees (event not found)
+						if (existingAttendees === null) {
+							continue
+						}
+
 						const existingEmails = new Set(
 							existingAttendees
-								?.filter((a) => a.email !== EVENT_HOST_EMAIL)
-								.map((a) => a.email) || [],
+								.filter((a) => a.email !== EVENT_HOST_EMAIL)
+								.map((a) => a.email.toLowerCase()),
 						)
 
 						let successCount = 0
@@ -241,8 +236,8 @@ export const processBulkCalendarInvites = inngest.createFunction(
 							purchaserIndex,
 							purchaser,
 						] of purchaseData.data.entries()) {
-							// Skip if already invited
-							if (existingEmails.has(purchaser.email)) {
+							// Skip if already invited (case-insensitive check)
+							if (existingEmails.has(purchaser.email.toLowerCase())) {
 								skippedCount++
 								continue
 							}
@@ -259,6 +254,8 @@ export const processBulkCalendarInvites = inngest.createFunction(
 
 							if (inviteResult.success) {
 								successCount++
+								// Add to existing emails set to prevent re-inviting in same run
+								existingEmails.add(purchaser.email.toLowerCase())
 							} else {
 								failedCount++
 								await log.warn('bulk_calendar_invites.invite_failed', {
@@ -316,11 +313,11 @@ export const processBulkCalendarInvites = inngest.createFunction(
 				requestedBy: requestedBy.email,
 			}
 
-			// TODO: Create proper email template
-			await sendAnEmail({
-				Component: BasicEmail,
-				componentProps: {
-					body: `# Calendar Invites Complete
+			try {
+				await sendAnEmail({
+					Component: BasicEmail,
+					componentProps: {
+						body: `# Calendar Invites Complete
 
 The calendar invitation process for **${product.name}** has finished successfully.
 
@@ -346,13 +343,23 @@ ${eventResults
 ---
 
 *Requested by: ${requestedBy.email}*`,
-					preview: `Calendar invites complete: ${totalSuccessfulInvites} sent, ${totalSkippedInvites} skipped, ${totalFailedInvites} failed`,
-					messageType: 'transactional',
-				},
-				Subject: `✅ Calendar Invites Complete: ${product.name}`,
-				To: requestedBy.email,
-				type: 'transactional',
-			})
+						preview: `Calendar invites complete: ${totalSuccessfulInvites} sent, ${totalSkippedInvites} skipped, ${totalFailedInvites} failed`,
+						messageType: 'transactional',
+					},
+					Subject: `✅ Calendar Invites Complete: ${product.name}`,
+					To: requestedBy.email,
+					type: 'transactional',
+				})
+			} catch (error) {
+				await log.error('bulk_calendar_invites.email_failed', {
+					productId,
+					productName: product.name,
+					requestedBy: requestedBy.email,
+					error: error instanceof Error ? error.message : 'Unknown error',
+					stack: error instanceof Error ? error.stack : undefined,
+				})
+				// Don't rethrow - let the step complete even if email fails
+			}
 		})
 
 		await log.info('bulk_calendar_invites.completed', {

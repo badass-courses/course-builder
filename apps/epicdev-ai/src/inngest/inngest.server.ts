@@ -71,6 +71,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	BULK_CALENDAR_INVITE_EVENT,
+	BulkCalendarInviteSent,
+} from './events/bulk-calendar-invites'
+import {
 	COHORT_UPDATED_EVENT,
 	CohortUpdatedPayload,
 } from './events/cohort-management'
@@ -93,10 +97,6 @@ import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
-import {
-	BULK_CALENDAR_INVITE_EVENT,
-	BulkCalendarInvitePayload,
-} from './functions/bulk-calendar-invites'
 import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
@@ -134,7 +134,7 @@ export type Events = {
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
-	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInvitePayload
+	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
 }
 
 const callbackBase =
