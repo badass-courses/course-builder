@@ -113,6 +113,7 @@ export const MultipleEventsFormSchema = z
 					title: z.string().min(2).max(90),
 					startsAt: z.date().nullish(),
 					endsAt: z.date().nullish(),
+					location: z.string().optional(),
 					tagIds: z
 						.array(
 							z.object({
@@ -181,6 +182,7 @@ export const EventFormDataSchema = z.object({
 		startsAt: z.date().nullish(),
 		endsAt: z.date().nullish(),
 		description: z.string().optional(),
+		location: z.string().optional(),
 		price: z.number().min(0).nullish(),
 		quantity: z.number().min(-1).nullish(),
 		state: z.string().optional(),
@@ -243,6 +245,7 @@ export const EventSeriesFormDataSchema = z.object({
 					startsAt: z.date().nullish(),
 					endsAt: z.date().nullish(),
 					description: z.string().optional(),
+					location: z.string().optional(),
 					tagIds: z
 						.array(
 							z.object({
@@ -309,6 +312,7 @@ export function CreateEventForm({
 					title: '',
 					startsAt: undefined,
 					endsAt: undefined,
+					location: undefined,
 					tagIds: undefined,
 				},
 			],
@@ -340,6 +344,7 @@ export function CreateEventForm({
 						title: firstEvent.title,
 						startsAt: firstEvent.startsAt,
 						endsAt: firstEvent.endsAt,
+						location: firstEvent.location,
 						price: data.sharedFields.price,
 						quantity: data.sharedFields.quantity,
 						tagIds: firstEvent.tagIds,
@@ -376,6 +381,7 @@ export function CreateEventForm({
 							title: event.title,
 							startsAt: event.startsAt,
 							endsAt: event.endsAt,
+							location: event.location,
 							tagIds: event.tagIds,
 						},
 					})),
@@ -607,6 +613,7 @@ export function CreateEventForm({
 										title: '',
 										startsAt: undefined,
 										endsAt: undefined,
+										location: undefined,
 										tagIds: undefined,
 									})
 								}
@@ -792,6 +799,27 @@ export function CreateEventForm({
 											)}
 										/>
 									</div>
+
+									<FormField
+										control={form.control}
+										name={`events.${index}.location`}
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Location</FormLabel>
+												<FormControl>
+													<Input
+														{...field}
+														placeholder="Zoom link or physical address"
+														value={field.value || ''}
+													/>
+												</FormControl>
+												<FormDescription>
+													Meeting link (e.g., Zoom URL) or physical location
+												</FormDescription>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
 									<div>
 										<FormLabel>Event Tags</FormLabel>
