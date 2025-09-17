@@ -16,6 +16,7 @@ import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import {
 	addResourceToProduct,
 	archiveProduct,
+	removeResourceFromProduct,
 	updateProduct,
 } from '@/lib/products-query'
 import { api } from '@/trpc/react'
@@ -215,6 +216,11 @@ export function EditProductForm({ product }: { product: Product }) {
 		router.refresh()
 	}
 
+	const handleResourceRemoved = async (resourceId: string) => {
+		if (!resourceId) return
+		await removeResourceFromProduct(resourceId, product.id)
+	}
+
 	return (
 		<EditProductFormDesktop
 			product={product}
@@ -404,6 +410,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				rootResourceId={product.id}
 				state={state}
 				updateState={updateState}
+				onResourceRemove={(resourceId) => handleResourceRemoved(resourceId)}
 			/>
 			<FormField
 				control={form.control}

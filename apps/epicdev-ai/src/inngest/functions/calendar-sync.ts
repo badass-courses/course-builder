@@ -20,7 +20,7 @@ import {
 } from '../events/resource-management'
 import { inngest } from '../inngest.server'
 
-const EVENT_HOST_EMAIL = 'me@kentcdodds.com'
+export const EVENT_HOST_EMAIL = 'me@kentcdodds.com'
 const EVENT_HOST_DISPLAY_NAME = 'Kent C. Dodds'
 
 /**
