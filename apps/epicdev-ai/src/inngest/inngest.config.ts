@@ -19,6 +19,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { processBulkCalendarInvites } from './functions/bulk-calendar-invites'
 import {
 	calendarSync,
 	handleRefundAndRemoveFromCalendar,
@@ -69,5 +70,6 @@ export const inngestConfig = {
 		addCohortRoleDiscord,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		processBulkCalendarInvites,
 	],
 }

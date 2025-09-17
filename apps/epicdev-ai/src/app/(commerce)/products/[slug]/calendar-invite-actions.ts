@@ -3,7 +3,13 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { contentResourceProduct, contentResourceResource } from '@/db/schema'
+import { BULK_CALENDAR_INVITE_EVENT } from '@/inngest/events/bulk-calendar-invites'
 import { EVENT_HOST_EMAIL } from '@/inngest/functions/calendar-sync'
+import { inngest } from '@/inngest/inngest.server'
+import {
+	getProductOfficeHoursEvents,
+	processAllEventInvites,
+} from '@/lib/calendar-invite-utils'
 import { getEventOrEventSeries } from '@/lib/events-query'
 import {
 	addUserToGoogleCalendarEvent,
@@ -16,47 +22,6 @@ import { log } from '@/server/logger'
 import { and, eq } from 'drizzle-orm'
 
 import type { ProductEventInviteStatus } from './calendar-invite-types'
-
-/**
- * Gets events associated with a product, filtered for office hours
- */
-export async function getProductOfficeHoursEvents(productId: string) {
-	// Get events directly associated with the product
-	const productEvents = await db.query.contentResourceProduct.findMany({
-		where: eq(contentResourceProduct.productId, productId),
-		with: {
-			resource: {
-				with: {
-					tags: {
-						with: {
-							tag: true,
-						},
-					},
-				},
-			},
-		},
-	})
-
-	// Filter for events and event-series
-	const eventResources = productEvents.filter(
-		(pe) => pe.resource.type === 'event' || pe.resource.type === 'event-series',
-	)
-
-	// Parse and validate events
-	const validEvents = []
-	for (const eventResource of eventResources) {
-		const parsedEvent = await getEventOrEventSeries(eventResource.resource.id)
-		if (parsedEvent) {
-			// Check if this is an office hours event
-			const isOfficeHours = true // isOfficeHoursEvent(parsedEvent)
-			if (isOfficeHours) {
-				validEvents.push(parsedEvent)
-			}
-		}
-	}
-
-	return validEvents
-}
 
 /**
  * Gets invite status for office hours events associated with a product
@@ -629,129 +594,46 @@ export async function sendCalendarInvitesToNewPurchasersOnly(
 			}
 		}
 
-		// Get office hours events associated with the product
-		const officeHoursEvents = await getProductOfficeHoursEvents(product.id)
-
-		if (officeHoursEvents.length === 0) {
-			return {
-				success: false,
-				message: 'No office hours events found for this cohort product',
-			}
-		}
-
-		// Get all purchasers of the product
-		const purchaseData = await getProductPurchaseData({
-			productIds: [product.id],
-			limit: 1000, // Get all purchasers
-			offset: 0,
+		// Use shared processing logic without rate limiting
+		const inviteResults = await processAllEventInvites({
+			productId: product.id,
+			addRateLimit: false,
+			skipAlreadyInvited: true,
 		})
 
-		if (purchaseData.data.length === 0) {
+		if (!inviteResults.success) {
 			return {
 				success: false,
-				message: 'No purchasers found for this product',
+				message: inviteResults.message,
 			}
-		}
-
-		await log.info('calendar.invite.new_only_processing', {
-			productId,
-			productName: product.name,
-			totalPurchasers: purchaseData.data.length,
-			totalOfficeHoursEvents: officeHoursEvents.length,
-		})
-
-		let successfulInvites = 0
-		let failedInvites = 0
-		let skippedInvites = 0
-		const eventResults = []
-
-		// Process each office hours event
-		for (const event of officeHoursEvents) {
-			const eventResult = {
-				eventTitle: event.fields?.title || 'Untitled Event',
-				eventId: event.id,
-				calendarId: undefined as string | undefined,
-				purchaserResults: [] as Array<{
-					email: string
-					success: boolean
-					error?: string
-					skipped?: boolean
-					reason?: string
-				}>,
-			}
-
-			// Handle both single events and event series
-			if (event.type === 'event-series' && event.resources) {
-				// Process each child event in the series
-				for (const { resource: childEvent } of event.resources) {
-					if (
-						childEvent?.type === 'event' &&
-						'calendarId' in childEvent.fields &&
-						childEvent.fields.calendarId
-					) {
-						await processEventInvites(
-							childEvent.fields.calendarId as string,
-							purchaseData.data,
-							eventResult,
-							true, // Skip already invited users
-						)
-					}
-				}
-			} else if (
-				event.type === 'event' &&
-				'calendarId' in event.fields &&
-				event.fields.calendarId
-			) {
-				// Single event
-				eventResult.calendarId = event.fields.calendarId as string
-				await processEventInvites(
-					event.fields.calendarId as string,
-					purchaseData.data,
-					eventResult,
-					true, // Skip already invited users
-				)
-			}
-
-			// Count successes, failures, and skips for this event
-			const eventSuccesses = eventResult.purchaserResults.filter(
-				(r) => r.success && !r.skipped,
-			).length
-			const eventFailures = eventResult.purchaserResults.filter(
-				(r) => !r.success,
-			).length
-			const eventSkips = eventResult.purchaserResults.filter(
-				(r) => r.skipped,
-			).length
-
-			successfulInvites += eventSuccesses
-			failedInvites += eventFailures
-			skippedInvites += eventSkips
-
-			eventResults.push(eventResult)
 		}
 
 		await log.info('calendar.invite.new_only_completed', {
 			productId,
 			productName: product.name,
-			totalPurchasers: purchaseData.data.length,
-			totalEvents: officeHoursEvents.length,
-			successfulInvites,
-			failedInvites,
-			skippedInvites,
+			totalPurchasers: inviteResults.results.totalPurchasers,
+			totalEvents: inviteResults.results.totalEvents,
+			successfulInvites: inviteResults.results.successfulInvites,
+			failedInvites: inviteResults.results.failedInvites,
+			skippedInvites: inviteResults.results.skippedInvites,
 		})
 
 		revalidatePath(`/products/${product.fields?.slug || product.id}`)
 
 		return {
 			success: true,
-			message: `Successfully processed calendar invites. ${successfulInvites} new invites sent, ${skippedInvites} already invited, ${failedInvites} failed.`,
+			message: inviteResults.message,
 			results: {
-				totalPurchasers: purchaseData.data.length,
-				totalEvents: officeHoursEvents.length,
-				successfulInvites,
-				failedInvites,
-				skippedInvites,
-				details: eventResults,
+				...inviteResults.results,
+				// Convert the detailed results to match the expected format
+				details: inviteResults.results.details.map((event) => ({
+					eventTitle: event.eventTitle,
+					eventId: event.eventId,
+					calendarId: event.calendarEvents[0]?.calendarId,
+					purchaserResults: event.calendarEvents.flatMap(
+						(ce) => ce.results || [],
+					),
+				})),
 			},
 		}
 	} catch (error) {
@@ -771,26 +653,66 @@ export async function sendCalendarInvitesToNewPurchasersOnly(
 }
 
 /**
- * Determines if an event is an office hours event based on title or tags
- * This is not currently used, but keeping for reference
+ * Triggers background job to send calendar invites to all purchasers (for large scale operations)
  */
-function isOfficeHoursEvent(event: any): boolean {
-	// Check title for "office hours" keywords
-	const titleLower = event.fields?.title?.toLowerCase() || ''
-	if (
-		titleLower.includes('office hours') ||
-		titleLower.includes('office hour')
-	) {
-		return true
+export async function triggerBulkCalendarInvites(productId: string): Promise<{
+	success: boolean
+	message: string
+	jobId?: string
+}> {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!ability.can('update', 'Content')) {
+		return {
+			success: false,
+			message: 'Unauthorized to send calendar invites',
+		}
 	}
 
-	// Check tags for office hours
-	if (event.tags && Array.isArray(event.tags)) {
-		return event.tags.some((tagItem: any) => {
-			const tagName = tagItem.tag?.fields?.name?.toLowerCase() || ''
-			return tagName.includes('office hours') || tagName.includes('office hour')
+	if (!session?.user) {
+		return {
+			success: false,
+			message: 'User session required',
+		}
+	}
+
+	try {
+		await log.info('bulk_calendar_invites.triggered', {
+			productId,
+			requestedBy: session.user.email,
 		})
-	}
 
-	return false
+		// Trigger the background job
+		const jobId = await inngest.send({
+			name: BULK_CALENDAR_INVITE_EVENT,
+			data: {
+				productId,
+				requestedBy: {
+					id: session.user.id,
+					email: session.user.email!,
+				},
+			},
+		})
+
+		return {
+			success: true,
+			message:
+				'Calendar invites are being processed in the background. You will receive an email when complete.',
+			jobId: Array.isArray(jobId) ? jobId[0] : jobId,
+		}
+	} catch (error) {
+		await log.error('bulk_calendar_invites.trigger_error', {
+			productId,
+			requestedBy: session.user.email,
+			error: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+
+		return {
+			success: false,
+			message: `Failed to start calendar invite processing: ${
+				error instanceof Error ? error.message : 'Unknown error'
+			}`,
+		}
+	}
 }
