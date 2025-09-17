@@ -4,6 +4,7 @@ import * as React from 'react'
 import {
 	getProductEventInviteStatus,
 	sendCalendarInvitesToNewPurchasersOnly,
+	triggerBulkCalendarInvites,
 } from '@/app/(commerce)/products/[slug]/calendar-invite-actions'
 import type { ProductEventInviteStatus } from '@/app/(commerce)/products/[slug]/calendar-invite-types'
 import {
@@ -64,13 +65,32 @@ export function CalendarInviteSection({
 		setResult(null)
 
 		try {
-			const response = await sendCalendarInvitesToNewPurchasersOnly(product.id)
-			setResult(response)
+			// Determine if we should use background processing
+			const totalInvitesToProcess =
+				inviteStatus?.events.reduce((total, event) => {
+					const eventInviteCount = event.calendarEvents.length * purchaseCount
+					return total + eventInviteCount
+				}, 0) || 0
 
-			// Reload invite status after sending invites
-			if (response.success) {
-				const updatedStatus = await getProductEventInviteStatus(product.id)
-				setInviteStatus(updatedStatus)
+			// Use background processing for large operations (>200 total API calls)
+			const useBackgroundJob = totalInvitesToProcess > 200
+
+			if (useBackgroundJob) {
+				const response = await triggerBulkCalendarInvites(product.id)
+				setResult(response)
+
+				// Don't reload status for background jobs - user will get email notification
+			} else {
+				const response = await sendCalendarInvitesToNewPurchasersOnly(
+					product.id,
+				)
+				setResult(response)
+
+				// Reload invite status after sending invites
+				if (response.success) {
+					const updatedStatus = await getProductEventInviteStatus(product.id)
+					setInviteStatus(updatedStatus)
+				}
 			}
 		} catch (error) {
 			setResult({
@@ -229,7 +249,8 @@ export function CalendarInviteSection({
 								<div className="flex items-center justify-between">
 									<div className="text-muted-foreground text-sm">
 										This action will add purchasers to the Google Calendar
-										events. Users already invited will be skipped.
+										events. Users already invited will be skipped. Large
+										operations will be processed in the background.
 									</div>
 									<Button
 										onClick={handleSendInvites}

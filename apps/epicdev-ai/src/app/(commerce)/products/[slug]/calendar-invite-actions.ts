@@ -3,7 +3,9 @@
 import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { contentResourceProduct, contentResourceResource } from '@/db/schema'
+import { BULK_CALENDAR_INVITE_EVENT } from '@/inngest/functions/bulk-calendar-invites'
 import { EVENT_HOST_EMAIL } from '@/inngest/functions/calendar-sync'
+import { inngest } from '@/inngest/inngest.server'
 import { getEventOrEventSeries } from '@/lib/events-query'
 import {
 	addUserToGoogleCalendarEvent,
@@ -48,7 +50,7 @@ export async function getProductOfficeHoursEvents(productId: string) {
 		const parsedEvent = await getEventOrEventSeries(eventResource.resource.id)
 		if (parsedEvent) {
 			// Check if this is an office hours event
-			const isOfficeHours = true // isOfficeHoursEvent(parsedEvent)
+			const isOfficeHours = true
 			if (isOfficeHours) {
 				validEvents.push(parsedEvent)
 			}
@@ -771,26 +773,67 @@ export async function sendCalendarInvitesToNewPurchasersOnly(
 }
 
 /**
- * Determines if an event is an office hours event based on title or tags
- * This is not currently used, but keeping for reference
+ * Triggers background job to send calendar invites to all purchasers (for large scale operations)
  */
-function isOfficeHoursEvent(event: any): boolean {
-	// Check title for "office hours" keywords
-	const titleLower = event.fields?.title?.toLowerCase() || ''
-	if (
-		titleLower.includes('office hours') ||
-		titleLower.includes('office hour')
-	) {
-		return true
+export async function triggerBulkCalendarInvites(productId: string): Promise<{
+	success: boolean
+	message: string
+	jobId?: string
+}> {
+	const { ability, session } = await getServerAuthSession()
+
+	if (!ability.can('update', 'Content')) {
+		return {
+			success: false,
+			message: 'Unauthorized to send calendar invites',
+		}
 	}
 
-	// Check tags for office hours
-	if (event.tags && Array.isArray(event.tags)) {
-		return event.tags.some((tagItem: any) => {
-			const tagName = tagItem.tag?.fields?.name?.toLowerCase() || ''
-			return tagName.includes('office hours') || tagName.includes('office hour')
+	if (!session?.user) {
+		return {
+			success: false,
+			message: 'User session required',
+		}
+	}
+
+	try {
+		await log.info('bulk_calendar_invites.triggered', {
+			productId,
+			requestedBy: session.user.email,
 		})
-	}
 
-	return false
+		// Trigger the background job
+		const jobId = await inngest.send({
+			name: BULK_CALENDAR_INVITE_EVENT,
+			data: {
+				productId,
+				requestedBy: {
+					id: session.user.id,
+					email: session.user.email!,
+					name: session.user.name,
+				},
+			},
+		})
+
+		return {
+			success: true,
+			message:
+				'Calendar invites are being processed in the background. You will receive an email when complete.',
+			jobId: Array.isArray(jobId) ? jobId[0] : jobId,
+		}
+	} catch (error) {
+		await log.error('bulk_calendar_invites.trigger_error', {
+			productId,
+			requestedBy: session.user.email,
+			error: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+
+		return {
+			success: false,
+			message: `Failed to start calendar invite processing: ${
+				error instanceof Error ? error.message : 'Unknown error'
+			}`,
+		}
+	}
 }
