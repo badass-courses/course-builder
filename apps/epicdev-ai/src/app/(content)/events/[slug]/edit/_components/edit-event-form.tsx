@@ -151,6 +151,7 @@ const eventFormConfig: ResourceFormConfig<Event, typeof EventSchema> = {
 				},
 				details: event?.fields?.details || '',
 				attendeeInstructions: event?.fields?.attendeeInstructions || '',
+				location: event?.fields?.location || '',
 			},
 			// Handle resourceProducts (specific to EventSchema merge)
 			resourceProducts: event?.resourceProducts || [],
@@ -413,6 +414,25 @@ const EventFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel className="text-lg font-semibold">Timezone</FormLabel>
 						<Input {...field} readOnly disabled value={field.value || ''} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.location"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-semibold">Location</FormLabel>
+						<FormDescription>
+							Meeting link (e.g., Zoom URL) or physical address. This will
+							appear in calendar invites.
+						</FormDescription>
+						<Input
+							{...field}
+							placeholder="Zoom link or physical address"
+							value={field.value || ''}
+						/>
 						<FormMessage />
 					</FormItem>
 				)}
