@@ -62,6 +62,7 @@ async function mapResourceToGoogleEvent(
 	return {
 		summary: fields.title,
 		description: htmlDescription.replace(/\n/g, ''), // Remove all newlines for nice formatting in Google Calendar
+		location: fields.location || undefined, // Include location if provided (e.g., Zoom link, physical address)
 		start: {
 			dateTime: fields.startsAt,
 			timeZone: timezone,
@@ -72,8 +73,6 @@ async function mapResourceToGoogleEvent(
 		},
 		guestsCanInviteOthers: false,
 		guestsCanSeeOtherGuests: false,
-
-		// Consider adding other fields like location if available/needed
 	}
 }
 

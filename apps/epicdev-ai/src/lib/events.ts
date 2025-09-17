@@ -28,6 +28,7 @@ export const EventFieldsSchema = z.object({
 	endsAt: z.string().datetime().nullable().optional(),
 	timezone: z.string().default('America/Los_Angeles').nullish(),
 	attendeeInstructions: z.string().nullable().optional(),
+	location: z.string().nullable().optional(),
 })
 
 /**
@@ -103,6 +104,7 @@ export const NewEventSchema = z.object({
 		price: z.number().min(0).nullish(),
 		quantity: z.number().min(-1).nullish(),
 		description: z.string().optional(),
+		location: z.string().optional(),
 		tagIds: z
 			.array(
 				z.object({
@@ -153,6 +155,7 @@ export type ChildEvent = {
 		startsAt: Date | null | undefined
 		endsAt: Date | null | undefined
 		description?: string | undefined
+		location?: string | undefined
 		tagIds?:
 			| { id: string; fields: { label: string; name: string } }[]
 			| null
@@ -195,6 +198,7 @@ export function multipleEventsToEventSeriesAndEvents(
 			title: event.fields.title,
 			startsAt: event.fields.startsAt,
 			endsAt: event.fields.endsAt,
+			location: event.fields.location,
 			tagIds: event.fields.tagIds,
 		},
 	}))
