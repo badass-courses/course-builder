@@ -94,6 +94,10 @@ import {
 	type RequestVideoSplitPoints,
 } from './events/split_video'
 import {
+	BULK_CALENDAR_INVITE_EVENT,
+	BulkCalendarInvitePayload,
+} from './functions/bulk-calendar-invites'
+import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
 } from './functions/create-user-organization'
@@ -130,6 +134,7 @@ export type Events = {
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInvitePayload
 }
 
 const callbackBase =

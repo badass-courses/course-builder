@@ -810,7 +810,6 @@ export async function triggerBulkCalendarInvites(productId: string): Promise<{
 				requestedBy: {
 					id: session.user.id,
 					email: session.user.email!,
-					name: session.user.name,
 				},
 			},
 		})

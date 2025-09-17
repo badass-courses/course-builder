@@ -19,32 +19,16 @@ import { inngest } from '../inngest.server'
  */
 export const BULK_CALENDAR_INVITE_EVENT = 'calendar/bulk-invite-requested'
 
-/**
- * Determines if an event is an office hours event based on title or tags
- * Not currently used, but keeping for reference
- */
-function isOfficeHoursEvent(event: any): boolean {
-	return true
-	// Check title for "office hours" keywords
-	// const titleLower = event.fields?.title?.toLowerCase() || ''
-	// if (
-	// 	titleLower.includes('office hours') ||
-	// 	titleLower.includes('office hour')
-	// ) {
-	// 	return true
-	// }
-
-	// // Check tags for office hours
-	// if (event.tags && Array.isArray(event.tags)) {
-	// 	return event.tags.some((tagItem: any) => {
-	// 		const tagName = tagItem.tag?.fields?.name?.toLowerCase() || ''
-	// 		return tagName.includes('office hours') || tagName.includes('office hour')
-	// 	})
-	// }
-
-	// return false
+export type BulkCalendarInvitePayload = {
+	name: typeof BULK_CALENDAR_INVITE_EVENT
+	data: {
+		productId: string
+		requestedBy: {
+			id: string
+			email: string
+		}
+	}
 }
-
 /**
  * Gets office hours events associated with a product
  */
@@ -128,7 +112,7 @@ export const processBulkCalendarInvites = inngest.createFunction(
 		name: 'Process Bulk Calendar Invites',
 	},
 	{ event: BULK_CALENDAR_INVITE_EVENT },
-	async ({ event, step }) => {
+	async ({ event, step }: { event: BulkCalendarInvitePayload; step: any }) => {
 		const { productId, requestedBy } = event.data
 
 		await log.info('bulk_calendar_invites.started', {
@@ -186,7 +170,7 @@ export const processBulkCalendarInvites = inngest.createFunction(
 		let totalSuccessfulInvites = 0
 		let totalFailedInvites = 0
 		let totalSkippedInvites = 0
-		const eventResults = []
+		const eventResults: any = []
 
 		for (const [eventIndex, event] of officeHoursEvents.entries()) {
 			const eventResult = await step.run(
@@ -329,7 +313,7 @@ export const processBulkCalendarInvites = inngest.createFunction(
 				totalFailedInvites,
 				totalSkippedInvites,
 				eventResults,
-				requestedBy: requestedBy.name || requestedBy.email,
+				requestedBy: requestedBy.email,
 			}
 
 			// TODO: Create proper email template
@@ -351,7 +335,7 @@ The calendar invitation process for **${product.name}** has finished successfull
 
 ${eventResults
 	.map(
-		(e) =>
+		(e: any) =>
 			`### ${e.eventTitle}
 - **${e.totalSuccessful}** sent
 - **${e.totalSkipped}** skipped  
@@ -361,7 +345,7 @@ ${eventResults
 
 ---
 
-*Requested by: ${requestedBy.name || requestedBy.email}*`,
+*Requested by: ${requestedBy.email}*`,
 					preview: `Calendar invites complete: ${totalSuccessfulInvites} sent, ${totalSkippedInvites} skipped, ${totalFailedInvites} failed`,
 					messageType: 'transactional',
 				},
@@ -395,3 +379,29 @@ ${eventResults
 		}
 	},
 )
+
+/**
+ * Determines if an event is an office hours event based on title or tags
+ * Not currently used, but keeping for reference
+ */
+function isOfficeHoursEvent(event: any): boolean {
+	return true
+	// Check title for "office hours" keywords
+	// const titleLower = event.fields?.title?.toLowerCase() || ''
+	// if (
+	// 	titleLower.includes('office hours') ||
+	// 	titleLower.includes('office hour')
+	// ) {
+	// 	return true
+	// }
+
+	// // Check tags for office hours
+	// if (event.tags && Array.isArray(event.tags)) {
+	// 	return event.tags.some((tagItem: any) => {
+	// 		const tagName = tagItem.tag?.fields?.name?.toLowerCase() || ''
+	// 		return tagName.includes('office hours') || tagName.includes('office hour')
+	// 	})
+	// }
+
+	// return false
+}
