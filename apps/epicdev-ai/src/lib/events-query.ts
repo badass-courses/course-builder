@@ -395,6 +395,11 @@ export async function getActiveEvents() {
 			excludedEventIds.length > 0
 				? sql`${contentResource.id} NOT IN ${excludedEventIds}`
 				: undefined,
+			eq(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				'public',
+			),
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, 'published'),
 		),
 		orderBy: asc(sql`JSON_EXTRACT (${contentResource.fields}, "$.startsAt")`),
 		with: {
