@@ -34,6 +34,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 interface CalendarInviteSectionProps {
 	product: Product
@@ -126,42 +127,70 @@ export function CalendarInviteSection({
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				{/* Invite Status Summary */}
-				{inviteStatus?.success && (
+				{/* Per-Event Invite Status */}
+				{inviteStatus?.success && inviteStatus.events.length > 0 && (
 					<div className="space-y-3 rounded-lg border p-4">
 						<div className="flex items-center justify-between">
-							<h4 className="text-sm font-medium">Invite Status</h4>
-							<div className="flex items-center gap-2 text-sm">
-								{inviteStatus.inviteComparison.inviteRate >= 90 ? (
-									<CheckCircle className="h-4 w-4 text-green-500" />
-								) : inviteStatus.inviteComparison.inviteRate >= 50 ? (
-									<AlertCircle className="h-4 w-4 text-yellow-500" />
-								) : (
-									<XCircle className="h-4 w-4 text-red-500" />
-								)}
-								{inviteStatus.inviteComparison.inviteRate}% invited
+							<h4 className="text-sm font-medium">Cohort Events</h4>
+							<div className="text-muted-foreground text-xs">
+								{inviteStatus.events.length} office hours events
 							</div>
 						</div>
 
-						<div className="grid grid-cols-3 gap-4 text-sm">
-							<div>
-								<div className="text-muted-foreground">Total Purchasers</div>
-								<div className="font-medium">
-									{inviteStatus.totalPurchasers}
+						<div className="space-y-3">
+							{inviteStatus.events.map((eventStatus) => (
+								<div
+									key={eventStatus.eventId}
+									className="rounded-md border p-3"
+								>
+									<div className="mb-2 flex items-center justify-between">
+										<div className="text-sm font-medium">
+											{eventStatus.eventTitle}
+										</div>
+									</div>
+
+									<div className="grid grid-cols-3 gap-3 text-xs">
+										<div>
+											<div className="text-muted-foreground">
+												Calendar Events
+											</div>
+											<div className="font-medium">
+												{eventStatus.calendarEvents.length}
+											</div>
+										</div>
+										<div>
+											<div className="text-muted-foreground">Invited</div>
+											<div
+												className={cn('font-medium', {
+													'text-emerald-600 dark:text-emerald-300':
+														eventStatus.totalAttendees ===
+														inviteStatus.totalPurchasers,
+													'text-red-600 dark:text-red-300':
+														eventStatus.totalAttendees <
+														inviteStatus.totalPurchasers,
+												})}
+											>
+												{eventStatus.totalAttendees}/
+												{inviteStatus.totalPurchasers}
+											</div>
+										</div>
+									</div>
+
+									{eventStatus.calendarEvents.length > 1 && (
+										<div className="mt-2 space-y-1 border-t pt-2">
+											{eventStatus.calendarEvents.map((calEvent) => (
+												<div
+													key={calEvent.calendarId}
+													className="text-muted-foreground flex justify-between text-xs"
+												>
+													<span>{calEvent.eventTitle}</span>
+													<span>{calEvent.attendeeCount} attendees</span>
+												</div>
+											))}
+										</div>
+									)}
 								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground">Invited</div>
-								<div className="font-medium text-green-600">
-									{inviteStatus.inviteComparison.totalUniqueInvited}
-								</div>
-							</div>
-							<div>
-								<div className="text-muted-foreground">Not Invited</div>
-								<div className="font-medium text-red-600">
-									{inviteStatus.inviteComparison.notInvited.length}
-								</div>
-							</div>
+							))}
 						</div>
 
 						{inviteStatus.inviteComparison.invitedButNotPurchased.length >
@@ -191,7 +220,7 @@ export function CalendarInviteSection({
 					</div>
 					<Dialog>
 						<DialogTrigger asChild>
-							<Button variant="outline" className="flex items-center gap-2">
+							<Button variant="default" className="flex items-center gap-2">
 								<Mail className="h-4 w-4" />
 								Send Invites
 							</Button>
