@@ -262,6 +262,79 @@ export async function addUserToGoogleCalendarEvent(
 	return updateGoogleCalendarEvent(calendarEventId, event)
 }
 
+/**
+ * Gets the list of attendees for a Google Calendar event
+ */
+export async function getGoogleCalendarEventAttendees(
+	calendarEventId: string,
+): Promise<Array<{
+	email: string
+	displayName?: string
+	responseStatus?: string
+}> | null> {
+	if (!calendarEventId) {
+		throw new Error('Missing calendarEventId for getting attendees.')
+	}
+
+	try {
+		const authClient = getAuthClient()
+		const calendar = google.calendar({ version: 'v3', auth: authClient })
+
+		console.log(
+			`Getting attendees for Google Calendar event: ${calendarEventId}`,
+		)
+		const response = await calendar.events.get({
+			calendarId: 'primary',
+			eventId: calendarEventId,
+		})
+
+		const event = response.data
+		if (!event) {
+			console.log(`Google Calendar event not found: ${calendarEventId}`)
+			return null
+		}
+
+		if (!event.attendees || event.attendees.length === 0) {
+			console.log(`No attendees found for event: ${calendarEventId}`)
+			return []
+		}
+
+		const attendees = event.attendees
+			.map((attendee) => ({
+				email: attendee.email || '',
+				displayName: attendee.displayName || undefined,
+				responseStatus: attendee.responseStatus || undefined,
+			}))
+			.filter((attendee) => attendee.email) // Filter out any attendees without email
+
+		console.log(
+			`Found ${attendees.length} attendees for event: ${calendarEventId}`,
+		)
+		return attendees
+	} catch (error: any) {
+		// Handle 404 (Not Found) by returning null
+		if (error.code === 404 || error.response?.status === 404) {
+			console.log(
+				`Google Calendar event not found when getting attendees: ${calendarEventId}`,
+			)
+			return null
+		}
+
+		// Log and re-throw other errors
+		console.error('ERROR getting calendar event attendees:', error.message)
+		if (error.response?.data?.error) {
+			console.error('API Error Details:', error.response.data.error)
+			throw new Error(
+				`Google Calendar API Error (Get Attendees): ${error.response.data.error.message || 'Unknown API error'} (Code: ${error.response.data.error.code})`,
+			)
+		} else {
+			throw new Error(
+				`Failed to get calendar event attendees: ${error.message}`,
+			)
+		}
+	}
+}
+
 export async function removeUserFromGoogleCalendarEvent(
 	calendarEventId: string,
 	userEmail: string,

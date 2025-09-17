@@ -19,7 +19,9 @@ import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce
 import { Product, Purchase } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 
+import { CalendarInviteSection } from './_components/calendar-invite-section'
 import ProductPurchasesTable from './_components/product-purchase-table'
+import { getProductEventInviteStatus } from './calendar-invite-actions'
 
 type MetadataProps = {
 	params: Promise<{ slug: string }>
@@ -96,14 +98,36 @@ async function ProductPurchaseDetails({
 		offset,
 	})
 
+	// Get purchase count for calendar invite section
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, product.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	// Get calendar invite status for cohort products
+	const inviteStatus =
+		product.type === 'cohort'
+			? await getProductEventInviteStatus(product.id)
+			: null
+
 	return (
 		<>
 			{product && ability.can('update', 'Content') ? (
-				<ProductPurchasesTable
-					purchaseDataResultLoader={purchaseDataLoader}
-					currentPage={page}
-					pageSize={limit}
-				/>
+				<div className="space-y-8">
+					{/* Calendar Invite Section - only shows for cohort products with office hours events */}
+					<CalendarInviteSection
+						product={product}
+						purchaseCount={purchaseCount}
+						inviteStatus={inviteStatus}
+					/>
+
+					<ProductPurchasesTable
+						purchaseDataResultLoader={purchaseDataLoader}
+						currentPage={page}
+						pageSize={limit}
+					/>
+				</div>
 			) : (
 				<div className="flex h-9 w-full items-center justify-between px-1" />
 			)}
