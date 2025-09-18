@@ -4,6 +4,7 @@ import { EVENT_HOST_EMAIL } from '@/inngest/functions/calendar-sync'
 import { getEventOrEventSeries } from '@/lib/events-query'
 import {
 	addUserToGoogleCalendarEvent,
+	bulkAddUsersToGoogleCalendarEvent,
 	getGoogleCalendarEventAttendees,
 } from '@/lib/google-calendar'
 import { getProductPurchaseData } from '@/lib/products/products.service'
@@ -175,10 +176,6 @@ export async function processCalendarEventInvites({
 			await new Promise((resolve) => setTimeout(resolve, 1000))
 		}
 
-		const inviteFunction = addRateLimit
-			? addUserWithRateLimit
-			: addUserToGoogleCalendarEvent
-
 		try {
 			let inviteResult
 			if (addRateLimit) {
@@ -331,8 +328,21 @@ export async function processAllEventInvites({
 	let totalSkippedInvites = 0
 	const eventResults = []
 
-	// Process each office hours event
-	for (const event of officeHoursEvents) {
+	// Process each office hours event SEQUENTIALLY to avoid hitting API limits
+	// Since we found Google allows ~50 API calls before rate limiting
+	let totalApiCallsUsed = 0
+	const MAX_TOTAL_API_CALLS = 45 // Conservative limit across all events
+
+	for (const [eventIndex, event] of officeHoursEvents.entries()) {
+		// Check if we're approaching the global API limit
+		if (totalApiCallsUsed >= MAX_TOTAL_API_CALLS) {
+			await log.warn('calendar.invite.api_limit_reached', {
+				totalApiCallsUsed,
+				remainingEvents: officeHoursEvents.length - eventIndex,
+			})
+			break
+		}
+
 		const eventResult = {
 			eventId: event.id,
 			eventTitle: event.fields?.title || 'Untitled Event',
@@ -347,6 +357,16 @@ export async function processAllEventInvites({
 			totalSuccessful: 0,
 			totalFailed: 0,
 			totalSkipped: 0,
+		}
+
+		// Add delay between different events to avoid overwhelming the API
+		if (eventIndex > 0) {
+			const eventDelay = 5000 // 5 seconds between different events
+			await log.info('calendar.invite.event_delay', {
+				eventIndex,
+				delay: eventDelay,
+			})
+			await new Promise((resolve) => setTimeout(resolve, eventDelay))
 		}
 
 		// Handle both single events and event series
@@ -376,8 +396,22 @@ export async function processAllEventInvites({
 			})
 		}
 
-		// Process each calendar event
-		for (const calendarEvent of calendarEventsToProcess) {
+		// Process each calendar event SEQUENTIALLY
+		for (const [calIndex, calendarEvent] of calendarEventsToProcess.entries()) {
+			// Check API limit before processing
+			if (totalApiCallsUsed >= MAX_TOTAL_API_CALLS) {
+				await log.warn('calendar.invite.skipping_calendar_event', {
+					calendarId: calendarEvent.calendarId,
+					reason: 'API limit reached',
+				})
+				break
+			}
+
+			// Add delay between calendar events in a series
+			if (calIndex > 0) {
+				await new Promise((resolve) => setTimeout(resolve, 3000))
+			}
+
 			const calendarResult = await processCalendarEventInvites({
 				calendarId: calendarEvent.calendarId,
 				eventTitle: calendarEvent.eventTitle,
@@ -385,6 +419,10 @@ export async function processAllEventInvites({
 				skipAlreadyInvited,
 				addRateLimit,
 			})
+
+			// Estimate API calls used (rough estimate: 1 call per 100 attendees added)
+			const estimatedApiCalls = Math.ceil(calendarResult.successCount / 100) + 1
+			totalApiCallsUsed += estimatedApiCalls
 
 			eventResult.calendarEvents.push({
 				calendarId: calendarResult.calendarId,
@@ -404,6 +442,14 @@ export async function processAllEventInvites({
 		totalSuccessfulInvites += eventResult.totalSuccessful
 		totalFailedInvites += eventResult.totalFailed
 		totalSkippedInvites += eventResult.totalSkipped
+
+		await log.info('calendar.invite.event_completed', {
+			eventId: event.id,
+			totalApiCallsUsed,
+			successful: eventResult.totalSuccessful,
+			failed: eventResult.totalFailed,
+			skipped: eventResult.totalSkipped,
+		})
 	}
 
 	return {
@@ -421,26 +467,334 @@ export async function processAllEventInvites({
 }
 
 /**
- * Determines if an event is an office hours event based on title or tags
- * Not currently used, but keeping for reference
+ * Gets office hours events and purchase data for a product
+ * This is the first step in processing bulk calendar invites
  */
-function isOfficeHoursEvent(event: any): boolean {
-	// Check title for "office hours" keywords
-	const titleLower = event.fields?.title?.toLowerCase() || ''
-	if (
-		titleLower.includes('office hours') ||
-		titleLower.includes('office hour')
-	) {
-		return true
+export async function getOfficeHoursAndPurchaseData({
+	productId,
+}: {
+	productId: string
+}): Promise<{
+	success: boolean
+	message?: string
+	officeHoursEvents: any[]
+	purchasers: Array<{
+		user_id: string
+		email: string
+		name: string | null
+		productId: string
+		product_name: string
+		purchase_date: string
+	}>
+}> {
+	// Get office hours events and purchasers in parallel
+	const [officeHoursEvents, purchaseData] = await Promise.all([
+		getProductOfficeHoursEvents(productId),
+		getProductPurchaseData({
+			productIds: [productId],
+			limit: 10000,
+			offset: 0,
+		}),
+	])
+
+	if (officeHoursEvents.length === 0) {
+		return {
+			success: false,
+			message: 'No office hours events found for this cohort product',
+			officeHoursEvents: [],
+			purchasers: [],
+		}
 	}
 
-	// Check tags for office hours
-	if (event.tags && Array.isArray(event.tags)) {
-		return event.tags.some((tagItem: any) => {
-			const tagName = tagItem.tag?.fields?.name?.toLowerCase() || ''
-			return tagName.includes('office hours') || tagName.includes('office hour')
+	if (purchaseData.data.length === 0) {
+		return {
+			success: false,
+			message: 'No purchasers found for this product',
+			officeHoursEvents,
+			purchasers: [],
+		}
+	}
+
+	return {
+		success: true,
+		officeHoursEvents,
+		purchasers: purchaseData.data,
+	}
+}
+
+/**
+ * Bulk processes calendar invites for a single calendar event
+ * Uses a single API call to add all purchasers at once
+ */
+export async function processCalendarEventInvitesBulk({
+	calendarId,
+	eventTitle,
+	purchasers,
+	skipAlreadyInvited = true,
+}: {
+	calendarId: string
+	eventTitle: string
+	purchasers: Array<{
+		user_id: string
+		email: string
+		name: string | null
+		productId: string
+		product_name: string
+		purchase_date: string
+	}>
+	skipAlreadyInvited?: boolean
+}): Promise<{
+	calendarId: string
+	eventTitle: string
+	successCount: number
+	failedCount: number
+	skippedCount: number
+	results: Array<{
+		email: string
+		success: boolean
+		error?: string
+		skipped?: boolean
+		reason?: string
+	}>
+}> {
+	// Check if event exists first
+	const existingAttendees = await getGoogleCalendarEventAttendees(calendarId)
+
+	// Skip this event if we can't get attendees (event not found)
+	if (existingAttendees === null) {
+		await log.warn('calendar.invite.event_not_found', {
+			calendarId,
+			eventTitle,
+		})
+		return {
+			calendarId,
+			eventTitle,
+			successCount: 0,
+			failedCount: 0,
+			skippedCount: 0,
+			results: [],
+		}
+	}
+
+	// Extract all purchaser emails
+	const allEmails = purchasers.map((p) => p.email)
+
+	// Bulk add users to the calendar event
+	const bulkResult = await bulkAddUsersToGoogleCalendarEvent(
+		calendarId,
+		allEmails,
+		skipAlreadyInvited,
+	)
+
+	// Log the bulk operation result
+	if (bulkResult.success) {
+		await log.info('calendar.invite.bulk_add_completed', {
+			calendarId,
+			eventTitle,
+			addedCount: bulkResult.addedCount,
+			skippedCount: bulkResult.skippedCount,
+			totalPurchasers: purchasers.length,
+		})
+	} else {
+		await log.error('calendar.invite.bulk_add_failed', {
+			calendarId,
+			eventTitle,
+			error: bulkResult.error,
+			totalPurchasers: purchasers.length,
 		})
 	}
 
-	return false
+	// Create detailed results for consistency with existing API
+	const results: Array<{
+		email: string
+		success: boolean
+		error?: string
+		skipped?: boolean
+		reason?: string
+	}> = []
+
+	if (bulkResult.success) {
+		// For successful bulk operation, create individual result entries
+		const existingEmailsSet = new Set(
+			existingAttendees
+				.filter((a) => a.email !== EVENT_HOST_EMAIL)
+				.map((a) => a.email.toLowerCase()),
+		)
+
+		for (const purchaser of purchasers) {
+			const emailLower = purchaser.email.toLowerCase()
+			if (skipAlreadyInvited && existingEmailsSet.has(emailLower)) {
+				results.push({
+					email: purchaser.email,
+					success: true,
+					skipped: true,
+					reason: 'Already invited to this event',
+				})
+			} else {
+				results.push({
+					email: purchaser.email,
+					success: true,
+				})
+			}
+		}
+	} else {
+		// For failed bulk operation, mark all as failed
+		for (const purchaser of purchasers) {
+			results.push({
+				email: purchaser.email,
+				success: false,
+				error: bulkResult.error,
+			})
+		}
+	}
+
+	return {
+		calendarId,
+		eventTitle,
+		successCount: bulkResult.success ? bulkResult.addedCount : 0,
+		failedCount: bulkResult.success ? 0 : purchasers.length,
+		skippedCount: bulkResult.success ? bulkResult.skippedCount : 0,
+		results,
+	}
+}
+
+/**
+ * Processes invites for a single office hours event
+ * Handles both single events and event series
+ */
+export async function processSingleEventInvites({
+	event,
+	purchasers,
+	skipAlreadyInvited = true,
+	addRateLimit = false,
+	useBulkMode = true,
+}: {
+	event: any
+	purchasers: Array<{
+		user_id: string
+		email: string
+		name: string | null
+		productId: string
+		product_name: string
+		purchase_date: string
+	}>
+	skipAlreadyInvited?: boolean
+	addRateLimit?: boolean
+	useBulkMode?: boolean
+}): Promise<{
+	eventId: string
+	eventTitle: string
+	eventType: 'event' | 'event-series'
+	calendarEvents: Array<{
+		calendarId: string
+		eventTitle: string
+		successCount: number
+		failedCount: number
+		skippedCount: number
+		results?: Array<{
+			email: string
+			success: boolean
+			error?: string
+			skipped?: boolean
+			reason?: string
+		}>
+	}>
+	totalSuccessful: number
+	totalFailed: number
+	totalSkipped: number
+}> {
+	let eventResult = {
+		eventId: event.id,
+		eventTitle: event.fields?.title || 'Untitled Event',
+		eventType: event.type as 'event' | 'event-series',
+		calendarEvents: [] as Array<{
+			calendarId: string
+			eventTitle: string
+			successCount: number
+			failedCount: number
+			skippedCount: number
+			results?: Array<{
+				email: string
+				success: boolean
+				error?: string
+				skipped?: boolean
+				reason?: string
+			}>
+		}>,
+		totalSuccessful: 0,
+		totalFailed: 0,
+		totalSkipped: 0,
+	}
+
+	// Handle both single events and event series
+	const calendarEventsToProcess = []
+
+	if (event.type === 'event-series' && event.resources) {
+		for (const { resource: childEvent } of event.resources) {
+			if (
+				childEvent?.type === 'event' &&
+				'calendarId' in childEvent.fields &&
+				childEvent.fields.calendarId
+			) {
+				calendarEventsToProcess.push({
+					calendarId: childEvent.fields.calendarId as string,
+					eventTitle: childEvent.fields.title || 'Untitled Child Event',
+				})
+			}
+		}
+	} else if (
+		event.type === 'event' &&
+		'calendarId' in event.fields &&
+		event.fields.calendarId
+	) {
+		calendarEventsToProcess.push({
+			calendarId: event.fields.calendarId as string,
+			eventTitle: event.fields?.title || 'Untitled Event',
+		})
+	}
+
+	// Process each calendar event SEQUENTIALLY with delays
+	for (const [index, calendarEvent] of calendarEventsToProcess.entries()) {
+		// Add delay between calendar events to avoid rate limiting
+		if (index > 0) {
+			const delayMs = 3000 // 3 seconds between events
+			await log.info('calendar.invite.inter_event_delay', {
+				delayMs,
+				eventIndex: index,
+				totalEvents: calendarEventsToProcess.length,
+			})
+			await new Promise((resolve) => setTimeout(resolve, delayMs))
+		}
+
+		// Use bulk mode if enabled, otherwise fall back to individual invites
+		const calendarResult = useBulkMode
+			? await processCalendarEventInvitesBulk({
+					calendarId: calendarEvent.calendarId,
+					eventTitle: calendarEvent.eventTitle,
+					purchasers,
+					skipAlreadyInvited,
+				})
+			: await processCalendarEventInvites({
+					calendarId: calendarEvent.calendarId,
+					eventTitle: calendarEvent.eventTitle,
+					purchasers,
+					skipAlreadyInvited,
+					addRateLimit,
+				})
+
+		eventResult.calendarEvents.push({
+			calendarId: calendarResult.calendarId,
+			eventTitle: calendarResult.eventTitle,
+			successCount: calendarResult.successCount,
+			failedCount: calendarResult.failedCount,
+			skippedCount: calendarResult.skippedCount,
+			results: calendarResult.results,
+		})
+
+		eventResult.totalSuccessful += calendarResult.successCount
+		eventResult.totalFailed += calendarResult.failedCount
+		eventResult.totalSkipped += calendarResult.skippedCount
+	}
+
+	return eventResult
 }
