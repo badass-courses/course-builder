@@ -95,7 +95,7 @@ export function PostActions({
 					className="px-5 py-4 [&>div]:border-b-0"
 				>
 					<AccordionItem value="unlisted">
-						<AccordionTrigger>
+						<AccordionTrigger className="hover:bg-muted/50 dark:hover:bg-muted/30">
 							<strong>Unlisted ({unlisted.length})</strong>
 						</AccordionTrigger>
 						<AccordionContent>
