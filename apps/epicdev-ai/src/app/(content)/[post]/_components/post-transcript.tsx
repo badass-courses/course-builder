@@ -24,7 +24,7 @@ export default function PostTranscript({
 	return (
 		<Accordion type="single" defaultValue="open" collapsible>
 			<AccordionItem value="open" className="rounded-md border">
-				<AccordionTrigger className="w-full justify-between p-5">
+				<AccordionTrigger className="hover:bg-muted/50 dark:hover:bg-muted/30 w-full justify-between p-5">
 					<span className="flex items-center gap-2 font-medium sm:text-lg">
 						<FileVideo className="text-primary size-4" /> Video Transcript
 					</span>

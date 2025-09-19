@@ -229,9 +229,9 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight hover:bg-gray-100',
+														'bg-background dark:hover:bg-muted/50 relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight hover:bg-gray-100',
 														{
-															'bg-gray-100': isActiveGroup,
+															'dark:bg-muted bg-gray-100': isActiveGroup,
 														},
 													)}
 												>
@@ -368,7 +368,7 @@ const LessonResource = ({
 			className={cn(
 				'',
 				{
-					'bg-card-muted': isActiveGroup,
+					'bg-card-muted dark:bg-muted': isActiveGroup,
 				},
 				className,
 			)}
@@ -385,9 +385,10 @@ const LessonResource = ({
 								'bg-card-muted dark:bg-muted text-primary border-gray-200':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
-								'dark:hover:bg-foreground/10 hover:text-primary':
+								'hover:bg-muted/50 dark:hover:bg-foreground/10 hover:text-primary':
 									canViewLesson && !isActiveLesson && !isActiveGroup,
-								'dark:hover:bg-foreground/10': canViewLesson && isActiveGroup,
+								'hover:bg-muted/50 dark:hover:bg-foreground/10':
+									canViewLesson && isActiveGroup,
 							},
 						)
 

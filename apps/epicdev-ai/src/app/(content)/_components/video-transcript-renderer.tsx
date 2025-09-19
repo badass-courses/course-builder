@@ -47,7 +47,7 @@ export function Transcript({
 				value="transcript"
 				className="bg-muted border-border rounded-lg border-x border-y border-b last:border-b"
 			>
-				<AccordionTrigger className="font-heading hover:text-primary flex w-full items-center justify-between gap-2 px-3 py-2 text-lg font-semibold tracking-tight hover:no-underline sm:text-xl [&[data-state=open]>svg]:rotate-180">
+				<AccordionTrigger className="font-heading hover:text-primary hover:bg-muted/50 dark:hover:bg-muted/30 flex w-full items-center justify-between gap-2 px-3 py-2 text-lg font-semibold tracking-tight hover:no-underline sm:text-xl [&[data-state=open]>svg]:rotate-180">
 					Video Transcript
 				</AccordionTrigger>
 				<AccordionContent className="px-3">
