@@ -221,7 +221,7 @@ export default async function ModulePage(props: Props) {
 							<h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
 								Contents
 							</h2>
-							<div className="bg-card flex flex-col rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+							<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
 								<WorkshopResourceList
 									isCollapsible={false}
 									className="border-r-0! w-full max-w-none"

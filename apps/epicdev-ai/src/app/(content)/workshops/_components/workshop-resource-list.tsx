@@ -139,7 +139,9 @@ export function WorkshopResourceList(props: Props) {
 					{withHeader && (
 						<div
 							ref={ref as any}
-							className={cn('relative z-10 w-full border-b pl-2')}
+							className={cn(
+								'dark:border-foreground/5 border-border relative z-10 w-full border-b pl-2',
+							)}
 						>
 							{isCollapsible && (
 								<Tooltip delayDuration={0}>
@@ -214,7 +216,7 @@ export function WorkshopResourceList(props: Props) {
 							className={cn('flex flex-col', wrapperClassName)}
 							defaultValue={sectionId || resources[0]?.id}
 						>
-							<ol className="divide-border divide-y">
+							<ol className="divide-border dark:divide-foreground/5 divide-y">
 								{resources.map((resource: NavigationResource, i: number) => {
 									const isActiveGroup =
 										(resource.type === 'section' ||
@@ -229,18 +231,24 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'bg-background dark:hover:bg-muted/50 relative flex w-full items-center border-b px-5 py-5 text-left text-lg font-semibold leading-tight hover:bg-gray-100',
+														'bg-card dark:hover:bg-foreground/10 dark:data-[state=open]:bg-card hover:text-primary hover:bg-muted/50 data-[state=open]:bg-muted/50 relative flex w-full items-center rounded-none px-5 py-3 text-left text-base font-semibold leading-tight hover:no-underline',
 														{
-															'dark:bg-muted bg-gray-100': isActiveGroup,
+															'dark:bg-foreground/10 bg-muted/50 text-primary':
+																isActiveGroup,
 														},
 													)}
 												>
-													<h3 className="pr-2">{resource.title}</h3>
+													<h3 className="">
+														{resource.title}{' '}
+														<span className="text-sm opacity-50">
+															({resource.resources.length})
+														</span>
+													</h3>
 												</AccordionTrigger>
 												{resource.resources.length > 0 && (
 													// section lessons
-													<AccordionContent>
-														<ol className="divide-border bg-background divide-y border-b">
+													<AccordionContent className="pb-0">
+														<ol className="divide-border bg-background divide-y">
 															{resource.resources.map((item, index: number) => {
 																return (
 																	<LessonResource
@@ -368,7 +376,7 @@ const LessonResource = ({
 			className={cn(
 				'',
 				{
-					'bg-card-muted dark:bg-muted': isActiveGroup,
+					'bg-card-muted dark:bg-foreground/10': isActiveGroup,
 				},
 				className,
 			)}
@@ -382,7 +390,7 @@ const LessonResource = ({
 							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium transition ease-out',
 							{
 								// Active state
-								'bg-card-muted dark:bg-muted text-primary border-gray-200':
+								'bg-card-muted dark:bg-foreground/10 text-primary border-gray-200':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
 								'hover:bg-muted/50 dark:hover:bg-foreground/10 hover:text-primary':
