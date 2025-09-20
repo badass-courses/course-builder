@@ -63,10 +63,16 @@ export async function GET(
 		if (!isAdmin && workshop.fields?.startsAt) {
 			const timezone = workshop.fields?.timezone || 'America/Los_Angeles'
 			const nowInTZ = new Date(
-				formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+				formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ss"),
 			)
-			const startsAtDate = new Date(workshop.fields.startsAt)
-			workshopHasStarted = startsAtDate <= nowInTZ
+			const startsAtInTZ = new Date(
+				formatInTimeZone(
+					new Date(workshop.fields.startsAt),
+					timezone,
+					"yyyy-MM-dd'T'HH:mm:ss",
+				),
+			)
+			workshopHasStarted = startsAtInTZ <= nowInTZ
 		}
 
 		// Final decision: admin bypasses everything, others need content access + started
