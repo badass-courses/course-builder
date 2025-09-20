@@ -4,7 +4,6 @@ import { courseBuilderAdapter, db } from '@/db'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { subject } from '@casl/ability'
-import { formatInTimeZone } from 'date-fns-tz'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -48,35 +47,20 @@ export async function GET(
 
 		const ability = createAppAbility(abilityRules || [])
 
-		// Check basic content access
+		// Check content access (ability system already handles startsAt logic)
 		const hasContentAccess = ability.can(
 			'read',
 			subject('Content', { id: workshop.id }),
 		)
 
-		// Check if user is admin (can bypass date restrictions)
+		// Check if user is admin (can bypass all restrictions)
 		const isAdmin = ability.can('create', 'Content')
 
-		// Check if workshop has started (for non-admin users)
-		let workshopHasStarted = true
+		// Check if access is pending due to workshop not started yet
+		const isPendingOpenAccess = ability.can('read', 'PendingOpenAccess')
 
-		if (!isAdmin && workshop.fields?.startsAt) {
-			const timezone = workshop.fields?.timezone || 'America/Los_Angeles'
-			const nowInTZ = new Date(
-				formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ss"),
-			)
-			const startsAtInTZ = new Date(
-				formatInTimeZone(
-					new Date(workshop.fields.startsAt),
-					timezone,
-					"yyyy-MM-dd'T'HH:mm:ss",
-				),
-			)
-			workshopHasStarted = startsAtInTZ <= nowInTZ
-		}
-
-		// Final decision: admin bypasses everything, others need content access + started
-		const canViewContent = isAdmin || (hasContentAccess && workshopHasStarted)
+		// Final decision: admin bypasses everything, others need actual content access
+		const canViewContent = isAdmin || hasContentAccess
 
 		return NextResponse.json(canViewContent, { headers: corsHeaders })
 	} catch (error) {
