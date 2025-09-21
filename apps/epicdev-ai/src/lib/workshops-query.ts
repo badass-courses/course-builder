@@ -46,6 +46,7 @@ import {
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
+import { transformWorkshopToModuleSchema } from './transform-workshop-result'
 import { upsertPostToTypeSense } from './typesense-query'
 
 /**
@@ -698,9 +699,12 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 
 	const sanitizedWorkshop = transformResource(workshop)
 
-	console.log('workshop', sanitizedWorkshop)
+	// Transform to ModuleSchema format
+	const transformedWorkshop = transformWorkshopToModuleSchema(sanitizedWorkshop)
 
-	return sanitizedWorkshop
+	console.log('workshop', transformedWorkshop)
+
+	return transformedWorkshop
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
