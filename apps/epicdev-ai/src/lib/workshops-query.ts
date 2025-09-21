@@ -46,6 +46,7 @@ import {
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
+import { transformWorkshopToModuleSchema } from './transform-workshop-result'
 import { upsertPostToTypeSense } from './typesense-query'
 
 /**
@@ -616,6 +617,94 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 	}
 
 	return MinimalWorkshopSchema.parse(workshop)
+}
+
+export async function getWorkshopViaApi(moduleSlugOrId: string) {
+	const workshop = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					moduleSlugOrId,
+				),
+				eq(contentResource.id, moduleSlugOrId),
+			),
+			eq(contentResource.type, 'workshop'),
+		),
+
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: {
+										extras: {
+											fields: sql<
+												Record<string, any>
+											>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
+												'fields',
+											),
+										},
+										with: {
+											resources: {
+												with: {
+													resource: {
+														extras: {
+															fields: sql<
+																Record<string, any>
+															>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
+																'fields',
+															),
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+		},
+	})
+
+	if (!workshop) {
+		return null
+	}
+
+	// Transform nested resources to apply field sanitization
+	const transformResource = (resource: any): any => {
+		if (!resource) return resource
+
+		const transformed = { ...resource }
+
+		// Transform nested resources
+		if (resource.resources) {
+			transformed.resources = resource.resources.map(
+				(resourceRelation: any) => ({
+					...resourceRelation,
+					resource: transformResource(resourceRelation.resource),
+				}),
+			)
+		}
+
+		return transformed
+	}
+
+	const sanitizedWorkshop = transformResource(workshop)
+
+	// Transform to ModuleSchema format
+	const transformedWorkshop = transformWorkshopToModuleSchema(sanitizedWorkshop)
+
+	console.log('workshop', transformedWorkshop)
+
+	return transformedWorkshop
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
