@@ -123,8 +123,11 @@ export default async function ModulePage(props: Props) {
 							moduleSlug={params.module}
 							workshop={workshop}
 						/>
+						<WorkshopGitHubRepoLink
+							abilityLoader={abilityLoader}
+							githubUrl={workshop.fields?.github}
+						/>
 						<div className="w-full items-center gap-2 sm:flex md:w-auto">
-							<WorkshopGitHubRepoLink githubUrl={workshop.fields?.github} />
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button

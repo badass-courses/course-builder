@@ -182,14 +182,28 @@ export function ContentTitle(
 	)
 }
 
-export function WorkshopGitHubRepoLink({ githubUrl }: { githubUrl?: string }) {
+export function WorkshopGitHubRepoLink({
+	abilityLoader,
+	githubUrl,
+}: {
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
+	githubUrl?: string
+}) {
+	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	if (!githubUrl) return null
+	if (!canView) return null
 	return (
 		<Button
 			asChild
 			size="lg"
 			variant="ghost"
-			className="hover:text-primary bg-card mb-2 h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out sm:mb-0 md:w-auto"
+			className="hover:text-primary bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out sm:mb-0 md:w-auto"
 		>
 			<Link href={githubUrl} target="_blank" rel="noopener noreferrer">
 				<Github className="size-4" /> Workshop App
