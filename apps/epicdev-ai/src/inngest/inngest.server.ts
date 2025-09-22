@@ -94,6 +94,10 @@ import {
 	type ResourceUpdated,
 } from './events/resource-management'
 import {
+	SEND_OFFICE_HOURS_EMAIL,
+	SendOfficeHoursEmail,
+} from './events/send-office-hours-email'
+import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
@@ -135,6 +139,7 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
+	[SEND_OFFICE_HOURS_EMAIL]: SendOfficeHoursEmail
 }
 
 const callbackBase =

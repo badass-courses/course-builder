@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:developers.google.com)",
+      "Read(//Users/zacjones/Documents/02.Areas/work/course-builder/packages/ui/event-creation/**)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_tabs",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_close",
+      "Read(//Users/zacjones/Documents/02.Areas/work/course-builder/packages/utils-email/src/**)",
+      "WebSearch",
+      "Read(//Users/zacjones/Documents/02.Areas/work/course-builder/apps/ai-hero/src/emails/**)",
+      "Read(//Users/zacjones/Documents/02.Areas/work/course-builder/apps/ai-hero/src/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

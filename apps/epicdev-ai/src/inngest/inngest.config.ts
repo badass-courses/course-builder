@@ -29,6 +29,7 @@ import { createUserOrganizations } from './functions/create-user-organization'
 import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { postEventPurchase } from './functions/post-event-purchase'
+import { sendOfficeHoursEmail } from './functions/send-office-hours-for-cohort'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -71,5 +72,6 @@ export const inngestConfig = {
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 		processBulkCalendarInvites,
+		sendOfficeHoursEmail,
 	],
 }
