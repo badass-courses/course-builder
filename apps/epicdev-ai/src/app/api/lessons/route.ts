@@ -23,6 +23,111 @@ const corsHeaders = {
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
+/**
+ * Helper function to create proper ability rules with purchase-based access for a specific lesson
+ */
+async function getAbilityForLessonById(request: NextRequest, lessonId: string) {
+	const { user } = await getUserAbilityForRequest(request)
+
+	if (!user) {
+		return { user: null, ability: getAbility(), lesson: null }
+	}
+
+	// Get lesson with parent resources
+	const basicAbility = getAbility({ user })
+	const lesson = await getLesson(lessonId, basicAbility)
+	if (!lesson) {
+		return { user, ability: basicAbility, lesson: null }
+	}
+
+	// Find the parent workshop for this lesson
+	const parentWorkshops = lesson.parentResources || []
+	if (parentWorkshops.length === 0) {
+		return { user, ability: basicAbility, lesson }
+	}
+
+	const workshopSlug = parentWorkshops[0]?.fields?.slug
+	if (!workshopSlug) {
+		return { user, ability: basicAbility, lesson }
+	}
+
+	// Get workshop without session dependency but with resourceProducts for ability rules
+	const workshopResult = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					workshopSlug,
+				),
+				eq(contentResource.id, workshopSlug),
+			),
+			eq(contentResource.type, 'workshop'),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+								orderBy: asc(contentResourceResource.position),
+							},
+						},
+					},
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if (!workshopResult) {
+		return { user, ability: basicAbility, lesson }
+	}
+
+	const { WorkshopSchema } = await import('@/lib/workshops')
+	const parsedWorkshop = WorkshopSchema.safeParse(workshopResult)
+	if (!parsedWorkshop.success) {
+		return { user, ability: basicAbility, lesson }
+	}
+
+	const workshop = parsedWorkshop.data
+
+	// Get user purchases and create ability rules with device token user
+	const purchases = await courseBuilderAdapter.getPurchasesForUser(user.id)
+	const allEntitlementTypes = await db.query.entitlementTypes.findMany()
+
+	// Get all workshop resource IDs for ability rules
+	const { getWorkshopResourceIds } = await import(
+		'@/utils/get-workshop-resource-ids'
+	)
+	const allModuleResourceIds = getWorkshopResourceIds(workshop)
+
+	const abilityRules = defineRulesForPurchases({
+		user,
+		purchases,
+		module: workshop,
+		lesson,
+		entitlementTypes: allEntitlementTypes,
+		country: request.headers.get('x-vercel-ip-country') || 'US',
+		allModuleResourceIds,
+	})
+
+	const ability = createAppAbility(abilityRules || [])
+
+	return { user, ability, lesson }
+}
+
 export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
@@ -212,41 +317,6 @@ export async function GET(request: NextRequest) {
 
 		let abilityRules, ability
 		try {
-			// Check entitlement type matching
-			const cohortEntitlementType = allEntitlementTypes?.find(
-				(entitlement) => entitlement.name === 'cohort_content_access',
-			)
-
-			// console.log('🔍 Ability rules debug:', {
-			// 	userId: user.id,
-			// 	workshopId: workshop.id,
-			// 	hasResourceProducts: !!workshop.resourceProducts?.length,
-			// 	resourceProductsCount: workshop.resourceProducts?.length || 0,
-			// 	userEntitlementsCount: user.entitlements?.length || 0,
-			// 	allModuleResourceIds: allModuleResourceIds.slice(0, 5), // First 5 IDs
-			// 	allModuleResourceIdsCount: allModuleResourceIds.length,
-			// 	userEntitlements: user.entitlements?.map((e) => ({
-			// 		type: e.type,
-			// 		contentIds: e.metadata?.contentIds,
-			// 	})),
-			// 	workshopStartsAt: workshop.fields?.startsAt,
-			// 	workshopStarted:
-			// 		!workshop.fields?.startsAt ||
-			// 		new Date(workshop.fields.startsAt) < new Date(),
-			// 	cohortEntitlementType: cohortEntitlementType
-			// 		? {
-			// 				id: cohortEntitlementType.id,
-			// 				name: cohortEntitlementType.name,
-			// 			}
-			// 		: null,
-			// 	userHasCohortEntitlement: user.entitlements?.some(
-			// 		(e) => e.type === cohortEntitlementType?.id,
-			// 	),
-			// 	workshopInUserEntitlements: user.entitlements?.some((e) =>
-			// 		e.metadata?.contentIds?.includes(workshop.id),
-			// 	),
-			// })
-
 			abilityRules = defineRulesForPurchases({
 				user,
 				purchases,
@@ -334,11 +404,20 @@ export async function PUT(request: NextRequest) {
 	const id = searchParams.get('id')
 
 	try {
-		const { ability, user } = await getUserAbilityForRequest(request)
+		if (!id) {
+			await log.warn('api.lessons.put.invalid', {
+				error: 'Missing lesson ID',
+			})
+			return NextResponse.json(
+				{ error: 'Missing lesson ID' },
+				{ status: 400, headers: corsHeaders },
+			)
+		}
+
+		const { ability, user, lesson } = await getAbilityForLessonById(request, id)
 
 		if (!user) {
 			await log.warn('api.lessons.put.unauthorized', {
-				headers: Object.fromEntries(request.headers),
 				lessonId: id,
 			})
 			return NextResponse.json(
@@ -347,14 +426,33 @@ export async function PUT(request: NextRequest) {
 			)
 		}
 
-		if (!id) {
-			await log.warn('api.lessons.put.invalid', {
+		if (!lesson) {
+			await log.warn('api.lessons.put.lesson_not_found', {
 				userId: user.id,
-				error: 'Missing lesson ID',
+				lessonId: id,
 			})
 			return NextResponse.json(
-				{ error: 'Missing lesson ID' },
-				{ status: 400, headers: corsHeaders },
+				{ error: 'Lesson not found' },
+				{ status: 404, headers: corsHeaders },
+			)
+		}
+
+		// Check if user can create/manage content (admins or contributors only)
+		const canCreateContent = ability.can('create', 'Content')
+		const canManageLesson = ability.can(
+			'manage',
+			subject('Content', { id: lesson.id }),
+		)
+		const isAdmin = ability.can('manage', 'all')
+
+		if (!isAdmin && !canCreateContent && !canManageLesson) {
+			await log.warn('api.lessons.put.access_denied', {
+				userId: user.id,
+				lessonId: lesson.id,
+			})
+			return NextResponse.json(
+				{ error: 'Access denied - content creation/management required' },
+				{ status: 403, headers: corsHeaders },
 			)
 		}
 
