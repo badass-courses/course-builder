@@ -189,10 +189,10 @@ export function WorkshopGitHubRepoLink({ githubUrl }: { githubUrl?: string }) {
 			asChild
 			size="lg"
 			variant="ghost"
-			className="hover:text-primary flex h-12 w-full items-center gap-2 rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+			className="hover:text-primary bg-card mb-2 h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out sm:mb-0 md:w-auto"
 		>
 			<Link href={githubUrl} target="_blank" rel="noopener noreferrer">
-				<Github className="size-4" /> GitHub
+				<Github className="size-4" /> Workshop App
 			</Link>
 		</Button>
 	)
