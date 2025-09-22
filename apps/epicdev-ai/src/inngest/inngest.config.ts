@@ -24,6 +24,11 @@ import {
 	calendarSync,
 	handleRefundAndRemoveFromCalendar,
 } from './functions/calendar-sync'
+import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
+import {
+	apiTransferWorkflow,
+	cohortTransferWorkflow,
+} from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
@@ -54,6 +59,9 @@ export const inngestConfig = {
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
+		cohortTransferWorkflow,
+		apiTransferWorkflow,
+		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
