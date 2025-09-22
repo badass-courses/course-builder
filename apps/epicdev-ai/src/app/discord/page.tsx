@@ -8,12 +8,12 @@ import { getProviders } from '@/server/auth'
 import { DiscordConnectButton } from './discord-connect-button'
 
 export const metadata: Metadata = {
-	title: 'Join AI Hero Discord',
-	description: 'Join AI Hero Discord',
+	title: 'Join Epic AI Discord',
+	description: 'Join Epic AI Discord',
 	openGraph: {
 		images: [
 			{
-				url: 'https://res.cloudinary.com/total-typescript/image/upload/v1738075018/aihero.dev/aihero-discord-og_2x_uneisf.jpg',
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Join%20Epic%20AI%20Discord`,
 			},
 		],
 	},
