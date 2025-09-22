@@ -141,11 +141,35 @@ export async function LessonPage({
 					lesson={lesson}
 					problem={problem}
 				/>
-				<div className="container relative max-w-4xl pb-16 sm:px-5 sm:pb-24">
+				<div className="container relative max-w-4xl px-0 pb-16 sm:px-5 sm:pb-24">
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
-
+							{workshop?.fields?.github && (
+								<div className="bg-card rounded-lg border p-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+									<h2 className="mb-2 text-xl font-semibold">
+										Run in Workshop App
+									</h2>
+									<p className="text-base opacity-80">
+										For the best experience, we highly recommend you use the
+										Epic Web workshop application on your local machine. It
+										allows you to authenticate and work through the material as
+										intended at your own pace.
+									</p>
+									<Button
+										asChild
+										className="from-primary relative mt-4 h-10 rounded-lg bg-gradient-to-b to-indigo-800 text-base font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+									>
+										<Link
+											target="_blank"
+											rel="noopener noreferrer"
+											href={`${workshop?.fields?.github}#readme`}
+										>
+											Setup Workshop App
+										</Link>
+									</Button>
+								</div>
+							)}
 							<Suspense
 								fallback={
 									<div className="flex flex-col gap-3">
