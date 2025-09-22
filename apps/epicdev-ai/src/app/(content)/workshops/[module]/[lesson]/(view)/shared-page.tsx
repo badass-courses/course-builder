@@ -83,20 +83,22 @@ export async function LessonPage({
 							{workshop?.fields?.workshopApp?.externalUrl &&
 							exercise?.fields?.workshopApp?.path ? (
 								<div className="mt-5 flex w-full max-w-xs flex-col items-center gap-2 text-center">
-									<Button
-										asChild
-										className="w-full"
-										size="lg"
-										variant="outline"
-									>
-										<Link
-											target="_blank"
-											rel="noopener noreferrer"
-											href={'/get-started'}
+									{workshop.fields.github && (
+										<Button
+											asChild
+											className="w-full"
+											size="lg"
+											variant="outline"
 										>
-											Setup Workshop App
-										</Link>
-									</Button>
+											<Link
+												target="_blank"
+												rel="noopener noreferrer"
+												href={workshop.fields.github}
+											>
+												Setup Workshop App
+											</Link>
+										</Button>
+									)}
 									<div className="flex w-full flex-col gap-2">
 										<Button asChild className="w-full" size="lg">
 											<Link
