@@ -45,6 +45,7 @@ export default function GetStartedClient({
 						className="bg-primary text-primary-foreground mt-10 flex items-center gap-3 rounded-md px-5 py-1 font-semibold transition"
 						href={`${githubUrlForCurrentModule}?tab=readme-ov-file#setup`}
 						target="_blank"
+						rel="noopener noreferrer"
 					>
 						{currentModule.fields.coverImage?.url && (
 							<Image

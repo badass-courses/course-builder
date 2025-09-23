@@ -62,8 +62,10 @@ const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
 					/>
 				) : null}
 				<Link
+				<Link
 					href={module.fields.github}
 					target="_blank"
+					rel="noopener noreferrer"
 					className="group leading-tight hover:underline"
 				>
 					{module.fields.title}{' '}
@@ -76,7 +78,7 @@ const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
 				{deployedUrl && (
 					<Link
 						target="_blank"
-						rel="noopener"
+						rel="noopener noreferrer"
 						className="inline-flex items-center gap-1.5 hover:underline"
 						href={deployedUrl}
 					>
@@ -87,7 +89,7 @@ const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
 				<Link
 					href={module.fields.github + '?tab=readme-ov-file#setup'}
 					target="_blank"
-					rel="noopener"
+					rel="noopener noreferrer"
 					className="inline-flex items-center gap-1.5 hover:underline"
 				>
 					<Icon name="Github" size="16" className="opacity-75" />
