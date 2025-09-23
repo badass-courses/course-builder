@@ -218,7 +218,15 @@ export function WorkshopResourceList(props: Props) {
 										resource.resources.some(
 											(item) => props.currentLessonSlug === item.slug,
 										)
-
+									const isSectionCompleted =
+										resource.type === 'section' &&
+										resource.resources?.every((item) =>
+											moduleProgress?.completedLessons?.some(
+												(progress) =>
+													progress.resourceId === item.id &&
+													progress.completedAt,
+											),
+										)
 									return resource.type === 'section' ? (
 										// sections
 										<li key={`${resource.id}-accordion`}>
@@ -232,7 +240,15 @@ export function WorkshopResourceList(props: Props) {
 													)}
 												>
 													<div className="flex w-full items-center">
-														<h3 className="pr-2">{resource.title}</h3>
+														<h3 className="flex items-center gap-1 pr-2">
+															{isSectionCompleted && (
+																<Check
+																	className="-ml-1.5 w-4 shrink-0"
+																	aria-hidden="true"
+																/>
+															)}
+															{resource.title}
+														</h3>
 														{resource.resources.length > 0 && (
 															<span className="self-end text-sm font-normal opacity-50">
 																({resource.resources.length})

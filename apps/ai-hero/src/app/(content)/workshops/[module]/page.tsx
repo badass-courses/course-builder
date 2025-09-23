@@ -181,7 +181,7 @@ export default async function ModulePage(props: Props) {
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
-								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl mt-3 leading-tight">
 									<p>{workshop.fields?.description}</p>
 								</div>
 							)}

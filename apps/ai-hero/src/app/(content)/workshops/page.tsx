@@ -15,6 +15,7 @@ import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { uniqBy } from '@coursebuilder/nodash'
 import {
 	Button,
 	Card,
@@ -112,11 +113,17 @@ async function WorkshopsList() {
 		orderBy: asc(contentResourceProduct.position),
 	})
 	const cohorts = products.flatMap((product) => {
-		return product.resource.resources.map((resource) => {
-			return resource.resource
-		})
+		return product.resource.resources
+			.filter((resource) => resource.resource.type === 'workshop')
+			.map((resource) => {
+				return resource.resource
+			})
 	})
-	let workshops = cohorts as ContentResource[]
+	const allWorkshops = await getAllWorkshops()
+	let workshops = uniqBy(
+		[...allWorkshops, ...cohorts],
+		(item) => item.id,
+	) as ContentResource[]
 	const { ability } = await getServerAuthSession()
 
 	const canEdit = ability.can('create', 'Content')

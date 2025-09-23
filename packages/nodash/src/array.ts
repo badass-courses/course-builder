@@ -4,6 +4,18 @@
 export const uniq = <T>(arr: T[]): T[] => [...new Set(arr)]
 
 /**
+ * Returns a new array with unique values by a key
+ */
+export const uniqBy = <T>(arr: T[], iteratee: (item: T) => any): T[] => {
+	const cb =
+		typeof iteratee === 'function' ? iteratee : (obj: any) => obj[iteratee]
+
+	return arr.filter(
+		(item, index, self) => self.findIndex((t) => cb(t) === cb(item)) === index,
+	)
+}
+
+/**
  * Groups array elements by a key
  */
 export const groupBy = <T>(

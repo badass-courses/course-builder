@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { revalidateTag } from 'next/cache'
 import { useRouter } from 'next/navigation'
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import type { Workshop, WorkshopRaw, WorkshopSchema } from '@/lib/workshops'
