@@ -1,133 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
-	createAppAbility,
-	defineRulesForPurchases,
-	getAbility,
-} from '@/ability'
-import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
-import { getLesson } from '@/lib/lessons/lessons.service'
-import {
 	createSolutionForLesson,
 	deleteSolutionForLesson,
 	getSolutionForLesson,
 	SolutionError,
 	updateSolutionForLesson,
 } from '@/lib/solutions/solutions.service'
-import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { getAbilityForLessonById } from '@/utils/get-ability-for-lesson-by-id'
 import { subject } from '@casl/ability'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
 	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-}
-
-/**
- * Helper function to create proper ability rules with purchase-based access
- */
-async function getAbilityForLesson(request: NextRequest, lessonId: string) {
-	const { user } = await getUserAbilityForRequest(request)
-
-	if (!user) {
-		return { user: null, ability: getAbility() }
-	}
-
-	// Get lesson with parent resources
-	const basicAbility = getAbility({ user })
-	const lesson = await getLesson(lessonId, basicAbility)
-	if (!lesson) {
-		return { user, ability: basicAbility, lesson: null }
-	}
-
-	// Find the parent workshop for this lesson
-	const parentWorkshops = lesson.parentResources || []
-	if (parentWorkshops.length === 0) {
-		return { user, ability: basicAbility, lesson }
-	}
-
-	const workshopSlug = parentWorkshops[0]?.fields?.slug
-	if (!workshopSlug) {
-		return { user, ability: basicAbility, lesson }
-	}
-
-	// Get workshop without session dependency but with resourceProducts for ability rules
-	const workshopResult = await db.query.contentResource.findFirst({
-		where: and(
-			or(
-				eq(
-					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-					workshopSlug,
-				),
-				eq(contentResource.id, workshopSlug),
-			),
-			eq(contentResource.type, 'workshop'),
-		),
-		with: {
-			resources: {
-				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-								orderBy: asc(contentResourceResource.position),
-							},
-						},
-					},
-				},
-				orderBy: asc(contentResourceResource.position),
-			},
-			resourceProducts: {
-				with: {
-					product: {
-						with: {
-							price: true,
-						},
-					},
-				},
-			},
-		},
-	})
-
-	if (!workshopResult) {
-		return { user, ability: basicAbility, lesson }
-	}
-
-	const { WorkshopSchema } = await import('@/lib/workshops')
-	const parsedWorkshop = WorkshopSchema.safeParse(workshopResult)
-	if (!parsedWorkshop.success) {
-		return { user, ability: basicAbility, lesson }
-	}
-
-	const workshop = parsedWorkshop.data
-
-	// Get user purchases and create ability rules with device token user
-	const purchases = await courseBuilderAdapter.getPurchasesForUser(user.id)
-	const allEntitlementTypes = await db.query.entitlementTypes.findMany()
-
-	// Get all workshop resource IDs for ability rules
-	const { getWorkshopResourceIds } = await import(
-		'@/utils/get-workshop-resource-ids'
-	)
-	const allModuleResourceIds = getWorkshopResourceIds(workshop)
-
-	const abilityRules = defineRulesForPurchases({
-		user,
-		purchases,
-		module: workshop,
-		lesson,
-		entitlementTypes: allEntitlementTypes,
-		country: request.headers.get('x-vercel-ip-country') || 'US',
-		allModuleResourceIds,
-	})
-
-	const ability = createAppAbility(abilityRules || [])
-
-	return { user, ability, lesson }
 }
 
 export async function OPTIONS() {
@@ -141,7 +27,7 @@ export async function GET(
 	const { lessonId } = await params
 
 	try {
-		const { ability, user, lesson } = await getAbilityForLesson(
+		const { ability, user, lesson } = await getAbilityForLessonById(
 			request,
 			lessonId,
 		)
@@ -231,7 +117,7 @@ export async function PUT(
 	const { lessonId } = await params
 	try {
 		const body = await request.json()
-		const { ability, user, lesson } = await getAbilityForLesson(
+		const { ability, user, lesson } = await getAbilityForLessonById(
 			request,
 			lessonId,
 		)
@@ -327,7 +213,7 @@ export async function POST(
 	const { lessonId } = await params
 	try {
 		const body = await request.json()
-		const { ability, user, lesson } = await getAbilityForLesson(
+		const { ability, user, lesson } = await getAbilityForLessonById(
 			request,
 			lessonId,
 		)
@@ -412,7 +298,7 @@ export async function DELETE(
 ) {
 	const { lessonId } = await params
 	try {
-		const { ability, user, lesson } = await getAbilityForLesson(
+		const { ability, user, lesson } = await getAbilityForLessonById(
 			request,
 			lessonId,
 		)

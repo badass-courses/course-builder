@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAppAbility, defineRulesForPurchases } from '@/ability'
-import { courseBuilderAdapter, db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
-import { getUserAbilityForRequest } from '@/server/ability-for-request'
+import { getAbilityForWorkshop } from '@/utils/get-ability-for-workshop'
 import { subject } from '@casl/ability'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -22,81 +18,18 @@ export async function GET(
 ) {
 	const { slug } = await params
 	try {
-		const { user } = await getUserAbilityForRequest(request)
+		const { user, ability, workshop } = await getAbilityForWorkshop(
+			request,
+			slug,
+		)
 
 		if (!user) {
 			return NextResponse.json(false, { headers: corsHeaders })
 		}
 
-		// Get workshop without session dependency but with resourceProducts for ability rules
-		const workshopResult = await db.query.contentResource.findFirst({
-			where: and(
-				or(
-					eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slug),
-					eq(contentResource.id, slug),
-				),
-				eq(contentResource.type, 'workshop'),
-			),
-			with: {
-				resources: {
-					with: {
-						resource: {
-							with: {
-								resources: {
-									with: {
-										resource: true,
-									},
-									orderBy: asc(contentResourceResource.position),
-								},
-							},
-						},
-					},
-					orderBy: asc(contentResourceResource.position),
-				},
-				resourceProducts: {
-					with: {
-						product: {
-							with: {
-								price: true,
-							},
-						},
-					},
-				},
-			},
-		})
-
-		if (!workshopResult) {
+		if (!workshop) {
 			return NextResponse.json(false, { headers: corsHeaders })
 		}
-
-		const { WorkshopSchema } = await import('@/lib/workshops')
-		const parsedWorkshop = WorkshopSchema.safeParse(workshopResult)
-		if (!parsedWorkshop.success) {
-			return NextResponse.json(false, { headers: corsHeaders })
-		}
-
-		const workshop = parsedWorkshop.data
-
-		// Get user purchases and create ability rules with device token user
-		const purchases = await courseBuilderAdapter.getPurchasesForUser(user.id)
-		const allEntitlementTypes = await db.query.entitlementTypes.findMany()
-
-		// Get all workshop resource IDs for ability rules
-		const { getWorkshopResourceIds } = await import(
-			'@/utils/get-workshop-resource-ids'
-		)
-		const allModuleResourceIds = getWorkshopResourceIds(workshop)
-
-		const abilityRules = defineRulesForPurchases({
-			user,
-			purchases,
-			module: workshop,
-			entitlementTypes: allEntitlementTypes,
-			country: request.headers.get('x-vercel-ip-country') || 'US',
-			allModuleResourceIds,
-		})
-
-		const ability = createAppAbility(abilityRules || [])
 
 		// Check content access (ability system already handles startsAt logic)
 		const hasContentAccess = ability.can(
