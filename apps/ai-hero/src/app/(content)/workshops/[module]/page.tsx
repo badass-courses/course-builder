@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
@@ -21,7 +22,11 @@ import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
+import {
+	getCachedMinimalWorkshop,
+	getCachedWorkshopProduct,
+	getWorkshopProduct,
+} from '@/lib/workshops-query'
 import { getProviders } from '@/server/auth'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
@@ -45,6 +50,10 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import { ConnectToDiscord } from '../_components/connect-to-discord'
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
+import { WorkshopPricingClient } from '../_components/workshop-pricing'
+import { WorkshopPricing } from '../_components/workshop-pricing-server'
+import { WorkshopSidebar } from '../_components/workshop-sidebar'
+import { Certificate } from '../../_components/module-certificate-container'
 
 type Props = {
 	params: Promise<{ module: string }>
@@ -102,9 +111,20 @@ export default async function ModulePage(props: Props) {
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
-	const Links = ({ children }: { children?: React.ReactNode }) => {
+	const Links = ({
+		children,
+		className,
+	}: {
+		children?: React.ReactNode
+		className?: string
+	}) => {
 		return (
-			<div className="relative w-full grid-cols-6 items-center border-y md:grid">
+			<div
+				className={cn(
+					'relative w-full grid-cols-6 items-center border-y md:grid',
+					className,
+				)}
+			>
 				<div
 					aria-hidden="true"
 					className="via-foreground/10 to-muted bg-linear-to-r absolute -bottom-px right-0 h-px w-2/3 from-transparent"
@@ -115,12 +135,16 @@ export default async function ModulePage(props: Props) {
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
+							productType={product?.type}
 							abilityLoader={abilityLoader}
 							moduleSlug={params.module}
 							workshop={workshop}
 						/>
 						<div className="w-full items-center sm:flex sm:w-auto">
-							<WorkshopGitHubRepoLink githubUrl={workshop.fields?.githubUrl} />
+							<WorkshopGitHubRepoLink
+								githubUrl={'/'} // workshop.fields?.github
+								abilityLoader={abilityLoader}
+							/>
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
@@ -128,7 +152,7 @@ export default async function ModulePage(props: Props) {
 										variant="ghost"
 										size="lg"
 									>
-										<Share2 className="mr-2 w-3" /> Share
+										<Share2 className="mr-1 w-3" /> Share
 									</Button>
 								</DialogTrigger>
 								<DialogContent>
@@ -156,11 +180,13 @@ export default async function ModulePage(props: Props) {
 		0.8,
 		true,
 	)
+	const product = await getCachedWorkshopProduct(params.module)
+
 	return (
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] flex w-full items-center justify-center gap-2 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat p-3 text-center dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]">
+					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] relative flex w-full items-center justify-center gap-2 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat p-3 text-center dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]">
 						<Construction className="h-4 w-4" />{' '}
 						<p className="text-sm font-medium capitalize">
 							{workshop.fields?.visibility} {workshop.type}
@@ -191,16 +217,12 @@ export default async function ModulePage(props: Props) {
 						</div>
 						<div className="col-span-2">
 							{workshop.fields?.coverImage?.url && (
-								<WorkshopImage imageUrl={workshop.fields.coverImage.url} />
+								<WorkshopImage
+									imageUrl={workshop.fields.coverImage.url}
+									abilityLoader={abilityLoader}
+								/>
 							)}
 						</div>
-						<Suspense fallback={null}>
-							<EditWorkshopButton
-								className="absolute right-0 top-5"
-								moduleType="workshop"
-								moduleSlug={params.module}
-							/>
-						</Suspense>
 					</div>
 					<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
 						<img
@@ -214,6 +236,14 @@ export default async function ModulePage(props: Props) {
 							aria-hidden="true"
 						/>
 					</div>
+					<Suspense fallback={null}>
+						<EditWorkshopButton
+							className="absolute right-5 top-5 z-10"
+							moduleType="workshop"
+							moduleSlug={params.module}
+							product={product}
+						/>
+					</Suspense>
 				</header>
 
 				<>
@@ -221,24 +251,103 @@ export default async function ModulePage(props: Props) {
 						<ContentTitle />
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
-						<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
-							{workshop.fields?.body ? (
-								<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-							) : (
-								<p>No description found.</p>
+						<div className="col-span-4 px-5 py-10 sm:px-8 lg:px-10">
+							<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
+								{workshop.fields?.body ? (
+									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
+								) : (
+									<p>No description found.</p>
+								)}
+							</article>
+							{product?.type === 'self-paced' && (
+								<>
+									<hr className="border-border mb-6 mt-8 w-full border-dashed" />
+									<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
+										Content
+									</h3>
+									<WorkshopResourceList
+										isCollapsible={false}
+										className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
+										withHeader={false}
+										maxHeight="h-auto"
+										wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
+									/>
+								</>
 							)}
-						</article>
-						<div className="bg-muted/50 col-span-2 flex flex-col border-l">
-							<WorkshopResourceList
-								isCollapsible={false}
-								className="border-r-0! w-full max-w-none"
-								withHeader={false}
-								maxHeight="h-auto"
-								wrapperClassName="overflow-hidden pb-0"
-							/>
+						</div>
+						<div className="bg-muted/50 col-span-2 flex h-full flex-col border-l">
+							{product?.type === 'self-paced' ? (
+								<React.Suspense
+									fallback={
+										<div className="bg-background relative z-10 flex w-full flex-col gap-2 p-5 pb-16 md:-mt-14">
+											<Skeleton className="bg-accent h-10 w-full" />
+											<Skeleton className="bg-accent h-10 w-full" />
+											<Skeleton className="bg-accent h-10 w-full" />
+											<Skeleton className="bg-accent h-10 w-full" />
+										</div>
+									}
+								>
+									<WorkshopPricing
+										moduleSlug={params.module}
+										searchParams={searchParams}
+									>
+										{(pricingProps) => {
+											return pricingProps.product ? (
+												<>
+													<WorkshopSidebar workshop={workshop}>
+														{pricingProps.allowPurchase &&
+														!pricingProps.hasPurchasedCurrentProduct ? (
+															<>
+																<WorkshopPricingClient
+																	className="bg-background relative z-10 md:-mt-14"
+																	searchParams={props.searchParams}
+																	{...pricingProps}
+																/>
+															</>
+														) : (
+															<>
+																<WorkshopResourceList
+																	isCollapsible={false}
+																	className="border-r-0! w-full max-w-none"
+																	withHeader={false}
+																	maxHeight="h-auto"
+																	wrapperClassName="overflow-hidden pb-0"
+																/>
+																<div className="p-3">
+																	<Certificate
+																		resourceSlugOrId={params.module}
+																	/>
+																</div>
+															</>
+														)}
+													</WorkshopSidebar>
+												</>
+											) : (
+												<WorkshopResourceList
+													isCollapsible={false}
+													className="border-r-0! w-full max-w-none"
+													withHeader={false}
+													maxHeight="h-auto"
+													wrapperClassName="overflow-hidden pb-0"
+												/>
+											)
+										}}
+									</WorkshopPricing>
+								</React.Suspense>
+							) : (
+								<WorkshopSidebar workshop={workshop}>
+									<WorkshopResourceList
+										isCollapsible={false}
+										className="border-r-0! w-full max-w-none"
+										withHeader={false}
+										maxHeight="h-auto"
+										wrapperClassName="overflow-hidden pb-0"
+									/>
+								</WorkshopSidebar>
+							)}
 						</div>
 					</div>
-					{workshop?.fields?.body && <Links />}
+					{workshop?.fields?.body && <Links className="border-b-0" />}
 				</>
 			</main>
 		</LayoutClient>

@@ -15,11 +15,13 @@ import type { AbilityForResource } from '@coursebuilder/utils-auth/current-abili
 import { useModuleProgress } from '../../_components/module-progress-provider'
 
 export function StartLearningWorkshopButton({
+	productType,
 	abilityLoader,
 	moduleSlug,
 	className,
 	workshop,
 }: {
+	productType?: 'self-paced' | 'live' | 'membership' | 'cohort'
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean
@@ -66,15 +68,21 @@ export function StartLearningWorkshopButton({
 		)
 	}
 
-	return null
+	if (productType === 'cohort') {
+		// preview not available
+		return null
+	}
 
-	// preview not available
+	if (!canView) {
+		return null
+	}
+
 	return (
 		<>
 			<Button
 				size="lg"
 				className={cn(
-					'before:bg-primary-foreground relative h-14 w-full rounded-none text-sm font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] sm:max-w-[180px]',
+					'before:bg-primary-foreground relative h-14 w-full rounded-none text-base font-medium before:absolute before:-left-1 before:h-2 before:w-2 before:rotate-45 before:content-[""] sm:max-w-[180px]',
 					className,
 					{
 						'text-foreground hover:bg-secondary border-r bg-transparent before:hidden sm:max-w-[120px]':
@@ -170,17 +178,31 @@ export function ContentTitle(
 	)
 }
 
-export function WorkshopGitHubRepoLink({ githubUrl }: { githubUrl?: string }) {
+export function WorkshopGitHubRepoLink({
+	githubUrl,
+	abilityLoader,
+}: {
+	githubUrl?: string
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
+}) {
+	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	if (!githubUrl) return null
+	if (!canView) return null
 	return (
 		<Button
 			asChild
 			size="lg"
 			variant="ghost"
-			className="flex h-14 w-full items-center gap-2 rounded-none border-r"
+			className="flex h-14 items-center gap-2 rounded-none border-r"
 		>
 			<Link href={githubUrl} target="_blank" rel="noopener noreferrer">
-				<Github className="size-4" /> GitHub
+				<Github className="size-4" /> Code
 			</Link>
 		</Button>
 	)

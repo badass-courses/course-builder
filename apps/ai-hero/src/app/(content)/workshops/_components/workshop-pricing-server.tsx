@@ -3,7 +3,10 @@ import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
-import { getWorkshopProduct } from '@/lib/workshops-query'
+import {
+	getCachedWorkshopProduct,
+	getWorkshopProduct,
+} from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
@@ -23,7 +26,7 @@ export async function WorkshopPricing({
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
 
-	const workshopProduct = await getWorkshopProduct(moduleSlug)
+	const workshopProduct = await getCachedWorkshopProduct(moduleSlug)
 	const product = await getProduct(workshopProduct?.id)
 
 	let workshopProps
@@ -101,5 +104,10 @@ export async function WorkshopPricing({
 		}
 	}
 
-	return <>{children(workshopProps)}</>
+	const ALLOW_PURCHASE =
+		searchParams?.allowPurchase === 'true' ||
+		(workshopProps?.product?.fields.state === 'published' &&
+			workshopProps?.product?.fields.visibility === 'public')
+
+	return <>{children({ ...workshopProps, allowPurchase: ALLOW_PURCHASE })}</>
 }

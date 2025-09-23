@@ -73,7 +73,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
 	// Filter attached emails from workshop.resources
 	const attachedEmails =
 		workshop.resources?.filter(
-			(resource) => resource.resource.type === 'email',
+			(resource) => resource.resource?.type === 'email',
 		) || []
 
 	// Available emails that aren't already attached

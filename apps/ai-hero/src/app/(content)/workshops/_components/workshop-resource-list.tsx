@@ -233,7 +233,7 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'hover:bg-muted bg-background relative flex w-full items-center border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
+														'hover:bg-muted bg-background relative flex w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
 														{
 															'bg-muted': isActiveGroup,
 														},
@@ -258,7 +258,7 @@ export function WorkshopResourceList(props: Props) {
 												</AccordionTrigger>
 												{resource.resources.length > 0 && (
 													// section lessons
-													<AccordionContent>
+													<AccordionContent className="pb-0">
 														<ol className="divide-border bg-background divide-y border-b">
 															{resource.resources.map((item, index: number) => {
 																return (

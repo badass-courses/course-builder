@@ -11,7 +11,7 @@ export async function getResourceSection(
 	let sectionData = null
 
 	moduleResource.resources.forEach((section) => {
-		if (section.resource.type !== 'section') return
+		if (section?.resource?.type !== 'section') return
 
 		if (section.resourceId === resourceId) {
 			sectionData = section.resource
