@@ -284,6 +284,12 @@ export function defineRulesForPurchases(
 		) {
 			can('read', 'RegionRestriction')
 		}
+
+		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+			can('read', 'Content', {
+				id: { $in: [module.id, ...(allModuleResourceIds || [])] },
+			})
+		}
 	}
 
 	if (hasChargesForPurchases(purchases)) {

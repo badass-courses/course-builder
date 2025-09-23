@@ -43,11 +43,12 @@ export const ConnectToDiscord = async ({
 	return (
 		<>
 			{discordProvider ? (
-				<div className="flex h-14 w-full items-center justify-center rounded-none md:w-auto md:border-r">
-					<DiscordConnectButton discordProvider={discordProvider}>
-						Join Discord
-					</DiscordConnectButton>
-				</div>
+				<DiscordConnectButton
+					className="flex h-14 w-full items-center justify-center rounded-none md:w-auto md:border-r"
+					discordProvider={discordProvider}
+				>
+					Join Discord
+				</DiscordConnectButton>
 			) : null}
 		</>
 	)

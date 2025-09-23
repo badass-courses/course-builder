@@ -6,19 +6,22 @@ import { env } from '@/env.mjs'
 import { signIn } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 export function DiscordConnectButton({
 	discordProvider,
 	children,
+	className,
 }: {
 	discordProvider: { id: string; name: string }
 	children?: React.ReactNode
+	className?: string
 }) {
 	return (
 		<Button
 			data-button=""
 			variant="ghost"
-			className="h-full bg-black text-white"
+			className={cn('h-full', className)}
 			onClick={() =>
 				signIn(discordProvider.id, {
 					callbackUrl: `${env.NEXT_PUBLIC_URL}/discord/redirect`,
@@ -27,7 +30,7 @@ export function DiscordConnectButton({
 			}
 		>
 			<Icon
-				className="mr-2 flex items-center justify-center"
+				className="mr-0.5 flex items-center justify-center"
 				name="Discord"
 				size="20"
 			/>

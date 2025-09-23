@@ -66,7 +66,9 @@ export const PricingWidget: React.FC<{
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
-						<span className="relative z-10">Enroll</span>
+						<span className="relative z-10">
+							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
+						</span>
 						<div
 							style={{
 								backgroundSize: '200% 100%',
@@ -85,7 +87,10 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle className="bg-muted mt-5 max-w-sm rounded p-5" />
 				</Pricing.Details>
 			</Pricing.Product>
-			<ProductPricingFeatures workshops={workshops ?? []} />
+			<ProductPricingFeatures
+				workshops={workshops ?? []}
+				productType={product.type}
+			/>
 		</Pricing.Root>
 	)
 }

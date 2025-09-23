@@ -443,6 +443,12 @@ export async function getWorkshopNavigation(
 	return workshopNavigation
 }
 
+export const getCachedWorkshopProduct = unstable_cache(
+	async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
+	['workshop'],
+	{ revalidate: 3600, tags: ['workshop'] },
+)
+
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	// This query finds a product associated with a workshop in two ways:
 	// 1. Direct association: Workshop -> Product
