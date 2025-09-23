@@ -86,7 +86,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.LiveRefundPolicy />
 					<Pricing.SaleCountdown className="mt-6 w-full rounded border p-5" />
 					<Pricing.PPPToggle className="mt-5" />
-					<ProductPricingFeatures workshops={[]} />
+					<ProductPricingFeatures productType={product.type} workshops={[]} />
 				</Pricing.Details>
 			</Pricing.Product>
 		</Pricing.Root>
