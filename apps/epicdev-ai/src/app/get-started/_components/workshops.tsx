@@ -7,20 +7,15 @@ import { Workshop } from '@/lib/workshops'
 import { GlobeIcon } from 'lucide-react'
 
 const Workshops: React.FC<{ workshops: Workshop[] }> = ({ workshops }) => {
-	console.log({ workshops })
-	// log workshop fields
-	console.log(workshops.map((workshop) => workshop.fields))
-
 	const publishedWorkshops = workshops.filter(
 		(workshop) => workshop.fields.state === 'published',
 	)
 
-	console.log({ publishedWorkshops })
 	return (
 		<div className="not-prose my-8 flex flex-col items-center justify-center text-lg sm:gap-4 md:text-lg">
 			<strong className="flex w-full">Workshops</strong>
 			<ul className="w-full divide-y pb-5">
-				{workshops.map((workshop) => {
+				{publishedWorkshops.map((workshop) => {
 					return <ModuleWorkshopAppItem key={workshop.id} module={workshop} />
 				})}
 			</ul>
@@ -61,7 +56,6 @@ const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
 						aria-hidden
 					/>
 				) : null}
-				<Link
 				<Link
 					href={module.fields.github}
 					target="_blank"

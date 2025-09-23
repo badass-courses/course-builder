@@ -15,7 +15,7 @@ export default function ThemeAwareImage({
 	dark?: string
 	alt?: string
 }) {
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const [mounted, setMounted] = React.useState(false)
 
 	React.useEffect(() => {
@@ -29,7 +29,8 @@ export default function ThemeAwareImage({
 			{mounted ? (
 				<Image
 					src={
-						typeof src === 'string' ? src : theme === 'light' ? light! : dark!
+						src ??
+						(resolvedTheme === 'light' ? (light ?? dark) : (dark ?? light))!
 					}
 					fill
 					alt={alt}

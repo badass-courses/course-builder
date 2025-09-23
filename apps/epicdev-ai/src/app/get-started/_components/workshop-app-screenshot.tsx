@@ -15,7 +15,7 @@ const WorkshopAppScreenshot = () => {
 		['0deg', '-3deg'],
 	)
 
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const [mounted, setMounted] = React.useState(false)
 	React.useEffect(() => {
 		setMounted(true)
@@ -33,7 +33,7 @@ const WorkshopAppScreenshot = () => {
 			{mounted ? (
 				<Image
 					src={
-						theme === 'light'
+						resolvedTheme === 'light'
 							? 'https://res.cloudinary.com/epic-web/image/upload/v1696929540/workshop-app-screenshot-light-1_2x.png'
 							: 'https://res.cloudinary.com/epic-web/image/upload/v1696929542/workshop-app-screenshot-1_2x.png'
 					}
