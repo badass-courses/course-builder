@@ -1192,41 +1192,65 @@ export function mySqlDrizzleAdapter(
 					.transform((val) => (val ? new Date(val) : null)),
 			})
 
-			// Execute the optimized query
+			// Execute the optimized query - create a flattened, properly ordered list
 			const results: any = await client.execute(sql`
-        SELECT
-						cr.id AS resource_id,
+				WITH RECURSIVE workshop AS (
+					SELECT id, fields->>'$.slug' AS slug
+					FROM ${contentResource}
+					WHERE id = ${moduleIdOrSlug} OR fields->>'$.slug' = ${moduleIdOrSlug}
+				),
+				-- Get all workshop resources with their positions
+				workshop_structure AS (
+					SELECT 
+						w.id AS workshop_id,
+						crr.resourceId,
+						crr.position AS position,
 						cr.type AS resource_type,
 						cr.fields->>'$.slug' AS resource_slug,
-						rp.completedAt AS completed_at
-				FROM
-						(SELECT id, fields->>'$.slug' AS slug
-						 FROM ${contentResource}
-						 WHERE id = ${moduleIdOrSlug}
-								OR fields->>'$.slug' = ${moduleIdOrSlug}) AS w
-				LEFT JOIN
-						(SELECT
-								crr.resourceOfId AS workshop_id,
-								crr.resourceId,
-								crr.position
-						 FROM ${contentResourceResource} crr) AS tlr ON w.id = tlr.workshop_id
-				LEFT JOIN ${contentResource} sections ON sections.id = tlr.resourceId AND sections.type = 'section'
-				LEFT JOIN
-						(SELECT
-								crr.resourceOfId AS section_id,
-								crr.resourceId AS resource_id,
-								crr.position AS position_in_section,
-								section_crr.position AS section_position
-						 FROM ${contentResourceResource} crr
-						 JOIN ${contentResourceResource} section_crr ON crr.resourceOfId = section_crr.resourceId) AS sr
-				ON sr.section_id = sections.id
-				JOIN ${contentResource} cr ON cr.id = COALESCE(sr.resource_id, tlr.resourceId)
-				LEFT JOIN ${resourceProgress} rp ON rp.resourceId = cr.id
-						AND rp.userId = ${user.id}
-				WHERE
-						cr.type IN ('lesson', 'exercise', 'post')
-
-    `)
+						cr.id AS resource_content_id
+					FROM workshop w
+					JOIN ${contentResourceResource} crr ON w.id = crr.resourceOfId
+					JOIN ${contentResource} cr ON crr.resourceId = cr.id
+					ORDER BY crr.position
+				),
+				-- Recursively expand sections and maintain global ordering
+				expanded_resources AS (
+					-- Base case: direct lessons/posts from workshop
+					SELECT 
+						workshop_id,
+						position * 1000 AS global_order, -- Multiply by 1000 to leave room for section items
+						resource_content_id AS resource_id,
+						resource_type,
+						resource_slug
+					FROM workshop_structure
+					WHERE resource_type IN ('lesson', 'post')
+					
+					UNION ALL
+					
+					-- Recursive case: lessons within sections
+					SELECT 
+						ws.workshop_id,
+						ws.position * 1000 + crr.position AS global_order, -- Section position * 1000 + lesson position
+						cr.id AS resource_id,
+						cr.type AS resource_type,
+						cr.fields->>'$.slug' AS resource_slug
+					FROM workshop_structure ws
+					JOIN ${contentResourceResource} crr ON ws.resource_content_id = crr.resourceOfId
+					JOIN ${contentResource} cr ON crr.resourceId = cr.id
+					WHERE ws.resource_type = 'section'
+					AND cr.type IN ('lesson', 'post')
+				)
+				SELECT
+					er.resource_id,
+					er.resource_type,
+					er.resource_slug,
+					rp.completedAt AS completed_at,
+					er.global_order
+				FROM expanded_resources er
+				LEFT JOIN ${resourceProgress} rp ON rp.resourceId = er.resource_id
+					AND rp.userId = ${user.id}
+				ORDER BY er.global_order ASC
+			`)
 			// Process the results
 			const completedLessons: ResourceProgress[] = []
 			let nextResource: Partial<ContentResource> | null = null

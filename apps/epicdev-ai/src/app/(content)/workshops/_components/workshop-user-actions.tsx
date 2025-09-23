@@ -203,7 +203,7 @@ export function WorkshopGitHubRepoLink({
 			asChild
 			size="lg"
 			variant="ghost"
-			className="hover:text-primary bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out sm:mb-0 md:w-auto"
+			className="hover:text-primary hover:bg-card-muted bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
 		>
 			<Link href={githubUrl} target="_blank" rel="noopener noreferrer">
 				<Github className="size-4" /> Workshop App

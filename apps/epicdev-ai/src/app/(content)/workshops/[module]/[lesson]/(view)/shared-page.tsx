@@ -105,7 +105,7 @@ export async function LessonPage({
 												target="_blank"
 												rel="noopener noreferrer"
 												href={joinUrlPath(
-													workshop.fields.workshopApp.externalUrl,
+													`http://localhost:${workshop.fields.workshopApp?.port || '5639'}`,
 													exercise.fields.workshopApp.path,
 												)}
 											>

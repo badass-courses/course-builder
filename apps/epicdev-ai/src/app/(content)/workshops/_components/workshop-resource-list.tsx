@@ -115,6 +115,7 @@ export function WorkshopResourceList(props: Props) {
 				'': !isSidebarCollapsed,
 				'w-8 cursor-pointer transition [&_div]:hidden':
 					isSidebarCollapsed && isCollapsible,
+				'pb-5': isCollapsible,
 				// 'bg-card overflow-hidden rounded-t-lg border-x border-t shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]':
 				// 	isCollapsible,
 			})}
@@ -224,6 +225,15 @@ export function WorkshopResourceList(props: Props) {
 										resource.resources.some(
 											(item) => props.currentLessonSlug === item.slug,
 										)
+									const isSectionCompleted =
+										resource.type === 'section' &&
+										resource.resources?.every((item) =>
+											moduleProgress?.completedLessons?.some(
+												(progress) =>
+													progress.resourceId === item.id &&
+													progress.completedAt,
+											),
+										)
 
 									return resource.type === 'section' ? (
 										// sections
@@ -238,7 +248,10 @@ export function WorkshopResourceList(props: Props) {
 														},
 													)}
 												>
-													<h3 className="">
+													<h3 className="flex items-center gap-1.5">
+														{isSectionCompleted && (
+															<Check className="-ml-1.5 w-4 shrink-0 text-teal-500" />
+														)}
 														{resource.title}{' '}
 														<span className="text-sm opacity-50">
 															({resource.resources.length})
@@ -480,7 +493,7 @@ const LessonResource = ({
 						<li data-active={isActiveExercise ? 'true' : 'false'}>
 							<Link
 								className={cn(
-									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-2 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
+									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
 									{
 										'pl-9': true,
 										'text-primary border-gray-200': isActiveExercise,

@@ -131,7 +131,7 @@ export default async function ModulePage(props: Props) {
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
-										className="hover:text-primary bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
+										className="hover:text-primary hover:bg-card-muted bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
 										variant="ghost"
 										size="lg"
 									>
@@ -159,7 +159,7 @@ export default async function ModulePage(props: Props) {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="flex w-full flex-col">
+			<main className="flex w-full flex-col pb-24">
 				{workshop.fields?.visibility !== 'public' && (
 					<div className="flex w-full items-center justify-center gap-2 rounded-lg border p-3 text-center">
 						<Construction className="h-4 w-4" />{' '}
@@ -174,7 +174,7 @@ export default async function ModulePage(props: Props) {
 					imageUrl={workshop.fields?.coverImage?.url}
 					slug={params.module}
 				/>
-				<header className="relative flex items-center justify-center overflow-hidden">
+				<header className="relative flex items-center justify-center">
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-8 md:grid md:grid-cols-8 md:gap-8 md:pt-8 lg:gap-10">
 						<div className="col-span-5 flex shrink-0 flex-col items-center md:items-start">
 							<WorkshopBreadcrumb />
@@ -209,8 +209,8 @@ export default async function ModulePage(props: Props) {
 				<>
 					<div className="mx-auto flex w-full grow grid-cols-8 flex-col gap-5 md:grid lg:gap-10">
 						<div className="col-span-5">
-							<article className="prose sm:prose-lg lg:prose-base prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-8 lg:pt-10">
-								<h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75 sm:mb-6 lg:mb-6">
+							<article className="prose sm:prose-lg lg:prose-base prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
+								<h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75">
 									Description
 								</h2>
 								{workshop.fields?.body ? (
@@ -235,7 +235,7 @@ export default async function ModulePage(props: Props) {
 							</div>
 						</div>
 					</div>
-					{workshop?.fields?.body && <Links className="mb-20 mt-10" />}
+					{/* {workshop?.fields?.body && <Links className="mb-20 mt-10" />} */}
 				</>
 			</main>
 		</LayoutClient>
