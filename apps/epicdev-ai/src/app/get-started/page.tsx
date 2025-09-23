@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getPage } from '@/lib/pages-query'
 import { getAllTutorials } from '@/lib/tutorials-query'
 import { getAllWorkshops } from '@/lib/workshops-query'
@@ -29,13 +30,15 @@ export default async function GetStartedPage() {
 		"From setting up your environment to navigating exercises and understanding the Epic Workshop App's structure, this guide ensures a smooth workshop experience."
 
 	return (
-		<GetStartedClient
-			page={page}
-			workshops={workshops}
-			pageTitle={pageTitle}
-			pageDescription={pageDescription}
-		>
-			{content}
-		</GetStartedClient>
+		<LayoutClient withContainer>
+			<GetStartedClient
+				page={page}
+				workshops={workshops}
+				pageTitle={pageTitle}
+				pageDescription={pageDescription}
+			>
+				{content}
+			</GetStartedClient>
+		</LayoutClient>
 	)
 }
