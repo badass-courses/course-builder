@@ -90,12 +90,8 @@ export async function LessonPage({
 											size="lg"
 											variant="outline"
 										>
-											<Link
-												target="_blank"
-												rel="noopener noreferrer"
-												href={workshop.fields.github}
-											>
-												Setup Workshop App
+											<Link target="_blank" href="/get-started">
+												Get Started
 											</Link>
 										</Button>
 									)}
@@ -160,12 +156,8 @@ export async function LessonPage({
 										asChild
 										className="from-primary relative mt-4 h-10 rounded-lg bg-gradient-to-b to-indigo-800 text-base font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 									>
-										<Link
-											target="_blank"
-											rel="noopener noreferrer"
-											href={`${workshop?.fields?.github}#readme`}
-										>
-											Setup Workshop App
+										<Link target="_blank" href="/get-started">
+											Get Started
 										</Link>
 									</Button>
 								</div>
