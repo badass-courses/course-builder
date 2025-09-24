@@ -113,7 +113,7 @@ export type TreeAction =
 	| {
 			type: 'update-tier'
 			itemId: string
-			tier: 'standard' | 'premium' | 'vip'
+			tier: 'free' | 'standard' | 'premium' | 'vip'
 	  }
 	| {
 			type: 'update-item'

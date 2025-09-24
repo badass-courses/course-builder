@@ -34,7 +34,7 @@ export const TierSelect: React.FC<{
 				dispatch({
 					type: 'update-tier',
 					itemId: item.id,
-					tier: value as 'standard' | 'premium' | 'vip',
+					tier: value as 'free' | 'standard' | 'premium' | 'vip',
 				})
 			}}
 		>
@@ -42,6 +42,7 @@ export const TierSelect: React.FC<{
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent>
+				<SelectItem value="free">Free</SelectItem>
 				<SelectItem value="standard">Standard</SelectItem>
 				<SelectItem value="premium">Premium</SelectItem>
 				<SelectItem value="vip">VIP</SelectItem>

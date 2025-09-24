@@ -383,6 +383,47 @@ export function defineRulesForPurchases(
 		})
 	}
 
+	// Grant access to lessons in sections with "free" tier and individual free lessons
+	if (module?.resources) {
+		const freeResourceIds: string[] = []
+
+		module.resources.forEach((moduleResource) => {
+			// Check if this is a section with free tier
+			if (
+				moduleResource.resource?.type === 'section' &&
+				moduleResource.metadata?.tier === 'free'
+			) {
+				// Add all lessons in this free section
+				moduleResource.resource.resources?.forEach((sectionResource) => {
+					if (
+						sectionResource.resource?.type === 'lesson' ||
+						sectionResource.resource?.type === 'exercise' ||
+						sectionResource.resource?.type === 'post'
+					) {
+						freeResourceIds.push(sectionResource.resource.id)
+					}
+				})
+			}
+
+			// Check if this is a top-level lesson/exercise/post with free tier
+			if (
+				(moduleResource.resource?.type === 'lesson' ||
+					moduleResource.resource?.type === 'exercise' ||
+					moduleResource.resource?.type === 'post') &&
+				moduleResource.metadata?.tier === 'free'
+			) {
+				freeResourceIds.push(moduleResource.resource.id)
+			}
+		})
+
+		// Grant access to all free resources (lessons in free sections + individual free lessons)
+		if (freeResourceIds.length > 0) {
+			can('read', 'Content', {
+				id: { $in: freeResourceIds },
+			})
+		}
+	}
+
 	// lesson check
 	// TODO: validate
 	const lessonModule = module?.resources?.find(
