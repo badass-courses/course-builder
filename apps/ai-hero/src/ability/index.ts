@@ -285,11 +285,13 @@ export function defineRulesForPurchases(
 			can('read', 'RegionRestriction')
 		}
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content', {
-				id: { $in: [module.id, ...(allModuleResourceIds || [])] },
-			})
-		}
+		// LEGACY: this was used to grant access to the module and its resources
+		// 		   but now we grant access via entitlements
+		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+		// 	can('read', 'Content', {
+		// 		id: { $in: [module.id, ...(allModuleResourceIds || [])] },
+		// 	})
+		// }
 	}
 
 	if (hasChargesForPurchases(purchases)) {
@@ -353,6 +355,29 @@ export function defineRulesForPurchases(
 					} else {
 						can('read', 'PendingOpenAccess')
 					}
+				}
+			}
+		})
+	}
+
+	const workshopEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'workshop_content_access',
+	)
+
+	// check self-paced workshop and its lessons
+	if (user?.entitlements && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === workshopEntitlementType?.id) {
+				// Grant access to the workshop itself and its lessons
+				can('read', 'Content', {
+					id: { $in: entitlement.metadata.contentIds },
+				})
+
+				// If user has access to this specific workshop, grant access to lessons
+				if (entitlement.metadata.contentIds?.includes(module.id)) {
+					can('read', 'Content', {
+						id: { $in: allModuleResourceIds },
+					})
 				}
 			}
 		})

@@ -1,45 +1,38 @@
 import { db } from '@/db'
-import {
-	contentResourceResource,
-	entitlements,
-	entitlementTypes,
-} from '@/db/schema'
-import LiveOfficeHoursInvitation, {
-	generateICSAttachments,
-} from '@/emails/live-office-hours-invitation'
+import { contentResourceResource, entitlementTypes } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
-import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
-import { getCohort } from '@/lib/cohorts-query'
+import { getWorkshopWelcomeEmailVariant } from '@/inngest/utils/get-workshop-welcome-email-variant'
 import {
-	createCohortEntitlement,
+	createWorkshopEntitlement,
 	EntitlementSourceType,
 } from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
+import { getWorkshop } from '@/lib/workshops-query'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
-import { addDays, format } from 'date-fns'
 import { and, eq } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
-import { USER_ADDED_TO_COHORT_EVENT } from './discord/add-cohort-role-discord'
+import { USER_ADDED_TO_WORKSHOP_EVENT } from './discord/add-workshop-role-discord'
 
-export const postCohortPurchaseWorkflow = inngest.createFunction(
+export const postWorkshopPurchaseWorkflow = inngest.createFunction(
 	{
-		id: `post-cohort-purchase-workflow`,
-		name: `Post Cohort Purchase Followup Workflow`,
+		id: `post-workshop-purchase-workflow`,
+		name: `Post Workshop Purchase Followup Workflow`,
 	},
 	[
 		{
 			event: NEW_PURCHASE_CREATED_EVENT,
-			if: 'event.data.productType == "cohort"',
+			if: 'event.data.productType == "self-paced"',
 		},
 		{
 			event: FULL_PRICE_COUPON_REDEEMED_EVENT,
-			if: 'event.data.productType == "cohort"',
+			if: 'event.data.productType == "self-paced"',
 		},
 	],
 	async ({ event, step, db: adapter }) => {
@@ -89,25 +82,21 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			return null
 		})
 
-		// the cohort should be part of the product resources
-		const cohortResourceId = product.resources?.find(
-			(resource) => resource.resource?.type === 'cohort',
+		// the workshop should be part of the product resources
+		const workshopResourceId = product.resources?.find(
+			(resource) => resource.resource?.type === 'workshop',
 		)?.resource.id
 
-		const cohortResource = await step.run(`get cohort resource`, async () => {
-			return getCohort(cohortResourceId)
-		})
+		const workshopResource = await step.run(
+			`get workshop resource`,
+			async () => {
+				return getWorkshop(workshopResourceId)
+			},
+		)
 
-		if (!cohortResource) {
-			throw new Error(`cohort resource not found`)
+		if (!workshopResource) {
+			throw new Error(`workshop resource not found`)
 		}
-
-		const dayOneStartsAt = cohortResource.resources?.find(
-			(resource) => resource.position === 1,
-		)?.resource?.fields?.startsAt
-		const dayOneUnlockDate = dayOneStartsAt
-			? format(new Date(dayOneStartsAt), 'MMMM do, yyyy')
-			: 'TBD'
 
 		if (isTeamPurchase) {
 			const bulkCoupon = await step.run('get bulk coupon', async () => {
@@ -118,33 +107,32 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			})
 
 			await step.run(`send welcome email to team purchaser`, async () => {
-				const dayZeroWorkshop = cohortResource.resources?.find(
-					(resource) => resource.position === 0,
-				)?.resource
-				const dayZeroSlug = dayZeroWorkshop.fields?.slug
-				const dayZeroUrl = `${env.COURSEBUILDER_URL}/workshops/${dayZeroSlug}`
+				const workshopUrl = getResourcePath(
+					workshopResource.type,
+					workshopResource.fields.slug,
+					'view',
+				)
 
 				await sendAnEmail({
-					Component: getCohortWelcomeEmailVariant({
+					Component: getWorkshopWelcomeEmailVariant({
 						isTeamPurchase: true,
 						isFullPriceCouponRedemption,
 					}),
 					componentProps: {
-						cohortTitle:
-							cohortResource.fields.title || cohortResource.fields.slug,
-						url: dayZeroUrl,
-						dayOneUnlockDate,
+						workshopTitle:
+							workshopResource.fields.title || workshopResource.fields.slug,
+						url: workshopUrl,
 						quantity: bulkCoupon?.maxUses || 1,
 						userFirstName: user.name?.split(' ')[0],
 					},
-					Subject: `Welcome to ${cohortResource.fields.title || 'Epic AI Pro'}!`,
+					Subject: `Welcome to ${workshopResource.fields.title || 'Epic AI Pro'}!`,
 					To: user.email,
 					ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 					From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 					type: 'transactional',
 				})
 
-				await log.info('cohort_welcome_email.sent', {
+				await log.info('workshop_welcome_email.sent', {
 					purchaseId: purchase.id,
 					emailType: 'team_purchaser',
 				})
@@ -175,20 +163,20 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			}
 		} else {
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
-				const cohortContentAccessEntitlementType = await step.run(
-					`get cohort content access entitlement type`,
+				const workshopContentAccessEntitlementType = await step.run(
+					`get workshop content access entitlement type`,
 					async () => {
 						return await db.query.entitlementTypes.findFirst({
-							where: eq(entitlementTypes.name, 'cohort_content_access'),
+							where: eq(entitlementTypes.name, 'workshop_content_access'),
 						})
 					},
 				)
 
-				const cohortDiscordRoleEntitlementType = await step.run(
-					`get cohort discord role entitlement type`,
+				const workshopDiscordRoleEntitlementType = await step.run(
+					`get workshop discord role entitlement type`,
 					async () => {
 						return await db.query.entitlementTypes.findFirst({
-							where: eq(entitlementTypes.name, 'cohort_discord_role'),
+							where: eq(entitlementTypes.name, 'workshop_discord_role'),
 						})
 					},
 				)
@@ -240,32 +228,45 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					},
 				)
 
-				if (cohortContentAccessEntitlementType && cohortResource?.resources) {
+				if (workshopContentAccessEntitlementType && workshopResource) {
 					await step.sendEvent('send-discord-role-event', {
-						name: USER_ADDED_TO_COHORT_EVENT,
+						name: USER_ADDED_TO_WORKSHOP_EVENT,
 						data: {
-							cohortId: cohortResource.id,
+							workshopId: workshopResource.id,
 							userId: user.id,
-							discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
+							discordRoleId:
+								product.fields.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 						},
 					})
 
-					await step.run(`add cohort discord entitlement`, async () => {
-						if (!cohortDiscordRoleEntitlementType) {
-							return 'no cohort discord role entitlement type found'
+					await step.run(`add workshop discord entitlement`, async () => {
+						if (!workshopDiscordRoleEntitlementType) {
+							return 'no workshop discord role entitlement type found'
 						}
 
-						const entitlementId = `${cohortResource.id}-discord-${guid()}`
-						await createCohortEntitlement({
+						if (
+							!product.fields.discordRoleId &&
+							!env.DISCORD_PURCHASER_ROLE_ID
+						) {
+							return 'no discord workshop role id found'
+						}
+
+						if (!workshopResource.id) {
+							return 'no workshop resource id found'
+						}
+
+						const entitlementId = `${workshopResource.id}-discord-${guid()}`
+						await createWorkshopEntitlement({
 							id: entitlementId,
 							userId: user.id,
 							organizationId,
 							organizationMembershipId: orgMembership.id,
-							entitlementType: cohortDiscordRoleEntitlementType.id,
+							entitlementType: workshopDiscordRoleEntitlementType.id,
 							sourceType: EntitlementSourceType.PURCHASE,
 							sourceId: purchase.id,
 							metadata: {
-								discordRoleId: env.DISCORD_COHORT_001_ROLE_ID,
+								discordRoleId:
+									product.fields.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 							},
 						})
 
@@ -274,34 +275,36 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						}
 					})
 
-					await step.run(`add user to cohort via entitlement`, async () => {
+					await step.run(`add user to workshop via entitlement`, async () => {
 						const createdEntitlements = []
 
-						for (const resource of cohortResource.resources || []) {
-							const entitlementId = await createCohortEntitlement({
-								userId: user.id,
-								resourceId: resource.resource.id,
-								sourceId: purchase.id,
-								organizationId,
-								organizationMembershipId: orgMembership.id,
-								entitlementType: cohortContentAccessEntitlementType.id,
-								sourceType: EntitlementSourceType.PURCHASE,
-								metadata: {
-									contentIds: [resource.resource.id],
-								},
-							})
-
-							createdEntitlements.push({
-								entitlementId,
-								resourceId: resource.resource.id,
-								resourceType: resource.resource.type,
-								resourceTitle: resource.resource.fields?.title,
-							})
+						if (!workshopResource.id) {
+							return 'no workshop resource id found'
 						}
 
-						await log.info('cohort_entitlements_created', {
+						const entitlementId = await createWorkshopEntitlement({
 							userId: user.id,
-							cohortId: cohortResource.id,
+							resourceId: workshopResource.id,
+							sourceId: purchase.id,
+							organizationId,
+							organizationMembershipId: orgMembership.id,
+							entitlementType: workshopContentAccessEntitlementType.id,
+							sourceType: EntitlementSourceType.PURCHASE,
+							metadata: {
+								contentIds: [workshopResource.id],
+							},
+						})
+
+						createdEntitlements.push({
+							entitlementId,
+							resourceId: workshopResource.id,
+							resourceType: workshopResource.type,
+							resourceTitle: workshopResource.fields?.title,
+						})
+
+						await log.info('workshop_entitlements_created', {
+							userId: user.id,
+							workshopId: workshopResource.id,
 							entitlementsCreated: createdEntitlements.length,
 							organizationId,
 							organizationMembershipId: orgMembership.id,
@@ -317,12 +320,12 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 					})
 
 					await step.run(`send welcome email to individual`, async () => {
-						const dayZeroWorkshop = cohortResource.resources?.find(
-							(resource) => resource.position === 0,
-						)?.resource
-						const dayZeroSlug = dayZeroWorkshop.fields?.slug
-						const dayZeroUrl = `${env.COURSEBUILDER_URL}/workshops/${dayZeroSlug}`
-						const ComponentToSend = getCohortWelcomeEmailVariant({
+						const workshopUrl = getResourcePath(
+							workshopResource.type,
+							workshopResource.fields.slug,
+							'view',
+						)
+						const ComponentToSend = getWorkshopWelcomeEmailVariant({
 							isTeamPurchase: false,
 							isFullPriceCouponRedemption,
 						})
@@ -330,21 +333,20 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 						await sendAnEmail({
 							Component: ComponentToSend,
 							componentProps: {
-								cohortTitle:
-									cohortResource.fields.title || cohortResource.fields.slug,
-								url: dayZeroUrl,
-								dayOneUnlockDate,
+								workshopTitle:
+									workshopResource.fields.title || workshopResource.fields.slug,
+								url: workshopUrl,
 								quantity: purchase.totalAmount || 1,
 								userFirstName: user.name?.split(' ')[0],
 							},
-							Subject: `Welcome to ${cohortResource.fields.title || 'AI Hero'}!`,
+							Subject: `Welcome to ${workshopResource.fields.title || 'AI Hero'}!`,
 							To: user.email,
 							ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 							From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
 							type: 'transactional',
 						})
 
-						await log.info('cohort_welcome_email.sent', {
+						await log.info('workshop_welcome_email.sent', {
 							purchaseId: purchase.id,
 							emailType: isFullPriceCouponRedemption
 								? 'coupon_redeemer'
@@ -383,7 +385,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 			purchase,
 			product,
 			user,
-			cohortResource,
+			workshopResource,
 			isTeamPurchase,
 			isFullPriceCouponRedemption,
 			bulkCouponData,
@@ -392,7 +394,7 @@ export const postCohortPurchaseWorkflow = inngest.createFunction(
 )
 
 const getContentIdsForTier = async (
-	cohortResourceId: string,
+	workshopResourceId: string,
 	purchasedTier: 'standard' | 'premium' | 'vip',
 ) => {
 	const allowedTiers = {
@@ -404,7 +406,7 @@ const getContentIdsForTier = async (
 	const allowedTierList = allowedTiers[purchasedTier] || ['standard'] // Default to standard
 
 	const accessibleContent = await db.query.contentResourceResource.findMany({
-		where: and(eq(contentResourceResource.resourceOfId, cohortResourceId)),
+		where: and(eq(contentResourceResource.resourceOfId, workshopResourceId)),
 		with: {
 			resource: true, // Fetch the related content resource
 		},

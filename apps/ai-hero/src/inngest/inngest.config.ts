@@ -24,13 +24,16 @@ import {
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addCohortRoleDiscord } from './functions/discord/add-cohort-role-discord'
+import { addWorkshopRoleDiscord } from './functions/discord/add-workshop-role-discord'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
+import { postWorkshopPurchaseWorkflow } from './functions/post-workshop-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
 } from './functions/video-resource-attached'
+import { workshopTransferWorkflow } from './functions/workshop-transfer-workflow'
 
 export const inngestConfig = {
 	client: inngest,
@@ -50,7 +53,9 @@ export const inngestConfig = {
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
 		postCohortPurchaseWorkflow,
+		postWorkshopPurchaseWorkflow,
 		cohortTransferWorkflow,
+		workshopTransferWorkflow,
 		apiTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
@@ -61,6 +66,7 @@ export const inngestConfig = {
 		videoResourceAttached,
 		videoResourceDetached,
 		addCohortRoleDiscord,
+		addWorkshopRoleDiscord,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 	],

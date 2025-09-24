@@ -34,6 +34,7 @@ export const productSchema = z.object({
 		visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 		openEnrollment: z.string().datetime().nullish(),
 		closeEnrollment: z.string().datetime().nullish(),
+		discordRoleId: z.string().optional().nullable(),
 	}),
 	createdAt: z.coerce.date().nullable(),
 	status: z.number().int().default(0),
