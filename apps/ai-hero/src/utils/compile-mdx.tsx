@@ -21,6 +21,11 @@ const Testimonial = dynamic(() =>
 		(mod) => mod.Testimonial,
 	),
 )
+const TableWrapper = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.TableWrapper,
+	),
+)
 const DynamicCode = dynamic(() =>
 	import('@/components/codehike/code').then((mod) => mod.Code),
 )
@@ -97,6 +102,7 @@ export async function compileMDX(source: string) {
 					{children}
 				</Testimonial>
 			),
+			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
 		},
 		options: {
 			mdxOptions: {
