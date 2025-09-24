@@ -9,10 +9,16 @@ import type { Page } from '@/lib/pages'
 import { formatFaq } from '@/utils/format-faq'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, ZoomIn } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
-import { Accordion } from '@coursebuilder/ui'
+import {
+	Accordion,
+	Button,
+	Dialog,
+	DialogContent,
+	DialogTrigger,
+} from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 const CenteredTitle = ({
@@ -565,6 +571,41 @@ const FAQ = ({
 	)
 }
 
+const TableWrapper = ({ children }: { children: React.ReactNode }) => {
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<div className="bg-background relative">
+				<div className="relative z-0 w-full overflow-x-auto pr-10">
+					<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-xs [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-sm [&_td_code]:whitespace-normal [&_td_code]:break-words [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_th_code]:whitespace-normal [&_th_code]:break-words [&_tr:not(:last-child)_td]:border-b">
+						{children}
+					</div>
+				</div>
+				{/* <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-20 w-4 bg-gradient-to-r to-transparent" /> */}
+				<div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l to-transparent" />
+			</div>
+			<Dialog>
+				<DialogTrigger asChild>
+					<Button
+						size="icon"
+						variant="outline"
+						className="absolute -top-5 right-0 z-20"
+					>
+						<ZoomIn />
+						<span className="sr-only">View Table</span>
+					</Button>
+				</DialogTrigger>
+				<DialogContent className="max-w-none sm:max-w-[90%]">
+					<div className="relative w-full overflow-x-auto pb-5">
+						<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-sm [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-base [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_thead_th:nth-child(1)]:w-[400px] [&_thead_th:nth-child(2)]:w-[220px] [&_thead_th:nth-child(3)]:w-[300px] [&_thead_th:nth-child(4)]:w-[300px] [&_tr:not(:last-child)_td]:border-b">
+							{children}
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
+		</div>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -593,4 +634,5 @@ export {
 	AIPracticesGrid,
 	ShinyText,
 	FAQ,
+	TableWrapper,
 }

@@ -5,7 +5,7 @@ import { EmbedLoadingSkeleton } from '../../(embed)/embed/_components/embed-load
  */
 export default function SolutionEmbedLoading() {
 	return (
-		<div className="flex h-screen w-full items-center justify-center bg-black">
+		<div className="flex h-screen w-full items-center justify-center overflow-hidden bg-black">
 			<EmbedLoadingSkeleton />
 		</div>
 	)

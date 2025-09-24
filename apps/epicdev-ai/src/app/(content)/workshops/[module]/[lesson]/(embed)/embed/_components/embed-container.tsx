@@ -31,7 +31,7 @@ export function EmbedContainer({
 	}, [lessonSlug, moduleSlug, isAuthenticated])
 
 	return (
-		<div className="flex h-screen w-full items-center justify-center bg-black">
+		<div className="flex h-screen w-full items-center justify-center overflow-hidden bg-black">
 			{children}
 		</div>
 	)
