@@ -8,5 +8,13 @@ export async function getUser(userId: string | null) {
 	}
 	return db.query.users.findFirst({
 		where: eq(users.id, userId),
+		with: {
+			accounts: {
+				columns: {
+					provider: true,
+					providerAccountId: true,
+				},
+			},
+		},
 	})
 }
