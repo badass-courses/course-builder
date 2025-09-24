@@ -11,6 +11,7 @@ import z from 'zod'
 import {
 	ContentResource,
 	userSchema,
+	type ContentResourceResource,
 	type Purchase,
 } from '@coursebuilder/core/schemas'
 
@@ -394,15 +395,17 @@ export function defineRulesForPurchases(
 				moduleResource.metadata?.tier === 'free'
 			) {
 				// Add all lessons in this free section
-				moduleResource.resource.resources?.forEach((sectionResource) => {
-					if (
-						sectionResource.resource?.type === 'lesson' ||
-						sectionResource.resource?.type === 'exercise' ||
-						sectionResource.resource?.type === 'post'
-					) {
-						freeResourceIds.push(sectionResource.resource.id)
-					}
-				})
+				moduleResource.resource.resources?.forEach(
+					(sectionResource: ContentResourceResource) => {
+						if (
+							sectionResource.resource?.type === 'lesson' ||
+							sectionResource.resource?.type === 'exercise' ||
+							sectionResource.resource?.type === 'post'
+						) {
+							freeResourceIds.push(sectionResource.resource.id)
+						}
+					},
+				)
 			}
 
 			// Check if this is a top-level lesson/exercise/post with free tier
