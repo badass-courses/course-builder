@@ -61,11 +61,11 @@ export async function getLesson(slugOrId: string, ability: AppAbility) {
 				eq(contentResource.id, `lesson_${slugOrId.split('~')[1]}`),
 			),
 			eq(contentResource.type, 'lesson'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
-			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
+			// inArray(
+			// 	sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+			// 	visibility,
+			// ),
+			// inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		with: {
 			resources: {
