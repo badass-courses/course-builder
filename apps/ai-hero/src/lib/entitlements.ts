@@ -7,6 +7,8 @@ import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 export type EntitlementType =
 	| 'cohort_content_access'
 	| 'cohort_discord_role'
+	| 'workshop_content_access'
+	| 'workshop_discord_role'
 	| 'subscription_tier'
 
 export enum EntitlementSourceType {
@@ -354,4 +356,80 @@ export async function createCohortEntitlementInTransaction(
 		metadata: finalMetadata,
 	})
 	return entitlementId
+}
+
+/**
+ * Soft delete entitlements for multiple purchases when bulk refunds occur
+ * @param purchaseIds - Array of purchase IDs whose entitlements should be soft deleted
+ * @returns The total number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForPurchases(
+	purchaseIds: string[],
+) {
+	if (purchaseIds.length === 0) return { rowsAffected: 0 }
+
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+				isNull(entitlements.deletedAt),
+				// Use IN clause for multiple purchase IDs
+				sql`${entitlements.sourceId} IN (${sql.join(
+					purchaseIds.map((id) => sql`${id}`),
+					sql`, `,
+				)})`,
+			),
+		)
+
+	return result
+}
+
+/**
+ * Get all entitlements for a specific user in an organization
+ * @param userId - The user ID
+ * @param organizationId - The organization ID
+ * @returns Array of entitlements
+ */
+export async function getUserEntitlementsInOrganization(
+	userId: string,
+	organizationId: string,
+) {
+	return await db.query.entitlements.findMany({
+		where: and(
+			eq(entitlements.userId, userId),
+			eq(entitlements.organizationId, organizationId),
+			isNull(entitlements.deletedAt),
+		),
+	})
+}
+
+/**
+ * Remove all entitlements for a user in a specific organization
+ * Useful when removing organization membership completely
+ * @param userId - The user ID
+ * @param organizationId - The organization ID
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function removeAllUserEntitlementsInOrganization(
+	userId: string,
+	organizationId: string,
+) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.organizationId, organizationId),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
 }
