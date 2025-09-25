@@ -343,6 +343,10 @@ async function handleProductTransfer({
 			},
 		)
 
+		if (!contentAccessEntitlementType) {
+			throw new Error(`Entitlement type not found: ${config.contentAccess}`)
+		}
+
 		const discordRoleEntitlementType = await step.run(
 			`get ${config.logPrefix} discord role entitlement type`,
 			async () => {

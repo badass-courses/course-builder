@@ -1,6 +1,6 @@
 import config from '@/config'
 import { db } from '@/db'
-import { entitlements, entitlementTypes } from '@/db/schema'
+import { entitlementTypes } from '@/db/schema'
 import LiveOfficeHoursInvitation, {
 	generateICSAttachments,
 } from '@/emails/live-office-hours-invitation'
@@ -8,21 +8,14 @@ import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { getCohortWelcomeEmailVariant } from '@/inngest/utils/get-cohort-welcome-email-variant'
 import { getWorkshopWelcomeEmailVariant } from '@/inngest/utils/get-workshop-welcome-email-variant'
-import type { Cohort } from '@/lib/cohort'
-import { getCohort } from '@/lib/cohorts-query'
-import {
-	createCohortEntitlement,
-	createWorkshopEntitlement,
-	EntitlementSourceType,
-} from '@/lib/entitlements'
+import { EntitlementSourceType } from '@/lib/entitlements'
 import { createResourceEntitlements } from '@/lib/entitlements-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
-import type { Workshop } from '@/lib/workshops'
-import { getWorkshop } from '@/lib/workshops-query'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
-import { addDays, format, isAfter, parse } from 'date-fns'
-import { and, eq } from 'drizzle-orm'
+import { isAfter, parse } from 'date-fns'
+import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz'
+import { eq } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
@@ -30,7 +23,6 @@ import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce
 import {
 	ContentResourceSchema,
 	type ContentResource,
-	type ContentResourceResource,
 } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
@@ -41,7 +33,6 @@ import {
 	getResourceData,
 	PRODUCT_TYPE_CONFIG,
 	ProductType,
-	RESOURCE_TYPE_MAPPING,
 } from '../config/product-types'
 import {
 	USER_ADDED_TO_COHORT_EVENT,
@@ -74,7 +65,13 @@ export const generateContentUrl = (
 	if (productType === 'cohort') {
 		const dayOneIsInFuture =
 			dayOneUnlockDate &&
-			isAfter(parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()), new Date())
+			isAfter(
+				zonedTimeToUtc(
+					parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
+					'America/Los_Angeles',
+				),
+				new Date(),
+			)
 
 		if (!dayOneIsInFuture) {
 			// Find the day one workshop (position 0) for immediate access
@@ -202,10 +199,14 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			productType === 'cohort'
 				? (() => {
 						const dayOneStartsAt = primaryResource.resources?.find(
-							(resource) => resource.position === 1,
+							(resource) => resource.position === 0,
 						)?.resource?.fields?.startsAt
 						return dayOneStartsAt
-							? format(new Date(dayOneStartsAt), 'MMMM do, yyyy')
+							? formatInTimeZone(
+									new Date(dayOneStartsAt),
+									'America/Los_Angeles',
+									'MMMM do, yyyy',
+								)
 							: 'TBD'
 					})()
 				: null

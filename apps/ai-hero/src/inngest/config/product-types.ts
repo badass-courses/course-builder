@@ -25,7 +25,7 @@ export const PRODUCT_TYPE_CONFIG = {
 		discordEvent: USER_ADDED_TO_COHORT_EVENT,
 		logPrefix: 'cohort',
 		getDiscordRoleId: (product: any) =>
-			product.fields.discordRoleId || env.DISCORD_COHORT_001_ROLE_ID,
+			product?.fields?.discordRoleId || env.DISCORD_COHORT_001_ROLE_ID,
 	},
 	'self-paced': {
 		resourceType: 'workshop',
@@ -36,20 +36,14 @@ export const PRODUCT_TYPE_CONFIG = {
 		discordEvent: USER_ADDED_TO_WORKSHOP_EVENT,
 		logPrefix: 'workshop',
 		getDiscordRoleId: (product: any) =>
-			product.fields.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
+			product?.fields?.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 	},
 	// Future product types can be added here
 	// live: { ... },
 	// membership: { ... },
 } as const
 
-// Legacy mapping for backwards compatibility
-export const RESOURCE_TYPE_MAPPING = {
-	cohort: { type: 'cohort', queryFn: getCohort },
-	'self-paced': { type: 'workshop', queryFn: getWorkshop },
-} as const
-
-// Legacy entitlement config for backwards compatibility
+// Entitlement config for backwards compatibility
 export const ENTITLEMENT_CONFIG = {
 	cohort: {
 		contentAccess: PRODUCT_TYPE_CONFIG.cohort.contentAccess,

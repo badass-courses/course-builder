@@ -12,6 +12,7 @@ import {
 	Text,
 } from '@react-email/components'
 import { format, isAfter, parse } from 'date-fns'
+import { zonedTimeToUtc } from 'date-fns-tz'
 
 import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
@@ -44,7 +45,10 @@ export default function WelcomeCohortEmailForTeam({
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
 	const teamDashboardUrl = `${env.COURSEBUILDER_URL}/team`
 	const dayOneIsInFuture = isAfter(
-		parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
+		zonedTimeToUtc(
+			parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
+			'America/Los_Angeles',
+		),
 		new Date(),
 	)
 
