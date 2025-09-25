@@ -39,10 +39,6 @@ import {
 	USER_ADDED_TO_WORKSHOP_EVENT,
 } from './discord/add-discord-role-workflow'
 
-// Configuration for zero-day workshop access
-// TODO: make this dynamic
-const ENABLE_ZERO_DAY_WORKSHOP_ACCESS = false
-
 /**
  * Get resource type based on product type
  */
