@@ -21,6 +21,7 @@ export interface WelcomeCohortEmailTeamRedeemerProps {
 	dayOneUnlockDate: string
 	userFirstName?: string
 	supportEmail?: string
+	isZeroDayAccess?: boolean
 }
 
 export default function WelcomeCohortEmailForTeamRedeemer({
@@ -29,6 +30,7 @@ export default function WelcomeCohortEmailForTeamRedeemer({
 	dayOneUnlockDate,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
+	isZeroDayAccess = false,
 }: WelcomeCohortEmailTeamRedeemerProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		// eslint-disable-next-line no-console
@@ -58,9 +60,11 @@ export default function WelcomeCohortEmailForTeamRedeemer({
 							<Text style={text}>
 								You've successfully claimed your seat via your team's purchase.
 							</Text>
-							<Text style={text}>
-								You now have access to <strong>Day 0</strong>.
-							</Text>
+							{!dayOneIsInFuture && (
+								<Text style={text}>
+									You now have access to <strong>Day 1</strong>.
+								</Text>
+							)}
 							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
 								<Link href={url} style={buttonStyle}>
 									Get Started with {cohortTitle}
@@ -71,8 +75,8 @@ export default function WelcomeCohortEmailForTeamRedeemer({
 						{dayOneIsInFuture && (
 							<Section style={contentSection}>
 								<Text style={text}>
-									<strong>Heads up:</strong> <strong>Day&nbsp;1</strong> unlocks
-									on {dayOneUnlockDate}.{' '}
+									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
+									{dayOneUnlockDate}.{' '}
 								</Text>
 								<Text style={text}>
 									You'll receive another email when Day 1 unlocks.

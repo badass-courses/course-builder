@@ -66,9 +66,11 @@ export default function WelcomeCohortEmailForTeam({
 								{quantity === 1 ? 'seat' : 'seats'} to{' '}
 								<strong>{cohortTitle}</strong>.
 							</Text>
-							<Text style={text}>
-								You now have access to <strong>Day 0</strong>.
-							</Text>
+							{!dayOneIsInFuture && (
+								<Text style={text}>
+									You now have access to <strong>Day 1</strong>.
+								</Text>
+							)}
 							<Text style={text}>
 								(You will need to redeem a seat on your team.)
 							</Text>
@@ -82,8 +84,8 @@ export default function WelcomeCohortEmailForTeam({
 						{dayOneIsInFuture && (
 							<Section style={contentSection}>
 								<Text style={text}>
-									<strong>Heads up:</strong> <strong>Day&nbsp;1</strong> unlocks
-									on {dayOneUnlockDate}.{' '}
+									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
+									{dayOneUnlockDate}.{' '}
 								</Text>
 								<Text style={text}>
 									You'll receive another email when Day 1 unlocks.

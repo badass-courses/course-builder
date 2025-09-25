@@ -51,27 +51,28 @@ export default function WelcomeCohortEmail({
 					<Section style={section}>
 						<Heading style={heading}>Welcome to {cohortTitle}! 🎉</Heading>
 
-						<Section style={contentSection}>
-							<Text style={text}>{greeting}</Text>
-							<Text style={text}>
-								You now have access and can start with <strong>Day 0</strong> of
-								the cohort.
-							</Text>
-							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
-								<Link href={url} style={buttonStyle}>
-									Get Started with {cohortTitle}
-								</Link>
-							</Section>
-						</Section>
-						{dayOneIsInFuture && (
+						{dayOneIsInFuture ? (
 							<Section style={contentSection}>
 								<Text style={text}>
-									<strong>Heads up:</strong> <strong>Day&nbsp;1</strong> unlocks
-									on {dayOneUnlockDate}.{' '}
+									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
+									{dayOneUnlockDate}.{' '}
 								</Text>
 								<Text style={text}>
 									You'll receive another email when Day 1 unlocks.
 								</Text>
+							</Section>
+						) : (
+							<Section style={contentSection}>
+								<Text style={text}>{greeting}</Text>
+								<Text style={text}>
+									You now have access and can start with <strong>Day 1</strong>{' '}
+									of the cohort.
+								</Text>
+								<Section style={{ textAlign: 'center', marginTop: '20px' }}>
+									<Link href={url} style={buttonStyle}>
+										Get Started with {cohortTitle}
+									</Link>
+								</Section>
 							</Section>
 						)}
 

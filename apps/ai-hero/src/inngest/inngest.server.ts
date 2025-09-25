@@ -93,12 +93,10 @@ import {
 } from './functions/create-user-organization'
 import {
 	USER_ADDED_TO_COHORT_EVENT,
-	UserAddedToCohort,
-} from './functions/discord/add-cohort-role-discord'
-import {
 	USER_ADDED_TO_WORKSHOP_EVENT,
+	UserAddedToCohort,
 	UserAddedToWorkshop,
-} from './functions/discord/add-workshop-role-discord'
+} from './functions/discord/add-discord-role-workflow'
 
 // Create a client to send and receive events
 export type Events = {
