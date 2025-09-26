@@ -3,6 +3,7 @@
 import { db } from '@/db'
 import { accounts, users } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { DiscordMember } from '@/lib/discord'
 import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
 
@@ -62,4 +63,17 @@ export async function fetchAsDiscordBot(
 			...config?.headers,
 		},
 	})
+}
+
+export async function getDiscordUser(accountId: string | null) {
+	if (!accountId) return null
+
+	try {
+		return fetchJsonAsDiscordBot<DiscordMember>(
+			`guilds/${env.DISCORD_GUILD_ID}/members/${accountId}`,
+		)
+	} catch (error) {
+		console.error('Error fetching Discord user:', error)
+		return null
+	}
 }

@@ -120,44 +120,9 @@ export async function EmbedVideoPage({
 	// Get cohort resource if this workshop is part of a cohort
 	const cohortResource = await getWorkshopCohort(moduleSlug)
 
-	// Check permissions
-	if (!user || !abilityForResource.canViewLesson) {
-		await log.info('embed_video_unauthorized_access', {
-			lessonSlug,
-			moduleSlug,
-			resourceType,
-		})
-
-		return (
-			<EmbedContainer
-				lessonSlug={lessonSlug}
-				moduleSlug={moduleSlug}
-				isAuthenticated={!!user}
-			>
-				<LoginPrompt
-					lessonSlug={lessonSlug}
-					moduleSlug={moduleSlug}
-					workshopProduct={workshopProduct}
-					workshopResource={workshopResource}
-					cohortResource={cohortResource}
-					hasAccess={!!user && abilityForResource.canViewLesson}
-					isAdmin={abilityForResource.canCreate}
-				/>
-				{thumbnailUrl && (
-					<Image
-						fill
-						className="blur-xs pointer-events-none absolute inset-0 z-0 h-full w-full select-none bg-cover opacity-20"
-						src={thumbnailUrl}
-						alt="thumbnail"
-					/>
-				)}
-			</EmbedContainer>
-		)
-	}
-
-	// Check if user has access but workshop hasn't started yet (unless they're an admin)
+	// Check if workshop hasn't started yet (for authenticated users, unless they're an admin)
 	const startsAt = workshopResource?.fields?.startsAt
-	if (startsAt && !abilityForResource.canCreate) {
+	if (user && startsAt && !abilityForResource.canCreate) {
 		// Properly handle timezone comparison - get current time in workshop timezone to compare with stored date
 		const timezone = workshopResource?.fields?.timezone || 'America/Los_Angeles'
 		const nowInTZ = new Date(
@@ -200,6 +165,41 @@ export async function EmbedVideoPage({
 				</EmbedContainer>
 			)
 		}
+	}
+
+	// Check permissions for actual content access
+	if (!user || !abilityForResource.canViewLesson) {
+		await log.info('embed_video_unauthorized_access', {
+			lessonSlug,
+			moduleSlug,
+			resourceType,
+		})
+
+		return (
+			<EmbedContainer
+				lessonSlug={lessonSlug}
+				moduleSlug={moduleSlug}
+				isAuthenticated={!!user}
+			>
+				<LoginPrompt
+					lessonSlug={lessonSlug}
+					moduleSlug={moduleSlug}
+					workshopProduct={workshopProduct}
+					workshopResource={workshopResource}
+					cohortResource={cohortResource}
+					hasAccess={false}
+					isAdmin={abilityForResource.canCreate}
+				/>
+				{thumbnailUrl && (
+					<Image
+						fill
+						className="blur-xs pointer-events-none absolute inset-0 z-0 h-full w-full select-none bg-cover opacity-20"
+						src={thumbnailUrl}
+						alt="thumbnail"
+					/>
+				)}
+			</EmbedContainer>
+		)
 	}
 
 	// Validate resource and playback ID
