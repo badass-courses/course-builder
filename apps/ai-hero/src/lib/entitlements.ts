@@ -261,8 +261,8 @@ export async function createCohortEntitlement({
 }
 
 /**
- * Creates a cohort entitlement for a user for a specific resource in a cohort.
- * This should be used by all flows (purchase, transfer, redeem, etc.)
+ * Creates a workshop entitlement for a user for a specific workshop resource.
+ * Use for purchase, transfer, redeem, etc.
  * @returns The ID of the created entitlement
  */
 export async function createWorkshopEntitlement({

@@ -59,7 +59,9 @@ export const generateContentUrl = (
 	dayOneUnlockDate?: string | null,
 ) => {
 	if (productType === 'cohort') {
+		const isKnownDate = !!dayOneUnlockDate && dayOneUnlockDate !== 'TBD'
 		const dayOneIsInFuture =
+			isKnownDate &&
 			dayOneUnlockDate &&
 			isAfter(
 				zonedTimeToUtc(

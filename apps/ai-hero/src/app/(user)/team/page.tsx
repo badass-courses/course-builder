@@ -62,9 +62,10 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 			})
 
 			// Get the bulk coupon and check if it's active
-			const bulkCoupon = await courseBuilderAdapter.getCouponWithBulkPurchases(
-				purchaseDetails?.purchase?.bulkCouponId as string,
-			)
+			const bulkCouponId = purchaseDetails?.purchase?.bulkCouponId
+			const bulkCoupon = bulkCouponId
+				? await courseBuilderAdapter.getCouponWithBulkPurchases(bulkCouponId)
+				: null
 
 			// Only include active coupons (status = 1)
 			const activeBulkCoupon = bulkCoupon?.status === 1 ? bulkCoupon : null

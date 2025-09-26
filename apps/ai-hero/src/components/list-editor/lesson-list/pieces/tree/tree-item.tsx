@@ -458,42 +458,32 @@ const TreeItem = memo(function TreeItem({
 
 	// Check if this item is nested within a free tier section at any level
 	const isWithinFreeTierSection = useMemo(() => {
-		const pathToItem = getPathToItem(item.id)
-		// Get all the tree data to find the actual tree items by their IDs
-		const getTreeData = () => {
-			// Walk up to find the root data
-			let currentData = getChildrenOfItem('')
-			return currentData
-		}
+		const pathToItem = getPathToItem(item.id) || []
+		if (!pathToItem.length) return false
+
+		const treeData = getChildrenOfItem('')
 
 		const findItemInTree = (
 			data: TreeItemType[],
 			targetId: string,
 		): TreeItemType | null => {
-			for (const treeItem of data) {
-				if (treeItem.id === targetId) {
-					return treeItem
-				}
-				const found = findItemInTree(treeItem.children, targetId)
+			for (const node of data) {
+				if (node.id === targetId) return node
+				const found = findItemInTree(node.children, targetId)
 				if (found) return found
 			}
 			return null
 		}
 
-		const treeData = getTreeData()
-
-		// Check each ancestor in the path to see if any are free tier sections
 		for (const ancestorId of pathToItem) {
 			const ancestorItem = findItemInTree(treeData, ancestorId)
 			if (ancestorItem?.type === 'section') {
 				const sectionTier = ancestorItem.itemData?.metadata?.tier || 'standard'
-				if (sectionTier === 'free') {
-					return true
-				}
+				if (sectionTier === 'free') return true
 			}
 		}
 		return false
-	}, [getPathToItem, getChildrenOfItem, item.id])
+	}, [item, getPathToItem, getChildrenOfItem])
 
 	return (
 		<div

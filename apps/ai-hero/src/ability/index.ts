@@ -370,15 +370,20 @@ export function defineRulesForPurchases(
 		user.entitlements.forEach((entitlement) => {
 			if (entitlement.type === workshopEntitlementType?.id) {
 				// Grant access to the workshop itself and its lessons
-				can('read', 'Content', {
-					id: { $in: entitlement.metadata.contentIds },
-				})
+				const contentIds = Array.isArray(entitlement.metadata?.contentIds)
+					? entitlement.metadata.contentIds.filter(Boolean)
+					: []
+				if (contentIds.length) {
+					can('read', 'Content', { id: { $in: contentIds } })
+				}
 
 				// If user has access to this specific workshop, grant access to lessons
-				if (entitlement.metadata.contentIds?.includes(module.id)) {
-					can('read', 'Content', {
-						id: { $in: allModuleResourceIds },
-					})
+				if (
+					contentIds.includes(module.id) &&
+					Array.isArray(allModuleResourceIds) &&
+					allModuleResourceIds.length
+				) {
+					can('read', 'Content', { id: { $in: allModuleResourceIds } })
 				}
 			}
 		})

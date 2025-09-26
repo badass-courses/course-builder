@@ -11,9 +11,6 @@ import {
 	Section,
 	Text,
 } from '@react-email/components'
-import { format, isAfter, parse } from 'date-fns'
-
-import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
 
 export interface WelcomeWorkshopEmailTeamProps {
 	workshopTitle: string
