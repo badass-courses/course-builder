@@ -1,5 +1,18 @@
 # @coursebuilder/core
 
+## 1.0.7
+
+### Patch Changes
+
+- [#568](https://github.com/badass-courses/course-builder/pull/568)
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - ensure self-paced
+  workshop purchasers have org id by redirecting to /verify-login before
+  checkout
+- Updated dependencies
+  [[`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/nodash@0.0.2
+
 ## 1.0.6
 
 ### Patch Changes
