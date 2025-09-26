@@ -108,6 +108,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_SITE_TITLE: z.string(),
 		NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().optional(),
 		NEXT_PUBLIC_AXIOM_DATASET: z.string().optional(),
+		NEXT_PUBLIC_COOKIE_DOMAIN: z.string().optional(),
 	},
 
 	/**
@@ -179,6 +180,7 @@ export const env = createEnv({
 		PINECONE_API_KEY: process.env.PINECONE_API_KEY,
 		AXIOM_TOKEN: process.env.AXIOM_TOKEN,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
+		NEXT_PUBLIC_COOKIE_DOMAIN: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
 		GOOG_CREDENTIALS_JSON: process.env.GOOG_CREDENTIALS_JSON,
 		GOOG_CALENDAR_IMPERSONATE_USER: process.env.GOOG_CALENDAR_IMPERSONATE_USER,
 		COUPON_CODE_LOYALTY_1: process.env.COUPON_CODE_LOYALTY_1,

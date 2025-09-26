@@ -1,4 +1,5 @@
 import { cookies, headers } from 'next/headers'
+import { NextRequest, NextResponse } from 'next/server'
 import { getAbility, UserSchema } from '@/ability'
 import { emailProvider } from '@/coursebuilder/email-provider'
 import { courseBuilderAdapter, db } from '@/db'
@@ -7,10 +8,13 @@ import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
+import {
+	createSkillCookieValue,
+	getUserAccessibleWorkshopSlugs,
+} from '@/lib/skill-cookie'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
-import TwitterProvider from '@auth/core/providers/twitter'
 import type { CookiesOptions } from '@auth/core/types'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth'
@@ -193,6 +197,17 @@ export const authOptions: NextAuthConfig = {
 		signOut: async () => {
 			const cookieStore = await cookies()
 			cookieStore.delete('organizationId')
+			// Clear the skill cookie on sign out
+			cookieStore.set('skill', '0', {
+				httpOnly: false,
+				sameSite: 'lax',
+				secure: process.env.NODE_ENV === 'production',
+				path: '/',
+				expires: new Date('1970-01-01'),
+				...(env.NEXT_PUBLIC_COOKIE_DOMAIN && {
+					domain: env.NEXT_PUBLIC_COOKIE_DOMAIN,
+				}),
+			})
 		},
 	},
 	cookies: authCookies,
@@ -351,11 +366,110 @@ export const authOptions: NextAuthConfig = {
 	},
 }
 
-export const {
-	handlers: { GET, POST },
-	auth,
-	signIn,
-} = NextAuth(authOptions)
+const nextAuth = NextAuth(authOptions)
+
+export const auth = nextAuth.auth
+export const signIn = nextAuth.signIn
+export const POST = nextAuth.handlers.POST
+
+// Custom GET handler that adds skill cookie for external applications
+export async function GET(request: NextRequest) {
+	// Call the original NextAuth handler
+	const response = await nextAuth.handlers.GET(request)
+
+	// Only process session requests
+	const url = new URL(request.url)
+	if (!url.pathname.includes('/api/auth/session')) {
+		return response
+	}
+
+	try {
+		// Parse the response body to get the session data
+		const responseText = await response.text()
+		let session = null
+
+		try {
+			session = JSON.parse(responseText)
+		} catch {
+			// If parsing fails, return original response
+			return new Response(responseText, response)
+		}
+
+		// If there's no user in the session, return as is
+		if (!session?.user?.id) {
+			return new Response(responseText, response)
+		}
+
+		// Get workshop slugs and create skill cookie value
+		const workshopSlugs = await getUserAccessibleWorkshopSlugs(session.user.id)
+		const skillCookieValue = createSkillCookieValue(workshopSlugs)
+
+		// Create a NextResponse with the same body to use cookies.set()
+		const newResponse = new NextResponse(responseText, {
+			status: response.status,
+			statusText: response.statusText,
+			headers: new Headers(response.headers),
+		})
+
+		// Determine cookie settings based on environment
+		const hostname = request.headers.get('host') || ''
+		const origin = request.headers.get('origin') || ''
+		const referer = request.headers.get('referer') || ''
+
+		const isLocalhost =
+			hostname.includes('localhost') || hostname.includes('127.0.0.1')
+		const isEpicAI =
+			hostname.includes('epicai.pro') ||
+			origin.includes('epicai.pro') ||
+			referer.includes('epicai.pro')
+		const isSecure = request.nextUrl.protocol === 'https:'
+
+		// Determine the appropriate cookie domain
+		let cookieDomain: string | undefined = undefined
+
+		if (isLocalhost) {
+			// For localhost, don't set domain to allow sharing across ports
+			cookieDomain = undefined
+		} else if (isEpicAI) {
+			// For epicai.pro subdomains, set domain to .epicai.pro to share across subdomains
+			cookieDomain = '.epicai.pro'
+		} else if (env.NEXT_PUBLIC_COOKIE_DOMAIN) {
+			// Fall back to configured domain
+			cookieDomain = env.NEXT_PUBLIC_COOKIE_DOMAIN
+		}
+
+		const cookieOptions = {
+			path: '/',
+			httpOnly: false, // Allow client-side access for external apps
+			maxAge: 60 * 60 * 24 * 90, // 90 days
+			domain: cookieDomain,
+			// For localhost: use 'lax' for HTTP, 'none' for HTTPS (ngrok)
+			// For production: always use 'lax' for same-site subdomain sharing
+			sameSite: (isLocalhost && isSecure ? 'none' : 'lax') as 'none' | 'lax',
+			secure: isSecure || process.env.NODE_ENV === 'production',
+		}
+
+		// Set the skill cookie using Next.js cookie API
+		newResponse.cookies.set('skill', skillCookieValue, cookieOptions)
+
+		console.log('[Auth GET] Setting skill cookie:', {
+			hostname,
+			origin,
+			referer,
+			isLocalhost,
+			isEpicAI,
+			isSecure,
+			cookieDomain,
+			cookieOptions,
+			skillCookieValue: skillCookieValue.substring(0, 50) + '...', // Log partial value for debugging
+		})
+
+		return newResponse
+	} catch (error) {
+		console.error('[Auth GET] Error setting skill cookie:', error)
+		return response
+	}
+}
 
 export const getServerAuthSession = async () => {
 	const session = await auth()
