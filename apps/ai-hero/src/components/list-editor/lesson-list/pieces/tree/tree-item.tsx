@@ -4,6 +4,7 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react'
@@ -167,6 +168,7 @@ const TreeItem = memo(function TreeItem({
 		dispatch,
 		uniqueContextId,
 		getPathToItem,
+		getChildrenOfItem,
 		rootResource,
 		rootResourceId,
 		onResourceUpdate,
@@ -454,6 +456,35 @@ const TreeItem = memo(function TreeItem({
 
 	const parentResource = useResource()?.resource
 
+	// Check if this item is nested within a free tier section at any level
+	const isWithinFreeTierSection = useMemo(() => {
+		const pathToItem = getPathToItem(item.id) || []
+		if (!pathToItem.length) return false
+
+		const treeData = getChildrenOfItem('')
+
+		const findItemInTree = (
+			data: TreeItemType[],
+			targetId: string,
+		): TreeItemType | null => {
+			for (const node of data) {
+				if (node.id === targetId) return node
+				const found = findItemInTree(node.children, targetId)
+				if (found) return found
+			}
+			return null
+		}
+
+		for (const ancestorId of pathToItem) {
+			const ancestorItem = findItemInTree(treeData, ancestorId)
+			if (ancestorItem?.type === 'section') {
+				const sectionTier = ancestorItem.itemData?.metadata?.tier || 'standard'
+				if (sectionTier === 'free') return true
+			}
+		}
+		return false
+	}, [item, getPathToItem, getChildrenOfItem])
+
 	return (
 		<div
 			className={cn('relative', {
@@ -511,7 +542,7 @@ const TreeItem = memo(function TreeItem({
 									item.itemData?.resource.fields?.state,
 								)}
 							</span>
-							{showTierSelector && item.type !== 'section' && (
+							{showTierSelector && !isWithinFreeTierSection && (
 								<TierSelect item={item} dispatch={dispatch} />
 							)}
 						</DraggableItemRenderer>

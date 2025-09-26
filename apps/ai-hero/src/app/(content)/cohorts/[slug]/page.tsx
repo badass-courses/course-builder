@@ -44,6 +44,7 @@ import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
+import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
 import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
@@ -381,11 +382,11 @@ export default async function CohortPage(props: {
 												>
 													<AccordionItem
 														value={`${workshop.id}-body`}
-														className="bg-card shadow-xs rounded border pl-4 pr-1"
+														className="bg-card shadow-xs overflow-hidden rounded border"
 													>
-														<div className="relative flex items-center justify-between">
+														<div className="relative flex items-stretch justify-between border-b">
 															<Link
-																className="text-foreground hover:text-primary flex max-w-[90%] flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																className="text-foreground hover:text-primary flex flex-col py-2 pl-4 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
 																href={getResourcePath(
 																	'workshop',
 																	workshop.fields.slug,
@@ -399,7 +400,7 @@ export default async function CohortPage(props: {
 															</Link>
 															<AccordionTrigger
 																aria-label="Toggle lessons"
-																className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
+																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-full shrink-0 items-center justify-center rounded-none border-l bg-transparent"
 															/>
 														</div>
 														<AccordionContent className="pb-2">
@@ -410,7 +411,10 @@ export default async function CohortPage(props: {
 											)} */}
 															</div>
 															<ol className="list-inside list-none">
-																<WorkshopListRowRenderer workshop={workshop} />
+																<WorkshopListRowRenderer
+																	className="pl-10 [&_[data-state]]:left-5"
+																	workshop={workshop}
+																/>
 															</ol>
 														</AccordionContent>
 													</AccordionItem>
@@ -438,7 +442,7 @@ export default async function CohortPage(props: {
 								<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
 									Workshops
 								</div>
-								<ol className="flex flex-col">
+								<ol className="divide-border flex flex-col divide-y">
 									{workshops.map((workshop, index) => {
 										// Determine end date and timezone for the workshop
 										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
@@ -478,27 +482,13 @@ export default async function CohortPage(props: {
 													moduleProgressLoader={moduleProgressLoader}
 												>
 													<Accordion type="multiple">
-														<AccordionItem value={workshop.id}>
-															<div className="relative flex items-center justify-between">
-																<Link
-																	className="text-foreground/90 hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-medium transition ease-in-out"
-																	href={getResourcePath(
-																		'workshop',
-																		workshop.fields.slug,
-																		'view',
-																	)}
-																>
-																	{workshop.fields.title.includes(':')
-																		? workshop.fields.title.split(':')[1]
-																		: workshop.fields.title}
-																</Link>
-																<AccordionTrigger
-																	aria-label="Toggle lessons"
-																	className="bg-secondary hover:bg-foreground/20 absolute right-2 z-10 flex aspect-square size-5 items-center justify-center rounded"
-																/>
-															</div>
+														<AccordionItem
+															value={workshop.id}
+															className='data-[state="open"]:bg-muted/60 transition-colors ease-out'
+														>
+															<WorkshopSidebarItem workshop={workshop} />
 															<AccordionContent>
-																<ol className="divide-border list-inside list-none divide-y">
+																<ol className="divide-border border-border list-inside list-none divide-y border-t">
 																	<WorkshopListRowRenderer
 																		workshop={workshop}
 																	/>
@@ -527,14 +517,20 @@ export default async function CohortPage(props: {
 	)
 }
 
-const WorkshopListRowRenderer = ({ workshop }: { workshop: Workshop }) => {
+const WorkshopListRowRenderer = ({
+	workshop,
+	className,
+}: {
+	workshop: Workshop
+	className?: string
+}) => {
 	const workshopNavDataLoader = getCachedWorkshopNavigation(
 		workshop.fields.slug,
 	)
 
 	return (
 		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>
-			<WorkshopLessonList workshop={workshop} />
+			<WorkshopLessonList workshop={workshop} className={className} />
 		</WorkshopNavigationProvider>
 	)
 }

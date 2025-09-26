@@ -61,14 +61,19 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 				productId: bulkPurchase?.product?.id,
 			})
 
-			const bulkCoupon = await courseBuilderAdapter.getCouponWithBulkPurchases(
-				purchaseDetails?.purchase?.bulkCouponId as string,
-			)
+			// Get the bulk coupon and check if it's active
+			const bulkCouponId = purchaseDetails?.purchase?.bulkCouponId
+			const bulkCoupon = bulkCouponId
+				? await courseBuilderAdapter.getCouponWithBulkPurchases(bulkCouponId)
+				: null
+
+			// Only include active coupons (status = 1)
+			const activeBulkCoupon = bulkCoupon?.status === 1 ? bulkCoupon : null
 
 			return {
 				bulkPurchase: purchaseDetails,
 				pricingDataLoader,
-				...(bulkCoupon && { bulkCoupon }),
+				...(activeBulkCoupon && { bulkCoupon: activeBulkCoupon }),
 			}
 		}),
 	)

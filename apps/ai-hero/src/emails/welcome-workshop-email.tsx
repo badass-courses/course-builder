@@ -11,86 +11,56 @@ import {
 	Section,
 	Text,
 } from '@react-email/components'
-import { format, isAfter, parse } from 'date-fns'
-import { zonedTimeToUtc } from 'date-fns-tz'
 
-import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
-
-export interface WelcomeCohortEmailTeamRedeemerProps {
-	cohortTitle: string
+export interface WelcomeWorkshopEmailProps {
+	workshopTitle: string
 	url: string
-	dayOneUnlockDate: string
 	userFirstName?: string
 	supportEmail?: string
-	isZeroDayAccess?: boolean
 }
 
-export default function WelcomeCohortEmailForTeamRedeemer({
-	cohortTitle,
+export default function WelcomeWorkshopEmail({
+	workshopTitle,
 	url,
-	dayOneUnlockDate,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
-	isZeroDayAccess = false,
-}: WelcomeCohortEmailTeamRedeemerProps) {
+}: WelcomeWorkshopEmailProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		// eslint-disable-next-line no-console
-		console.debug('Rendering WelcomeCohortEmailForTeamRedeemer', {
-			cohortTitle,
-		})
+		console.debug('Rendering WelcomeWorkshopEmail', { workshopTitle })
 	}
 
-	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
-	const dayOneIsInFuture = isAfter(
-		zonedTimeToUtc(
-			parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
-			'America/Los_Angeles',
-		),
-		new Date(),
-	)
 
 	return (
 		<Html>
 			<Head />
-			<Preview>You've claimed your seat for {cohortTitle}!</Preview>
+			<Preview>Welcome to {workshopTitle}!</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Section style={section}>
-						<Heading style={heading}>Welcome to {cohortTitle}! 🎉</Heading>
+						<Heading style={heading}>Welcome to {workshopTitle}! 🎉</Heading>
 
 						<Section style={contentSection}>
 							<Text style={text}>{greeting}</Text>
-							<Text style={text}>
-								You've successfully claimed your seat via your team's purchase.
-							</Text>
-							{!dayOneIsInFuture && (
-								<Text style={text}>
-									You now have access to <strong>Day 1</strong>.
-								</Text>
-							)}
 							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
 								<Link href={url} style={buttonStyle}>
-									Get Started with {cohortTitle}
+									Get Started with {workshopTitle}
 								</Link>
 							</Section>
 						</Section>
 
-						{dayOneIsInFuture && (
-							<Section style={contentSection}>
-								<Text style={text}>
-									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
-									{dayOneUnlockDate}.{' '}
-								</Text>
-								<Text style={text}>
-									You'll receive another email when Day 1 unlocks.
-								</Text>
-							</Section>
-						)}
-
 						<Section style={contentSection}>
+							<Text style={text}>Need anything? We're here to help.</Text>
 							<Text style={textSmall}>
-								Questions? Contact{' '}
+								You can access your invoice anytime on your{' '}
+								<Link href={`${env.COURSEBUILDER_URL}/invoices`} style={link}>
+									invoices page
+								</Link>
+								.
+							</Text>
+							<Text style={textSmall}>
+								Questions? Reply to this email or reach out to{' '}
 								<Link href={`mailto:${supportEmail}`} style={link}>
 									{supportEmail}
 								</Link>

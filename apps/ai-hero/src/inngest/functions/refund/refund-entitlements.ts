@@ -1,5 +1,9 @@
 import { db } from '@/db'
 import { inngest } from '@/inngest/inngest.server'
+import {
+	isBulkPurchase,
+	refundBulkPurchaseEntitlements,
+} from '@/lib/bulk-purchase-refund'
 import { softDeleteEntitlementsForPurchase } from '@/lib/entitlements'
 import { log } from '@/server/logger'
 
@@ -9,6 +13,9 @@ import { REFUND_PROCESSED_EVENT } from '@coursebuilder/core/inngest/commerce/eve
  * Inngest function to handle refund events and soft delete entitlements
  * This function is triggered when a purchase is refunded and removes
  * the associated entitlements by setting the deletedAt timestamp
+ *
+ * For bulk purchases, it removes entitlements for ALL team members who
+ * claimed seats, not just the original purchaser
  */
 export const refundEntitlements = inngest.createFunction(
 	{
@@ -59,28 +66,77 @@ export const refundEntitlements = inngest.createFunction(
 				}
 			}
 
-			// Soft delete entitlements for this specific purchase
-			const result = await step.run(
-				'soft delete entitlements for purchase',
-				async () => {
-					return softDeleteEntitlementsForPurchase(purchase.id)
-				},
-			)
+			// Check if this is a bulk purchase that affects multiple users
+			const isBulk = isBulkPurchase(purchase)
 
-			await log.info('refund_entitlements.completed', {
-				purchaseId: purchase.id,
-				stripeChargeId: chargeId,
-				userId: purchase.userId,
-				entitlementsDeleted: result.rowsAffected || 0,
-				duration: Date.now() - startTime,
-			})
+			let result
+			if (isBulk) {
+				// Handle bulk purchase refund - affects all team members
+				result = await step.run(
+					'refund bulk purchase entitlements',
+					async () => {
+						return refundBulkPurchaseEntitlements(purchase)
+					},
+				)
+			} else {
+				// Handle individual purchase refund
+				result = await step.run(
+					'soft delete entitlements for purchase',
+					async () => {
+						return softDeleteEntitlementsForPurchase(purchase.id)
+					},
+				)
+			}
 
-			return {
-				purchaseId: purchase.id,
-				userId: purchase.userId,
-				entitlementsDeleted: result.rowsAffected || 0,
-				reason: 'success',
-				stripeChargeId: chargeId,
+			if (isBulk) {
+				const bulkResult = result as any // Type assertion since we know it's from refundBulkPurchaseEntitlements
+
+				await log.info('refund_entitlements.bulk_completed', {
+					purchaseId: purchase.id,
+					stripeChargeId: chargeId,
+					userId: purchase.userId,
+					isBulkPurchase: true,
+					success: bulkResult.success || false,
+					totalPurchasesRefunded: bulkResult.totalPurchasesRefunded || 0,
+					totalEntitlementsRemoved: bulkResult.totalEntitlementsRemoved || 0,
+					totalMembershipsRemoved: bulkResult.totalMembershipsRemoved || 0,
+					affectedUsers: bulkResult.affectedUsers?.length || 0,
+					duration: Date.now() - startTime,
+				})
+
+				return {
+					purchaseId: purchase.id,
+					userId: purchase.userId,
+					isBulkPurchase: true,
+					success: bulkResult.success || false,
+					totalPurchasesRefunded: bulkResult.totalPurchasesRefunded || 0,
+					entitlementsDeleted: bulkResult.totalEntitlementsRemoved || 0,
+					membershipsRemoved: bulkResult.totalMembershipsRemoved || 0,
+					affectedUsers: bulkResult.affectedUsers || [],
+					reason: bulkResult.success ? 'success' : 'error',
+					error: bulkResult.error || null,
+					stripeChargeId: chargeId,
+				}
+			} else {
+				const individualResult = result as any // Type assertion for individual result
+
+				await log.info('refund_entitlements.individual_completed', {
+					purchaseId: purchase.id,
+					stripeChargeId: chargeId,
+					userId: purchase.userId,
+					isBulkPurchase: false,
+					entitlementsDeleted: individualResult.rowsAffected || 0,
+					duration: Date.now() - startTime,
+				})
+
+				return {
+					purchaseId: purchase.id,
+					userId: purchase.userId,
+					isBulkPurchase: false,
+					entitlementsDeleted: individualResult.rowsAffected || 0,
+					reason: 'success',
+					stripeChargeId: chargeId,
+				}
 			}
 		} catch (error) {
 			await log.error('refund_entitlements.failed', {

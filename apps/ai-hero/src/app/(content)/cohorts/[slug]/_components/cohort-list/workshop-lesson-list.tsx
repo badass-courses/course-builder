@@ -5,9 +5,17 @@ import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/wor
 import type { Workshop } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 
+import { cn } from '@coursebuilder/ui/utils/cn'
+
 import { WorkshopLessonItem } from './workshop-lesson-item'
 
-export function WorkshopLessonList({ workshop }: { workshop: Workshop }) {
+export function WorkshopLessonList({
+	workshop,
+	className,
+}: {
+	workshop: Workshop
+	className?: string
+}) {
 	const workshopNavigation = useWorkshopNavigation()
 
 	const { data: abilityRules, status: abilityStatus } =
@@ -28,7 +36,7 @@ export function WorkshopLessonList({ workshop }: { workshop: Workshop }) {
 				return (
 					<WorkshopLessonItem
 						index={index + 1}
-						className="rounded pl-10"
+						className={cn('pl-13 rounded', className)}
 						key={resource.id}
 						resource={resource}
 						workshopSlug={workshop.fields.slug}

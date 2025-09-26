@@ -11,86 +11,80 @@ import {
 	Section,
 	Text,
 } from '@react-email/components'
-import { format, isAfter, parse } from 'date-fns'
-import { zonedTimeToUtc } from 'date-fns-tz'
 
-import { buildEtzLink } from '@coursebuilder/utils-timezones/build-etz-link'
-
-export interface WelcomeCohortEmailTeamRedeemerProps {
-	cohortTitle: string
+export interface WelcomeWorkshopEmailTeamProps {
+	workshopTitle: string
 	url: string
-	dayOneUnlockDate: string
+	quantity: number
 	userFirstName?: string
 	supportEmail?: string
-	isZeroDayAccess?: boolean
 }
 
-export default function WelcomeCohortEmailForTeamRedeemer({
-	cohortTitle,
+export default function WelcomeWorkshopEmailForTeam({
+	workshopTitle,
 	url,
-	dayOneUnlockDate,
+	quantity,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
-	isZeroDayAccess = false,
-}: WelcomeCohortEmailTeamRedeemerProps) {
+}: WelcomeWorkshopEmailTeamProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		// eslint-disable-next-line no-console
-		console.debug('Rendering WelcomeCohortEmailForTeamRedeemer', {
-			cohortTitle,
+		console.debug('Rendering WelcomeWorkshopEmailForTeam', {
+			workshopTitle,
+			quantity,
 		})
 	}
 
-	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
-	const dayOneIsInFuture = isAfter(
-		zonedTimeToUtc(
-			parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
-			'America/Los_Angeles',
-		),
-		new Date(),
-	)
+	const teamDashboardUrl = `${env.COURSEBUILDER_URL}/team`
 
 	return (
 		<Html>
 			<Head />
-			<Preview>You've claimed your seat for {cohortTitle}!</Preview>
+			<Preview>Welcome! Manage your {String(quantity)} cohort seats</Preview>
 			<Body style={main}>
 				<Container style={container}>
 					<Section style={section}>
-						<Heading style={heading}>Welcome to {cohortTitle}! 🎉</Heading>
+						<Heading style={heading}>
+							Your Team is Registered for {workshopTitle}! 🎉
+						</Heading>
 
 						<Section style={contentSection}>
 							<Text style={text}>{greeting}</Text>
 							<Text style={text}>
-								You've successfully claimed your seat via your team's purchase.
+								You've purchased <strong>{quantity}</strong>{' '}
+								{quantity === 1 ? 'seat' : 'seats'} to{' '}
+								<strong>{workshopTitle}</strong>.
 							</Text>
-							{!dayOneIsInFuture && (
-								<Text style={text}>
-									You now have access to <strong>Day 1</strong>.
-								</Text>
-							)}
+
+							<Text style={text}>
+								(You will need to redeem a seat on your team.)
+							</Text>
 							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
 								<Link href={url} style={buttonStyle}>
-									Get Started with {cohortTitle}
+									Get Started with {workshopTitle}
 								</Link>
 							</Section>
 						</Section>
 
-						{dayOneIsInFuture && (
-							<Section style={contentSection}>
-								<Text style={text}>
-									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
-									{dayOneUnlockDate}.{' '}
-								</Text>
-								<Text style={text}>
-									You'll receive another email when Day 1 unlocks.
-								</Text>
+						<Section style={contentSection}>
+							<Text style={text}>
+								Manage your team seats anytime from your dashboard:
+							</Text>
+							<Section style={{ textAlign: 'center', marginTop: '20px' }}>
+								<Link href={teamDashboardUrl} style={buttonStyle}>
+									Manage Seats
+								</Link>
 							</Section>
-						)}
+						</Section>
 
 						<Section style={contentSection}>
 							<Text style={textSmall}>
-								Questions? Contact{' '}
+								Need an invoice? Visit your{' '}
+								<Link href={`${env.COURSEBUILDER_URL}/invoices`} style={link}>
+									invoices page
+								</Link>
+								. Questions? Contact{' '}
 								<Link href={`mailto:${supportEmail}`} style={link}>
 									{supportEmail}
 								</Link>
@@ -99,7 +93,7 @@ export default function WelcomeCohortEmailForTeamRedeemer({
 						</Section>
 
 						<Section style={contentSection}>
-							<Text style={text}>See you inside,</Text>
+							<Text style={text}>Thank you!</Text>
 							<Text style={text}>The {env.NEXT_PUBLIC_SITE_TITLE} Team</Text>
 						</Section>
 					</Section>
