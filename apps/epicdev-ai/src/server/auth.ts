@@ -135,7 +135,6 @@ const authCookies: Partial<CookiesOptions> = {
 			sameSite: 'none',
 			path: '/',
 			secure: true,
-			partitioned: true,
 		},
 	},
 	callbackUrl: {
@@ -144,7 +143,6 @@ const authCookies: Partial<CookiesOptions> = {
 			sameSite: 'none',
 			path: '/',
 			secure: true,
-			partitioned: true,
 		},
 	},
 	csrfToken: {
@@ -154,7 +152,6 @@ const authCookies: Partial<CookiesOptions> = {
 			sameSite: 'none',
 			path: '/',
 			secure: true,
-			partitioned: true,
 		},
 	},
 }
