@@ -1,6 +1,6 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purchased-convertkit'
-import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
+import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-subscription-discord-role'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
@@ -17,14 +17,14 @@ import { inngest } from '@/inngest/inngest.server'
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
-import {
-	apiTransferWorkflow,
-	cohortTransferWorkflow,
-} from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
-import { addCohortRoleDiscord } from './functions/discord/add-cohort-role-discord'
-import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
+import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
+import {
+	apiProductTransferWorkflow,
+	productTransferWorkflow,
+} from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -49,9 +49,9 @@ export const inngestConfig = {
 		discordAccountLinked,
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
-		postCohortPurchaseWorkflow,
-		cohortTransferWorkflow,
-		apiTransferWorkflow,
+		postPurchaseWorkflow,
+		productTransferWorkflow,
+		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
@@ -60,7 +60,7 @@ export const inngestConfig = {
 		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,
 		videoResourceDetached,
-		addCohortRoleDiscord,
+		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 	],

@@ -28,6 +28,7 @@ export const ProductContentSchema = ContentResourceSchema.merge(
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
 			type: z.enum(['live', 'self-paced', 'membership']),
+			discordRoleId: z.string().optional().nullable(),
 		}),
 	}),
 )

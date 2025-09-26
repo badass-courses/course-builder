@@ -9,12 +9,12 @@ describe('WelcomeCohortEmailForTeamRedeemer', () => {
 		const html = await render(
 			<WelcomeCohortEmailForTeamRedeemer
 				cohortTitle="Redeemer Cohort"
-				url="#day0"
+				url="#day1"
 				dayOneUnlockDate="July 2nd, 2055"
 			/>,
 		)
 
 		expect(html).toMatchSnapshot()
-		expect(html).toContain('#day0')
+		expect(html).toContain('Day 1')
 	})
 })

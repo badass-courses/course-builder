@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
 import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
@@ -13,11 +11,9 @@ import {
 	StartLearningWorkshopButtonSkeleton,
 	WorkshopGitHubRepoLink,
 } from '@/app/(content)/workshops/_components/workshop-user-actions'
-import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
-import Spinner from '@/components/spinner'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
@@ -25,14 +21,13 @@ import { env } from '@/env.mjs'
 import {
 	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
-	getWorkshopProduct,
 } from '@/lib/workshops-query'
 import { getProviders } from '@/server/auth'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
-import { Construction, Github, Share2 } from 'lucide-react'
+import { Construction, Share2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 

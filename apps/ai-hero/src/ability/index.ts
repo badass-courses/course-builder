@@ -11,6 +11,7 @@ import z from 'zod'
 import {
 	ContentResource,
 	userSchema,
+	type ContentResourceResource,
 	type Purchase,
 } from '@coursebuilder/core/schemas'
 
@@ -285,11 +286,13 @@ export function defineRulesForPurchases(
 			can('read', 'RegionRestriction')
 		}
 
-		if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
-			can('read', 'Content', {
-				id: { $in: [module.id, ...(allModuleResourceIds || [])] },
-			})
-		}
+		// LEGACY: this was used to grant access to the module and its resources
+		// 		   but now we grant access via entitlements
+		// if (userHasPurchaseWithAccess.some((purchase) => purchase.valid)) {
+		// 	can('read', 'Content', {
+		// 		id: { $in: [module.id, ...(allModuleResourceIds || [])] },
+		// 	})
+		// }
 	}
 
 	if (hasChargesForPurchases(purchases)) {
@@ -356,6 +359,77 @@ export function defineRulesForPurchases(
 				}
 			}
 		})
+	}
+
+	const workshopEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'workshop_content_access',
+	)
+
+	// check self-paced workshop and its lessons
+	if (user?.entitlements && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (entitlement.type === workshopEntitlementType?.id) {
+				// Grant access to the workshop itself and its lessons
+				const contentIds = Array.isArray(entitlement.metadata?.contentIds)
+					? entitlement.metadata.contentIds.filter(Boolean)
+					: []
+				if (contentIds.length) {
+					can('read', 'Content', { id: { $in: contentIds } })
+				}
+
+				// If user has access to this specific workshop, grant access to lessons
+				if (
+					contentIds.includes(module.id) &&
+					Array.isArray(allModuleResourceIds) &&
+					allModuleResourceIds.length
+				) {
+					can('read', 'Content', { id: { $in: allModuleResourceIds } })
+				}
+			}
+		})
+	}
+
+	// Grant access to lessons in sections with "free" tier and individual free lessons
+	if (module?.resources) {
+		const freeResourceIds: string[] = []
+
+		module.resources.forEach((moduleResource) => {
+			// Check if this is a section with free tier
+			if (
+				moduleResource.resource?.type === 'section' &&
+				moduleResource.metadata?.tier === 'free'
+			) {
+				// Add all lessons in this free section
+				moduleResource.resource.resources?.forEach(
+					(sectionResource: ContentResourceResource) => {
+						if (
+							sectionResource.resource?.type === 'lesson' ||
+							sectionResource.resource?.type === 'exercise' ||
+							sectionResource.resource?.type === 'post'
+						) {
+							freeResourceIds.push(sectionResource.resource.id)
+						}
+					},
+				)
+			}
+
+			// Check if this is a top-level lesson/exercise/post with free tier
+			if (
+				(moduleResource.resource?.type === 'lesson' ||
+					moduleResource.resource?.type === 'exercise' ||
+					moduleResource.resource?.type === 'post') &&
+				moduleResource.metadata?.tier === 'free'
+			) {
+				freeResourceIds.push(moduleResource.resource.id)
+			}
+		})
+
+		// Grant access to all free resources (lessons in free sections + individual free lessons)
+		if (freeResourceIds.length > 0) {
+			can('read', 'Content', {
+				id: { $in: freeResourceIds },
+			})
+		}
 	}
 
 	// lesson check
