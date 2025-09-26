@@ -112,7 +112,9 @@ function Search() {
 			future={{ preserveSharedStateOnUnmount: true }}
 		>
 			<Configure
-				filters={'visibility:public && state:published'}
+				filters={
+					'visibility:public && state:published && type:!workshop && type:!lesson'
+				}
 				hitsPerPage={40}
 			/>
 			<div className="z-10 flex flex-col items-end gap-x-3 pb-4 sm:flex-row sm:items-center sm:pb-0">
