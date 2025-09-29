@@ -22,7 +22,7 @@ import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getProviders, getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
-import { differenceInCalendarDays } from 'date-fns'
+import { differenceInCalendarDays, format } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle, Construction } from 'lucide-react'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
@@ -404,6 +404,10 @@ export default async function CohortPage(props: {
 												null, // Pass null for end date
 												workshopTimezone,
 											)
+											const workshopStartDate = format(
+												new Date(workshop.fields.startsAt as string),
+												'MMMM d, yyyy h:mm a zzz',
+											)
 
 											// Calculate Day number
 											let dayNumber: number | null = null
@@ -441,7 +445,7 @@ export default async function CohortPage(props: {
 																	workshop.fields.visibility === 'public' ? (
 																		<Link
 																			className={cn(
-																				'text-foreground hover:text-primary flex flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out',
+																				'text-foreground cursor-pointer! group flex flex-col py-2 pt-3 text-lg font-semibold leading-tight transition ease-in-out',
 																				{
 																					'max-w-[90%]':
 																						workshop.resources &&
@@ -454,12 +458,12 @@ export default async function CohortPage(props: {
 																				'view',
 																			)}
 																		>
-																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
-																				<div className="font-bold">
+																			<div className="flex flex-col">
+																				<div className="font-bold group-hover:underline">
 																					{workshop.fields.title}
 																				</div>{' '}
 																				<div className="text-primary text-sm font-medium">
-																					Available from {workshopDateString}
+																					Available from {workshopStartDate}
 																				</div>
 																			</div>
 																			{workshop.fields.description && (
@@ -479,12 +483,12 @@ export default async function CohortPage(props: {
 																				},
 																			)}
 																		>
-																			<div className="flex flex-col justify-between sm:flex-row sm:items-center sm:gap-2">
+																			<div className="flex flex-col">
 																				<div className="font-bold">
 																					{workshop.fields.title}
 																				</div>{' '}
 																				<div className="text-primary text-sm font-medium">
-																					Available from {workshopDateString}
+																					Available from {workshopStartDate}
 																				</div>
 																			</div>
 																			{workshop.fields.description && (
