@@ -35,7 +35,9 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 						const bulkCoupon = purchase.bulkCoupon
 
 						const redemptionsLeft =
-							bulkCoupon && bulkCoupon.maxUses > bulkCoupon.usedCount
+							bulkCoupon &&
+							bulkCoupon.maxUses > bulkCoupon.usedCount &&
+							bulkCoupon.status === 1 // Check if coupon is active
 
 						return (
 							<div

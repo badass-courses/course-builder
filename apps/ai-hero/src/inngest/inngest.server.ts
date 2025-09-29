@@ -93,8 +93,10 @@ import {
 } from './functions/create-user-organization'
 import {
 	USER_ADDED_TO_COHORT_EVENT,
+	USER_ADDED_TO_WORKSHOP_EVENT,
 	UserAddedToCohort,
-} from './functions/discord/add-cohort-role-discord'
+	UserAddedToWorkshop,
+} from './functions/discord/add-discord-role-workflow'
 
 // Create a client to send and receive events
 export type Events = {
@@ -121,6 +123,7 @@ export type Events = {
 	[PURCHASE_TRANSFERRED_API_EVENT]: PurchaseTransferredApi
 	[ENSURE_PERSONAL_ORGANIZATION_EVENT]: EnsurePersonalOrganization
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
+	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 }
 

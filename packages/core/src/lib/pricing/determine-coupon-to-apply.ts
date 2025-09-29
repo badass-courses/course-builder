@@ -357,8 +357,10 @@ const getQualifyingSeatCount = async ({
 	const { getPurchasesForUser } = prismaCtx
 	const userPurchases = await getPurchasesForUser(userId)
 	const bulkPurchase = userPurchases.find(
-		({ productId, bulkCoupon }) =>
-			productId === purchasingProductId && Boolean(bulkCoupon),
+		({ productId, bulkCoupon, status }) =>
+			productId === purchasingProductId &&
+			Boolean(bulkCoupon) &&
+			(status === 'Valid' || status === 'Restricted'), // Exclude refunded purchases
 	)
 
 	const existingSeatsPurchasedForThisProduct =

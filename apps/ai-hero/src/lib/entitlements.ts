@@ -7,6 +7,8 @@ import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 export type EntitlementType =
 	| 'cohort_content_access'
 	| 'cohort_discord_role'
+	| 'workshop_content_access'
+	| 'workshop_discord_role'
 	| 'subscription_tier'
 
 export enum EntitlementSourceType {
@@ -259,6 +261,54 @@ export async function createCohortEntitlement({
 }
 
 /**
+ * Creates a workshop entitlement for a user for a specific workshop resource.
+ * Use for purchase, transfer, redeem, etc.
+ * @returns The ID of the created entitlement
+ */
+export async function createWorkshopEntitlement({
+	id,
+	userId,
+	resourceId,
+	organizationId,
+	organizationMembershipId,
+	entitlementType,
+	sourceId,
+	sourceType,
+	metadata = {},
+}: {
+	id?: string
+	userId: string
+	resourceId?: string
+	organizationId: string
+	organizationMembershipId: string
+	entitlementType: string
+	sourceId: string
+	sourceType: string
+	metadata?: Record<string, any>
+}): Promise<string> {
+	const entitlementId =
+		id ?? (resourceId ? `${resourceId}-${guid()}` : `entitlement-${guid()}`)
+
+	// Only add contentIds if resourceId is provided and not null
+	const finalMetadata = {
+		...metadata,
+		...(resourceId && { contentIds: [resourceId] }),
+	}
+
+	await db.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType,
+		sourceId,
+		metadata: finalMetadata,
+	})
+	return entitlementId
+}
+
+/**
  * Creates a cohort entitlement for a user for a specific resource in a cohort within a transaction.
  * This should be used when you need to create entitlements as part of a larger transaction.
  * @returns The ID of the created entitlement
@@ -306,4 +356,80 @@ export async function createCohortEntitlementInTransaction(
 		metadata: finalMetadata,
 	})
 	return entitlementId
+}
+
+/**
+ * Soft delete entitlements for multiple purchases when bulk refunds occur
+ * @param purchaseIds - Array of purchase IDs whose entitlements should be soft deleted
+ * @returns The total number of entitlements that were soft deleted
+ */
+export async function softDeleteEntitlementsForPurchases(
+	purchaseIds: string[],
+) {
+	if (purchaseIds.length === 0) return { rowsAffected: 0 }
+
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+				isNull(entitlements.deletedAt),
+				// Use IN clause for multiple purchase IDs
+				sql`${entitlements.sourceId} IN (${sql.join(
+					purchaseIds.map((id) => sql`${id}`),
+					sql`, `,
+				)})`,
+			),
+		)
+
+	return result
+}
+
+/**
+ * Get all entitlements for a specific user in an organization
+ * @param userId - The user ID
+ * @param organizationId - The organization ID
+ * @returns Array of entitlements
+ */
+export async function getUserEntitlementsInOrganization(
+	userId: string,
+	organizationId: string,
+) {
+	return await db.query.entitlements.findMany({
+		where: and(
+			eq(entitlements.userId, userId),
+			eq(entitlements.organizationId, organizationId),
+			isNull(entitlements.deletedAt),
+		),
+	})
+}
+
+/**
+ * Remove all entitlements for a user in a specific organization
+ * Useful when removing organization membership completely
+ * @param userId - The user ID
+ * @param organizationId - The organization ID
+ * @returns The number of entitlements that were soft deleted
+ */
+export async function removeAllUserEntitlementsInOrganization(
+	userId: string,
+	organizationId: string,
+) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.organizationId, organizationId),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
 }
