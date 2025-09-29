@@ -10,6 +10,7 @@ export type EventVideoStatusCheck = {
 export const VideoStatusCheckEventSchema = z.object({
 	videoResourceId: z.string(),
 	fileKey: z.string(),
+	retryCount: z.number().optional(),
 })
 
 export type VideoStatusCheckEvent = z.infer<typeof VideoStatusCheckEventSchema>
