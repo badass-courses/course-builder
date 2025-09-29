@@ -10,6 +10,7 @@ import { VIDEO_STATUS_CHECK_EVENT } from '../events/event-video-status-check'
 const removeCompletedVideoConfig = {
 	id: `remove-video-after-completed`,
 	name: 'Remove Uploadthing Video',
+	retries: 3, // Limit Inngest retries for database errors
 }
 const removeCompletedVideoTrigger: CoreInngestTrigger = {
 	event: VIDEO_STATUS_CHECK_EVENT,
