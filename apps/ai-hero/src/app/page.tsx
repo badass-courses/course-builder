@@ -215,10 +215,10 @@ const Home = async (props: Props) => {
 										<div className="mt-10 flex flex-col items-center justify-center border-t sm:flex-row">
 											<div
 												id="buy"
-												className="not-prose bg-card pb-5 pt-3 sm:border-x"
+												className="not-prose bg-card mx-auto w-full max-w-md pb-5 pt-3 sm:border-x"
 											>
 												<PricingWidgetServer
-													productId="product-3vfob"
+													productId={props.productId || 'product-3vfob'}
 													searchParams={searchParams}
 													{...props}
 												/>

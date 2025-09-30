@@ -5,16 +5,19 @@ import { CohortPricingWidgetContainer } from '@/app/(content)/cohorts/[slug]/_co
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
+import { Purchase } from '@coursebuilder/core/schemas'
+import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export async function PricingWidgetServer({
@@ -28,9 +31,14 @@ export async function PricingWidgetServer({
 	const user = session?.user
 
 	const product = await getProduct(productId)
-	const cohort = await getCohort(
-		product?.resources?.[0]?.resource?.fields?.slug,
-	)
+	let resource
+
+	if (product?.type === 'self-paced') {
+		resource = await getWorkshop(product.resources?.[0]?.resource?.fields?.slug)
+	}
+	if (product?.type === 'cohort') {
+		resource = await getCohort(product.resources?.[0]?.resource?.fields?.slug)
+	}
 
 	if (!product) return null
 
@@ -119,13 +127,13 @@ export async function PricingWidgetServer({
 	const organizationId = productProps.organizationId
 
 	// Extract workshops from cohort for features display
-	const workshops =
-		cohort?.resources?.map(({ resource }: any) => ({
+	const cohortWorkshops =
+		resource?.resources?.map(({ resource }: any) => ({
 			title: resource.fields.title,
 			slug: resource.fields.slug,
 		})) || []
 
-	if (!cohort) return null
+	if (!resource) return null
 
 	return productProps.hasPurchasedCurrentProduct ? (
 		<div className="flex w-full flex-col items-center justify-center gap-2 px-10 pt-3 text-center text-lg sm:flex-row">
@@ -133,7 +141,7 @@ export async function PricingWidgetServer({
 			<span>You have already purchased a ticket to this cohort.</span>{' '}
 			<Link
 				className="text-primary underline"
-				href={getResourcePath(cohort.type, cohort.fields.slug, 'view')}
+				href={getResourcePath(resource.type, resource.fields.slug, 'view')}
 			>
 				View →
 			</Link>
@@ -143,17 +151,45 @@ export async function PricingWidgetServer({
 			purchasedProductIds={purchasedProductIds}
 			organizationId={organizationId}
 		>
-			<CohortPricingWidgetContainer
-				className="**:aria-[live='polite']:text-6xl border-b-0 pt-10"
-				{...productProps}
-				{...productProps.commerceProps}
-				workshops={workshops}
-				cohort={cohort}
-				pricingWidgetOptions={{
-					withTitle: true,
-					withImage: true,
-				}}
-			/>
+			{product?.type === 'cohort' && (
+				<CohortPricingWidgetContainer
+					className="**:aria-[live='polite']:text-6xl border-b-0 pt-10"
+					{...productProps}
+					{...productProps.commerceProps}
+					workshops={cohortWorkshops}
+					cohort={resource}
+					pricingWidgetOptions={{
+						withTitle: true,
+						withImage: true,
+					}}
+				/>
+			)}
+			{product?.type === 'self-paced' && (
+				<PricingWidget
+					className={cn('px-5')}
+					workshops={[
+						{
+							title: resource.fields.title,
+							slug: resource.fields.slug,
+						},
+					]}
+					commerceProps={{ ...commerceProps, products: [product] }}
+					hasPurchasedCurrentProduct={productProps.hasPurchasedCurrentProduct}
+					product={product}
+					quantityAvailable={quantityAvailable}
+					pricingDataLoader={pricingDataLoader}
+					pricingWidgetOptions={{
+						withImage: false,
+						withGuaranteeBadge: true,
+						isLiveEvent: false,
+						isCohort: false,
+
+						isPPPEnabled: true,
+						cancelUrl: env.NEXT_PUBLIC_URL,
+					}}
+					{...commerceProps}
+				/>
+			)}
 		</PriceCheckProvider>
 	)
 }
