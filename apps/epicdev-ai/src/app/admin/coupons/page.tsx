@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import CouponDataTable from '@/app/admin/coupons/_components/coupon-data-table'
 import CouponGeneratorForm from '@/app/admin/coupons/_components/coupon-generator-form'
 import { db } from '@/db'
-import { coupon } from '@/db/schema'
+import { coupon, products } from '@/db/schema'
 import { getPastEventIds } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
 import { desc } from 'drizzle-orm'
@@ -12,7 +12,7 @@ import z from 'zod'
 import { couponSchema, productSchema } from '@coursebuilder/core/schemas'
 
 const getActiveProducts = async () => {
-	const products = await db.query.products.findMany({
+	const productsData = await db.query.products.findMany({
 		with: {
 			resources: {
 				with: {
@@ -20,13 +20,11 @@ const getActiveProducts = async () => {
 				},
 			},
 		},
+		orderBy: desc(products.createdAt),
 	})
 	const pastEventIds = await getPastEventIds()
-	return products.filter((product) =>
-		product.resources.every(
-			(resource) => !pastEventIds.includes(resource.resource.id),
-		),
-	)
+
+	return { products: productsData, pastEventIds }
 }
 
 export default async function AdminCouponPage() {
@@ -43,9 +41,14 @@ export default async function AdminCouponPage() {
 		}),
 	)
 
-	const productsLoader = getActiveProducts().then((products) => {
-		return z.array(productSchema).parse(products)
-	})
+	const productsLoader = getActiveProducts().then(
+		({ products, pastEventIds }) => {
+			return {
+				products: z.array(productSchema).parse(products),
+				pastEventIds,
+			}
+		},
+	)
 
 	return (
 		<main className="mx-auto flex w-full flex-col gap-5 px-5 pt-10 lg:gap-10">
