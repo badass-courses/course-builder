@@ -171,7 +171,8 @@ const CouponGeneratorForm = ({
 		form.reset()
 		// router.refresh()
 	}
-
+	const [isRestrictedToProductIdOpen, setIsRestrictedToProductIdOpen] =
+		React.useState(false)
 	return (
 		<Form {...form}>
 			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
@@ -199,7 +200,6 @@ const CouponGeneratorForm = ({
 					<FormField
 						name="restrictedToProductId"
 						render={({ field }) => {
-							const [open, setOpen] = React.useState(false)
 							const value = field.value
 							return (
 								<FormItem className="flex flex-col">
@@ -222,12 +222,15 @@ const CouponGeneratorForm = ({
 										Restricted to Product
 									</FormLabel>
 									<FormControl>
-										<Popover open={open} onOpenChange={setOpen}>
+										<Popover
+											open={isRestrictedToProductIdOpen}
+											onOpenChange={setIsRestrictedToProductIdOpen}
+										>
 											<PopoverTrigger asChild>
 												<Button
 													variant="outline"
 													role="combobox"
-													aria-expanded={open}
+													aria-expanded={isRestrictedToProductIdOpen}
 													className="justify-between"
 												>
 													<span className="truncate overflow-ellipsis">
@@ -268,7 +271,7 @@ const CouponGeneratorForm = ({
 																					? undefined
 																					: product.id,
 																			)
-																			setOpen(false)
+																			setIsRestrictedToProductIdOpen(false)
 																		}}
 																		className="flex w-full items-center justify-between"
 																	>
