@@ -82,6 +82,9 @@ export const CohortPricingWidgetContainer: React.FC<
 
 	// Determine the current state and messaging
 	const getEnrollmentState = () => {
+		if (couponFromCode?.fields?.bypassSoldOut === true) {
+			return { type: 'open' as const }
+		}
 		if (isOpenEnrollment) {
 			return { type: 'open' as const }
 		}

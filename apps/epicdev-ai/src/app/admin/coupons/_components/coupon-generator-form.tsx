@@ -9,6 +9,7 @@ import { createCoupon } from '@/lib/coupons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CalendarDate } from '@internationalized/date'
 import { formatInTimeZone } from 'date-fns-tz'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -17,6 +18,12 @@ import {
 	Button,
 	Calendar,
 	Checkbox,
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
 	DateTimePicker,
 	Form,
 	FormControl,
@@ -54,7 +61,7 @@ const formSchema = z.object({
 const CouponGeneratorForm = ({
 	productsLoader,
 }: {
-	productsLoader: Promise<Product[]>
+	productsLoader: Promise<{ products: Product[]; pastEventIds: string[] }>
 }) => {
 	const router = useRouter()
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -72,7 +79,7 @@ const CouponGeneratorForm = ({
 	})
 	const [codes, setCodes] = React.useState<string[]>([])
 
-	const products = use(productsLoader)
+	const { products, pastEventIds } = use(productsLoader)
 	const { toast } = useToast()
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const { bypassSoldOut, ...couponDataFromForm } = values
@@ -164,7 +171,8 @@ const CouponGeneratorForm = ({
 		form.reset()
 		// router.refresh()
 	}
-
+	const [isRestrictedToProductIdOpen, setIsRestrictedToProductIdOpen] =
+		React.useState(false)
 	return (
 		<Form {...form}>
 			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
@@ -191,28 +199,105 @@ const CouponGeneratorForm = ({
 					/>
 					<FormField
 						name="restrictedToProductId"
-						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel
-									htmlFor="enableRestrictedToProductId"
-									className="mb-0.5 mt-1.5 flex items-center gap-1.5"
-								>
-									<Checkbox
-										id="enableRestrictedToProductId"
-										checked={Boolean(form.watch('restrictedToProductId'))}
-										onCheckedChange={() => {
-											return Boolean(form.watch('restrictedToProductId'))
-												? form.setValue('restrictedToProductId', undefined)
-												: form.setValue(
-														'restrictedToProductId',
-														products[0]?.id,
-													)
-										}}
-									/>
-									Restricted to Product
-								</FormLabel>
-								<FormControl>
-									<Select
+						render={({ field }) => {
+							const value = field.value
+							return (
+								<FormItem className="flex flex-col">
+									<FormLabel
+										htmlFor="enableRestrictedToProductId"
+										className="mb-0.5 mt-1.5 flex items-center gap-1.5"
+									>
+										<Checkbox
+											id="enableRestrictedToProductId"
+											checked={Boolean(form.watch('restrictedToProductId'))}
+											onCheckedChange={() => {
+												return Boolean(form.watch('restrictedToProductId'))
+													? form.setValue('restrictedToProductId', undefined)
+													: form.setValue(
+															'restrictedToProductId',
+															products[0]?.id,
+														)
+											}}
+										/>
+										Restricted to Product
+									</FormLabel>
+									<FormControl>
+										<Popover
+											open={isRestrictedToProductIdOpen}
+											onOpenChange={setIsRestrictedToProductIdOpen}
+										>
+											<PopoverTrigger asChild>
+												<Button
+													variant="outline"
+													role="combobox"
+													aria-expanded={isRestrictedToProductIdOpen}
+													className="justify-between"
+												>
+													<span className="truncate overflow-ellipsis">
+														{value
+															? products.find((product) => product.id === value)
+																	?.name
+															: 'Select product...'}
+													</span>
+													<ChevronsUpDown className="opacity-50" />
+												</Button>
+											</PopoverTrigger>
+											<PopoverContent className="p-0">
+												<Command>
+													<CommandInput
+														placeholder="Search product..."
+														className="h-9"
+													/>
+													<CommandList>
+														<CommandEmpty>No product found.</CommandEmpty>
+														<CommandGroup>
+															{products.map((product) => {
+																const displayName = `${product.name}${
+																	pastEventIds.some(
+																		(id) =>
+																			id ===
+																			product?.resources?.[0]?.resource.id,
+																	)
+																		? ' (Closed)'
+																		: ''
+																}`
+																return (
+																	<CommandItem
+																		key={product.id}
+																		value={displayName}
+																		onSelect={() => {
+																			field.onChange(
+																				product.id === value
+																					? undefined
+																					: product.id,
+																			)
+																			setIsRestrictedToProductIdOpen(false)
+																		}}
+																		className="flex w-full items-center justify-between"
+																	>
+																		<span>{displayName}</span>{' '}
+																		<div className="flex items-center gap-1">
+																			<span className="text-muted-foreground text-sm">
+																				{product.type}
+																			</span>
+																			<Check
+																				className={cn(
+																					'ml-auto',
+																					value === product.id
+																						? 'opacity-100'
+																						: 'opacity-0',
+																				)}
+																			/>
+																		</div>
+																	</CommandItem>
+																)
+															})}
+														</CommandGroup>
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+										{/* <Select
 										required
 										{...field}
 										disabled={!Boolean(form.watch('restrictedToProductId'))}
@@ -234,10 +319,11 @@ const CouponGeneratorForm = ({
 												</SelectItem>
 											))}
 										</SelectContent>
-									</Select>
-								</FormControl>
-							</FormItem>
-						)}
+									</Select> */}
+									</FormControl>
+								</FormItem>
+							)
+						}}
 					/>
 					<FormField
 						name="expires"
