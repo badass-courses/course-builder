@@ -106,6 +106,7 @@ export function getMuxOptions(options?: MuxApiOptions) {
 		test: options?.test || false,
 		new_asset_settings: {
 			master_access: 'temporary',
+			video_quality: 'premium',
 			max_resolution_tier: '2160p',
 			playback_policy: ['public'],
 			input: [{ url: options?.url }],
