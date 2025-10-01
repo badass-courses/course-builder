@@ -246,6 +246,7 @@
 		"tailwind-scrollbar": "^4.0.2",
 		"tailwindcss": "^4.1.11",
 		"tsx": "^4.7.1",
+		"tw-animate-css": "^1.4.0",
 		"typescript": "5.4.5",
 		"vite-tsconfig-paths": "^5.1.4"
 	},

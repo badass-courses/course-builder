@@ -158,7 +158,7 @@ module.exports = {
 		require('@tailwindcss/typography'),
 		require('tailwind-scrollbar'),
 		require('tailwindcss-radix'),
-		require('tailwindcss-animate'),
+		// require('tailwindcss-animate'),
 		require('tailwind-fluid-typography'),
 	],
 }

@@ -103,6 +103,14 @@ import {
 import { Input } from './primitives/input'
 import { Label } from './primitives/label'
 import {
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	NavigationMenuTrigger,
+} from './primitives/navigation-menu'
+import {
 	Pagination,
 	PaginationContent,
 	PaginationEllipsis,
@@ -320,4 +328,10 @@ export {
 	PaginationNext,
 	PaginationEllipsis,
 	CreateEventForm,
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	NavigationMenuTrigger,
 }
