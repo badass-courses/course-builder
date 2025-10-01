@@ -6,6 +6,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
+import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import { ChevronRight, Menu, Newspaper, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
@@ -105,6 +106,13 @@ const Navigation = () => {
 													<Link
 														href={course.href}
 														className="relative flex flex-row items-center gap-5 pr-8"
+														onClick={() => {
+															track('navigation_menu_item_click', {
+																resource: course.title,
+																type: 'course',
+																category: 'navigation',
+															})
+														}}
 													>
 														<CldImage
 															src={course.image.src}
@@ -140,6 +148,13 @@ const Navigation = () => {
 												<NavigationMenuLink key={cohort.href} asChild>
 													<Link
 														href={cohort.href}
+														onClick={() => {
+															track('navigation_menu_item_click', {
+																resource: cohort.title,
+																type: 'cohort',
+																category: 'navigation',
+															})
+														}}
 														className="relative flex flex-row items-center gap-5 pr-8"
 													>
 														<CldImage
@@ -175,6 +190,13 @@ const Navigation = () => {
 											<Link
 												href={navData.freeTutorials.featured.href}
 												className="p-0! flex aspect-[3/4] max-w-[180px] flex-col items-start justify-between border-r"
+												onClick={() => {
+													track('navigation_menu_item_click', {
+														resource: navData.freeTutorials.featured.title,
+														type: 'tutorial',
+														category: 'navigation',
+													})
+												}}
 											>
 												<div className="flex flex-col p-3">
 													<div className="bg-primary text-primary-foreground inline-flex items-center self-start rounded-full px-2 py-0.5 text-xs font-medium uppercase">
@@ -199,6 +221,13 @@ const Navigation = () => {
 													<Link
 														href={tutorial.href}
 														className="relative flex flex-col pl-3 pr-8 text-lg font-medium"
+														onClick={() => {
+															track('navigation_menu_item_click', {
+																resource: tutorial.title,
+																type: 'tutorial',
+																category: 'navigation',
+															})
+														}}
 													>
 														<div className="text-base font-semibold leading-tight">
 															{tutorial.title}
@@ -219,7 +248,16 @@ const Navigation = () => {
 									className="flex h-full items-center justify-center px-4 font-medium"
 									asChild
 								>
-									<Link href={navData.browseAll.href}>
+									<Link
+										href={navData.browseAll.href}
+										onClick={() => {
+											track('navigation_menu_item_click', {
+												resource: navData.browseAll.label,
+												type: 'browse_all',
+												category: 'navigation',
+											})
+										}}
+									>
 										{navData.browseAll.label}
 									</Link>
 								</NavigationMenuLink>
