@@ -2,12 +2,15 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
 	withResourceForm,
 	type ResourceFormProps,
 } from '@/components/resource-form/with-resource-form'
 import { List, ListSchema, type ListUpdate } from '@/lib/lists'
 import { updateList, updateListItemFields } from '@/lib/lists-query'
+import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 
 import { ListMetadataFormFields } from './list-metadata-form-fields'
 
@@ -39,6 +42,28 @@ export function EditListForm({ resource }: { resource: List }) {
 	const ListForm = withResourceForm<List, typeof ListSchema>(BaseListForm, {
 		resourceType: 'list',
 		schema: ListSchema,
+		customTools: [
+			{
+				id: 'images',
+				icon: () => (
+					<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: (
+					<ImageResourceUploader
+						key={'image-uploader'}
+						belongsToResourceId={resource.id}
+						uploadDirectory={`lists`}
+					/>
+				),
+			},
+			{
+				id: 'videos',
+				icon: () => (
+					<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+				),
+				toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+			},
+		],
 		defaultValues: (resource) => ({
 			id: resource?.id ?? '',
 			type: 'list',
@@ -107,6 +132,7 @@ export function EditListForm({ resource }: { resource: List }) {
 				router.push(`/lists/${resource.fields?.slug}/edit`)
 			}
 		},
+
 		bodyPanelConfig: {
 			showListResources: true,
 			listEditorConfig: {
