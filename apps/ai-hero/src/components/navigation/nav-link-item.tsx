@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
+import { ChevronRight } from 'lucide-react'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
@@ -62,8 +63,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 					styles[variant],
 
 					{
-						'after:bg-foreground/50 after:absolute after:-bottom-px after:left-0 after:h-px after:w-full after:content-[""]':
-							isActive,
+						'': isActive,
 						'bg-muted': isActive && variant === 'menu',
 					},
 					className,
@@ -76,7 +76,7 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 					content
 				) : (
 					<Link prefetch href={href!} onClick={handleClick}>
-						{content}
+						{isActive && <ChevronRight className="text-primary" />} {content}
 					</Link>
 				)}
 			</Button>

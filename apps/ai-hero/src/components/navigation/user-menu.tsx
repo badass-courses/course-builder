@@ -32,6 +32,7 @@ export const UserMenu = () => {
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoice = ability.can('read', 'Invoice')
+	const isAdmin = ability.can('manage', 'all')
 
 	if (sessionStatus === 'loading') {
 		return (
@@ -65,7 +66,7 @@ export const UserMenu = () => {
 
 	return (
 		<>
-			{canViewTeam && (
+			{canViewTeam && !isAdmin && (
 				<NavLinkItem label="Invite Team" className="border-l" href="/team" />
 			)}
 			<li className="hidden items-stretch sm:flex">

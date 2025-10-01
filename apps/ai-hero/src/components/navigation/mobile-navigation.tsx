@@ -31,7 +31,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	setIsMobileMenuOpen,
 	subscriber,
 }) => {
-	const links = useNavLinks()
+	const navData = useNavLinks()
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { setIsFeedbackDialogOpen } = useFeedback()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
@@ -40,6 +40,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoice = ability.can('read', 'Invoice')
+	const isAdmin = ability.can('manage', 'all')
 
 	const userAvatar = sessionData?.user?.image ? (
 		<Image
@@ -58,10 +59,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	)
 
 	return (
-		<div className="flex items-stretch sm:hidden">
+		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex h-full items-center justify-center border-l px-5"
+				className="flex aspect-square h-full items-center justify-center border-l px-5"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
@@ -116,35 +117,101 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									}
 								/>
 							)}
-							<ul className="flex flex-col gap-1">
-								{links.map((link) => (
-									<NavLinkItem
-										className=""
-										key={link.href || link.label}
-										{...link}
-									/>
-								))}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem
-										className=""
-										label="Send Feedback"
-										onClick={() => setIsFeedbackDialogOpen(true)}
-									/>
+							<div className="flex w-full flex-col gap-3">
+								{navData.courses.length > 0 && (
+									<div className="flex flex-col">
+										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+											Courses
+										</div>
+										<ul className="flex flex-col gap-1">
+											{navData.courses.map((course) => (
+												<NavLinkItem
+													className=""
+													key={course.href}
+													href={course.href}
+													label={course.title}
+												/>
+											))}
+										</ul>
+									</div>
 								)}
+								{navData.cohorts.length > 0 && (
+									<div className="flex flex-col">
+										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+											Cohorts
+										</div>
+										<ul className="flex flex-col gap-1">
+											{navData.cohorts.map((cohort) => (
+												<NavLinkItem
+													className=""
+													key={cohort.href}
+													href={cohort.href}
+													label={cohort.title}
+												/>
+											))}
+										</ul>
+									</div>
+								)}
+								<div className="flex flex-col">
+									<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+										Free Tutorials
+									</div>
+									<ul className="flex flex-col gap-1">
+										<NavLinkItem
+											className=""
+											href={navData.freeTutorials.featured.href}
+											label={navData.freeTutorials.featured.title}
+										/>
+										{navData.freeTutorials.items.map((tutorial) => (
+											<NavLinkItem
+												className=""
+												key={tutorial.href}
+												href={tutorial.href}
+												label={tutorial.title}
+											/>
+										))}
+									</ul>
+								</div>
+								<ul className="border-foreground/20 flex flex-col gap-1 border-t pt-2">
+									<NavLinkItem
+										className=""
+										href={navData.browseAll.href}
+										label={navData.browseAll.label}
+									/>
+									{sessionStatus === 'authenticated' && (
+										<NavLinkItem
+											className=""
+											label="Send Feedback"
+											onClick={() => setIsFeedbackDialogOpen(true)}
+										/>
+									)}
 
-								{canViewTeam && (
-									<NavLinkItem className="" label="Invite Team" href="/team" />
-								)}
-								{canViewInvoice && (
-									<NavLinkItem className="" href="/invoices" label="Invoices" />
-								)}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem className="" href="/profile" label="Profile" />
-								)}
-								{canCreateContent && (
-									<NavLinkItem className="" href="/admin/pages" label="Admin" />
-								)}
-							</ul>
+									{canViewTeam && !isAdmin && (
+										<NavLinkItem
+											className=""
+											label="Invite Team"
+											href="/team"
+										/>
+									)}
+									{canViewInvoice && (
+										<NavLinkItem
+											className=""
+											href="/invoices"
+											label="Invoices"
+										/>
+									)}
+									{sessionStatus === 'authenticated' && (
+										<NavLinkItem className="" href="/profile" label="Profile" />
+									)}
+									{canCreateContent && (
+										<NavLinkItem
+											className=""
+											href="/admin/pages"
+											label="Admin"
+										/>
+									)}
+								</ul>
+							</div>
 						</div>
 
 						<div className="flex w-full flex-col items-start justify-start border-t pt-3">
