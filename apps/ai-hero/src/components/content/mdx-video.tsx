@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { api } from '@/trpc/react'
 import type { MuxPlayerProps } from '@mux/mux-player-react'
 import MuxPlayer from '@mux/mux-player-react'
@@ -29,11 +30,20 @@ export default function MDXVideo({
 		return (
 			<div
 				className={cn(
-					'mb-5 flex aspect-video w-full max-w-4xl items-center justify-center rounded-lg border',
+					'not-prose relative mb-5 flex aspect-video w-full max-w-4xl items-center justify-center overflow-hidden rounded-lg border',
 					className,
 				)}
 			>
-				<Spinner className="h-6 w-6" />
+				<Spinner className="relative z-10 h-6 w-6" />
+				{poster && (
+					<Image
+						src={poster}
+						alt={''}
+						aria-hdden="true"
+						fill
+						className="object-fill opacity-25"
+					/>
+				)}
 			</div>
 		)
 
