@@ -55,12 +55,12 @@ export function ThemeToggle({ className }: { className?: string }) {
 				>
 					Dark {theme === 'dark' && <Check className="h-4 w-4" />}
 				</DropdownMenuItem>
-				<DropdownMenuItem
+				{/* <DropdownMenuItem
 					onClick={() => setTheme('system')}
 					className="flex items-center justify-between gap-2"
 				>
 					System {theme === 'system' && <Check className="h-4 w-4" />}
-				</DropdownMenuItem>
+				</DropdownMenuItem> */}
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)

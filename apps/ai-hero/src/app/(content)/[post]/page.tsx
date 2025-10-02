@@ -213,7 +213,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="mb-4 text-2xl font-bold sm:text-3xl dark:text-white">
+		<h1 className="mb-4 text-2xl font-semibold sm:text-3xl lg:text-4xl dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
