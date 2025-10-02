@@ -1,5 +1,17 @@
 # @coursebuilder/adapter-drizzle
 
+## 1.0.5
+
+### Patch Changes
+
+- [`783e546`](https://github.com/badass-courses/course-builder/commit/783e546e443b1fcece4c5dee38b363e85d5ad99c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix getProgressForUser
+  to consider sections
+
+- Updated dependencies
+  [[`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/nodash@0.0.2
+
 ## 1.0.4
 
 ### Patch Changes
