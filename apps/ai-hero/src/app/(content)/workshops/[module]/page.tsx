@@ -135,7 +135,7 @@ export default async function ModulePage(props: Props) {
 							moduleSlug={params.module}
 							workshop={workshop}
 						/>
-						<div className="w-full items-center sm:flex sm:w-auto">
+						<div className="divide-border w-full items-center divide-y sm:flex sm:w-auto sm:divide-y-0">
 							<WorkshopGitHubRepoLink
 								githubUrl={'/'} // workshop.fields?.github
 								abilityLoader={abilityLoader}
@@ -198,7 +198,7 @@ export default async function ModulePage(props: Props) {
 					<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
 						<div className="col-span-3 flex shrink-0 flex-col items-center px-5 md:items-start md:px-0">
 							<WorkshopBreadcrumb />
-							<h1 className="w-full text-center text-xl font-bold tracking-tight sm:text-3xl md:text-left lg:text-4xl dark:text-white">
+							<h1 className="w-full text-center text-3xl font-bold tracking-tight sm:text-4xl md:text-left lg:text-5xl dark:text-white">
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
