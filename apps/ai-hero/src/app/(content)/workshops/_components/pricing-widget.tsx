@@ -84,7 +84,7 @@ export const PricingWidget: React.FC<{
 					<Pricing.GuaranteeBadge />
 					{/* <Pricing.LiveRefundPolicy /> */}
 					<Pricing.SaleCountdown className="mt-3 py-4 [&_p]:text-base [&_p]:font-normal" />
-					<Pricing.PPPToggle className="bg-muted mt-5 max-w-sm rounded p-5" />
+					<Pricing.PPPToggle className="bg-muted [&_button[data-state='unchecked']]:border-foreground/20 mt-5 max-w-sm rounded p-5 [&_label]:rounded-lg" />
 				</Pricing.Details>
 			</Pricing.Product>
 			<ProductPricingFeatures
