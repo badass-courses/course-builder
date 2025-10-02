@@ -19,7 +19,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 	return (
 		<div className="max-w-(--breakpoint-lg) mx-auto flex w-full flex-col items-start gap-8 px-5 py-20 sm:gap-10 sm:py-16 md:flex-row lg:gap-16">
 			<header className="w-full md:max-w-[230px]">
-				<h1 className="fluid-xl text-center font-bold md:text-left">
+				<h1 className="text-center text-xl font-bold md:text-left">
 					Your Team
 				</h1>
 			</header>
@@ -54,7 +54,7 @@ export function TeamPageTemplate({ bulkPurchases, user }: TeamPageData) {
 												alt={bulkPurchase?.purchase?.product?.name || ''}
 											/>
 										)}
-										<h2 className="fluid-lg font-semibold">
+										<h2 className="text-lg font-semibold">
 											Invite your team to{' '}
 											{bulkPurchase?.purchase?.product?.name}
 										</h2>

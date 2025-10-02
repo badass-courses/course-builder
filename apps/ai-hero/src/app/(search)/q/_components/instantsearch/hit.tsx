@@ -18,7 +18,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
-					<span className="fluid-lg pr-5 font-semibold sm:truncate">
+					<span className="pr-5 text-lg font-semibold sm:truncate lg:text-xl">
 						{/* {hit.title} */}
 						<Highlight
 							attribute="title"

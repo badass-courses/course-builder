@@ -57,7 +57,7 @@ export default function PostNextUpFromListPagination({
 			)}
 			aria-label="List navigation"
 		>
-			<h2 className="fluid-2xl mb-3 font-semibold">Continue</h2>
+			<h2 className="mb-3 text-xl font-semibold sm:text-3xl">Continue</h2>
 			<ul>
 				<li className="flex flex-col">
 					<Link

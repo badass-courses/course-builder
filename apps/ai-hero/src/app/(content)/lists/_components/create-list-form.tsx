@@ -44,7 +44,7 @@ export function CreateListForm() {
 			onSubmit={handleSubmit}
 			className="w-full max-w-md shrink-0 space-y-4"
 		>
-			<h2 className="fluid-xl">Create New List</h2>
+			<h2 className="text-xl">Create New List</h2>
 			<div>
 				<Label htmlFor="title" className="mb-1 block text-sm font-medium">
 					Title

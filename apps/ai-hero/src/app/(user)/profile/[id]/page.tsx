@@ -81,7 +81,9 @@ export default async function ProfilePage({ params }: Props) {
 						/>
 					)}
 					<div className="flex flex-col">
-						<h1 className="fluid-3xl font-heading font-bold">{profile.name}</h1>
+						<h1 className="font-heading text-xl font-bold sm:text-3xl">
+							{profile.name}
+						</h1>
 						<p className="text-muted-foreground">
 							{profile.role === 'admin' && '⭐️ Admin ・'} Member since{' '}
 							{profile.createdAt?.toLocaleDateString()}
@@ -113,9 +115,11 @@ export default async function ProfilePage({ params }: Props) {
 										},
 									)}
 								>
-									<span className="fluid-3xl">{achievement.icon}</span>
+									<span className="text-xl sm:text-3xl">
+										{achievement.icon}
+									</span>
 									<div>
-										<h4 className="fluid-lg my-1 font-bold">
+										<h4 className="my-1 text-lg font-bold">
 											{achievement.name}
 										</h4>
 										<p className="text-muted-foreground text-sm">

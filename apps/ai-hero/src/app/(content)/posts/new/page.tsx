@@ -11,7 +11,7 @@ export default async function NewPostPage() {
 		<LayoutClient withContainer>
 			<div className="container flex h-full shrink-0 items-center justify-center py-16">
 				<main className="mx-auto max-w-4xl">
-					<h1 className="fluid-3xl mb-8">New Post</h1>
+					<h1 className="mb-8 text-3xl">New Post</h1>
 					<CreatePost />
 				</main>
 			</div>

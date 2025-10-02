@@ -276,7 +276,7 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 			>
 				{lesson.type}
 			</Badge> */}
-			<h1 className="sm:fluid-2xl fluid-xl mb-8 font-bold dark:text-white">
+			<h1 className="mb-8 text-xl font-bold sm:text-2xl dark:text-white">
 				{lesson.fields?.title}
 			</h1>
 		</div>

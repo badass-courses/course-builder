@@ -322,7 +322,7 @@ export default async function CohortPage(props: {
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="sm:fluid-xl fluid-lg mt-5 text-balance font-light">
+									<h2 className="mt-5 text-balance text-lg font-light sm:text-xl">
 										{fields.description}
 									</h2>
 								)}
@@ -333,7 +333,7 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						</header>
-						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
+						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
 							{content}
 						</article>
 

@@ -25,7 +25,7 @@ export default function Exercise({
 
 	return (
 		<div className="text-foreground bg-muted flex h-full w-full flex-col items-center justify-center py-8 text-center sm:aspect-video">
-			<h2 className="fluid-xl font-bold">
+			<h2 className="text-xl font-bold">
 				Now it&#8217;s your turn! Try solving this exercise.
 			</h2>
 			<div className="mt-8 flex flex-col gap-5 md:flex-row md:gap-2">

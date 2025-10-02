@@ -52,7 +52,7 @@ export default async function OrganizationList() {
 		<LayoutClient withContainer>
 			<div className="container relative mx-auto flex min-h-[calc(100vh-var(--nav-height))] w-full grow flex-col items-center justify-start px-5 pb-10 pt-16 sm:px-8">
 				<div className="mb-16 flex flex-col gap-2">
-					<h1 className="fluid-2xl font-bold tracking-tight">Organizations</h1>
+					<h1 className="text-2xl font-bold tracking-tight">Organizations</h1>
 				</div>
 				<div className="flex w-full flex-row flex-wrap justify-center gap-5">
 					{organizationMemberships.map((membership) => {

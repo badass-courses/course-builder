@@ -67,7 +67,7 @@ const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
 						<PostTeaser
 							isHighlighted
 							post={primary}
-							className="**:data-card:text-foreground sm:**:data-title:!fluid-3xl **:data-title:text-foreground **:data-card:p-8 sm:**:data-card:p-10 **:data-title:font-bold relative z-10 h-full w-full"
+							className="**:data-card:text-foreground sm:**:data-title:!text-3xl **:data-title:text-foreground **:data-card:p-8 sm:**:data-card:p-10 **:data-title:font-bold relative z-10 h-full w-full"
 						/>
 					</div>
 				)}
@@ -251,7 +251,7 @@ const PostTeaser: React.FC<{
 							)}
 							<CardTitle
 								data-title=""
-								className="!fluid-xl font-semibold leading-tight"
+								className="!text-xl font-semibold leading-tight"
 							>
 								{title}
 							</CardTitle>

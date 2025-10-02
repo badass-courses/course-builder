@@ -54,7 +54,7 @@ export default async function Workshops(props: {
 			<main className="container min-h-[calc(100vh-var(--nav-height))] px-0">
 				<div className="max-w-(--breakpoint-lg) mx-auto flex h-full w-full flex-col items-center">
 					<div className="w-full px-5 pb-16 pt-24">
-						<h1 className="font-heading fluid-3xl text-center font-medium">
+						<h1 className="font-heading text-center text-xl font-medium sm:text-3xl">
 							Professional AI Workshops
 						</h1>
 					</div>
@@ -72,7 +72,7 @@ export default async function Workshops(props: {
 						{product && allowPurchase && (
 							<section id="buy" className="mt-16">
 								{!hasPurchased && (
-									<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+									<h2 className="mb-10 text-balance px-5 text-center text-2xl font-bold">
 										Get Access Today
 									</h2>
 								)}
@@ -159,7 +159,7 @@ async function WorkshopsList() {
 						<div className="flex h-full w-full flex-col justify-between p-5 md:pl-8">
 							<div className="flex h-full flex-col pt-2 md:pt-5">
 								<CardHeader className="p-0">
-									<CardTitle className="fluid-xl font-semibold">
+									<CardTitle className="text-xl font-semibold">
 										<Link
 											href={`/workshops/${workshop.fields?.slug || workshop.id}`}
 											className="hover:text-primary w-full text-balance"

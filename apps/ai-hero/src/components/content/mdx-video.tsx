@@ -39,7 +39,7 @@ export default function MDXVideo({
 					<Image
 						src={poster}
 						alt={''}
-						aria-hdden="true"
+						aria-hidden="true"
 						fill
 						className="object-fill opacity-25"
 					/>

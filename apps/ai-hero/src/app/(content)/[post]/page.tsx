@@ -172,7 +172,7 @@ export default async function PostPage(props: {
 			</div>
 			{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
 						<section id="buy">
-							<h2 className="fluid-2xl mb-10 text-balance px-5 text-center font-bold">
+							<h2 className="text-2xl mb-10 text-balance px-5 text-center font-bold">
 								Get Really Good At Node.js
 							</h2>
 							<div className="flex items-center justify-center border-y">
@@ -204,7 +204,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="px-5 md:px-10 lg:px-14">
-			<article className="prose dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
+			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
 				{content}
 			</article>
 		</div>
@@ -213,7 +213,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="sm:fluid-3xl fluid-2xl mb-4 font-bold dark:text-white">
+		<h1 className="mb-4 text-2xl font-bold sm:text-3xl dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,

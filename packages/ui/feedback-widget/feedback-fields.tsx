@@ -28,7 +28,7 @@ export const EmotionField = ({
 				{emotions.map((emotion) => (
 					<div
 						key={emotion}
-						className="radix-state-checked:*:bg-border hover:radix-state-unchecked:*:bg-border/50 radix-state-checked:*:shadow-inner relative h-10 w-10 first-of-type:rounded-l-md last-of-type:rounded-r-md [&_svg]:absolute [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
+						className="data-[state='checked']:*:bg-border hover:bg-accent hover:data-[state='unchecked']:*:bg-border/50 relative h-10 w-10 first-of-type:rounded-l-md last-of-type:rounded-r-md data-[state='checked']:*:shadow-inner [&_svg]:absolute [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
 					>
 						<RadioGroupItem
 							value={emotion}
@@ -76,7 +76,7 @@ export const CategoryField = ({
 			>
 				{categories.map((category) => (
 					<div
-						className="radix-state-checked:*:bg-border hover:radix-state-unchecked:*:bg-border/50 radix-state-checked:*:shadow-inner relative h-10 first-of-type:rounded-l-md last-of-type:rounded-r-md [&_svg]:absolute [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
+						className="data-[state='checked']:*:bg-border hover:bg-accent hover:data-[state='unchecked']:*:bg-border/50 relative h-10 first-of-type:rounded-l-md last-of-type:rounded-r-md data-[state='checked']:*:shadow-inner [&_svg]:absolute [&_svg]:left-1 [&_svg]:top-0 [&_svg]:w-1"
 						key={category}
 					>
 						<RadioGroupItem

@@ -181,7 +181,7 @@ export default function UpNext({
 				)}
 				aria-label={upNextText}
 			>
-				<h2 className="fluid-2xl mb-3 font-semibold">{upNextText}:</h2>
+				<h2 className="mb-3 text-2xl font-semibold">{upNextText}:</h2>
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link

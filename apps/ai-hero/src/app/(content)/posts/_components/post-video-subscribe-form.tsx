@@ -87,7 +87,7 @@ export const PostNewsletterCta: React.FC<
 							{common['video-newsletter-title']}
 						</div>
 					</div>
-					<div className="dark:text-primary sm:fluid-sm fluid-base font-heading text-balance text-gray-600">
+					<div className="dark:text-primary font-heading text-balance text-sm text-gray-600">
 						{common['video-newsletter-subtitle']}
 					</div>
 				</div>

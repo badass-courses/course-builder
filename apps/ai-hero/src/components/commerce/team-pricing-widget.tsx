@@ -11,7 +11,7 @@ export const TeamPricingWidget = () => {
 				Level up Your Team
 			</div>
 			{/* <div className="mt-2 flex h-[76px] items-center justify-center gap-0.5">
-				<div className="font-heading fluid-xl text-center font-bold">
+				<div className="font-heading text-xl text-center font-bold">
 					Membership For Teams
 				</div>
 			</div> */}

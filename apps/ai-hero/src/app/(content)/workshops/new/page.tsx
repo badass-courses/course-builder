@@ -27,7 +27,7 @@ export default async function NewWorkshopPage() {
 
 	return (
 		<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col border-x">
-			<h1 className="fluid-2xl py-16 text-center font-semibold">
+			<h1 className="py-16 text-center text-2xl font-semibold">
 				Create a New Workshop
 			</h1>
 			<CreateResourcePage resourceType="workshop" />
