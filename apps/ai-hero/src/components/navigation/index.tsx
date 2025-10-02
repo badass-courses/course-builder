@@ -139,7 +139,7 @@ const Navigation = () => {
 							)}
 							{navData.cohorts.length > 0 && (
 								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white">
+									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
 										Cohorts
 									</NavigationMenuTrigger>
 									<NavigationMenuContent className="w-full shrink-0">
@@ -181,7 +181,7 @@ const Navigation = () => {
 								</NavigationMenuItem>
 							)}
 							<NavigationMenuItem className="items-stretch">
-								<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white">
+								<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
 									Free Tutorials
 								</NavigationMenuTrigger>
 								<NavigationMenuContent className="w-full shrink-0 p-0">
@@ -220,7 +220,7 @@ const Navigation = () => {
 												<NavigationMenuLink key={tutorial.href} asChild>
 													<Link
 														href={tutorial.href}
-														className="relative flex flex-col pl-3 pr-8 text-lg font-medium"
+														className="relative flex flex-col pl-3 pr-8 text-lg font-normal"
 														onClick={() => {
 															track('navigation_menu_item_click', {
 																resource: tutorial.title,
@@ -245,7 +245,7 @@ const Navigation = () => {
 							</NavigationMenuItem>
 							<NavigationMenuItem className="flex items-center justify-center border-r">
 								<NavigationMenuLink
-									className="flex h-full items-center justify-center px-4 font-medium"
+									className="flex h-full items-center justify-center px-4 font-normal"
 									asChild
 								>
 									<Link

@@ -23,17 +23,6 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-	/* Font families */
-	--font-family-sans:
-		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
-		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-	--font-family-heading:
-		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
-		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-	--font-family-mono:
-		var(--font-maison-neue-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-		Consolas, 'Liberation Mono', 'Courier New', monospace;
-
 	/* Screens */
 	--breakpoint-2xl: 1820px;
 
@@ -191,6 +180,17 @@
 }
 
 @theme inline {
+	/* Font families */
+	--font-sans:
+		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+	--font-heading:
+		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+	--font-mono:
+		var(--font-maison-neue-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+		Consolas, 'Liberation Mono', 'Courier New', monospace;
+
 	/* Shadcn color tokens */
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -259,7 +259,7 @@
 		@apply border-border outline-ring/50 selection:bg-primary selection:text-primary-foreground;
 	}
 	body {
-		@apply bg-background text-foreground;
+		@apply bg-background text-foreground font-sans font-normal;
 	}
 
 	html {
@@ -272,7 +272,7 @@
 	h4,
 	h5,
 	h6 {
-		font-family: var(--font-family-heading);
+		font-family: var(--font-heading);
 		text-wrap: balance;
 		font-weight: 700;
 	}
@@ -281,7 +281,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-family: var(--font-family-mono);
+		font-family: var(--font-mono);
 		font-size: 0.75rem;
 		line-height: 1rem;
 	}
