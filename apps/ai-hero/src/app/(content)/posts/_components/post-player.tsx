@@ -16,7 +16,6 @@ import MuxPlayer, {
 	type MuxPlayerProps,
 	type MuxPlayerRefAttributes,
 } from '@mux/mux-player-react'
-import { useSession } from 'next-auth/react'
 
 import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
@@ -150,7 +149,8 @@ export function PostPlayer({
 				>
 					<PostNextUpFromListPagination
 						postId={postId}
-						className="text-white! mt-0 border-0 bg-transparent px-0 py-0"
+						className="text-white! mt-0 border-0 bg-transparent px-0 py-0 dark:bg-transparent"
+						documentIdsToSkip={list?.resources.map((resource) => resource.id)}
 					/>
 				</div>
 			)}

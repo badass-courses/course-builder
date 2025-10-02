@@ -9,6 +9,7 @@ export const typesenseRouter = createTRPCRouter({
 				documentId: z.string(),
 				numberOfNearestNeighborsToReturn: z.number().optional().default(5),
 				distanceThreshold: z.number().optional().default(1),
+				documentIdsToSkip: z.array(z.string()).optional(),
 			}),
 		)
 		.query(async ({ input }) => {
@@ -16,6 +17,7 @@ export const typesenseRouter = createTRPCRouter({
 				input.documentId,
 				input.numberOfNearestNeighborsToReturn,
 				input.distanceThreshold,
+				input.documentIdsToSkip,
 			)
 		}),
 })

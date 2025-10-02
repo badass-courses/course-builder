@@ -46,13 +46,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<Image
 			src={sessionData.user.image}
 			alt={sessionData.user.name || ''}
-			width={80}
-			height={80}
+			width={48}
+			height={48}
 			className="rounded-full"
 		/>
 	) : (
 		<Gravatar
-			className="h-20 w-20 rounded-full"
+			className="h-[48px] w-[48px] rounded-full"
 			email={sessionData?.user?.email || ''}
 			default="mp"
 		/>
@@ -62,7 +62,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex aspect-square h-full items-center justify-center border-l px-5"
+				className="flex aspect-square h-full shrink-0 items-center justify-center border-l px-5"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
@@ -83,10 +83,12 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					>
 						<div className="flex w-full flex-col">
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-1 gap-3 border-b px-5 py-5">
 									{userAvatar}
 									<span className="text-xl font-bold">
-										{sessionData.user.name?.split(' ')[0] || ''}
+										{sessionData.user.name
+											? `Hey there, ${sessionData.user.name?.split(' ')[0]}`
+											: 'Hey there'}
 									</span>
 								</div>
 							)}

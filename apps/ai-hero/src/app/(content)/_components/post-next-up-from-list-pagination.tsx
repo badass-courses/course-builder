@@ -19,9 +19,11 @@ import Recommendations from '../[post]/_components/recommendations'
 export default function PostNextUpFromListPagination({
 	postId,
 	className,
+	documentIdsToSkip,
 }: {
 	postId: string
 	className?: string
+	documentIdsToSkip?: string[]
 }) {
 	const router = useRouter()
 	const { list } = useList()
@@ -38,7 +40,14 @@ export default function PostNextUpFromListPagination({
 		}
 	}, [nextUp, list, router])
 
-	if (!nextUp) return <Recommendations postId={postId} className={className} />
+	if (!nextUp)
+		return (
+			<Recommendations
+				postId={postId}
+				className={className}
+				documentIdsToSkip={documentIdsToSkip}
+			/>
+		)
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav

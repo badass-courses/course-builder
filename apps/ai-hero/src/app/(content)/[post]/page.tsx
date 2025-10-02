@@ -161,7 +161,12 @@ export default async function PostPage(props: {
 								title={post?.fields.title}
 							/>
 						</div>
-						<PostNextUpFromListPagination postId={post.id} />
+						<PostNextUpFromListPagination
+							postId={post.id}
+							documentIdsToSkip={list?.resources.map(
+								(resource) => resource.resource.id,
+							)}
+						/>
 					</article>
 				</div>
 			</div>

@@ -120,7 +120,8 @@ export function useNavLinks(): NavigationMenuData {
 		href: '/posts',
 		label: (
 			<span>
-				Browse <span className="hidden lg:inline-block">all</span>
+				Browse{' '}
+				<span className="inline-block sm:hidden lg:inline-block">all</span>
 			</span>
 		),
 	}

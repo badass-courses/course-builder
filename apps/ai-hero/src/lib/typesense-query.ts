@@ -322,6 +322,7 @@ export async function getNearestNeighbour(
 	documentId: string,
 	numberOfNearestNeighborsToReturn: number,
 	distanceThreshold: number,
+	documentIdsToSkip?: string[],
 ) {
 	if (
 		!process.env.TYPESENSE_WRITE_API_KEY ||
@@ -375,7 +376,7 @@ export async function getNearestNeighbour(
 
 	const completedFilter =
 		completedItemIds.length > 0
-			? ` && id:!=[${completedItemIds.join(',')}]`
+			? ` && id:!=[${[...completedItemIds, ...(documentIdsToSkip ?? [])].join(',')}]`
 			: ''
 
 	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
@@ -385,7 +386,7 @@ export async function getNearestNeighbour(
 				q: '*',
 				vector_query: `embedding:([${document.embedding.join(', ')}], k:${numberOfNearestNeighborsToReturn}, distance_threshold: ${distanceThreshold})`,
 				exclude_fields: 'embedding',
-				filter_by: `id:!=${documentId} && state:=published && type:=[post,list]${completedFilter}`,
+				filter_by: `id:!=${documentId} && state:=published && type:=[post,list,article]${completedFilter}`,
 			},
 		],
 	}

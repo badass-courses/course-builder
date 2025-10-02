@@ -120,7 +120,7 @@ export const SubscribeToConvertkitForm: React.FC<
 					name="first_name"
 					id={id ? `first_name_${id}` : 'first_name'}
 					onChange={handleChange}
-					placeholder="Preferred name"
+					placeholder="Name"
 					type="text"
 				/>
 				{validationSchema && touched.first_name && errors.first_name && (

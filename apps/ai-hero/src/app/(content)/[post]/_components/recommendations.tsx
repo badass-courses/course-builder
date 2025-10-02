@@ -14,13 +14,16 @@ import { useProgress } from './progress-provider'
 export default function Recommendations({
 	postId,
 	className,
+	documentIdsToSkip,
 }: {
 	postId: string
 	className?: string
+	documentIdsToSkip?: string[]
 }) {
 	const { data: post, status } = api.typesense.getNearestNeighbor.useQuery(
 		{
 			documentId: postId,
+			documentIdsToSkip,
 		},
 		{
 			refetchOnWindowFocus: false,
@@ -31,6 +34,7 @@ export default function Recommendations({
 	const isCompleted = progress?.completedLessons.some(
 		(lesson) => lesson.resourceId === postId,
 	)
+
 	if (!post && status !== 'pending') return null
 
 	return (

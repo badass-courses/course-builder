@@ -64,7 +64,8 @@ export default {
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
 	'video-newsletter-title': 'Ship AI Apps That Work',
-	'video-newsletter-subtitle': 'Straight to your inbox',
+	'video-newsletter-subtitle':
+		'New AI Engineering content straight to your inbox',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
 		`Level up with ${moduleTitle}`,
