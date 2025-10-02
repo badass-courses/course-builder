@@ -70,7 +70,7 @@ export function EditPagesForm({
 }: EditArticleFormProps) {
 	const session = useSession()
 	const defaultSocialImage = getOGImageUrlForResource(page)
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const form = useForm<z.infer<typeof PageSchema>>({
 		resolver: zodResolver(PageSchema),
 		defaultValues: {
@@ -156,7 +156,7 @@ export function EditPagesForm({
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			tools={tools}
-			theme={theme}
+			theme={resolvedTheme}
 			toggleMdxPreview={togglePreviewPanel}
 			isShowingMdxPreview={isShowingMdxPreview}
 		>

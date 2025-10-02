@@ -98,6 +98,10 @@
 	--radius: 0.3rem;
 	color-scheme: light;
 
+	--md-editor-background: var(--background);
+	--md-editor-foreground: var(--foreground);
+	--md-editor-border: var(--border);
+
 	/* codehike theme */
 	--ch-0: light;
 	--ch-1: #6e7781;
@@ -299,83 +303,6 @@
 	.prose li {
 		list-style-type: square;
 	}
-
-	/* Typography plugin customization */
-	/* .prose {
-		color: var(--color-foreground);
-	}
-
-	.prose p {
-		color: var(--color-foreground);
-		font-weight: 400;
-	}
-
-	.prose p strong {
-		color: var(--color-foreground);
-	}
-
-	.prose th {
-		color: var(--color-foreground);
-	}
-
-	.prose tr,
-	.prose thead {
-		border-color: var(--color-border);
-	}
-
-	.prose h1,
-	.prose h2,
-	.prose h3,
-	.prose h4 {
-		font-weight: 700;
-		color: var(--color-foreground);
-	}
-
-	.prose ul {
-		list-style-position: outside;
-		list-style-type: square;
-	}
-
-	.prose ul > li {
-		color: var(--color-foreground);
-	}
-
-	.prose blockquote {
-		border-left-color: var(--color-muted);
-		color: var(--color-foreground);
-	}
-
-	.prose ul,
-	.prose ol,
-	.prose li,
-	.prose strong {
-		color: var(--color-foreground);
-	}
-
-	.prose a {
-		color: var(--color-primary);
-	}
-
-	.prose code::before,
-	.prose code::after {
-		content: '';
-	}
-
-	.prose code {
-		background-color: var(--color-muted);
-		color: var(--color-foreground);
-		padding: 0.1rem 0.25rem;
-		border-radius: 0.25rem;
-		white-space: nowrap;
-	}
-
-	.prose pre code {
-		white-space: pre-wrap;
-	}
-
-	.prose pre {
-		border: 1px solid var(--color-border);
-	} */
 }
 
 /* Custom component styles */

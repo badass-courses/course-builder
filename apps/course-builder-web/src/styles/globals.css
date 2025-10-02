@@ -141,6 +141,10 @@
 		--radius: 0.5rem;
 
 		--grid: 8px;
+
+		--md-editor-background: hsl(var(--background));
+		--md-editor-foreground: hsl(var(--foreground));
+		--md-editor-border: hsl(var(--border));
 	}
 
 	.dark {

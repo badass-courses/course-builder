@@ -59,6 +59,10 @@
 		--radius: 0.7rem;
 		color-scheme: light;
 
+		--md-editor-background: hsl(var(--background));
+		--md-editor-foreground: hsl(var(--foreground));
+		--md-editor-border: hsl(var(--border));
+
 		/* codehike theme */
 		--ch-0: light;
 		--ch-1: #6e7781;
