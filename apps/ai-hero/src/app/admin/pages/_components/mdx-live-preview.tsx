@@ -21,7 +21,7 @@ export default function MDXLivePreview() {
 			</div>
 			<ErrorBoundary fallback={<p>Error</p>} resetKeys={[mdxContent]}>
 				{mdxContent && (
-					<article className="prose sm:prose-lg prose-headings:mx-auto prose-headings:max-w-(--breakpoint-md) prose-p:mx-auto prose-p:max-w-(--breakpoint-md) prose-ul:mx-auto prose-ul:max-w-(--breakpoint-md) prose-img:mx-auto prose-img:max-w-(--breakpoint-md) mx-auto max-w-none p-5">
+					<article className="prose dark:prose-invert sm:prose-lg prose-headings:mx-auto prose-headings:max-w-(--breakpoint-md) prose-p:mx-auto prose-p:max-w-(--breakpoint-md) prose-ul:mx-auto prose-ul:max-w-(--breakpoint-md) prose-img:mx-auto prose-img:max-w-(--breakpoint-md) mx-auto max-w-none p-5">
 						<MDXRemote
 							// @ts-expect-error
 							components={allMdxPageBuilderComponents}

@@ -127,7 +127,7 @@ export const AISummary = ({
 							</TrackLink>
 						</div>
 						<AccordionContent className="radix-state-open:border-t px-5 pt-8">
-							<div className="prose sm:prose-lg lg:prose-xl max-w-4xl">
+							<div className="prose dark:prose-invert sm:prose-lg lg:prose-xl max-w-4xl">
 								{children}
 							</div>
 						</AccordionContent>

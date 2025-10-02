@@ -155,7 +155,7 @@ export default async function ListPage(props: {
 			<header className="relative flex items-center justify-center md:px-8 lg:px-10">
 				<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
 					<div className="col-span-3 flex shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
-						<h1 className="w-full text-center text-2xl font-bold tracking-tight sm:text-3xl md:text-left dark:text-white">
+						<h1 className="w-full text-center text-2xl font-bold tracking-tight sm:text-3xl md:text-left lg:text-4xl dark:text-white">
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
