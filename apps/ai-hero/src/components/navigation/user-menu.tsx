@@ -45,7 +45,13 @@ export const UserMenu = () => {
 	}
 
 	if (!sessionData?.user?.email) {
-		return <NavLinkItem className="border-l" label="Log in" href="/login" />
+		return (
+			<NavLinkItem
+				className="rounded-none border-l"
+				label="Log in"
+				href="/login"
+			/>
+		)
 	}
 
 	const userAvatar = sessionData.user.image ? (

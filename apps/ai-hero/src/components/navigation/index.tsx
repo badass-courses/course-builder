@@ -307,7 +307,7 @@ const Navigation = () => {
 						{sessionStatus === 'unauthenticated' && !subscriber && (
 							<NavLinkItem
 								href="/newsletter"
-								className="border-l [&_span]:flex [&_span]:items-center"
+								className="rounded-none border-l [&_span]:flex [&_span]:items-center"
 								label={
 									<>
 										<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
