@@ -17,7 +17,7 @@ export default async function ConfirmSubscriptionPage() {
 					<h1 className="font-text font-heading mx-auto w-full max-w-lg py-8 text-3xl font-extrabold sm:text-5xl">
 						Confirm your email address
 					</h1>
-					<div className="prose sm:prose-lg prose-p:text-balance mx-auto leading-relaxed opacity-80">
+					<div className="prose dark:prose-invert sm:prose-lg prose-p:text-balance mx-auto leading-relaxed opacity-80">
 						<p>
 							We sent an email to{' '}
 							<Suspense>

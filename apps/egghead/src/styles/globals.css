@@ -156,6 +156,10 @@
 		--sidebar-accent-foreground: var(--accent-foreground);
 		--sidebar-border: var(--border);
 		--sidebar-ring: var(--ring);
+
+		--md-editor-background: hsl(var(--background));
+		--md-editor-foreground: hsl(var(--foreground));
+		--md-editor-border: hsl(var(--border));
 	}
 
 	.dark {

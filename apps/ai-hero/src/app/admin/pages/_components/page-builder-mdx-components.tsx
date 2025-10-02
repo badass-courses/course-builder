@@ -473,7 +473,7 @@ const AIPracticesGrid: React.FC<AIPracticesGridProps> = ({
 }
 
 const PatternElement = ({ className }: { className?: string }) => {
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const [isMounted, setIsMounted] = React.useState(false)
 
 	React.useEffect(() => {
@@ -483,7 +483,7 @@ const PatternElement = ({ className }: { className?: string }) => {
 	return isMounted ? (
 		<CldImage
 			src={
-				theme === 'light'
+				resolvedTheme === 'light'
 					? 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png'
 					: 'https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png'
 			}
@@ -556,7 +556,7 @@ const FAQ = ({
 				type="multiple"
 				className="not-prose flex w-full flex-col border-t"
 			>
-				<ul className="divide-border flex flex-col gap-0 divide-y">
+				<ul className="divide-border flex list-none flex-col gap-0 divide-y">
 					{formattedQuestions.map(({ question, answer }) => (
 						<FaqItem
 							className="rounded-none border-none bg-transparent hover:bg-transparent dark:border-none dark:bg-transparent dark:hover:bg-transparent"

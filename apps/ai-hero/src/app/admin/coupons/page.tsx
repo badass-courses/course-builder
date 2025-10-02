@@ -30,13 +30,13 @@ export default async function AdminCouponPage() {
 
 	return (
 		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 pt-10 lg:gap-10">
-			<h1 className="fluid-3xl font-heading font-bold">Coupons</h1>
+			<h1 className="font-heading text-xl font-bold sm:text-3xl">Coupons</h1>
 			<section className=" ">
-				<h2 className="fluid-xl font-heading mb-8 font-bold">Create new</h2>
+				<h2 className="font-heading mb-8 text-xl font-bold">Create new</h2>
 				<CouponGeneratorForm productsLoader={productsLoader} />
 			</section>
 			<section>
-				<h2 className="fluid-xl font-heading mb-5 font-bold">History</h2>
+				<h2 className="font-heading mb-5 text-xl font-bold">History</h2>
 				<CouponDataTable coupons={coupons} />
 			</section>
 		</main>

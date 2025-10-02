@@ -28,7 +28,7 @@ import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/ed
 
 export function EditEventForm({ event }: { event: Event }) {
 	const { data: session } = useSession()
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const form = useForm<z.infer<typeof EventSchema>>({
 		resolver: zodResolver(EventSchema),
 		defaultValues: {
@@ -87,7 +87,7 @@ export function EditEventForm({ event }: { event: Event }) {
 					),
 				},
 			]}
-			theme={theme}
+			theme={resolvedTheme}
 		>
 			<EventMetadataFormFields form={form} />
 		</ResourceForm>

@@ -27,7 +27,7 @@ export default async function ListsPage() {
 	return (
 		<LayoutClient withContainer className="">
 			<main className="p-5">
-				<h1 className="fluid-2xl font-bold">Lists</h1>
+				<h1 className="text-xl font-bold sm:text-2xl">Lists</h1>
 				<div className="flex flex-col gap-5">
 					<ListsTable canCreateContent={canCreateContent} lists={lists} />
 					{canCreateContent && <CreateListForm />}

@@ -81,7 +81,7 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 	return (
 		<main className="flex w-full flex-col p-10">
 			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<h1 className="fluid-3xl font-heading font-bold">Tags</h1>
+				<h1 className="font-heading text-xl font-bold sm:text-3xl">Tags</h1>
 
 				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-64">

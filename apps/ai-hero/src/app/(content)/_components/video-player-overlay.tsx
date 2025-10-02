@@ -88,7 +88,7 @@ export const CompletedLessonOverlay: React.FC<{
 						? `Now Watch ${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME || 'Instructor'}'s Solution`
 						: 'Up Next:'}
 				</p>
-				<p className="font-heading sm:fluid-2xl text-xl font-bold">
+				<p className="font-heading text-xl font-bold sm:text-2xl">
 					{nextLesson?.title}
 				</p>
 				<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
@@ -207,8 +207,8 @@ export const CompletedModuleOverlay: React.FC<{
 			aria-live="polite"
 			className="absolute left-0 top-0 z-40 flex aspect-video h-full w-full flex-col items-center justify-center gap-2 bg-gray-900/80 p-5 text-lg text-white backdrop-blur-md sm:gap-5 xl:gap-5"
 		>
-			<p className="font-heading fluid-xl text-center font-bold">Great job!</p>
-			<p className="sm:fluid-base text-center text-sm">
+			<p className="font-heading text-center text-xl font-bold">Great job!</p>
+			<p className="text-center text-sm sm:text-base">
 				You&apos;ve completed the "{moduleNavigation?.title}" {moduleType}.
 			</p>
 			<span id="rewardId" />

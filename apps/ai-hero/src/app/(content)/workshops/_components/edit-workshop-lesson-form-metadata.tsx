@@ -137,7 +137,7 @@ export const LessonMetadataFormFields: React.FC<{
 		})
 	}
 
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 
 	return (
 		<>
@@ -223,7 +223,7 @@ export const LessonMetadataFormFields: React.FC<{
 									minHeight="300px"
 									onChange={(value) => field.onChange(value)}
 									theme={
-										(theme === 'dark'
+										(resolvedTheme === 'dark'
 											? CourseBuilderEditorThemeDark
 											: CourseBuilderEditorThemeLight) ||
 										CourseBuilderEditorThemeDark

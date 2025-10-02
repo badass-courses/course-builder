@@ -181,7 +181,7 @@ export function MobileListResourceNavigation() {
 					{/* <SheetTitle className="px-5">{list?.fields?.title}</SheetTitle> */}
 					<Link
 						href={`/${list?.fields?.slug}`}
-						className="fluid-lg inline-flex px-5 pb-5 pt-10 font-bold"
+						className="inline-flex px-5 pb-5 pt-10 text-lg font-bold"
 					>
 						{list?.fields?.title}
 					</Link>

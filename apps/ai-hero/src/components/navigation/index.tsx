@@ -139,7 +139,7 @@ const Navigation = () => {
 							)}
 							{navData.cohorts.length > 0 && (
 								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="flex h-full items-center">
+									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white">
 										Cohorts
 									</NavigationMenuTrigger>
 									<NavigationMenuContent className="w-full shrink-0">
@@ -181,7 +181,7 @@ const Navigation = () => {
 								</NavigationMenuItem>
 							)}
 							<NavigationMenuItem className="items-stretch">
-								<NavigationMenuTrigger className="flex h-full items-center">
+								<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white">
 									Free Tutorials
 								</NavigationMenuTrigger>
 								<NavigationMenuContent className="w-full shrink-0 p-0">

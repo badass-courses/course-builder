@@ -70,7 +70,7 @@ export const UserMenu = () => {
 				<NavLinkItem label="Invite Team" className="border-l" href="/team" />
 			)}
 			<li className="hidden items-stretch sm:flex">
-				<DropdownMenu>
+				<DropdownMenu modal={false}>
 					<DropdownMenuTrigger className="hover:bg-muted flex items-center space-x-1 border-l px-5">
 						{userAvatar}
 						<div className="flex flex-col pl-0.5">

@@ -155,11 +155,11 @@ export default async function ListPage(props: {
 			<header className="relative flex items-center justify-center md:px-8 lg:px-10">
 				<div className="relative z-10 mx-auto flex h-full w-full flex-col-reverse items-center justify-between gap-5 pb-10 md:grid md:grid-cols-5 md:gap-10 md:pt-10 lg:gap-5">
 					<div className="col-span-3 flex shrink-0 flex-col items-center gap-3 px-5 md:items-start md:px-0">
-						<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+						<h1 className="w-full text-center text-2xl font-bold tracking-tight sm:text-3xl md:text-left lg:text-4xl dark:text-white">
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
-							<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+							<div className="prose prose-p:text-balance dark:prose-invert md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
 								<p>{list.fields.description}</p>
 							</div>
 						)}
@@ -214,7 +214,7 @@ export default async function ListPage(props: {
 			</Links>
 			<div className="">
 				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
+					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl dark:prose-invert prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
 						{body || 'No body found.'}
 					</article>
 					<ListResources list={list} />

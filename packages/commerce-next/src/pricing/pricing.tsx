@@ -324,13 +324,13 @@ const TeamToggle = ({
 						For myself
 					</button>
 					<Switch.Root
-						className="radix-state-checked:bg-gray-200 dark:radix-state-checked:bg-gray-950 hover:radix-state-checked:bg-gray-300/50 relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900"
+						className="relative h-6 w-[47px] rounded-full border border-gray-300/50 bg-gray-200 shadow-md shadow-gray-300/30 transition hover:bg-gray-300/50 data-[state='checked']:bg-gray-200 hover:data-[state='checked']:bg-gray-300/50 dark:border-gray-800 dark:bg-gray-950 dark:shadow-transparent dark:hover:bg-gray-900 dark:data-[state='checked']:bg-gray-950"
 						aria-label={isTeamPurchaseActive ? 'For my team' : 'For myself'}
 						onCheckedChange={toggleTeamPurchase}
 						checked={isTeamPurchaseActive}
 						id="team-switch"
 					>
-						<Switch.Thumb className="radix-state-checked:translate-x-[25px] radix-state-checked:bg-blue-500 radix-state-checked:group-hover:bg-indigo-400 shadow-2xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300" />
+						<Switch.Thumb className="shadow-2xs block h-[18px] w-[18px] translate-x-[2px] rounded-full bg-gray-500 shadow-gray-300/50 transition-all will-change-transform group-hover:bg-gray-300 data-[state='checked']:translate-x-[25px] data-[state='checked']:bg-blue-500 data-[state='checked']:group-hover:bg-indigo-400" />
 					</Switch.Root>
 					<button
 						className="decoration-gray-600 underline-offset-2 transition hover:underline"

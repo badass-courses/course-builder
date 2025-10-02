@@ -20,7 +20,7 @@ export const FaqItem: React.FC<{
 			<AccordionItem
 				value={question}
 				className={cn(
-					'rounded-md border border-gray-200/50 bg-white shadow-xl shadow-gray-500/5 transition dark:border-white/5 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10',
+					'rounded-md border border-gray-200/50 bg-white transition dark:border-white/5 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10',
 					className,
 				)}
 			>

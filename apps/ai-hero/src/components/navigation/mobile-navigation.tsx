@@ -72,7 +72,11 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					<X className="h-5 w-5" />
 				)}
 			</Button>
-			<Sheet onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
+			<Sheet
+				modal={false}
+				onOpenChange={setIsMobileMenuOpen}
+				open={isMobileMenuOpen}
+			>
 				<SheetContent
 					side="right"
 					className="bg-card overflow-y-auto px-0 py-5 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"

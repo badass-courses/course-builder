@@ -69,7 +69,9 @@ export default async function AdminDashboardPage() {
 	return (
 		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 py-10 lg:gap-10">
 			<div className="flex flex-col gap-2">
-				<h1 className="fluid-3xl font-heading font-bold">Dashboard</h1>
+				<h1 className="font-heading text-xl font-bold sm:text-3xl">
+					Dashboard
+				</h1>
 				<p className="text-muted-foreground">
 					Track content engagement and completion rates
 				</p>
@@ -82,7 +84,7 @@ export default async function AdminDashboardPage() {
 							<div className="flex items-center gap-5">
 								<GraduationCapIcon className="text-muted-foreground h-4 w-4" />
 								<div className="space-y-1">
-									<CardTitle className="fluid-lg font-bold">
+									<CardTitle className="text-lg font-bold">
 										List Completions
 									</CardTitle>
 									<CardDescription>
@@ -145,7 +147,7 @@ export default async function AdminDashboardPage() {
 						<div className="flex items-center gap-5">
 							<BookOpenIcon className="text-muted-foreground h-4 w-4" />
 							<div className="space-y-1">
-								<CardTitle className="fluid-lg font-bold">
+								<CardTitle className="text-lg font-bold">
 									Post Completions
 								</CardTitle>
 								<CardDescription>

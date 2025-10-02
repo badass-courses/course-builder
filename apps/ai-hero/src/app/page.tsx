@@ -167,7 +167,7 @@ const Home = async (props: Props) => {
 				<PixelatedImageCarousel />
 				<article
 					className={cn(
-						'prose dark:prose-strong:text-white dark:prose-headings:text-white prose-h2:drop-shadow-[1px_3px_0px_hsl(var(--background))] prose-h1:text-center prose-h2:text-center prose-h2:max-w-3xl prose-h2:text-balance lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg prose-lg lg:prose-2xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-blockquote:mx-auto prose-blockquote:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mt-10 max-w-none overflow-x-hidden pb-8 sm:overflow-x-visible sm:pb-16 md:mt-16',
+						'prose dark:prose-invert dark:prose-strong:text-white dark:prose-headings:text-white prose-h2:drop-shadow-[1px_3px_0px_hsl(var(--background))] prose-h1:text-center prose-h2:text-center prose-h2:max-w-3xl prose-h2:text-balance lg:prose-h1:max-w-6xl prose-h1:max-w-4xl xl:prose-h1:text-6xl lg:prose-h1:text-5xl sm:prose-h1:text-4xl prose-h1:text-3xl sm:prose-lg prose-lg lg:prose-2xl prose-headings:mx-auto prose-headings:max-w-4xl prose-p:mx-auto prose-p:max-w-4xl prose-blockquote:mx-auto prose-blockquote:max-w-4xl prose-ul:mx-auto prose-ul:max-w-4xl prose-img:mx-auto prose-img:max-w-4xl mt-10 max-w-none overflow-x-hidden pb-8 sm:overflow-x-visible sm:pb-16 md:mt-16',
 						'prose-p:px-5 prose-ul:px-5 prose-headings:px-5', // paddings
 						{},
 					)}

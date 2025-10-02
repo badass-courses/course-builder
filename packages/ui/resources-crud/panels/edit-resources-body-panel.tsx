@@ -133,9 +133,9 @@ export function EditResourcesBodyPanel({
 					}}
 					enablePreview={withMdxPreview ? false : true}
 					theme={
-						(theme === 'dark'
+						theme === 'dark'
 							? CourseBuilderEditorThemeDark
-							: CourseBuilderEditorThemeLight) || CourseBuilderEditorThemeDark
+							: CourseBuilderEditorThemeLight
 					}
 					extensions={[
 						EditorView.lineWrapping,

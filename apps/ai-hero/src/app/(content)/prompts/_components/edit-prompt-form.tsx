@@ -20,7 +20,7 @@ type EditPromptFormProps = {
 }
 
 export function EditPromptForm({ prompt }: EditPromptFormProps) {
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const session = useSession()
 	const form = useForm<z.infer<typeof PromptSchema>>({
 		resolver: zodResolver(PromptSchema),
@@ -54,7 +54,7 @@ export function EditPromptForm({ prompt }: EditPromptFormProps) {
 			hostUrl={env.NEXT_PUBLIC_PARTY_KIT_URL}
 			user={session?.data?.user}
 			onSave={onPromptSave}
-			theme={theme}
+			theme={resolvedTheme}
 		>
 			<EditResourcesMetadataFields form={form} />
 		</ResourceForm>
