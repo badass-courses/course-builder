@@ -182,13 +182,13 @@
 @theme inline {
 	/* Font families */
 	--font-sans:
-		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
+		ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-heading:
-		var(--font-maison-neue), ui-sans-serif, system-ui, sans-serif,
+		ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-mono:
-		var(--font-maison-neue-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+		ui-monospace, SFMono-Regular, Menlo, Monaco,
 		Consolas, 'Liberation Mono', 'Courier New', monospace;
 
 	/* Shadcn color tokens */
