@@ -1,5 +1,27 @@
 # @coursebuilder/core
 
+## 1.0.7
+
+### Patch Changes
+
+- [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add optional retryCount
+  to VideoStatusCheckEvent schema and enhance error handling in
+  removeCompletedVideo function
+
+- [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - limit retries on
+  remove-completed-video inngest function
+
+- [#568](https://github.com/badass-courses/course-builder/pull/568)
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - ensure self-paced
+  workshop purchasers have org id by redirecting to /verify-login before
+  checkout
+- Updated dependencies
+  [[`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/nodash@0.0.2
+
 ## 1.0.6
 
 ### Patch Changes
