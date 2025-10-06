@@ -452,18 +452,6 @@ export async function GET(request: NextRequest) {
 		// Set the skill cookie using Next.js cookie API
 		newResponse.cookies.set('skill', skillCookieValue, cookieOptions)
 
-		console.log('[Auth GET] Setting skill cookie:', {
-			hostname,
-			origin,
-			referer,
-			isLocalhost,
-			isEpicAI,
-			isSecure,
-			cookieDomain,
-			cookieOptions,
-			skillCookieValue: skillCookieValue.substring(0, 50) + '...', // Log partial value for debugging
-		})
-
 		return newResponse
 	} catch (error) {
 		console.error('[Auth GET] Error setting skill cookie:', error)
