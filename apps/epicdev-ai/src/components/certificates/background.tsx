@@ -31,7 +31,7 @@ const Background = () => {
 				cy="25.244"
 				r="5.102"
 				fill="url(#purple-gradient)"
-				stroke="#fff"
+				stroke="#C4B5FD"
 				stroke-width="2"
 			/>
 			<path
@@ -47,7 +47,7 @@ const Background = () => {
 				cy="569.756"
 				r="5.102"
 				fill="url(#purple-gradient)"
-				stroke="#fff"
+				stroke="#C4B5FD"
 				stroke-width="2"
 			/>
 			<circle
@@ -55,7 +55,7 @@ const Background = () => {
 				cy="25.244"
 				r="5.102"
 				fill="url(#purple-gradient)"
-				stroke="#fff"
+				stroke="#C4B5FD"
 				stroke-width="2"
 			/>
 			<circle
@@ -63,7 +63,7 @@ const Background = () => {
 				cy="569.756"
 				r="5.102"
 				fill="url(#purple-gradient)"
-				stroke="#fff"
+				stroke="#C4B5FD"
 				stroke-width="2"
 			/>
 		</svg>
