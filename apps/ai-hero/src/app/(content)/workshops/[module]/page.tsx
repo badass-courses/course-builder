@@ -136,10 +136,11 @@ export default async function ModulePage(props: Props) {
 							workshop={workshop}
 						/>
 						<div className="divide-border w-full items-center divide-y sm:flex sm:w-auto sm:divide-y-0">
-							<WorkshopGitHubRepoLink
-								githubUrl={'/'} // workshop.fields?.github
+							{workshop.fields?.github ? (<WorkshopGitHubRepoLink
+								githubUrl={workshop.fields?.github} 
 								abilityLoader={abilityLoader}
-							/>
+							/>) : null}
+							
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
