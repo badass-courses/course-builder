@@ -160,7 +160,7 @@ export async function GET(request: Request) {
 					</div>
 					<div tw="absolute flex items-center justify-center bottom-24">
 						<img
-							src="https://zac-edai.ngrok.dev/assets/signature.png"
+							src={`${process.env.NEXT_PUBLIC_URL || ''}/assets/signature.png`}
 							alt="Kent C. Dodds"
 							width={200}
 							style={{
