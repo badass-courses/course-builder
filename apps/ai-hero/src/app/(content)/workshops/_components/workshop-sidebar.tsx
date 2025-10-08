@@ -16,10 +16,12 @@ export const WorkshopSidebar = ({
 	children,
 	sticky = true,
 	workshop,
+	className,
 }: {
 	children: React.ReactNode
 	sticky?: boolean
 	workshop?: MinimalWorkshop | null
+	className?: string
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
 	const [windowHeight, setWindowHeight] = React.useState(0)
@@ -40,7 +42,11 @@ export const WorkshopSidebar = ({
 
 	return (
 		<>
-			<div ref={buySectionRef} id="buy" className="relative h-full">
+			<div
+				ref={buySectionRef}
+				id="buy"
+				className={cn('relative h-full', className)}
+			>
 				<div
 					ref={sidebarRef}
 					className={cn('', {

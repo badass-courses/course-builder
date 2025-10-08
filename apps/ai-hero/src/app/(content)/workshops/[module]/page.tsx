@@ -136,11 +136,12 @@ export default async function ModulePage(props: Props) {
 							workshop={workshop}
 						/>
 						<div className="divide-border w-full items-center divide-y sm:flex sm:w-auto sm:divide-y-0">
-							{workshop.fields?.github ? (<WorkshopGitHubRepoLink
-								githubUrl={workshop.fields?.github} 
-								abilityLoader={abilityLoader}
-							/>) : null}
-							
+							{workshop.fields?.github ? (
+								<WorkshopGitHubRepoLink
+									githubUrl={workshop.fields?.github}
+									abilityLoader={abilityLoader}
+								/>
+							) : null}
 							<Dialog>
 								<DialogTrigger asChild>
 									<Button
@@ -247,7 +248,7 @@ export default async function ModulePage(props: Props) {
 						<ContentTitle />
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
-						<div className="col-span-4 px-5 py-10 sm:px-8 lg:px-10">
+						<div className="col-span-4 border-b px-5 pb-2 pt-10 sm:px-8 md:border-b-0 md:py-10 lg:px-10">
 							<article className="prose dark:prose-invert sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
 								{workshop.fields?.body ? (
 									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
@@ -256,7 +257,7 @@ export default async function ModulePage(props: Props) {
 								)}
 							</article>
 							{product?.type === 'self-paced' && (
-								<>
+								<div className="">
 									<hr className="border-border mb-6 mt-8 w-full border-dashed" />
 									<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
 										Content
@@ -268,10 +269,10 @@ export default async function ModulePage(props: Props) {
 										maxHeight="h-auto"
 										wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
 									/>
-								</>
+								</div>
 							)}
 						</div>
-						<div className="bg-muted/50 col-span-2 flex h-full flex-col border-l">
+						<div className="bg-muted/50 col-span-2 flex h-full flex-col md:border-l">
 							{product?.type === 'self-paced' ? (
 								<React.Suspense
 									fallback={
@@ -307,7 +308,7 @@ export default async function ModulePage(props: Props) {
 																	className="border-r-0! w-full max-w-none"
 																	withHeader={false}
 																	maxHeight="h-auto"
-																	wrapperClassName="overflow-hidden pb-0"
+																	wrapperClassName="overflow-hidden pb-0 hidden md:block"
 																/>
 																<div className="p-3">
 																	<Certificate
