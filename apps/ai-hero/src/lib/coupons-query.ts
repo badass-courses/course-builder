@@ -17,7 +17,9 @@ const CouponInputSchema = z.object({
 	maxUses: z.coerce.number(),
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
-	percentageDiscount: z.string(),
+	discountType: z.enum(['percentage', 'fixed']).default('percentage'),
+	percentageDiscount: z.string().optional(),
+	amountDiscount: z.number().optional(),
 	status: z.number().default(1),
 	default: z.boolean().default(false),
 	fields: z.record(z.any()).default({}),
@@ -26,7 +28,7 @@ const CouponInputSchema = z.object({
 export type CouponInput = z.infer<typeof CouponInputSchema>
 
 /**
- * Creates a merchant coupon in Stripe and the database if it doesn't exist
+ * Creates a merchant coupon in Stripe and the database if it doesn't exist (percentage-based)
  * @param percentageDiscount - The percentage discount as a decimal (e.g., 0.25 for 25%)
  * @returns The merchant coupon ID
  */
@@ -103,13 +105,89 @@ async function createOrFindMerchantCoupon(
 	}
 }
 
+/**
+ * Creates a fixed discount merchant coupon (does not create Stripe coupon, handled at checkout)
+ * @param amountDiscount - The fixed discount amount in cents (e.g., 2000 for $20)
+ * @returns The merchant coupon ID
+ */
+async function createOrFindFixedMerchantCoupon(
+	amountDiscount: number,
+): Promise<string | null> {
+	if (amountDiscount <= 0) {
+		return null
+	}
+
+	const existingMerchantCoupon = await db.query.merchantCoupon.findFirst({
+		where: and(
+			eq(merchantCouponTable.amountDiscount, amountDiscount),
+			eq(merchantCouponTable.type, 'special'),
+		),
+	})
+
+	if (existingMerchantCoupon) {
+		await log.info('coupon.merchant_coupon_fixed.found', {
+			merchantCouponId: existingMerchantCoupon.id,
+			amountDiscount,
+		})
+		return existingMerchantCoupon.id
+	}
+
+	const merchantAccountRecord = await courseBuilderAdapter.getMerchantAccount({
+		provider: 'stripe',
+	})
+	if (!merchantAccountRecord) {
+		await log.error('coupon.merchant_coupon_fixed.no_account', {
+			amountDiscount,
+		})
+		throw new Error('No merchant account found')
+	}
+
+	try {
+		// Create the merchant coupon in the database
+		// Note: We don't create a Stripe coupon here; that happens dynamically at checkout
+		const merchantCouponId = `kcd_${uuidv4()}`
+		await db.insert(merchantCouponTable).values({
+			id: merchantCouponId,
+			merchantAccountId: merchantAccountRecord.id,
+			status: 1,
+			identifier: null, // No Stripe coupon ID for fixed discounts
+			amountDiscount,
+			type: 'special',
+		})
+
+		await log.info('coupon.merchant_coupon_fixed.created', {
+			merchantCouponId,
+			amountDiscount,
+		})
+
+		return merchantCouponId
+	} catch (error) {
+		await log.error('coupon.merchant_coupon_fixed.creation_failed', {
+			amountDiscount,
+			error: error instanceof Error ? error.message : 'Unknown error',
+		})
+		throw error
+	}
+}
+
 export async function createCoupon(input: CouponInput) {
 	const { ability } = await getServerAuthSession()
 	if (ability.can('create', 'Content')) {
-		const percentageDiscount = Number(input.percentageDiscount)
+		let merchantCouponId: string | null = null
 
-		const merchantCouponId =
-			await createOrFindMerchantCoupon(percentageDiscount)
+		// Create or find merchant coupon based on discount type
+		if (input.discountType === 'percentage' && input.percentageDiscount) {
+			const percentageDiscount = Number(input.percentageDiscount)
+			merchantCouponId = await createOrFindMerchantCoupon(percentageDiscount)
+		} else if (input.discountType === 'fixed' && input.amountDiscount) {
+			merchantCouponId = await createOrFindFixedMerchantCoupon(
+				input.amountDiscount,
+			)
+		} else {
+			throw new Error(
+				'Invalid discount configuration: must provide either percentageDiscount or amountDiscount',
+			)
+		}
 
 		const codesArray: string[] = []
 		await db.transaction(async (trx) => {
@@ -126,7 +204,9 @@ export async function createCoupon(input: CouponInput) {
 
 		await log.info('coupon.created', {
 			quantity: input.quantity,
+			discountType: input.discountType,
 			percentageDiscount: input.percentageDiscount,
+			amountDiscount: input.amountDiscount,
 			merchantCouponId,
 			couponIds: codesArray,
 		})

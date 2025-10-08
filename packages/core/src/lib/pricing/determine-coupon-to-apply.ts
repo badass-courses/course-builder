@@ -124,9 +124,34 @@ export const determineCouponToApply = async (
 		})
 		.parse(couponToApply?.type)
 
+	// Determine the specific discount type being applied
+	let appliedDiscountType: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none' =
+		'none'
+
+	if (couponToApply) {
+		if (appliedCouponType === PPP_TYPE) {
+			appliedDiscountType = 'ppp'
+		} else if (appliedCouponType === BULK_TYPE) {
+			appliedDiscountType = 'bulk'
+		} else if (
+			couponToApply.amountDiscount !== null &&
+			couponToApply.amountDiscount !== undefined &&
+			couponToApply.amountDiscount > 0
+		) {
+			appliedDiscountType = 'fixed'
+		} else if (
+			couponToApply.percentageDiscount !== null &&
+			couponToApply.percentageDiscount !== undefined &&
+			couponToApply.percentageDiscount > 0
+		) {
+			appliedDiscountType = 'percentage'
+		}
+	}
+
 	return {
 		appliedMerchantCoupon: couponToApply || undefined,
 		appliedCouponType,
+		appliedDiscountType,
 		availableCoupons,
 		bulk: consideredBulk,
 	}
