@@ -15,11 +15,13 @@ import type { AbilityForResource } from '@coursebuilder/utils-auth/current-abili
 import { useModuleProgress } from '../../_components/module-progress-provider'
 
 export function StartLearningWorkshopButton({
+	productType,
 	abilityLoader,
 	moduleSlug,
 	className,
 	workshop,
 }: {
+	productType?: 'self-paced' | 'live' | 'membership' | 'cohort'
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean
@@ -40,11 +42,11 @@ export function StartLearningWorkshopButton({
 
 	const url = isWorkshopInProgress
 		? `/workshops/${moduleSlug}/${moduleProgress?.nextResource?.fields?.slug}`
-		: `/workshops/${moduleSlug}/${firstLessonSlug}`
+		: firstLessonSlug && `/workshops/${moduleSlug}/${firstLessonSlug}`
 	const { canViewWorkshop: canView, isPendingOpenAccess } =
 		React.use(abilityLoader)
 
-	if (isPendingOpenAccess) {
+	if (isPendingOpenAccess && workshop?.fields?.startsAt) {
 		const formattedDate = formatInTimeZone(
 			new Date(workshop?.fields?.startsAt || ''),
 			'America/Los_Angeles',
@@ -64,9 +66,16 @@ export function StartLearningWorkshopButton({
 		)
 	}
 
+	if (productType === 'cohort') {
+		// preview not available
+		return null
+	}
+
 	if (!canView) {
 		return null
 	}
+
+	if (!url) return null
 
 	// preview not available
 	return (
@@ -120,7 +129,7 @@ export function GetAccessButton({
 	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
 	const cohort = workshopNavigation?.cohorts[0]
-	if (canView) return null
+	if (canView || !cohort) return null
 
 	return (
 		<Button

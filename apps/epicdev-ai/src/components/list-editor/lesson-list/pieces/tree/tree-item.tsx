@@ -4,6 +4,7 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 } from 'react'
@@ -167,6 +168,7 @@ const TreeItem = memo(function TreeItem({
 		dispatch,
 		uniqueContextId,
 		getPathToItem,
+		getChildrenOfItem,
 		rootResource,
 		rootResourceId,
 		onResourceUpdate,
@@ -455,6 +457,35 @@ const TreeItem = memo(function TreeItem({
 
 	const parentResource = useResource()?.resource
 
+	// Check if this item is nested within a free tier section at any level
+	const isWithinFreeTierSection = useMemo(() => {
+		const pathToItem = getPathToItem(item.id) || []
+		if (!pathToItem.length) return false
+
+		const treeData = getChildrenOfItem('')
+
+		const findItemInTree = (
+			data: TreeItemType[],
+			targetId: string,
+		): TreeItemType | null => {
+			for (const node of data) {
+				if (node.id === targetId) return node
+				const found = findItemInTree(node.children, targetId)
+				if (found) return found
+			}
+			return null
+		}
+
+		for (const ancestorId of pathToItem) {
+			const ancestorItem = findItemInTree(treeData, ancestorId)
+			if (ancestorItem?.type === 'section') {
+				const sectionTier = ancestorItem.itemData?.metadata?.tier || 'standard'
+				if (sectionTier === 'free') return true
+			}
+		}
+		return false
+	}, [item, getPathToItem, getChildrenOfItem])
+
 	return (
 		<div
 			className={cn('relative', {
@@ -503,16 +534,18 @@ const TreeItem = memo(function TreeItem({
 									{state !== 'idle' && `State: ${state}`}
 								</div>
 							)}
-							{showTierSelector && item.type !== 'section' && (
-								<TierSelect item={item} dispatch={dispatch} />
-							)}
+							<span className="text-muted-foreground ml-2 flex min-w-[50px] items-center gap-2 text-xs">
+								{item.type}
+							</span>
 							<span className="text-muted-foreground ml-2 flex min-w-[90px] items-center gap-2 text-xs">
 								{getResourceStatus(
 									item.itemData?.resource.fields?.visibility,
 									item.itemData?.resource.fields?.state,
 								)}
 							</span>
-							<span></span>
+							{showTierSelector && !isWithinFreeTierSection && (
+								<TierSelect item={item} dispatch={dispatch} />
+							)}
 						</DraggableItemRenderer>
 					</ContextMenuTrigger>
 					<ContextMenuContent>

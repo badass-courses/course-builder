@@ -6,6 +6,7 @@ import { createAppAbility } from '@/ability'
 import { api } from '@/trpc/react'
 import pluralize from 'pluralize'
 
+import type { Product } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -13,10 +14,12 @@ export function EditWorkshopButton({
 	moduleType,
 	moduleSlug,
 	className,
+	product,
 }: {
 	moduleType: string
 	moduleSlug: string
 	className?: string
+	product?: Product | null
 }) {
 	const { data: abilityRules, status } =
 		api.ability.getCurrentAbilityRules.useQuery()
@@ -27,15 +30,27 @@ export function EditWorkshopButton({
 			{status === 'success' && (
 				<>
 					{ability.can('update', 'Content') && (
-						<Button
-							asChild
-							variant="secondary"
-							className={cn('absolute right-5 top-5 gap-1', className)}
+						<div
+							className={cn(
+								'absolute right-5 top-2 z-20 flex items-center justify-center gap-2',
+								className,
+							)}
 						>
-							<Link href={`/${pluralize(moduleType)}/${moduleSlug}/edit`}>
-								Edit
-							</Link>
-						</Button>
+							<Button asChild size="sm" variant="outline">
+								<Link href={`/${pluralize(moduleType)}/${moduleSlug}/edit`}>
+									Edit Workshop
+								</Link>
+							</Button>
+							{product && (
+								<Button asChild size="sm" variant="outline">
+									<Link
+										href={`/products/${product?.fields?.slug || product?.id}/edit`}
+									>
+										Edit Product
+									</Link>
+								</Button>
+							)}
+						</div>
 					)}
 				</>
 			)}

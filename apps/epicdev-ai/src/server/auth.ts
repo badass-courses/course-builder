@@ -8,10 +8,6 @@ import { env } from '@/env.mjs'
 import { OAUTH_PROVIDER_ACCOUNT_LINKED_EVENT } from '@/inngest/events/oauth-provider-account-linked'
 import { USER_CREATED_EVENT } from '@/inngest/events/user-created'
 import { inngest } from '@/inngest/inngest.server'
-import {
-	createSkillCookieValue,
-	getUserAccessibleWorkshopSlugs,
-} from '@/lib/skill-cookie'
 import { Identify, identify, init, track } from '@amplitude/analytics-node'
 import DiscordProvider from '@auth/core/providers/discord'
 import GithubProvider from '@auth/core/providers/github'
@@ -399,6 +395,10 @@ export async function GET(request: NextRequest) {
 		if (!session?.user?.id) {
 			return new Response(responseText, response)
 		}
+
+		// Dynamically import skill cookie functions to avoid Edge Runtime issues in middleware
+		const { getUserAccessibleWorkshopSlugs, createSkillCookieValue } =
+			await import('@/lib/skill-cookie')
 
 		// Get workshop slugs and create skill cookie value
 		const workshopSlugs = await getUserAccessibleWorkshopSlugs(session.user.id)

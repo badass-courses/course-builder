@@ -18,7 +18,7 @@ export function DiscordConnectButton({
 		<Button
 			data-button=""
 			variant="ghost"
-			className="hover:text-primary hover:bg-card-muted bg-card h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
+			className="text-primary hover:text-primary h-12 w-full rounded-lg border px-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] ease-out md:w-auto"
 			onClick={() =>
 				signIn(discordProvider.id, {
 					callbackUrl: `${env.NEXT_PUBLIC_URL}/discord/redirect`,
