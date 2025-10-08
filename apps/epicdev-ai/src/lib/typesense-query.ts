@@ -3,7 +3,7 @@
 import { db } from '@/db'
 import { resourceProgress } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
-import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
+import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-config'
 import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'

@@ -1,7 +1,5 @@
 import { imageResourceCreated } from '@/inngest/functions/cloudinary/image-resource-created'
 import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purchased-convertkit'
-import { addCohortRoleDiscord } from '@/inngest/functions/discord/add-cohort-role-discord'
-import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
@@ -25,15 +23,16 @@ import {
 	handleRefundAndRemoveFromCalendar,
 } from './functions/calendar-sync'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
-import {
-	apiTransferWorkflow,
-	cohortTransferWorkflow,
-} from './functions/cohort-transfer-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
 import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
-import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { postEventPurchase } from './functions/post-event-purchase'
+import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
+import {
+	apiProductTransferWorkflow,
+	productTransferWorkflow,
+} from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -56,11 +55,10 @@ export const inngestConfig = {
 		getOrCreateConcept,
 		computeVideoSplitPoints,
 		discordAccountLinked,
-		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
-		postCohortPurchaseWorkflow,
-		cohortTransferWorkflow,
-		apiTransferWorkflow,
+		postPurchaseWorkflow,
+		productTransferWorkflow,
+		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
@@ -75,7 +73,7 @@ export const inngestConfig = {
 		handleRefundAndRemoveFromCalendar,
 		unlistPastEvents,
 		eventReminderBroadcast,
-		addCohortRoleDiscord,
+		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 		processBulkCalendarInvites,

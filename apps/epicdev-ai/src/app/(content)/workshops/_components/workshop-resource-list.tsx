@@ -370,7 +370,7 @@ const LessonResource = ({
 
 	const canViewLesson = ability.can(
 		'read',
-		subject('Content', { id: moduleId }),
+		subject('Content', { id: lesson.id }),
 	)
 
 	const canCreate = ability.can('create', 'Content')

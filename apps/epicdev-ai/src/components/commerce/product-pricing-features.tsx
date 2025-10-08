@@ -1,3 +1,5 @@
+import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
+import type { WorkshopNavigation } from '@/lib/workshops'
 import {
 	BadgeCheck,
 	Check,
@@ -10,6 +12,8 @@ import {
 } from 'lucide-react'
 import pluralize from 'pluralize'
 
+import { Product } from '@coursebuilder/core/schemas'
+import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { Icon } from '../brand/icons'
@@ -17,12 +21,14 @@ import { Icon } from '../brand/icons'
 export const ProductPricingFeatures = ({
 	workshops,
 	className,
+	productType,
 }: {
 	workshops: {
 		title: string
 		slug: string
 	}[]
 	className?: string
+	productType: 'cohort' | 'live' | 'self-paced' | 'membership'
 }) => {
 	return (
 		<div
@@ -64,14 +70,14 @@ export const ProductPricingFeatures = ({
 			<ul className="flex w-full flex-col gap-2">
 				<li className="flex items-center gap-2">
 					<ListVideo className="h-4 w-4" />
-					{workshops.length > 0
-						? `${workshops.length} ${pluralize('Workshop', workshops.length)}`
-						: `Workshops TBA`}
+					{workshops.length} {pluralize('Workshop', workshops.length)}
 				</li>
-				<li className="flex items-center gap-2">
-					<Speaker className="h-4 w-4" />
-					Live Office Hours
-				</li>
+				{productType === 'cohort' && (
+					<li className="flex items-center gap-2">
+						<Speaker className="h-4 w-4" />
+						Live Office Hours
+					</li>
+				)}
 				<li className="flex items-center gap-2">
 					<Infinity className="h-4 w-4" />
 					Lifetime Access to Lessons

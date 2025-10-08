@@ -60,14 +60,16 @@ export const PricingWidget: React.FC<{
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
-					<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
+					{pricingWidgetOptions?.withTitle && (
+						<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
+					)}
 					<Pricing.LiveQuantity />
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton className="dark:bg-primary font-heading dark:hover:bg-primary/90 from-primary relative mt-3 h-16 max-w-xs cursor-pointer overflow-hidden rounded-lg bg-gradient-to-b to-indigo-800 text-xl font-semibold tracking-tight shadow-xl transition duration-300 ease-out hover:bg-blue-700 hover:brightness-110">
 						<span className="relative z-10 drop-shadow-md dark:text-white">
-							Enroll
+							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
 						</span>
 						<div
 							style={{
@@ -87,7 +89,10 @@ export const PricingWidget: React.FC<{
 					<Pricing.PPPToggle className="bg-muted mt-5 max-w-sm rounded p-5" />
 				</Pricing.Details>
 			</Pricing.Product>
-			<ProductPricingFeatures workshops={workshops ?? []} />
+			<ProductPricingFeatures
+				workshops={workshops ?? []}
+				productType={product.type}
+			/>
 		</Pricing.Root>
 	)
 }

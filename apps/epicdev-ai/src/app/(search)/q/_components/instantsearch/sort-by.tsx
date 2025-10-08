@@ -1,6 +1,6 @@
 'use client'
 
-import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
+import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-config'
 import { useSortBy } from 'react-instantsearch'
 
 import {
