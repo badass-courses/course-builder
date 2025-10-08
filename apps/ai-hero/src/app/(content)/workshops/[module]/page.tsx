@@ -249,7 +249,7 @@ export default async function ModulePage(props: Props) {
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
 						<div className="col-span-4 border-b px-5 pb-2 pt-10 sm:px-8 md:border-b-0 md:py-10 lg:px-10">
-							<article className="prose dark:prose-invert sm:prose-lg lg:prose-xl prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
+							<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
 								{workshop.fields?.body ? (
 									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
 								) : (

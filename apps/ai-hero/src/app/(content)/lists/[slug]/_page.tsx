@@ -159,7 +159,7 @@ export default async function ListPage(props: {
 							{list.fields.title}
 						</h1>
 						{list.fields.description && (
-							<div className="prose prose-p:text-balance dark:prose-invert md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl">
+							<div className="prose prose-p:text-balance dark:prose-invert md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-lg">
 								<p>{list.fields.description}</p>
 							</div>
 						)}
@@ -214,7 +214,7 @@ export default async function ListPage(props: {
 			</Links>
 			<div className="">
 				<div className="mx-auto flex w-full grid-cols-6 flex-col md:grid">
-					<article className="prose sm:prose-lg lg:prose-xl prose-p:max-w-4xl dark:prose-invert prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
+					<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl dark:prose-invert prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl col-span-4 max-w-none px-5 py-10 sm:px-8 lg:px-10">
 						{body || 'No body found.'}
 					</article>
 					<ListResources list={list} />

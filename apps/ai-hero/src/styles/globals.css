@@ -182,14 +182,14 @@
 @theme inline {
 	/* Font families */
 	--font-sans:
-		ui-sans-serif, system-ui, sans-serif,
+		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-heading:
-		ui-sans-serif, system-ui, sans-serif,
+		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-mono:
-		ui-monospace, SFMono-Regular, Menlo, Monaco,
-		Consolas, 'Liberation Mono', 'Courier New', monospace;
+		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+		'Courier New', monospace;
 
 	/* Shadcn color tokens */
 	--color-background: var(--background);
@@ -327,21 +327,8 @@
 
 [data-builders-heading] img {
 	position: absolute;
-	right: -10px;
-	max-width: 6rem;
 	rotate: 8deg;
-}
-
-@media (min-width: 640px) {
-	[data-builders-heading] img {
-		right: -20px;
-	}
-}
-
-@media (min-width: 1024px) {
-	[data-builders-heading] img {
-		max-width: 100%;
-	}
+	@apply right-[-10px] top-[-90px] max-w-[100px] lg:right-[-100px] lg:top-[-100px] lg:max-w-full;
 }
 
 [data-every-hero-needs-a-guide] {
