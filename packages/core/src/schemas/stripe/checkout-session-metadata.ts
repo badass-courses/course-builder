@@ -11,8 +11,10 @@ export const CheckoutSessionMetadataSchema = z.object({
 	productId: z.string(),
 	product: z.string(),
 	userId: z.string().optional(),
-	siteName: z.string(),
+	siteName: z.string().optional(),
 	organizationId: z.string().optional(),
+	discountType: z.enum(['fixed', 'percentage']).optional(),
+	discountAmount: z.number().optional(),
 })
 export type CheckoutSessionMetadata = z.infer<
 	typeof CheckoutSessionMetadataSchema

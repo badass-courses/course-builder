@@ -167,18 +167,22 @@ export async function formatPricesForProduct(
 	if (!price) throw new PriceFormattingError(`no-price-found`, noContextOptions)
 
 	// TODO: give this function a better name like, `determineCouponDetails`
-	const { appliedMerchantCoupon, appliedCouponType, ...result } =
-		await determineCouponToApply({
-			prismaCtx: ctx,
-			merchantCouponId,
-			country,
-			quantity,
-			userId,
-			productId: product.id,
-			purchaseToBeUpgraded: upgradeFromPurchase,
-			autoApplyPPP,
-			usedCoupon,
-		})
+	const {
+		appliedMerchantCoupon,
+		appliedCouponType,
+		appliedDiscountType,
+		...result
+	} = await determineCouponToApply({
+		prismaCtx: ctx,
+		merchantCouponId,
+		country,
+		quantity,
+		userId,
+		productId: product.id,
+		purchaseToBeUpgraded: upgradeFromPurchase,
+		autoApplyPPP,
+		usedCoupon,
+	})
 
 	const fireFixedDiscountForIndividualUpgrade = async () => {
 		return await getFixedDiscountForIndividualUpgrade({
@@ -202,6 +206,7 @@ export async function formatPricesForProduct(
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
 
 	const percentOfDiscount = appliedMerchantCoupon?.percentageDiscount
+	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here
@@ -222,10 +227,12 @@ export async function formatPricesForProduct(
 			unitPrice,
 			percentOfDiscount,
 			fixedDiscount: fixedDiscountForUpgrade, // if not upgrade, we know this will be 0
+			amountDiscount, // fixed amount discount from merchant coupon
 			quantity, // if PPP is applied, we know this will be 1
 		}),
 		availableCoupons: result.availableCoupons,
 		appliedMerchantCoupon,
+		appliedDiscountType,
 		...(usedCoupon?.merchantCouponId === appliedMerchantCoupon?.id && {
 			usedCouponId,
 		}),

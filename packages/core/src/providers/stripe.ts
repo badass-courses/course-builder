@@ -131,6 +131,12 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		const coupon = await this.stripe.coupons.retrieve(identifier)
 		return coupon && coupon.percent_off ? coupon.percent_off / 100 : 0
 	}
+
+	async getCouponAmountOff(identifier: string) {
+		const coupon = await this.stripe.coupons.retrieve(identifier)
+		return coupon && coupon.amount_off ? coupon.amount_off : 0
+	}
+
 	async createCoupon(params: Stripe.CouponCreateParams) {
 		const coupon = await this.stripe.coupons.create(params)
 		return coupon.id
@@ -231,6 +237,7 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 
 export const mockStripeAdapter: PaymentsAdapter = {
 	getCouponPercentOff: async () => 0,
+	getCouponAmountOff: async () => 0,
 	createCoupon: async () => 'mock-coupon-id',
 	createPromotionCode: async () => 'mock-promotion-code-id',
 	createCheckoutSession: async () => 'mock-checkout-session-id',

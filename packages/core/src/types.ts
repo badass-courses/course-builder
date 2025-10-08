@@ -136,6 +136,12 @@ export interface PaymentsAdapter {
 	getCouponPercentOff(identifier: string): Promise<number>
 
 	/**
+	 * Returns the amount off (in cents) for a given coupon
+	 * @param identifier
+	 */
+	getCouponAmountOff(identifier: string): Promise<number>
+
+	/**
 	 * Returns a coupon id.
 	 *
 	 * TODO: these use the stripe types and we probably want to use an
@@ -278,6 +284,7 @@ export type FormattedPrice = {
 		Omit<MerchantCouponWithCountry, 'identifier'> | undefined
 	>
 	appliedMerchantCoupon?: MinimalMerchantCoupon
+	appliedDiscountType?: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none'
 	upgradeFromPurchaseId?: string
 	upgradeFromPurchase?: Purchase
 	upgradedProduct?: ProductWithPrices | null

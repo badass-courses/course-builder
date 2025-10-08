@@ -46,17 +46,34 @@ import {
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
-const formSchema = z.object({
-	quantity: z.string(),
-	// coupon
-	maxUses: z.string(),
-	expires: z.date().optional(),
-	restrictedToProductId: z.string().optional(),
-	percentOff: z.string(),
-	bypassSoldOut: z.boolean().default(false),
-	status: z.number().default(1),
-	default: z.boolean().default(false),
-})
+const formSchema = z
+	.object({
+		quantity: z.string(),
+		// coupon
+		maxUses: z.string(),
+		expires: z.date().optional(),
+		restrictedToProductId: z.string().optional(),
+		discountType: z.enum(['percentage', 'fixed']).default('percentage'),
+		percentOff: z.string().optional(),
+		amountOff: z.string().optional(),
+		bypassSoldOut: z.boolean().default(false),
+		status: z.number().default(1),
+		default: z.boolean().default(false),
+	})
+	.refine(
+		(data) => {
+			// Ensure one discount type is provided
+			if (data.discountType === 'percentage') {
+				return data.percentOff && Number(data.percentOff) > 0
+			} else {
+				return data.amountOff && Number(data.amountOff) > 0
+			}
+		},
+		{
+			message:
+				'Please provide either a percentage discount or a fixed amount discount',
+		},
+	)
 
 const CouponGeneratorForm = ({
 	productsLoader,
@@ -70,7 +87,9 @@ const CouponGeneratorForm = ({
 			quantity: '1',
 			maxUses: '-1',
 			restrictedToProductId: undefined,
+			discountType: 'percentage',
 			percentOff: '20',
+			amountOff: undefined,
 			expires: undefined,
 			bypassSoldOut: false,
 			status: 1,
@@ -107,9 +126,17 @@ const CouponGeneratorForm = ({
 			maxUses: Number(couponDataFromForm.maxUses),
 			expires: finalExpires,
 			restrictedToProductId: couponDataFromForm.restrictedToProductId,
-			percentageDiscount: (
-				Number(couponDataFromForm.percentOff) / 100
-			).toString(),
+			discountType: couponDataFromForm.discountType,
+			percentageDiscount:
+				couponDataFromForm.discountType === 'percentage' &&
+				couponDataFromForm.percentOff
+					? (Number(couponDataFromForm.percentOff) / 100).toString()
+					: undefined,
+			amountDiscount:
+				couponDataFromForm.discountType === 'fixed' &&
+				couponDataFromForm.amountOff
+					? Number(couponDataFromForm.amountOff) * 100 // Convert to cents
+					: undefined,
 			status: Number(couponDataFromForm.status),
 			default: couponDataFromForm.default,
 			fields: {
@@ -178,25 +205,95 @@ const CouponGeneratorForm = ({
 			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
 				<fieldset className="flex grid-cols-2 flex-col gap-5 space-y-5 lg:grid lg:space-y-0 xl:grid-cols-3">
 					<FormField
-						name="percentOff"
+						name="discountType"
 						render={({ field }) => (
-							<FormItem>
-								<FormLabel htmlFor="percentOff" className="flex h-4">
-									Discount Percentage
-								</FormLabel>
+							<FormItem className="space-y-3">
+								<FormLabel>Discount Type</FormLabel>
 								<FormControl>
-									<Input
-										type="number"
-										id="percentOff"
-										{...field}
-										required
-										placeholder={'20'}
-									/>
+									<div className="flex space-x-4">
+										<label className="flex cursor-pointer items-center space-x-2">
+											<input
+												type="radio"
+												value="percentage"
+												checked={field.value === 'percentage'}
+												onChange={() => {
+													field.onChange('percentage')
+													form.setValue('amountOff', undefined)
+												}}
+												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+											/>
+											<span>Percentage</span>
+										</label>
+										<label className="flex cursor-pointer items-center space-x-2">
+											<input
+												type="radio"
+												value="fixed"
+												checked={field.value === 'fixed'}
+												onChange={() => {
+													field.onChange('fixed')
+													form.setValue('percentOff', undefined)
+												}}
+												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+											/>
+											<span>Fixed Amount</span>
+										</label>
+									</div>
 								</FormControl>
-								<FormDescription>Required</FormDescription>
+								<FormDescription>
+									Choose between percentage or fixed dollar discount
+								</FormDescription>
 							</FormItem>
 						)}
 					/>
+					{form.watch('discountType') === 'percentage' ? (
+						<FormField
+							name="percentOff"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="percentOff" className="flex h-4">
+										Discount Percentage
+									</FormLabel>
+									<FormControl>
+										<Input
+											type="number"
+											id="percentOff"
+											{...field}
+											placeholder={'20'}
+											min="0"
+											max="100"
+										/>
+									</FormControl>
+									<FormDescription>
+										0-100 (e.g., 25 for 25% off)
+									</FormDescription>
+								</FormItem>
+							)}
+						/>
+					) : (
+						<FormField
+							name="amountOff"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel htmlFor="amountOff" className="flex h-4">
+										Fixed Discount Amount ($)
+									</FormLabel>
+									<FormControl>
+										<Input
+											type="number"
+											id="amountOff"
+											{...field}
+											placeholder={'20'}
+											min="0"
+											step="1"
+										/>
+									</FormControl>
+									<FormDescription>
+										Dollar amount (e.g., 20 for $20 off)
+									</FormDescription>
+								</FormItem>
+							)}
+						/>
+					)}
 					<FormField
 						name="restrictedToProductId"
 						render={({ field }) => {
