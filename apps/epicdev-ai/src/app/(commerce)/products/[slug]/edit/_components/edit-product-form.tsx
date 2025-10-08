@@ -163,6 +163,7 @@ export function EditProductForm({ product }: { product: Product }) {
 				closeEnrollment: product.fields.closeEnrollment
 					? new Date(product.fields.closeEnrollment).toISOString()
 					: null,
+				discordRoleId: product.fields.discordRoleId ?? '',
 			},
 		},
 	})
@@ -357,6 +358,27 @@ export function EditProductForm({ product }: { product: Product }) {
 						<FormMessage />
 					</FormItem>
 				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.discordRoleId"
+				render={({ field }) => {
+					return (
+						<FormItem className="px-5">
+							<FormLabel className="text-lg font-bold">
+								Discord Role ID
+							</FormLabel>
+							<FormDescription className="mt-2 text-sm">
+								The ID of the Discord role that will be added to the user when
+								they purchase the product.
+							</FormDescription>
+							<FormControl>
+								<Input {...field} value={field.value ?? ''} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)
+				}}
 			/>
 			<FormField
 				control={form.control}

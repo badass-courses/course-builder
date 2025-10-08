@@ -158,6 +158,7 @@ export async function PricingWidgetServer({
 					{...productProps.commerceProps}
 					workshops={cohortWorkshops}
 					cohort={resource}
+					searchParams={searchParams}
 					pricingWidgetOptions={{
 						withTitle: true,
 						withImage: true,

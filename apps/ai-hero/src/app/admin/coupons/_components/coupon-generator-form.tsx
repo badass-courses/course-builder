@@ -1,15 +1,16 @@
 'use client'
 
 import React, { use } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Spinner from '@/components/spinner'
+import { env } from '@/env.mjs'
 import { createCoupon } from '@/lib/coupons-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { format } from 'date-fns'
-import { motion } from 'framer-motion'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarDate } from '@internationalized/date'
+import { formatInTimeZone } from 'date-fns-tz'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { z } from 'zod'
 
 import { Product } from '@coursebuilder/core/schemas'
@@ -17,6 +18,13 @@ import {
 	Button,
 	Calendar,
 	Checkbox,
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+	DateTimePicker,
 	Form,
 	FormControl,
 	FormDescription,
@@ -33,8 +41,10 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	useToast,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 const formSchema = z.object({
 	quantity: z.string(),
@@ -43,12 +53,15 @@ const formSchema = z.object({
 	expires: z.date().optional(),
 	restrictedToProductId: z.string().optional(),
 	percentOff: z.string(),
+	bypassSoldOut: z.boolean().default(false),
+	status: z.number().default(1),
+	default: z.boolean().default(false),
 })
 
 const CouponGeneratorForm = ({
 	productsLoader,
 }: {
-	productsLoader: Promise<Product[]>
+	productsLoader: Promise<{ products: Product[]; pastEventIds: string[] }>
 }) => {
 	const router = useRouter()
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -59,37 +72,111 @@ const CouponGeneratorForm = ({
 			restrictedToProductId: undefined,
 			percentOff: '20',
 			expires: undefined,
+			bypassSoldOut: false,
+			status: 1,
+			default: false,
 		},
 	})
 	const [codes, setCodes] = React.useState<string[]>([])
 
-	const products = use(productsLoader)
-
-	const expiresAtDateTime = form.watch('expires')?.setHours(23, 59, 0, 0)
-	/**
-	 * Handles form submission to create new coupons
-	 * @param values - The form values from the coupon generator form
-	 */
+	const { products, pastEventIds } = use(productsLoader)
+	const { toast } = useToast()
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		form.reset()
-		const codes = await createCoupon({
-			quantity: values.quantity,
-			maxUses: Number(values.maxUses),
-			expires: values.expires,
-			restrictedToProductId: values.restrictedToProductId,
-			percentageDiscount: (Number(values.percentOff) / 100).toString(),
-			status: 1,
-			default: false,
-			fields: {},
-		})
-		setCodes(codes)
-		router.refresh()
-	}
+		const { bypassSoldOut, ...couponDataFromForm } = values
 
+		let finalExpires = couponDataFromForm.expires
+		if (finalExpires instanceof Date) {
+			// Create a new Date object for 23:59:59 UTC on the date part of finalExpires
+			// finalExpires from the form should be a JS Date representing 00:00:00 LA time for the chosen day.
+			// Its UTC date parts (getUTCFullYear, etc.) will give us the correct calendar day.
+			finalExpires = new Date(
+				Date.UTC(
+					finalExpires.getUTCFullYear(),
+					finalExpires.getUTCMonth(), // 0-indexed
+					finalExpires.getUTCDate(),
+					23, // hours
+					59, // minutes
+					59, // seconds
+					0, // milliseconds
+				),
+			)
+		}
+
+		const codes = await createCoupon({
+			quantity: couponDataFromForm.quantity,
+			maxUses: Number(couponDataFromForm.maxUses),
+			expires: finalExpires,
+			restrictedToProductId: couponDataFromForm.restrictedToProductId,
+			percentageDiscount: (
+				Number(couponDataFromForm.percentOff) / 100
+			).toString(),
+			status: Number(couponDataFromForm.status),
+			default: couponDataFromForm.default,
+			fields: {
+				bypassSoldOut: bypassSoldOut,
+			},
+		})
+
+		if (Boolean(couponDataFromForm.default)) {
+			// TODO: toast notification about the default coupon being applied to product
+			const product = products.find(
+				(product) => product.id === couponDataFromForm.restrictedToProductId,
+			)
+			const resource = product?.resources?.[0]
+			if (!product) {
+				return
+			}
+			toast({
+				duration: 10000,
+				title: `Default coupon applied to ${resource?.resource?.fields?.title}`,
+				description: (
+					<>
+						<Link
+							className="text-primary underline"
+							href={getResourcePath(
+								resource?.resource.type,
+								resource?.resource?.fields?.slug,
+								'view',
+							)}
+						>
+							View
+						</Link>
+					</>
+				),
+			})
+			form.reset()
+			return
+		}
+
+		const codesWithUrls = codes.map((code) => {
+			const product = products.find(
+				(product) => product.id === couponDataFromForm.restrictedToProductId,
+			)
+			if (!product) {
+				return code
+			}
+			const resource = product.resources?.[0]
+			if (!resource) {
+				return code
+			}
+			console.log(resource)
+			const url = getResourcePath(
+				resource.resource.type,
+				resource.resource.fields.slug,
+				'view',
+			)
+			return `${env.NEXT_PUBLIC_URL}${url}?coupon=${code}`
+		})
+		setCodes(codesWithUrls)
+		form.reset()
+		// router.refresh()
+	}
+	const [isRestrictedToProductIdOpen, setIsRestrictedToProductIdOpen] =
+		React.useState(false)
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)}>
-				<fieldset className="grid-cols-4 gap-5 space-y-5 md:grid md:space-y-0">
+			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
+				<fieldset className="flex grid-cols-2 flex-col gap-5 space-y-5 lg:grid lg:space-y-0 xl:grid-cols-3">
 					<FormField
 						name="percentOff"
 						render={({ field }) => (
@@ -103,7 +190,6 @@ const CouponGeneratorForm = ({
 										id="percentOff"
 										{...field}
 										required
-										onChange={field.onChange}
 										placeholder={'20'}
 									/>
 								</FormControl>
@@ -113,38 +199,111 @@ const CouponGeneratorForm = ({
 					/>
 					<FormField
 						name="restrictedToProductId"
-						render={({ field }) => (
-							<FormItem className="flex flex-col">
-								<FormLabel
-									htmlFor="enableRestrictedToProductId"
-									className="mb-0.5 mt-1.5 flex items-center gap-1.5"
-								>
-									<Checkbox
-										id="enableRestrictedToProductId"
-										checked={Boolean(form.watch('restrictedToProductId'))}
-										onCheckedChange={() => {
-											console.log(
-												'checked',
-												form.watch('restrictedToProductId'),
-											)
-											return Boolean(form.watch('restrictedToProductId'))
-												? form.setValue('restrictedToProductId', undefined)
-												: form.setValue(
-														'restrictedToProductId',
-														products[0]?.id,
-													)
-										}}
-									/>
-									Restricted to Product
-								</FormLabel>
-								<FormControl>
-									<Select
+						render={({ field }) => {
+							const value = field.value
+							return (
+								<FormItem className="flex flex-col">
+									<FormLabel
+										htmlFor="enableRestrictedToProductId"
+										className="mb-0.5 mt-1.5 flex items-center gap-1.5"
+									>
+										<Checkbox
+											id="enableRestrictedToProductId"
+											checked={Boolean(form.watch('restrictedToProductId'))}
+											onCheckedChange={() => {
+												return Boolean(form.watch('restrictedToProductId'))
+													? form.setValue('restrictedToProductId', undefined)
+													: form.setValue(
+															'restrictedToProductId',
+															products[0]?.id,
+														)
+											}}
+										/>
+										Restricted to Product
+									</FormLabel>
+									<FormControl>
+										<Popover
+											open={isRestrictedToProductIdOpen}
+											onOpenChange={setIsRestrictedToProductIdOpen}
+										>
+											<PopoverTrigger asChild>
+												<Button
+													variant="outline"
+													role="combobox"
+													aria-expanded={isRestrictedToProductIdOpen}
+													className="justify-between"
+												>
+													<span className="truncate overflow-ellipsis">
+														{value
+															? products.find((product) => product.id === value)
+																	?.name
+															: 'Select product...'}
+													</span>
+													<ChevronsUpDown className="opacity-50" />
+												</Button>
+											</PopoverTrigger>
+											<PopoverContent className="p-0">
+												<Command>
+													<CommandInput
+														placeholder="Search product..."
+														className="h-9"
+													/>
+													<CommandList>
+														<CommandEmpty>No product found.</CommandEmpty>
+														<CommandGroup>
+															{products.map((product) => {
+																const displayName = `${product.name}${
+																	pastEventIds.some(
+																		(id) =>
+																			id ===
+																			product?.resources?.[0]?.resource.id,
+																	)
+																		? ' (Closed)'
+																		: ''
+																}`
+																return (
+																	<CommandItem
+																		key={product.id}
+																		value={displayName}
+																		onSelect={() => {
+																			field.onChange(
+																				product.id === value
+																					? undefined
+																					: product.id,
+																			)
+																			setIsRestrictedToProductIdOpen(false)
+																		}}
+																		className="flex w-full items-center justify-between"
+																	>
+																		<span>{displayName}</span>{' '}
+																		<div className="flex items-center gap-1">
+																			<span className="text-muted-foreground text-sm">
+																				{product.type}
+																			</span>
+																			<Check
+																				className={cn(
+																					'ml-auto',
+																					value === product.id
+																						? 'opacity-100'
+																						: 'opacity-0',
+																				)}
+																			/>
+																		</div>
+																	</CommandItem>
+																)
+															})}
+														</CommandGroup>
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+										{/* <Select
 										required
 										{...field}
 										disabled={!Boolean(form.watch('restrictedToProductId'))}
 										onValueChange={field.onChange}
 									>
-										<SelectTrigger>
+										<SelectTrigger className="truncate text-ellipsis pr-5 text-left">
 											<SelectValue
 												placeholder={
 													Boolean(form.watch('restrictedToProductId'))
@@ -160,10 +319,11 @@ const CouponGeneratorForm = ({
 												</SelectItem>
 											))}
 										</SelectContent>
-									</Select>
-								</FormControl>
-							</FormItem>
-						)}
+									</Select> */}
+									</FormControl>
+								</FormItem>
+							)
+						}}
 					/>
 					<FormField
 						name="expires"
@@ -184,42 +344,64 @@ const CouponGeneratorForm = ({
 									/>
 									Expiration date
 								</FormLabel>
-								<Popover>
-									<PopoverTrigger asChild>
-										<FormControl>
-											<Button
-												variant={'outline'}
-												className={cn(
-													'w-[240px] pl-3 text-left font-normal',
-													!field.value && 'text-muted-foreground',
-												)}
-											>
-												{field.value ? (
-													format(field.value, 'PPP')
-												) : (
-													<span>Pick a date</span>
-												)}
-												<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-											</Button>
-										</FormControl>
-									</PopoverTrigger>
-									<PopoverContent className="w-auto p-0" align="start">
-										<Calendar
-											mode="single"
-											selected={field.value}
-											onSelect={(date) => {
-												return field.onChange(date)
-											}}
-											disabled={(date) =>
-												date < new Date() || date < new Date('1900-01-01')
-											}
-										/>
-									</PopoverContent>
-								</Popover>
+								<DateTimePicker
+									aria-label="Expiration date"
+									value={(() => {
+										const jsDateValue = field.value
+										if (jsDateValue instanceof Date) {
+											const year = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'yyyy',
+												),
+												10,
+											)
+											const month = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'MM',
+												),
+												10,
+											)
+											const day = parseInt(
+												formatInTimeZone(
+													jsDateValue,
+													'America/Los_Angeles',
+													'dd',
+												),
+												10,
+											)
+											return new CalendarDate(year, month, day)
+										} else {
+											return null
+										}
+									})()}
+									onChange={(dateValue) => {
+										// dateValue is CalendarDate | null from the picker
+										field.onChange(
+											dateValue
+												? dateValue.toDate('America/Los_Angeles')
+												: null,
+										)
+									}}
+									shouldCloseOnSelect={true}
+									granularity="day"
+								/>
 								<FormDescription>
-									{/* {form.watch('expires')?.toUTCString()} */}
-									{expiresAtDateTime &&
-										new Date(expiresAtDateTime).toISOString()}
+									{(() => {
+										const expiresDate = form.watch('expires')
+										if (expiresDate) {
+											return `${formatInTimeZone(
+												new Date(expiresDate),
+												'America/Los_Angeles',
+												'yyyy-MM-dd',
+											)} (Expires at 23:59:59 PT)`
+										} else {
+											return 'No expiration date set'
+										}
+									})()}
 								</FormDescription>
 								<FormMessage />
 							</FormItem>
@@ -278,6 +460,57 @@ const CouponGeneratorForm = ({
 							</FormItem>
 						)}
 					/>
+					<FormField
+						name="default"
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<FormLabel
+										className="mt-1.5 flex items-center gap-1.5 peer-disabled:cursor-not-allowed"
+										htmlFor="default"
+									>
+										<Checkbox
+											disabled={form.watch('maxUses') !== '-1'}
+											id="default"
+											checked={field.value}
+											onCheckedChange={(value) => {
+												form.setValue('bypassSoldOut', false)
+												field.onChange(value)
+											}}
+										/>
+										Auto Apply
+									</FormLabel>
+								</FormControl>
+								<FormDescription>
+									When enabled, this coupon gets applied automatically (sets{' '}
+									<code>default</code> flag)
+								</FormDescription>
+							</FormItem>
+						)}
+					/>
+					{!form.watch('default') && (
+						<FormField
+							name="bypassSoldOut"
+							render={({ field }) => (
+								<FormItem className="flex flex-col">
+									<FormLabel
+										htmlFor="bypassSoldOut"
+										className="mt-1.5 flex items-center gap-1.5"
+									>
+										<Checkbox
+											id="bypassSoldOut"
+											checked={field.value}
+											onCheckedChange={field.onChange}
+										/>
+										Bypass Sold Out
+									</FormLabel>
+									<FormDescription>
+										Allow purchasing even when a product is sold out.
+									</FormDescription>
+								</FormItem>
+							)}
+						/>
+					)}
 				</fieldset>
 				<div className="mt-8 flex items-end gap-5">
 					<div className="flex w-full flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -295,8 +528,6 @@ const CouponGeneratorForm = ({
 												required
 												min={1}
 												max={100}
-												onChange={field.onChange}
-												defaultValue={1}
 											/>
 										</FormControl>
 									</FormItem>
@@ -313,7 +544,7 @@ const CouponGeneratorForm = ({
 							key={codes.join('\n')}
 							className="flex w-full items-end gap-2 sm:justify-end"
 						>
-							{form.formState.isSubmitted && codes && (
+							{codes.length > 0 && !form.formState.isDirty && (
 								<>
 									<Button
 										disabled={form.formState.isSubmitting}
@@ -327,7 +558,7 @@ const CouponGeneratorForm = ({
 										disabled={form.formState.isSubmitting}
 										type="button"
 										onClick={() => {
-											toast.success('Copied to clipboard')
+											toast({ title: 'Copied to clipboard' })
 											return navigator.clipboard.writeText(codes.join('\n'))
 										}}
 										variant="secondary"
