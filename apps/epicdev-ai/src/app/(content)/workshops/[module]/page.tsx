@@ -341,10 +341,12 @@ export default async function ModulePage(props: Props) {
 						) : (
 							<>
 								{workshop.fields?.coverImage?.url && (
-									<WorkshopImage
-										imageUrl={workshop.fields.coverImage.url}
-										abilityLoader={abilityLoader}
-									/>
+									<div className="mb-3">
+										<WorkshopImage
+											imageUrl={workshop.fields.coverImage.url}
+											abilityLoader={abilityLoader}
+										/>
+									</div>
 								)}
 								<WorkshopSidebar
 									productType={product?.type}
