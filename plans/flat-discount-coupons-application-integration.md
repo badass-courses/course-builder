@@ -20,8 +20,9 @@ Based on the latest commit (`6e19940b - feat(core): implement fixed amount disco
 - ✅ Core unit tests passing
 
 ### What's Not Yet Done (Application Layer)
-- ❌ UI components for displaying fixed discounts
-- ❌ Admin interface for creating/managing fixed discount coupons
+- ✅ Admin interface for creating/managing fixed discount coupons
+- ✅ UI components for displaying fixed discounts (PriceBreakdown, DiscountBadge, CouponInput)
+- ✅ Updated existing Price/PriceDisplay components to show fixed discount amounts
 - ❌ Checkout page updates to show fixed amounts
 - ❌ Purchase confirmation/receipt display
 - ❌ Application-level integration tests
@@ -29,7 +30,7 @@ Based on the latest commit (`6e19940b - feat(core): implement fixed amount disco
 
 ## Integration Strategy
 
-### Phase 1: Shared UI Components (Generic)
+### Phase 1: Shared UI Components (Generic) ✅ COMPLETED
 Create reusable UI components in `@coursebuilder/ui` or `@coursebuilder/commerce-next` that any app can use.
 
 ### Phase 2: AI Hero Implementation (Specific)
@@ -885,9 +886,12 @@ Core discount logic lives in `@coursebuilder/core`. If you need app-specific beh
 - [ ] Review this plan with team
 
 ### Phase 1: Shared Components (Week 1)
-- [ ] Create `PriceBreakdown` component
-- [ ] Create `DiscountBadge` component
-- [ ] Create `CouponInput` component
+- [x] Create `PriceBreakdown` component
+- [x] Create `DiscountBadge` component
+- [x] Create `CouponInput` component
+- [x] Update existing Price/PriceDisplay components for fixed discounts
+- [x] Add `appliedFixedDiscount` field to FormattedPrice type
+- [x] Update formatPricesForProduct to return appliedFixedDiscount
 - [ ] Add exports to `@coursebuilder/commerce-next`
 - [ ] Write component tests
 - [ ] Build and verify exports work
