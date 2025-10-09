@@ -87,10 +87,20 @@ export const columns = () => {
 		},
 		{
 			id: 'percentageDiscount',
-			header: 'Discount',
+			header: 'Percent Off',
 			accessorFn: (data) => data.percentageDiscount,
 			cell: ({ row }) => {
-				return <div>{Number(row.getValue('percentageDiscount')) * 100}%</div>
+				const value = row.getValue('percentageDiscount')
+				return value ? <div>{Number(value) * 100}%</div> : <div>—</div>
+			},
+		},
+		{
+			id: 'amountDiscount',
+			header: 'Amount Off',
+			accessorFn: (data) => data.amountDiscount,
+			cell: ({ row }) => {
+				const value = row.getValue('amountDiscount')
+				return value ? <div>${Number(value) / 100}</div> : <div>—</div>
 			},
 		},
 		{

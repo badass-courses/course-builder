@@ -111,8 +111,8 @@ async function getActiveMerchantCoupon({
 		// use whichever coupon provides the bigger discount
 		const { merchantCoupon: incomingMerchantCoupon } = incomingCoupon
 		if (
-			incomingMerchantCoupon.percentageDiscount >=
-			defaultMerchantCoupon.percentageDiscount
+			(incomingMerchantCoupon.percentageDiscount ?? 0) >=
+			(defaultMerchantCoupon.percentageDiscount ?? 0)
 		) {
 			activeMerchantCoupon = incomingMerchantCoupon
 			usedCouponId = incomingCoupon.id
