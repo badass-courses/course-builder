@@ -285,6 +285,7 @@ export type FormattedPrice = {
 	>
 	appliedMerchantCoupon?: MinimalMerchantCoupon
 	appliedDiscountType?: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none'
+	appliedFixedDiscount?: number
 	upgradeFromPurchaseId?: string
 	upgradeFromPurchase?: Purchase
 	upgradedProduct?: ProductWithPrices | null

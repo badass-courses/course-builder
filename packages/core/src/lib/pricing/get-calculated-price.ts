@@ -30,8 +30,9 @@ export function getCalculatedPrice({
 	// Apply merchant coupon discount - either percentage or fixed amount, but not both
 	let finalPrice: number
 	if (amountDiscount > 0) {
-		// Fixed amount discount from merchant coupon
-		finalPrice = priceAfterUpgradeDiscount - amountDiscount
+		// Fixed amount discount from merchant coupon (convert from cents to dollars)
+		const amountDiscountInDollars = amountDiscount / 100
+		finalPrice = priceAfterUpgradeDiscount - amountDiscountInDollars
 	} else {
 		// Percentage discount from merchant coupon
 		const discountMultiplier = 1 - percentOfDiscount
