@@ -100,6 +100,10 @@ const CouponGeneratorForm = ({
 
 	const { products, pastEventIds } = use(productsLoader)
 	const { toast } = useToast()
+
+	const discountType = form.watch('discountType')
+	const percentOffValue = form.watch('percentOff')
+	const amountOffValue = form.watch('amountOff')
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const { bypassSoldOut, ...couponDataFromForm } = values
 
@@ -186,7 +190,6 @@ const CouponGeneratorForm = ({
 			if (!resource) {
 				return code
 			}
-			console.log(resource)
 			const url = getResourcePath(
 				resource.resource.type,
 				resource.resource.fields.slug,
@@ -219,6 +222,10 @@ const CouponGeneratorForm = ({
 												onChange={() => {
 													field.onChange('percentage')
 													form.setValue('amountOff', undefined)
+													// Set a default value for percentOff if it's undefined
+													if (!form.getValues('percentOff')) {
+														form.setValue('percentOff', '20')
+													}
 												}}
 												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
 											/>
@@ -232,6 +239,10 @@ const CouponGeneratorForm = ({
 												onChange={() => {
 													field.onChange('fixed')
 													form.setValue('percentOff', undefined)
+													// Set a default value for amountOff if it's undefined
+													if (!form.getValues('amountOff')) {
+														form.setValue('amountOff', '20')
+													}
 												}}
 												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
 											/>
@@ -247,51 +258,65 @@ const CouponGeneratorForm = ({
 					/>
 					{form.watch('discountType') === 'percentage' ? (
 						<FormField
+							key="percentOff"
 							name="percentOff"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="percentOff" className="flex h-4">
-										Discount Percentage
-									</FormLabel>
-									<FormControl>
-										<Input
-											type="number"
-											id="percentOff"
-											{...field}
-											placeholder={'20'}
-											min="0"
-											max="100"
-										/>
-									</FormControl>
-									<FormDescription>
-										0-100 (e.g., 25 for 25% off)
-									</FormDescription>
-								</FormItem>
-							)}
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel htmlFor="percentOff" className="flex h-4">
+											Discount Percentage
+										</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												id="percentOff"
+												{...field}
+												value={field.value ?? ''}
+												placeholder={'20'}
+												min="0"
+												max="100"
+												onChange={(e) => {
+													field.onChange(e)
+												}}
+											/>
+										</FormControl>
+										<FormDescription>
+											0-100 (e.g., 25 for 25% off)
+										</FormDescription>
+									</FormItem>
+								)
+							}}
 						/>
 					) : (
 						<FormField
 							name="amountOff"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel htmlFor="amountOff" className="flex h-4">
-										Fixed Discount Amount ($)
-									</FormLabel>
-									<FormControl>
-										<Input
-											type="number"
-											id="amountOff"
-											{...field}
-											placeholder={'20'}
-											min="0"
-											step="1"
-										/>
-									</FormControl>
-									<FormDescription>
-										Dollar amount (e.g., 20 for $20 off)
-									</FormDescription>
-								</FormItem>
-							)}
+							key="amountOff"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel htmlFor="amountOff" className="flex h-4">
+											Fixed Discount Amount ($)
+										</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												id="amountOff"
+												{...field}
+												value={field.value ?? ''}
+												placeholder={'20'}
+												min="0"
+												step="1"
+												onChange={(e) => {
+													field.onChange(e)
+												}}
+											/>
+										</FormControl>
+										<FormDescription>
+											Dollar amount (e.g., 20 for $20 off)
+										</FormDescription>
+									</FormItem>
+								)
+							}}
 						/>
 					)}
 					<FormField

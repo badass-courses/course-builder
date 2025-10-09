@@ -36,7 +36,8 @@ export function getCouponSchema(mysqlTable: MySqlTableFn) {
 			percentageDiscount: decimal('percentageDiscount', {
 				precision: 3,
 				scale: 2,
-			}).notNull(),
+			}),
+			amountDiscount: int('amountDiscount'),
 			restrictedToProductId: varchar('restrictedToProductId', { length: 191 }),
 		},
 		(table) => {

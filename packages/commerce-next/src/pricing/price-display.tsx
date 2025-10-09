@@ -24,7 +24,7 @@ export const PriceDisplay = ({
 	const fullPrice = formattedPrice?.fullPrice
 
 	const percentOff = appliedMerchantCoupon
-		? Math.floor(+appliedMerchantCoupon.percentageDiscount * 100)
+		? Math.floor(+(appliedMerchantCoupon.percentageDiscount ?? 0) * 100)
 		: formattedPrice && isDiscount(formattedPrice)
 			? Math.floor(
 					((formattedPrice.unitPrice - formattedPrice.calculatedPrice) /

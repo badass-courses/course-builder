@@ -205,7 +205,8 @@ export async function formatPricesForProduct(
 	const unitPrice: number = price.unitAmount
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
 
-	const percentOfDiscount = appliedMerchantCoupon?.percentageDiscount
+	const percentOfDiscount =
+		appliedMerchantCoupon?.percentageDiscount ?? undefined
 	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
 	const upgradeDetails =

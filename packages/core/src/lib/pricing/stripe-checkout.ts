@@ -225,8 +225,6 @@ export async function stripeCheckout({
 
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
-			console.log('user', user)
-
 			const upgradeFromPurchase = upgradeFromPurchaseId
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
@@ -246,8 +244,6 @@ export async function stripeCheckout({
 						config.paymentsAdapter,
 					)
 				: false
-
-			console.log('customerId', customerId)
 
 			const loadedProduct = await adapter.getProduct(productId)
 
@@ -360,7 +356,7 @@ export async function stripeCheckout({
 					const couponName = buildCouponName(
 						{ ...upgradeFromPurchase, product: upgradeFromProduct },
 						productId,
-						availableUpgrade,
+						availableUpgrade?.[0] || null,
 						purchaseWillBeRestricted,
 						stripeCouponPercentOff,
 					)
