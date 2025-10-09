@@ -279,6 +279,33 @@ export function createMockAdapter(
 			id,
 			email: `test@example.com`,
 		})),
+		getPurchasesForUser: vi.fn(async (userId?: string) => {
+			// Return purchases for the test user
+			if (!userId) return []
+			return Object.values(testPurchases).filter((p) => p.userId === userId)
+		}),
+		getMerchantCouponForTypeAndPercent: vi.fn(
+			async (options: { type: string; percentageDiscount: number }) => {
+				// Find coupon matching type and percentage
+				return (
+					Object.values(testMerchantCoupons).find(
+						(c) =>
+							c.type === options.type &&
+							c.percentageDiscount === options.percentageDiscount,
+					) || null
+				)
+			},
+		),
+		getMerchantCouponsForTypeAndPercent: vi.fn(
+			async (options: { type: string; percentageDiscount: number }) => {
+				// Find all coupons matching type and percentage
+				return Object.values(testMerchantCoupons).filter(
+					(c) =>
+						c.type === options.type &&
+						c.percentageDiscount === options.percentageDiscount,
+				)
+			},
+		),
 	} as unknown as CourseBuilderAdapter
 
 	return { ...defaultAdapter, ...overrides } as CourseBuilderAdapter

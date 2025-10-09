@@ -23,6 +23,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('fixed')
@@ -43,6 +44,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('percentage')
@@ -65,6 +67,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedMerchantCoupon).toBeDefined()
@@ -88,6 +91,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			// PPP 60% on $100 = $40 final
@@ -114,6 +118,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			// Should fall back to bulk discount
@@ -139,6 +144,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('ppp')
@@ -158,6 +164,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('none')
@@ -176,6 +183,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: false,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('none')
@@ -197,6 +205,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).not.toBe('ppp')
@@ -221,6 +230,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.bulk).toBe(true)
@@ -242,6 +252,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			// Merchant 25% is better than bulk 20%, so should use merchant
@@ -265,6 +276,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedMerchantCoupon).toBeDefined()
@@ -285,6 +297,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedMerchantCoupon?.type).toBe('special')
@@ -307,6 +320,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 				usedCoupon: {
 					merchantCouponId: 'coupon_percent_25',
 					restrictedToProductId: 'different_product',
@@ -331,6 +345,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 				usedCoupon: {
 					merchantCouponId: 'coupon_percent_25',
 					restrictedToProductId: 'prod_basic',
@@ -356,6 +371,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result).toHaveProperty('appliedMerchantCoupon')
@@ -378,6 +394,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('none')
@@ -401,6 +418,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(Array.isArray(result.availableCoupons)).toBe(true)
@@ -429,6 +447,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedDiscountType).toBe('none')
@@ -446,6 +465,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result.appliedMerchantCoupon).toBeUndefined()
@@ -465,6 +485,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				unitPrice: 100,
 			})
 
 			expect(result).toBeDefined()
