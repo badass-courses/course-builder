@@ -20,6 +20,8 @@ export const PriceDisplay = ({
 	const { isDiscount } = usePriceCheck()
 
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
+	const appliedFixedDiscount = formattedPrice?.appliedFixedDiscount
+	const appliedDiscountType = formattedPrice?.appliedDiscountType
 
 	const fullPrice = formattedPrice?.fullPrice
 
@@ -35,6 +37,10 @@ export const PriceDisplay = ({
 
 	const percentOffLabel =
 		appliedMerchantCoupon && `${percentOff}% off of $${fullPrice}`
+
+	const fixedDiscountLabel =
+		appliedFixedDiscount &&
+		`$${appliedFixedDiscount.toFixed(2)} off of $${fullPrice}`
 
 	return (
 		<div data-price-container={status} className={className}>
@@ -57,13 +63,21 @@ export const PriceDisplay = ({
 							<>
 								<div aria-hidden="true" data-price-discounted="">
 									<div data-full-price={fullPrice}>{'$' + fullPrice}</div>
-									<div data-percent-off={percentOff}>Save {percentOff}%</div>
+									{appliedDiscountType === 'fixed' && appliedFixedDiscount ? (
+										<div data-fixed-discount={appliedFixedDiscount}>
+											Save ${appliedFixedDiscount.toFixed(0)}
+										</div>
+									) : (
+										<div data-percent-off={percentOff}>Save {percentOff}%</div>
+									)}
 								</div>
 								<div className="sr-only">
 									{appliedMerchantCoupon?.type === 'bulk' ? (
 										<div>Team discount.</div>
 									) : null}{' '}
-									{percentOffLabel}
+									{appliedDiscountType === 'fixed'
+										? fixedDiscountLabel
+										: percentOffLabel}
 								</div>
 							</>
 						)}
