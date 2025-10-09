@@ -110,10 +110,32 @@ async function getActiveMerchantCoupon({
 	) {
 		// use whichever coupon provides the bigger discount
 		const { merchantCoupon: incomingMerchantCoupon } = incomingCoupon
-		if (
-			(incomingMerchantCoupon.percentageDiscount ?? 0) >=
-			(defaultMerchantCoupon.percentageDiscount ?? 0)
-		) {
+
+		// Get product price to compare actual discount amounts
+		const product = productId
+			? await courseBuilderAdapter.getProduct(productId)
+			: null
+		const price = product
+			? await courseBuilderAdapter.getPriceForProduct(productId!)
+			: null
+		const unitPrice = price?.unitAmount || 0
+
+		// Calculate actual discount amounts in dollars
+		const incomingDiscountAmount =
+			incomingMerchantCoupon.amountDiscount !== null &&
+			incomingMerchantCoupon.amountDiscount !== undefined &&
+			incomingMerchantCoupon.amountDiscount > 0
+				? incomingMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				: (incomingMerchantCoupon.percentageDiscount ?? 0) * unitPrice
+
+		const defaultDiscountAmount =
+			defaultMerchantCoupon.amountDiscount !== null &&
+			defaultMerchantCoupon.amountDiscount !== undefined &&
+			defaultMerchantCoupon.amountDiscount > 0
+				? defaultMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				: (defaultMerchantCoupon.percentageDiscount ?? 0) * unitPrice
+
+		if (incomingDiscountAmount >= defaultDiscountAmount) {
 			activeMerchantCoupon = incomingMerchantCoupon
 			usedCouponId = incomingCoupon.id
 		} else {
@@ -183,7 +205,7 @@ const checkForAvailableCoupons = async ({
 
 		const minimalDefaultCoupon = defaultCoupon && {
 			expires: defaultCoupon.expires?.toISOString(),
-			percentageDiscount: defaultCoupon.percentageDiscount.toString(),
+			percentageDiscount: defaultCoupon.percentageDiscount?.toString() || '0',
 		}
 
 		return {
