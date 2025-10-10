@@ -777,9 +777,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -1429,9 +1426,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -2076,9 +2070,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
 
   apps/craft-of-ui:
     dependencies:
@@ -2740,9 +2731,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -3416,9 +3404,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -3852,9 +3837,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
 
   apps/epic-react:
     dependencies:
@@ -4150,9 +4132,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
 
   apps/epic-web:
     dependencies:
@@ -4814,9 +4793,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -5502,9 +5478,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
       vite-tsconfig-paths:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.4.5)(vite@5.4.10)
@@ -6217,9 +6190,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      typescript-eslint:
-        specifier: ^8.46.0
-        version: 8.46.0(eslint@9.37.0)(typescript@5.4.5)
 
   cli:
     dependencies:
@@ -36675,6 +36645,7 @@ packages:
       typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
+    dev: false
 
   /typescript@5.1.6:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
