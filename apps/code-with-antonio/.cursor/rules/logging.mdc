@@ -1,0 +1,9 @@
+---
+description: serverside logging will be added where appropriate 
+globs: *.ts, *.tsx
+---
+[logger.ts](mdc:apps/ai-hero/src/server/logger.ts) is used in a serverside context, but not in client files
+
+logging should be added where appropriate for server actions and server components
+
+we use logging for general observability and debugging
