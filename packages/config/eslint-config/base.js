@@ -3,6 +3,24 @@ import tseslint from 'typescript-eslint'
 /** @type {import("eslint").Linter.Config[]} */
 export default [
 	{
+		ignores: [
+			'eslint.config.js',
+			'**/*.config.js',
+			'**/*.config.cjs',
+			'node_modules/**',
+			'.next/**',
+			'out/**',
+			'build/**',
+			'next-env.d.ts',
+			'.sanity/**',
+			'dist/**',
+			'coverage/**',
+			'**/.well-known/**',
+			'pnpm-lock.yaml',
+		],
+	},
+	{
+		files: ['**/*.{ts,tsx}'],
 		languageOptions: {
 			parser: tseslint.parser,
 			parserOptions: {
@@ -12,18 +30,5 @@ export default [
 		rules: {
 			// Keep it minimal - just the basic TypeScript parser setup
 		},
-	},
-	{
-		ignores: [
-			'eslint.config.js',
-			'node_modules/**',
-			'.next/**',
-			'out/**',
-			'build/**',
-			'next-env.d.ts',
-			'.sanity/**',
-			'dist/**',
-			'coverage/**',
-		],
 	},
 ]
