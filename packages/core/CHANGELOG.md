@@ -1,5 +1,34 @@
 # @coursebuilder/core
 
+## 1.0.7
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add optional retryCount
+  to VideoStatusCheckEvent schema and enhance error handling in
+  removeCompletedVideo function
+
+- [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - limit retries on
+  remove-completed-video inngest function
+
+- [#568](https://github.com/badass-courses/course-builder/pull/568)
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - ensure self-paced
+  workshop purchasers have org id by redirecting to /verify-login before
+  checkout
+- Updated dependencies
+  [[`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/email-templates@1.0.7
+  - @coursebuilder/nodash@0.0.2
+
 ## 1.0.6
 
 ### Patch Changes
