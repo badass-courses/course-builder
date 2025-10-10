@@ -216,8 +216,7 @@
 		"tailwindcss": "^4.1.11",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.7.1",
-		"typescript": "5.4.5",
-		"typescript-eslint": "^8.46.0"
+		"typescript": "5.4.5"
 	},
 	"ct3aMetadata": {
 		"initVersion": "7.22.0"

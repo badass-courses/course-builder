@@ -217,16 +217,11 @@ async function PostBody({ post }: { post: Post | null }) {
 		return null
 	}
 
+	// Separate the compilation from JSX rendering
+	let content
 	try {
-		const { content } = await compileMDX(post.fields.body)
-
-		return (
-			<div className="">
-				<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
-					{content}
-				</article>
-			</div>
-		)
+		const result = await compileMDX(post.fields.body)
+		content = result.content
 	} catch (error) {
 		// Log the error on the server side where it belongs
 		log.error('MDX compilation failed', {
@@ -238,6 +233,14 @@ async function PostBody({ post }: { post: Post | null }) {
 		// Re-throw the error so the error boundary can catch it
 		throw error
 	}
+
+	return (
+		<div className="">
+			<article className="prose dark:prose-a:text-primary prose-a:text-primary sm:prose-lg lg:prose-xl mx-auto max-w-3xl">
+				{content}
+			</article>
+		</div>
+	)
 }
 
 async function PostTitle({ post }: { post: Post | null }) {

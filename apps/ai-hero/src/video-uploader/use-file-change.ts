@@ -47,7 +47,6 @@ export function useFileChange() {
 		//   return
 		// }
 
-		// eslint-disable-next-line no-param-reassign
 		event.target.value = ''
 
 		fileDispatch({

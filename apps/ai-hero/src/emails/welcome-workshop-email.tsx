@@ -26,7 +26,6 @@ export default function WelcomeWorkshopEmail({
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
 }: WelcomeWorkshopEmailProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
-		// eslint-disable-next-line no-console
 		console.debug('Rendering WelcomeWorkshopEmail', { workshopTitle })
 	}
 

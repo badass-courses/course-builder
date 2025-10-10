@@ -32,7 +32,6 @@ export default function WelcomeCohortEmail({
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
 }: WelcomeCohortEmailProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
-		// eslint-disable-next-line no-console
 		console.debug('Rendering WelcomeCohortEmail', { cohortTitle })
 	}
 

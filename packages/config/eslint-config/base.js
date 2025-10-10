@@ -15,13 +15,15 @@ export default [
 	},
 	{
 		ignores: [
-			'**/.eslintrc.cjs',
-			'**/*.config.js',
-			'**/*.config.cjs',
-			'packages/config/**',
-			'.next',
-			'dist',
-			'pnpm-lock.yaml',
+			'eslint.config.js',
+			'node_modules/**',
+			'.next/**',
+			'out/**',
+			'build/**',
+			'next-env.d.ts',
+			'.sanity/**',
+			'dist/**',
+			'coverage/**',
 		],
 	},
 ]

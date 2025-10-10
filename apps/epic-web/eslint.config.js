@@ -1,34 +1,14 @@
-import nextPlugin from '@next/eslint-plugin-next'
-import tseslint from 'typescript-eslint'
+import baseConfig from '@coursebuilder/eslint-config/base.js'
+import nextConfig from '@coursebuilder/eslint-config/nextjs.js'
+import reactConfig from '@coursebuilder/eslint-config/react.js'
 
 /** @type {import("eslint").Linter.Config[]} */
 export default [
+	...baseConfig,
+	...reactConfig,
+	...nextConfig,
 	{
-		ignores: [
-			'node_modules/**',
-			'.next/**',
-			'out/**',
-			'build/**',
-			'next-env.d.ts',
-		],
-	},
-	{
-		files: ['**/*.{js,jsx,ts,tsx}'],
-		plugins: {
-			'@next/next': nextPlugin,
-		},
-		rules: {
-			...nextPlugin.configs['core-web-vitals'].rules,
-			'react/no-unescaped-entities': 'off',
-		},
-	},
-	{
-		files: ['**/*.{ts,tsx}'],
-		languageOptions: {
-			parser: tseslint.parser,
-			parserOptions: {
-				project: './tsconfig.json',
-			},
-		},
+		// App-specific overrides
+		rules: {},
 	},
 ]

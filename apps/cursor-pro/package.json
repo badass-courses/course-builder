@@ -250,7 +250,6 @@
 		"tailwindcss": "^4.1.11",
 		"tsx": "^4.7.1",
 		"typescript": "5.4.5",
-		"typescript-eslint": "^8.46.0",
 		"vite-tsconfig-paths": "^5.1.4"
 	},
 	"ct3aMetadata": {

@@ -61,7 +61,7 @@
 		"tailwindcss": "^4.1.11",
 		"postcss": "^8.4.47",
 		"autoprefixer": "^10.4.14",
-		"eslint": "^8.47.0",
+		"eslint": "^9.37.0",
 		"eslint-config-next": "16.0.0-beta.0",
 		"partykit": "0.0.104",
 		"vitest": "1.6.0",

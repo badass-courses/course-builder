@@ -19,7 +19,7 @@ const Background = () => {
 				r="5.102"
 				fill="#000"
 				stroke="#fff"
-				stroke-width="2"
+				strokeWidth="2"
 			/>
 			<path
 				fill="#000"
@@ -35,7 +35,7 @@ const Background = () => {
 				r="5.102"
 				fill="#000"
 				stroke="#fff"
-				stroke-width="2"
+				strokeWidth="2"
 			/>
 			<circle
 				cx="819.898"
@@ -43,7 +43,7 @@ const Background = () => {
 				r="5.102"
 				fill="#000"
 				stroke="#fff"
-				stroke-width="2"
+				strokeWidth="2"
 			/>
 			<circle
 				cx="819.898"
@@ -51,7 +51,7 @@ const Background = () => {
 				r="5.102"
 				fill="#000"
 				stroke="#fff"
-				stroke-width="2"
+				strokeWidth="2"
 			/>
 		</svg>
 	)
