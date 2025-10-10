@@ -1,9 +1,14 @@
-/** @type {import('eslint').Linter.Config} */
-const config = {
-	extends: ['plugin:@next/next/recommended'],
-	rules: {
-		'@next/next/no-html-link-for-pages': 'off',
-	},
-}
+import nextPlugin from '@next/eslint-plugin-next'
 
-module.exports = config
+/** @type {import('eslint').Linter.Config[]} */
+export default [
+	{
+		plugins: {
+			'@next/next': nextPlugin,
+		},
+		rules: {
+			...nextPlugin.configs.recommended.rules,
+			'@next/next/no-html-link-for-pages': 'off',
+		},
+	},
+]

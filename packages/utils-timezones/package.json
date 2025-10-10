@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@coursebuilder/eslint-config": "workspace:*",
 		"@coursebuilder/tsconfig": "workspace:*",
-		"eslint": "^8.47.0",
+		"eslint": "^9.37.0",
 		"tsup": "8.0.2",
 		"typescript": "5.4.5",
 		"vitest": "1.6.0"

@@ -14,13 +14,7 @@ import {
 
 import { NavItem } from './pages/_components/nav-link'
 
-const AdminLayout = async ({
-	children,
-	params,
-}: {
-	children: React.ReactNode
-	params: Promise<{ module: string }>
-}) => {
+const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
 		<LayoutClient withContainer>
 			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-5 md:grid">
