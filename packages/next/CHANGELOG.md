@@ -1,5 +1,21 @@
 # @coursebuilder/next
 
+## 0.0.29
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- Updated dependencies
+  [[`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3),
+  [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147),
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)]:
+  - @coursebuilder/core@1.0.7
+
 ## 0.0.28
 
 ### Patch Changes
