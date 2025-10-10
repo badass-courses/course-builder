@@ -58,7 +58,7 @@ test('has no available seats if a purchase exists with a bulk coupon without sea
 })
 
 test('has a valid purchase', () => {
-	const purchases = [{}] as Purchase[]
+	const purchases = [{ status: 'Valid' }] as Purchase[]
 	expect(hasValidPurchase(purchases)).toBe(true)
 })
 

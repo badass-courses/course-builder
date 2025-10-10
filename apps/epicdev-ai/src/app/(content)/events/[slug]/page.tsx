@@ -40,8 +40,6 @@ import {
 } from './_components/inline-event-pricing'
 import { createPurchaseDataLoader } from './_components/purchase-data-provider'
 
-export const experimental_ppr = true
-
 export async function generateMetadata(
 	props: {
 		params: Promise<{ slug: string }>

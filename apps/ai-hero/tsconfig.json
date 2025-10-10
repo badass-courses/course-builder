@@ -13,7 +13,7 @@
 		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"jsx": "preserve",
+		"jsx": "react-jsx",
 		"incremental": true,
 		"noUncheckedIndexedAccess": true,
 		"baseUrl": ".",
@@ -27,14 +27,14 @@
 		]
 	},
 	"include": [
-		".eslintrc.cjs",
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
 		"**/*.cjs",
 		"**/*.mjs",
 		".next/types/**/*.ts",
-		"./node_modules/y-codemirror.next/dist/src/index.d.ts"
+		"./node_modules/y-codemirror.next/dist/src/index.d.ts",
+		".next/dev/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]
 }

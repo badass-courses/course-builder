@@ -174,7 +174,7 @@ export async function createPost(input: NewPost) {
 			})
 		}
 
-		revalidateTag('posts')
+		revalidateTag('posts', 'max')
 
 		return post
 	} else {
@@ -211,7 +211,7 @@ export async function updatePost(
 		postSlug = input.fields.slug
 	}
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 
 	await updateKcdPost({
 		...input,
@@ -258,8 +258,8 @@ export async function deletePost(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	revalidateTag('posts')
-	revalidateTag(id)
+	revalidateTag('posts', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/posts')
 
 	await deleteKcdPost(id)

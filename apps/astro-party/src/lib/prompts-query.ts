@@ -48,7 +48,7 @@ export async function createPrompt(input: NewPrompt) {
 
 	const prompt = await getPrompt(newPromptId)
 
-	revalidateTag('prompts')
+	revalidateTag('prompts', 'max')
 
 	return prompt
 }

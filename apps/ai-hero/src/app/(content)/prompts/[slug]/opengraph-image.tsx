@@ -26,7 +26,6 @@ export default async function PromptOG({
 			>
 				<main tw="flex flex-col gap-5 h-full grow items-start pb-24 justify-center px-16">
 					<div tw="text-[60px] text-white">{resource?.fields?.title}</div>
-					{/* eslint-disable-next-line @next/next/no-img-element */}
 					{/* <img
                 tw="rounded-full h-74"
                 alt={author.name}

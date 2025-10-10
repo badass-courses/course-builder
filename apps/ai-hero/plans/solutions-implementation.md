@@ -163,7 +163,7 @@ export async function createSolution({
       userId: user.id,
     })
 
-    revalidateTag('solution')
+    revalidateTag('solution', 'max')
     return solution
   } catch (error) {
     log.error('solution.create.error', {
@@ -220,7 +220,7 @@ export async function updateSolution(input: Partial<Solution>) {
     userId: user.id,
   })
 
-  revalidateTag('solution')
+  revalidateTag('solution', 'max')
   return updatedResource
 }
 
@@ -270,7 +270,7 @@ export async function deleteSolution(solutionId: string) {
       userId: user.id,
     })
 
-    revalidateTag('solution')
+    revalidateTag('solution', 'max')
     return { success: true }
   } catch (error) {
     log.error('solution.delete.error', {

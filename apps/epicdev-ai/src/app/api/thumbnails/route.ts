@@ -14,12 +14,8 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(
-	request: NextRequest,
-	props: { params: Promise<{ videoResourceId: string }> },
-) {
+export async function GET(request: NextRequest) {
 	try {
-		// const params = await props.params
 		const { searchParams } = new URL(request.url)
 		// const searchParams = request.nextUrl.searchParams
 		const videoResourceId = searchParams.get('videoResourceId')

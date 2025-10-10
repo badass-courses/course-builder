@@ -34,7 +34,6 @@ export default function WelcomeCohortEmailForTeamRedeemer({
 	isZeroDayAccess = false,
 }: WelcomeCohortEmailTeamRedeemerProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
-		// eslint-disable-next-line no-console
 		console.debug('Rendering WelcomeCohortEmailForTeamRedeemer', {
 			cohortTitle,
 		})

@@ -449,8 +449,8 @@ export async function updateWorkshop(input: Module) {
 			},
 		})
 
-	revalidateTag('workshops')
-	revalidateTag(currentWorkshop.id)
+	revalidateTag('workshops', 'max')
+	revalidateTag(currentWorkshop.id, 'max')
 	revalidatePath('/workshops')
 
 	return {

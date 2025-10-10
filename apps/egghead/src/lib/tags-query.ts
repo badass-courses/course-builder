@@ -226,6 +226,6 @@ export async function updateTag(input: UpdateTagInput): Promise<EggheadTag> {
 		.set(updatedTag)
 		.where(eq(tagTable.id, updatedTag.id))
 
-	revalidateTag('tags')
+	revalidateTag('tags', 'max')
 	return updatedTag
 }

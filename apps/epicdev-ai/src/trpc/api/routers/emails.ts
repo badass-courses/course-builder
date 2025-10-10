@@ -21,7 +21,7 @@ export const emailsRouter = createTRPCRouter({
 		.input(NewEmailSchema)
 		.mutation(async ({ input }) => {
 			const email = await createEmail(input)
-			revalidateTag('emails')
+			revalidateTag('emails', 'max')
 			return email
 		}),
 
@@ -47,9 +47,9 @@ export const emailsRouter = createTRPCRouter({
 				workshopId: input.workshopId,
 			})
 
-			revalidateTag('workshop')
-			revalidateTag('workshops')
-			revalidateTag(input.workshopId)
+			revalidateTag('workshop', 'max')
+			revalidateTag('workshops', 'max')
+			revalidateTag(input.workshopId, 'max')
 
 			return result
 		}),
@@ -71,9 +71,9 @@ export const emailsRouter = createTRPCRouter({
 					),
 				)
 
-			revalidateTag('workshop')
-			revalidateTag('workshops')
-			revalidateTag(input.workshopId)
+			revalidateTag('workshop', 'max')
+			revalidateTag('workshops', 'max')
+			revalidateTag(input.workshopId, 'max')
 
 			return result
 		}),

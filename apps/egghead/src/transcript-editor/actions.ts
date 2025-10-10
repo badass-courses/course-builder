@@ -64,6 +64,6 @@ export async function updateTranscript(
 	}
 
 	// Revalidate relevant caches
-	revalidateTag('posts')
-	revalidateTag('videos')
+	revalidateTag('posts', 'max')
+	revalidateTag('videos', 'max')
 }

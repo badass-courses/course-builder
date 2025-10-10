@@ -32,7 +32,6 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { PostActions } from './_components/post-actions'
 
-// export const experimental_ppr = true
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
