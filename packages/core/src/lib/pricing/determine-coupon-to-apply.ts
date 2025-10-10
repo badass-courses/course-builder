@@ -25,6 +25,7 @@ const DetermineCouponToApplyParamsSchema = z.object({
 		})
 		.nullable()
 		.optional(),
+	unitPrice: z.number(),
 })
 
 type DetermineCouponToApplyParams = z.infer<
@@ -49,6 +50,7 @@ export const determineCouponToApply = async (
 		purchaseToBeUpgraded,
 		autoApplyPPP,
 		usedCoupon,
+		unitPrice,
 	} = DetermineCouponToApplyParamsSchema.parse(params)
 	// TODO: What are the lookups and logic checks we can
 	// skip when there is no appliedMerchantCouponId?
@@ -82,6 +84,7 @@ export const determineCouponToApply = async (
 		userPurchases,
 		autoApplyPPP,
 		prismaCtx,
+		unitPrice,
 	})
 
 	const { bulkCouponToBeApplied, consideredBulk } = await getBulkCouponDetails({
@@ -91,6 +94,7 @@ export const determineCouponToApply = async (
 		quantity,
 		appliedMerchantCoupon: specialMerchantCouponToApply,
 		pppApplied: pppDetails.pppApplied,
+		unitPrice,
 	})
 
 	let couponToApply: MinimalMerchantCoupon | null = null
@@ -124,9 +128,34 @@ export const determineCouponToApply = async (
 		})
 		.parse(couponToApply?.type)
 
+	// Determine the specific discount type being applied
+	let appliedDiscountType: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none' =
+		'none'
+
+	if (couponToApply) {
+		if (appliedCouponType === PPP_TYPE) {
+			appliedDiscountType = 'ppp'
+		} else if (appliedCouponType === BULK_TYPE) {
+			appliedDiscountType = 'bulk'
+		} else if (
+			couponToApply.amountDiscount !== null &&
+			couponToApply.amountDiscount !== undefined &&
+			couponToApply.amountDiscount > 0
+		) {
+			appliedDiscountType = 'fixed'
+		} else if (
+			couponToApply.percentageDiscount !== null &&
+			couponToApply.percentageDiscount !== undefined &&
+			couponToApply.percentageDiscount > 0
+		) {
+			appliedDiscountType = 'percentage'
+		}
+	}
+
 	return {
 		appliedMerchantCoupon: couponToApply || undefined,
 		appliedCouponType,
+		appliedDiscountType,
 		availableCoupons,
 		bulk: consideredBulk,
 	}
@@ -146,6 +175,7 @@ const GetPPPDetailsParamsSchema = z.object({
 	userPurchases: UserPurchasesSchema,
 	autoApplyPPP: z.boolean(),
 	prismaCtx: PrismaCtxSchema,
+	unitPrice: z.number(),
 })
 type GetPPPDetailsParams = z.infer<typeof GetPPPDetailsParamsSchema>
 
@@ -162,6 +192,7 @@ const getPPPDetails = async ({
 	userPurchases,
 	autoApplyPPP,
 	prismaCtx,
+	unitPrice,
 }: GetPPPDetailsParams) => {
 	const hasMadeNonPPPDiscountedPurchase = userPurchases.some(
 		(purchase) => purchase.status === 'Valid',
@@ -189,12 +220,18 @@ const getPPPDetails = async ({
 			? appliedMerchantCoupon
 			: pppMerchantCouponForUpgrade
 
-	// TODO: Move this sort of price comparison to the parent method, for the
-	// purposes of this method we'll just assume that if the PPP looks
-	// good and can be applied, then it is a candidate.
-	const pppDiscountIsBetter =
-		(specialMerchantCoupon?.percentageDiscount || 0) <
-		expectedPPPDiscountPercent
+	// Compare PPP vs special merchant coupon by calculating actual discount amounts
+	// to determine which provides better savings for the customer
+	const merchantDiscountAmount =
+		specialMerchantCoupon?.amountDiscount !== null &&
+		specialMerchantCoupon?.amountDiscount !== undefined &&
+		specialMerchantCoupon?.amountDiscount > 0
+			? specialMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+			: (specialMerchantCoupon?.percentageDiscount || 0) * unitPrice
+
+	const pppDiscountAmount = expectedPPPDiscountPercent * unitPrice
+
+	const pppDiscountIsBetter = merchantDiscountAmount < pppDiscountAmount
 
 	const pppConditionsMet =
 		expectedPPPDiscountPercent > 0 &&
@@ -296,6 +333,7 @@ const GetBulkCouponDetailsParamsSchema = z.object({
 	quantity: z.number(),
 	appliedMerchantCoupon: MerchantCouponSchema.nullable(),
 	pppApplied: z.boolean(),
+	unitPrice: z.number(),
 })
 type GetBulkCouponDetailsParams = z.infer<
 	typeof GetBulkCouponDetailsParamsSchema
@@ -308,6 +346,7 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 		quantity,
 		appliedMerchantCoupon,
 		pppApplied,
+		unitPrice,
 	} = GetBulkCouponDetailsParamsSchema.parse(params)
 
 	// Determine if the user has an existing bulk purchase of this product.
@@ -323,8 +362,17 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 
 	const bulkCouponPercent = getBulkDiscountPercent(seatCount)
 
-	const bulkDiscountIsBetter =
-		(appliedMerchantCoupon?.percentageDiscount || 0) < bulkCouponPercent
+	// Compare bulk discount vs merchant coupon by calculating actual discount amounts
+	const merchantDiscountAmount =
+		appliedMerchantCoupon?.amountDiscount !== null &&
+		appliedMerchantCoupon?.amountDiscount !== undefined &&
+		appliedMerchantCoupon?.amountDiscount > 0
+			? appliedMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+			: (appliedMerchantCoupon?.percentageDiscount || 0) * unitPrice
+
+	const bulkDiscountAmount = bulkCouponPercent * unitPrice
+
+	const bulkDiscountIsBetter = merchantDiscountAmount < bulkDiscountAmount
 
 	const bulkDiscountAvailable =
 		bulkCouponPercent > 0 && bulkDiscountIsBetter && !pppApplied // this condition seems irrelevant, if quantity > 1 OR seatCount > 1

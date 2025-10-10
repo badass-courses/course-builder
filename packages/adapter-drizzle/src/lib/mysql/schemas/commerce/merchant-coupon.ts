@@ -22,7 +22,8 @@ export function getMerchantCouponSchema(mysqlTable: MySqlTableFn) {
 			percentageDiscount: decimal('percentageDiscount', {
 				precision: 3,
 				scale: 2,
-			}).notNull(),
+			}),
+			amountDiscount: int('amountDiscount'),
 			type: varchar('type', { length: 191 }),
 		},
 		(table) => {

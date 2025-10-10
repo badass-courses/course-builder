@@ -15,6 +15,7 @@ export const couponSchema = z.object({
 		const decimalPlaces = value.toString().split('.')[1]?.length || 0
 		return decimalPlaces <= 2
 	}),
+	amountDiscount: z.coerce.number().int().optional().nullable(),
 	restrictedToProductId: z.string().max(191).optional().nullable(),
 	bulkPurchases: z.array(z.any()).default([]),
 	redeemedBulkCouponPurchases: z.array(z.any()).default([]),

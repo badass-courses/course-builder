@@ -79,14 +79,17 @@ export async function getFixedDiscountForIndividualUpgrade({
 
 	// if the Purchase To Be Upgraded is `restricted` and it has a matching
 	// `productId` with the Product To Be Purchased, then this is a PPP
-	// upgrade, so use the purchase amount.
+	// upgrade, so use the purchase amount (convert from cents to dollars).
 	if (transitioningToUnrestrictedAccess) {
 		const purchaseChain = await getChainOfPurchases({
 			purchase: purchaseToBeUpgraded,
 			ctx,
 		})
 
-		return sum(purchaseChain.map((purchase) => purchase.totalAmount))
+		const totalInCents = sum(
+			purchaseChain.map((purchase) => purchase.totalAmount),
+		)
+		return totalInCents / 100 // Convert cents to dollars
 	}
 
 	// if Purchase To Be Upgraded is upgradeable to the Product To Be Purchased,
@@ -167,18 +170,23 @@ export async function formatPricesForProduct(
 	if (!price) throw new PriceFormattingError(`no-price-found`, noContextOptions)
 
 	// TODO: give this function a better name like, `determineCouponDetails`
-	const { appliedMerchantCoupon, appliedCouponType, ...result } =
-		await determineCouponToApply({
-			prismaCtx: ctx,
-			merchantCouponId,
-			country,
-			quantity,
-			userId,
-			productId: product.id,
-			purchaseToBeUpgraded: upgradeFromPurchase,
-			autoApplyPPP,
-			usedCoupon,
-		})
+	const {
+		appliedMerchantCoupon,
+		appliedCouponType,
+		appliedDiscountType,
+		...result
+	} = await determineCouponToApply({
+		prismaCtx: ctx,
+		merchantCouponId,
+		country,
+		quantity,
+		userId,
+		productId: product.id,
+		purchaseToBeUpgraded: upgradeFromPurchase,
+		autoApplyPPP,
+		usedCoupon,
+		unitPrice: price.unitAmount,
+	})
 
 	const fireFixedDiscountForIndividualUpgrade = async () => {
 		return await getFixedDiscountForIndividualUpgrade({
@@ -201,7 +209,9 @@ export async function formatPricesForProduct(
 	const unitPrice: number = price.unitAmount
 	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
 
-	const percentOfDiscount = appliedMerchantCoupon?.percentageDiscount
+	const percentOfDiscount =
+		appliedMerchantCoupon?.percentageDiscount ?? undefined
+	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here
@@ -222,10 +232,13 @@ export async function formatPricesForProduct(
 			unitPrice,
 			percentOfDiscount,
 			fixedDiscount: fixedDiscountForUpgrade, // if not upgrade, we know this will be 0
+			amountDiscount, // fixed amount discount from merchant coupon
 			quantity, // if PPP is applied, we know this will be 1
 		}),
 		availableCoupons: result.availableCoupons,
 		appliedMerchantCoupon,
+		appliedDiscountType,
+		appliedFixedDiscount: amountDiscount > 0 ? amountDiscount / 100 : undefined,
 		...(usedCoupon?.merchantCouponId === appliedMerchantCoupon?.id && {
 			usedCouponId,
 		}),

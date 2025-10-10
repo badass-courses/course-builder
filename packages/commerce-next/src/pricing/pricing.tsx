@@ -206,11 +206,13 @@ const Price = ({
 	const { isDiscount } = usePriceCheck()
 
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
+	const appliedFixedDiscount = formattedPrice?.appliedFixedDiscount
+	const appliedDiscountType = formattedPrice?.appliedDiscountType
 
 	const fullPrice = formattedPrice?.fullPrice
 
 	const percentOff = appliedMerchantCoupon
-		? Math.floor(+appliedMerchantCoupon.percentageDiscount * 100)
+		? Math.floor(+(appliedMerchantCoupon.percentageDiscount ?? 0) * 100)
 		: formattedPrice && isDiscount(formattedPrice)
 			? Math.floor(
 					((formattedPrice.unitPrice - formattedPrice.calculatedPrice) /
@@ -221,6 +223,10 @@ const Price = ({
 
 	const percentOffLabel =
 		appliedMerchantCoupon && `${percentOff}% off of $${fullPrice}`
+
+	const fixedDiscountLabel =
+		appliedFixedDiscount &&
+		`$${appliedFixedDiscount.toFixed(2)} off of $${fullPrice}`
 	return (
 		<div className={cn('flex flex-col items-center', className)}>
 			{children || (
@@ -270,15 +276,24 @@ const Price = ({
 											<div className="text-foreground relative flex text-2xl leading-none line-through">
 												{'$' + fullPrice}
 											</div>
-											<div className="text-primary text-base">
-												Save {percentOff}%
-											</div>
+											{appliedDiscountType === 'fixed' &&
+											appliedFixedDiscount ? (
+												<div className="text-primary text-base">
+													Save ${appliedFixedDiscount.toFixed(0)}
+												</div>
+											) : (
+												<div className="text-primary text-base">
+													Save {percentOff}%
+												</div>
+											)}
 										</div>
 										<div className="sr-only">
 											{appliedMerchantCoupon?.type === 'bulk' ? (
 												<div>Team discount.</div>
 											) : null}{' '}
-											{percentOffLabel}
+											{appliedDiscountType === 'fixed'
+												? fixedDiscountLabel
+												: percentOffLabel}
 										</div>
 									</>
 								)}

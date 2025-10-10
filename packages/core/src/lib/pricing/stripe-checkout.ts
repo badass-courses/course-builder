@@ -225,8 +225,6 @@ export async function stripeCheckout({
 
 			const user = userId ? await adapter.getUser?.(userId as string) : false
 
-			console.log('user', user)
-
 			const upgradeFromPurchase = upgradeFromPurchaseId
 				? await adapter.getPurchase(upgradeFromPurchaseId)
 				: null
@@ -246,8 +244,6 @@ export async function stripeCheckout({
 						config.paymentsAdapter,
 					)
 				: false
-
-			console.log('customerId', customerId)
 
 			const loadedProduct = await adapter.getProduct(productId)
 
@@ -307,6 +303,13 @@ export async function stripeCheckout({
 						)
 					: 0
 
+			const stripeCouponAmountOff =
+				merchantCoupon && merchantCoupon.identifier
+					? await config.paymentsAdapter.getCouponAmountOff(
+							merchantCoupon.identifier,
+						)
+					: 0
+
 			let discounts = []
 			let appliedPPPStripeCouponId: string | undefined | null = undefined
 			let upgradedFromPurchaseId: string | undefined | null = undefined
@@ -340,6 +343,7 @@ export async function stripeCheckout({
 				const calculatedPrice = getCalculatedPrice({
 					unitPrice: fullPrice,
 					percentOfDiscount: stripeCouponPercentOff,
+					amountDiscount: stripeCouponAmountOff,
 					quantity: 1,
 					fixedDiscount: fixedDiscountForIndividualUpgrade,
 				})
@@ -352,7 +356,7 @@ export async function stripeCheckout({
 					const couponName = buildCouponName(
 						{ ...upgradeFromPurchase, product: upgradeFromProduct },
 						productId,
-						first(availableUpgrade),
+						availableUpgrade?.[0] || null,
 						purchaseWillBeRestricted,
 						stripeCouponPercentOff,
 					)
@@ -374,7 +378,7 @@ export async function stripeCheckout({
 						coupon: couponId,
 					})
 				}
-			} else if (merchantCoupon && merchantCoupon.identifier) {
+			} else if (merchantCoupon) {
 				// no ppp for bulk purchases
 				const isNotPPP = merchantCoupon.type !== 'ppp'
 				if (isNotPPP || quantity === 1) {
@@ -382,15 +386,36 @@ export async function stripeCheckout({
 						merchantCoupon.type === 'ppp'
 							? merchantCoupon?.identifier
 							: undefined
-					const promotionCodeId =
-						await config.paymentsAdapter.createPromotionCode({
-							coupon: merchantCoupon.identifier,
+
+					// Handle fixed amount discounts vs percentage discounts
+					if (merchantCoupon.amountDiscount) {
+						// For fixed amount discounts, create a transient coupon
+						const couponId = await config.paymentsAdapter.createCoupon({
+							amount_off: merchantCoupon.amountDiscount,
+							name: merchantCoupon.type || 'Fixed Discount',
 							max_redemptions: 1,
-							expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+							redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
+							currency: 'USD',
+							applies_to: {
+								products: [merchantProductIdentifier],
+							},
 						})
-					discounts.push({
-						promotion_code: promotionCodeId,
-					})
+
+						discounts.push({
+							coupon: couponId,
+						})
+					} else if (merchantCoupon.identifier) {
+						// For percentage discounts, use promotion code
+						const promotionCodeId =
+							await config.paymentsAdapter.createPromotionCode({
+								coupon: merchantCoupon.identifier,
+								max_redemptions: 1,
+								expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+							})
+						discounts.push({
+							promotion_code: promotionCodeId,
+						})
+					}
 				}
 			}
 
@@ -435,8 +460,16 @@ export async function stripeCheckout({
 				productId: loadedProduct.id,
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),
-				siteName: process.env.NEXT_PUBLIC_APP_NAME as string,
+				...(process.env.NEXT_PUBLIC_APP_NAME && {
+					siteName: process.env.NEXT_PUBLIC_APP_NAME,
+				}),
 				...(params.organizationId && { organizationId: params.organizationId }),
+				...(merchantCoupon && {
+					discountType: merchantCoupon.amountDiscount ? 'fixed' : 'percentage',
+					discountAmount: merchantCoupon.amountDiscount
+						? merchantCoupon.amountDiscount
+						: stripeCouponPercentOff * 100,
+				}),
 			})
 
 			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({
