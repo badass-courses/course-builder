@@ -234,7 +234,7 @@ export async function updateEvent(
 			changes: Object.keys(input.fields || {}),
 		})
 
-		revalidate && revalidateTag('events')
+		revalidate && revalidateTag('events', 'max')
 		try {
 			console.log(
 				`Dispatching ${RESOURCE_UPDATED_EVENT} for resource: ${updatedEvent.id} (type: ${updatedEvent.type})`,

@@ -161,8 +161,8 @@
 		"@types/mjml": "^4.7.4",
 		"@types/nodemailer": "^6.4.14",
 		"@types/pluralize": "^0.0.33",
-		"@types/react": "19.1.8",
-		"react": "19.1.0",
+		"@types/react": "19.2.2",
+		"react": "19.2.0",
 		"tsup": "8.0.2",
 		"zod": "^3.22.4"
 	}

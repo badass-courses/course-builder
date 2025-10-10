@@ -68,7 +68,7 @@ export async function createEmail(input: NewEmail) {
 
 	const email = await getEmail(newEmailId)
 
-	revalidateTag('emails')
+	revalidateTag('emails', 'max')
 
 	return email
 }

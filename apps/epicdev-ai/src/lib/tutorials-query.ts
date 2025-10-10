@@ -300,8 +300,8 @@ export async function updateTutorial(input: Module) {
 		tutorialSlug = `${slugify(input.fields.title)}~${splitSlug[1] || guid()}`
 	}
 
-	revalidateTag('tutorials')
-	revalidateTag(currentTutorial.id)
+	revalidateTag('tutorials', 'max')
+	revalidateTag(currentTutorial.id, 'max')
 	revalidatePath('/tutorials')
 
 	return courseBuilderAdapter.updateContentResourceFields({

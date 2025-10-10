@@ -80,5 +80,5 @@ export async function updateTranscript(
 		})
 	}
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 }

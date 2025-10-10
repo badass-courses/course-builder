@@ -194,7 +194,7 @@ export async function createSolution({
 			})
 		}
 
-		revalidateTag('solution')
+		revalidateTag('solution', 'max')
 		return solution
 	} catch (error) {
 		log.error('solution.create.error', {
@@ -281,7 +281,7 @@ export async function updateSolution(input: Partial<Solution>) {
 			userId: user.id,
 		})
 
-		revalidateTag('solution')
+		revalidateTag('solution', 'max')
 		return updatedResource
 	} catch (error) {
 		log.error('solution.update.error', {
@@ -350,7 +350,7 @@ export async function deleteSolution(solutionId: string) {
 			userId: user.id,
 		})
 
-		revalidateTag('solution')
+		revalidateTag('solution', 'max')
 		return { success: true }
 	} catch (error) {
 		log.error('solution.delete.error', {
@@ -627,7 +627,7 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 				// Don't rethrow - let the solution creation succeed even if TypeSense fails
 			}
 
-			revalidateTag('solution')
+			revalidateTag('solution', 'max')
 			return solution
 		} catch (error) {
 			console.log('❌ Error in solution creation flow:', error)

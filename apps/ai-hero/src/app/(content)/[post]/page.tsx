@@ -30,8 +30,6 @@ import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
-export const experimental_ppr = true
-
 type Props = {
 	params: Promise<{ post: string }>
 }

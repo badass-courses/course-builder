@@ -34,8 +34,6 @@ import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 
-export const experimental_ppr = true
-
 type Props = {
 	params: Promise<{ post: string }>
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>

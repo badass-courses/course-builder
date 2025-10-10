@@ -39,8 +39,6 @@ import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-for
 import { PostBodyErrorBoundary } from './_components/post-body-error-boundary'
 import PostTranscript from './_components/post-transcript'
 
-export const experimental_ppr = true
-
 type Props = {
 	params: Promise<{ post: string }>
 }

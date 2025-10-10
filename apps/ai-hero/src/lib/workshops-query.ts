@@ -688,7 +688,7 @@ export const addResourceToWorkshop = async ({
 		},
 	})
 
-	revalidateTag('workshop')
+	revalidateTag('workshop', 'max')
 
 	return resourceResource
 }
@@ -714,7 +714,7 @@ export const updateResourcePosition = async ({
 			),
 		)
 
-	revalidateTag('workshop')
+	revalidateTag('workshop', 'max')
 
 	return result
 }
@@ -810,9 +810,9 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 			},
 		})
 
-	revalidateTag('workshop')
-	revalidateTag('workshops')
-	revalidateTag(currentWorkshop.id)
+	revalidateTag('workshop', 'max')
+	revalidateTag('workshops', 'max')
+	revalidateTag(currentWorkshop.id, 'max')
 	revalidatePath('/workshops')
 	revalidatePath(`/workshops/${workshopSlug}`)
 
