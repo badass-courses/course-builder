@@ -123,7 +123,9 @@ const Home = async (props: Props) => {
 							</span>{' '}
 							on {saleBannerData.productName}.{' '}
 							<div className="bg-primary text-primary-foreground ml-1 rounded px-1.5 py-0.5 transition ease-in-out group-hover:underline">
-								Get Your Ticket
+								{saleBannerData.productType === 'self-paced'
+									? 'Get Access'
+									: 'Get Your Ticket'}
 							</div>
 						</Link>
 					</div>

@@ -8,6 +8,7 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 export type SaleBannerData = {
 	percentOff: number
 	productName: string
+	productType: string | null
 	productPath: string
 }
 
@@ -53,6 +54,7 @@ export async function getSaleBannerData(
 		return {
 			percentOff,
 			productName: result.product.name,
+			productType: result.product.type,
 			productPath: getResourcePath(
 				result.resource.type,
 				result.resource.fields.slug,
