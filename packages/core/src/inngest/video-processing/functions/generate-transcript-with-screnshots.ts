@@ -6,7 +6,11 @@ import {
 	CoreInngestTrigger,
 } from '../../create-inngest-middleware'
 import { VIDEO_SRT_READY_EVENT } from '../events/event-video-srt-ready-to-asset'
+import { videoChannel } from '../realtime'
 import { mergeSrtWithScreenshots } from '../utils'
+
+const realtimeEnabled =
+	process.env.NEXT_PUBLIC_ENABLE_REALTIME_VIDEO_UPLOAD === 'true'
 
 export const generateTranscriptWithScreenshotsConfig = {
 	id: `generate-transcript-with-screenshots`,
@@ -17,7 +21,13 @@ export const generateTranscriptWithScreenshotsTrigger: CoreInngestTrigger = {
 }
 
 export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
-	async ({ event, step, db, partyProvider }: CoreInngestFunctionInput) => {
+	async ({
+		event,
+		step,
+		db,
+		partyProvider,
+		publish,
+	}: CoreInngestFunctionInput) => {
 		const videoResourceId = event.data.videoResourceId
 
 		if (!videoResourceId) {
@@ -64,15 +74,27 @@ export const generateTranscriptWithScreenshotsHandler: CoreInngestHandler =
 			})
 		})
 
-		await step.run('send the transcript to the party', async () => {
-			return await partyProvider.broadcastMessage({
-				body: {
-					body: transcriptWithScreenshots,
-					requestId: event.data.videoResourceId,
-					name: 'transcriptWithScreenshots.ready',
-				},
-				roomId: event.data.videoResourceId,
-			})
+		await step.run('send the transcript update', async () => {
+			const roomId = event.data.videoResourceId
+			const payload = {
+				name: 'transcriptWithScreenshots.ready' as const,
+				body: transcriptWithScreenshots,
+				requestId: roomId,
+			}
+			if (realtimeEnabled && publish) {
+				await publish(videoChannel(roomId).status(payload))
+			}
+
+			if (!realtimeEnabled || !publish) {
+				await partyProvider.broadcastMessage({
+					body: {
+						body: payload.body,
+						requestId: payload.requestId,
+						name: payload.name,
+					},
+					roomId,
+				})
+			}
 		})
 
 		return { transcriptWithScreenshots }

@@ -8,9 +8,10 @@ import { LessonPlayer } from '@/app/(content)/_components/lesson-player'
 import { NewLessonVideoForm } from '@/app/(content)/_components/new-lesson-video-form'
 import { SimplePostPlayer } from '@/app/(content)/posts/_components/post-player'
 import { reprocessTranscript } from '@/app/(content)/posts/[slug]/edit/actions'
+import { fetchRealtimeVideoToken } from '@/app/actions/realtime'
 import Spinner from '@/components/spinner'
-import { env } from '@/env.mjs'
 import { useTranscript } from '@/hooks/use-transcript'
+import { useVideoRealtimeSubscription } from '@/hooks/use-video-realtime'
 import { api } from '@/trpc/react'
 import { pollVideoResource } from '@/utils/poll-video-resource'
 import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
@@ -35,7 +36,6 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '@coursebuilder/ui'
-import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
 /**
  * Base interface that any content resource must implement
@@ -163,42 +163,64 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 	)
 
 	// Socket connection for video and transcript updates
-	useSocket({
+	const realtimeEnabled =
+		process.env.NEXT_PUBLIC_ENABLE_REALTIME_VIDEO_UPLOAD === 'true' &&
+		Boolean(videoResource?.id)
+	const realtimeSubscription = useVideoRealtimeSubscription({
 		room: videoResource?.id,
-		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
-		onMessage: async (messageEvent) => {
-			try {
-				const data = JSON.parse(messageEvent.data)
-
-				switch (data.name) {
-					case 'video.asset.ready':
-					case 'videoResource.created':
-						if (data.body.id) {
-							refetch()
-						}
-						break
-					case 'transcript.ready':
-						setTranscript(data.body)
-						setIsTranscriptProcessing(false)
-						refetch()
-						break
-					case 'video.asset.attached':
-						console.log('video.asset.attached', data.body)
-						setVideoResourceId(data.body.videoResourceId)
-						refetch()
-						break
-					case 'video.asset.detached':
-						setVideoResourceId(undefined)
-						refetch()
-						break
-					default:
-						break
-				}
-			} catch (error) {
-				// nothing to do
-			}
-		},
+		enabled: realtimeEnabled,
+		refreshToken: fetchRealtimeVideoToken,
 	})
+
+	React.useEffect(() => {
+		if (!realtimeEnabled || !realtimeSubscription?.latestData) {
+			return
+		}
+
+		const { data: message } = realtimeSubscription.latestData
+		if (!message) return
+
+		switch (message.name) {
+			case 'video.asset.ready':
+			case 'videoResource.created':
+				if (
+					message.body &&
+					typeof message.body === 'object' &&
+					'id' in message.body
+				) {
+					refetch()
+				}
+				break
+			case 'transcript.ready':
+				setTranscript(message.body)
+				setIsTranscriptProcessing(false)
+				refetch()
+				break
+			case 'video.asset.attached':
+				console.log('video.asset.attached', message.body)
+				if (
+					message.body &&
+					typeof message.body === 'object' &&
+					'videoResourceId' in message.body
+				) {
+					setVideoResourceId(message.body.videoResourceId as string)
+				}
+				refetch()
+				break
+			case 'video.asset.detached':
+				setVideoResourceId(undefined)
+				refetch()
+				break
+			default:
+				break
+		}
+	}, [
+		realtimeSubscription?.latestData,
+		realtimeEnabled,
+		refetch,
+		setIsTranscriptProcessing,
+		setTranscript,
+	])
 
 	// Effect to poll video resource until it's ready
 	React.useEffect(() => {

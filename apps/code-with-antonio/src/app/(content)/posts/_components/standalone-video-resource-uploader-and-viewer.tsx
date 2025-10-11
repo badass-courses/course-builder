@@ -1,7 +1,9 @@
 import * as React from 'react'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
+import { fetchRealtimeVideoToken } from '@/app/actions/realtime'
 import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
+import { useVideoRealtimeSubscription } from '@/hooks/use-video-realtime'
 import { api } from '@/trpc/react'
 import MuxPlayer from '@mux/mux-player-react'
 import { Loader2, MoreVertical, Play } from 'lucide-react'
@@ -20,7 +22,6 @@ import {
 	Skeleton,
 	useToast,
 } from '@coursebuilder/ui'
-import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 
 type VideoPreviewModalState = {
 	isOpen: boolean
@@ -57,28 +58,34 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 		return paginatedVideoResources?.pages.flatMap((page) => page.items) ?? []
 	}, [paginatedVideoResources])
 
-	useSocket({
+	const subscription = useVideoRealtimeSubscription({
 		room: videoResourceId,
-		host: env.NEXT_PUBLIC_PARTY_KIT_URL,
-		onMessage: async (messageEvent) => {
-			try {
-				const data = JSON.parse(messageEvent.data)
-
-				switch (data.name) {
-					case 'video.asset.ready':
-					case 'videoResource.created':
-						if (data.body.id) {
-							refetch()
-						}
-						break
-					default:
-						break
-				}
-			} catch (error) {
-				// nothing to do
-			}
-		},
+		enabled:
+			process.env.NEXT_PUBLIC_ENABLE_REALTIME_VIDEO_UPLOAD === 'true' &&
+			Boolean(videoResourceId),
+		refreshToken: fetchRealtimeVideoToken,
 	})
+
+	React.useEffect(() => {
+		if (!subscription?.latestData) return
+
+		const message = subscription.latestData
+
+		if (!message?.data) return
+
+		const { name, body } = message.data
+
+		switch (name) {
+			case 'video.asset.ready':
+			case 'videoResource.created':
+				if (typeof body === 'object' && body && 'id' in body) {
+					refetch()
+				}
+				break
+			default:
+				break
+		}
+	}, [subscription?.latestData, refetch])
 	const { resource, form } = useResource()
 	const { mutate: attachVideoResourceToPost } =
 		api.videoResources.attachToPost.useMutation()

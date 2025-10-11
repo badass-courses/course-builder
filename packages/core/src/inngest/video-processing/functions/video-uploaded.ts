@@ -7,17 +7,24 @@ import {
 import { VIDEO_RESOURCE_CREATED_EVENT } from '../events/event-video-resource'
 import { VIDEO_STATUS_CHECK_EVENT } from '../events/event-video-status-check'
 import { VIDEO_UPLOADED_EVENT } from '../events/event-video-uploaded'
+import { videoChannel } from '../realtime'
 
 const videoUploadedConfig = {
 	id: `video-uploaded`,
 	name: 'Video Uploaded',
 }
-const videoUploadedTrigger: CoreInngestTrigger = { event: VIDEO_UPLOADED_EVENT }
+const videoUploadedTrigger: CoreInngestTrigger = {
+	event: VIDEO_UPLOADED_EVENT,
+}
+const realtimeEnabled =
+	process.env.NEXT_PUBLIC_ENABLE_REALTIME_VIDEO_UPLOAD === 'true'
+
 const videoUploadedHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	db,
 	partyProvider,
+	publish,
 }: CoreInngestFunctionInput) => {
 	// @ts-expect-error
 	if (!event.user.id) {
@@ -95,14 +102,26 @@ const videoUploadedHandler: CoreInngestHandler = async ({
 		}
 
 		await step.run('announce video resource created', async () => {
-			return await partyProvider.broadcastMessage({
-				body: {
-					body: videoResource,
-					requestId: videoResource.id,
-					name: 'videoResource.created',
-				},
-				roomId: videoResource.id,
-			})
+			if (realtimeEnabled && publish) {
+				await publish(
+					videoChannel(videoResource.id).status({
+						name: 'videoResource.created',
+						body: videoResource,
+						requestId: videoResource.id,
+					}),
+				)
+			}
+
+			if (!realtimeEnabled || !publish) {
+				await partyProvider.broadcastMessage({
+					body: {
+						body: videoResource,
+						requestId: videoResource.id,
+						name: 'videoResource.created',
+					},
+					roomId: videoResource.id,
+				})
+			}
 		})
 
 		await step.sendEvent('announce new video resource', {
