@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  partykit@0.0.104:
-    hash: 6xusmswpakgadochui6zoetvsm
-    path: patches/partykit@0.0.104.patch
-
 importers:
 
   .:
@@ -748,7 +743,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -1400,7 +1395,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
@@ -2128,7 +2123,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -2726,7 +2721,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
@@ -3381,7 +3376,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -4054,7 +4049,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -4499,7 +4494,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
@@ -4794,7 +4789,7 @@ importers:
         version: 0.27.1
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
@@ -5443,7 +5438,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -6125,7 +6120,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       picocolors:
         specifier: ^1.1.1
         version: 1.1.1
@@ -6840,7 +6835,7 @@ importers:
         version: 3.14.0
       partykit:
         specifier: 0.0.104
-        version: 0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm)
+        version: 0.0.104
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
@@ -34223,7 +34218,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /partykit@0.0.104(patch_hash=6xusmswpakgadochui6zoetvsm):
+  /partykit@0.0.104:
     resolution: {integrity: sha512-cuXweoZzb6ZCeyKVXAFYOiz/GTXFBAcQZz5gHgTbiifaEPP+hKMn/zK67JHR54s5ATpzEAnb5U7YlODId+6rSg==}
     hasBin: true
     dependencies:
@@ -34239,7 +34234,6 @@ packages:
       - supports-color
       - utf-8-validate
     dev: true
-    patched: true
 
   /partysocket@1.0.1:
     resolution: {integrity: sha512-sSnLf9X0Oaxw0wXp0liKho0QQqStDJB5I4ViaqmtI4nHm6cpb2kUealErPrcQpYUF6zgTHzLQhIO++2tcJc59A==}
