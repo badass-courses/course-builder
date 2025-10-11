@@ -96,7 +96,7 @@
 		"google-auth-library": "^9.15.1",
 		"googleapis": "^148.0.0",
 		"human-readable-ids": "^1.0.4",
-		"inngest": "3.35.0",
+		"inngest": "3.44.2",
 		"lucide-react": "^0.288.0",
 		"marked": "^15.0.12",
 		"memoize-one": "^6.0.0",

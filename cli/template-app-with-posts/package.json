@@ -33,7 +33,7 @@
 		"@coursebuilder/next": "workspace:*",
 		"@coursebuilder/ui": "workspace:*",
 		"@casl/ability": "^6.5.0",
-		"inngest": "3.35.0",
+		"inngest": "3.44.2",
 		"@uploadthing/react": "7.1.5",
 		"uploadthing": "7.4.4",
 		"partysocket": "1.0.1",

@@ -26,13 +26,50 @@
 **risk:** high but containable if phased (keep partykit + realtime coexistence until traffic flipped)
 
 ### risk mitigation guardrails (execute before/during rollout)
-- pilot on lowest-traffic app first (e.g. `apps/astro-party`) before touching flagship apps
+- pilot on `apps/code-with-antonio` (greenfield target) before touching flagship apps
 - keep realtime in shadow mode initially: publish to realtime but keep UI on partykit; verify parity via logs
 - add per-channel feature flags (`ENABLE_REALTIME_VIDEO_UPLOAD`, `...READY`, `...TRANSCRIPT`) for granular rollouts
 - record/playback representative video events in staging to validate realtime output against partykit baseline
 - set up dashboards + alerts (publish failure count, latency, token errors) prior to enabling realtime for users
 - run codemods on throwaway branch + CI before merging; manual diff review required
 - document toggle + rollback runbook; conduct oncall rehearsal so rollback is muscle memory
+
+### greenfield spike: `apps/code-with-antonio`
+1. **bootstrap realtime provider**
+   - files: `packages/core/providers/realtime.ts`, `packages/core/providers/broadcast.ts`
+   - create `RealtimeProvider` matching `PartyProviderConfig` interface (`publish({channel,topic,data})`)
+   - add `multiCastBroadcast({ message, providers })` helper that forwards to both realtime + legacy
+2. **wire middleware in greenfield app**
+   - update `apps/code-with-antonio/src/inngest/inngest.server.ts`
+     - import `RealtimeProvider` + `LegacyPartyProvider`
+     - instantiate inngest client with `@inngest/realtime/middleware`
+     - pass `{ realtimeProvider, partyProvider }` into `createInngestMiddleware`
+     - gate realtime config behind `process.env.ENABLE_REALTIME_VIDEO_UPLOAD === 'true'`
+3. **adapt video pipeline handlers**
+   - scope to files in `apps/code-with-antonio/src/inngest/functions/video-*.ts`
+   - replace direct `partyProvider.broadcastMessage` with new `broadcastVideoEvent({ roomId, eventName, payload, ctx })`
+   - `broadcastVideoEvent` should call multicaster when flag enabled else party only
+4. **client subscription path**
+   - create `apps/code-with-antonio/src/app/api/realtime/token/route.ts`
+     - validates auth, calls `getSubscriptionToken(inngest, { channel, topics })`
+   - add `apps/code-with-antonio/src/hooks/use-realtime.ts`
+     - wraps `useInngestSubscription` + falls back to no-op until flag enabled
+   - update any video status pages/components to consume new hook instead of `usePartySocket`
+5. **env + flag setup**
+   - add to `apps/code-with-antonio/.env.example`:
+     - `ENABLE_REALTIME_VIDEO_UPLOAD=false`
+     - `INNGEST_REALTIME_SIGNING_KEY=` (document requirement)
+     - `NEXT_PUBLIC_REALTIME_URL=` (if client needs base URL)
+   - ensure deployment config sets defaults before enabling flag
+6. **tests + validation**
+   - add vitest unit tests in `apps/code-with-antonio/src/inngest/__tests__/broadcast.test.ts`
+     - assert shadow mode publishes to both providers when flag on
+     - assert fallback stays party only when flag off
+   - update or create client hook test using `@testing-library/react` or vitest DOM harness verifying fallback behavior
+   - manual smoke: run local upload (provide script) and confirm realtime log reception
+7. **observability + docs**
+   - add structured logs `logger.info('realtime.publish', { channel, topic, provider })`
+   - document rollout steps in `apps/code-with-antonio/README.md`
 
 0. **codemod prep**
    - scriptable swaps: import renames (`PartykitProvider` -> `RealtimeProvider` placeholder), env var rename (`NEXT_PUBLIC_PARTY_KIT_URL` -> `NEXT_PUBLIC_REALTIME_URL`), removing `dev:party` scripts. prep jscodeshift transforms + tests ([martinfowler.com/articles/codemods-api-refactoring.html](https://martinfowler.com/articles/codemods-api-refactoring.html))

@@ -35,7 +35,7 @@
 	},
 	"dependencies": {
 		"@coursebuilder/core": "1.0.6",
-		"inngest": "3.35.0"
+		"inngest": "3.44.2"
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",

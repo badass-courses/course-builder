@@ -1,5 +1,6 @@
 import { AuthConfig } from '@auth/core'
 import { NodemailerConfig } from '@auth/core/providers/nodemailer'
+import { realtimeMiddleware } from '@inngest/realtime/middleware'
 import {
 	EventSchemas,
 	GetEvents,
@@ -84,6 +85,7 @@ export const coreInngest = new Inngest({
 	id: 'core-inngest',
 	schemas,
 	middleware: [
+		realtimeMiddleware(),
 		createInngestMiddleware({
 			db: MockCourseBuilderAdapter,
 			siteRootUrl: '',

@@ -43,6 +43,7 @@ import {
 	SyncPurchaseTags,
 } from '@/inngest/functions/sync-purchase-tags'
 import { authOptions } from '@/server/auth'
+import { realtimeMiddleware } from '@inngest/realtime/middleware'
 import { EventSchemas, Inngest } from 'inngest'
 import { UTApi } from 'uploadthing/server'
 
@@ -153,6 +154,6 @@ const middleware = createInngestMiddleware({
 
 export const inngest = new Inngest({
 	id: env.NEXT_PUBLIC_APP_NAME,
-	middleware: [middleware],
+	middleware: [middleware, realtimeMiddleware()],
 	schemas: new EventSchemas().fromRecord<Events & CourseBuilderCoreEvents>(),
 })
