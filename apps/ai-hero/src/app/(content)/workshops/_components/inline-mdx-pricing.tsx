@@ -202,7 +202,7 @@ export const withEventPricing = (
 						? 100
 						: product.quantityAvailable,
 			isPPPEnabled: true,
-			cancelUrl: `${env.NEXT_PUBLIC_URL}/${(getResourcePath(resourceType, resource?.fields?.slug), 'view')}`,
+			cancelUrl: `${env.NEXT_PUBLIC_URL}/${getResourcePath(resourceType, resource?.fields?.slug, 'view')}`,
 			...pricingOptions,
 		}
 		const { openEnrollment, closeEnrollment } = product?.fields || {}
