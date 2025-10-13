@@ -23,6 +23,7 @@ import {
 	getCachedWorkshopProduct,
 } from '@/lib/workshops-query'
 import { getProviders } from '@/server/auth'
+import { compileMDX } from '@/utils/compile-mdx'
 import { generateGridPattern } from '@/utils/generate-grid-pattern'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -43,6 +44,7 @@ import {
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { ConnectToDiscord } from '../_components/connect-to-discord'
+import { InlineBuyButton } from '../_components/inline-mdx-pricing'
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
 import { WorkshopPricingClient } from '../_components/workshop-pricing'
@@ -178,6 +180,25 @@ export default async function ModulePage(props: Props) {
 		true,
 	)
 	const product = await getCachedWorkshopProduct(params.module)
+	const { content: body } = await compileMDX(workshop.fields.body || '', {
+		EnrollNow: (props) => (
+			<WorkshopPricing moduleSlug={params.module} searchParams={searchParams}>
+				{(workshopProps) => (
+					<InlineBuyButton
+						resource={workshop}
+						pricingDataLoader={workshopProps.pricingDataLoader}
+						pricingProps={workshopProps as any}
+						centered={false}
+						resourceType="workshop"
+						pricingOptions={{
+							withTitle: false,
+							withImage: false,
+						}}
+					/>
+				)}
+			</WorkshopPricing>
+		),
+	})
 
 	return (
 		<LayoutClient withContainer>
@@ -250,11 +271,7 @@ export default async function ModulePage(props: Props) {
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
 						<div className="col-span-4 border-b px-5 pb-2 pt-10 sm:px-8 md:border-b-0 md:py-10 lg:px-10">
 							<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
-								{workshop.fields?.body ? (
-									<ReactMarkdown>{workshop.fields.body}</ReactMarkdown>
-								) : (
-									<p>No description found.</p>
-								)}
+								{workshop.fields?.body ? body : <p>No description found.</p>}
 							</article>
 							{product?.type === 'self-paced' && (
 								<div className="">
