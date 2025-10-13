@@ -17,7 +17,7 @@ const withMDX = createMDX({
 const config = {
 	experimental: {
 		mdxRs: true,
-		ppr: 'incremental',
+		turbopackFileSystemCacheForDev: true,
 	},
 	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
 	images: {

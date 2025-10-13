@@ -2,21 +2,21 @@
 	"name": "@coursebuilder/eslint-config",
 	"version": "0.1.0",
 	"license": "MIT",
+	"type": "module",
 	"dependencies": {
 		"@coursebuilder/eslint-plugin": "workspace:*",
-		"@next/eslint-plugin-next": "^14.0.1",
-		"@types/eslint": "^8.44.2",
-		"@typescript-eslint/eslint-plugin": "^6.7.0",
-		"@typescript-eslint/parser": "^6.7.0",
+		"@eslint/js": "^9.37.0",
+		"@next/eslint-plugin-next": "^16.0.0-beta.0",
+		"@types/eslint": "^9.6.1",
 		"eslint-config-prettier": "^9.0.0",
-		"eslint-config-turbo": "^1.10.12",
-		"eslint-plugin-import": "^2.28.0",
-		"eslint-plugin-react": "^7.33.1",
-		"eslint-plugin-react-hooks": "^4.6.0",
-		"modern-module-resolution": "link:@rushstack/eslint-patch/modern-module-resolution"
+		"eslint-plugin-import": "^2.29.0",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^7.0.0",
+		"globals": "^15.0.0",
+		"typescript-eslint": "^8.46.0"
 	},
 	"devDependencies": {
-		"eslint": "^8.47.0",
+		"eslint": "^9.37.0",
 		"typescript": "5.4.5"
 	}
 }

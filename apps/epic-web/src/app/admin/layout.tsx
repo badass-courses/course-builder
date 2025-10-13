@@ -16,13 +16,7 @@ import {
 
 import { NavItem } from './pages/_components/nav-link'
 
-const AdminLayout = async ({
-	children,
-	params,
-}: {
-	children: React.ReactNode
-	params: Promise<{ module: string }>
-}) => {
+const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	const { session, ability } = await getImpersonatedSession()
 
 	if (!ability.can('manage', 'all')) {

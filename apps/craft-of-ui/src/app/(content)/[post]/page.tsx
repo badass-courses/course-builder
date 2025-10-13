@@ -36,8 +36,6 @@ import {
 	EventPricingInline,
 } from './_components/event-pricing'
 
-export const experimental_ppr = true
-
 type Props = {
 	params: Promise<{ post: string }>
 }

@@ -53,7 +53,7 @@ export async function createList(input: {
 		console.error(`Failed to index ${newListId} in Typesense`, e)
 	}
 
-	revalidateTag('lists')
+	revalidateTag('lists', 'max')
 	return list
 }
 
@@ -416,7 +416,7 @@ export async function updateList(
 		console.error('Failed to update post in Typesense', e)
 	}
 
-	revalidate && revalidateTag('lists')
+	revalidate && revalidateTag('lists', 'max')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentList.id,
@@ -461,8 +461,8 @@ export async function deleteList(id: string) {
 
 	await deletePostInTypeSense(list.id)
 
-	revalidateTag('lists')
-	revalidateTag(id)
+	revalidateTag('lists', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/lists')
 
 	return true

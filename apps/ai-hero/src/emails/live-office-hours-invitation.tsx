@@ -201,7 +201,6 @@ export default function LiveOfficeHoursInvitation({
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
 }: LiveOfficeHoursInvitationProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
-		// eslint-disable-next-line no-console
 		console.debug('Rendering LiveOfficeHoursInvitation', { eventTitle })
 	}
 

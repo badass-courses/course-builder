@@ -11,12 +11,12 @@
 		"clean": "git clean -xdf dist node_modules"
 	},
 	"dependencies": {
-		"@typescript-eslint/parser": "^6.7.0",
-		"@typescript-eslint/utils": "^6.7.0"
+		"@typescript-eslint/parser": "^8.46.0",
+		"@typescript-eslint/utils": "^8.46.0"
 	},
 	"devDependencies": {
 		"@coursebuilder/tsconfig": "workspace:*",
-		"@types/eslint": "^8.44.2",
+		"@types/eslint": "^9.6.1",
 		"tsup": "8.0.2",
 		"typescript": "5.4.5"
 	}

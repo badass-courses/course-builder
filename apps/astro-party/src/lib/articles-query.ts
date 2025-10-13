@@ -68,7 +68,7 @@ export async function createArticle(input: NewArticle) {
 
 	const article = await getArticle(newArticleId)
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 
 	return article
 }

@@ -70,7 +70,7 @@ export async function createPage(input: NewPage) {
 
 	const page = await getPage(newPageId)
 
-	revalidateTag('pages')
+	revalidateTag('pages', 'max')
 
 	return page
 }
@@ -159,7 +159,7 @@ export async function updatePage(
 			changes: Object.keys(input.fields || {}),
 		})
 
-		revalidate && revalidateTag('pages')
+		revalidate && revalidateTag('pages', 'max')
 
 		return updatedPage
 	} catch (error) {

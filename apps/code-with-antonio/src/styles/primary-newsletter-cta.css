@@ -1,0 +1,41 @@
+/* @reference './globals.css'; */
+
+#primary-newsletter-cta [data-sr-convertkit-subscribe-form] {
+	@apply mx-auto flex w-full max-w-[420px] flex-col;
+
+	[data-sr-fieldset] {
+		@apply mb-2;
+	}
+	input {
+		@apply placeholder:text-muted-foreground text-foreground relative flex p-5 text-base placeholder:opacity-75;
+		@apply before:absolute before:left-0 before:top-0 before:h-px before:w-full before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent;
+	}
+	[data-sr-input-label] {
+		@apply text-muted-foreground mt-3 inline-block pb-1 text-base font-normal;
+	}
+	[data-sr-input-asterisk] {
+		@apply opacity-50;
+	}
+	[data-sr-button] {
+		@apply bg-primary relative mt-4 py-8 text-base font-medium;
+	}
+}
+
+#video-overlay > [data-sr-convertkit-subscribe-form] {
+	@apply mx-auto flex w-full flex-col;
+	[data-sr-input-wrapper] {
+		@apply text-left;
+	}
+	[data-sr-input] {
+		@apply mb-4 block w-full rounded-lg border px-4 py-3 shadow sm:text-base sm:leading-6;
+	}
+	[data-sr-input-label] {
+		@apply inline-block pb-1 text-sm;
+	}
+	[data-sr-input-asterisk] {
+		@apply opacity-50;
+	}
+	[data-sr-button] {
+		@apply bg-primary focus-visible:ring-ring mt-2 flex items-center justify-center rounded-md py-3 font-bold text-white transition hover:brightness-110;
+	}
+}

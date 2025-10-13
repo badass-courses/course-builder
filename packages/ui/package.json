@@ -59,10 +59,10 @@
 		"openai-edge": "^1.2.2",
 		"partysocket": "1.0.1",
 		"query-string": "^9.0.0",
-		"react": "19.1.0",
+		"react": "19.2.0",
 		"react-aria": "^3.35.1",
 		"react-day-picker": "^9.2.1",
-		"react-dom": "19.1.0",
+		"react-dom": "19.2.0",
 		"react-hook-form": "^7.48.0",
 		"react-markdown": "9.0.3",
 		"react-resizable-panels": "^2.1.7",
@@ -77,8 +77,8 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@types/react": "19.1.8",
-		"@types/react-dom": "19.1.6",
+		"@types/react": "19.2.2",
+		"@types/react-dom": "19.2.1",
 		"@types/react-gravatar": "^2.6.13"
 	}
 }

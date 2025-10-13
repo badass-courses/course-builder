@@ -26,8 +26,6 @@ import {
 
 import { CreatePost, CreatePostModal } from './_components/create-post'
 
-export const experimental_ppr = true
-
 export const metadata: Metadata = {
 	title: `Local First Posts by ${config.author}`,
 	openGraph: {
