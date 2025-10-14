@@ -203,14 +203,15 @@ const getPPPDetails = async ({
 
 	// Compare PPP vs special merchant coupon by calculating actual discount amounts
 	// to determine which provides better savings for the customer
+	const subtotal = unitPrice * quantity
 	const merchantDiscountAmount =
 		specialMerchantCoupon?.amountDiscount !== null &&
 		specialMerchantCoupon?.amountDiscount !== undefined &&
 		specialMerchantCoupon?.amountDiscount > 0
-			? specialMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
-			: (specialMerchantCoupon?.percentageDiscount || 0) * unitPrice
+			? specialMerchantCoupon.amountDiscount / 100 // Convert cents to dollars (already a total)
+			: (specialMerchantCoupon?.percentageDiscount || 0) * subtotal
 
-	const pppDiscountAmount = expectedPPPDiscountPercent * unitPrice
+	const pppDiscountAmount = expectedPPPDiscountPercent * subtotal
 
 	const pppDiscountIsBetter = merchantDiscountAmount < pppDiscountAmount
 
@@ -368,14 +369,15 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 	const bulkCouponPercent = getBulkDiscountPercent(seatCount)
 
 	// Compare bulk discount vs merchant coupon by calculating actual discount amounts
+	const subtotal = unitPrice * quantity
 	const merchantDiscountAmount =
 		appliedMerchantCoupon?.amountDiscount !== null &&
 		appliedMerchantCoupon?.amountDiscount !== undefined &&
 		appliedMerchantCoupon?.amountDiscount > 0
-			? appliedMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
-			: (appliedMerchantCoupon?.percentageDiscount || 0) * unitPrice
+			? appliedMerchantCoupon.amountDiscount / 100 // Convert cents to dollars (already a total)
+			: (appliedMerchantCoupon?.percentageDiscount || 0) * subtotal
 
-	const bulkDiscountAmount = bulkCouponPercent * unitPrice
+	const bulkDiscountAmount = bulkCouponPercent * subtotal
 
 	const bulkDiscountIsBetter = merchantDiscountAmount < bulkDiscountAmount
 
