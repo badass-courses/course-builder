@@ -213,36 +213,29 @@ export async function formatPricesForProduct(
 		appliedMerchantCoupon?.percentageDiscount ?? undefined
 	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
-	// No coupon stacking: If upgrade discount exists and a coupon is applied,
-	// choose whichever gives the better discount for the customer
+	// Discount stacking rules:
+	// - Upgrade credit + percentage coupon: STACK (apply both)
+	// - Upgrade credit + fixed amount coupon: CHOOSE BETTER (don't stack)
+	// Note: PPP vs other coupons is handled in determine-coupon-to-apply
 	let finalFixedDiscount = fixedDiscountForUpgrade
 	let finalPercentDiscount = percentOfDiscount
 	let finalAmountDiscount = amountDiscount
 
-	if (
-		fixedDiscountForUpgrade > 0 &&
-		(amountDiscount > 0 || percentOfDiscount)
-	) {
-		// Calculate dollar amounts for comparison
+	if (fixedDiscountForUpgrade > 0 && amountDiscount > 0) {
+		// Both upgrade credit and fixed amount coupon exist
+		// Choose whichever gives the better discount
 		const upgradeDiscountAmount = fixedDiscountForUpgrade
-		let merchantDiscountAmount = 0
+		const merchantDiscountAmount = amountDiscount / 100 // Convert cents to dollars
 
-		if (amountDiscount > 0) {
-			merchantDiscountAmount = amountDiscount / 100 // Convert cents to dollars
-		} else if (percentOfDiscount) {
-			merchantDiscountAmount = fullPrice * percentOfDiscount
-		}
-
-		// Choose the better discount
 		if (upgradeDiscountAmount >= merchantDiscountAmount) {
 			// Upgrade discount is better, don't apply merchant coupon
 			finalAmountDiscount = 0
-			finalPercentDiscount = undefined
 		} else {
 			// Merchant coupon is better, don't apply upgrade discount
 			finalFixedDiscount = 0
 		}
 	}
+	// If upgrade credit + percentage coupon, both are applied (no special handling needed)
 
 	// Calculate fullPrice as price after upgrade discount but before merchant coupon
 	const fullPriceWithUpgrade = fullPrice - fixedDiscountForUpgrade
