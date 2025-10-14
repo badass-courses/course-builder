@@ -55,8 +55,15 @@ export const useSaleToastNotifier = () => {
 				: true) &&
 			productResourceSlug !== param
 		) {
+			// Format discount based on coupon type
+			const hasFixedDiscount =
+				defaultCoupon.amountDiscount && defaultCoupon.amountDiscount > 0
+			const discountFormatted = hasFixedDiscount
+				? `$${((defaultCoupon.amountDiscount ?? 0) / 100).toFixed(2)}`
+				: `${Number(defaultCoupon.percentageDiscount) * 100}%`
+
 			toast({
-				title: `Save ${Number(defaultCoupon?.percentageDiscount) * 100}% on ${defaultCoupon?.product?.name}`,
+				title: `Save ${discountFormatted} on ${defaultCoupon?.product?.name}`,
 				duration: Infinity,
 				onDismiss: () => {
 					cookieUtil.set(
