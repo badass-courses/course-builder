@@ -12,16 +12,24 @@ import { useMeasure } from 'react-use'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import {
+	InlineBuyButton,
+	type PricingComponentProps,
+} from './inline-mdx-pricing'
+import type { WorkshopPageProps } from './workshop-page-props'
+
 export const WorkshopSidebar = ({
 	children,
 	sticky = true,
 	workshop,
 	className,
+	pricingProps,
 }: {
 	children: React.ReactNode
 	sticky?: boolean
 	workshop?: MinimalWorkshop | null
 	className?: string
+	pricingProps?: WorkshopPageProps
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
 	const [windowHeight, setWindowHeight] = React.useState(0)
@@ -62,6 +70,7 @@ export const WorkshopSidebar = ({
 					'pointer-events-none opacity-0': isInView,
 				})}
 				workshop={workshop}
+				pricingProps={pricingProps}
 			/>
 		</>
 	)
@@ -70,9 +79,11 @@ export const WorkshopSidebar = ({
 export const WorkshopSidebarMobile = ({
 	workshop,
 	className,
+	pricingProps,
 }: {
 	workshop?: MinimalWorkshop | null
 	className?: string
+	pricingProps?: WorkshopPageProps
 }) => {
 	const { fields } = workshop ?? {}
 
@@ -88,25 +99,29 @@ export const WorkshopSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-3 transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between gap-3 border-t px-3 py-3 transition-opacity duration-300 md:hidden',
 				className,
 			)}
 		>
 			<div className="flex flex-col gap-0.5">
-				<h3 className="font-heading text-base font-semibold">
-					{fields?.title}
-				</h3>
+				<h3 className="font-heading text-sm font-semibold">{fields?.title}</h3>
 				<Contributor className="gap-1 text-sm [&_img]:w-5" />
 				{/* <p className="text-sm opacity-75">{config.author}</p> */}
 			</div>
-			<Button
-				asChild
-				className="dark:bg-primary dark:hover:bg-primary bg-blue-600 hover:bg-blue-500"
-			>
-				<Link href="#buy" onClick={handleScrollToBuy}>
-					Start Learning
-				</Link>
-			</Button>
+			{workshop && pricingProps && (
+				<InlineBuyButton
+					className="**:data-divider:mx-1 **:data-label:text-sm h-10 gap-2 px-5"
+					resource={workshop}
+					pricingDataLoader={pricingProps.pricingDataLoader}
+					pricingProps={pricingProps as any}
+					centered={false}
+					resourceType="workshop"
+					pricingOptions={{
+						withTitle: false,
+						withImage: false,
+					}}
+				/>
+			)}
 		</div>
 	)
 }

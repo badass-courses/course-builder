@@ -185,7 +185,7 @@ export default function UpNext({
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link
-							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-orange-600 hover:underline lg:text-xl"
+							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-blue-600 hover:underline lg:text-xl"
 							href={getResourcePath(
 								nextResource.type,
 								nextResourceSlug,

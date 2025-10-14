@@ -358,7 +358,7 @@ const Description = ({
 		}
 	}
 	return (
-		<div className={cn('prose w-full max-w-none', className)}>
+		<div className={cn('prose dark:prose-invert w-full max-w-none', className)}>
 			{children || getDescriptionForStatus(STATE)}
 		</div>
 	)

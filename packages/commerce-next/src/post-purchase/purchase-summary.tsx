@@ -94,7 +94,10 @@ const Status: React.FC<React.PropsWithChildren<StatusProps>> = ({
 }) => {
 	return (
 		<span
-			className={cn('text-primary block pb-4 text-sm uppercase', className)}
+			className={cn(
+				'text-primary block pb-4 text-sm font-semibold uppercase',
+				className,
+			)}
 		>
 			{children}
 		</span>
