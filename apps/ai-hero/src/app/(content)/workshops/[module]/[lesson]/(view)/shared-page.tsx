@@ -73,7 +73,7 @@ export async function LessonPage({
 					lesson={lesson}
 					problem={problem}
 				/>
-				<div className="max-w-(--breakpoint-xl) container relative pb-16 sm:pb-24 md:px-10 lg:px-14">
+				<div className="max-w-(--breakpoint-xl) container relative px-5 md:px-10 lg:px-14">
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
@@ -98,12 +98,7 @@ export async function LessonPage({
 								lessonId={lesson?.id}
 								abilityLoader={abilityLoader}
 							/>
-							<Suspense fallback={null}>
-								<UpNext
-									currentResourceId={lesson?.id}
-									abilityLoader={abilityLoader}
-								/>
-							</Suspense>
+
 							{/* <Accordion type="single" collapsible className="mt-4">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center font-medium">
@@ -134,6 +129,13 @@ export async function LessonPage({
 						</article>
 					</div>
 				</div>
+				<Suspense fallback={null}>
+					<UpNext
+						className="rounded-none border-x-0 border-b-0 border-t"
+						currentResourceId={lesson?.id}
+						abilityLoader={abilityLoader}
+					/>
+				</Suspense>
 			</main>
 		</ActiveHeadingProvider>
 	)
@@ -276,7 +278,7 @@ async function LessonTitle({ lesson }: { lesson: Lesson | null }) {
 			>
 				{lesson.type}
 			</Badge> */}
-			<h1 className="mb-8 text-xl font-bold sm:text-2xl lg:text-3xl dark:text-white">
+			<h1 className="mb-8 text-2xl font-bold sm:text-2xl lg:text-3xl dark:text-white">
 				{lesson.fields?.title}
 			</h1>
 		</div>

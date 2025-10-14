@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic'
+import { CheckList } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
@@ -81,6 +82,7 @@ export async function compileMDX(
 			}: { urls: { dark: string; light: string } } & CldImageProps) => (
 				<ThemeImage urls={urls} {...props} />
 			),
+			CheckList: ({ children }) => <CheckList>{children}</CheckList>,
 			h1: ({ children }) => <Heading level={1}>{children}</Heading>,
 			h2: ({ children }) => <Heading level={2}>{children}</Heading>,
 			h3: ({ children }) => <Heading level={3}>{children}</Heading>,
