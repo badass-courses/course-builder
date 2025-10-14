@@ -94,7 +94,7 @@ export const useSaleToastNotifier = () => {
 						)}
 					</>
 				),
-				action: (
+				action: productPath ? (
 					<ToastAction
 						altText="Buy Now"
 						asChild
@@ -102,7 +102,7 @@ export const useSaleToastNotifier = () => {
 					>
 						<Link href={productPath}>Buy Now</Link>
 					</ToastAction>
-				),
+				) : null,
 			})
 		}
 	}, [
