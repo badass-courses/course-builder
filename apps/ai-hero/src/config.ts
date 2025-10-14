@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Build%20DeepSearch%20in%20TypeScript`, // `card@2x.jpg`,
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=AI%20SDK%20v5%20Crash%20Course`, // `card@2x.jpg`,
 				width: 1200,
 				height: 630,
 			},

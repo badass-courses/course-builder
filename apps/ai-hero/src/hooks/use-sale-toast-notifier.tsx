@@ -33,13 +33,17 @@ export const useSaleToastNotifier = () => {
 		? isBefore(new Date(lastDismissed), thresholdDays)
 		: true
 
+	const productResourceSlug =
+		defaultCoupon?.product?.resources[0]?.resource?.fields?.slug
+	const productResourceType =
+		defaultCoupon?.product?.resources[0]?.resource?.type
+
 	const productPath =
-		defaultCoupon?.product?.type && defaultCoupon?.product?.fields?.slug
-			? getResourcePath(
-					defaultCoupon?.product?.type,
-					defaultCoupon?.product?.fields?.slug,
-				)
+		productResourceType && productResourceSlug
+			? getResourcePath(productResourceType, productResourceSlug)
 			: null
+
+	const param = params.slug || params.module
 
 	React.useEffect(() => {
 		if (
@@ -49,7 +53,7 @@ export const useSaleToastNotifier = () => {
 			(defaultCoupon?.expires
 				? new Date(defaultCoupon?.expires) > new Date()
 				: true) &&
-			defaultCoupon?.product?.fields?.slug !== params.slug
+			productResourceSlug !== param
 		) {
 			toast({
 				title: `Save ${Number(defaultCoupon?.percentageDiscount) * 100}% on ${defaultCoupon?.product?.name}`,
@@ -96,7 +100,7 @@ export const useSaleToastNotifier = () => {
 						asChild
 						className="bg-primary hover:bg-primary/90 text-primary-foreground"
 					>
-						<Link href={'/#buy'}>Buy Now</Link>
+						<Link href={productPath || '/#buy'}>Buy Now</Link>
 					</ToastAction>
 				),
 			})

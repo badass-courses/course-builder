@@ -85,11 +85,14 @@ export async function generateMetadata(
 		description: workshop.fields?.description,
 		openGraph: {
 			images: [
-				getOGImageUrlForResource(
-					workshop as unknown as ContentResource & {
-						fields?: { slug: string }
-					},
-				),
+				{
+					url: `${env.NEXT_PUBLIC_URL}/api/og/default?title=${workshop.fields?.title}`,
+				},
+				// getOGImageUrlForResource(
+				// 	workshop as unknown as ContentResource & {
+				// 		fields?: { slug: string }
+				// 	},
+				// ),
 			],
 		},
 	}

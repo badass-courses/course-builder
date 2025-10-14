@@ -60,7 +60,7 @@ export function Transcript({
 									muxPlayerRef,
 								}),
 						}}
-						className="prose dark:prose-invert max-w-none pt-3 opacity-80"
+						className="prose dark:prose-invert max-w-none pt-3"
 					>
 						{transcript}
 					</ReactMarkdown>
