@@ -201,25 +201,6 @@ const getPPPDetails = async ({
 
 	const expectedPPPDiscountPercent = getPPPDiscountPercent(country)
 
-	const shouldLookupPPPMerchantCouponForUpgrade =
-		appliedMerchantCoupon === null &&
-		purchaseToBeUpgraded !== null &&
-		hasOnlyPPPDiscountedPurchases &&
-		autoApplyPPP
-
-	let pppMerchantCouponForUpgrade: MerchantCoupon | null = null
-	if (shouldLookupPPPMerchantCouponForUpgrade) {
-		pppMerchantCouponForUpgrade = await lookupApplicablePPPMerchantCoupon({
-			prismaCtx,
-			pppDiscountPercent: expectedPPPDiscountPercent,
-		})
-	}
-
-	const pppCouponToBeApplied =
-		appliedMerchantCoupon?.type === PPP_TYPE
-			? appliedMerchantCoupon
-			: pppMerchantCouponForUpgrade
-
 	// Compare PPP vs special merchant coupon by calculating actual discount amounts
 	// to determine which provides better savings for the customer
 	const merchantDiscountAmount =
@@ -238,6 +219,30 @@ const getPPPDetails = async ({
 		quantity === 1 &&
 		hasOnlyPPPDiscountedPurchases &&
 		pppDiscountIsBetter
+
+	// Lookup PPP coupon when:
+	// 1. For upgrade scenarios when no merchant coupon is applied, OR
+	// 2. When PPP provides better discount than special merchant coupon
+	const shouldLookupPPPMerchantCoupon =
+		appliedMerchantCoupon?.type !== PPP_TYPE && // Don't lookup if already PPP
+		autoApplyPPP &&
+		(pppConditionsMet || // PPP is better than special merchant
+			(appliedMerchantCoupon === null && // Upgrade scenario
+				purchaseToBeUpgraded !== null &&
+				hasOnlyPPPDiscountedPurchases))
+
+	let pppMerchantCoupon: MerchantCoupon | null = null
+	if (shouldLookupPPPMerchantCoupon) {
+		pppMerchantCoupon = await lookupApplicablePPPMerchantCoupon({
+			prismaCtx,
+			pppDiscountPercent: expectedPPPDiscountPercent,
+		})
+	}
+
+	const pppCouponToBeApplied =
+		appliedMerchantCoupon?.type === PPP_TYPE
+			? appliedMerchantCoupon
+			: pppMerchantCoupon
 
 	// Build `details` with all kinds of intermediate stuff as part of this refactoring
 	const pppApplied =
