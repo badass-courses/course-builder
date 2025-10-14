@@ -153,7 +153,7 @@ async function getActiveMerchantCoupon({
 			incomingMerchantCoupon.amountDiscount !== null &&
 			incomingMerchantCoupon.amountDiscount !== undefined &&
 			incomingMerchantCoupon.amountDiscount > 0
-				? incomingMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				? (incomingMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
 				: (incomingMerchantCoupon.percentageDiscount || 0) * subtotal
 
 		// Calculate default coupon discount amount
@@ -161,7 +161,7 @@ async function getActiveMerchantCoupon({
 			defaultMerchantCoupon.amountDiscount !== null &&
 			defaultMerchantCoupon.amountDiscount !== undefined &&
 			defaultMerchantCoupon.amountDiscount > 0
-				? defaultMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				? (defaultMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
 				: (defaultMerchantCoupon.percentageDiscount || 0) * subtotal
 
 		// Choose the coupon with the higher discount amount

@@ -31,8 +31,10 @@ export function getCalculatedPrice({
 	let finalPrice: number
 	if (amountDiscount > 0) {
 		// Fixed amount discount from merchant coupon (convert from cents to dollars)
+		// Apply discount per seat for bulk purchases
 		const amountDiscountInDollars = amountDiscount / 100
-		finalPrice = priceAfterUpgradeDiscount - amountDiscountInDollars
+		const totalDiscount = amountDiscountInDollars * quantity
+		finalPrice = priceAfterUpgradeDiscount - totalDiscount
 	} else {
 		// Percentage discount from merchant coupon
 		const discountMultiplier = 1 - percentOfDiscount

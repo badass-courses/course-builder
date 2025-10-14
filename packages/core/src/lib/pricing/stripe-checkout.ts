@@ -390,8 +390,9 @@ export async function stripeCheckout({
 					// Handle fixed amount discounts vs percentage discounts
 					if (merchantCoupon.amountDiscount) {
 						// For fixed amount discounts, create a transient coupon
+						// Apply discount per seat for bulk purchases
 						const couponId = await config.paymentsAdapter.createCoupon({
-							amount_off: merchantCoupon.amountDiscount,
+							amount_off: merchantCoupon.amountDiscount * quantity,
 							name: merchantCoupon.type || 'Fixed Discount',
 							max_redemptions: 1,
 							redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
