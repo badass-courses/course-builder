@@ -252,9 +252,10 @@ export function WorkshopResourceList(props: Props) {
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'hover:bg-muted bg-background relative flex w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
+														'hover:bg-muted bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
 														{
-															'bg-muted': isActiveGroup,
+															'bg-muted dark:text-primary text-blue-600':
+																isActiveGroup,
 														},
 													)}
 												>

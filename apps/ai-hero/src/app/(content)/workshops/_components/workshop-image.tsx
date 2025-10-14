@@ -57,7 +57,7 @@ export default function WorkshopImage({
 				src={imageUrl}
 				width={480}
 				height={270}
-				className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded dark:brightness-90"
+				className="brightness-100 transition duration-300 ease-in-out group-hover:brightness-100 sm:rounded"
 				sizes="(max-width: 768px) 100vw, 480px"
 			/>
 			{canView && (
