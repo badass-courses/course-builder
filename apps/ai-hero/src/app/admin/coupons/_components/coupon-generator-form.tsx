@@ -139,7 +139,7 @@ const CouponGeneratorForm = ({
 			amountDiscount:
 				couponDataFromForm.discountType === 'fixed' &&
 				couponDataFromForm.amountOff
-					? Number(couponDataFromForm.amountOff) * 100 // Convert to cents
+					? Math.round(Number(couponDataFromForm.amountOff) * 100) // Convert to cents
 					: undefined,
 			status: Number(couponDataFromForm.status),
 			default: couponDataFromForm.default,
