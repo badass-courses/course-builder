@@ -93,8 +93,8 @@ describe('formatPricesForProduct', () => {
 			const result = await formatPricesForProduct({
 				ctx: mockAdapter,
 				productId: 'prod_basic',
-				merchantCouponId: 'coupon_ppp_india',
-				country: 'IN',
+				merchantCouponId: 'coupon_ppp_bd',
+				country: 'BD',
 				quantity: 1,
 			})
 
@@ -104,7 +104,7 @@ describe('formatPricesForProduct', () => {
 
 		it('should apply bulk discount correctly', async () => {
 			const mockAdapter = createMockAdapter({
-				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.bulk20),
+				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.bulk15),
 			})
 
 			const result = await formatPricesForProduct({
@@ -115,8 +115,8 @@ describe('formatPricesForProduct', () => {
 
 			expect(result.bulk).toBe(true)
 			expect(result.appliedDiscountType).toBe('bulk')
-			// $100 * 5 = $500, 20% off = $400
-			expect(result.calculatedPrice).toBe(400)
+			// $100 * 5 = $500, 15% off = $425
+			expect(result.calculatedPrice).toBe(425)
 		})
 	})
 
@@ -132,7 +132,7 @@ describe('formatPricesForProduct', () => {
 					return testPrices.basic
 				}),
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 			})
 
@@ -159,7 +159,7 @@ describe('formatPricesForProduct', () => {
 				}),
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 			})
 
@@ -191,7 +191,8 @@ describe('formatPricesForProduct', () => {
 				getMerchantCoupon: vi.fn(
 					async () => testMerchantCoupons.fixedAmount200,
 				),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
+				availableUpgradesForProduct: vi.fn(async () => testUpgradableProducts),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 			})
 
@@ -345,7 +346,7 @@ describe('formatPricesForProduct', () => {
 					return testPrices.basic
 				}),
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 			})
 

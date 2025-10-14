@@ -124,18 +124,43 @@ export const testMerchantCoupons = {
 		merchantAccountId: 'merchant_1',
 	} as MerchantCoupon,
 	ppp60: {
-		id: 'coupon_ppp_india',
-		identifier: 'stripe_ppp_india',
+		id: 'coupon_ppp_bd',
+		identifier: 'stripe_ppp_bd',
 		percentageDiscount: 0.6,
+		type: 'ppp',
+		status: 1,
+		merchantAccountId: 'merchant_1',
+		country: 'BD',
+	} as MerchantCoupon,
+	ppp75: {
+		id: 'coupon_ppp_india_75',
+		identifier: 'stripe_ppp_india_75',
+		percentageDiscount: 0.75,
 		type: 'ppp',
 		status: 1,
 		merchantAccountId: 'merchant_1',
 		country: 'IN',
 	} as MerchantCoupon,
-	bulk20: {
+	bulk15: {
 		id: 'coupon_bulk_5seats',
 		identifier: 'stripe_bulk_5',
+		percentageDiscount: 0.15,
+		type: 'bulk',
+		status: 1,
+		merchantAccountId: 'merchant_1',
+	} as MerchantCoupon,
+	bulk20: {
+		id: 'coupon_bulk_10seats',
+		identifier: 'stripe_bulk_10',
 		percentageDiscount: 0.2,
+		type: 'bulk',
+		status: 1,
+		merchantAccountId: 'merchant_1',
+	} as MerchantCoupon,
+	bulk25: {
+		id: 'coupon_bulk_15seats',
+		identifier: 'stripe_bulk_15',
+		percentageDiscount: 0.25,
 		type: 'bulk',
 		status: 1,
 		merchantAccountId: 'merchant_1',
@@ -164,6 +189,7 @@ export const testPurchases = {
 		status: 'Valid' as const,
 		totalAmount: 10000, // $100 in cents
 		createdAt: new Date(),
+		fields: {},
 	} as Purchase,
 	restrictedBasic: {
 		id: 'purchase_restricted_basic',
@@ -174,6 +200,7 @@ export const testPurchases = {
 		status: 'Restricted' as const,
 		totalAmount: 4000, // $40 in cents (with PPP)
 		createdAt: new Date(),
+		fields: {},
 	} as Purchase,
 }
 
@@ -185,6 +212,10 @@ export const testUpgradableProducts: UpgradableProduct[] = [
 		upgradableFromId: 'prod_basic',
 		upgradableToId: 'prod_bundle',
 		position: 0,
+		createdAt: null,
+		updatedAt: null,
+		deletedAt: null,
+		metadata: {},
 	},
 ]
 
@@ -223,14 +254,13 @@ export function createMockAdapter(
 			async (options: {
 				upgradableFromId: string
 				upgradableToId: string
-			}): Promise<UpgradableProduct | null> => {
-				return (
-					testUpgradableProducts.find(
-						(up) =>
-							up.upgradableFromId === options.upgradableFromId &&
-							up.upgradableToId === options.upgradableToId,
-					) || null
+			}): Promise<UpgradableProduct[]> => {
+				const match = testUpgradableProducts.find(
+					(up) =>
+						up.upgradableFromId === options.upgradableFromId &&
+						up.upgradableToId === options.upgradableToId,
 				)
+				return match ? [match] : []
 			},
 		),
 		availableUpgradesForProduct: vi.fn(

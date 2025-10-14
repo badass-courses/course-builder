@@ -237,6 +237,7 @@ const getPPPDetails = async ({
 		pppMerchantCoupon = await lookupApplicablePPPMerchantCoupon({
 			prismaCtx,
 			pppDiscountPercent: expectedPPPDiscountPercent,
+			country,
 		})
 	}
 
@@ -306,6 +307,7 @@ const getPPPDetails = async ({
 const LookupApplicablePPPMerchantCouponParamsSchema = z.object({
 	prismaCtx: PrismaCtxSchema,
 	pppDiscountPercent: z.number(),
+	country: z.string(),
 })
 type LookupApplicablePPPMerchantCouponParams = z.infer<
 	typeof LookupApplicablePPPMerchantCouponParamsSchema
@@ -316,20 +318,21 @@ type LookupApplicablePPPMerchantCouponParams = z.infer<
 const lookupApplicablePPPMerchantCoupon = async (
 	params: LookupApplicablePPPMerchantCouponParams,
 ) => {
-	const { prismaCtx, pppDiscountPercent } =
+	const { prismaCtx, pppDiscountPercent, country } =
 		LookupApplicablePPPMerchantCouponParamsSchema.parse(params)
 
-	const { getMerchantCouponForTypeAndPercent } = prismaCtx
-	const pppMerchantCoupon = await getMerchantCouponForTypeAndPercent({
-		type: PPP_TYPE,
-		percentageDiscount: pppDiscountPercent,
-	})
+	const pppCoupons = await couponForType(
+		PPP_TYPE,
+		pppDiscountPercent,
+		prismaCtx,
+		country,
+	)
 
 	// early return if there is no PPP coupon that fits the bill
 	// report this to Sentry? Seems like a bug if we aren't able to find one.
-	if (pppMerchantCoupon === null) return null
+	if (pppCoupons.length === 0) return null
 
-	return pppMerchantCoupon
+	return pppCoupons[0]
 }
 
 const GetBulkCouponDetailsParamsSchema = z.object({

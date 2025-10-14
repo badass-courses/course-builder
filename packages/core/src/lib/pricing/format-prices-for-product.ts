@@ -207,11 +207,25 @@ export async function formatPricesForProduct(
 		: await fireFixedDiscountForIndividualUpgrade()
 
 	const unitPrice: number = price.unitAmount
-	const fullPrice: number = unitPrice * quantity - fixedDiscountForUpgrade
+	const fullPrice: number = unitPrice * quantity
 
 	const percentOfDiscount =
 		appliedMerchantCoupon?.percentageDiscount ?? undefined
 	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
+
+	// Calculate merchant coupon discount amount in dollars
+	const merchantDiscountAmount =
+		amountDiscount > 0
+			? amountDiscount / 100 // Convert cents to dollars
+			: percentOfDiscount
+				? percentOfDiscount * fullPrice
+				: 0
+
+	// Compare upgrade discount vs merchant discount and use the better one
+	// Both values are returned for transparency, but only the better one affects calculatedPrice
+	const betterDiscountIsUpgrade =
+		fixedDiscountForUpgrade > 0 &&
+		fixedDiscountForUpgrade > merchantDiscountAmount
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here
@@ -230,10 +244,10 @@ export async function formatPricesForProduct(
 		fixedDiscountForUpgrade,
 		calculatedPrice: getCalculatedPrice({
 			unitPrice,
-			percentOfDiscount,
-			fixedDiscount: fixedDiscountForUpgrade, // if not upgrade, we know this will be 0
-			amountDiscount, // fixed amount discount from merchant coupon
-			quantity, // if PPP is applied, we know this will be 1
+			percentOfDiscount: betterDiscountIsUpgrade ? 0 : percentOfDiscount,
+			fixedDiscount: betterDiscountIsUpgrade ? fixedDiscountForUpgrade : 0,
+			amountDiscount: betterDiscountIsUpgrade ? 0 : amountDiscount,
+			quantity,
 		}),
 		availableCoupons: result.availableCoupons,
 		appliedMerchantCoupon,
