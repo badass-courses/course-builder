@@ -239,11 +239,11 @@ export function WorkshopResourceList(props: Props) {
 										resource.type === 'section' && resource.resources[0]
 									const firstLessonId = firstLesson && firstLesson.id
 
-									const canViewSection =
+									const canViewWorkshop =
 										firstLessonId &&
 										ability.can(
 											'read',
-											subject('Content', { id: firstLessonId }),
+											subject('Content', { id: workshopNavigation.id }),
 										)
 
 									return resource.type === 'section' ? (
@@ -275,13 +275,18 @@ export function WorkshopResourceList(props: Props) {
 														)}
 													</div>
 													<div>
-														{abilityStatus === 'success' && !canViewSection ? (
-															<Lock className="w-3 text-gray-500" />
-														) : resource?.tier === 'free' && !canViewSection ? (
-															<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
-																<Play className="size-3" /> Free
-															</div>
-														) : null}
+														{abilityStatus === 'success' && (
+															<>
+																{resource?.tier === 'free' &&
+																!canViewWorkshop ? (
+																	<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
+																		<Play className="size-3" /> Free
+																	</div>
+																) : !canViewWorkshop ? (
+																	<Lock className="w-3 text-gray-500" />
+																) : null}
+															</>
+														)}
 													</div>
 												</AccordionTrigger>
 												{resource.resources.length > 0 && (
