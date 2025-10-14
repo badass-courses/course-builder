@@ -39,7 +39,7 @@ export async function reprocessTranscript({
 
 export const onPostSave = async (resource: ContentResource) => {
 	const post = await courseBuilderAdapter.getContentResource(resource.id)
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 	revalidatePath(`/${post?.fields?.slug}`)
 }
 

@@ -86,8 +86,8 @@ export async function deletePost(id: string) {
 
 	await deletePostFromDatabase(id)
 
-	revalidateTag('posts')
-	revalidateTag(id)
+	revalidateTag('posts', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/posts')
 
 	return true
@@ -127,7 +127,7 @@ export async function createPost(input: NewPost) {
 			},
 		})
 
-		revalidateTag('posts')
+		revalidateTag('posts', 'max')
 
 		return post
 	} else {
@@ -158,7 +158,7 @@ export async function updatePost(
 		throw new Error('Unauthorized')
 	}
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 
 	return writePostUpdateToDatabase({
 		currentPost,
@@ -201,7 +201,7 @@ export async function addTagToPost(postId: string, tagId: string) {
 
 	// Revalidate cache for events
 	if (post?.type === 'event') {
-		revalidateTag('events')
+		revalidateTag('events', 'max')
 	}
 }
 
@@ -282,7 +282,7 @@ export async function removeTagFromPost(postId: string, tagId: string) {
 
 	// Revalidate cache for events
 	if (post?.type === 'event') {
-		revalidateTag('events')
+		revalidateTag('events', 'max')
 	}
 }
 

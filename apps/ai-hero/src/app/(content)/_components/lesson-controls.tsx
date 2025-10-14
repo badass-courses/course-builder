@@ -13,6 +13,7 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
+import GetAccessButton from '../workshops/_components/get-access-button'
 import { AutoPlayToggle } from './autoplay-toggle'
 import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
 
@@ -22,11 +23,13 @@ export const LessonControls = async ({
 	className,
 	moduleType = 'workshop',
 	abilityLoader,
+	moduleSlug,
 }: {
 	lesson: Lesson | null
 	problem?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
+	moduleSlug: string
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean
@@ -58,6 +61,13 @@ export const LessonControls = async ({
 			)}
 		>
 			<div className="flex h-full grow items-center">
+				<React.Suspense fallback={null}>
+					<GetAccessButton
+						className="border-r-border dark:bg-primary dark:hover:bg-primary/90 h-full rounded-none border-0 border-r bg-blue-600 px-5 text-sm hover:bg-blue-500"
+						abilityLoader={abilityLoader}
+						moduleSlug={moduleSlug}
+					/>
+				</React.Suspense>
 				<React.Suspense fallback={null}>
 					<CopyProblemPromptButton
 						abilityLoader={abilityLoader}

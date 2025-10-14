@@ -3,10 +3,7 @@ import Link from 'next/link'
 
 import { Badge } from '@coursebuilder/ui'
 
-const AdminLayout = async (props: {
-	params: Promise<{ module: string }>
-	children: React.ReactNode
-}) => {
+const AdminLayout = async (props: { children: React.ReactNode }) => {
 	return (
 		<div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
 			<div className="bg-muted/40 hidden border-r md:block">

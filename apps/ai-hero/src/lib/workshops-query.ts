@@ -97,18 +97,19 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN cohorts ON cohorts.cohortId = crr.resourceOfId
 			WHERE cr.type IN ('workshop', 'tutorial')
 		),
-		sections AS (
-			-- Get all sections with their positions
-			SELECT
-				cr.id,
-				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as slug,
-				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as title,
-				crr.position
-			FROM ${contentResource} as cr
-			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
-			JOIN workshop ON workshop.id = crr.resourceOfId
-			WHERE cr.type = 'section'
-		),
+	sections AS (
+		-- Get all sections with their positions
+		SELECT
+			cr.id,
+			JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as slug,
+			JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as title,
+			crr.position,
+			JSON_UNQUOTE(JSON_EXTRACT(crr.metadata, '$.tier')) as tier
+		FROM ${contentResource} as cr
+		JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
+		JOIN workshop ON workshop.id = crr.resourceOfId
+		WHERE cr.type = 'section'
+	),
 		resources AS (
 			-- Get top-level resources (not in sections)
 			SELECT
@@ -150,37 +151,37 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN resources ON resources.id = crr.resourceOfId AND resources.type = 'lesson'
 			WHERE cr.type = 'solution'
 		)
-		-- Get all data in separate result sets without complex ordering
-		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
-			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			NULL as resourceType, NULL as resourcePosition
-		FROM workshop
-		UNION ALL
-		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId,
-			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			NULL as resourceType, NULL as resourcePosition
-		FROM sections
-		UNION ALL
-		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId,
-			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			type as resourceType, NULL as resourcePosition
-		FROM resources
-		UNION ALL
-		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
-			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			NULL as resourceType, NULL as resourcePosition
-		FROM solutions
-		UNION ALL
-		SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
-			cohortId, cohortSlug, cohortTitle, startsAt, endsAt, timezone, cohortTier, maxSeats,
-			NULL as resourceType, NULL as resourcePosition
-		FROM cohorts
-		UNION ALL
-		SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position,
-			NULL as sectionId, NULL as resourceId,
-			cohortId, NULL as cohortSlug, NULL as cohortTitle, startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
-			resourceType, resourcePosition
-		FROM cohort_resources
+	-- Get all data in separate result sets without complex ordering
+	SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+		NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+		NULL as resourceType, NULL as resourcePosition, NULL as tier
+	FROM workshop
+	UNION ALL
+	SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId,
+		NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+		NULL as resourceType, NULL as resourcePosition, tier
+	FROM sections
+	UNION ALL
+	SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId,
+		NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+		type as resourceType, NULL as resourcePosition, NULL as tier
+	FROM resources
+	UNION ALL
+	SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
+		NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+		NULL as resourceType, NULL as resourcePosition, NULL as tier
+	FROM solutions
+	UNION ALL
+	SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+		cohortId, cohortSlug, cohortTitle, startsAt, endsAt, timezone, cohortTier, maxSeats,
+		NULL as resourceType, NULL as resourcePosition, NULL as tier
+	FROM cohorts
+	UNION ALL
+	SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position,
+		NULL as sectionId, NULL as resourceId,
+		cohortId, NULL as cohortSlug, NULL as cohortTitle, startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
+		resourceType, resourcePosition, NULL as tier
+	FROM cohort_resources
 	`
 
 	const result = await db.execute(query)
@@ -212,6 +213,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 				slug: row.slug,
 				title: row.title,
 				position: row.position,
+				tier: row.tier,
 			}),
 		)
 
@@ -405,6 +407,7 @@ function transformToNavigationStructure(
 			title: section.title,
 			position: section.position,
 			type: 'section',
+			tier: section.tier,
 			resources: sectionNavigationResources,
 		})
 	})
@@ -688,7 +691,7 @@ export const addResourceToWorkshop = async ({
 		},
 	})
 
-	revalidateTag('workshop')
+	revalidateTag('workshop', 'max')
 
 	return resourceResource
 }
@@ -714,7 +717,7 @@ export const updateResourcePosition = async ({
 			),
 		)
 
-	revalidateTag('workshop')
+	revalidateTag('workshop', 'max')
 
 	return result
 }
@@ -810,9 +813,9 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 			},
 		})
 
-	revalidateTag('workshop')
-	revalidateTag('workshops')
-	revalidateTag(currentWorkshop.id)
+	revalidateTag('workshop', 'max')
+	revalidateTag('workshops', 'max')
+	revalidateTag(currentWorkshop.id, 'max')
 	revalidatePath('/workshops')
 	revalidatePath(`/workshops/${workshopSlug}`)
 

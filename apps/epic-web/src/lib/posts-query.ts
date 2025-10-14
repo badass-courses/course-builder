@@ -382,7 +382,7 @@ export async function createPost(input: NewPostInput) {
 			})
 		}
 
-		revalidateTag('posts')
+		revalidateTag('posts', 'max')
 		return post
 	} else {
 		await log.error('post.create.notfound', {
@@ -499,7 +499,7 @@ export async function updatePost(
 			changes: Object.keys(input.fields),
 		})
 
-		revalidate && revalidateTag('posts')
+		revalidate && revalidateTag('posts', 'max')
 		return result
 	} catch (error) {
 		await log.error('post.update.failed', {
@@ -624,8 +624,8 @@ export async function deletePost(id: string) {
 
 	await deletePostInTypeSense(post.id)
 
-	revalidateTag('posts')
-	revalidateTag(id)
+	revalidateTag('posts', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/posts')
 
 	return true

@@ -65,18 +65,13 @@ export const PricingWidget: React.FC<{
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
+					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs cursor-pointer bg-blue-600 text-lg font-semibold hover:bg-blue-700">
 						<span className="relative z-10">
 							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
 						</span>
 						<div
 							style={{
 								backgroundSize: '200% 100%',
-								animationDuration: '2s',
-								animationIterationCount: 'infinite',
-								animationTimingFunction: 'linear',
-								animationFillMode: 'forwards',
-								animationDelay: '2s',
 							}}
 							className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
 						/>

@@ -38,6 +38,7 @@ export const NavigationSectionSchema = z.object({
 	title: z.string(),
 	position: z.number(),
 	type: z.literal('section'),
+	tier: z.string().optional().nullable(),
 	resources: z.array(z.union([NavigationLessonSchema, NavigationPostSchema])),
 })
 
@@ -129,6 +130,7 @@ export type SectionRaw = {
 	slug: string
 	title: string
 	position: number
+	tier?: string | null
 }
 
 export type ResourceRaw = {
@@ -160,6 +162,7 @@ export const SectionRawSchema = z.object({
 	slug: z.string(),
 	title: z.string(),
 	position: z.number(),
+	tier: z.string().optional().nullable(),
 })
 
 export const ResourceRawSchema = z.object({
@@ -200,6 +203,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			maxSeats: z.null(),
 			resourceType: z.null(),
 			resourcePosition: z.null(),
+			tier: z.null(),
 		}),
 	// Section row
 	z
@@ -246,6 +250,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			maxSeats: z.null(),
 			resourceType: z.enum(['lesson', 'post']),
 			resourcePosition: z.null(),
+			tier: z.null(),
 		}),
 	// Solution row
 	z
@@ -267,6 +272,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			maxSeats: z.null(),
 			resourceType: z.null(),
 			resourcePosition: z.null(),
+			tier: z.null(),
 		}),
 	// Cohort row
 	z
@@ -291,6 +297,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			maxSeats: z.number().int().positive().nullable(),
 			resourceType: z.null(),
 			resourcePosition: z.null(),
+			tier: z.null(),
 		}),
 	// Cohort resource row
 	z
@@ -315,6 +322,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			maxSeats: z.null(),
 			resourceType: z.enum(['workshop', 'tutorial']),
 			resourcePosition: z.number(),
+			tier: z.null(),
 		}),
 ])
 

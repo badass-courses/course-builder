@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic'
+import { CheckList } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
@@ -37,10 +38,14 @@ const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
  * @param source - MDX source content to compile
  * @returns Compiled MDX content
  */
-export async function compileMDX(source: string) {
+export async function compileMDX(
+	source: string,
+	components?: Record<string, React.ComponentType<any>>,
+) {
 	return await _compileMDX({
 		source: source,
 		components: {
+			...components,
 			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
@@ -77,6 +82,7 @@ export async function compileMDX(source: string) {
 			}: { urls: { dark: string; light: string } } & CldImageProps) => (
 				<ThemeImage urls={urls} {...props} />
 			),
+			CheckList: ({ children }) => <CheckList>{children}</CheckList>,
 			h1: ({ children }) => <Heading level={1}>{children}</Heading>,
 			h2: ({ children }) => <Heading level={2}>{children}</Heading>,
 			h3: ({ children }) => <Heading level={3}>{children}</Heading>,

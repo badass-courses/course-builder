@@ -16,7 +16,6 @@ const withMDX = createMDX({
 const config = {
 	experimental: {
 		mdxRs: true,
-		ppr: 'incremental',
 	},
 	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
 	images: {

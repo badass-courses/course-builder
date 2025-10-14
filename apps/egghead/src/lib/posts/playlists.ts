@@ -136,7 +136,7 @@ export const removePostFromCoursePost = async ({
 		console.error('Error syncing with Egghead', e)
 	}
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 	return result
 }
 
@@ -284,7 +284,7 @@ export const updateResourcePosition = async ({
 			),
 		)
 
-	revalidateTag('posts')
+	revalidateTag('posts', 'max')
 
 	return result
 }

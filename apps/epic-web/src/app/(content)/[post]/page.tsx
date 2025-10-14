@@ -27,8 +27,6 @@ import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-pl
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 
-export const experimental_ppr = true
-
 type Props = {
 	params: Promise<{ post: string }>
 }

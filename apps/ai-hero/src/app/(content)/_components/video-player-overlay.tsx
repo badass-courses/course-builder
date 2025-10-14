@@ -74,6 +74,7 @@ export const CompletedLessonOverlay: React.FC<{
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
+	const { data: session } = useSession()
 
 	const percentCompleted = moduleProgress?.percentCompleted || 0
 
@@ -91,16 +92,28 @@ export const CompletedLessonOverlay: React.FC<{
 				<p className="font-heading text-xl font-bold sm:text-2xl">
 					{nextLesson?.title}
 				</p>
-				<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
-					<Progress
-						value={percentCompleted}
-						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
-					/>
-					<div className="opacity-85">
-						{moduleProgress?.completedLessonsCount || 0}/
-						{moduleProgress?.totalLessonsCount || 0} completed
+				{session?.user ? (
+					<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
+						<Progress
+							value={percentCompleted}
+							className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
+						/>
+						<div className="opacity-85">
+							{moduleProgress?.completedLessonsCount || 0}/
+							{moduleProgress?.totalLessonsCount || 0} completed
+						</div>
 					</div>
-				</div>
+				) : (
+					<div className="mt-3 text-sm sm:mt-8">
+						<Link
+							href="/login"
+							className="dark:text-primary text-blue-600 hover:underline"
+						>
+							Log in
+						</Link>{' '}
+						to track your progress.
+					</div>
+				)}
 			</div>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
@@ -277,11 +290,12 @@ const ContinueButton: React.FC<{
 	const isSolution = pathname.endsWith('/solution')
 
 	const [isPending, startTransition] = React.useTransition()
+	const { data: session } = useSession()
 
 	return (
 		<Button
 			className={cn(
-				'dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80',
+				'dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground cursor-pointer bg-white text-black hover:bg-white/80',
 				className,
 			)}
 			onClick={async () => {
@@ -310,7 +324,7 @@ const ContinueButton: React.FC<{
 			type="submit"
 			disabled={isPending}
 		>
-			{isCurrentLessonCompleted && !isPending
+			{(isCurrentLessonCompleted && !isPending) || !session?.user
 				? 'Continue'
 				: isProblemLesson
 					? 'Continue'

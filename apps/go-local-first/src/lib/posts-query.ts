@@ -211,7 +211,7 @@ export async function createPost(input: NewPost) {
 			console.error('Failed to create post in Typesense', e)
 		}
 
-		revalidateTag('posts')
+		revalidateTag('posts', 'max')
 
 		return post
 	} else {
@@ -273,7 +273,7 @@ export async function updatePost(
 		console.error('Failed to update post in Typesense', e)
 	}
 
-	revalidate && revalidateTag('posts')
+	revalidate && revalidateTag('posts', 'max')
 
 	return courseBuilderAdapter.updateContentResourceFields({
 		id: currentPost.id,
@@ -384,8 +384,8 @@ export async function deletePost(id: string) {
 
 	await deletePostInTypeSense(post.id)
 
-	revalidateTag('posts')
-	revalidateTag(id)
+	revalidateTag('posts', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/posts')
 
 	return true

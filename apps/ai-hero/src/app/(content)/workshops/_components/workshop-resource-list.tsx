@@ -11,7 +11,14 @@ import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { subject } from '@casl/ability'
-import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
+import {
+	Check,
+	Lock,
+	PanelLeftClose,
+	PanelLeftOpen,
+	Pen,
+	Play,
+} from 'lucide-react'
 import { useMeasure } from 'react-use'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
@@ -227,15 +234,28 @@ export function WorkshopResourceList(props: Props) {
 													progress.completedAt,
 											),
 										)
+
+									const firstLesson =
+										resource.type === 'section' && resource.resources[0]
+									const firstLessonId = firstLesson && firstLesson.id
+
+									const canViewWorkshop =
+										firstLessonId &&
+										ability.can(
+											'read',
+											subject('Content', { id: workshopNavigation.id }),
+										)
+
 									return resource.type === 'section' ? (
 										// sections
 										<li key={`${resource.id}-accordion`}>
 											<AccordionItem value={resource.id} className="border-0">
 												<AccordionTrigger
 													className={cn(
-														'hover:bg-muted bg-background relative flex w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
+														'hover:bg-muted bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
 														{
-															'bg-muted': isActiveGroup,
+															'bg-muted dark:text-primary text-blue-600':
+																isActiveGroup,
 														},
 													)}
 												>
@@ -253,6 +273,20 @@ export function WorkshopResourceList(props: Props) {
 															<span className="self-end text-sm font-normal opacity-50">
 																({resource.resources.length})
 															</span>
+														)}
+													</div>
+													<div>
+														{abilityStatus === 'success' && (
+															<>
+																{resource?.tier === 'free' &&
+																!canViewWorkshop ? (
+																	<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
+																		<Play className="size-3" /> Free
+																	</div>
+																) : !canViewWorkshop ? (
+																	<Lock className="w-3 text-gray-500" />
+																) : null}
+															</>
 														)}
 													</div>
 												</AccordionTrigger>
@@ -390,12 +424,13 @@ const LessonResource = ({
 							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 							{
 								// Active state
-								'bg-muted text-primary border-gray-200':
+								'bg-muted dark:text-primary text-blue-600 border-gray-200':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
-								'hover:bg-muted hover:text-primary':
+								'hover:bg-muted dark:hover:text-primary hover:text-blue-600':
 									canViewLesson && !isActiveLesson && !isActiveGroup,
-								'hover:bg-foreground/10': canViewLesson && isActiveGroup,
+								'hover:bg-foreground/5 dark:hover:text-primary hover:text-blue-600':
+									canViewLesson && isActiveGroup,
 							},
 						)
 
@@ -420,6 +455,7 @@ const LessonResource = ({
 										{index + 1}
 									</span>
 								)}
+
 								<span className="w-full text-base">{lesson.title}</span>
 								{abilityStatus === 'success' && !canViewLesson && (
 									<Lock
@@ -462,12 +498,13 @@ const LessonResource = ({
 					<li data-active={isActiveLesson ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								'hover:bg-foreground/10 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 								{
 									'pl-9': true,
-									'bg-foreground/10 text-primary border-gray-200':
+									'bg-foreground/5 dark:text-primary border-gray-200 text-blue-600':
 										isActiveLesson,
-									'hover:text-primary': !isActiveLesson,
+									'dark:hover:text-primary hover:text-blue-600':
+										!isActiveLesson,
 								},
 							)}
 							prefetch={true}
@@ -479,12 +516,13 @@ const LessonResource = ({
 					<li data-active={isActiveSolution ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'hover:bg-foreground/20 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								'hover:bg-foreground/10 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
 								{
 									'pl-9': true,
-									'bg-foreground/10 text-primary border-gray-200':
+									'bg-foreground/5 dark:text-primary border-gray-200 text-blue-600':
 										isActiveSolution,
-									'hover:text-primary': !isActiveSolution,
+									'dark:hover:text-primary hover:text-blue-600':
+										!isActiveSolution,
 								},
 							)}
 							prefetch={true}

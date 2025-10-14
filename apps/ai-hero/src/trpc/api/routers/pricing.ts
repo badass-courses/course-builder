@@ -363,7 +363,15 @@ export const pricingRouter = createTRPCRouter({
 				await courseBuilderAdapter.getPurchasesForUser(verifiedUserId),
 			)
 		}
-		const products = await db.query.products.findMany()
+		const products = await db.query.products.findMany({
+			with: {
+				resources: {
+					with: {
+						resource: true,
+					},
+				},
+			},
+		})
 
 		if (!products) return null
 

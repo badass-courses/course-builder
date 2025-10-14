@@ -39,13 +39,13 @@
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",
-		"next": "15.4.2-canary.14",
+		"next": "16.0.0-beta.0",
 		"next-auth": "5.0.0-beta.25",
-		"react": "19.1.0"
+		"react": "19.2.0"
 	},
 	"peerDependencies": {
-		"next": "15.4.2-canary.14",
+		"next": "16.0.0-beta.0",
 		"next-auth": "5.0.0-beta.25",
-		"react": "19.1.0"
+		"react": "19.2.0"
 	}
 }

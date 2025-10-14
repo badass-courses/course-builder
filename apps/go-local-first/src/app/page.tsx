@@ -27,8 +27,6 @@ import {
 	Spacer,
 } from './admin/pages/_components/page-builder-mdx-components'
 
-export const experimental_ppr = true
-
 const LANDING_PAGE_RESOURCE_SLUG = 'home-z9ik9'
 
 export async function generateMetadata(

@@ -39,8 +39,8 @@ export async function deleteTip(id: string) {
 
 	await db.delete(contentResource).where(eq(contentResource.id, id))
 
-	revalidateTag('tips')
-	revalidateTag(id)
+	revalidateTag('tips', 'max')
+	revalidateTag(id, 'max')
 	revalidatePath('/tips')
 
 	return true
@@ -142,7 +142,7 @@ export async function createTip(input: NewTip) {
 			})
 		}
 
-		revalidateTag('tips')
+		revalidateTag('tips', 'max')
 
 		return tip
 	} else {

@@ -68,7 +68,7 @@ export async function createPage(input: NewPage) {
 
 	const page = await getPage(newPageId)
 
-	revalidateTag('pages')
+	revalidateTag('pages', 'max')
 
 	return page
 }
