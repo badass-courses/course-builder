@@ -222,15 +222,19 @@ const getPPPDetails = async ({
 		pppDiscountIsBetter
 
 	// Lookup PPP coupon when:
-	// 1. For upgrade scenarios when no merchant coupon is applied, OR
-	// 2. When PPP provides better discount than special merchant coupon
+	// 1. No merchant coupon was provided at all (auto-apply PPP), OR
+	// 2. A fixed-amount coupon was provided AND PPP is better (override fixed with PPP)
+	// NOTE: For percentage coupons, respect user's explicit choice - don't override
+	const isFixedAmountCoupon =
+		specialMerchantCoupon?.amountDiscount !== null &&
+		specialMerchantCoupon?.amountDiscount !== undefined &&
+		specialMerchantCoupon?.amountDiscount > 0
+
 	const shouldLookupPPPMerchantCoupon =
 		appliedMerchantCoupon?.type !== PPP_TYPE && // Don't lookup if already PPP
 		autoApplyPPP &&
-		(pppConditionsMet || // PPP is better than special merchant
-			(appliedMerchantCoupon === null && // Upgrade scenario
-				purchaseToBeUpgraded !== null &&
-				hasOnlyPPPDiscountedPurchases))
+		pppConditionsMet && // PPP conditions must be met
+		(appliedMerchantCoupon === null || isFixedAmountCoupon) // No coupon OR fixed-amount coupon
 
 	let pppMerchantCoupon: MerchantCoupon | null = null
 	if (shouldLookupPPPMerchantCoupon) {

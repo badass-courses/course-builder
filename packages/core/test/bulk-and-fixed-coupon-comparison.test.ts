@@ -90,7 +90,7 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 			expect(result.bulk).toBe(true)
 		})
 
-		it('should prefer $500 fixed over bulk 40% for bulk purchase when fixed is better', async () => {
+		it('should prefer bulk 40% over $500 fixed for bulk purchase when bulk is better', async () => {
 			// Product: $1000, Quantity: 5 → Subtotal: $5000
 			// Bulk 40%: $2000 off → $3000 final
 			// Fixed $500: $500 off → $4500 final
@@ -204,7 +204,7 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 	})
 
 	describe('Cheap Product ($50) with Bulk Discount', () => {
-		it('should prefer $30 fixed over bulk 40% when fixed is better', async () => {
+		it('should prefer bulk 40% over $30 fixed when bulk is better', async () => {
 			// Product: $50, Quantity: 5 → Subtotal: $250
 			// Bulk 40%: $100 off → $150 final
 			// Fixed $30: $30 off → $220 final

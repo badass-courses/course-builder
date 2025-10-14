@@ -66,10 +66,9 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 			expect(result.appliedMerchantCoupon?.amountDiscount).toBe(20000)
 		})
 
-		it('should prefer default 25% over $100 fixed when default is better on $50 product', async () => {
-			// $50 product with 25% default = $12.50 off → $37.50 final
-			// $50 product with $100 fixed = clamped to $0
-			// Fixed is better (free product!)
+		it('should apply $100 fixed discount on $50 product (results in free product)', async () => {
+			// $50 product with $100 fixed discount
+			// Fixed discount exceeds price, resulting in free product (clamped to $0)
 			const fixedCoupon100 = testMerchantCoupons.fixedAmount100
 
 			const mockAdapter = createMockAdapter({
@@ -88,7 +87,7 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 				unitPrice: 50,
 			})
 
-			// Fixed $100 > price $50, so fixed wins
+			// Fixed coupon is applied even though it exceeds the price
 			expect(result.appliedDiscountType).toBe('fixed')
 		})
 	})
@@ -118,10 +117,8 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 			// Final price should be $0
 		})
 
-		it('should prefer $50 fixed over 25% default on $50 product', async () => {
-			// $50 product with 25% = $12.50 off → $37.50 final
+		it('should apply $50 fixed discount on $50 product', async () => {
 			// $50 product with $50 fixed = $50 off → $0 final
-			// Fixed is better
 			const fixedCoupon50 = {
 				...testMerchantCoupons.fixedAmount20,
 				id: 'coupon_fixed_50',
@@ -150,10 +147,8 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 	})
 
 	describe('Fixed Discount as Large Percentage of Price', () => {
-		it('should prefer $75 fixed (75% off) over 25% default on $100 product', async () => {
-			// $100 with 25% = $25 off → $75 final
+		it('should apply $75 fixed discount on $100 product', async () => {
 			// $100 with $75 fixed = $75 off → $25 final
-			// Fixed is better
 			const fixedCoupon75 = testMerchantCoupons.fixedAmount75
 
 			const mockAdapter = createMockAdapter({
@@ -176,24 +171,16 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 			expect(result.appliedMerchantCoupon?.amountDiscount).toBe(7500)
 		})
 
-		it('should prefer 40% default over $20 fixed (20% off) on $100 product', async () => {
-			// $100 with 40% = $40 off → $60 final
+		it('should apply fixed discount when no default coupon present on $100 product', async () => {
 			// $100 with $20 fixed = $20 off → $80 final
-			// Percentage is better
+			// Default coupon comparison out of scope for determineCouponToApply
 			const fixedCoupon20 = testMerchantCoupons.fixedAmount20
-			const percent40 = {
-				...testMerchantCoupons.percentage25,
-				percentageDiscount: 0.4,
-			}
 
 			const mockAdapter = createMockAdapter({
 				getMerchantCoupon: vi.fn(async () => fixedCoupon20),
 				getPurchasesForUser: vi.fn(async () => []),
 			})
 
-			// Simulate having a default 40% coupon
-			// Since we don't have default coupon logic in determineCouponToApply,
-			// this test documents expected behavior
 			const result = await determineCouponToApply({
 				prismaCtx: mockAdapter,
 				merchantCouponId: 'coupon_fixed_20',
@@ -205,7 +192,6 @@ describe('Fixed Discount Edge Cases at Various Price Points', () => {
 				unitPrice: 100,
 			})
 
-			// Without default coupon comparison, fixed applies
 			expect(result.appliedDiscountType).toBe('fixed')
 		})
 	})
