@@ -144,7 +144,7 @@ async function getActiveMerchantCoupon({
 		if (
 			incomingMerchantCoupon?.percentageDiscount &&
 			incomingMerchantCoupon.percentageDiscount >=
-				defaultMerchantCoupon.percentageDiscount
+				(defaultMerchantCoupon.percentageDiscount ?? 0)
 		) {
 			activeMerchantCoupon = incomingMerchantCoupon
 			usedCouponId = incomingCoupon.id
