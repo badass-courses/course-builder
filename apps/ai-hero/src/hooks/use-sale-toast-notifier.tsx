@@ -94,15 +94,15 @@ export const useSaleToastNotifier = () => {
 						)}
 					</>
 				),
-				action: productPath ? (
+				action: (
 					<ToastAction
 						altText="Buy Now"
 						asChild
 						className="bg-primary hover:bg-primary/90 text-primary-foreground"
 					>
-						<Link href={productPath}>Buy Now</Link>
+						<Link href={productPath || '/#buy'}>Buy Now</Link>
 					</ToastAction>
-				) : null,
+				),
 			})
 		}
 	}, [
