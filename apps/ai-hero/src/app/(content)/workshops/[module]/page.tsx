@@ -308,7 +308,10 @@ export default async function ModulePage(props: Props) {
 										{(pricingProps) => {
 											return pricingProps.product ? (
 												<>
-													<WorkshopSidebar workshop={workshop}>
+													<WorkshopSidebar
+														pricingProps={pricingProps}
+														workshop={workshop}
+													>
 														{pricingProps.allowPurchase &&
 														!pricingProps.hasPurchasedCurrentProduct ? (
 															<>

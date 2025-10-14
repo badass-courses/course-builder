@@ -49,7 +49,7 @@ export async function checkout(
 		// if the user isn't logged in. we want to ensure an org id is set.
 		if (
 			product?.type &&
-			['membership', 'cohort', 'live', 'self-paced'].includes(product.type)
+			['membership', 'cohort', 'live'].includes(product.type)
 		) {
 			return Response.redirect(
 				`${options.baseUrl}/subscribe/verify-login?${new URLSearchParams({
