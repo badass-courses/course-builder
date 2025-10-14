@@ -208,11 +208,12 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 					return testPrices.basic
 				}),
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 				getUser: vi.fn(async () => ({
 					id: 'user_1',
 					email: 'test@example.com',
+					emailVerified: null,
 				})),
 				getMerchantCustomerForUserId: vi.fn(async () => ({
 					id: 'merchant_customer_1',
@@ -220,6 +221,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 					merchantAccountId: 'merchant_1',
 					userId: 'user_1',
 					createdAt: new Date(),
+					status: 0,
 				})),
 			})
 
@@ -262,11 +264,12 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				}),
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 				getUser: vi.fn(async () => ({
 					id: 'user_1',
 					email: 'test@example.com',
+					emailVerified: null,
 				})),
 				getMerchantCustomerForUserId: vi.fn(async () => ({
 					id: 'merchant_customer_1',
@@ -274,6 +277,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 					merchantAccountId: 'merchant_1',
 					userId: 'user_1',
 					createdAt: new Date(),
+					status: 0,
 				})),
 			})
 
@@ -412,6 +416,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				getUser: vi.fn(async () => ({
 					id: 'user_1',
 					email: 'test@example.com',
+					emailVerified: null,
 				})),
 				getMerchantCustomerForUserId: vi.fn(async () => ({
 					id: 'merchant_customer_1',
@@ -419,6 +424,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 					merchantAccountId: 'merchant_1',
 					userId: 'user_1',
 					createdAt: new Date(),
+					status: 0,
 				})),
 			})
 
@@ -450,6 +456,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				getUser: vi.fn(async () => ({
 					id: 'user_1',
 					email: 'test@example.com',
+					emailVerified: null,
 				})),
 				getMerchantCustomerForUserId: vi.fn(async () => null),
 				createMerchantCustomer: mockCreateMerchantCustomer,
@@ -515,7 +522,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 
 			const mockAdapter = createMockAdapter({
 				getPurchase: vi.fn(async () => testPurchases.validBasic),
-				getUpgradableProducts: vi.fn(async () => testUpgradableProducts[0]),
+				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
 			})
 
 			await stripeCheckout({
@@ -577,6 +584,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				getUser: vi.fn(async () => ({
 					id: 'user_1',
 					email: 'test@example.com',
+					emailVerified: null,
 				})),
 			})
 

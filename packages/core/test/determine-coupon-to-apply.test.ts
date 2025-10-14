@@ -79,14 +79,14 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.ppp60,
+					testMerchantCoupons.ppp75,
 				]),
 			})
 
 			const result = await determineCouponToApply({
 				prismaCtx: mockAdapter,
 				merchantCouponId: 'coupon_fixed_20',
-				country: 'IN', // India has 60% PPP discount
+				country: 'IN', // India has 75% PPP discount
 				quantity: 1,
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
@@ -94,11 +94,11 @@ describe('determineCouponToApply', () => {
 				unitPrice: 100,
 			})
 
-			// PPP 60% on $100 = $40 final
+			// PPP 75% on $100 = $25 final
 			// Fixed $20 on $100 = $80 final
 			// PPP is better, so should be preferred
 			expect(result.appliedDiscountType).toBe('ppp')
-			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.6)
+			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.75)
 		})
 
 		it('should not apply fixed coupon for bulk purchases', async () => {
@@ -106,7 +106,7 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.bulk20,
+					testMerchantCoupons.bulk15,
 				]),
 			})
 
@@ -133,7 +133,7 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => null),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.ppp60,
+					testMerchantCoupons.ppp75,
 				]),
 			})
 
@@ -194,7 +194,7 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => null),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.bulk20,
+					testMerchantCoupons.bulk15,
 				]),
 			})
 
@@ -219,7 +219,7 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => null),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.bulk20,
+					testMerchantCoupons.bulk15,
 				]),
 			})
 
@@ -235,7 +235,7 @@ describe('determineCouponToApply', () => {
 
 			expect(result.bulk).toBe(true)
 			expect(result.appliedDiscountType).toBe('bulk')
-			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.2)
+			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.15)
 		})
 
 		it('should not apply bulk discount when merchant percentage is better', async () => {
@@ -255,7 +255,7 @@ describe('determineCouponToApply', () => {
 				unitPrice: 100,
 			})
 
-			// Merchant 25% is better than bulk 20%, so should use merchant
+			// Merchant 25% is better than bulk 15%, so should use merchant
 			expect(result.appliedDiscountType).toBe('percentage')
 			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.25)
 		})
@@ -407,7 +407,7 @@ describe('determineCouponToApply', () => {
 				getMerchantCoupon: vi.fn(async () => null),
 				getPurchasesForUser: vi.fn(async () => []),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
-					testMerchantCoupons.ppp60,
+					testMerchantCoupons.ppp75,
 				]),
 			})
 
