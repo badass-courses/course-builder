@@ -8,6 +8,7 @@ import {
 } from 'next/navigation'
 import { api } from '@/trpc/react'
 import cookieUtil from '@/utils/cookies'
+import { formatDiscount } from '@/utils/discount-formatter'
 import { isBefore, subDays } from 'date-fns'
 import Countdown, { type CountdownRenderProps } from 'react-countdown'
 
@@ -55,12 +56,7 @@ export const useSaleToastNotifier = () => {
 				: true) &&
 			productResourceSlug !== param
 		) {
-			// Format discount based on coupon type
-			const hasFixedDiscount =
-				defaultCoupon.amountDiscount && defaultCoupon.amountDiscount > 0
-			const discountFormatted = hasFixedDiscount
-				? `$${((defaultCoupon.amountDiscount ?? 0) / 100).toFixed(2)}`
-				: `${Number(defaultCoupon.percentageDiscount) * 100}%`
+			const discountFormatted = formatDiscount(defaultCoupon)
 
 			toast({
 				title: `Save ${discountFormatted} on ${defaultCoupon?.product?.name}`,
