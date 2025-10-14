@@ -187,7 +187,7 @@ export const testPurchases = {
 		merchantChargeId: 'ch_valid_1',
 		merchantAccountId: 'merchant_1',
 		status: 'Valid' as const,
-		totalAmount: 10000, // $100 in cents
+		totalAmount: 100, // $100 in dollars
 		createdAt: new Date(),
 		fields: {},
 	} as Purchase,
@@ -198,7 +198,7 @@ export const testPurchases = {
 		merchantChargeId: 'ch_restricted_1',
 		merchantAccountId: 'merchant_1',
 		status: 'Restricted' as const,
-		totalAmount: 4000, // $40 in cents (with PPP)
+		totalAmount: 40, // $40 in dollars (with PPP)
 		createdAt: new Date(),
 		fields: {},
 	} as Purchase,
