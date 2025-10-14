@@ -1,5 +1,6 @@
 import { db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
+import { formatDiscount } from '@/utils/discount-formatter'
 import { eq } from 'drizzle-orm'
 
 import type { Coupon } from '@coursebuilder/core/schemas'
@@ -55,21 +56,20 @@ export async function getSaleBannerData(
 		const discountType = hasFixedDiscount ? 'fixed' : 'percentage'
 
 		let discountValue: number
-		let discountFormatted: string
 		let percentOff: number | undefined
 
-		if (hasFixedDiscount) {
+		if (hasFixedDiscount && coupon.amountDiscount) {
 			// Fixed amount discount (in cents, convert to dollars)
 			discountValue = coupon.amountDiscount / 100
-			discountFormatted = `$${discountValue.toFixed(2)}`
 		} else {
 			// Percentage discount
 			percentOff = parseFloat(
 				(Number(coupon.percentageDiscount) * 100).toFixed(1),
 			)
 			discountValue = percentOff
-			discountFormatted = `${percentOff}%`
 		}
+
+		const discountFormatted = formatDiscount(coupon)
 
 		return {
 			discountType,
