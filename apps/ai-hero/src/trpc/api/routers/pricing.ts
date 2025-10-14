@@ -86,6 +86,9 @@ const CheckForAvailableCouponsSchema = PricingFormattedInputSchema.pick({
 	couponId: true,
 	code: true,
 	productId: true,
+	quantity: true,
+}).extend({
+	unitPrice: z.number(),
 })
 type CheckForAvailableCoupons = z.infer<typeof CheckForAvailableCouponsSchema>
 
@@ -109,10 +112,14 @@ async function getActiveMerchantCoupon({
 	productId,
 	siteCouponId,
 	code,
+	unitPrice,
+	quantity,
 }: {
 	productId: string | undefined
 	siteCouponId: string | undefined
 	code: string | undefined
+	unitPrice: number
+	quantity: number
 }) {
 	let activeMerchantCoupon = null
 	let usedCouponId
@@ -137,11 +144,28 @@ async function getActiveMerchantCoupon({
 		defaultMerchantCoupon
 	) {
 		// use whichever coupon provides the bigger discount
+		// by calculating actual discount amounts in dollars
 		const { merchantCoupon: incomingMerchantCoupon } = incomingCoupon
-		if (
-			incomingMerchantCoupon.percentageDiscount >=
-			defaultMerchantCoupon.percentageDiscount
-		) {
+		const subtotal = unitPrice * quantity
+
+		// Calculate incoming coupon discount amount
+		const incomingDiscountAmount =
+			incomingMerchantCoupon.amountDiscount !== null &&
+			incomingMerchantCoupon.amountDiscount !== undefined &&
+			incomingMerchantCoupon.amountDiscount > 0
+				? incomingMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				: (incomingMerchantCoupon.percentageDiscount || 0) * subtotal
+
+		// Calculate default coupon discount amount
+		const defaultDiscountAmount =
+			defaultMerchantCoupon.amountDiscount !== null &&
+			defaultMerchantCoupon.amountDiscount !== undefined &&
+			defaultMerchantCoupon.amountDiscount > 0
+				? defaultMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
+				: (defaultMerchantCoupon.percentageDiscount || 0) * subtotal
+
+		// Choose the coupon with the higher discount amount
+		if (incomingDiscountAmount >= defaultDiscountAmount) {
 			activeMerchantCoupon = incomingMerchantCoupon
 			usedCouponId = incomingCoupon.id
 		} else {
@@ -179,6 +203,8 @@ const checkForAvailableCoupons = async ({
 	merchantCoupon,
 	couponId,
 	productId,
+	unitPrice,
+	quantity,
 }: CheckForAvailableCoupons) => {
 	// explicit incoming merchant coupons are honored
 	// without checking for other potential coupons
@@ -195,12 +221,9 @@ const checkForAvailableCoupons = async ({
 				siteCouponId: couponId,
 				productId,
 				code: undefined,
+				unitPrice,
+				quantity,
 			})
-
-		const minimalDefaultCoupon = defaultCoupon && {
-			expires: defaultCoupon.expires?.toISOString(),
-			percentageDiscount: defaultCoupon.percentageDiscount.toString(),
-		}
 
 		return {
 			activeMerchantCoupon,
@@ -299,11 +322,17 @@ export const pricingRouter = createTRPCRouter({
 				}
 			}
 
+			// Get product price for coupon comparison
+			const price = await courseBuilderAdapter.getPriceForProduct(productId)
+			const unitPrice = price?.unitAmount || 0
+
 			const { activeMerchantCoupon, defaultCoupon, usedCouponId } =
 				await checkForAvailableCoupons({
 					merchantCoupon,
 					couponId,
 					productId,
+					unitPrice,
+					quantity,
 				})
 
 			const productPrices = await formatPricesForProduct({
