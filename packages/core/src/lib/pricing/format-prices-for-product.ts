@@ -225,7 +225,7 @@ export async function formatPricesForProduct(
 		// Both upgrade credit and fixed amount coupon exist
 		// Choose whichever gives the better discount
 		const upgradeDiscountAmount = fixedDiscountForUpgrade
-		const merchantDiscountAmount = amountDiscount / 100 // Convert cents to dollars
+		const merchantDiscountAmount = (amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
 
 		if (upgradeDiscountAmount >= merchantDiscountAmount) {
 			// Upgrade discount is better, don't apply merchant coupon
@@ -265,7 +265,8 @@ export async function formatPricesForProduct(
 		availableCoupons: result.availableCoupons,
 		appliedMerchantCoupon,
 		appliedDiscountType,
-		appliedFixedDiscount: amountDiscount > 0 ? amountDiscount / 100 : undefined,
+		appliedFixedDiscount:
+			amountDiscount > 0 ? (amountDiscount / 100) * quantity : undefined,
 		...(usedCoupon?.merchantCouponId === appliedMerchantCoupon?.id && {
 			usedCouponId,
 		}),

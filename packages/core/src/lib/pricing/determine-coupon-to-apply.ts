@@ -208,7 +208,7 @@ const getPPPDetails = async ({
 		specialMerchantCoupon?.amountDiscount !== null &&
 		specialMerchantCoupon?.amountDiscount !== undefined &&
 		specialMerchantCoupon?.amountDiscount > 0
-			? specialMerchantCoupon.amountDiscount / 100 // Convert cents to dollars (already a total)
+			? (specialMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
 			: (specialMerchantCoupon?.percentageDiscount || 0) * subtotal
 
 	const pppDiscountAmount = expectedPPPDiscountPercent * subtotal
@@ -381,7 +381,7 @@ const getBulkCouponDetails = async (params: GetBulkCouponDetailsParams) => {
 		appliedMerchantCoupon?.amountDiscount !== null &&
 		appliedMerchantCoupon?.amountDiscount !== undefined &&
 		appliedMerchantCoupon?.amountDiscount > 0
-			? appliedMerchantCoupon.amountDiscount / 100 // Convert cents to dollars (already a total)
+			? (appliedMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
 			: (appliedMerchantCoupon?.percentageDiscount || 0) * subtotal
 
 	const bulkDiscountAmount = bulkCouponPercent * subtotal

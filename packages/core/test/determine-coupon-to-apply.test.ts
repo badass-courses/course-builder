@@ -101,7 +101,7 @@ describe('determineCouponToApply', () => {
 			expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.75)
 		})
 
-		it('should not apply fixed coupon for bulk purchases', async () => {
+		it('should apply fixed $20/seat coupon over bulk 15% when per-seat is better', async () => {
 			const mockAdapter = createMockAdapter({
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
 				getPurchasesForUser: vi.fn(async () => []),
@@ -121,9 +121,9 @@ describe('determineCouponToApply', () => {
 				unitPrice: 100,
 			})
 
-			// Should fall back to bulk discount
+			// Fixed $20/seat × 5 = $100 > Bulk 15% ($75)
 			expect(result.bulk).toBe(true)
-			expect(result.appliedDiscountType).toBe('bulk')
+			expect(result.appliedDiscountType).toBe('fixed')
 		})
 	})
 

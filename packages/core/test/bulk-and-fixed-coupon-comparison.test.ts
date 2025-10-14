@@ -90,11 +90,11 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 			expect(result.bulk).toBe(true)
 		})
 
-		it('should prefer bulk 40% over $500 fixed for bulk purchase when bulk is better', async () => {
+		it('should prefer fixed $500/seat over bulk 40% for bulk purchase', async () => {
 			// Product: $1000, Quantity: 5 → Subtotal: $5000
 			// Bulk 40%: $2000 off → $3000 final
-			// Fixed $500: $500 off → $4500 final
-			// Bulk is better, but let's test the comparison logic works
+			// Fixed $500/seat × 5: $2500 off → $2500 final
+			// Fixed per-seat wins!
 
 			const fixedCoupon500 = {
 				...testMerchantCoupons.fixedAmount20,
@@ -124,18 +124,19 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 				unitPrice: 1000,
 			})
 
-			// Bulk 40% ($2000) > Fixed $500, so bulk wins
-			expect(result.appliedDiscountType).toBe('bulk')
+			// Fixed $500/seat × 5 ($2500) > Bulk 40% ($2000), so fixed wins
+			expect(result.appliedDiscountType).toBe('fixed')
 			expect(result.bulk).toBe(true)
 		})
 	})
 
 	describe('Mid-Range Product ($100) with Bulk Discount', () => {
-		it('should prefer bulk 40% over $30 fixed for bulk purchase', async () => {
+		it('should prefer fixed $30/seat over actual bulk 15% for quantity 5', async () => {
 			// Product: $100, Quantity: 5 → Subtotal: $500
-			// Bulk 40%: $200 off → $300 final
-			// Fixed $30: $30 off → $470 final
-			// Bulk is better
+			// Bulk 15% (actual for qty 5): $75 off → $425 final
+			// Fixed $30/seat × 5: $150 off → $350 final
+			// Fixed per-seat wins! ($150 > $75)
+			// Note: getBulkDiscountPercent(5) = 0.15, not the mocked 0.4
 			const fixedCoupon30 = {
 				...testMerchantCoupons.fixedAmount20,
 				id: 'coupon_fixed_30',
@@ -148,7 +149,7 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
 					{
 						...testMerchantCoupons.bulk20,
-						percentageDiscount: 0.4,
+						percentageDiscount: 0.4, // Mock ignored - actual is 15%
 					},
 				]),
 			})
@@ -164,7 +165,7 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 				unitPrice: 100,
 			})
 
-			expect(result.appliedDiscountType).toBe('bulk')
+			expect(result.appliedDiscountType).toBe('fixed')
 			expect(result.bulk).toBe(true)
 		})
 
@@ -204,11 +205,11 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 	})
 
 	describe('Cheap Product ($50) with Bulk Discount', () => {
-		it('should prefer bulk 40% over $30 fixed when bulk is better', async () => {
+		it('should prefer fixed $30/seat over bulk 40% for bulk purchase', async () => {
 			// Product: $50, Quantity: 5 → Subtotal: $250
 			// Bulk 40%: $100 off → $150 final
-			// Fixed $30: $30 off → $220 final
-			// Bulk is still better!
+			// Fixed $30/seat × 5: $150 off → $100 final
+			// Fixed per-seat wins!
 			const fixedCoupon30 = {
 				...testMerchantCoupons.fixedAmount20,
 				id: 'coupon_fixed_30',
@@ -237,8 +238,8 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 				unitPrice: 50,
 			})
 
-			// With quantity 5, bulk 40% ($100) > fixed $30
-			expect(result.appliedDiscountType).toBe('bulk')
+			// Fixed $30/seat × 5 ($150) > Bulk 40% ($100), so fixed wins
+			expect(result.appliedDiscountType).toBe('fixed')
 			expect(result.bulk).toBe(true)
 		})
 
@@ -313,8 +314,8 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 		it('should handle quantity 10 with fixed coupon', async () => {
 			// Product: $100, Quantity: 10 → Subtotal: $1000
 			// Bulk 20%: $200 off → $800 final
-			// Fixed $30: $30 off → $970 final
-			// Bulk is much better
+			// Fixed $30/seat × 10: $300 off → $700 final
+			// Fixed per-seat wins
 			const fixedCoupon30 = {
 				...testMerchantCoupons.fixedAmount20,
 				id: 'coupon_fixed_30',
@@ -341,14 +342,15 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 			})
 
 			expect(result.bulk).toBe(true)
-			expect(result.appliedDiscountType).toBe('bulk')
+			// Fixed $30/seat × 10 ($300) > Bulk 20% ($200), so fixed wins
+			expect(result.appliedDiscountType).toBe('fixed')
 		})
 
 		it('should handle extreme bulk quantity (100 units)', async () => {
 			// Product: $100, Quantity: 100 → Subtotal: $10,000
 			// Bulk 20%: $2000 off → $8000 final
-			// Fixed $200: $200 off → $9800 final
-			// Bulk is much better
+			// Fixed $200/seat × 100: $20,000 off → FREE!
+			// Fixed per-seat wins massively
 
 			const mockAdapter = createMockAdapter({
 				getMerchantCoupon: vi.fn(
@@ -372,7 +374,8 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 			})
 
 			expect(result.bulk).toBe(true)
-			expect(result.appliedDiscountType).toBe('bulk')
+			// Fixed $200/seat × 100 ($20,000) > Bulk 20% ($2,000), so fixed wins
+			expect(result.appliedDiscountType).toBe('fixed')
 		})
 	})
 
@@ -483,7 +486,8 @@ describe('Bulk Purchase + Default Coupon vs Fixed Coupon Comparison', () => {
 
 			expect(result.appliedDiscountType).not.toBe('ppp')
 			expect(result.bulk).toBe(true)
-			expect(result.appliedDiscountType).toBe('bulk')
+			// Fixed $30/seat × 5 ($150) > Bulk 20% ($100), so fixed wins
+			expect(result.appliedDiscountType).toBe('fixed')
 		})
 	})
 })
