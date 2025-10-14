@@ -44,13 +44,13 @@
 	--color-gray-900: oklch(20.5% 0 0);
 	--color-gray-950: oklch(14.5% 0 0);
 
-	--animate-shine: shine 5s linear infinite;
+	--animate-shine: shine 5s linear infinite forwards 5s;
 	@keyframes shine {
 		0% {
-			background-position: 100%;
+			background-position: 200%;
 		}
-		50% {
-			background-position: -100%;
+		100% {
+			background-position: -200%;
 		}
 	}
 }

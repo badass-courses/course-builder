@@ -71,11 +71,7 @@ export const BuyButtonComponent: React.FC<
 		<PurchasedTicketInfo centered={centered} resourceType={resourceType} />
 	) : (
 		<Pricing.Root
-			className={cn(
-				'mt-4 items-start justify-start',
-				centered && 'flex items-center justify-center',
-				className,
-			)}
+			className={cn('flex items-start justify-start')}
 			product={product}
 			couponId={couponId}
 			options={pricingWidgetOptions}
@@ -83,7 +79,11 @@ export const BuyButtonComponent: React.FC<
 			pricingDataLoader={pricingDataLoader}
 		>
 			<Pricing.Product>
-				<Buy resourceType={resourceType} centered={centered} />
+				<Buy
+					resourceType={resourceType}
+					className={className}
+					centered={centered}
+				/>
 			</Pricing.Product>
 		</Pricing.Root>
 	)
@@ -92,9 +92,11 @@ export const BuyButtonComponent: React.FC<
 const Buy = ({
 	centered,
 	resourceType,
+	className,
 }: {
 	centered?: boolean
 	resourceType: string
+	className?: string
 }) => {
 	const {
 		formattedPrice,
@@ -111,37 +113,46 @@ const Buy = ({
 
 	return (
 		<>
-			<div
-				className={cn(
-					'flex flex-wrap items-center gap-5',
-					centered && 'flex items-center justify-center',
-				)}
-			>
-				<div className="flex flex-col items-start gap-2">
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 rounded-lg bg-blue-600 px-10 font-semibold hover:bg-blue-700">
-						<span className="relative z-10">Buy Now</span>
-						<span className="bg-primary-foreground/30 mx-3 h-full w-px" />
-						<div className="relative z-10 flex items-baseline">
-							{status === 'pending' ? (
-								<Spinner className="w-5" />
-							) : (
-								<>
-									<sup className="text-[10px] leading-tight opacity-50">US</sup>
-									<span className="font-semibold tabular-nums">
-										{formatUsd(finalPrice).dollars}
-									</span>
-									{savings > 0 && !isSoldOut && (
-										<>
-											<span className="ml-1 text-sm font-normal line-through opacity-90">
-												{formatUsd(fullPrice).dollars}
-											</span>
-										</>
-									)}
-								</>
-							)}
-						</div>
-					</Pricing.BuyButton>
-				</div>
+			<div className="">
+				<Pricing.BuyButton
+					className={cn(
+						'dark:bg-primary dark:hover:bg-primary/90 relative cursor-pointer rounded-lg bg-blue-600 px-10 font-semibold hover:bg-blue-700',
+						className,
+					)}
+				>
+					<span data-label="" className="relative z-10">
+						Buy Now
+					</span>
+					<div
+						style={{
+							backgroundSize: '200% 100%',
+						}}
+						className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+					/>
+					<span
+						data-divider=""
+						className="bg-primary-foreground/30 mx-3 h-full w-px"
+					/>
+					<div className="relative z-10 flex items-baseline">
+						{status === 'pending' ? (
+							<Spinner className="w-5" />
+						) : (
+							<>
+								<sup className="text-[10px] leading-tight opacity-50">US</sup>
+								<span className="font-semibold tabular-nums">
+									{formatUsd(finalPrice).dollars}
+								</span>
+								{savings > 0 && !isSoldOut && (
+									<>
+										<span className="ml-1 text-sm font-normal line-through opacity-90">
+											{formatUsd(fullPrice).dollars}
+										</span>
+									</>
+								)}
+							</>
+						)}
+					</div>
+				</Pricing.BuyButton>
 			</div>
 		</>
 	)
