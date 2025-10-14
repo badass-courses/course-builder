@@ -79,17 +79,17 @@ export async function getFixedDiscountForIndividualUpgrade({
 
 	// if the Purchase To Be Upgraded is `restricted` and it has a matching
 	// `productId` with the Product To Be Purchased, then this is a PPP
-	// upgrade, so use the purchase amount (convert from cents to dollars).
+	// upgrade, so use the total purchase amount as the fixed discount.
 	if (transitioningToUnrestrictedAccess) {
 		const purchaseChain = await getChainOfPurchases({
 			purchase: purchaseToBeUpgraded,
 			ctx,
 		})
 
-		const totalInCents = sum(
+		const totalInDollars = sum(
 			purchaseChain.map((purchase) => purchase.totalAmount),
 		)
-		return totalInCents / 100 // Convert cents to dollars
+		return totalInDollars // totalAmount is already in dollars
 	}
 
 	// if Purchase To Be Upgraded is upgradeable to the Product To Be Purchased,
@@ -213,19 +213,39 @@ export async function formatPricesForProduct(
 		appliedMerchantCoupon?.percentageDiscount ?? undefined
 	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
-	// Calculate merchant coupon discount amount in dollars
-	const merchantDiscountAmount =
-		amountDiscount > 0
-			? amountDiscount / 100 // Convert cents to dollars
-			: percentOfDiscount
-				? percentOfDiscount * fullPrice
-				: 0
+	// No coupon stacking: If upgrade discount exists and a coupon is applied,
+	// choose whichever gives the better discount for the customer
+	let finalFixedDiscount = fixedDiscountForUpgrade
+	let finalPercentDiscount = percentOfDiscount
+	let finalAmountDiscount = amountDiscount
 
-	// Compare upgrade discount vs merchant discount and use the better one
-	// Both values are returned for transparency, but only the better one affects calculatedPrice
-	const betterDiscountIsUpgrade =
+	if (
 		fixedDiscountForUpgrade > 0 &&
-		fixedDiscountForUpgrade > merchantDiscountAmount
+		(amountDiscount > 0 || percentOfDiscount)
+	) {
+		// Calculate dollar amounts for comparison
+		const upgradeDiscountAmount = fixedDiscountForUpgrade
+		let merchantDiscountAmount = 0
+
+		if (amountDiscount > 0) {
+			merchantDiscountAmount = amountDiscount / 100 // Convert cents to dollars
+		} else if (percentOfDiscount) {
+			merchantDiscountAmount = fullPrice * percentOfDiscount
+		}
+
+		// Choose the better discount
+		if (upgradeDiscountAmount >= merchantDiscountAmount) {
+			// Upgrade discount is better, don't apply merchant coupon
+			finalAmountDiscount = 0
+			finalPercentDiscount = undefined
+		} else {
+			// Merchant coupon is better, don't apply upgrade discount
+			finalFixedDiscount = 0
+		}
+	}
+
+	// Calculate fullPrice as price after upgrade discount but before merchant coupon
+	const fullPriceWithUpgrade = fullPrice - fixedDiscountForUpgrade
 
 	const upgradeDetails =
 		upgradeFromPurchase !== null && appliedCouponType !== 'bulk' // we don't handle bulk with upgrades (yet), so be explicit here
@@ -240,13 +260,13 @@ export async function formatPricesForProduct(
 		...product,
 		quantity,
 		unitPrice,
-		fullPrice,
+		fullPrice: fixedDiscountForUpgrade > 0 ? fullPriceWithUpgrade : fullPrice,
 		fixedDiscountForUpgrade,
 		calculatedPrice: getCalculatedPrice({
 			unitPrice,
-			percentOfDiscount: betterDiscountIsUpgrade ? 0 : percentOfDiscount,
-			fixedDiscount: betterDiscountIsUpgrade ? fixedDiscountForUpgrade : 0,
-			amountDiscount: betterDiscountIsUpgrade ? 0 : amountDiscount,
+			percentOfDiscount: finalPercentDiscount,
+			fixedDiscount: finalFixedDiscount,
+			amountDiscount: finalAmountDiscount,
 			quantity,
 		}),
 		availableCoupons: result.availableCoupons,
