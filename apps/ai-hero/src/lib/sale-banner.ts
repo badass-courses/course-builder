@@ -6,7 +6,10 @@ import type { Coupon } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export type SaleBannerData = {
-	percentOff: number
+	discountType: 'percentage' | 'fixed'
+	discountValue: number
+	discountFormatted: string
+	percentOff?: number // for backward compatibility with existing code
 	productName: string
 	productType: string | null
 	productPath: string
@@ -47,12 +50,32 @@ export async function getSaleBannerData(
 			return null
 		}
 
-		const percentOff = parseFloat(
-			(Number(coupon.percentageDiscount) * 100).toFixed(1),
-		)
+		// Determine discount type and format
+		const hasFixedDiscount = coupon.amountDiscount && coupon.amountDiscount > 0
+		const discountType = hasFixedDiscount ? 'fixed' : 'percentage'
+
+		let discountValue: number
+		let discountFormatted: string
+		let percentOff: number | undefined
+
+		if (hasFixedDiscount) {
+			// Fixed amount discount (in cents, convert to dollars)
+			discountValue = coupon.amountDiscount / 100
+			discountFormatted = `$${discountValue.toFixed(2)}`
+		} else {
+			// Percentage discount
+			percentOff = parseFloat(
+				(Number(coupon.percentageDiscount) * 100).toFixed(1),
+			)
+			discountValue = percentOff
+			discountFormatted = `${percentOff}%`
+		}
 
 		return {
-			percentOff,
+			discountType,
+			discountValue,
+			discountFormatted,
+			percentOff, // for backward compatibility
 			productName: result.product.name,
 			productType: result.product.type,
 			productPath: getResourcePath(

@@ -119,7 +119,7 @@ const Home = async (props: Props) => {
 							prefetch
 						>
 							<span className="font-bold">
-								Save {saleBannerData.percentOff}%
+								Save {saleBannerData.discountFormatted}
 							</span>{' '}
 							on {saleBannerData.productName}.{' '}
 							<div className="bg-primary text-primary-foreground ml-1 rounded px-1.5 py-0.5 transition ease-in-out group-hover:underline">
