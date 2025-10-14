@@ -279,7 +279,7 @@ const Price = ({
 											{appliedDiscountType === 'fixed' &&
 											appliedFixedDiscount ? (
 												<div className="text-primary text-base">
-													Save ${appliedFixedDiscount.toFixed(0)}
+													Save ${appliedFixedDiscount.toFixed(2)}
 												</div>
 											) : (
 												<div className="text-primary text-base">
