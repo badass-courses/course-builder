@@ -65,7 +65,10 @@ export default function RootLayout({
 					id="layout"
 					className={`relative overflow-x-hidden ${inter.variable} antialised font-sans`}
 				>
-					<Toaster viewportClassName="left-auto bottom-5 sm:bottom-5" />
+					<Toaster
+						className="[&_button]:opacity-100 [&_svg]:opacity-100"
+						viewportClassName="left-auto bottom-0 sm:bottom-5"
+					/>
 					<FeedbackInsert />
 					<TRPCReactProvider>
 						<NuqsAdapter>
