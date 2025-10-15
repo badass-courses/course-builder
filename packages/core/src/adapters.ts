@@ -187,6 +187,12 @@ export interface CourseBuilderAdapter<
 		identifier: string
 		merchantAccountId: string
 	}): Promise<MerchantCustomer | null>
+	createMerchantCoupon(options: {
+		identifier: string
+		merchantAccountId: string
+		type: string
+		amountDiscount: number
+	}): Promise<MerchantCoupon>
 	getMerchantPriceForProductId(productId: string): Promise<MerchantPrice | null>
 	transferPurchaseToUser(options: {
 		purchaseId: string
@@ -279,6 +285,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	getMerchantProductForProductId: async (productId) => null,
 	getMerchantAccount: async () => null,
 	createMerchantCustomer: async () => null,
+	createMerchantCoupon: async () => ({}) as MerchantCoupon,
 	getMerchantCustomerForUserId: async () => null,
 	getUpgradableProducts: async () => [],
 	createPurchase: async (options) => {
