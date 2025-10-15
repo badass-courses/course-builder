@@ -837,15 +837,35 @@ export function mySqlDrizzleAdapter(
 								})
 								.where(eq(coupon.id, bulkCouponId))
 						} else {
-							const merchantCouponToUse = stripeCouponId
+							// Try to find merchant coupon by stripeCouponId first
+							let merchantCouponToUse = stripeCouponId
 								? merchantCouponSchema.nullable().parse(
-										await client.query.merchantCoupon.findFirst({
+										(await client.query.merchantCoupon.findFirst({
 											where: eq(merchantCoupon.identifier, stripeCouponId),
-										}),
+										})) || null,
 									)
 								: null
 
-							couponToUpdate = await client.insert(coupon).values({
+							// Fallback: If not found, try to find via usedCouponId from checkout session metadata
+							if (!merchantCouponToUse && usedCouponId) {
+								// First get the coupon record to find its merchantCouponId
+								const usedCoupon = couponSchema.nullable().parse(
+									(await client.query.coupon.findFirst({
+										where: eq(coupon.id, usedCouponId),
+									})) || null,
+								)
+
+								// Then get the merchant coupon
+								if (usedCoupon?.merchantCouponId) {
+									merchantCouponToUse = merchantCouponSchema.nullable().parse(
+										(await client.query.merchantCoupon.findFirst({
+											where: eq(merchantCoupon.id, usedCoupon.merchantCouponId),
+										})) || null,
+									)
+								}
+							}
+
+							const bulkCouponValues = {
 								id: bulkCouponId as string,
 								percentageDiscount: '1.0',
 								restrictedToProductId: productId,
@@ -857,7 +877,11 @@ export function mySqlDrizzleAdapter(
 											merchantCouponId: merchantCouponToUse.id,
 										}
 									: {}),
-							})
+							}
+
+							couponToUpdate = await client
+								.insert(coupon)
+								.values(bulkCouponValues)
 						}
 					}
 
