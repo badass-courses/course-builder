@@ -226,7 +226,7 @@ export default async function ModulePage(props: Props) {
 							</h1>
 							{workshop.fields?.description && (
 								<div className="prose prose-p:text-balance dark:prose-invert md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl mt-3 leading-tight">
-									<p>{workshop.fields?.description}</p>
+									<ReactMarkdown>{workshop.fields?.description}</ReactMarkdown>
 								</div>
 							)}
 							<div className="mt-5 flex items-center gap-2">
