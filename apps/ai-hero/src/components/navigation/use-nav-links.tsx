@@ -58,18 +58,18 @@ export type NavigationMenuData = {
  */
 export function useNavLinks(): NavigationMenuData {
 	const courses: CourseItem[] = [
-		// {
-		// 	href: '/workshops/ai-sdk-v5-crash-course',
-		// 	image: {
-		// 		src: 'https://res.cloudinary.com/total-typescript/image/upload/v1758621207/workshops/workshop-xoh13/bkljkijniogppynqfqjc.jpg',
-		// 		alt: 'AI SDK v5 Crash Course',
-		// 		width: 960 / 6,
-		// 		height: 540 / 6,
-		// 	},
-		// 	title: 'AI SDK v5 Crash Course',
-		// 	description:
-		// 		"Master AI SDK v5 with AI Hero's comprehensive crash course.",
-		// },
+		{
+			href: '/workshops/ai-sdk-v5-crash-course',
+			image: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1758621207/workshops/workshop-xoh13/bkljkijniogppynqfqjc.jpg',
+				alt: 'AI SDK v5 Crash Course',
+				width: 960 / 6,
+				height: 540 / 6,
+			},
+			title: 'AI SDK v5 Crash Course',
+			description:
+				"Master AI SDK v5 with AI Hero's comprehensive crash course.",
+		},
 	]
 
 	const cohorts: CohortItem[] = [
