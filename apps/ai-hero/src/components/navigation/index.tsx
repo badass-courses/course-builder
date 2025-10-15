@@ -96,7 +96,7 @@ const Navigation = () => {
 						<NavigationMenuList className="divide-border flex h-full items-stretch gap-0 divide-x">
 							{navData.courses.length > 0 && (
 								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="flex h-full items-center">
+									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
 										Courses
 									</NavigationMenuTrigger>
 									<NavigationMenuContent>
