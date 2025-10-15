@@ -11,7 +11,7 @@ const resourceTeaserVariants = cva('', {
 	variants: {
 		variant: {
 			horizontal: 'flex w-full items-center gap-6 lg:gap-16',
-			card: 'group flex h-full flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white transition-shadow hover:shadow-md',
+			card: 'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-md',
 		},
 	},
 	defaultVariants: {
@@ -123,6 +123,7 @@ const ResourceTeaser = ({
 					<div className={thumbnailVariants({ variant })}>
 						{thumbnailUrl && (
 							<CldImage
+								loading="lazy"
 								src={thumbnailUrl}
 								alt={title}
 								fill
@@ -130,8 +131,8 @@ const ResourceTeaser = ({
 							/>
 						)}
 						{thumbnailBadge && (
-							<div className="absolute right-3 top-3 rounded-xl bg-zinc-950 px-4 py-1.5">
-								<span className="text-sm text-white">{thumbnailBadge}</span>
+							<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
+								{thumbnailBadge}
 							</div>
 						)}
 					</div>
@@ -155,7 +156,7 @@ const ResourceTeaser = ({
 									<Badge
 										key={tag}
 										variant="secondary"
-										className="rounded-full border-transparent px-2.5 py-0.5 text-xs font-semibold leading-4"
+										// className="rounded-full border-transparent px-2.5 py-0.5 text-xs font-semibold leading-4"
 									>
 										{tag}
 									</Badge>

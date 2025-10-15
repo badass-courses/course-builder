@@ -112,7 +112,7 @@ const Home = async (props: Props) => {
 				<section className="bg-muted">
 					<div className="container py-20">
 						<div className="flex w-full items-center justify-between pb-16">
-							<h2 className="text-3xl font-medium leading-9 text-zinc-900">
+							<h2 className="text-foreground text-3xl font-medium leading-9">
 								Featured Self-paced Courses
 							</h2>
 						</div>
