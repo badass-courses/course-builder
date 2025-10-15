@@ -119,7 +119,7 @@ export async function GET(request: Request) {
 								</div>
 							) : (
 								<div tw="flex items-center justify-center bg-[#FDAEBA] text-black px-10 py-5 rounded-md text-[38px] font-bold">
-									Master Modern AI Development
+									Become an AI developer — fast
 								</div>
 							)}
 						</div>
