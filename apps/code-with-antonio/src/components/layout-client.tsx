@@ -16,13 +16,13 @@ export default function LayoutClient({
 	withContainer = false,
 	className,
 	saleBannerData,
-	isCommerceEnabled,
+	isCommerceEnabled = false,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
 	saleBannerData?: SaleBannerData | null
-	isCommerceEnabled: boolean
+	isCommerceEnabled?: boolean
 }) {
 	return (
 		<div
