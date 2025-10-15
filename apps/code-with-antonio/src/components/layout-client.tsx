@@ -21,7 +21,7 @@ export default function LayoutClient({
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
-	saleBannerData: SaleBannerData | null
+	saleBannerData?: SaleBannerData | null
 	isCommerceEnabled: boolean
 }) {
 	return (
@@ -35,10 +35,12 @@ export default function LayoutClient({
 			)}
 		>
 			<Navigation />
-			<SaleBanner
-				saleBannerData={saleBannerData}
-				isCommerceEnabled={isCommerceEnabled}
-			/>
+			{saleBannerData && (
+				<SaleBanner
+					saleBannerData={saleBannerData}
+					isCommerceEnabled={isCommerceEnabled}
+				/>
+			)}
 			{children}
 			<Footer />
 		</div>
