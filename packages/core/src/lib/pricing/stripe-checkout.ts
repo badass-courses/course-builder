@@ -389,22 +389,34 @@ export async function stripeCheckout({
 
 					// Handle fixed amount discounts vs percentage discounts
 					if (merchantCoupon.amountDiscount) {
-						// For fixed amount discounts, create a transient coupon
-						// Apply discount per seat for bulk purchases
-						const couponId = await config.paymentsAdapter.createCoupon({
-							amount_off: merchantCoupon.amountDiscount * quantity,
-							name: merchantCoupon.type || 'Fixed Discount',
-							max_redemptions: 1,
-							redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
-							currency: 'USD',
-							applies_to: {
-								products: [merchantProductIdentifier],
-							},
-						})
+						if (quantity > 1) {
+							// For multi-seat purchases, create a transient coupon with adjusted amount
+							const couponId = await config.paymentsAdapter.createCoupon({
+								amount_off: merchantCoupon.amountDiscount * quantity,
+								name: merchantCoupon.type || 'Fixed Discount',
+								max_redemptions: 1,
+								redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
+								currency: 'USD',
+								applies_to: {
+									products: [merchantProductIdentifier],
+								},
+							})
 
-						discounts.push({
-							coupon: couponId,
-						})
+							discounts.push({
+								coupon: couponId,
+							})
+						} else if (merchantCoupon.identifier) {
+							// For single seat, use promotion code with original coupon
+							const promotionCodeId =
+								await config.paymentsAdapter.createPromotionCode({
+									coupon: merchantCoupon.identifier,
+									max_redemptions: 1,
+									expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+								})
+							discounts.push({
+								promotion_code: promotionCodeId,
+							})
+						}
 					} else if (merchantCoupon.identifier) {
 						// For percentage discounts, use promotion code
 						const promotionCodeId =
