@@ -65,7 +65,7 @@ export default function RootLayout({
 					id="layout"
 					className={`relative overflow-x-hidden ${inter.variable} antialised font-sans`}
 				>
-					<Toaster />
+					<Toaster viewportClassName="left-auto bottom-5 sm:bottom-5" />
 					<FeedbackInsert />
 					<TRPCReactProvider>
 						<NuqsAdapter>
