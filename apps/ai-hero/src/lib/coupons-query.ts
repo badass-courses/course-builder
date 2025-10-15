@@ -79,7 +79,7 @@ async function createOrFindMerchantCoupon(
 			})
 
 		// Create the merchant coupon in the database
-		const merchantCouponId = `kcd_${uuidv4()}`
+		const merchantCouponId = `ai_${uuidv4()}`
 		await db.insert(merchantCouponTable).values({
 			id: merchantCouponId,
 			merchantAccountId: merchantAccountRecord.id,
@@ -106,7 +106,7 @@ async function createOrFindMerchantCoupon(
 }
 
 /**
- * Creates a fixed discount merchant coupon (does not create Stripe coupon, handled at checkout)
+ * Creates a fixed discount merchant coupon with Stripe coupon for individual purchases
  * @param amountDiscount - The fixed discount amount in cents (e.g., 2000 for $20)
  * @returns The merchant coupon ID
  */
@@ -143,20 +143,33 @@ async function createOrFindFixedMerchantCoupon(
 	}
 
 	try {
+		// Create the Stripe coupon for individual purchases
+		// For bulk purchases, a new transient coupon will be created at checkout
+		const stripeCouponId =
+			await stripeProvider.options.paymentsAdapter.createCoupon({
+				duration: 'forever',
+				name: `special $${(amountDiscount / 100).toFixed(2)}`,
+				amount_off: amountDiscount,
+				currency: 'USD',
+				metadata: {
+					type: 'special',
+				},
+			})
+
 		// Create the merchant coupon in the database
-		// Note: We don't create a Stripe coupon here; that happens dynamically at checkout
-		const merchantCouponId = `kcd_${uuidv4()}`
+		const merchantCouponId = `ai_${uuidv4()}`
 		await db.insert(merchantCouponTable).values({
 			id: merchantCouponId,
 			merchantAccountId: merchantAccountRecord.id,
 			status: 1,
-			identifier: null, // No Stripe coupon ID for fixed discounts
+			identifier: stripeCouponId,
 			amountDiscount,
 			type: 'special',
 		})
 
 		await log.info('coupon.merchant_coupon_fixed.created', {
 			merchantCouponId,
+			stripeCouponId,
 			amountDiscount,
 		})
 
