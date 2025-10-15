@@ -7,6 +7,6 @@ export default {
 	dbCredentials: {
 		url: env.DATABASE_URL,
 	},
-	tablesFilter: [`AI_*`],
+	tablesFilter: [`CWA_*`],
 	out: './src/db/generated',
 } satisfies Config

@@ -3,90 +3,31 @@ import { api } from '@/trpc/react'
 
 import type { NavLinkItem } from './nav-link-item'
 
-export type CourseItem = {
-	href: string
-	image: {
-		src: string
-		alt: string
-		width: number
-		height: number
+export type NavigationMenuData = {
+	browse: {
+		featured: FeaturedCourse
+		items: CourseItem[]
 	}
-	title: string
-	description: string
 }
 
-export type CohortItem = {
-	href: string
-	image: {
-		src: string
-		alt: string
-		width: number
-		height: number
-	}
-	title: string
-	subtitle: string
-}
-
-export type FeaturedTutorial = {
+export type FeaturedCourse = {
 	href: string
 	badge: string
 	title: string
 	description: string
 }
 
-export type TutorialItem = {
+export type CourseItem = {
 	href: string
 	title: string
 	description: string
-}
-
-export type NavigationMenuData = {
-	courses: CourseItem[]
-	cohorts: CohortItem[]
-	freeTutorials: {
-		featured: FeaturedTutorial
-		items: TutorialItem[]
-	}
-	browseAll: {
-		href: string
-		label: React.ReactNode | string
-	}
 }
 
 /**
  * Hook that provides navigation menu data for the main navigation
  */
 export function useNavLinks(): NavigationMenuData {
-	const courses: CourseItem[] = [
-		// {
-		// 	href: '/workshops/ai-sdk-v5-crash-course',
-		// 	image: {
-		// 		src: 'https://res.cloudinary.com/total-typescript/image/upload/v1758621207/workshops/workshop-xoh13/bkljkijniogppynqfqjc.jpg',
-		// 		alt: 'AI SDK v5 Crash Course',
-		// 		width: 960 / 6,
-		// 		height: 540 / 6,
-		// 	},
-		// 	title: 'AI SDK v5 Crash Course',
-		// 	description:
-		// 		"Master AI SDK v5 with AI Hero's comprehensive crash course.",
-		// },
-	]
-
-	const cohorts: CohortItem[] = [
-		{
-			href: '/cohorts/build-deepsearch-in-typescript',
-			image: {
-				src: 'https://res.cloudinary.com/total-typescript/image/upload/c_limit,w_828/f_auto/q_auto/v1748619829/cohorts/cohort-5uyf5/kttfkqzngqj6uvbpgjhl',
-				alt: 'Build DeepSearch in TypeScript',
-				width: 766 / 5,
-				height: 408 / 5,
-			},
-			title: 'Build DeepSearch in TypeScript',
-			subtitle: 'July 14—July 25, 2025',
-		},
-	]
-
-	const freeTutorials = {
+	const browse = {
 		featured: {
 			href: '/llm-fundamentals',
 			badge: 'New',
@@ -116,20 +57,7 @@ export function useNavLinks(): NavigationMenuData {
 		],
 	}
 
-	const browseAll = {
-		href: '/posts',
-		label: (
-			<span>
-				Browse{' '}
-				<span className="inline-block sm:hidden lg:inline-block">all</span>
-			</span>
-		),
-	}
-
 	return {
-		courses,
-		cohorts,
-		freeTutorials,
-		browseAll,
+		browse,
 	}
 }

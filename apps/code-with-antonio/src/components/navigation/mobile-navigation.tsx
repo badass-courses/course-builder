@@ -124,13 +124,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								/>
 							)}
 							<div className="flex w-full flex-col gap-3">
-								{navData.courses.length > 0 && (
+								{navData.browse.items.length > 0 && (
 									<div className="flex flex-col">
 										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
 											Courses
 										</div>
 										<ul className="flex flex-col gap-1">
-											{navData.courses.map((course) => (
+											{navData.browse.items.map((course) => (
 												<NavLinkItem
 													className=""
 													key={course.href}
@@ -141,49 +141,8 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 										</ul>
 									</div>
 								)}
-								{navData.cohorts.length > 0 && (
-									<div className="flex flex-col">
-										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
-											Cohorts
-										</div>
-										<ul className="flex flex-col gap-1">
-											{navData.cohorts.map((cohort) => (
-												<NavLinkItem
-													className=""
-													key={cohort.href}
-													href={cohort.href}
-													label={cohort.title}
-												/>
-											))}
-										</ul>
-									</div>
-								)}
-								<div className="flex flex-col">
-									<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
-										Free Tutorials
-									</div>
-									<ul className="flex flex-col gap-1">
-										<NavLinkItem
-											className=""
-											href={navData.freeTutorials.featured.href}
-											label={navData.freeTutorials.featured.title}
-										/>
-										{navData.freeTutorials.items.map((tutorial) => (
-											<NavLinkItem
-												className=""
-												key={tutorial.href}
-												href={tutorial.href}
-												label={tutorial.title}
-											/>
-										))}
-									</ul>
-								</div>
+
 								<ul className="border-foreground/20 flex flex-col gap-1 border-t pt-2">
-									<NavLinkItem
-										className=""
-										href={navData.browseAll.href}
-										label={navData.browseAll.label}
-									/>
 									{sessionStatus === 'authenticated' && (
 										<NavLinkItem
 											className=""

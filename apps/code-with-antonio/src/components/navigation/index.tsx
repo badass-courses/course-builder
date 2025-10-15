@@ -8,10 +8,11 @@ import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { ChevronRight, Menu, Newspaper, X } from 'lucide-react'
+import { ChevronRight, Menu, Newspaper, SearchIcon, X } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import {
+	Input,
 	NavigationMenu,
 	NavigationMenuContent,
 	NavigationMenuItem,
@@ -22,15 +23,14 @@ import {
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { LogoMark } from '../brand/logo'
-import { CldImage } from '../cld-image'
+import { LogoVideo } from './logo-video'
 import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
-import { useLiveEventToastNotifier } from './use-live-event-toast-notifier'
 import { useNavLinks } from './use-nav-links'
 import { UserMenu } from './user-menu'
 
-const Navigation = () => {
+const Navigation = ({ className }: { className?: string }) => {
 	const navData = useNavLinks()
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
@@ -54,122 +54,63 @@ const Navigation = () => {
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
 
+	const [isSearching, startSearchTransition] = React.useTransition()
+
+	const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		const formData = new FormData(e.currentTarget)
+		const query = formData.get('query')?.toString().trim()
+
+		if (!query) return
+
+		track('search_submitted', {
+			query,
+			location: 'navigation',
+		})
+
+		startSearchTransition(() => {
+			router.push(`/browse?q=${encodeURIComponent(query)}`)
+		})
+	}
+
 	return (
-		<header
-			className={cn(
-				'dark:bg-background h-(--nav-height) relative z-50 flex w-full items-stretch justify-between border-b bg-white px-0 print:hidden',
-				{
-					'sticky top-0': !params.lesson,
-				},
-			)}
-		>
-			<div className={cn('flex w-full items-stretch justify-between', {})}>
-				<div className="flex items-stretch">
-					<span
-						onContextMenu={(e) => {
-							e.preventDefault()
-							router.push('/brand')
-						}}
-					>
-						<Link
-							prefetch
-							tabIndex={isRoot ? -1 : 0}
-							href="/"
-							className="font-heading hover:bg-muted h-(--nav-height) flex w-full items-center justify-center gap-2 px-5 text-lg font-semibold leading-none transition"
-						>
-							<LogoMark className="w-7" />
-							<span className="text-foreground leading-none! text-xl font-semibold">
-								<span className="font-mono">AI</span>hero
-							</span>
-						</Link>
-					</span>
-					<hr
-						aria-hidden="true"
-						className="bg-border my-auto flex h-full w-px"
-					/>
+		<header className={cn('relative z-50 w-full shadow-sm', className)}>
+			<div className="container flex items-center justify-between">
+				<div className="flex w-full items-center">
+					<LogoVideo isRoot={isRoot} />
 					<NavigationMenu
 						delayDuration={0}
 						skipDelayDuration={0}
 						viewport={true}
-						className="hidden items-stretch md:flex"
+						className="ml-3 hidden items-center md:flex"
 					>
-						<NavigationMenuList className="divide-border flex h-full items-stretch gap-0 divide-x">
-							{navData.courses.length > 0 && (
-								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="flex h-full items-center">
-										Courses
-									</NavigationMenuTrigger>
-									<NavigationMenuContent>
-										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
-											{navData.courses.map((course) => (
-												<NavigationMenuLink key={course.href} asChild>
-													<Link
-														href={course.href}
-														className="relative flex flex-row items-center gap-5 pr-8"
-														onClick={() => {
-															track('navigation_menu_item_click', {
-																resource: course.title,
-																type: 'course',
-																category: 'navigation',
-															})
-														}}
-													>
-														<CldImage
-															src={course.image.src}
-															alt={course.image.alt}
-															width={course.image.width}
-															height={course.image.height}
-															className="rounded"
-														/>
-														<div className="flex flex-col">
-															<div className="text-lg font-semibold">
-																{course.title}
-															</div>
-															<div className="text-muted-foreground text-sm">
-																{course.description}
-															</div>
-														</div>
-														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
-													</Link>
-												</NavigationMenuLink>
-											))}
-										</ul>
-									</NavigationMenuContent>
-								</NavigationMenuItem>
-							)}
-							{navData.cohorts.length > 0 && (
-								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
-										Cohorts
+						<NavigationMenuList className="divide-border flex h-full items-center gap-0 divide-x">
+							{navData.browse.items.length > 0 && (
+								<NavigationMenuItem className="items-center">
+									<NavigationMenuTrigger className="flex items-center">
+										Browse
 									</NavigationMenuTrigger>
 									<NavigationMenuContent className="w-full shrink-0">
 										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
-											{navData.cohorts.map((cohort) => (
-												<NavigationMenuLink key={cohort.href} asChild>
+											{navData.browse.items.map((item) => (
+												<NavigationMenuLink key={item.href} asChild>
 													<Link
-														href={cohort.href}
+														href={item.href}
 														onClick={() => {
 															track('navigation_menu_item_click', {
-																resource: cohort.title,
+																resource: item.title,
 																type: 'cohort',
 																category: 'navigation',
 															})
 														}}
 														className="relative flex flex-row items-center gap-5 pr-8"
 													>
-														<CldImage
-															src={cohort.image.src}
-															alt={cohort.image.alt}
-															width={cohort.image.width}
-															height={cohort.image.height}
-															className="rounded"
-														/>
 														<div className="flex flex-col">
 															<div className="text-lg font-semibold">
-																{cohort.title}
+																{item.title}
 															</div>
 															<div className="text-muted-foreground">
-																{cohort.subtitle}
+																{item.description}
 															</div>
 														</div>
 														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
@@ -180,112 +121,21 @@ const Navigation = () => {
 									</NavigationMenuContent>
 								</NavigationMenuItem>
 							)}
-							<NavigationMenuItem className="items-stretch">
-								<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
-									Free Tutorials
-								</NavigationMenuTrigger>
-								<NavigationMenuContent className="w-full shrink-0 p-0">
-									<div className="flex w-[300px] md:w-[550px] lg:w-[550px]">
-										<NavigationMenuLink asChild>
-											<Link
-												href={navData.freeTutorials.featured.href}
-												className="p-0! flex aspect-[3/4] max-w-[180px] flex-col items-start justify-between border-r"
-												onClick={() => {
-													track('navigation_menu_item_click', {
-														resource: navData.freeTutorials.featured.title,
-														type: 'tutorial',
-														category: 'navigation',
-													})
-												}}
-											>
-												<div className="flex flex-col p-3">
-													<div className="bg-primary text-primary-foreground inline-flex items-center self-start rounded-full px-2 py-0.5 text-xs font-medium uppercase">
-														{navData.freeTutorials.featured.badge}
-													</div>
-													<div className="mt-3 text-lg font-semibold leading-tight">
-														{navData.freeTutorials.featured.title}
-													</div>
-													<p className="text-muted-foreground mt-2 text-sm font-normal">
-														{navData.freeTutorials.featured.description}
-													</p>
-												</div>
-												<div className="bg-primary text-primary-foreground flex w-full items-center justify-center gap-1 py-3 font-medium">
-													View Tutorial
-													<ChevronRight className="text-primary-foreground size-4" />
-												</div>
-											</Link>
-										</NavigationMenuLink>
-										<ul className="divide-border flex w-full flex-col divide-y">
-											{navData.freeTutorials.items.map((tutorial) => (
-												<NavigationMenuLink key={tutorial.href} asChild>
-													<Link
-														href={tutorial.href}
-														className="relative flex flex-col pl-3 pr-8 text-lg font-normal"
-														onClick={() => {
-															track('navigation_menu_item_click', {
-																resource: tutorial.title,
-																type: 'tutorial',
-																category: 'navigation',
-															})
-														}}
-													>
-														<div className="text-base font-semibold leading-tight">
-															{tutorial.title}
-														</div>
-														<p className="text-muted-foreground text-sm font-normal">
-															{tutorial.description}
-														</p>
-														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
-													</Link>
-												</NavigationMenuLink>
-											))}
-										</ul>
-									</div>
-								</NavigationMenuContent>
-							</NavigationMenuItem>
-							<NavigationMenuItem className="flex items-center justify-center border-r">
-								<NavigationMenuLink
-									className="flex h-full items-center justify-center px-4 font-normal"
-									asChild
-								>
-									<Link
-										href={navData.browseAll.href}
-										onClick={() => {
-											track('navigation_menu_item_click', {
-												resource: navData.browseAll.label,
-												type: 'browse_all',
-												category: 'navigation',
-											})
-										}}
-									>
-										{navData.browseAll.label}
-									</Link>
-								</NavigationMenuLink>
-							</NavigationMenuItem>
 						</NavigationMenuList>
 					</NavigationMenu>
-					{/* {links.length > 0 && (
-						<nav
-							className={cn('flex items-stretch', {
-								'hidden sm:flex': links.length > 3,
-							})}
-							aria-label={`Navigation header with ${links.length} links`}
-						>
-							<ul className="divide-border flex items-stretch sm:divide-x">
-								{links.map((link, i) => {
-									return (
-										<NavLinkItem
-											className={cn('text-base font-medium', {
-												'hidden md:flex': i > 0,
-											})}
-											key={link.href || link.label}
-											{...link}
-										/>
-									)
-								})}
-							</ul>
-						</nav>
-					)} */}
+					<form
+						className="relative flex w-full max-w-xs"
+						onSubmit={handleSearch}
+					>
+						<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
+						<Input
+							name="query"
+							placeholder="What do you want to learn today?"
+							className="bg-input border-border ml-3 w-full rounded-full border pl-10"
+							type="search"
+							disabled={isSearching}
+						/>
+					</form>
 				</div>
 				<nav className="flex items-stretch" aria-label={`User navigation`}>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
@@ -304,7 +154,7 @@ const Navigation = () => {
 								}}
 							/>
 						)}
-						{sessionStatus === 'unauthenticated' && !subscriber && (
+						{/* {sessionStatus === 'unauthenticated' && !subscriber && (
 							<NavLinkItem
 								href="/newsletter"
 								className="rounded-none border-l [&_span]:flex [&_span]:items-center"
@@ -315,9 +165,8 @@ const Navigation = () => {
 									</>
 								}
 							/>
-						)}
+						)} */}
 						<UserMenu />
-						<ThemeToggle className="hover:bg-muted border-l px-5" />
 					</ul>
 				</nav>
 				<MobileNavigation

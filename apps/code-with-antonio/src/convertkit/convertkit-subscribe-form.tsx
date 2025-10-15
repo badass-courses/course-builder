@@ -1,10 +1,12 @@
+'use client'
+
 import React from 'react'
 import Spinner from '@/components/spinner'
 import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { type Subscriber } from '@/schemas/subscriber'
 import { CK_SUBSCRIBER_KEY } from '@skillrecordings/config'
 import queryString from 'query-string'
-import * as Yup from 'yup'
+import { z } from 'zod'
 
 import { Button, Input, Label } from '@coursebuilder/ui'
 
@@ -24,9 +26,10 @@ export type SubscribeFormProps = {
 	id?: string
 	fields?: Record<string, string>
 	className?: string
-	validationSchema?: Yup.ObjectSchema<any>
-	validateOnChange?: boolean
+	validationSchema?: z.ZodType<any, any, any>
+	mode?: 'onSubmit' | 'onChange' | 'onBlur' | 'onTouched' | 'all'
 	[rest: string]: any
+	emailPlaceholder?: string
 }
 
 /**
@@ -65,7 +68,7 @@ export type SubscribeFormProps = {
  * @param fields custom subscriber fields to create or update
  * @param className
  * @param validationSchema
- * @param validateOnChange
+ * @param mode validation mode ('onSubmit', 'onChange', 'onBlur', 'onTouched', 'all')
  * @param rest anything else!
  * @constructor
  */
@@ -84,10 +87,11 @@ export const SubscribeToConvertkitForm: React.FC<
 	fields,
 	className,
 	validationSchema,
-	validateOnChange,
+	mode,
+	emailPlaceholder = 'you@example.com',
 	...rest
 }) => {
-	const { isSubmitting, status, handleChange, handleSubmit, errors, touched } =
+	const { isSubmitting, status, register, handleSubmit, errors, touched } =
 		useConvertkitForm({
 			formId,
 			onSuccess,
@@ -95,7 +99,7 @@ export const SubscribeToConvertkitForm: React.FC<
 			fields,
 			submitUrl: subscribeApiURL,
 			validationSchema,
-			validateOnChange,
+			mode,
 		})
 
 	return (
@@ -117,14 +121,13 @@ export const SubscribeToConvertkitForm: React.FC<
 						touched.first_name && errors.first_name,
 					)}
 					className="h-auto"
-					name="first_name"
 					id={id ? `first_name_${id}` : 'first_name'}
-					onChange={handleChange}
 					placeholder="Name"
 					type="text"
+					{...register('first_name')}
 				/>
 				{validationSchema && touched.first_name && errors.first_name && (
-					<p data-input-error-message>{errors.first_name}</p>
+					<p data-input-error-message>{errors.first_name?.message}</p>
 				)}
 			</div>
 			<div data-sr-fieldset="" className="w-full">
@@ -134,15 +137,14 @@ export const SubscribeToConvertkitForm: React.FC<
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
 					className="h-auto"
-					name="email"
 					id={id ? `email_${id}` : 'email'}
-					onChange={handleChange}
-					placeholder="you@example.com"
+					placeholder={emailPlaceholder}
 					type="email"
 					required
+					{...register('email')}
 				/>
 				{validationSchema && touched.email && errors.email && (
-					<p data-input-error-message>{errors.email}</p>
+					<p data-input-error-message>{errors.email?.message}</p>
 				)}
 			</div>
 			{submitButtonElem ? (
@@ -160,8 +162,8 @@ export const SubscribeToConvertkitForm: React.FC<
 					variant="default"
 					size="lg"
 					disabled={
-						(touched.first_name && errors.first_name) ||
-						(touched.email && errors.email) ||
+						Boolean(errors.first_name) ||
+						Boolean(errors.email) ||
 						Boolean(isSubmitting)
 					}
 					type="submit"

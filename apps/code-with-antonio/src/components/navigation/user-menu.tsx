@@ -45,13 +45,7 @@ export const UserMenu = () => {
 	}
 
 	if (!sessionData?.user?.email) {
-		return (
-			<NavLinkItem
-				className="rounded-none border-l"
-				label="Log in"
-				href="/login"
-			/>
-		)
+		return <NavLinkItem className="" label="Log in" href="/login" />
 	}
 
 	const userAvatar = sessionData.user.image ? (
@@ -73,11 +67,11 @@ export const UserMenu = () => {
 	return (
 		<>
 			{canViewTeam && !isAdmin && (
-				<NavLinkItem label="Invite Team" className="border-l" href="/team" />
+				<NavLinkItem label="Invite Team" href="/team" />
 			)}
 			<li className="hidden items-stretch sm:flex">
 				<DropdownMenu modal={false}>
-					<DropdownMenuTrigger className="hover:bg-muted flex items-center space-x-1 border-l px-5">
+					<DropdownMenuTrigger className="hover:bg-muted flex items-center space-x-1 px-5">
 						{userAvatar}
 						<div className="flex flex-col pl-0.5">
 							<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">

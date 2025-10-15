@@ -1,0 +1,249 @@
+import Link from 'next/link'
+import { cva, type VariantProps } from 'class-variance-authority'
+import { ChevronRight } from 'lucide-react'
+
+import { Badge, Button } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
+
+import { CldImage } from '../cld-image'
+
+const resourceTeaserVariants = cva('', {
+	variants: {
+		variant: {
+			horizontal: 'flex w-full items-center gap-6 lg:gap-16',
+			card: 'group flex h-full flex-col overflow-hidden rounded-lg border border-zinc-200 bg-white transition-shadow hover:shadow-md',
+		},
+	},
+	defaultVariants: {
+		variant: 'horizontal',
+	},
+})
+
+const thumbnailVariants = cva('relative overflow-hidden bg-zinc-900', {
+	variants: {
+		variant: {
+			horizontal:
+				'aspect-video w-full max-w-[568px] shrink-0 rounded-xl lg:w-[568px]',
+			card: 'aspect-video w-full',
+		},
+	},
+	defaultVariants: {
+		variant: 'horizontal',
+	},
+})
+
+const contentVariants = cva('flex flex-col gap-5', {
+	variants: {
+		variant: {
+			horizontal: 'items-start gap-6',
+			card: 'flex-1 p-2.5',
+		},
+	},
+	defaultVariants: {
+		variant: 'horizontal',
+	},
+})
+
+const titleVariants = cva('', {
+	variants: {
+		variant: {
+			horizontal: 'text-3xl font-medium leading-9 text-foreground',
+			card: 'line-clamp-2 text-lg font-semibold leading-7 text-foreground',
+		},
+	},
+	defaultVariants: {
+		variant: 'horizontal',
+	},
+})
+
+/**
+ * ResourceTeaser displays a promotional card for courses or workshops
+ * with a thumbnail, title, description, and CTA button.
+ *
+ * Supports two variants:
+ * - "horizontal": Large promotional card with side-by-side layout
+ * - "card": Compact vertical card with thumbnail on top
+ */
+export interface ResourceTeaserProps
+	extends VariantProps<typeof resourceTeaserVariants> {
+	/** Course or workshop label (e.g., "New Cohort-based Course") */
+	label?: string
+	/** Main title of the resource */
+	title: string
+	/** Descriptive text about the resource */
+	description?: string
+	/** URL to navigate to when clicked */
+	href: string
+	/** Image URL for the thumbnail */
+	thumbnailUrl?: string
+	/** Badge text (e.g., "9 days left to enroll") */
+	badgeText?: string
+	/** Date text (e.g., "Starts Oct 8") */
+	dateText?: string
+	/** Metadata text (e.g., "35 chapters") - for card variant */
+	metadata?: string
+	/** CTA button text */
+	ctaText?: string
+	/** Optional thumbnail badge (e.g., "NEW") */
+	thumbnailBadge?: string
+	/** Technology/feature tags (e.g., ["React", "Next.js", "Node.js"]) */
+	tags?: string[]
+	/** Optional className for styling overrides */
+	className?: string
+}
+
+/**
+ * ResourceTeaser component for displaying featured courses and workshops
+ */
+const ResourceTeaser = ({
+	variant = 'horizontal',
+	label,
+	title,
+	description,
+	href,
+	thumbnailUrl,
+	badgeText,
+	dateText,
+	metadata,
+	ctaText = 'View course',
+	thumbnailBadge,
+	tags,
+	className,
+}: ResourceTeaserProps) => {
+	const isCard = variant === 'card'
+
+	return (
+		<>
+			{isCard ? (
+				<Link
+					href={href}
+					className={cn(resourceTeaserVariants({ variant }), className)}
+				>
+					{/* Thumbnail */}
+					<div className={thumbnailVariants({ variant })}>
+						{thumbnailUrl && (
+							<CldImage
+								src={thumbnailUrl}
+								alt={title}
+								fill
+								className="object-cover"
+							/>
+						)}
+						{thumbnailBadge && (
+							<div className="absolute right-3 top-3 rounded-xl bg-zinc-950 px-4 py-1.5">
+								<span className="text-sm text-white">{thumbnailBadge}</span>
+							</div>
+						)}
+					</div>
+
+					{/* Content */}
+					<div className={contentVariants({ variant })}>
+						{/* Header section */}
+						<div className="flex min-h-[80px] flex-col gap-2.5">
+							<h2 className={titleVariants({ variant })}>{title}</h2>
+							{metadata && (
+								<p className="text-muted-foreground text-sm leading-none">
+									{metadata}
+								</p>
+							)}
+						</div>
+
+						{/* Tags */}
+						{tags && tags.length > 0 && (
+							<div className="flex flex-wrap gap-0.5">
+								{tags.map((tag) => (
+									<Badge
+										key={tag}
+										variant="secondary"
+										className="rounded-full border-transparent px-2.5 py-0.5 text-xs font-semibold leading-4"
+									>
+										{tag}
+									</Badge>
+								))}
+							</div>
+						)}
+					</div>
+				</Link>
+			) : (
+				<div className={cn(resourceTeaserVariants({ variant }), className)}>
+					{/* Thumbnail */}
+					<Link
+						href={href}
+						className={cn(thumbnailVariants({ variant }), 'group')}
+					>
+						{thumbnailUrl && (
+							<CldImage
+								src={thumbnailUrl}
+								alt={title}
+								fill
+								className="object-cover"
+							/>
+						)}
+						{!thumbnailUrl && (
+							<div className="flex h-full items-center justify-center">
+								<div className="text-center">
+									<p className="font-heading text-4xl font-bold text-white">
+										AI-Powered Applications
+									</p>
+									<p className="mt-2 text-xl text-white/70">
+										with AI SDK and Next.js
+									</p>
+								</div>
+							</div>
+						)}
+						{thumbnailBadge && (
+							<div className="absolute right-7 top-7 rounded-xl bg-zinc-950 px-4 py-1.5">
+								<span className="text-sm text-white">{thumbnailBadge}</span>
+							</div>
+						)}
+					</Link>
+
+					{/* Content */}
+					<div className={contentVariants({ variant })}>
+						{/* Header section */}
+						<div className="flex flex-col gap-2">
+							{label && (
+								<p className="text-muted-foreground text-base leading-none">
+									{label}
+								</p>
+							)}
+							<h2 className={titleVariants({ variant })}>{title}</h2>
+							<div className="flex items-center gap-3">
+								{badgeText && (
+									<Badge variant="outline" className="rounded-full">
+										<span className="text-muted-foreground text-sm font-medium leading-5">
+											{badgeText}
+										</span>
+									</Badge>
+								)}
+								{dateText && (
+									<p className="text-muted-foreground text-sm leading-none">
+										{dateText}
+									</p>
+								)}
+							</div>
+						</div>
+
+						{description && (
+							<p className="text-foreground max-w-[573px] text-base leading-6">
+								{description}
+							</p>
+						)}
+
+						<Button asChild size="lg">
+							<Link href={href}>
+								<span>
+									<span className="font-bold">Save 45%</span> — {ctaText}
+								</span>
+								<ChevronRight className="h-4 w-4" />
+							</Link>
+						</Button>
+					</div>
+				</div>
+			)}
+		</>
+	)
+}
+
+export { ResourceTeaser }
+export default ResourceTeaser
