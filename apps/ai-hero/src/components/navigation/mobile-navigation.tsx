@@ -7,7 +7,7 @@ import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { Menu, Newspaper, X } from 'lucide-react'
+import { LogIn, Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
@@ -62,15 +62,11 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex aspect-square h-full shrink-0 items-center justify-center border-l px-5"
+				className="h-16 w-16 items-center justify-center border-l"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
-				{!isMobileMenuOpen ? (
-					<Menu className="h-5 w-5" />
-				) : (
-					<X className="h-5 w-5" />
-				)}
+				<Menu className="size-5" />
 			</Button>
 			<Sheet
 				modal={false}
@@ -87,7 +83,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					>
 						<div className="flex w-full flex-col">
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 gap-3 border-b px-5 py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b px-5 py-5">
 									{userAvatar}
 									<span className="text-xl font-bold">
 										{sessionData.user.name
@@ -97,15 +93,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								</div>
 							)}
 							{sessionStatus === 'unauthenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b py-3">
 									{/* <div className="bg-muted flex h-16 w-16 rounded-full" /> */}
 									<span className="text-xl font-bold">
 										<NavLinkItem
 											className=""
-											icon={
-												<div className="border-primary mr-3 flex h-12 w-12 rounded-full border border-dashed" />
-											}
-											label="Login"
+											label="Log in"
+											icon={<LogIn className="size-4" />}
 											href="/login"
 										/>
 									</span>
@@ -114,7 +108,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 							{sessionStatus === 'unauthenticated' && !subscriber && (
 								<NavLinkItem
 									href="/newsletter"
-									className="[&_span]:flex [&_span]:items-center"
+									className="mb-5 [&_span]:flex [&_span]:items-center"
 									label={
 										<>
 											<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />

@@ -228,11 +228,20 @@ export default async function ModulePage(props: Props) {
 								{workshop.fields?.title}
 							</h1>
 							{workshop.fields?.description && (
-								<div className="prose prose-p:text-balance dark:prose-invert md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-lg lg:prose-xl mt-3 leading-tight">
-									<p>{workshop.fields?.description}</p>
-								</div>
+								<ReactMarkdown
+									className={cn(
+										'mt-4 text-balance text-center leading-tight sm:text-lg md:text-left lg:text-xl',
+									)}
+									components={{
+										p: ({ children }) => (
+											<h2 className="font-normal">{children}</h2>
+										),
+									}}
+								>
+									{workshop.fields?.description}
+								</ReactMarkdown>
 							)}
-							<div className="mt-5 flex items-center gap-2">
+							<div className="mt-10 flex items-center gap-2">
 								<Contributor />
 							</div>
 						</div>
