@@ -68,7 +68,7 @@
 		"date-fns-tz": "^2.0.1",
 		"drizzle-orm": "0.36.0",
 		"framer-motion": "^12.0.0-alpha.1",
-		"inngest": "3.35.0",
+		"inngest": "3.44.2",
 		"lucide-react": "^0.288.0",
 		"mysql2": "^3.6.1",
 		"nanoid": "^5.0.2",

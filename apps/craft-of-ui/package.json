@@ -140,7 +140,7 @@
 		"human-readable-ids": "^1.0.4",
 		"i": "^0.3.7",
 		"import-in-the-middle": "^1.11.2",
-		"inngest": "3.35.0",
+		"inngest": "3.44.2",
 		"intl-segmenter-polyfill": "^0.4.4",
 		"js-cookie": "^3.0.5",
 		"json-schema": "^0.4.0",
