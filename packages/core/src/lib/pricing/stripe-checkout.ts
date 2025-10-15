@@ -374,6 +374,14 @@ export async function stripeCheckout({
 						},
 					})
 
+					// Store the newly created upgrade coupon in the database for tracking
+					await adapter.createMerchantCoupon({
+						identifier: couponId,
+						merchantAccountId: merchantProduct.merchantAccountId,
+						type: 'upgrade',
+						amountDiscount: amount_off_in_cents,
+					})
+
 					discounts.push({
 						coupon: couponId,
 					})
@@ -390,7 +398,7 @@ export async function stripeCheckout({
 					// Handle fixed amount discounts vs percentage discounts
 					if (merchantCoupon.amountDiscount) {
 						if (quantity > 1) {
-							// For multi-seat purchases, create a transient coupon with adjusted amount
+							// For multi-seat purchases, create a coupon with adjusted amount
 							const couponId = await config.paymentsAdapter.createCoupon({
 								amount_off: merchantCoupon.amountDiscount * quantity,
 								name: merchantCoupon.type || 'Fixed Discount',
@@ -400,6 +408,14 @@ export async function stripeCheckout({
 								applies_to: {
 									products: [merchantProductIdentifier],
 								},
+							})
+
+							// Store the newly created coupon in the database for tracking
+							await adapter.createMerchantCoupon({
+								identifier: couponId,
+								merchantAccountId: merchantProduct.merchantAccountId,
+								type: `${merchantCoupon.type} bulk`,
+								amountDiscount: merchantCoupon.amountDiscount * quantity,
 							})
 
 							discounts.push({

@@ -530,6 +530,21 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
+		createMerchantCoupon: async (options) => {
+			await client.insert(merchantCoupon).values({
+				id: `mcoupon_${v4()}`,
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				type: options.type,
+				amountDiscount: Math.floor(options.amountDiscount),
+				status: 1,
+			})
+			return merchantCouponSchema.parse(
+				await client.query.merchantCoupon.findFirst({
+					where: eq(merchantCoupon.identifier, options.identifier),
+				}),
+			)
+		},
 		getMerchantAccount: async (options) => {
 			return merchantAccountSchema.parse(
 				await client.query.merchantAccount.findFirst({
@@ -1225,7 +1240,7 @@ export function mySqlDrizzleAdapter(
 				),
 				-- Get all workshop resources with their positions
 				workshop_structure AS (
-					SELECT 
+					SELECT
 						w.id AS workshop_id,
 						crr.resourceId,
 						crr.position AS position,
@@ -1240,7 +1255,7 @@ export function mySqlDrizzleAdapter(
 				-- Recursively expand sections and maintain global ordering
 				expanded_resources AS (
 					-- Base case: direct lessons/posts from workshop
-					SELECT 
+					SELECT
 						workshop_id,
 						position * 1000 AS global_order, -- Multiply by 1000 to leave room for section items
 						resource_content_id AS resource_id,
@@ -1248,11 +1263,9 @@ export function mySqlDrizzleAdapter(
 						resource_slug
 					FROM workshop_structure
 					WHERE resource_type IN ('lesson', 'post')
-					
 					UNION ALL
-					
 					-- Recursive case: lessons within sections
-					SELECT 
+					SELECT
 						ws.workshop_id,
 						ws.position * 1000 + crr.position AS global_order, -- Section position * 1000 + lesson position
 						cr.id AS resource_id,
