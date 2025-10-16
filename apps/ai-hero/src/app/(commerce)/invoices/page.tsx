@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter } from '@/db'
 import { getServerAuthSession } from '@/server/auth'
@@ -8,8 +9,12 @@ import { Purchase } from '@coursebuilder/core/schemas'
 const Invoices = async () => {
 	const { session } = await getServerAuthSession()
 
+	if (!session) {
+		redirect('/login?callbackUrl=%2Finvoices')
+	}
+
 	const purchases =
-		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
+		(await courseBuilderAdapter.getPurchasesForUser(session.user.id)) || []
 	return (
 		<LayoutClient withContainer>
 			<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5">
