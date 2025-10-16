@@ -10,6 +10,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 	{
 		id: `post-purchase-workflow`,
 		name: `Post-Purchase Followup Workflow`,
+		idempotency: 'event.data.checkoutSessionId',
 	},
 	{
 		event: NEW_PURCHASE_CREATED_EVENT,
