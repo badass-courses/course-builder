@@ -530,6 +530,21 @@ export function mySqlDrizzleAdapter(
 				}),
 			)
 		},
+		createMerchantCoupon: async (options) => {
+			await client.insert(merchantCoupon).values({
+				id: `mcoupon_${v4()}`,
+				identifier: options.identifier,
+				merchantAccountId: options.merchantAccountId,
+				type: options.type,
+				amountDiscount: Math.floor(options.amountDiscount),
+				status: 1,
+			})
+			return merchantCouponSchema.parse(
+				await client.query.merchantCoupon.findFirst({
+					where: eq(merchantCoupon.identifier, options.identifier),
+				}),
+			)
+		},
 		getMerchantAccount: async (options) => {
 			return merchantAccountSchema.parse(
 				await client.query.merchantAccount.findFirst({
@@ -837,15 +852,35 @@ export function mySqlDrizzleAdapter(
 								})
 								.where(eq(coupon.id, bulkCouponId))
 						} else {
-							const merchantCouponToUse = stripeCouponId
+							// Try to find merchant coupon by stripeCouponId first
+							let merchantCouponToUse = stripeCouponId
 								? merchantCouponSchema.nullable().parse(
-										await client.query.merchantCoupon.findFirst({
+										(await client.query.merchantCoupon.findFirst({
 											where: eq(merchantCoupon.identifier, stripeCouponId),
-										}),
+										})) || null,
 									)
 								: null
 
-							couponToUpdate = await client.insert(coupon).values({
+							// Fallback: If not found, try to find via usedCouponId from checkout session metadata
+							if (!merchantCouponToUse && usedCouponId) {
+								// First get the coupon record to find its merchantCouponId
+								const usedCoupon = couponSchema.nullable().parse(
+									(await client.query.coupon.findFirst({
+										where: eq(coupon.id, usedCouponId),
+									})) || null,
+								)
+
+								// Then get the merchant coupon
+								if (usedCoupon?.merchantCouponId) {
+									merchantCouponToUse = merchantCouponSchema.nullable().parse(
+										(await client.query.merchantCoupon.findFirst({
+											where: eq(merchantCoupon.id, usedCoupon.merchantCouponId),
+										})) || null,
+									)
+								}
+							}
+
+							const bulkCouponValues = {
 								id: bulkCouponId as string,
 								percentageDiscount: '1.0',
 								restrictedToProductId: productId,
@@ -857,7 +892,11 @@ export function mySqlDrizzleAdapter(
 											merchantCouponId: merchantCouponToUse.id,
 										}
 									: {}),
-							})
+							}
+
+							couponToUpdate = await client
+								.insert(coupon)
+								.values(bulkCouponValues)
 						}
 					}
 
@@ -1201,7 +1240,7 @@ export function mySqlDrizzleAdapter(
 				),
 				-- Get all workshop resources with their positions
 				workshop_structure AS (
-					SELECT 
+					SELECT
 						w.id AS workshop_id,
 						crr.resourceId,
 						crr.position AS position,
@@ -1216,7 +1255,7 @@ export function mySqlDrizzleAdapter(
 				-- Recursively expand sections and maintain global ordering
 				expanded_resources AS (
 					-- Base case: direct lessons/posts from workshop
-					SELECT 
+					SELECT
 						workshop_id,
 						position * 1000 AS global_order, -- Multiply by 1000 to leave room for section items
 						resource_content_id AS resource_id,
@@ -1224,11 +1263,9 @@ export function mySqlDrizzleAdapter(
 						resource_slug
 					FROM workshop_structure
 					WHERE resource_type IN ('lesson', 'post')
-					
 					UNION ALL
-					
 					-- Recursive case: lessons within sections
-					SELECT 
+					SELECT
 						ws.workshop_id,
 						ws.position * 1000 + crr.position AS global_order, -- Section position * 1000 + lesson position
 						cr.id AS resource_id,

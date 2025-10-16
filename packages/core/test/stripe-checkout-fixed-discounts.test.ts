@@ -21,14 +21,16 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 	}
 
 	describe('Fixed Amount Merchant Coupons', () => {
-		it('should create transient amount_off coupon for fixed merchant coupons', async () => {
-			const mockCreateCoupon = vi.fn().mockResolvedValue('stripe_coupon_123')
+		it('should create promotion code for single-seat fixed merchant coupons', async () => {
+			const mockCreatePromotionCode = vi
+				.fn()
+				.mockResolvedValue('promo_code_123')
 			const mockCreateSession = vi
 				.fn()
 				.mockResolvedValue('https://checkout.stripe.com/session_123')
 
 			const mockPaymentsAdapter = createMockPaymentsAdapter({
-				createCoupon: mockCreateCoupon,
+				createPromotionCode: mockCreatePromotionCode,
 				createCheckoutSession: mockCreateSession,
 			})
 
@@ -48,18 +50,11 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
-			expect(mockCreateCoupon).toHaveBeenCalledWith(
-				expect.objectContaining({
-					amount_off: 2000,
-					name: expect.any(String),
-					max_redemptions: 1,
-					redeem_by: expect.any(Number),
-					currency: 'USD',
-					applies_to: {
-						products: [expect.any(String)],
-					},
-				}),
-			)
+			expect(mockCreatePromotionCode).toHaveBeenCalledWith({
+				coupon: expect.any(String),
+				max_redemptions: 1,
+				expires_at: expect.any(Number),
+			})
 			expect(result.redirect).toBeDefined()
 		})
 
@@ -95,11 +90,13 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 			})
 		})
 
-		it('should apply fixed discount coupon with correct amount', async () => {
-			const mockCreateCoupon = vi.fn().mockResolvedValue('coupon_123')
+		it('should create promotion code for single-seat fixed discount', async () => {
+			const mockCreatePromotionCode = vi
+				.fn()
+				.mockResolvedValue('promo_code_123')
 
 			const mockPaymentsAdapter = createMockPaymentsAdapter({
-				createCoupon: mockCreateCoupon,
+				createPromotionCode: mockCreatePromotionCode,
 			})
 
 			const mockAdapter = createMockAdapter({
@@ -118,9 +115,46 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreatePromotionCode).toHaveBeenCalledWith({
+				coupon: expect.any(String),
+				max_redemptions: 1,
+				expires_at: expect.any(Number),
+			})
+		})
+
+		it('should create transient coupon for multi-seat fixed discount', async () => {
+			const mockCreateCoupon = vi.fn().mockResolvedValue('coupon_123')
+
+			const mockPaymentsAdapter = createMockPaymentsAdapter({
+				createCoupon: mockCreateCoupon,
+			})
+
+			const mockAdapter = createMockAdapter({
+				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount75),
+			})
+
+			await stripeCheckout({
+				params: {
+					productId: 'prod_basic',
+					couponId: 'coupon_fixed_75',
+					quantity: 3,
+					bulk: true,
+					cancelUrl: 'https://example.com/cancel',
+				},
+				config: { ...mockConfig, paymentsAdapter: mockPaymentsAdapter },
+				adapter: mockAdapter,
+			})
+
 			expect(mockCreateCoupon).toHaveBeenCalledWith(
 				expect.objectContaining({
-					amount_off: 7500, // $75
+					amount_off: 22500, // $75 * 3 seats
+					name: expect.any(String),
+					max_redemptions: 1,
+					redeem_by: expect.any(Number),
+					currency: 'USD',
+					applies_to: {
+						products: [expect.any(String)],
+					},
 				}),
 			)
 		})

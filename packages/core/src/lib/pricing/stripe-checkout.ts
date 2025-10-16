@@ -374,6 +374,14 @@ export async function stripeCheckout({
 						},
 					})
 
+					// Store the newly created upgrade coupon in the database for tracking
+					await adapter.createMerchantCoupon({
+						identifier: couponId,
+						merchantAccountId: merchantProduct.merchantAccountId,
+						type: 'upgrade',
+						amountDiscount: amount_off_in_cents,
+					})
+
 					discounts.push({
 						coupon: couponId,
 					})
@@ -389,22 +397,42 @@ export async function stripeCheckout({
 
 					// Handle fixed amount discounts vs percentage discounts
 					if (merchantCoupon.amountDiscount) {
-						// For fixed amount discounts, create a transient coupon
-						// Apply discount per seat for bulk purchases
-						const couponId = await config.paymentsAdapter.createCoupon({
-							amount_off: merchantCoupon.amountDiscount * quantity,
-							name: merchantCoupon.type || 'Fixed Discount',
-							max_redemptions: 1,
-							redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
-							currency: 'USD',
-							applies_to: {
-								products: [merchantProductIdentifier],
-							},
-						})
+						if (quantity > 1) {
+							// For multi-seat purchases, create a coupon with adjusted amount
+							const couponId = await config.paymentsAdapter.createCoupon({
+								amount_off: merchantCoupon.amountDiscount * quantity,
+								name: merchantCoupon.type || 'Fixed Discount',
+								max_redemptions: 1,
+								redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
+								currency: 'USD',
+								applies_to: {
+									products: [merchantProductIdentifier],
+								},
+							})
 
-						discounts.push({
-							coupon: couponId,
-						})
+							// Store the newly created coupon in the database for tracking
+							await adapter.createMerchantCoupon({
+								identifier: couponId,
+								merchantAccountId: merchantProduct.merchantAccountId,
+								type: `${merchantCoupon.type} bulk`,
+								amountDiscount: merchantCoupon.amountDiscount * quantity,
+							})
+
+							discounts.push({
+								coupon: couponId,
+							})
+						} else if (merchantCoupon.identifier) {
+							// For single seat, use promotion code with original coupon
+							const promotionCodeId =
+								await config.paymentsAdapter.createPromotionCode({
+									coupon: merchantCoupon.identifier,
+									max_redemptions: 1,
+									expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+								})
+							discounts.push({
+								promotion_code: promotionCodeId,
+							})
+						}
 					} else if (merchantCoupon.identifier) {
 						// For percentage discounts, use promotion code
 						const promotionCodeId =
