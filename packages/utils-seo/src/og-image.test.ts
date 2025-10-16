@@ -20,7 +20,7 @@ describe('OpenGraph image URL generators', () => {
 
 			// Use includes instead of exact match since encoding differences can cause test failures
 			expect(result).toContain(
-				'https://example.com/api/og?resource=my-resource&updatedAt=',
+				'https://example.com/api/og/my-resource?updatedAt=',
 			)
 		})
 
@@ -33,9 +33,7 @@ describe('OpenGraph image URL generators', () => {
 			const result = getOGImageUrlForResource(resource, baseUrl)
 
 			// Use includes instead of exact match since encoding differences can cause test failures
-			expect(result).toContain(
-				'https://example.com/api/og?resource=123&updatedAt=',
-			)
+			expect(result).toContain('https://example.com/api/og/123?updatedAt=')
 		})
 
 		it('should handle Date objects for updatedAt', () => {
@@ -49,7 +47,7 @@ describe('OpenGraph image URL generators', () => {
 
 			// Use includes instead of exact match since encoding differences can cause test failures
 			expect(result).toContain(
-				'https://example.com/api/og?resource=my-resource&updatedAt=',
+				'https://example.com/api/og/my-resource?updatedAt=',
 			)
 		})
 
@@ -61,7 +59,7 @@ describe('OpenGraph image URL generators', () => {
 
 			const result = getOGImageUrlForResource(resource, baseUrl)
 
-			expect(result).toBe('https://example.com/api/og?resource=my-resource')
+			expect(result).toBe('https://example.com/api/og/my-resource')
 		})
 	})
 
