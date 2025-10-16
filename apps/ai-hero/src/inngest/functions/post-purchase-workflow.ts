@@ -256,6 +256,10 @@ export const postPurchaseWorkflow = inngest.createFunction(
 						isFullPriceCouponRedemption,
 					})
 
+					const invoiceUrl = purchase.merchantChargeId
+						? `${env.NEXT_PUBLIC_URL}/invoices/${purchase.merchantChargeId}`
+						: undefined
+
 					await sendAnEmail({
 						Component: ComponentToSend,
 						componentProps: {
@@ -265,6 +269,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 							url: contentUrl,
 							quantity: bulkCoupon?.maxUses || 1,
 							userFirstName: user.name?.split(' ')[0],
+							invoiceUrl,
 						},
 						Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
 						To: user.email,
@@ -489,6 +494,10 @@ export const postPurchaseWorkflow = inngest.createFunction(
 								isFullPriceCouponRedemption,
 							})
 
+							const invoiceUrl = purchase.merchantChargeId
+								? `${env.NEXT_PUBLIC_URL}/invoices/${purchase.merchantChargeId}`
+								: undefined
+
 							await sendAnEmail({
 								Component: ComponentToSend,
 								componentProps: {
@@ -498,6 +507,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 									url: contentUrl,
 									quantity: purchase.totalAmount || 1,
 									userFirstName: user.name?.split(' ')[0],
+									invoiceUrl,
 								},
 								Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
 								To: user.email,

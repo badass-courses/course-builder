@@ -17,6 +17,7 @@ export interface WelcomeWorkshopEmailTeamRedeemerProps {
 	url: string
 	userFirstName?: string
 	supportEmail?: string
+	invoiceUrl?: string
 }
 
 export default function WelcomeWorkshopEmailForTeamRedeemer({
@@ -24,6 +25,7 @@ export default function WelcomeWorkshopEmailForTeamRedeemer({
 	url,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
+	invoiceUrl,
 }: WelcomeWorkshopEmailTeamRedeemerProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		console.debug('Rendering WelcomeWorkshopEmailForTeamRedeemer', {

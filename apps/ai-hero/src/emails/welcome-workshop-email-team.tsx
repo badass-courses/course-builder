@@ -18,6 +18,7 @@ export interface WelcomeWorkshopEmailTeamProps {
 	quantity: number
 	userFirstName?: string
 	supportEmail?: string
+	invoiceUrl?: string
 }
 
 export default function WelcomeWorkshopEmailForTeam({
@@ -26,6 +27,7 @@ export default function WelcomeWorkshopEmailForTeam({
 	quantity,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
+	invoiceUrl,
 }: WelcomeWorkshopEmailTeamProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		console.debug('Rendering WelcomeWorkshopEmailForTeam', {
@@ -79,9 +81,12 @@ export default function WelcomeWorkshopEmailForTeam({
 
 						<Section style={contentSection}>
 							<Text style={textSmall}>
-								Need an invoice? Visit your{' '}
-								<Link href={`${env.COURSEBUILDER_URL}/invoices`} style={link}>
-									invoices page
+								Need an invoice?{' '}
+								<Link
+									href={invoiceUrl || `${env.COURSEBUILDER_URL}/invoices`}
+									style={link}
+								>
+									View it here
 								</Link>
 								. Questions? Contact{' '}
 								<Link href={`mailto:${supportEmail}`} style={link}>

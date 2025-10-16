@@ -17,6 +17,7 @@ export interface WelcomeWorkshopEmailProps {
 	url: string
 	userFirstName?: string
 	supportEmail?: string
+	invoiceUrl?: string
 }
 
 export default function WelcomeWorkshopEmail({
@@ -24,6 +25,7 @@ export default function WelcomeWorkshopEmail({
 	url,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
+	invoiceUrl,
 }: WelcomeWorkshopEmailProps) {
 	if (process.env.LOG_LEVEL === 'debug') {
 		console.debug('Rendering WelcomeWorkshopEmail', { workshopTitle })
@@ -52,9 +54,12 @@ export default function WelcomeWorkshopEmail({
 						<Section style={contentSection}>
 							<Text style={text}>Need anything? We're here to help.</Text>
 							<Text style={textSmall}>
-								You can access your invoice anytime on your{' '}
-								<Link href={`${env.COURSEBUILDER_URL}/invoices`} style={link}>
-									invoices page
+								You can access your invoice anytime{' '}
+								<Link
+									href={invoiceUrl || `${env.COURSEBUILDER_URL}/invoices`}
+									style={link}
+								>
+									here
 								</Link>
 								.
 							</Text>
