@@ -14,7 +14,7 @@ const Invoices = async () => {
 	}
 
 	const purchases =
-		(await courseBuilderAdapter.getPurchasesForUser(session.user.id)) || []
+		(await courseBuilderAdapter.getPurchasesForUser(session?.user?.id)) || []
 	return (
 		<LayoutClient withContainer>
 			<main className="container flex min-h-[calc(100vh-var(--nav-height))] flex-col px-5">
