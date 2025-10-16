@@ -9,6 +9,7 @@ export const postEventPurchase = inngest.createFunction(
 	{
 		id: `post-event-purchase-calendar-sync`,
 		name: `Add to Google Calendar Event`,
+		idempotency: 'event.data.purchaseId',
 	},
 	[
 		{
