@@ -12,6 +12,7 @@ export const addPurchaseRoleDiscord = inngest.createFunction(
 	{
 		id: `add-purchase-role-discord`,
 		name: 'Add Purchase Role Discord',
+		idempotency: 'event.data.checkoutSessionId',
 	},
 	{ event: NEW_PURCHASE_CREATED_EVENT },
 	async ({ event, step }) => {
