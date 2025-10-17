@@ -243,7 +243,7 @@ async function PurchaseThanksPageLoaded({
 	}
 	return (
 		<LayoutClient withContainer>
-			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+			<main className="min-h-[calc(100vh-var(--nav-height))] py-8 sm:py-16">
 				<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
 					<PurchaseSummary.Root
 						title={title}

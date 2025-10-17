@@ -18,8 +18,8 @@ export const Contributor: React.FC<{
 				<span className="text-foreground/90">{config.author}</span>
 				{withBio && (
 					<p className="text-foreground/75 text-sm">
-						A well-regarded expert developer known for his ability to demystify
-						complex concepts.
+						Antonio is a passionate coder and the creative mind behind
+						codewithantonio.com.
 					</p>
 				)}
 			</div>
@@ -30,7 +30,7 @@ export const Contributor: React.FC<{
 export const ContributorImage = ({
 	contributor,
 	className,
-	imageSize = 40,
+	imageSize = 76,
 }: {
 	contributor?: { name: string; lastName: string }
 	className?: string
@@ -39,13 +39,13 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/total-typescript/image/upload/v1728059672/matt-pocock_eyjjli.jpg'
+				'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760621497/antonio-thumbs-up_2x_r4upxk.png'
 			}
 			alt={config.author}
 			width={imageSize}
 			height={imageSize}
-			priority
-			className={cn('rounded-full', className)}
+			quality={100}
+			className={cn('', className)}
 		/>
 	)
 }

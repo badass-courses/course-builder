@@ -11,10 +11,14 @@ export const TypesenseResourceSchema = z.object({
 	summary: z.string().optional(),
 	visibility: z.string(),
 	type: z.string(),
+	productType: z.string().optional(),
 	published_at_timestamp: z.number().optional(),
 	updated_at_timestamp: z.number().optional(),
 	created_at_timestamp: z.number().optional(),
 	tags: z.array(TagSchema).nullish(),
+	image: z.string().optional(),
+	startsAt: z.string().optional(),
+	endsAt: z.string().optional(),
 	parentResources: z
 		.array(
 			z.object({
@@ -45,6 +49,7 @@ export const attributeLabelMap: {
 	created_at_timestamp: 'Created At',
 	tags: 'Tags',
 	parentResources: 'Parent Resources',
+	productType: 'Product Type',
 } as const
 
 export type TypesenseResource = z.infer<typeof TypesenseResourceSchema>

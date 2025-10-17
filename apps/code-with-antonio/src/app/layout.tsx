@@ -68,14 +68,14 @@ export default function RootLayout({
 					<Toaster />
 					<FeedbackInsert />
 					<TRPCReactProvider>
-						<NuqsAdapter>
-							<Party />
-							<ThemeProvider
-								attribute="class"
-								defaultTheme="system"
-								enableSystem={true}
-								disableTransitionOnChange
-							>
+						<Party />
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="system"
+							enableSystem={true}
+							disableTransitionOnChange
+						>
+							<NuqsAdapter>
 								<HolyLoader
 									color="hsl(var(--primary))"
 									height="0.15rem"
@@ -103,8 +103,8 @@ export default function RootLayout({
 								>
 									{children}
 								</CouponProvider>
-							</ThemeProvider>
-						</NuqsAdapter>
+							</NuqsAdapter>
+						</ThemeProvider>
 					</TRPCReactProvider>
 					{isGoogleAnalyticsAvailable && (
 						<GoogleAnalytics gaId={env.NEXT_PUBLIC_GOOGLE_ANALYTICS!} />

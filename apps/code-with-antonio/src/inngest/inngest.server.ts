@@ -84,6 +84,12 @@ import {
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
 import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+	ResourceCreated,
+	ResourceUpdated,
+} from './events/resource-management'
+import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
@@ -125,6 +131,8 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[RESOURCE_CREATED_EVENT]: ResourceCreated
+	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
 }
 
 const callbackBase =
@@ -149,6 +157,8 @@ const middleware = createInngestMiddleware({
 	emailProvider,
 	notificationProvider: slackProvider,
 	getAuthConfig: () => authOptions,
+	resourceCreatedEvent: RESOURCE_CREATED_EVENT,
+	resourceUpdatedEvent: RESOURCE_UPDATED_EVENT,
 })
 
 export const inngest = new Inngest({

@@ -1,25 +1,70 @@
 'use client'
 
 import Link from 'next/link'
+import ResourceTeaser from '@/components/content/resource-teaser'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { Highlight } from 'react-instantsearch'
 
 import { Badge } from '@coursebuilder/ui'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default function Hit({ hit }: { hit: TypesenseResource }) {
+	const getMetadataForType = (type: string) => {
+		switch (type) {
+			case 'tutorial':
+				return 'tutorial'
+
+			case 'article':
+				return 'article'
+
+			case 'nextUp':
+				return 'nextUp'
+			case 'post':
+				return 'post'
+			case 'workshop':
+				return 'workshop'
+			case 'cohort':
+				return 'cohort'
+			default:
+				return ''
+		}
+	}
 	return (
 		<li className="">
-			<Link
+			<ResourceTeaser
+				variant="card"
+				title={hit.title}
+				href={getResourcePath(hit.type, hit.slug, 'view')}
+				description={hit.summary}
+				metadata={
+					hit.type === 'cohort' && hit.startsAt && hit.endsAt
+						? `${formatInTimeZone(new Date(hit.startsAt), 'America/Los_Angeles', 'MMM d, yyyy')} — ${formatInTimeZone(new Date(hit.endsAt), 'America/Los_Angeles', 'MMM d, yyyy')}`
+						: getMetadataForType(hit.type)
+				}
+				thumbnailUrl={
+					hit.image ||
+					'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760615686/thumbnail-article_2x_sl3c0e.jpg'
+				}
+				tags={hit.tags?.map((tag) => tag.fields?.label || tag.fields?.name)}
+				titleSlot={
+					<Highlight
+						attribute="title"
+						hit={hit as any}
+						classNames={{
+							highlighted: 'bg-primary text-primary-foreground',
+						}}
+					/>
+				}
+			/>
+			{/* <Link
 				prefetch
 				className="to-secondary hover:bg-linear-to-l group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out sm:py-5 md:flex-row lg:px-6"
 				href={getResourcePath(hit.type, hit.slug, 'view')}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
 					<span className="pr-5 text-lg font-semibold sm:truncate lg:text-xl">
-						{/* {hit.title} */}
 						<Highlight
 							attribute="title"
 							hit={hit as any}
@@ -66,7 +111,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						)}
 					</div>
 				</div>
-			</Link>
+			</Link> */}
 		</li>
 	)
 }

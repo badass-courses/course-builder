@@ -15,13 +15,17 @@ export default async function LoginPage() {
 	const csrfToken = await getCsrf()
 
 	return (
-		<LayoutClient withContainer>
-			<Login
-				csrfToken={csrfToken}
-				providers={providers}
-				title={`Log In`}
-				subtitle={`We'll create your account if you don't have one yet.`}
-			/>
+		<LayoutClient>
+			<div className="bg-muted flex min-h-[calc(100svh-77px)] flex-col items-center justify-center p-6 md:p-10">
+				<div className="w-full max-w-sm md:max-w-4xl">
+					<Login
+						csrfToken={csrfToken}
+						providers={providers}
+						title={`Log In`}
+						subtitle={`We'll create your account if you don't have one yet.`}
+					/>
+				</div>
+			</div>
 		</LayoutClient>
 	)
 }

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
+import { getProduct } from '@/lib/products-query'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
@@ -356,9 +357,9 @@ export const pricingRouter = createTRPCRouter({
 			})
 
 		if (!hasPurchasedProductFromDefaultCoupon && defaultCoupon) {
-			const product = products.find((product) => {
-				return product.id === defaultCoupon.restrictedToProductId
-			})
+			const product = await getProduct(
+				defaultCoupon.restrictedToProductId as string,
+			)
 			return { ...defaultCoupon, product }
 		}
 

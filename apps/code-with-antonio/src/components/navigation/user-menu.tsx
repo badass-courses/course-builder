@@ -69,18 +69,14 @@ export const UserMenu = () => {
 			{canViewTeam && !isAdmin && (
 				<NavLinkItem label="Invite Team" href="/team" />
 			)}
-			<li className="hidden items-stretch sm:flex">
+			<li className="hidden shrink-0 items-stretch sm:flex">
 				<DropdownMenu modal={false}>
-					<DropdownMenuTrigger className="hover:bg-muted flex items-center space-x-1 px-5">
+					<DropdownMenuTrigger className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 text-sm font-medium">
 						{userAvatar}
-						<div className="flex flex-col pl-0.5">
-							<span className="text-foreground-muted inline-flex items-center gap-0.5 text-sm leading-tight">
-								<span className="truncate sm:max-w-[8rem] lg:max-w-[11rem] xl:max-w-none">
-									{sessionData.user.name?.split(' ')[0] || 'Account'}
-								</span>
-								<ChevronDownIcon className="w-2" />
-							</span>
-						</div>
+						<span className="w-full max-w-[20ch] truncate overflow-ellipsis">
+							{sessionData.user.name?.split(' ')[0] || 'Account'}
+						</span>
+						<ChevronDownIcon className="size-4" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
 						<DropdownMenuLabel>

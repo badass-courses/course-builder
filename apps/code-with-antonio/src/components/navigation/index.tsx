@@ -8,10 +8,12 @@ import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { ChevronRight, Menu, Newspaper, SearchIcon, X } from 'lucide-react'
+import { ChevronRight, SearchIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import Countdown from 'react-countdown'
 
 import {
+	Badge,
 	Input,
 	NavigationMenu,
 	NavigationMenuContent,
@@ -21,8 +23,11 @@ import {
 	NavigationMenuTrigger,
 } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { LogoMark } from '../brand/logo'
+import { ContributorImage } from '../contributor'
+import { FeaturedCountdown } from './countdown'
 import { LogoVideo } from './logo-video'
 import { MobileNavigation } from './mobile-navigation'
 import { NavLinkItem } from './nav-link-item'
@@ -73,10 +78,17 @@ const Navigation = ({ className }: { className?: string }) => {
 		})
 	}
 
+	const showSearch = pathname !== '/browse'
+
 	return (
-		<header className={cn('relative z-50 w-full shadow-sm', className)}>
+		<header
+			className={cn(
+				'dark:border-border relative z-50 w-full shadow-sm dark:shadow-[0_1px_0_0_var(--border)]',
+				className,
+			)}
+		>
 			<div className="container flex items-center justify-between">
-				<div className="flex w-full items-center">
+				<div className="flex items-center">
 					<LogoVideo isRoot={isRoot} />
 					<NavigationMenu
 						delayDuration={0}
@@ -90,52 +102,106 @@ const Navigation = ({ className }: { className?: string }) => {
 									<NavigationMenuTrigger className="flex items-center">
 										Browse
 									</NavigationMenuTrigger>
-									<NavigationMenuContent className="w-full shrink-0">
-										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
-											{navData.browse.items.map((item) => (
-												<NavigationMenuLink key={item.href} asChild>
-													<Link
-														href={item.href}
-														onClick={() => {
-															track('navigation_menu_item_click', {
-																resource: item.title,
-																type: 'cohort',
-																category: 'navigation',
-															})
-														}}
-														className="relative flex flex-row items-center gap-5 pr-8"
-													>
-														<div className="flex flex-col">
-															<div className="text-lg font-semibold">
-																{item.title}
+									<NavigationMenuContent className="w-full shrink-0 p-5">
+										<div className="grid w-[300px] grid-cols-5 gap-3 md:w-[550px] lg:w-[550px]">
+											<NavigationMenuLink
+												asChild
+												className="border-border col-span-2 overflow-hidden border p-0"
+											>
+												<Link
+													prefetch
+													href={getResourcePath(
+														navData.browse.featured.type,
+														navData.browse.featured.slug,
+													)}
+													className="flex flex-col justify-between"
+												>
+													<div className="flex flex-col gap-1 p-4">
+														{navData.browse.featured.metadata && (
+															<div className="text-xs font-medium opacity-80">
+																{navData.browse.featured.metadata}
 															</div>
-															<div className="text-muted-foreground">
-																{item.description}
-															</div>
+														)}
+														<div className="line-clamp-3 text-lg font-semibold leading-tight">
+															{navData.browse.featured.title}
 														</div>
-														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
-													</Link>
-												</NavigationMenuLink>
-											))}
-										</ul>
+													</div>
+
+													{navData.browse.featured.badge && (
+														<div className="bg-primary text-primary-foreground flex w-full justify-between px-5 pt-2">
+															<div className="flex flex-col">
+																<div className="text-lg font-semibold">
+																	{navData.browse.featured.badge}
+																</div>
+																<div className="tex-sm">
+																	{navData.browse.featured.expires && (
+																		<>
+																			Offer ends in{' '}
+																			<FeaturedCountdown
+																				expires={
+																					navData.browse.featured.expires
+																				}
+																			/>
+																		</>
+																	)}
+																</div>
+															</div>
+															<ContributorImage />
+														</div>
+													)}
+												</Link>
+											</NavigationMenuLink>
+											<ul className="col-span-3">
+												{navData.browse.items.map((item) => (
+													<NavigationMenuLink key={item.href} asChild>
+														<Link
+															prefetch
+															href={item.href}
+															onClick={() => {
+																track('navigation_menu_item_click', {
+																	resource: item.title,
+																	type: 'cohort',
+																	category: 'navigation',
+																})
+															}}
+															className="relative flex flex-row items-center gap-5 pr-8"
+														>
+															<div className="flex flex-col">
+																<div className="text-lg font-semibold">
+																	{item.title}
+																</div>
+																<div className="text-muted-foreground">
+																	{item.description}
+																</div>
+															</div>
+															<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+														</Link>
+													</NavigationMenuLink>
+												))}
+											</ul>
+										</div>
 									</NavigationMenuContent>
 								</NavigationMenuItem>
 							)}
 						</NavigationMenuList>
 					</NavigationMenu>
-					<form
-						className="relative flex w-full max-w-xs"
-						onSubmit={handleSearch}
-					>
-						<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
-						<Input
-							name="query"
-							placeholder="What do you want to learn today?"
-							className="bg-input border-border ml-3 w-full rounded-full border pl-10"
-							type="search"
-							disabled={isSearching}
-						/>
-					</form>
+					{showSearch && (
+						<form
+							className="relative flex w-full max-w-xs shrink-0"
+							onSubmit={handleSearch}
+						>
+							<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
+							<Input
+								name="query"
+								placeholder="What do you want to learn today?"
+								className="bg-input border-border ml-3 w-full rounded-full border pl-10"
+								type="search"
+								disabled={isSearching}
+								// onChange={(event) => refine(event.currentTarget.value)}
+								// defaultValue={queryParam || ''}
+							/>
+						</form>
+					)}
 				</div>
 				<nav className="flex items-stretch" aria-label={`User navigation`}>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
@@ -180,41 +246,3 @@ const Navigation = ({ className }: { className?: string }) => {
 }
 
 export default Navigation
-
-const components: { title: string; href: string; description: string }[] = [
-	{
-		title: 'Alert Dialog',
-		href: '/docs/primitives/alert-dialog',
-		description:
-			'A modal dialog that interrupts the user with important content and expects a response.',
-	},
-	{
-		title: 'Hover Card',
-		href: '/docs/primitives/hover-card',
-		description:
-			'For sighted users to preview content available behind a link.',
-	},
-	{
-		title: 'Progress',
-		href: '/docs/primitives/progress',
-		description:
-			'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-	},
-	{
-		title: 'Scroll-area',
-		href: '/docs/primitives/scroll-area',
-		description: 'Visually or semantically separates content.',
-	},
-	{
-		title: 'Tabs',
-		href: '/docs/primitives/tabs',
-		description:
-			'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-	},
-	{
-		title: 'Tooltip',
-		href: '/docs/primitives/tooltip',
-		description:
-			'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-	},
-]

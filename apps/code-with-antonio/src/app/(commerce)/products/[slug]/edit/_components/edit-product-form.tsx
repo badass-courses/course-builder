@@ -536,7 +536,7 @@ function EditProductFormDesktop({
 	}
 
 	return (
-		<LayoutClient withContainer={false}>
+		<LayoutClient>
 			<EditProductActionBar
 				resource={product}
 				resourcePath={getResourcePath(product.fields?.slug)}
