@@ -62,10 +62,6 @@ export const CohortPricingWidgetContainer: React.FC<{
 	const ALLOW_PURCHASE =
 		allowPurchase === 'true' || product?.fields.state === 'published'
 
-	if (!ALLOW_PURCHASE) {
-		return null
-	}
-
 	const { fields } = cohort
 	const { startsAt, endsAt, timezone } = fields
 
@@ -193,6 +189,10 @@ export const CohortPricingWidgetContainer: React.FC<{
 			}}
 		/>
 	)
+
+	if (!ALLOW_PURCHASE) {
+		return null
+	}
 
 	if (!product || product.status !== 1) {
 		return null

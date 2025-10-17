@@ -73,6 +73,8 @@ const Navigation = ({ className }: { className?: string }) => {
 		})
 	}
 
+	const showSearch = pathname !== '/browse'
+
 	return (
 		<header
 			className={cn(
@@ -128,21 +130,23 @@ const Navigation = ({ className }: { className?: string }) => {
 							)}
 						</NavigationMenuList>
 					</NavigationMenu>
-					<form
-						className="relative flex w-full max-w-xs shrink-0"
-						onSubmit={handleSearch}
-					>
-						<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
-						<Input
-							name="query"
-							placeholder="What do you want to learn today?"
-							className="bg-input border-border ml-3 w-full rounded-full border pl-10"
-							type="search"
-							disabled={isSearching}
-							// onChange={(event) => refine(event.currentTarget.value)}
-							// defaultValue={queryParam || ''}
-						/>
-					</form>
+					{showSearch && (
+						<form
+							className="relative flex w-full max-w-xs shrink-0"
+							onSubmit={handleSearch}
+						>
+							<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
+							<Input
+								name="query"
+								placeholder="What do you want to learn today?"
+								className="bg-input border-border ml-3 w-full rounded-full border pl-10"
+								type="search"
+								disabled={isSearching}
+								// onChange={(event) => refine(event.currentTarget.value)}
+								// defaultValue={queryParam || ''}
+							/>
+						</form>
+					)}
 				</div>
 				<nav className="flex items-stretch" aria-label={`User navigation`}>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
@@ -187,41 +191,3 @@ const Navigation = ({ className }: { className?: string }) => {
 }
 
 export default Navigation
-
-const components: { title: string; href: string; description: string }[] = [
-	{
-		title: 'Alert Dialog',
-		href: '/docs/primitives/alert-dialog',
-		description:
-			'A modal dialog that interrupts the user with important content and expects a response.',
-	},
-	{
-		title: 'Hover Card',
-		href: '/docs/primitives/hover-card',
-		description:
-			'For sighted users to preview content available behind a link.',
-	},
-	{
-		title: 'Progress',
-		href: '/docs/primitives/progress',
-		description:
-			'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-	},
-	{
-		title: 'Scroll-area',
-		href: '/docs/primitives/scroll-area',
-		description: 'Visually or semantically separates content.',
-	},
-	{
-		title: 'Tabs',
-		href: '/docs/primitives/tabs',
-		description:
-			'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-	},
-	{
-		title: 'Tooltip',
-		href: '/docs/primitives/tooltip',
-		description:
-			'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-	},
-]

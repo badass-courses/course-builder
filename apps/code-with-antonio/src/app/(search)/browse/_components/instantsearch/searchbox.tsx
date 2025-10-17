@@ -20,7 +20,10 @@ export const SearchBox = (
 	return (
 		<div className="relative flex w-full items-center">
 			<Input
-				className={cn('bg-background my-4 pl-8 text-base', props.className)}
+				className={cn(
+					'bg-muted border-border rounded-full border pl-8 text-base',
+					props.className,
+				)}
 				onChange={(event) => refine(event.currentTarget.value)}
 				defaultValue={queryParam || ''}
 				placeholder="Search..."

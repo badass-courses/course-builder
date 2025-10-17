@@ -167,8 +167,8 @@ function Search() {
 
 				{/* <HitsPerPageSelect items={hitsPerPageItems} /> */}
 				{/* <ClearRefinements className="mt-2 sm:mt-0" /> */}
-				<div className="col-span-9">
-					<h1 className="mb-5 text-2xl font-medium">{title}</h1>
+				<div className="col-span-9 flex flex-col gap-4">
+					{/* <h1 className="mb-5 text-2xl font-medium">{title}</h1> */}
 					<SearchBox />
 					<InfiniteHits />
 				</div>
