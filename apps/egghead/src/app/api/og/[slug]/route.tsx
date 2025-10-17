@@ -15,10 +15,42 @@ const allowedOrigins =
 		? ['https://egghead.io', 'https://builder.egghead.io']
 		: ['*']
 
-const corsHeaders = {
-	'Access-Control-Allow-Origin': allowedOrigins.join(', '),
-	'Access-Control-Allow-Methods': 'GET, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+const allowedOrigins =
+	process.env.NODE_ENV === 'production'
+		? ['https://egghead.io', 'https://builder.egghead.io']
+		: ['*']
+
+/**
+ * Return CORS headers for the given request origin.
+ */
+function getCorsHeaders(requestOrigin?: string | null): Record<string, string> {
+	const origin = allowedOrigins.includes('*')
+		? '*'
+		: allowedOrigins.includes(requestOrigin || '')
+			? requestOrigin || allowedOrigins[0]
+			: allowedOrigins[0]
+
+	return {
+		'Access-Control-Allow-Origin': origin,
+		'Access-Control-Allow-Methods': 'GET, OPTIONS',
+		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+	}
+}
+
+export async function OPTIONS() {
+	return NextResponse.json({}, { headers: getCorsHeaders() })
+}
+
+export async function GET(request: Request, { params }) {
+	const corsHeaders = getCorsHeaders(request.headers.get('origin'))
+
+	try {
+		const { slug } = params
+		// …rest of handler logic…
+		return NextResponse.json(data, { headers: corsHeaders })
+	} catch (error) {
+		// …error handling…
+	}
 }
 
 export async function OPTIONS() {
