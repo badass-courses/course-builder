@@ -326,13 +326,13 @@ export function NewResourceWithVideoForm({
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Title</FormLabel>
+							<FormControl>
+								<Input className="bg-input border-border border" {...field} />
+							</FormControl>
 							<FormDescription>
 								A title should summarize the resource and explain what it is
 								about clearly.
 							</FormDescription>
-							<FormControl>
-								<Input {...field} />
-							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -414,6 +414,7 @@ export function NewResourceWithVideoForm({
 				<Button
 					type="submit"
 					variant="default"
+					size="lg"
 					className="capitalize"
 					disabled={
 						(videoResourceId ? !videoResourceValid : typeRequiresVideo) ||

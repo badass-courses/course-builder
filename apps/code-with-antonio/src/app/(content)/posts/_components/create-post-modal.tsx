@@ -1,6 +1,8 @@
+'use client'
+
 import * as React from 'react'
 import { PostType } from '@/lib/posts'
-import { FilePlus2, Loader2 } from 'lucide-react'
+import { FilePlus2, Loader2, Plus } from 'lucide-react'
 
 import { ContentResource } from '@coursebuilder/core/schemas'
 import {
@@ -85,7 +87,7 @@ export function CreatePostModal({
 	defaultResourceType = 'article',
 	availableResourceTypes = ['article'],
 	topLevelResourceTypes = [],
-	title = 'New Post',
+	title,
 	uploadEnabled = true,
 }: CreatePostModalProps) {
 	const [isOpen, setIsOpen] = React.useState(open)
@@ -119,22 +121,24 @@ export function CreatePostModal({
 					<Button
 						variant="default"
 						type="button"
-						className="w-full gap-1"
+						size="lg"
+						className="w-full justify-between gap-1 capitalize"
 						onClick={() => setIsOpen(true)}
 					>
-						<FilePlus2 className="h-4 w-4" /> {'New Post'}
+						Create {defaultResourceType}
+						<Plus className="size-3 opacity-80" strokeWidth={3} />
 					</Button>
 				</DialogTrigger>
 			)}
-			<DialogContent>
-				{title && (
-					<DialogHeader className="">
-						<DialogTitle className="font-heading mb-3 flex items-center gap-2 text-2xl font-semibold">
-							{isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-							{isProcessing ? 'Creating...' : title}
-						</DialogTitle>
-					</DialogHeader>
-				)}
+			<DialogContent className="max-h-[90vh] overflow-y-auto">
+				<DialogHeader className="mb-4 border-b pb-2">
+					<DialogTitle className="text-xl font-semibold">
+						{isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+						{isProcessing
+							? 'Creating...'
+							: title || `New ${defaultResourceType}`}
+					</DialogTitle>
+				</DialogHeader>
 				<CreatePost
 					onResourceCreated={handleResourceCreated}
 					defaultResourceType={defaultResourceType}

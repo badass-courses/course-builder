@@ -45,6 +45,7 @@ export function formatCohortDateRange(
 	startsAt: string | null | undefined,
 	endsAt: string | null | undefined,
 	timezone?: string | null | undefined,
+	short: boolean = false,
 ): CohortDateRange {
 	// Use user's browser timezone if available (client-side), otherwise fall back to provided timezone or PT
 	const tz =
@@ -59,13 +60,13 @@ export function formatCohortDateRange(
 	if (startsAt) {
 		const startDate = new Date(startsAt)
 		const tzDisplay = getTimezoneDisplay(startDate, tz)
-		formattedStartsAt = `${formatInTimeZone(startDate, tz, 'MMMM d, yyyy')} at ${formatInTimeZone(startDate, tz, 'h:mm a')} ${tzDisplay}`
+		formattedStartsAt = `${formatInTimeZone(startDate, tz, short ? 'MMM d' : 'MMMM d')} at ${formatInTimeZone(startDate, tz, 'h:mm a')} ${tzDisplay}`
 
 		if (endsAt) {
 			const endDate = new Date(endsAt)
 			if (isSameDay(startDate, endDate)) {
 				// Same day event: "Month Day, Year" | "Start Time - End Time (Timezone)"
-				dateString = formatInTimeZone(startDate, tz, 'MMMM d, yyyy')
+				dateString = formatInTimeZone(startDate, tz, short ? 'MMM d' : 'MMMM d')
 				const tzDisplay = getTimezoneDisplay(startDate, tz)
 				timeString = `${formatInTimeZone(
 					startDate,
@@ -82,22 +83,26 @@ export function formatCohortDateRange(
 					dateString = `${formatInTimeZone(
 						startDate,
 						tz,
-						'MMMM d',
-					)}—${formatInTimeZone(endDate, tz, 'MMMM d, yyyy')}`
+						short ? 'MMM d' : 'MMMM d',
+					)}—${formatInTimeZone(endDate, tz, short ? 'MMM d' : 'MMMM d, yyyy')}`
 				} else {
 					// Different years: "Start Month Day, Year—End Month Day, Year"
 					dateString = `${formatInTimeZone(
 						startDate,
 						tz,
-						'MMMM d, yyyy',
-					)}—${formatInTimeZone(endDate, tz, 'MMMM d, yyyy')}`
+						short ? 'MMM d' : 'MMMM d, yyyy',
+					)}—${formatInTimeZone(endDate, tz, short ? 'MMM d' : 'MMMM d')}`
 				}
 				const tzDisplay = getTimezoneDisplay(startDate, tz)
 				timeString = `${formatInTimeZone(startDate, tz, 'h:mm a')} ${tzDisplay}`
 			}
 		} else {
 			// Only start date: "Month Day, Year" | "Start Time (Timezone)"
-			dateString = formatInTimeZone(startDate, tz, 'MMMM d, yyyy')
+			dateString = formatInTimeZone(
+				startDate,
+				tz,
+				short ? 'MMM d' : 'MMMM d, yyyy',
+			)
 			const tzDisplay = getTimezoneDisplay(startDate, tz)
 			timeString = `${formatInTimeZone(startDate, tz, 'h:mm a')} ${tzDisplay}`
 		}

@@ -69,7 +69,7 @@ export function CreatePost({
 	return (
 		<>
 			<NewResourceWithVideoForm
-				className="[&_label]:font-heading **:data-sr-button:h-10 [&_label]:text-lg [&_label]:font-semibold"
+				className=""
 				onResourceCreated={async (resource: ContentResource) => {
 					const editUrl = getResourcePath(
 						resource.type,

@@ -37,10 +37,14 @@ const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
  * @param source - MDX source content to compile
  * @returns Compiled MDX content
  */
-export async function compileMDX(source: string) {
+export async function compileMDX(
+	source: string,
+	components?: Record<string, React.ComponentType<any>>,
+) {
 	return await _compileMDX({
 		source: source,
 		components: {
+			...components,
 			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
