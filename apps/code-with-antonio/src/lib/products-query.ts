@@ -125,3 +125,13 @@ export async function createProduct(input: NewProduct) {
 
 	return courseBuilderAdapter.createProduct(input)
 }
+
+export async function getProductForResource(resourceId: string) {
+	const product = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, resourceId),
+		with: {
+			product: true,
+		},
+	})
+	return product?.product
+}

@@ -6,6 +6,7 @@ import {
 	contentResource,
 	contentResourceProduct,
 	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
 	products as productTable,
 } from '@/db/schema'
 import {
@@ -567,6 +568,12 @@ export async function getWorkshop(moduleSlugOrId: string) {
 			),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 			resources: {
 				// sections and stand-alone top level resource join
 				with: {

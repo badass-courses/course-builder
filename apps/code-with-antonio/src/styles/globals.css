@@ -50,13 +50,13 @@
 	--color-gray-900: oklch(20.5% 0 0);
 	--color-gray-950: oklch(14.5% 0 0); */
 
-	--animate-shine: shine 5s linear infinite;
+	--animate-shine: shine 5s linear infinite forwards 5s;
 	@keyframes shine {
 		0% {
-			background-position: 100%;
+			background-position: 200%;
 		}
-		50% {
-			background-position: -100%;
+		100% {
+			background-position: -200%;
 		}
 	}
 }
@@ -68,7 +68,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
-	--nav-height: 63px;
+	--nav-height: 77px;
 	--command-bar-height: 37px;
 	--pane-layout-height: calc(
 		100vh - var(--nav-height) - var(--command-bar-height)
@@ -305,7 +305,6 @@
 	h2 {
 		font-family: var(--font-heading);
 		text-wrap: balance;
-		font-weight: 700;
 	}
 
 	html.dark .shiki,

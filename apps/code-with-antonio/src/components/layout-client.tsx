@@ -28,9 +28,7 @@ export default function LayoutClient({
 		<div
 			className={cn(
 				'',
-				{
-					container: withContainer,
-				},
+
 				className,
 			)}
 		>
@@ -41,7 +39,13 @@ export default function LayoutClient({
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
-			{children}
+			<main
+				className={cn('', {
+					container: withContainer,
+				})}
+			>
+				{children}
+			</main>
 			<Footer />
 		</div>
 	)

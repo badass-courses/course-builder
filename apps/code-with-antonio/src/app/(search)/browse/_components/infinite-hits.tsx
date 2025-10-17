@@ -1,8 +1,13 @@
 'use client'
 
+import { useEffect } from 'react'
 import Spinner from '@/components/spinner'
 import type { TypesenseResource } from '@/lib/typesense'
-import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
+import {
+	useConfigure,
+	useInfiniteHits,
+	useInstantSearch,
+} from 'react-instantsearch'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
@@ -23,10 +28,11 @@ function SkeletonItem() {
 }
 
 export function InfiniteHits() {
-	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
+	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>()
 	const { status } = useInstantSearch()
 
-	if (status === 'loading') {
+	// Show skeleton during initial load or when search is stalled (refinements being applied)
+	if (status === 'loading' || status === 'stalled') {
 		return (
 			<div
 				className="h-[800px] w-full border-x border-b border-t"
@@ -52,7 +58,7 @@ export function InfiniteHits() {
 		</div>
 	) : (
 		<div>
-			<ul className="divide-y border">
+			<ul className="grid grid-cols-3 gap-4">
 				{items.map((item) => (
 					<Hit key={item.objectID} hit={item} />
 				))}

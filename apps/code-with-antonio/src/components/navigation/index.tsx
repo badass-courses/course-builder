@@ -8,7 +8,7 @@ import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { ChevronRight, Menu, Newspaper, SearchIcon, X } from 'lucide-react'
+import { ChevronRight, SearchIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import {
@@ -74,9 +74,14 @@ const Navigation = ({ className }: { className?: string }) => {
 	}
 
 	return (
-		<header className={cn('relative z-50 w-full shadow-sm', className)}>
+		<header
+			className={cn(
+				'dark:border-border relative z-50 w-full shadow-sm dark:shadow-[0_1px_0_0_var(--border)]',
+				className,
+			)}
+		>
 			<div className="container flex items-center justify-between">
-				<div className="flex w-full items-center">
+				<div className="flex items-center">
 					<LogoVideo isRoot={isRoot} />
 					<NavigationMenu
 						delayDuration={0}
@@ -124,7 +129,7 @@ const Navigation = ({ className }: { className?: string }) => {
 						</NavigationMenuList>
 					</NavigationMenu>
 					<form
-						className="relative flex w-full max-w-xs"
+						className="relative flex w-full max-w-xs shrink-0"
 						onSubmit={handleSearch}
 					>
 						<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
@@ -134,6 +139,8 @@ const Navigation = ({ className }: { className?: string }) => {
 							className="bg-input border-border ml-3 w-full rounded-full border pl-10"
 							type="search"
 							disabled={isSearching}
+							// onChange={(event) => refine(event.currentTarget.value)}
+							// defaultValue={queryParam || ''}
 						/>
 					</form>
 				</div>

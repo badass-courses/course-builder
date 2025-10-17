@@ -25,6 +25,7 @@ import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metad
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
+import { TagField } from '../../posts/_components/tag-field'
 import { EmailField } from './email-field'
 
 /**
@@ -81,6 +82,18 @@ export function WorkshopFormBase(
 					</FormItem>
 				)}
 				name="fields.description"
+			/>
+			<TagField resource={resource} showEditButton />
+			<FormField
+				control={form.control}
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
+						<Input {...field} value={field.value || ''} />
+						<FormMessage />
+					</FormItem>
+				)}
+				name="fields.github"
 			/>
 			<FormField
 				control={form.control}
@@ -150,17 +163,7 @@ export function WorkshopFormBase(
 					</FormItem>
 				)}
 			/>
-			<FormField
-				control={form.control}
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">GitHub</FormLabel>
-						<Input {...field} value={field.value || ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-				name="fields.github"
-			/>
+
 			<div className="px-5">
 				<FormLabel className="text-lg font-bold">Cover Image</FormLabel>
 				{form.watch('fields.coverImage.url') && (

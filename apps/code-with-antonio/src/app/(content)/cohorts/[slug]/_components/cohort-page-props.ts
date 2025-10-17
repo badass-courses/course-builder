@@ -1,8 +1,14 @@
-import { Cohort } from '@/lib/cohort'
+import { Cohort, CohortSchema } from '@/lib/cohort'
 import { Event } from '@/lib/events'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
+import z from 'zod'
 
-import { Product, Purchase } from '@coursebuilder/core/schemas'
+import {
+	Product,
+	productSchema,
+	Purchase,
+	purchaseSchema,
+} from '@coursebuilder/core/schemas'
 import {
 	CommerceProps,
 	PricingData,

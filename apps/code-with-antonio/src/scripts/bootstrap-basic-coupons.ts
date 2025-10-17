@@ -8,7 +8,7 @@ import Stripe from 'stripe'
 const config = {
 	stripeAccountId: 'acct_1He3UBAclagrtXef',
 	merchantAccountId: 'ma_clv1pegll000008jvbm0udeat',
-	uuidPrefix: 'cb_',
+	uuidPrefix: 'cwa_',
 	products: [],
 	coupons: [
 		{

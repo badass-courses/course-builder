@@ -2,23 +2,47 @@
 
 import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
+import {
+	Certificate,
+	DefaultCertificateFallback,
+} from '@/app/(content)/_components/cohort-certificate-container'
+import { ModuleProgressProvider } from '@/app/(content)/_components/module-progress-provider'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
+import { WorkshopNavigationProvider } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { CldImage } from '@/components/cld-image'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
+import { getModuleProgressForUser } from '@/lib/progress'
+import type { Workshop, WorkshopNavigation } from '@/lib/workshops'
+import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { track } from '@/utils/analytics'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
+import { differenceInCalendarDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import { toSnakeCase } from 'drizzle-orm/casing'
 import { CheckCircle } from 'lucide-react'
 
+import { Accordion, AccordionContent, AccordionItem } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { WorkshopListRowRenderer } from './cohort-list/workshop-list-row'
+import WorkshopSidebarItem from './cohort-list/workshop-sidebar-item'
 import type { CohortPageProps } from './cohort-page-props'
 
-export const CohortPricingWidgetContainer: React.FC<
-	CohortPageProps & { className?: string; searchParams?: ParsedUrlQuery }
-> = ({ className, searchParams, ...props }) => {
+export const CohortPricingWidgetContainer: React.FC<{
+	className?: string
+	searchParams?: ParsedUrlQuery
+	cohortPricingLoader: Promise<CohortPageProps>
+	certificateLegibilityLoader: Promise<{ hasCompletedCohort: boolean }>
+	children?: React.ReactNode
+}> = ({
+	className,
+	searchParams,
+	cohortPricingLoader,
+	certificateLegibilityLoader,
+	children,
+	...props
+}) => {
 	const {
 		cohort,
 		mdx,
@@ -30,14 +54,22 @@ export const CohortPricingWidgetContainer: React.FC<
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
 		couponFromCode,
+		product,
 		...commerceProps
-	} = props
-	const { fields } = cohort
-	const { startsAt, endsAt, timezone } = fields
-	const product = products && products[0]
-	const { openEnrollment, closeEnrollment } = product?.fields || {}
+	} = React.use(cohortPricingLoader)
 	const { allowPurchase } = searchParams || {}
 
+	const ALLOW_PURCHASE =
+		allowPurchase === 'true' || product?.fields.state === 'published'
+
+	if (!ALLOW_PURCHASE) {
+		return null
+	}
+
+	const { fields } = cohort
+	const { startsAt, endsAt, timezone } = fields
+
+	const { openEnrollment, closeEnrollment } = product?.fields || {}
 	// Properly handle timezone comparison - get current time in PT to compare with PT stored date
 	const tz = timezone || 'America/Los_Angeles'
 	const nowInPT = new Date(
@@ -69,8 +101,14 @@ export const CohortPricingWidgetContainer: React.FC<
 			.slice(0, 10),
 	}
 
+	// Use client-side timezone detection after hydration to avoid mismatch
+	const [isClient, setIsClient] = React.useState(false)
+	React.useEffect(() => {
+		setIsClient(true)
+	}, [])
+
 	const { dateString: eventDateString, timeString: eventTimeString } =
-		formatCohortDateRange(startsAt, endsAt, timezone)
+		formatCohortDateRange(startsAt, endsAt, isClient ? undefined : timezone)
 
 	// Format enrollment open date
 	const enrollmentOpenDateString = openEnrollment
@@ -160,10 +198,14 @@ export const CohortPricingWidgetContainer: React.FC<
 		return null
 	}
 
+	if (hasPurchasedCurrentProduct) {
+		return <>{children}</>
+	}
+
 	return (
 		<>
 			{enrollmentState.type === 'open' || allowPurchase ? (
-				<div className={cn('border-b px-5 pb-5', className)}>
+				<div className={cn('pb-5', className)}>
 					{renderImage()}
 					<p className="opacit-50 -mb-7 flex w-full items-center justify-center pt-5 text-center text-base">
 						{eventDateString}

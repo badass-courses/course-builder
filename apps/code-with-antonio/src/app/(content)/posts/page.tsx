@@ -1,7 +1,7 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Search from '@/app/(search)/q/_components/search'
+import Search from '@/app/(search)/browse/_components/search'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'

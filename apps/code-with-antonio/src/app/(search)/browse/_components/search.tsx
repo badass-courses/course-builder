@@ -1,24 +1,24 @@
 'use client'
 
-import React from 'react'
-import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
-import { Rss } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
-import { Configure } from 'react-instantsearch'
+import {
+	Configure,
+	useConfigure,
+	useCurrentRefinements,
+	useInstantSearch,
+	useInstantSearchContext,
+} from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
-import { Button } from '@coursebuilder/ui'
-
 import { InfiniteHits } from './infinite-hits'
-import ClearRefinements from './instantsearch/clear-refinements'
-import { RefinementList } from './instantsearch/refinement-list'
+import BrowseBy, { free } from './instantsearch/browse-by'
 import { SearchBox } from './instantsearch/searchbox'
-import { SortBy } from './instantsearch/sort-by'
 
 const hitsPerPageItems = [
 	{
@@ -59,10 +59,9 @@ export default SearchWithErrorBoundary
 
 function Search() {
 	const [type, setType] = useQueryState('type')
-	const [instructor, setInstructor] = useQueryState('instructor')
 	const [query, setQuery] = useQueryState('q')
-	const [tagsValue, setTagsValue] = useQueryState('tags')
 
+	const [tagsValue, setTagsValue] = useQueryState('tags')
 	const initialUiState = {
 		[TYPESENSE_COLLECTION_NAME]: {
 			query: query || '',
@@ -76,6 +75,18 @@ function Search() {
 			},
 		},
 	}
+	const getTitleFromQuery = (query: string | null) => {
+		if (query === free.join(',')) return 'Free'
+		if (query === 'cohort') return 'Cohort-based'
+		if (query === 'workshop') return 'Self-paced'
+		return 'Newest'
+	}
+
+	const [title, setTitle] = useState('Newest')
+
+	useEffect(() => {
+		setTitle(getTitleFromQuery(type))
+	}, [type, getTitleFromQuery])
 
 	return (
 		<InstantSearchNext
@@ -92,8 +103,14 @@ function Search() {
 							uiState[TYPESENSE_COLLECTION_NAME]?.refinementList?.[attribute]
 						if (refinementList && refinementList.length > 0) {
 							setState(refinementList)
+							if (attribute === 'type') {
+								// setTitle(getTitleFromQuery(refinementList.join(',')))
+							}
 						} else {
 							setState(null)
+							if (attribute === 'type') {
+								// setTitle('Newest')
+							}
 						}
 					}
 
@@ -115,14 +132,21 @@ function Search() {
 				filters={'visibility:public && state:published'}
 				hitsPerPage={40}
 			/>
-			<div className="bg-background top-(--nav-height) z-10 flex flex-col items-end gap-x-3 border-x border-b border-t px-4 pb-4 sm:sticky sm:flex-row sm:items-center sm:border-t-0 sm:pb-0">
-				<SearchBox />
-				{/* <RefinementList
-					attribute="instructor_name"
-					queryKey="instructor"
-					label="Instructor"
-				/> */}
-				<div className="grid w-full grid-cols-2 flex-row items-center gap-3 sm:grid-cols-3">
+			<div className="grid min-h-[calc(100svh-77px)] grid-cols-12 gap-10 py-20">
+				<aside className="col-span-3">
+					<BrowseBy />
+					{/* <Button variant="secondary" className="hidden sm:flex" asChild>
+						<Link
+							href="/rss.xml"
+							className="flex items-center gap-1"
+							target="_blank"
+						>
+							<Rss className="w-3" /> RSS
+						</Link>
+					</Button> */}
+				</aside>
+
+				{/* <div className="grid w-full grid-cols-2 flex-row items-center gap-3 sm:grid-cols-3">
 					<RefinementList attribute="type" label="Type" />
 					<RefinementList
 						attribute="tags.fields.label"
@@ -139,20 +163,16 @@ function Search() {
 							<Rss className="w-3" /> RSS
 						</Link>
 					</Button>
-				</div>
-				<Button variant="secondary" className="hidden sm:flex" asChild>
-					<Link
-						href="/rss.xml"
-						className="flex items-center gap-1"
-						target="_blank"
-					>
-						<Rss className="w-3" /> RSS
-					</Link>
-				</Button>
+				</div> */}
+
 				{/* <HitsPerPageSelect items={hitsPerPageItems} /> */}
 				{/* <ClearRefinements className="mt-2 sm:mt-0" /> */}
+				<div className="col-span-9">
+					<h1 className="mb-5 text-2xl font-medium">{title}</h1>
+					<SearchBox />
+					<InfiniteHits />
+				</div>
 			</div>
-			<InfiniteHits />
 		</InstantSearchNext>
 	)
 }

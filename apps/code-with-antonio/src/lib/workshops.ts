@@ -5,6 +5,9 @@ import {
 	productSchema,
 } from '@coursebuilder/core/schemas'
 
+import { PostTagsSchema } from './posts'
+import { TagSchema } from './tags'
+
 export const NavigationLessonSchema = z.object({
 	id: z.string(),
 	slug: z.string(),
@@ -347,6 +350,7 @@ export const WorkshopSchema = ContentResourceSchema.merge(
 		type: z.literal('workshop'),
 		id: z.string(),
 		fields: WorkshopFieldsSchema,
+		tags: PostTagsSchema,
 	}),
 )
 

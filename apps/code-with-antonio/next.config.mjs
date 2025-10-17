@@ -20,7 +20,7 @@ const config = {
 		mdxRs: true,
 		turbopackFileSystemCacheForDev: true,
 	},
-	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
+	serverExternalPackages: ['@sentry/nextjs', 'liquidjs', 'sanitize-html'],
 	images: {
 		remotePatterns: [
 			{

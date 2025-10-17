@@ -1,4 +1,5 @@
 // Import directly from typesense-instantsearch-adapter
+import { env } from '@/env.mjs'
 import TypesenseInstantSearchAdapter from 'typesense-instantsearch-adapter'
 
 import {
@@ -21,10 +22,12 @@ export const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter(
 	config,
 )
 
-export const TYPESENSE_COLLECTION_NAME = getTypesenseCollectionName({
-	envVar: 'NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME',
-	defaultValue: 'content_production',
-})
+export const TYPESENSE_COLLECTION_NAME =
+	process.env.NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME ||
+	getTypesenseCollectionName({
+		envVar: 'NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME',
+		defaultValue: 'content_production',
+	})
 
 // For backward compatibility
 export const typsenseAdapterConfig = config

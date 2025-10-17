@@ -10,7 +10,8 @@ import { CldImage } from '../cld-image'
 const resourceTeaserVariants = cva('', {
 	variants: {
 		variant: {
-			horizontal: 'flex w-full items-center gap-6 lg:gap-16',
+			horizontal:
+				'flex w-full lg:flex-row flex-col items-center gap-6 lg:gap-16',
 			card: 'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-md',
 		},
 	},
@@ -47,7 +48,8 @@ const contentVariants = cva('flex flex-col gap-5', {
 const titleVariants = cva('', {
 	variants: {
 		variant: {
-			horizontal: 'text-3xl font-medium leading-9 text-foreground',
+			horizontal:
+				'sm:text-3xl text-2xl font-medium leading-tight text-foreground',
 			card: 'line-clamp-2 text-lg font-semibold leading-7 text-foreground',
 		},
 	},
@@ -70,6 +72,8 @@ export interface ResourceTeaserProps
 	label?: string
 	/** Main title of the resource */
 	title: string
+	/** Title slot for the resource */
+	titleSlot?: React.ReactNode
 	/** Descriptive text about the resource */
 	description?: string
 	/** URL to navigate to when clicked */
@@ -99,6 +103,7 @@ const ResourceTeaser = ({
 	variant = 'horizontal',
 	label,
 	title,
+	titleSlot,
 	description,
 	href,
 	thumbnailUrl,
@@ -120,8 +125,8 @@ const ResourceTeaser = ({
 					className={cn(resourceTeaserVariants({ variant }), className)}
 				>
 					{/* Thumbnail */}
-					<div className={thumbnailVariants({ variant })}>
-						{thumbnailUrl && (
+					{thumbnailUrl && (
+						<div className={thumbnailVariants({ variant })}>
 							<CldImage
 								loading="lazy"
 								src={thumbnailUrl}
@@ -129,19 +134,21 @@ const ResourceTeaser = ({
 								fill
 								className="object-cover"
 							/>
-						)}
-						{thumbnailBadge && (
-							<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
-								{thumbnailBadge}
-							</div>
-						)}
-					</div>
+							{thumbnailBadge && (
+								<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
+									{thumbnailBadge}
+								</div>
+							)}
+						</div>
+					)}
 
 					{/* Content */}
 					<div className={contentVariants({ variant })}>
 						{/* Header section */}
 						<div className="flex min-h-[80px] flex-col gap-2.5">
-							<h2 className={titleVariants({ variant })}>{title}</h2>
+							<h2 className={titleVariants({ variant })}>
+								{titleSlot || title}
+							</h2>
 							{metadata && (
 								<p className="text-muted-foreground text-sm leading-none">
 									{metadata}

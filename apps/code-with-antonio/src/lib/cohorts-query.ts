@@ -1,19 +1,41 @@
-import { db } from '@/db'
+import type { ParsedUrlQuery } from 'querystring'
+import { unstable_cache } from 'next/cache'
+import { headers } from 'next/headers'
+import type { CohortPageProps } from '@/app/(content)/cohorts/[slug]/_components/cohort-page-props'
+import { courseBuilderAdapter, db } from '@/db'
 import {
 	accounts as accountsTable,
 	contentResource,
 	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
 	entitlements as entitlementsTable,
 	entitlementTypes,
 	organizationMemberships,
+	products,
+	purchases,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { getServerAuthSession } from '@/server/auth'
+import { and, asc, count, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
-import type { User } from '@coursebuilder/core/schemas'
+import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
+import {
+	productSchema,
+	type Product,
+	type Purchase,
+	type User,
+} from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 
-import { CohortAccess, CohortSchema } from './cohort'
+import { CohortAccess, CohortSchema, type Cohort } from './cohort'
+import { getPricingData } from './pricing-query'
 import { WorkshopSchema } from './workshops'
+
+export const getCachedCohort = unstable_cache(
+	async (cohortIdOrSlug: string) => getCohort(cohortIdOrSlug),
+	['cohort'],
+	{ revalidate: 3600, tags: ['cohort'] },
+)
 
 export async function getCohort(cohortIdOrSlug: string) {
 	const cohortData = await db.query.contentResource.findFirst({
@@ -28,6 +50,12 @@ export async function getCohort(cohortIdOrSlug: string) {
 			),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 			resources: {
 				with: {
 					resource: {
@@ -245,4 +273,133 @@ async function addDiscordRole(accessToken: string, roleId: string) {
 			},
 		},
 	)
+}
+
+export async function getCountryCode(): Promise<string> {
+	const countryCode =
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+	return countryCode
+}
+
+export async function getCurrentOrganization(): Promise<string | null> {
+	return (await headers()).get('x-organization-id') ?? null
+}
+export async function getCohortPricing(
+	cohort: Cohort,
+	searchParams: ParsedUrlQuery,
+): Promise<CohortPageProps> {
+	const { session } = await getServerAuthSession()
+	const user = session?.user
+	const currentOrganization = await getCurrentOrganization()
+	const countryCode = await getCountryCode()
+
+	let product: Product | null = null
+	let cohortProps: CohortPageProps
+
+	const productParsed = productSchema.safeParse(
+		first(cohort.resourceProducts)?.product,
+	)
+
+	if (productParsed.success) {
+		product = productParsed.data
+
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+		})
+
+		const commerceProps = await propsForCommerce(
+			{
+				query: {
+					...searchParams,
+				},
+				userId: user?.id,
+				products: [product],
+				countryCode,
+			},
+			courseBuilderAdapter,
+		)
+
+		const { count: purchaseCount } = await db
+			.select({ count: count() })
+			.from(purchases)
+			.where(eq(purchases.productId, product.id))
+			.then((res) => res[0] ?? { count: 0 })
+
+		const productWithQuantityAvailable = await db
+			.select({ quantityAvailable: products.quantityAvailable })
+			.from(products)
+			.where(eq(products.id, product.id))
+			.then((res) => res[0])
+
+		let quantityAvailable = -1
+
+		if (productWithQuantityAvailable) {
+			quantityAvailable =
+				productWithQuantityAvailable.quantityAvailable - purchaseCount
+		}
+
+		if (quantityAvailable < 0) {
+			quantityAvailable = -1
+		}
+
+		const baseProps = {
+			cohort,
+			availableBonuses: [],
+			purchaseCount,
+			quantityAvailable,
+			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+			product,
+			pricingDataLoader,
+			organizationId: currentOrganization,
+
+			...commerceProps,
+		}
+
+		if (!user) {
+			cohortProps = baseProps
+		} else {
+			const purchaseForProduct = commerceProps.purchases?.find(
+				(purchase: Purchase) => {
+					return purchase.productId === productSchema.parse(product).id
+				},
+			)
+
+			if (!purchaseForProduct) {
+				cohortProps = baseProps
+			} else {
+				const { purchase, existingPurchase } =
+					await courseBuilderAdapter.getPurchaseDetails(
+						purchaseForProduct.id,
+						user.id,
+					)
+				cohortProps = {
+					...baseProps,
+					hasPurchasedCurrentProduct: Boolean(
+						purchase &&
+							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
+					),
+					existingPurchase,
+				}
+			}
+		}
+	} else {
+		cohortProps = {
+			cohort,
+			availableBonuses: [],
+			quantityAvailable: -1,
+			totalQuantity: -1,
+			purchaseCount: 0,
+			hasPurchasedCurrentProduct: false,
+			product: undefined,
+			pricingDataLoader: Promise.resolve({
+				formattedPrice: null,
+				purchaseToUpgrade: null,
+				quantityAvailable: -1,
+			}),
+		}
+	}
+
+	return cohortProps
 }

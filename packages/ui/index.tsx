@@ -92,6 +92,18 @@ import {
 	DropdownMenuTrigger,
 } from './primitives/dropdown-menu'
 import {
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+	FieldTitle,
+} from './primitives/field'
+import {
 	Form,
 	FormControl,
 	FormDescription,
@@ -334,4 +346,14 @@ export {
 	NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+	FieldTitle,
 }

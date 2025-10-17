@@ -13,11 +13,7 @@ import config from '@/config'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import {
-	getActiveCoupon,
-	getSaleBannerData,
-	type SaleBannerData,
-} from '@/lib/sale-banner'
+import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
 import { compileMDX } from '@/utils/compile-mdx'
 import { ChevronRight, ChevronsRight } from 'lucide-react'
 
@@ -69,18 +65,18 @@ const Home = async (props: Props) => {
 			saleBannerData={saleBannerData}
 			isCommerceEnabled={isCommerceEnabled}
 		>
-			<main>
-				<section className="bg-primary text-primary-foreground relative flex w-full flex-col items-center justify-center overflow-hidden py-24">
+			<div>
+				<section className="bg-primary text-primary-foreground relative flex w-full flex-col items-center justify-center overflow-hidden py-10 lg:py-24">
 					<HeroBackground
-						size={0.8}
-						className="absolute left-0 top-0 z-0 h-full w-full opacity-20"
+						size={0.6}
+						className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full select-none opacity-10"
 					/>
-					<div className="container relative z-10 grid w-full grid-cols-2">
-						<div className="flex flex-col items-start justify-center gap-4">
-							<h1 className="text-5xl">
+					<div className="container relative z-10 flex w-full grid-cols-2 flex-col-reverse lg:grid">
+						<div className="flex flex-col items-center justify-center gap-4 text-center sm:items-start sm:text-left">
+							<h1 className="text-3xl font-semibold sm:text-4xl lg:text-5xl">
 								Build your career on modern full-stack skills
 							</h1>
-							<h2 className="text-2xl font-normal">
+							<h2 className="text-lg font-normal sm:text-xl lg:text-2xl">
 								Join cohort-based courses with Antonio and get really good at
 								modern development
 							</h2>
@@ -90,13 +86,13 @@ const Home = async (props: Props) => {
 								</Link>
 							</Button>
 						</div>
-						<div className="relative flex items-center justify-center">
+						<div className="relative hidden items-center justify-center lg:flex">
 							<HeroIllustration />
 						</div>
 					</div>
 				</section>
 				<section>
-					<div className="container py-20">
+					<div className="container py-8 sm:py-20">
 						<ResourceTeaser
 							label="New Cohort-based Course"
 							title="Building AI-Powered Applications with React and Next.js"
@@ -110,13 +106,13 @@ const Home = async (props: Props) => {
 					</div>
 				</section>
 				<section className="bg-muted">
-					<div className="container py-20">
-						<div className="flex w-full items-center justify-between pb-16">
-							<h2 className="text-foreground text-3xl font-medium leading-9">
+					<div className="container pb-0 pt-7 md:py-20">
+						<div className="flex w-full items-center justify-between pb-5 md:pb-16">
+							<h2 className="text-foreground text-2xl font-medium leading-9 md:text-3xl">
 								Featured Self-paced Courses
 							</h2>
 						</div>
-						<div className="grid grid-cols-2 gap-5 sm:grid-cols-3">
+						<div className="-mx-6 flex snap-x flex-row gap-5 overflow-x-auto px-6 pb-5 md:mx-0 md:grid md:grid-cols-3 md:px-0 md:pb-0 [&_a]:shrink-0 [&_a]:basis-2/3 [&_a]:snap-center">
 							{[
 								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760523672/thumbnail-cohort_2x_wwn6oa.jpg',
 								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524905/jira_hhzgvi.jpg',
@@ -143,7 +139,7 @@ const Home = async (props: Props) => {
 					</div>
 				</section>
 				<section>
-					<div className="container flex grid-cols-2 flex-col-reverse items-center gap-16 py-20 md:grid">
+					<div className="container flex grid-cols-2 flex-col-reverse items-center gap-7 py-7 md:grid md:gap-16 md:py-20">
 						<div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">
 							<h2 className="text-muted-foreground text-sm font-medium uppercase">
 								Builder's List
@@ -158,24 +154,30 @@ const Home = async (props: Props) => {
 							</h4>
 							<SubscribeToConvertkitForm className="mt-3 flex w-full max-w-sm flex-col items-start gap-3 text-left lg:max-w-full lg:flex-row lg:items-end" />
 						</div>
-						<div className="bg-primary text-primary-foreground relative flex items-center justify-center overflow-hidden rounded-lg p-10">
-							<HeroBackground
+						<div className="bg-primary text-primary-foreground relative flex items-center justify-center overflow-hidden rounded-lg">
+							<CldImage
+								src="https://res.cloudinary.com/dezn0ffbx/image/upload/v1760601130/email-illustration_2x_aidhz4.jpg"
+								width={1176 / 2}
+								height={640 / 2}
+								alt=""
+							/>
+							{/* <HeroBackground
 								size={10}
 								className="absolute inset-0 z-0 h-full w-full object-cover opacity-30"
 							/>
-							<SubscribeFormIllustration className="relative z-50" />
+							<SubscribeFormIllustration className="relative z-50" /> */}
 						</div>
 					</div>
 				</section>
 				<section className="bg-muted">
-					<div className="max-w-(--breakpoint-lg) container flex flex-col gap-10 py-20">
+					<div className="max-w-(--breakpoint-lg) container flex flex-col gap-10 py-10 md:py-20">
 						<p className="text-muted-foreground text-center text-sm">
 							Used by engineers from the world's most innovative teams
 						</p>
 						<CompanyLogos />
 					</div>
 				</section>
-			</main>
+			</div>
 		</LayoutClient>
 	)
 }
@@ -184,7 +186,7 @@ export default Home
 
 const CompanyLogos = () => {
 	return (
-		<div className="text-muted-foreground grid grid-cols-6 place-items-center items-center justify-center [&_svg]:py-[1px]">
+		<div className="text-muted-foreground grid grid-cols-3 place-items-center items-center justify-center gap-8 sm:gap-5 lg:grid-cols-6 [&_svg]:h-5 [&_svg]:py-[1px] sm:[&_svg]:h-auto">
 			{/* microsoft */}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -265,9 +267,9 @@ const CompanyLogos = () => {
 			>
 				<path
 					fill="currentColor"
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M34.11.792 23.293 21.94H13.13l4.528-8.765h-.203C13.72 18.024 8.147 21.215.206 21.94v-8.644s5.08-.3 8.067-3.44H.206V.793h9.066V8.25h.203L13.18.792h6.855v7.409h.204l3.843-7.41h10.029Z"
-					clip-rule="evenodd"
+					clipRule="evenodd"
 				/>
 				<path
 					fill="currentColor"
@@ -275,9 +277,9 @@ const CompanyLogos = () => {
 				/>
 				<path
 					fill="currentColor"
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M77.008 19.435c.613.26 1.27.394 1.936.396 1.084 0 2.054-.264 2.909-.791a5.359 5.359 0 0 0 1.99-2.182c.47-.934.705-1.993.705-3.177 0-1.183-.243-2.241-.727-3.176-.485-.934-1.158-1.657-2.022-2.171-.862-.52-1.843-.777-2.94-.77a5.118 5.118 0 0 0-2.011.407c-.665.273-1.25.71-1.7 1.27V2.858h-2.931v16.748h2.909l-.006-1.564a5.005 5.005 0 0 0 1.888 1.393Zm2.995-2.705c-.478.292-1.023.438-1.636.438a3.217 3.217 0 0 1-1.669-.45 3.394 3.394 0 0 1-1.208-1.25c-.293-.528-.438-1.127-.438-1.797-.008-.67.135-1.269.427-1.797a3.21 3.21 0 0 1 1.209-1.24 3.16 3.16 0 0 1 1.679-.438c.613-.008 1.158.134 1.636.427a2.79 2.79 0 0 1 1.112 1.23c.264.528.396 1.133.396 1.817 0 .685-.132 1.291-.396 1.818-.243.513-.63.944-1.112 1.242Z"
-					clip-rule="evenodd"
+					clipRule="evenodd"
 				/>
 				<path
 					fill="currentColor"
@@ -285,9 +287,9 @@ const CompanyLogos = () => {
 				/>
 				<path
 					fill="currentColor"
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M64.913 19.884c-1.162.006-2.21-.25-3.143-.77a5.781 5.781 0 0 1-2.193-2.193c-.527-.933-.792-2-.792-3.198 0-1.161.272-2.213.813-3.154a5.837 5.837 0 0 1 2.204-2.203c.926-.527 1.96-.792 3.1-.792 1.284 0 2.407.286 3.37.856a5.28 5.28 0 0 1 2.17 2.428c.486 1.04.66 2.235.525 3.582h-9.16c.018.513.156 1.014.4 1.465.271.485.65.863 1.134 1.134a3.28 3.28 0 0 0 1.626.407 3.698 3.698 0 0 0 1.273-.236c.37-.142.708-.357.994-.63a2.21 2.21 0 0 0 .588-.899h3.06a4.975 4.975 0 0 1-1.113 2.193c-.556.634-1.255 1.13-2.096 1.486-.841.357-1.761.531-2.76.524ZM62.22 11.5a3.087 3.087 0 0 0-.355.962h6.072a2.73 2.73 0 0 0-.402-1.187 2.604 2.604 0 0 0-1.049-.973 3.136 3.136 0 0 0-1.497-.354 3.25 3.25 0 0 0-1.614.407A3.017 3.017 0 0 0 62.22 11.5Z"
-					clip-rule="evenodd"
+					clipRule="evenodd"
 				/>
 				<path
 					fill="currentColor"
@@ -295,9 +297,9 @@ const CompanyLogos = () => {
 				/>
 				<path
 					fill="currentColor"
-					fill-rule="evenodd"
+					fillRule="evenodd"
 					d="M103.447 19.863c-1.191 0-2.256-.26-3.198-.78a5.777 5.777 0 0 1-2.203-2.182c-.528-.934-.791-1.993-.791-3.176 0-1.19.263-2.253.791-3.188a5.658 5.658 0 0 1 2.203-2.192c.942-.52 2.007-.78 3.198-.78 1.197 0 2.267.26 3.208.78a5.571 5.571 0 0 1 2.214 2.182c.527.934.795 2 .802 3.198-.007 1.183-.275 2.242-.802 3.176a5.588 5.588 0 0 1-2.203 2.181c-.949.52-2.022.781-3.219.781Zm0-2.684c.627 0 1.184-.142 1.668-.428.483-.29.873-.714 1.123-1.22.264-.526.396-1.13.396-1.806 0-.685-.132-1.291-.396-1.818a2.86 2.86 0 0 0-1.123-1.22c-.484-.292-1.041-.438-1.668-.438-.621 0-1.173.146-1.658.438a2.887 2.887 0 0 0-1.112 1.22c-.264.527-.392 1.133-.385 1.818 0 .677.131 1.279.396 1.807.27.52.641.927 1.112 1.219.477.285 1.026.428 1.647.428Z"
-					clip-rule="evenodd"
+					clipRule="evenodd"
 				/>
 				<path
 					fill="currentColor"

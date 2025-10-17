@@ -136,7 +136,11 @@ export default function TagCrudDialog({
 								<FormItem>
 									<FormLabel>Slug</FormLabel>
 									<FormControl>
-										<Input placeholder="tag-slug" {...field} />
+										<Input
+											placeholder="tag-slug"
+											{...field}
+											value={field.value ?? ''}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
