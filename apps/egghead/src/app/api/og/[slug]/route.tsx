@@ -15,11 +15,6 @@ const allowedOrigins =
 		? ['https://egghead.io', 'https://builder.egghead.io']
 		: ['*']
 
-const allowedOrigins =
-	process.env.NODE_ENV === 'production'
-		? ['https://egghead.io', 'https://builder.egghead.io']
-		: ['*']
-
 /**
  * Return CORS headers for the given request origin.
  */
@@ -27,8 +22,8 @@ function getCorsHeaders(requestOrigin?: string | null): Record<string, string> {
 	const origin = allowedOrigins.includes('*')
 		? '*'
 		: allowedOrigins.includes(requestOrigin || '')
-			? requestOrigin || allowedOrigins[0]
-			: allowedOrigins[0]
+			? requestOrigin || allowedOrigins[0]!
+			: allowedOrigins[0]!
 
 	return {
 		'Access-Control-Allow-Origin': origin,
@@ -37,27 +32,12 @@ function getCorsHeaders(requestOrigin?: string | null): Record<string, string> {
 	}
 }
 
-export async function OPTIONS() {
-	return NextResponse.json({}, { headers: getCorsHeaders() })
-}
-
-export async function GET(request: Request, { params }) {
-	const corsHeaders = getCorsHeaders(request.headers.get('origin'))
-
-	try {
-		const { slug } = params
-		// …rest of handler logic…
-		return NextResponse.json(data, { headers: corsHeaders })
-	} catch (error) {
-		// …error handling…
-	}
-}
-
 /**
  * Handles CORS preflight requests for OG image endpoints.
  * @returns {NextResponse} JSON response with CORS headers
  */
-export async function OPTIONS() {
+export async function OPTIONS(request: Request) {
+	const corsHeaders = getCorsHeaders(request.headers.get('origin'))
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
@@ -71,6 +51,8 @@ export async function GET(
 	request: Request,
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
+	const corsHeaders = getCorsHeaders(request.headers.get('origin'))
+
 	try {
 		const { slug } = await params
 		console.log('Starting OG image generation for slug:', slug)
@@ -359,12 +341,12 @@ export async function GET(
 		})
 
 		return response
-	} catch (e: any) {
+	} catch (e) {
 		console.error('Error generating OG image', e)
 		const errorMessage =
 			process.env.NODE_ENV === 'production'
 				? 'Failed to generate OG image'
-				: `Failed to generate OG image: ${e.message}`
+				: `Failed to generate OG image: ${e instanceof Error ? e.message : String(e)}`
 		return new Response(errorMessage, {
 			status: 500,
 			headers: corsHeaders,
