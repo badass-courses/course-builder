@@ -53,10 +53,20 @@ export async function GET(request: Request, { params }) {
 	}
 }
 
+/**
+ * Handles CORS preflight requests for OG image endpoints.
+ * @returns {NextResponse} JSON response with CORS headers
+ */
 export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
+/**
+ * Generates Open Graph images for content resources by slug.
+ * @param {Request} request - Incoming request with optional ?image query param
+ * @param {Object} params - Route params containing the resource slug
+ * @returns {Promise<ImageResponse>} Generated OG image with CORS headers
+ */
 export async function GET(
 	request: Request,
 	{ params }: { params: Promise<{ slug: string }> },
