@@ -191,6 +191,8 @@ import {
 	TooltipTrigger,
 } from './primitives/tooltip'
 import { useToast } from './primitives/use-toast'
+import { CreateWorkshopForm } from './workshop-creation/create-workshop-form'
+import { LessonVideoField } from './workshop-creation/lesson-video-field'
 
 export {
 	Button,
@@ -340,6 +342,8 @@ export {
 	PaginationNext,
 	PaginationEllipsis,
 	CreateEventForm,
+	CreateWorkshopForm,
+	LessonVideoField,
 	NavigationMenu,
 	NavigationMenuContent,
 	NavigationMenuItem,
