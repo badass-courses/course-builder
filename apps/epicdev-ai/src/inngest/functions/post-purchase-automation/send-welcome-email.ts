@@ -22,7 +22,11 @@ import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce
 const siteRootUrl = env.NEXT_PUBLIC_URL
 
 export const sendWelcomeEmail = inngest.createFunction(
-	{ id: 'send-welcome-email', name: 'Post-Purchase - Send Welcome Email' },
+	{
+		id: 'send-welcome-email',
+		name: 'Post-Purchase - Send Welcome Email',
+		idempotency: 'event.data.checkoutSessionId',
+	},
 	{
 		event: NEW_PURCHASE_CREATED_EVENT,
 	},

@@ -55,6 +55,7 @@ export async function redeem(
 							data: {
 								purchaseId: purchase.id,
 								productType: product.type || 'self-paced',
+								checkoutSessionId: `coupon-${purchase.id}`,
 							},
 							user: {
 								id: purchase.userId,
@@ -82,6 +83,7 @@ export async function redeem(
 						data: {
 							purchaseId: purchase.id,
 							productType: product.type || 'self-paced',
+							checkoutSessionId: `coupon-${purchase.id}`,
 						},
 						user,
 					})

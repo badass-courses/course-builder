@@ -26,6 +26,7 @@ export type StripeCheckoutSessionCompleted = {
 export const stripeCheckoutSessionCompletedConfig = {
 	id: 'stripe-checkout-session-completed',
 	name: 'Stripe Checkout Session Completed',
+	idempotency: 'event.data.stripeEvent.data.object.id',
 }
 
 export const stripeCheckoutSessionCompletedTrigger: CoreInngestTrigger = {

@@ -106,6 +106,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 	{
 		id: `post-purchase-workflow`,
 		name: `Post Purchase Followup Workflow`,
+		idempotency: 'event.data.purchaseId',
 	},
 	[
 		{

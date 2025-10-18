@@ -13,6 +13,7 @@ import { NEW_PURCHASE_CREATED_EVENT } from './event-new-purchase-created'
 export const sendCreatorSlackNotificationConfig = {
 	id: `send-post-purchase-slack`,
 	name: 'Send Post Purchase Slack',
+	idempotency: 'event.data.checkoutSessionId',
 }
 export const sendCreatorSlackNotificationTrigger: CoreInngestTrigger = {
 	event: NEW_PURCHASE_CREATED_EVENT,

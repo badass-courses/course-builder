@@ -11,6 +11,7 @@ export type FullPriceCouponRedeemed = {
 export const FullPriceCouponRedeemedEventSchema = z.object({
 	purchaseId: z.string(),
 	productType: z.enum(['live', 'self-paced', 'membership', 'cohort']),
+	checkoutSessionId: z.string(),
 })
 
 export type FullPriceCouponRedeemedEvent = z.infer<
