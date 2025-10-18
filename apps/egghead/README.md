@@ -1,6 +1,7 @@
 # Course Builder Video Blog
 
-This is a video blog example built with the [Course Builder](https://github.com/badass-courses/course-builder) framework.
+This is a video blog example built with the
+[Course Builder](https://github.com/badass-courses/course-builder) framework.
 
 PRs welcome!
 
@@ -150,8 +151,8 @@ $ pnpm db:seed
 
 1. Visit the `ngrok` URL in your browser
 2. Click 'Sign In' and authenticate with our GitHub account
-3. Connect to your database through the SQL console (planetscale), Drizzle Studio
-   (see below), or your favorite database client gui.
+3. Connect to your database through the SQL console (planetscale), Drizzle
+   Studio (see below), or your favorite database client gui.
 
 #### Configuring Drizzle Studio
 

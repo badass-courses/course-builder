@@ -1,5 +1,5 @@
 /**
- * Generates an OpenGraph image URL for a resource using the API-based approach
+ * Generates an OpenGraph image URL for a resource using the dynamic route approach
  *
  * @param resource - The resource object containing slug and updatedAt information
  * @param baseUrl - The base URL to use (typically from environment)
@@ -13,7 +13,7 @@
  *   updatedAt: new Date()
  * }
  * const url = getOGImageUrlForResource(resource, 'https://example.com')
- * // Returns: "https://example.com/api/og?resource=my-resource&updatedAt=2023-01-01T00%3A00%3A00.000Z"
+ * // Returns: "https://example.com/api/og/my-resource?updatedAt=2023-01-01T00%3A00%3A00.000Z"
  * ```
  */
 export function getOGImageUrlForResource(
@@ -24,12 +24,13 @@ export function getOGImageUrlForResource(
 	},
 	baseUrl: string,
 ): string {
+	const slug = resource?.fields?.slug || resource.id
 	const updatedAt =
 		typeof resource.updatedAt === 'string'
 			? resource.updatedAt
 			: resource.updatedAt?.toISOString()
 
-	return `${baseUrl}/api/og?resource=${resource?.fields?.slug || resource.id}${updatedAt ? `&updatedAt=${encodeURI(updatedAt)}` : ''}`
+	return `${baseUrl}/api/og/${encodeURIComponent(slug)}${updatedAt ? `?updatedAt=${encodeURIComponent(updatedAt)}` : ''}`
 }
 
 /**
