@@ -1,3 +1,5 @@
+import { CreateCohortForm } from './cohort-creation/create-cohort-form'
+import { WorkshopSelector } from './cohort-creation/workshop-selector'
 import { DateTimePicker } from './date-time-picker/date-time-picker'
 import { CreateEventForm } from './event-creation/create-event-form'
 import * as ModuleNavigation from './module-navigation'
@@ -344,6 +346,8 @@ export {
 	CreateEventForm,
 	CreateWorkshopForm,
 	LessonVideoField,
+	CreateCohortForm,
+	WorkshopSelector,
 	NavigationMenu,
 	NavigationMenuContent,
 	NavigationMenuItem,

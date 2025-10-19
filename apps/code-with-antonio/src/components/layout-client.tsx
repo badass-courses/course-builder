@@ -17,9 +17,11 @@ export default function LayoutClient({
 	className,
 	saleBannerData,
 	isCommerceEnabled = false,
+	withFooter = true,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
+	withFooter?: boolean
 	className?: string
 	saleBannerData?: SaleBannerData | null
 	isCommerceEnabled?: boolean
@@ -46,7 +48,7 @@ export default function LayoutClient({
 			>
 				{children}
 			</main>
-			<Footer />
+			{withFooter && <Footer />}
 		</div>
 	)
 }

@@ -9,7 +9,6 @@ import {
 import { getServerAuthSession } from '@/server/auth'
 import { format } from 'date-fns'
 import { BookOpenIcon, DollarSign, GraduationCapIcon } from 'lucide-react'
-import { z } from 'zod'
 
 import {
 	Badge,
@@ -21,6 +20,7 @@ import {
 	CreateEventForm,
 } from '@coursebuilder/ui'
 
+import CreateNewCohortDialog from '../../(content)/cohorts/_components/create-new-cohort-dialog'
 import CreateNewEventDialog from '../../(content)/events/_components/create-new-event-dialog'
 import CreateNewWorkshopDialog from '../../(content)/workshops/_components/create-new-workshop-dialog'
 
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
 					</CardHeader>
 					<CardContent className="">
 						<CreateNewEventDialog
-							modal={true}
+							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Event"
 						/>
@@ -144,7 +144,7 @@ export default async function AdminDashboardPage() {
 					</CardHeader>
 					<CardContent className="">
 						<CreateNewWorkshopDialog
-							modal={true}
+							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Workshop"
 						/>
@@ -162,7 +162,11 @@ export default async function AdminDashboardPage() {
 						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="cohort" />
+						<CreateNewCohortDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Cohort"
+						/>
 					</CardContent>
 				</Card>
 			</div>
