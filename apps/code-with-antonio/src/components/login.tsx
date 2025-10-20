@@ -5,12 +5,24 @@ import { useSearchParams } from 'next/navigation'
 import { Icon } from '@/components/brand/icons'
 import { env } from '@/env.mjs'
 import { Provider } from '@/server/auth'
+import { cn } from '@/utils/cn'
 import { signIn } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import Balancer from 'react-wrap-balancer'
 
-import { Button, Input, Label } from '@coursebuilder/ui'
+import {
+	Button,
+	Card,
+	CardContent,
+	Field,
+	FieldDescription,
+	FieldGroup,
+	FieldLabel,
+	FieldSeparator,
+	Input,
+} from '@coursebuilder/ui'
+
+import { HeroBackground, HeroIllustration } from './brand/svgs'
 
 export type LoginTemplateProps = {
 	csrfToken: string
@@ -19,8 +31,13 @@ export type LoginTemplateProps = {
 	title?: string
 	subtitle?: string
 	callbackUrl?: string
+	className?: string
 }
 
+/**
+ * Login component that handles authentication via OAuth providers (Discord, GitHub) and email.
+ * Displays error messages and provides a modern card-based UI.
+ */
 export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	csrfToken,
 	providers = {},
@@ -28,12 +45,9 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	title,
 	subtitle,
 	callbackUrl: callbackUrlProp,
+	className,
 }) => {
-	const {
-		register,
-		formState: { errors },
-	} = useForm()
-
+	const { register } = useForm()
 	const searchParams = useSearchParams()
 
 	const callbackUrl = callbackUrlProp
@@ -42,7 +56,6 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 			? (searchParams.get('callbackUrl') as string)
 			: '/'
 
-	console.log('callbackUrl', { callbackUrl, callbackUrlProp, searchParams })
 	const message = searchParams.get('message')
 		? (searchParams.get('message') as string)
 		: null
@@ -75,109 +88,133 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	const emailProvider = providers?.postmark
 
 	return (
-		<main data-login-template="">
-			{image ? image : null}
-			<h1 data-title="">
-				{title ? title : `Log in`}
-				{subtitle && <span data-subtitle="">{subtitle}</span>}
-			</h1>
-			{error === 'Verification' ? (
-				<p data-verification-error="">
-					<Balancer>
-						That sign in link is no longer valid. It may have been used already
-						or it may have expired. Please request a new log in link below.{' '}
-						<a
-							className="text-primary underline"
-							href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
-						>
-							Click here to email us
-						</a>{' '}
-						if you need help.
-					</Balancer>
-				</p>
-			) : null}
+		<div className={cn('flex flex-col gap-6', className)}>
+			<Card className="overflow-hidden p-0">
+				<CardContent className="grid p-0 md:grid-cols-2">
+					<div className="flex flex-col items-center justify-center p-6 md:p-8">
+						<FieldGroup>
+							<div className="flex flex-col gap-2 text-center">
+								<h1 className="text-2xl font-bold">
+									{title ? title : 'Welcome back'}
+								</h1>
+								{subtitle && (
+									<p className="text-muted-foreground text-balance">
+										{subtitle}
+									</p>
+								)}
+								{error === 'Verification' ? (
+									<p className="text-muted-foreground text-balance text-sm">
+										That sign in link is no longer valid. It may have been used
+										already or it may have expired. Please request a new log in
+										link below.{' '}
+										<a
+											className="text-primary underline underline-offset-2 hover:underline"
+											href={`mailto:${env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
+										>
+											Click here to email us
+										</a>{' '}
+										if you need help.
+									</p>
+								) : null}
+							</div>
 
-			<div data-providers-container="">
-				{discordProvider ? (
-					<Button
-						data-button=""
-						variant="outline"
-						onClick={() =>
-							signIn(discordProvider.id, {
-								callbackUrl,
-							})
-						}
-					>
-						<Icon
-							className="mr-2 flex items-center justify-center"
-							name="Discord"
-							size="20"
-						/>
-						Continue with {discordProvider.name}
-					</Button>
-				) : null}
-				{githubProvider ? (
-					<Button
-						data-button=""
-						variant="outline"
-						onClick={() =>
-							signIn(githubProvider.id, {
-								callbackUrl,
-							})
-						}
-					>
-						<svg
-							width={20}
-							height={20}
-							viewBox={'0 0 16 16'}
-							role={'img'}
-							className="mr-2 flex items-center justify-center"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<title>{'Github'}</title>
-							<path
-								fillRule="evenodd"
-								clipRule="evenodd"
-								fill="currentColor"
-								d="M8,0.2c-4.4,0-8,3.6-8,8c0,3.5,2.3,6.5,5.5,7.6 C5.9,15.9,6,15.6,6,15.4c0-0.2,0-0.7,0-1.4C3.8,14.5,3.3,13,3.3,13c-0.4-0.9-0.9-1.2-0.9-1.2c-0.7-0.5,0.1-0.5,0.1-0.5 c0.8,0.1,1.2,0.8,1.2,0.8C4.4,13.4,5.6,13,6,12.8c0.1-0.5,0.3-0.9,0.5-1.1c-1.8-0.2-3.6-0.9-3.6-4c0-0.9,0.3-1.6,0.8-2.1 c-0.1-0.2-0.4-1,0.1-2.1c0,0,0.7-0.2,2.2,0.8c0.6-0.2,1.3-0.3,2-0.3c0.7,0,1.4,0.1,2,0.3c1.5-1,2.2-0.8,2.2-0.8 c0.4,1.1,0.2,1.9,0.1,2.1c0.5,0.6,0.8,1.3,0.8,2.1c0,3.1-1.9,3.7-3.7,3.9C9.7,12,10,12.5,10,13.2c0,1.1,0,1.9,0,2.2 c0,0.2,0.1,0.5,0.6,0.4c3.2-1.1,5.5-4.1,5.5-7.6C16,3.8,12.4,0.2,8,0.2z"
-							/>
-						</svg>
-						Continue with {githubProvider.name}
-					</Button>
-				) : null}
-			</div>
-			{(githubProvider || discordProvider) && <div data-separator="">or</div>}
-			{emailProvider ? (
-				<form data-form="" method="POST" action={emailProvider.signinUrl}>
-					<Label data-label="" htmlFor="email">
-						Email address
-					</Label>
-					<input name="callbackUrl" type="hidden" defaultValue={callbackUrl} />
-					<input name="csrfToken" type="hidden" defaultValue={csrfToken} />
-					<div data-input-container="">
-						<div data-icon="">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 20 20"
-								fill="currentColor"
-								aria-hidden="true"
-							>
-								<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-								<path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-							</svg>
-						</div>
-						<Input
-							data-input=""
-							id="email"
-							type="email"
-							required={true}
-							placeholder="you@example.com"
-							{...register('email', { required: true })}
-						/>
+							{emailProvider ? (
+								<form method="POST" action={emailProvider.signinUrl}>
+									<FieldGroup>
+										<Field>
+											<FieldLabel htmlFor="email">Email</FieldLabel>
+											<Input
+												id="email"
+												type="email"
+												placeholder="you@example.com"
+												required
+												{...register('email', { required: true })}
+											/>
+										</Field>
+										<input
+											name="callbackUrl"
+											type="hidden"
+											defaultValue={callbackUrl}
+										/>
+										<input
+											name="csrfToken"
+											type="hidden"
+											defaultValue={csrfToken}
+										/>
+										<Field>
+											<Button type="submit">Email me a login link</Button>
+										</Field>
+									</FieldGroup>
+								</form>
+							) : null}
+
+							{(githubProvider || discordProvider) && emailProvider && (
+								<FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+									Or continue with
+								</FieldSeparator>
+							)}
+
+							{(githubProvider || discordProvider) && (
+								<Field className="grid grid-cols-2 gap-4">
+									{githubProvider ? (
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() =>
+												signIn(githubProvider.id, {
+													callbackUrl,
+												})
+											}
+										>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												viewBox="0 0 16 16"
+												className="mr-2 h-5 w-5"
+											>
+												<title>GitHub</title>
+												<path
+													fillRule="evenodd"
+													clipRule="evenodd"
+													fill="currentColor"
+													d="M8,0.2c-4.4,0-8,3.6-8,8c0,3.5,2.3,6.5,5.5,7.6 C5.9,15.9,6,15.6,6,15.4c0-0.2,0-0.7,0-1.4C3.8,14.5,3.3,13,3.3,13c-0.4-0.9-0.9-1.2-0.9-1.2c-0.7-0.5,0.1-0.5,0.1-0.5 c0.8,0.1,1.2,0.8,1.2,0.8C4.4,13.4,5.6,13,6,12.8c0.1-0.5,0.3-0.9,0.5-1.1c-1.8-0.2-3.6-0.9-3.6-4c0-0.9,0.3-1.6,0.8-2.1 c-0.1-0.2-0.4-1,0.1-2.1c0,0,0.7-0.2,2.2,0.8c0.6-0.2,1.3-0.3,2-0.3c0.7,0,1.4,0.1,2,0.3c1.5-1,2.2-0.8,2.2-0.8 c0.4,1.1,0.2,1.9,0.1,2.1c0.5,0.6,0.8,1.3,0.8,2.1c0,3.1-1.9,3.7-3.7,3.9C9.7,12,10,12.5,10,13.2c0,1.1,0,1.9,0,2.2 c0,0.2,0.1,0.5,0.6,0.4c3.2-1.1,5.5-4.1,5.5-7.6C16,3.8,12.4,0.2,8,0.2z"
+												/>
+											</svg>
+											<span className="sr-only">Login with GitHub</span>
+										</Button>
+									) : null}
+									{discordProvider ? (
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() =>
+												signIn(discordProvider.id, {
+													callbackUrl,
+												})
+											}
+										>
+											<Icon
+												className="mr-2 flex items-center justify-center"
+												name="Discord"
+												size="20"
+											/>
+											<span className="sr-only">Login with Discord</span>
+										</Button>
+									) : null}
+								</Field>
+							)}
+						</FieldGroup>
 					</div>
-					<Button data-button="">Email me a login link</Button>
-				</form>
-			) : null}
-		</main>
+					<div className="bg-primary relative hidden p-10 md:block">
+						{image ? (
+							<div className="absolute inset-0 h-full w-full">{image}</div>
+						) : (
+							<>
+								<HeroIllustration />
+							</>
+						)}
+					</div>
+				</CardContent>
+			</Card>
+		</div>
 	)
 }

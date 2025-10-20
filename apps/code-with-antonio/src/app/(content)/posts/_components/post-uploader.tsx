@@ -34,22 +34,23 @@ export function PostUploader({
 					container() {
 						return {
 							cursor: 'pointer',
-							background: 'hsl(var(--muted))',
-							border: '1px dashed hsl(var(--input))',
+							borderRadius: 'var(--radius)',
+							background: 'var(--muted)',
+							border: '1px dashed var(--border)',
 							padding: '0.5rem 1rem',
 						}
 					},
 					label({}) {
 						return {
-							color: 'hsl(var(--foreground))',
+							color: 'var(--foreground)',
 							fontWeight: 'normal',
 						}
 					},
 					button() {
 						return {
-							background: 'hsl(var(--background))',
-							color: 'hsl(var(--foreground))',
-							border: 'none',
+							background: 'var(--background)',
+							color: 'var(--foreground)',
+							border: '1px solid var(--border)',
 							padding: '0.5rem 1rem',
 							fontSize: '0.875rem',
 						}

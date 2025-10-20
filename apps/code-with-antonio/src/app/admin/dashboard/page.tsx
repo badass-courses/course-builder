@@ -1,22 +1,28 @@
 import React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { CreatePostModal } from '@/app/(content)/posts/_components/create-post-modal'
 import {
 	getListCompletionStats,
 	getPostCompletionStats,
 } from '@/lib/completions-query'
 import { getServerAuthSession } from '@/server/auth'
 import { format } from 'date-fns'
-import { BookOpenIcon, GraduationCapIcon } from 'lucide-react'
-import { z } from 'zod'
+import { BookOpenIcon, DollarSign, GraduationCapIcon } from 'lucide-react'
 
 import {
+	Badge,
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
+	CreateEventForm,
 } from '@coursebuilder/ui'
+
+import CreateNewCohortDialog from '../../(content)/cohorts/_components/create-new-cohort-dialog'
+import CreateNewEventDialog from '../../(content)/events/_components/create-new-event-dialog'
+import CreateNewWorkshopDialog from '../../(content)/workshops/_components/create-new-workshop-dialog'
 
 function CompletionCount({ count }: { count: number }) {
 	return (
@@ -67,16 +73,103 @@ export default async function AdminDashboardPage() {
 	)
 
 	return (
-		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-5 py-10 lg:gap-10">
+		<main className="mx-auto flex w-full flex-1 flex-col gap-5 py-10 lg:gap-10">
 			<div className="flex flex-col gap-2">
 				<h1 className="font-heading text-xl font-bold sm:text-3xl">
-					Dashboard
+					Admin Dashboard
 				</h1>
 				<p className="text-muted-foreground">
-					Track content engagement and completion rates
+					Create new content and track engagement.
 				</p>
 			</div>
-
+			<div className="grid grid-cols-3 gap-5">
+				<Card className="relative flex flex-col justify-between">
+					<CardHeader className="">
+						<CardTitle>Posts</CardTitle>
+						<CardDescription>
+							Articles, videos, podcasts, etc. This is the most flexible content
+							type and can be used for a variety of purposes.
+						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="outline">
+							Free
+						</Badge>
+					</CardHeader>
+					<CardContent className="">
+						<CreatePostModal defaultResourceType="article" />
+					</CardContent>
+				</Card>
+				<Card className="relative flex flex-col justify-between">
+					<CardHeader className="">
+						<CardTitle>Tutorials</CardTitle>
+						<CardDescription>
+							A free collection of video or article lessons.
+						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="outline">
+							Free
+						</Badge>
+					</CardHeader>
+					<CardContent className="">
+						<CreatePostModal defaultResourceType="tutorial" />
+					</CardContent>
+				</Card>
+				<Card className="relative flex flex-col justify-between">
+					<CardHeader className="">
+						<CardTitle>Live Events</CardTitle>
+						<CardDescription>
+							Live events are essentially virtual workshops with limited
+							availability and set dates. Great way to practice new content and
+							sell tickets to your community.
+						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
+					</CardHeader>
+					<CardContent className="">
+						<CreateNewEventDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Event"
+						/>
+					</CardContent>
+				</Card>
+				<Card className="relative flex flex-col justify-between">
+					<CardHeader className="">
+						<CardTitle>Workshops</CardTitle>
+						<CardDescription>
+							This is the wrapper for paid collections of lessons (resources).
+						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
+					</CardHeader>
+					<CardContent className="">
+						<CreateNewWorkshopDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Workshop"
+						/>
+					</CardContent>
+				</Card>
+				<Card className="relative flex flex-col justify-between">
+					<CardHeader className="">
+						<CardTitle>Cohort-based Courses</CardTitle>
+						<CardDescription>
+							Cohorts are made out of workshops with lessons that have a fixed
+							start and end enrollment date.
+						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
+					</CardHeader>
+					<CardContent className="">
+						<CreateNewCohortDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Cohort"
+						/>
+					</CardContent>
+				</Card>
+			</div>
 			<div className="flex flex-col gap-5">
 				{listStats.length > 0 && (
 					<Card>

@@ -1,8 +1,13 @@
 'use client'
 
+import { useEffect } from 'react'
 import Spinner from '@/components/spinner'
 import type { TypesenseResource } from '@/lib/typesense'
-import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
+import {
+	useConfigure,
+	useInfiniteHits,
+	useInstantSearch,
+} from 'react-instantsearch'
 import { z } from 'zod'
 
 import { Button } from '@coursebuilder/ui'
@@ -11,8 +16,8 @@ import Hit from './instantsearch/hit'
 
 function SkeletonItem() {
 	return (
-		<div className="flex animate-pulse gap-4 p-4">
-			<div className="h-16 w-16 shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
+		<div className="flex animate-pulse flex-col gap-4">
+			<div className="aspect-video shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
 			<div className="flex-1 space-y-3">
 				<div className="h-4 w-1/3 rounded bg-black/10 dark:bg-white/10" />
 				<div className="h-3 w-full rounded bg-black/10 dark:bg-white/10" />
@@ -23,15 +28,13 @@ function SkeletonItem() {
 }
 
 export function InfiniteHits() {
-	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
+	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>()
 	const { status } = useInstantSearch()
 
-	if (status === 'loading') {
+	// Show skeleton during initial load or when search is stalled (refinements being applied)
+	if (status === 'loading' || status === 'stalled') {
 		return (
-			<div
-				className="h-[800px] w-full border-x border-b border-t"
-				aria-live="polite"
-			>
+			<div className="grid grid-cols-3 gap-4" aria-live="polite">
 				<div className="sr-only">Loading results...</div>
 				{Array.from({ length: 5 }).map((_, i) => (
 					<SkeletonItem key={i} />
@@ -41,10 +44,7 @@ export function InfiniteHits() {
 	}
 
 	return items.length === 0 && status !== 'idle' ? (
-		<div
-			className="h-[800px] w-full border-x border-b border-t"
-			aria-live="polite"
-		>
+		<div className="grid grid-cols-3 gap-4" aria-live="polite">
 			<div className="sr-only">Loading results...</div>
 			{Array.from({ length: 5 }).map((_, i) => (
 				<SkeletonItem key={i} />
@@ -52,7 +52,7 @@ export function InfiniteHits() {
 		</div>
 	) : (
 		<div>
-			<ul className="divide-y border">
+			<ul className="grid grid-cols-3 gap-4">
 				{items.map((item) => (
 					<Hit key={item.objectID} hit={item} />
 				))}

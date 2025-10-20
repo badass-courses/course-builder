@@ -4,7 +4,7 @@ export const TagFieldsSchema = z.object({
 	name: z.string(),
 	label: z.string(),
 	description: z.string().nullish(),
-	slug: z.string(),
+	slug: z.string().nullish(),
 	image_url: z.string().url().nullish(),
 	contexts: z.array(z.string()).nullish(),
 	url: z.string().nullish(),

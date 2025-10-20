@@ -1,19 +1,49 @@
-import { db } from '@/db'
+'use server'
+
+import type { ParsedUrlQuery } from 'querystring'
+import { unstable_cache } from 'next/cache'
+import { headers } from 'next/headers'
+import type { CohortPageProps } from '@/app/(content)/cohorts/[slug]/_components/cohort-page-props'
+import { courseBuilderAdapter, db } from '@/db'
 import {
 	accounts as accountsTable,
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
 	entitlements as entitlementsTable,
 	entitlementTypes,
 	organizationMemberships,
+	products,
+	purchases,
 } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { and, asc, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
+import { guid } from '@/utils/guid'
+import slugify from '@sindresorhus/slugify'
+import { and, asc, count, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
-import type { User } from '@coursebuilder/core/schemas'
+import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
+import {
+	ContentResourceSchema,
+	productSchema,
+	type Product,
+	type Purchase,
+	type User,
+} from '@coursebuilder/core/schemas'
+import { first } from '@coursebuilder/nodash'
 
-import { CohortAccess, CohortSchema } from './cohort'
+import { CohortAccess, CohortSchema, type Cohort } from './cohort'
+import { getPricingData } from './pricing-query'
+import { upsertPostToTypeSense } from './typesense-query'
 import { WorkshopSchema } from './workshops'
+
+export const getCachedCohort = unstable_cache(
+	async (cohortIdOrSlug: string) => getCohort(cohortIdOrSlug),
+	['cohort'],
+	{ revalidate: 3600, tags: ['cohort'] },
+)
 
 export async function getCohort(cohortIdOrSlug: string) {
 	const cohortData = await db.query.contentResource.findFirst({
@@ -28,6 +58,12 @@ export async function getCohort(cohortIdOrSlug: string) {
 			),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 			resources: {
 				with: {
 					resource: {
@@ -245,4 +281,311 @@ async function addDiscordRole(accessToken: string, roleId: string) {
 			},
 		},
 	)
+}
+
+export async function getCountryCode(): Promise<string> {
+	const countryCode =
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+	return countryCode
+}
+
+export async function getCurrentOrganization(): Promise<string | null> {
+	return (await headers()).get('x-organization-id') ?? null
+}
+export async function getCohortPricing(
+	cohort: Cohort,
+	searchParams: ParsedUrlQuery,
+): Promise<CohortPageProps> {
+	const { session } = await getServerAuthSession()
+	const user = session?.user
+	const currentOrganization = await getCurrentOrganization()
+	const countryCode = await getCountryCode()
+
+	let product: Product | null = null
+	let cohortProps: CohortPageProps
+
+	const productParsed = productSchema.safeParse(
+		first(cohort.resourceProducts)?.product,
+	)
+
+	if (productParsed.success) {
+		product = productParsed.data
+
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+		})
+
+		const commerceProps = await propsForCommerce(
+			{
+				query: {
+					...searchParams,
+				},
+				userId: user?.id,
+				products: [product],
+				countryCode,
+			},
+			courseBuilderAdapter,
+		)
+
+		const { count: purchaseCount } = await db
+			.select({ count: count() })
+			.from(purchases)
+			.where(eq(purchases.productId, product.id))
+			.then((res) => res[0] ?? { count: 0 })
+
+		const productWithQuantityAvailable = await db
+			.select({ quantityAvailable: products.quantityAvailable })
+			.from(products)
+			.where(eq(products.id, product.id))
+			.then((res) => res[0])
+
+		let quantityAvailable = -1
+
+		if (productWithQuantityAvailable) {
+			quantityAvailable =
+				productWithQuantityAvailable.quantityAvailable - purchaseCount
+		}
+
+		if (quantityAvailable < 0) {
+			quantityAvailable = -1
+		}
+
+		const baseProps = {
+			cohort,
+			availableBonuses: [],
+			purchaseCount,
+			quantityAvailable,
+			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+			product,
+			pricingDataLoader,
+			organizationId: currentOrganization,
+
+			...commerceProps,
+		}
+
+		if (!user) {
+			cohortProps = baseProps
+		} else {
+			const purchaseForProduct = commerceProps.purchases?.find(
+				(purchase: Purchase) => {
+					return purchase.productId === productSchema.parse(product).id
+				},
+			)
+
+			if (!purchaseForProduct) {
+				cohortProps = baseProps
+			} else {
+				const { purchase, existingPurchase } =
+					await courseBuilderAdapter.getPurchaseDetails(
+						purchaseForProduct.id,
+						user.id,
+					)
+				cohortProps = {
+					...baseProps,
+					hasPurchasedCurrentProduct: Boolean(
+						purchase &&
+							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
+					),
+					existingPurchase,
+				}
+			}
+		}
+	} else {
+		cohortProps = {
+			cohort,
+			availableBonuses: [],
+			quantityAvailable: -1,
+			totalQuantity: -1,
+			purchaseCount: 0,
+			hasPurchasedCurrentProduct: false,
+			product: undefined,
+			pricingDataLoader: Promise.resolve({
+				formattedPrice: null,
+				purchaseToUpgrade: null,
+				quantityAvailable: -1,
+			}),
+		}
+	}
+
+	return cohortProps
+}
+
+/**
+ * Creates a cohort with workshops in bulk
+ * Supports product/pricing/coupon creation
+ */
+export async function createCohortWithWorkshops(input: {
+	cohort: {
+		title: string
+		description?: string
+		tagIds?: { id: string; fields: { label: string; name: string } }[] | null
+	}
+	dates: {
+		start: Date
+		end: Date
+	}
+	createProduct?: boolean
+	pricing: {
+		price?: number | null
+	}
+	coupon?: {
+		enabled: boolean
+		percentageDiscount?: string
+		expires?: Date
+	}
+	workshops: { id: string }[]
+}) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	try {
+		// Execute all in transaction
+		const result = await db.transaction(async (tx) => {
+			// 1. Create cohort
+			const cohortHash = guid()
+			const cohortId = `cohort~${cohortHash}`
+
+			await tx.insert(contentResource).values({
+				id: cohortId,
+				type: 'cohort',
+				createdById: user.id,
+				fields: {
+					title: input.cohort.title,
+					description: input.cohort.description,
+					state: 'draft',
+					visibility: 'unlisted',
+					slug: slugify(`${input.cohort.title}~${cohortHash}`),
+					startsAt: input.dates.start.toISOString(),
+					endsAt: input.dates.end.toISOString(),
+				},
+			})
+
+			// Fetch created cohort
+			const cohort = await tx.query.contentResource.findFirst({
+				where: eq(contentResource.id, cohortId),
+				with: {
+					resources: {
+						with: {
+							resource: true,
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			if (!cohort) {
+				throw new Error('Failed to create cohort')
+			}
+
+			const parsedCohort = ContentResourceSchema.safeParse(cohort)
+			if (!parsedCohort.success) {
+				throw new Error('Invalid cohort data')
+			}
+
+			// 2. Create product if enabled and price > 0
+			let product: any = null
+			if (
+				input.createProduct &&
+				input.pricing.price &&
+				input.pricing.price > 0
+			) {
+				product = await courseBuilderAdapter.createProduct({
+					name: input.cohort.title,
+					price: input.pricing.price,
+					quantityAvailable: -1,
+					type: 'cohort',
+					state: 'published',
+					visibility: 'public',
+				})
+
+				if (product) {
+					await tx.insert(contentResourceProduct).values({
+						resourceId: cohortId,
+						productId: product.id,
+						position: 0,
+						metadata: {
+							addedBy: user.id,
+						},
+					})
+
+					// Create coupon if enabled
+					if (
+						input.coupon?.enabled &&
+						input.coupon.percentageDiscount &&
+						input.coupon.expires
+					) {
+						const normalizeExpirationDate = (date: Date): Date => {
+							const expireDate = new Date(date)
+							expireDate.setHours(23, 59, 59, 999)
+							return expireDate
+						}
+
+						const finalExpires = normalizeExpirationDate(input.coupon.expires)
+						await courseBuilderAdapter.createCoupon({
+							percentageDiscount: input.coupon.percentageDiscount,
+							expires: finalExpires,
+							restrictedToProductId: product.id,
+							default: true,
+							maxUses: -1,
+							quantity: '-1',
+							status: 1,
+							fields: {},
+						})
+					}
+				}
+			}
+
+			// 3. Link workshops to cohort
+			let position = 0
+			for (const workshop of input.workshops) {
+				await tx.insert(contentResourceResource).values({
+					resourceOfId: cohortId,
+					resourceId: workshop.id,
+					position,
+				})
+				position++
+			}
+
+			// 4. Index in TypeSense
+			try {
+				await upsertPostToTypeSense(parsedCohort.data, 'save')
+				await log.info('cohort.create.typesense.success', {
+					cohortId,
+					userId: user.id,
+				})
+			} catch (error) {
+				await log.error('cohort.create.typesense.failed', {
+					cohortId,
+					error,
+					userId: user.id,
+				})
+			}
+
+			await log.info('cohort.created', {
+				cohortId,
+				title: input.cohort.title,
+				workshopCount: input.workshops.length,
+				hasProduct: !!product,
+				userId: user.id,
+			})
+
+			return {
+				cohort: parsedCohort.data,
+			}
+		})
+
+		return result
+	} catch (error) {
+		await log.error('cohort.create.failed', {
+			error,
+			title: input.cohort.title,
+			userId: user.id,
+		})
+		throw error
+	}
 }

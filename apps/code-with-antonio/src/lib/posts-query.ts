@@ -2,15 +2,20 @@
 
 import crypto from 'node:crypto'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentContributions,
 	contentResource,
+	contentResourceProduct,
 	contentResourceResource,
 	contentResourceTag as contentResourceTagTable,
 	contentResourceVersion as contentResourceVersionTable,
 	contributionTypes,
+	products,
+	purchases,
+	resourceProgress,
 } from '@/db/schema'
 import {
 	NewPostInput,
@@ -18,24 +23,29 @@ import {
 	Post,
 	PostAction,
 	PostSchema,
+	ProductForPostPropsSchema,
 	type PostUpdate,
+	type ProductForPostProps,
 } from '@/lib/posts'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import { subject } from '@casl/ability'
 import slugify from '@sindresorhus/slugify'
-import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm'
+import { and, asc, count, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import readingTime from 'reading-time'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
+import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
 import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
+import { getPricingData } from './pricing-query'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -145,17 +155,13 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
@@ -395,17 +401,13 @@ export const getCachedPost = unstable_cache(
 )
 
 export async function getPost(slugOrId: string) {
-	const { ability } = await getServerAuthSession()
+	const visibility: ('public' | 'private' | 'unlisted')[] = [
+		'public',
+		'private',
+		'unlisted',
+	]
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public', 'unlisted']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	const states: ('draft' | 'published')[] = ['draft', 'published']
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
@@ -1083,4 +1085,220 @@ export async function getPostOrList(slugOrId: string) {
 	}
 
 	return parsed.data
+}
+
+export async function getProductForPost(
+	postId: string,
+): Promise<ProductForPostProps | null> {
+	const contentProduct = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, postId),
+	})
+
+	const product = await courseBuilderAdapter.getProduct(
+		contentProduct?.productId,
+	)
+	if (!product) {
+		return null
+	}
+
+	let props
+	const productParsed = productSchema.parse(product)
+
+	const pricingDataLoader = getPricingData({
+		productId: productParsed.id,
+	})
+
+	const { session } = await getServerAuthSession()
+
+	const countryCode =
+		(await headers()).get('x-vercel-ip-country') ||
+		process.env.DEFAULT_COUNTRY ||
+		'US'
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				allowPurchase: 'true',
+			},
+			userId: session?.user?.id,
+			products: [productParsed],
+			countryCode,
+		},
+		courseBuilderAdapter,
+	)
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, productParsed.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const baseProps = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	if (!session?.user?.id) {
+		props = baseProps
+	} else {
+		const purchaseForProduct = commerceProps.purchases?.find(
+			(purchase: Purchase) => {
+				return purchase.productId === productSchema.parse(product).id
+			},
+		)
+
+		if (!purchaseForProduct) {
+			props = baseProps
+		} else {
+			const { purchase, existingPurchase } =
+				await courseBuilderAdapter.getPurchaseDetails(
+					purchaseForProduct.id,
+					session?.user?.id,
+				)
+			props = {
+				...baseProps,
+				hasPurchasedCurrentProduct: Boolean(purchase),
+				existingPurchase,
+			}
+		}
+	}
+	return ProductForPostPropsSchema.parse(props)
+}
+
+export async function getMinimalProductInfoWithoutUser(
+	postId: string,
+): Promise<ProductForPostProps | null> {
+	const contentProduct = await db.query.contentResourceProduct.findFirst({
+		where: eq(contentResourceProduct.resourceId, postId),
+	})
+
+	const product = await courseBuilderAdapter.getProduct(
+		contentProduct?.productId,
+	)
+	if (!product) {
+		return null
+	}
+
+	const productParsed = productSchema.parse(product)
+
+	const pricingDataLoader = getPricingData({
+		productId: productParsed.id,
+	})
+
+	const commerceProps = await propsForCommerce(
+		{
+			query: {
+				allowPurchase: 'true',
+			},
+			userId: null,
+			products: [productParsed],
+		},
+		courseBuilderAdapter,
+	)
+
+	const { count: purchaseCount } = await db
+		.select({ count: count() })
+		.from(purchases)
+		.where(eq(purchases.productId, productParsed.id))
+		.then((res) => res[0] ?? { count: 0 })
+
+	const productWithQuantityAvailable = await db
+		.select({ quantityAvailable: products.quantityAvailable })
+		.from(products)
+		.where(eq(products.id, product.id))
+		.then((res) => res[0])
+
+	let quantityAvailable = -1
+
+	if (productWithQuantityAvailable) {
+		quantityAvailable =
+			productWithQuantityAvailable.quantityAvailable - purchaseCount
+	}
+
+	if (quantityAvailable < 0) {
+		quantityAvailable = -1
+	}
+
+	const props = {
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+		product,
+		pricingDataLoader,
+		...commerceProps,
+	}
+
+	return ProductForPostPropsSchema.parse(props)
+}
+
+export async function getPostsWithCompletionCounts() {
+	try {
+		const postsWithCounts = await db
+			.select({
+				id: contentResource.id,
+				title: sql`JSON_EXTRACT(${contentResource.fields}, "$.title")`,
+				slug: sql`JSON_EXTRACT(${contentResource.fields}, "$.slug")`,
+				state: sql`JSON_EXTRACT(${contentResource.fields}, "$.state")`,
+				postType: sql`JSON_EXTRACT(${contentResource.fields}, "$.postType")`,
+				completionCount: count(resourceProgress.userId),
+				createdAt: contentResource.createdAt,
+			})
+			.from(contentResource)
+			.leftJoin(
+				resourceProgress,
+				and(
+					eq(contentResource.id, resourceProgress.resourceId),
+					sql`${resourceProgress.completedAt} IS NOT NULL`,
+				),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'post'),
+					eq(
+						sql`JSON_EXTRACT(${contentResource.fields}, "$.state")`,
+						'published',
+					),
+					eq(
+						sql`JSON_EXTRACT(${contentResource.fields}, "$.visibility")`,
+						'public',
+					),
+				),
+			)
+			.groupBy(contentResource.id)
+			.orderBy(desc(count(resourceProgress.userId)))
+
+		await log.info('posts.completions.fetch.success', {
+			count: postsWithCounts.length,
+		})
+
+		return postsWithCounts
+	} catch (error) {
+		await log.error('posts.completions.fetch.failed', {
+			error: getErrorMessage(error),
+			stack: getErrorStack(error),
+		})
+		return []
+	}
 }

@@ -282,7 +282,10 @@ const Price = ({
 													Save ${appliedFixedDiscount.toFixed(2)}
 												</div>
 											) : (
-												<div className="text-primary text-base">
+												<div
+													data-save-percent=""
+													className="text-primary text-base"
+												>
 													Save {percentOff}%
 												</div>
 											)}

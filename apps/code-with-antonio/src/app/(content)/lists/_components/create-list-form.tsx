@@ -20,7 +20,7 @@ import {
 export function CreateListForm() {
 	const [title, setTitle] = useState('')
 	const [description, setDescription] = useState('')
-	const [listType, setListType] = useState('nextUp')
+	const [listType, setListType] = useState('tutorial')
 	const [isLoading, setIsLoading] = useState(false)
 	const router = useRouter()
 

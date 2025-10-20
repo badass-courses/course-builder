@@ -1,5 +1,5 @@
 import React from 'react'
-import { SearchBox } from '@/app/(search)/q/_components/instantsearch/searchbox'
+import { SearchBox } from '@/app/(search)/browse/_components/instantsearch/searchbox'
 import Spinner from '@/components/spinner'
 import { addPostToList } from '@/lib/lists-query'
 import type { TypesenseResource } from '@/lib/typesense'

@@ -3,12 +3,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
+import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { EventSchema } from '@/lib/events'
+import { EventSchema, EventSeriesSchema } from '@/lib/events'
 import { getServerAuthSession } from '@/server/auth'
 import { formatInTimeZone } from 'date-fns-tz'
-import { eq } from 'drizzle-orm'
+import { desc, eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -20,45 +22,51 @@ import {
 	CardTitle,
 } from '@coursebuilder/ui'
 
+import CreateNewEventForm from './_components/create-new-event-dialog'
+
 export const metadata: Metadata = {
-	title: 'Live Events & Workshops hosted by Matt Pocock',
+	title: `Live Events & Workshops hosted by ${config.author}`,
 }
 
 export default async function EventIndexPage() {
-	const { ability } = await getServerAuthSession()
-
 	return (
-		<>
-			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-				<div className="max-w-(--breakpoint-md) w-full border-b px-5 py-16 md:border-dashed">
-					<h1 className="font-heading text-center text-5xl font-bold">
-						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-							Live
-						</span>{' '}
-						<span className="text-gray-100">Events & Workshops</span>
+		<LayoutClient withContainer>
+			<main className="pb-16">
+				<div className="mx-auto w-full pb-10 pt-16">
+					<h1 className="font-heading fluid-3xl text-center font-bold">
+						Epic AI Events & Live Workshops
 					</h1>
 				</div>
-				<EventsList />
-				{ability.can('update', 'Content') ? (
-					<div className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full items-center justify-center border-t border-dashed py-10">
-						<Button asChild variant="secondary">
-							<Link href={`/events/new`}>New Event</Link>
-						</Button>
+				<React.Suspense fallback={<div>Loading...</div>}>
+					<div className="flex w-full items-center justify-center">
+						<EventActions />
 					</div>
-				) : null}
-				<div
-					className="max-w-(--breakpoint-md) absolute top-0 -z-10 h-full w-full border-dashed md:border-x"
-					aria-hidden="true"
-				/>
+				</React.Suspense>
+				<React.Suspense fallback={<div>Loading...</div>}>
+					<EventsList />
+				</React.Suspense>
 			</main>
-		</>
+		</LayoutClient>
 	)
+}
+
+async function EventActions({}: {}) {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('create', 'Content') || !ability.can('update', 'Content')) {
+		return null
+	}
+
+	return <CreateNewEventForm />
 }
 
 async function EventsList() {
 	const { ability } = await getServerAuthSession()
 	const eventsModule = await db.query.contentResource.findMany({
-		where: eq(contentResource.type, 'event'),
+		where: or(
+			eq(contentResource.type, 'event'),
+			eq(contentResource.type, 'event-series'),
+		),
+		orderBy: desc(contentResource.createdAt),
 		with: {
 			resources: true,
 			resourceProducts: {
@@ -72,7 +80,9 @@ async function EventsList() {
 			},
 		},
 	})
-	const parsedEventsModule = z.array(EventSchema).parse(eventsModule)
+	const parsedEventsModule = z
+		.array(z.union([EventSchema, EventSeriesSchema]))
+		.parse(eventsModule)
 
 	const events = [...parsedEventsModule].filter((event) => {
 		if (ability.can('create', 'Content')) {
@@ -87,12 +97,21 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="max-w-(--breakpoint-md) mx-auto mt-8 flex w-full flex-col gap-5 px-8 md:px-8">
-			{publicEvents.length === 0 && <p>There are no public events.</p>}
+		<ul className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full flex-col gap-5">
+			{publicEvents.length === 0 && (
+				<p className="mb-10 text-center">There are no public events.</p>
+			)}
 			{events.map((event) => {
-				const { fields } = event
-				const { startsAt, endsAt } = fields
-				const PT = fields.timezone || 'America/Los_Angeles'
+				const sharedFields =
+					event.type === 'event'
+						? event.fields
+						: event?.resources?.[0]?.resource?.fields
+
+				if (!sharedFields) {
+					return null
+				}
+				const { startsAt, endsAt } = sharedFields
+				const PT = sharedFields.timezone || 'America/Los_Angeles'
 				const eventDate =
 					startsAt && `${formatInTimeZone(new Date(startsAt), PT, 'MMMM do')}`
 				const eventTime =
@@ -106,14 +125,14 @@ async function EventsList() {
 
 				return (
 					<li key={event.id}>
-						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 md:flex-row">
+						<Card className="bg-background flex flex-col items-center gap-3 rounded-none border-none p-0 shadow-none md:flex-row">
 							{event?.fields?.image && (
 								<Link
-									className="shrink-0"
+									className="flex-shrink-0"
 									href={`/events/${event.fields.slug || event.id}`}
 								>
 									<CldImage
-										className="shrink-0"
+										className="flex-shrink-0"
 										width={200}
 										height={200}
 										src={event.fields.image}
@@ -123,7 +142,7 @@ async function EventsList() {
 							)}
 							<div className="w-full">
 								<CardHeader className="mb-2 p-0">
-									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
+									<CardTitle className="fluid-xl font-rounded font-semibold">
 										<Link
 											href={`/events/${event?.fields?.slug || event.id}`}
 											className="w-full text-balance hover:underline"
@@ -131,10 +150,17 @@ async function EventsList() {
 											{event?.fields?.title}
 										</Link>
 									</CardTitle>
+
 									<div className="flex items-center gap-1 text-sm">
-										<p>{eventDate}</p>
-										<span className="opacity-50">・</span>
-										<p>{eventTime} (PT)</p>
+										{eventDate ? (
+											<>
+												<p>{eventDate}</p>
+												<span className="opacity-50">・</span>
+												<p>{eventTime} (PT)</p>
+											</>
+										) : (
+											<p>Date TBD</p>
+										)}
 									</div>
 								</CardHeader>
 								{event?.fields?.description && (
@@ -145,7 +171,7 @@ async function EventsList() {
 									</CardContent>
 								)}
 								<CardFooter className="flex items-center justify-between gap-3 px-0 py-3">
-									<Contributor className="text-sm font-light" />
+									<Contributor className="" />
 									<div className="flex items-center gap-2">
 										{ability.can('create', 'Content') && (
 											<>

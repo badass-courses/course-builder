@@ -6,6 +6,7 @@ import {
 	contentResource,
 	contentResourceProduct,
 	contentResourceResource,
+	contentResourceTag as contentResourceTagTable,
 	products as productTable,
 } from '@/db/schema'
 import {
@@ -567,6 +568,12 @@ export async function getWorkshop(moduleSlugOrId: string) {
 			),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
 			resources: {
 				// sections and stand-alone top level resource join
 				with: {
@@ -898,4 +905,314 @@ export async function getWorkshopsForLesson(lessonId: string) {
 	}
 
 	return parsedWorkshops.data
+}
+
+/**
+ * Creates a workshop with lessons and sections in bulk
+ * Supports product/pricing/coupon creation
+ */
+export async function createWorkshopWithLessons(input: {
+	workshop: {
+		title: string
+		description?: string
+		tagIds?: { id: string; fields: { label: string; name: string } }[] | null
+	}
+	pricing: {
+		price?: number | null
+		quantity?: number | null
+	}
+	coupon?: {
+		enabled: boolean
+		percentageDiscount?: string
+		expires?: Date
+	}
+	structure: Array<
+		| {
+				type: 'section'
+				title: string
+				lessons: { title: string; videoResourceId?: string }[]
+		  }
+		| { type: 'lesson'; title: string; videoResourceId?: string }
+	>
+}) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	try {
+		// Execute all in transaction
+		const result = await db.transaction(async (tx) => {
+			// 1. Create workshop
+			const workshopHash = guid()
+			const workshopId = `workshop~${workshopHash}`
+
+			await tx.insert(contentResource).values({
+				id: workshopId,
+				type: 'workshop',
+				createdById: user.id,
+				fields: {
+					title: input.workshop.title,
+					description: input.workshop.description,
+					state: 'draft',
+					visibility: 'unlisted',
+					slug: slugify(`${input.workshop.title}~${workshopHash}`),
+				},
+			})
+
+			// Fetch created workshop
+			const workshop = await tx.query.contentResource.findFirst({
+				where: eq(contentResource.id, workshopId),
+				with: {
+					resources: {
+						with: {
+							resource: {
+								with: {
+									resources: {
+										with: {
+											resource: true,
+										},
+										orderBy: asc(contentResourceResource.position),
+									},
+								},
+							},
+						},
+						orderBy: asc(contentResourceResource.position),
+					},
+				},
+			})
+
+			if (!workshop) {
+				throw new Error('Failed to create workshop')
+			}
+
+			const parsedWorkshop = ContentResourceSchema.safeParse(workshop)
+			if (!parsedWorkshop.success) {
+				throw new Error('Invalid workshop data')
+			}
+
+			// 2. Create product if price > 0
+			let product: any = null
+			if (input.pricing.price && input.pricing.price > 0) {
+				product = await courseBuilderAdapter.createProduct({
+					name: input.workshop.title,
+					price: input.pricing.price,
+					quantityAvailable: input.pricing.quantity ?? -1,
+					type: 'self-paced',
+					state: 'published',
+					visibility: 'public',
+				})
+
+				if (product) {
+					await tx.insert(contentResourceProduct).values({
+						resourceId: workshopId,
+						productId: product.id,
+						position: 0,
+						metadata: {
+							addedBy: user.id,
+						},
+					})
+
+					// Create coupon if enabled
+					if (
+						input.coupon?.enabled &&
+						input.coupon.percentageDiscount &&
+						input.coupon.expires
+					) {
+						const normalizeExpirationDate = (date: Date): Date => {
+							const expireDate = new Date(date)
+							expireDate.setHours(23, 59, 59, 999)
+							return expireDate
+						}
+
+						const finalExpires = normalizeExpirationDate(input.coupon.expires)
+						await courseBuilderAdapter.createCoupon({
+							percentageDiscount: input.coupon.percentageDiscount,
+							expires: finalExpires,
+							restrictedToProductId: product.id,
+							default: true,
+							maxUses: -1,
+							quantity: '-1',
+							status: 1,
+							fields: {},
+						})
+					}
+				}
+			}
+
+			// 3. Create sections and lessons
+			const createdSections: ContentResource[] = []
+			const createdLessons: ContentResource[] = []
+			let position = 0
+
+			for (const item of input.structure) {
+				if (item.type === 'section') {
+					// Create section
+					const sectionHash = guid()
+					const sectionId = `section~${sectionHash}`
+
+					await tx.insert(contentResource).values({
+						id: sectionId,
+						type: 'section',
+						createdById: user.id,
+						fields: {
+							title: item.title,
+							state: 'draft',
+							visibility: 'unlisted',
+							slug: slugify(`${item.title}~${sectionHash}`),
+						},
+					})
+
+					// Link section to workshop
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: workshopId,
+						resourceId: sectionId,
+						position,
+					})
+
+					const section = await tx.query.contentResource.findFirst({
+						where: eq(contentResource.id, sectionId),
+					})
+
+					if (section) {
+						createdSections.push(section as ContentResource)
+					}
+
+					// Create lessons in section
+					let lessonPosition = 0
+					for (const lessonData of item.lessons) {
+						const lessonHash = guid()
+						const lessonId = `lesson_${lessonHash}`
+
+						await tx.insert(contentResource).values({
+							id: lessonId,
+							type: 'lesson',
+							createdById: user.id,
+							fields: {
+								title: lessonData.title,
+								state: 'draft',
+								visibility: 'unlisted',
+								slug: slugify(`${lessonData.title}~${lessonHash}`),
+								lessonType: 'lesson',
+							},
+						})
+
+						// Link video if provided
+						if (lessonData.videoResourceId) {
+							await tx.insert(contentResourceResource).values({
+								resourceOfId: lessonId,
+								resourceId: lessonData.videoResourceId,
+								position: 0,
+							})
+						}
+
+						// Link lesson to section
+						await tx.insert(contentResourceResource).values({
+							resourceOfId: sectionId,
+							resourceId: lessonId,
+							position: lessonPosition,
+						})
+
+						const lesson = await tx.query.contentResource.findFirst({
+							where: eq(contentResource.id, lessonId),
+						})
+
+						if (lesson) {
+							createdLessons.push(lesson as ContentResource)
+						}
+
+						lessonPosition++
+					}
+
+					position++
+				} else {
+					// Create top-level lesson
+					const lessonHash = guid()
+					const lessonId = `lesson_${lessonHash}`
+
+					await tx.insert(contentResource).values({
+						id: lessonId,
+						type: 'lesson',
+						createdById: user.id,
+						fields: {
+							title: item.title,
+							state: 'draft',
+							visibility: 'unlisted',
+							slug: slugify(`${item.title}~${lessonHash}`),
+							lessonType: 'lesson',
+						},
+					})
+
+					// Link video if provided
+					if (item.videoResourceId) {
+						await tx.insert(contentResourceResource).values({
+							resourceOfId: lessonId,
+							resourceId: item.videoResourceId,
+							position: 0,
+						})
+					}
+
+					// Link lesson to workshop
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: workshopId,
+						resourceId: lessonId,
+						position,
+					})
+
+					const lesson = await tx.query.contentResource.findFirst({
+						where: eq(contentResource.id, lessonId),
+					})
+
+					if (lesson) {
+						createdLessons.push(lesson as ContentResource)
+					}
+
+					position++
+				}
+			}
+
+			return {
+				workshop: parsedWorkshop.data,
+				sections: createdSections,
+				lessons: createdLessons,
+				product,
+			}
+		})
+
+		// 4. Index in TypeSense (outside transaction)
+		try {
+			await upsertPostToTypeSense(result.workshop, 'save')
+			for (const lesson of result.lessons) {
+				await upsertPostToTypeSense(lesson, 'save')
+			}
+		} catch (error) {
+			await log.error('workshop.typesense.failed', {
+				workshopId: result.workshop.id,
+				error: error instanceof Error ? error.message : String(error),
+			})
+		}
+
+		// 5. Logging
+		await log.info('workshop.created', {
+			workshopId: result.workshop.id,
+			userId: user.id,
+			sectionCount: result.sections.length,
+			lessonCount: result.lessons.length,
+			hasProduct: !!result.product,
+		})
+
+		revalidateTag('workshops', 'max')
+		revalidatePath('/workshops')
+
+		return result
+	} catch (error) {
+		await log.error('workshop.creation.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			userId: user.id,
+			title: input.workshop.title,
+		})
+		throw error
+	}
 }

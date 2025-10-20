@@ -166,7 +166,7 @@ const Welcome = async (props: {
 
 		return (
 			<LayoutClient withContainer>
-				<div className="container border-x">
+				<div className="">
 					<WelcomePage
 						product={product}
 						productResources={productResources}
@@ -211,7 +211,7 @@ const Welcome = async (props: {
 		const isDiscordConnected = await discordAccountsForCurrentUser()
 
 		return (
-			<div className="container border-x">
+			<div className="">
 				<SubscriptionWelcomePage
 					subscription={subscription}
 					stripeSubscription={stripeSubscription}

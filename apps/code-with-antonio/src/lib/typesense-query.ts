@@ -13,6 +13,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import type { Post, PostAction } from './posts'
 import { getPostTags } from './posts-query'
+import { getProductForResource } from './products-query'
 import { getLessonForSolution } from './solutions-query'
 import { TypesenseResourceSchema } from './typesense'
 import { getWorkshopsForLesson } from './workshops-query'
@@ -95,6 +96,8 @@ export async function upsertPostToTypeSense(
 				)
 			}
 		}
+		const product = await getProductForResource(post.id)
+
 		console.log('✅ Retrieved tags:', tags.length)
 
 		console.log('🔄 Validating resource schema')
@@ -104,6 +107,7 @@ export async function upsertPostToTypeSense(
 			slug: post.fields?.slug,
 			description: post.fields?.body || '',
 			summary: post.fields?.description || '',
+			image: post.fields?.coverImage?.url || post.fields?.image || '',
 			type:
 				post?.fields && 'postType' in post.fields
 					? post.fields.postType
@@ -114,7 +118,14 @@ export async function upsertPostToTypeSense(
 			state: post.fields?.state,
 			created_at_timestamp: post.createdAt?.getTime() ?? Date.now(),
 			updated_at_timestamp: post.updatedAt?.getTime() ?? Date.now(),
+			...(post.fields?.startsAt && {
+				startsAt: post.fields?.startsAt,
+			}),
+			...(post.fields?.endsAt && {
+				endsAt: post.fields?.endsAt,
+			}),
 			...(tags.length > 0 && { tags: tags.map((tag) => tag) }),
+			...(product && { productType: product.type }),
 			...(parentResources && {
 				parentResources: parentResources.map((resource) => {
 					return {

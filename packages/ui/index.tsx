@@ -1,3 +1,5 @@
+import { CreateCohortForm } from './cohort-creation/create-cohort-form'
+import { WorkshopSelector } from './cohort-creation/workshop-selector'
 import { DateTimePicker } from './date-time-picker/date-time-picker'
 import { CreateEventForm } from './event-creation/create-event-form'
 import * as ModuleNavigation from './module-navigation'
@@ -92,6 +94,18 @@ import {
 	DropdownMenuTrigger,
 } from './primitives/dropdown-menu'
 import {
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+	FieldTitle,
+} from './primitives/field'
+import {
 	Form,
 	FormControl,
 	FormDescription,
@@ -179,6 +193,8 @@ import {
 	TooltipTrigger,
 } from './primitives/tooltip'
 import { useToast } from './primitives/use-toast'
+import { CreateWorkshopForm } from './workshop-creation/create-workshop-form'
+import { LessonVideoField } from './workshop-creation/lesson-video-field'
 
 export {
 	Button,
@@ -328,10 +344,24 @@ export {
 	PaginationNext,
 	PaginationEllipsis,
 	CreateEventForm,
+	CreateWorkshopForm,
+	LessonVideoField,
+	CreateCohortForm,
+	WorkshopSelector,
 	NavigationMenu,
 	NavigationMenuContent,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
+	Field,
+	FieldContent,
+	FieldDescription,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+	FieldLegend,
+	FieldSeparator,
+	FieldSet,
+	FieldTitle,
 }

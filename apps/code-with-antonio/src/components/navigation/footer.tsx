@@ -4,14 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SubscribeToConvertkitForm } from '@/convertkit'
-import { useConvertkitForm } from '@/hooks/use-convertkit-form'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Moon, Sun } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
-
-import { Button, Input } from '@coursebuilder/ui'
 
 import { LogoVideo } from './logo-video'
 
@@ -33,18 +29,19 @@ export default function Footer() {
 	}
 
 	return (
-		<footer className="flex w-full flex-col items-center justify-center px-5 py-24">
-			<div className="mx-auto flex w-full max-w-[1280px] flex-col gap-12">
+		<footer className="flex w-full flex-col items-center justify-center px-5 py-10 sm:py-24">
+			<div className="container flex w-full flex-col gap-12">
 				{/* Top section */}
-				<div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+				<div className="flex w-full flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
 					{/* Left: Logo + Nav */}
-					<div className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:gap-12">
+					<div className="flex w-full flex-col items-center gap-8 md:items-start lg:flex-row lg:items-center lg:gap-12">
 						{/* Logo */}
-						<Link
+						{/* <Link
 							tabIndex={isRoot ? -1 : 0}
 							href="/"
 							className="flex items-center gap-2"
-						>
+						> */}
+						<div className="flex items-center gap-2">
 							<LogoVideo />
 							<div className="flex flex-col">
 								<span className="text-muted-foreground text-[9.3px] font-medium leading-tight">
@@ -54,10 +51,11 @@ export default function Footer() {
 									Antonio
 								</span>
 							</div>
-						</Link>
+						</div>
+						{/* </Link> */}
 
 						{/* Navigation */}
-						<nav className="text-muted-foreground flex items-center gap-8 text-base">
+						<nav className="text-muted-foreground flex flex-col items-center gap-8 text-base md:flex-row">
 							<Link href="/" className="hover:text-foreground transition">
 								Home
 							</Link>
@@ -86,32 +84,18 @@ export default function Footer() {
 					</div>
 
 					{/* Right: Newsletter subscription */}
-					{status === 'pending' ? null : subscriber ? (
+					{status === 'pending' ? (
+						<div className="w-full" />
+					) : subscriber ? (
 						<div>
 							<Link href="/login">Log in</Link>
 						</div>
 					) : (
 						<SubscribeToConvertkitForm
 							emailPlaceholder="Your email"
-							className="flex w-full max-w-[350px] flex-col items-start gap-3 text-left lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
+							className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
 						/>
 					)}
-					{/* <form onSubmit={handleSubmit} className="gap-2">
-						<Input
-							{...register('email')}
-							type="email"
-							placeholder="Your email"
-							className="h-10 flex-1 rounded-md border"
-							disabled={isSubmitting}
-						/>
-						<Button
-							type="submit"
-							disabled={isSubmitting}
-							className="h-10 rounded-md bg-[#2b47ff] px-4 text-sm font-medium text-white hover:bg-[#2438d4]"
-						>
-							Subscribe
-						</Button>
-					</form> */}
 				</div>
 
 				{/* Separator */}

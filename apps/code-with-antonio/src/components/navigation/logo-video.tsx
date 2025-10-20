@@ -138,7 +138,7 @@ export const LogoVideo: React.FC<LogoVideoProps> = ({ isRoot = false }) => {
 				prefetch
 				tabIndex={isRoot ? -1 : 0}
 				href="/"
-				className="relative block h-[77px] w-[77px]"
+				className="relative flex size-[77px]"
 			>
 				<CldImage
 					src="https://res.cloudinary.com/dezn0ffbx/image/upload/v1760518174/antonio-waving_2x_sq5xrb.png"
@@ -150,7 +150,6 @@ export const LogoVideo: React.FC<LogoVideoProps> = ({ isRoot = false }) => {
 						hasBeenHovered && 'opacity-0',
 					)}
 				/>
-
 				<video
 					ref={lightVideoRef}
 					width={77}

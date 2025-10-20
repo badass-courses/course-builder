@@ -7,6 +7,7 @@ import {
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
 
+import { PostTagsSchema } from './posts'
 import { WorkshopSchema } from './workshops'
 
 /**
@@ -14,6 +15,7 @@ import { WorkshopSchema } from './workshops'
  */
 export const CohortSchema = ContentResourceSchema.merge(
 	z.object({
+		tags: PostTagsSchema,
 		fields: z.object({
 			title: z.string().min(2).max(90),
 			description: z.string().optional(),
