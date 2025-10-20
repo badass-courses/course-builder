@@ -8,8 +8,7 @@ import {
 } from '@/lib/completions-query'
 import { getServerAuthSession } from '@/server/auth'
 import { format } from 'date-fns'
-import { BookOpenIcon, GraduationCapIcon } from 'lucide-react'
-import { z } from 'zod'
+import { BookOpenIcon, DollarSign, GraduationCapIcon } from 'lucide-react'
 
 import {
 	Badge,
@@ -21,7 +20,9 @@ import {
 	CreateEventForm,
 } from '@coursebuilder/ui'
 
+import CreateNewCohortDialog from '../../(content)/cohorts/_components/create-new-cohort-dialog'
 import CreateNewEventDialog from '../../(content)/events/_components/create-new-event-dialog'
+import CreateNewWorkshopDialog from '../../(content)/workshops/_components/create-new-workshop-dialog'
 
 function CompletionCount({ count }: { count: number }) {
 	return (
@@ -111,7 +112,7 @@ export default async function AdminDashboardPage() {
 						<CreatePostModal defaultResourceType="tutorial" />
 					</CardContent>
 				</Card>
-				<Card className="flex flex-col justify-between">
+				<Card className="relative flex flex-col justify-between">
 					<CardHeader className="">
 						<CardTitle>Live Events</CardTitle>
 						<CardDescription>
@@ -119,10 +120,13 @@ export default async function AdminDashboardPage() {
 							availability and set dates. Great way to practice new content and
 							sell tickets to your community.
 						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
 					</CardHeader>
 					<CardContent className="">
 						<CreateNewEventDialog
-							modal={true}
+							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Event"
 						/>
@@ -130,27 +134,39 @@ export default async function AdminDashboardPage() {
 				</Card>
 				<Card className="relative flex flex-col justify-between">
 					<CardHeader className="">
-						<CardTitle>Self-paced Workshops</CardTitle>
+						<CardTitle>Workshops</CardTitle>
 						<CardDescription>
-							A collection of lessons sold as a product with no fixed start and
-							end date. Great for creating a course that students can enroll in
-							and complete at their own pace.
+							This is the wrapper for paid collections of lessons (resources).
 						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="workshop" />
+						<CreateNewWorkshopDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Workshop"
+						/>
 					</CardContent>
 				</Card>
 				<Card className="relative flex flex-col justify-between">
 					<CardHeader className="">
 						<CardTitle>Cohort-based Courses</CardTitle>
 						<CardDescription>
-							A collection of lessons sold as a product with a fixed start and
-							end enrollment date.
+							Cohorts are made out of workshops with lessons that have a fixed
+							start and end enrollment date.
 						</CardDescription>
+						<Badge className="absolute right-3 top-3" variant="secondary">
+							<DollarSign className="size-4" />
+						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="cohort" />
+						<CreateNewCohortDialog
+							modal={false}
+							className="w-full justify-between"
+							buttonLabel="Create Cohort"
+						/>
 					</CardContent>
 				</Card>
 			</div>

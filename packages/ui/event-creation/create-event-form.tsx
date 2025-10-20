@@ -722,7 +722,7 @@ export function CreateEventForm({
 										)}
 									</div>
 								</AccordionTrigger>
-								<AccordionContent className="space-y-4 rounded-b-lg border p-3 data-[state=open]:rounded-t-none">
+								<AccordionContent className="bg-muted/50 space-y-4 rounded-lg border p-3">
 									<FormField
 										control={form.control}
 										name={`events.${index}.title`}

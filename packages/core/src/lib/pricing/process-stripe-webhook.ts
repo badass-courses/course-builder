@@ -300,6 +300,7 @@ export async function processStripeWebhook(
 			// Occurs whenever a subscription changes (e.g., switching from one plan to another, or changing the status from trial to active).
 			break
 		case 'checkout.session.completed':
+			console.log('checkout.session.completed', event)
 			// is this a subscription payment? (event.data.object.mode)
 			await options.inngest.send({
 				name: STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
@@ -315,6 +316,7 @@ export async function processStripeWebhook(
 			console.log('checkout.session.async_payment_succeeded', event)
 			break
 		case 'charge.refunded':
+			console.log('charge.refunded', event)
 			const stripeChargeId = event.data.object.id
 
 			const totalRefunded = event.data.object.amount_refunded
@@ -330,6 +332,7 @@ export async function processStripeWebhook(
 			// log the transaction
 			break
 		case 'charge.dispute.created':
+			console.log('charge.dispute.created', event)
 			await updatePurchaseStatus({
 				stripeChargeId: event.data.object.id,
 				status: 'Disputed',

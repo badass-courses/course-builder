@@ -15,9 +15,9 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
 		<LayoutClient withContainer>
 			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-14 md:grid">
-				<div className="col-span-2 hidden py-5 md:block">
-					<div className="bg-card border-border flex h-full flex-col gap-2 overflow-hidden rounded-lg border">
-						<nav className="">
+				<div className="col-span-3 hidden py-5 md:block">
+					<div className="bg-muted border-border flex h-full flex-col gap-2 overflow-hidden rounded-lg border p-2">
+						<nav className="border-border overflow-hidden rounded-lg border">
 							<ul>
 								<li className="divide-border flex flex-col divide-y">
 									<NavItem href="/admin/dashboard">
@@ -53,7 +53,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 						</nav>
 					</div>
 				</div>
-				<div className="col-span-10 flex flex-col">{children}</div>
+				<div className="col-span-9 flex flex-col">{children}</div>
 			</div>
 		</LayoutClient>
 	)
