@@ -3,17 +3,177 @@ import Background from '@/components/certificates/background'
 import Logo from '@/components/certificates/logo'
 import Signature from '@/components/certificates/signature'
 import { db } from '@/db'
-import { contentResource, users } from '@/db/schema'
 import {
-	checkCertificateEligibility,
-	checkCohortCertificateEligibility,
-} from '@/lib/certificates'
+	contentResource,
+	contentResourceResource,
+	resourceProgress,
+	users,
+} from '@/db/schema'
+import { WorkshopSchema } from '@/lib/workshops'
 import { format } from 'date-fns'
-import { and, eq, or, sql } from 'drizzle-orm'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
 // export const contentType = 'image/png'
+
+/**
+ * Edge-safe helper to check if user completed all lessons in a resource
+ */
+async function hasUserCompletedAllLessons(
+	userId: string,
+	resourceId: string,
+): Promise<{ completed: boolean; lastCompletedDate: Date | null }> {
+	// Execute the optimized query to check if there are any incomplete lessons
+	const results: any = await db.execute(sql`
+	SELECT
+		COUNT(CASE WHEN rp.completedAt IS NULL THEN 1 END) AS incomplete_lessons,
+		MAX(rp.completedAt) AS last_completed_date
+	FROM ${contentResource} cr
+	LEFT JOIN ${resourceProgress} rp ON rp.resourceId = cr.id AND rp.userId = ${userId}
+	WHERE cr.id IN (
+			SELECT cr.id
+			FROM ${contentResource} cr
+			WHERE cr.id IN (
+					SELECT crr.resourceId
+					FROM ${contentResourceResource} crr
+					WHERE crr.resourceOfId = (
+							SELECT id
+							FROM ${contentResource}
+							WHERE id = ${resourceId} OR fields->>'$.slug' = ${resourceId}
+					)
+			)
+			OR cr.id IN (
+					SELECT crr.resourceId
+					FROM ${contentResourceResource} crr
+					WHERE crr.resourceOfId IN (
+							SELECT crr.resourceId
+							FROM ${contentResourceResource} crr
+							WHERE crr.resourceOfId = (
+									SELECT id
+									FROM ${contentResource}
+									WHERE id = ${resourceId} OR fields->>'$.slug' = ${resourceId}
+							)
+					)
+			)
+	)
+	AND cr.type IN ('lesson', 'exercise')
+	AND (cr.fields->>'$.optional' IS NULL OR cr.fields->>'$.optional' = 'false')
+`)
+
+	const incompleteLessons = Number(results.rows[0]?.incomplete_lessons) || 0
+	const lastCompletedDate = results.rows[0]?.last_completed_date
+		? new Date(results.rows[0].last_completed_date)
+		: null
+
+	// If there are no incomplete lessons, the user has completed all lessons
+	const completed = incompleteLessons === 0
+
+	return { completed, lastCompletedDate }
+}
+
+/**
+ * Edge-safe helper to get all workshops in a cohort
+ */
+async function getAllWorkshopsInCohort(cohortId: string) {
+	try {
+		const results = await db
+			.select()
+			.from(contentResourceResource)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceResource.resourceId),
+			)
+			.where(
+				and(
+					eq(contentResource.type, 'workshop'),
+					eq(contentResourceResource.resourceOfId, cohortId),
+				),
+			)
+			.orderBy(asc(contentResourceResource.position))
+
+		return results.map((r) => {
+			const parsed = WorkshopSchema.safeParse(r.ContentResource)
+			if (!parsed.success) {
+				console.error(
+					'Failed to parse workshop:',
+					parsed.error,
+					r.ContentResource,
+				)
+				throw new Error(`Invalid workshop data for cohort ${cohortId}`)
+			}
+			return parsed.data
+		})
+	} catch (error) {
+		console.error('Failed to get workshops in cohort:', error)
+		throw error
+	}
+}
+
+/**
+ * Edge-safe helper to check certificate eligibility for a workshop
+ */
+async function checkCertificateEligibility(resourceId: string, userId: string) {
+	if (!userId) {
+		return { hasCompletedModule: false }
+	}
+
+	const { completed: hasCompletedModule, lastCompletedDate } =
+		await hasUserCompletedAllLessons(userId, resourceId)
+
+	return { hasCompletedModule, date: lastCompletedDate }
+}
+
+/**
+ * Edge-safe helper to check certificate eligibility for a cohort
+ */
+async function checkCohortCertificateEligibility(
+	cohortId: string,
+	userId?: string,
+) {
+	if (!userId) {
+		return { hasCompletedCohort: false, date: null }
+	}
+	try {
+		const modules = await getAllWorkshopsInCohort(cohortId)
+
+		if (!modules || modules.length === 0) {
+			return { hasCompletedCohort: false, date: null }
+		}
+
+		const moduleCompletionPromises = modules.map((module) =>
+			hasUserCompletedAllLessons(userId, module.id),
+		)
+
+		const moduleCompletionResults = await Promise.all(moduleCompletionPromises)
+		const allModulesCompleted = moduleCompletionResults.every(
+			(result) => result.completed,
+		)
+
+		if (!allModulesCompleted) {
+			return { hasCompletedCohort: false, date: null }
+		}
+
+		const completionDates = moduleCompletionResults
+			.map((result) => result.lastCompletedDate)
+			.filter((date): date is Date => date !== null)
+
+		let latestCompletionDate: Date | null = null
+		if (completionDates.length > 0) {
+			latestCompletionDate = new Date(
+				Math.max(...completionDates.map((date) => date.getTime())),
+			)
+		}
+
+		return {
+			hasCompletedCohort: allModulesCompleted,
+			date: latestCompletionDate,
+		}
+	} catch (error) {
+		console.error(error)
+		return { hasCompletedCohort: false, date: null }
+	}
+}
 
 export async function GET(request: Request) {
 	try {

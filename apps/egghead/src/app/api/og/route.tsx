@@ -1,17 +1,13 @@
-// EXAMPLE USAGE
-// with resource: /api/og?resource=[SLUG_OR_ID]
-// with custom title: /api/og?title=ANYTHING
+// LEGACY ROUTE - Provides backward compatibility
+// NEW: Use /api/og/[slug] for resource-based OG images
+// LEGACY: /api/og?resource=[SLUG_OR_ID] - Redirects to /api/og/[slug]
+// STILL SUPPORTED: /api/og?title=CUSTOM_TITLE - For custom titles without resources
 
 import { ImageResponse } from 'next/og'
 import { NextResponse } from 'next/server'
-import { db } from '@/db'
-// Add import for users table
-import { contentResource, contentResourceResource, users } from '@/db/schema'
-import { and, asc, eq, or, sql } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
-// export const contentType = 'image/png'
 
 const allowedOrigins =
 	process.env.NODE_ENV === 'production'
@@ -30,121 +26,42 @@ export async function OPTIONS() {
 
 export async function GET(request: Request) {
 	try {
-		console.log('Starting OG image generation', { url: request.url })
+		console.log('Legacy OG route accessed', { url: request.url })
 
-		const { searchParams } = new URL(request.url)
-		const resourceTypesWithImages = [
-			'post',
-			'list',
-			'event',
-			'workshop',
-			'tutorial',
-			'self-paced',
-		]
+		const { searchParams, origin } = new URL(request.url)
 		const hasResource = searchParams.has('resource')
 		const resourceSlugOrID = hasResource ? searchParams.get('resource') : null
 		const hasTitle = searchParams.has('title')
 		const hasImage = searchParams.has('image')
-		let title
-		let image = hasImage ? searchParams.get('image') : null
-		let muxPlaybackId
-		let resource
-		let instructor = null
-		let postType = null
-		let lessonCount = 0
 
+		// If resource is provided, redirect to the new dynamic route
 		if (resourceSlugOrID && !hasTitle) {
-			console.log('Fetching resource for', resourceSlugOrID)
+			const updatedAt = searchParams.get('updatedAt')
+			const newUrl = `${origin}/api/og/${encodeURIComponent(resourceSlugOrID)}${updatedAt ? `?updatedAt=${encodeURIComponent(updatedAt)}` : ''}`
 
-			resource = await db.query.contentResource.findFirst({
-				extras: {
-					fields:
-						sql<string>`JSON_REMOVE(${contentResource.fields}, '$.body')`.as(
-							'fields',
-						),
-				},
-				where: and(
-					or(
-						eq(
-							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-							resourceSlugOrID,
-						),
-						eq(contentResource.id, resourceSlugOrID),
-					),
-				),
-				with: {
-					resources: {
-						with: {
-							resource: {
-								extras: {
-									fields:
-										sql<string>`JSON_REMOVE(${contentResource.fields}, '$.srt', '$.wordLevelSrt', '$.transcript', '$.muxAssetId', '$.originalMediaUrl')`.as(
-											'fields',
-										),
-								},
-							},
-						},
-						orderBy: asc(contentResourceResource.position),
-					},
-				},
+			console.log('Redirecting to:', newUrl)
+
+			return NextResponse.redirect(newUrl, {
+				status: 308, // Permanent redirect
+				headers: corsHeaders,
 			})
-
-			postType = resource?.fields.postType || null
-
-			console.log('Resource fetched', { resource: resource })
-
-			muxPlaybackId = resource?.resources?.[0]?.resource?.fields?.muxPlaybackId
-
-			title = resource?.fields?.title
-
-			if (resource && resourceTypesWithImages.includes(resource.type)) {
-				image =
-					resource?.fields?.coverImage?.url ||
-					resource.fields?.image ||
-					(muxPlaybackId &&
-						`https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${resource?.fields.thumbnailTime || 0}&width=1200`)
-			}
-
-			if (resource) {
-				console.log('Fetching instructor for userId', resource.createdById)
-				instructor = await db.query.users.findFirst({
-					where: eq(users.id, resource.createdById),
-					columns: {
-						name: true,
-						image: true,
-						email: true,
-					},
-				})
-				console.log('Instructor fetched', { instructor })
-
-				if (postType === 'course') {
-					console.log('Fetching lesson count for course', resource.id)
-					const result = await db
-						.select({
-							count: sql<number>`COUNT(*)`.as('count'),
-						})
-						.from(contentResourceResource)
-						.where(eq(contentResourceResource.resourceOfId, resource.id))
-
-					lessonCount = result[0]?.count || 0
-					console.log('Lesson count', lessonCount)
-				}
-			}
-		} else {
-			if (hasTitle) {
-				title = searchParams.get('title')?.slice(0, 100)
-			} else {
-				title = 'Learn Professional Programming'
-			}
 		}
 
-		const seed = resourceSlugOrID || title || 'default-seed'
+		// Handle custom title case (this is the only case we still support here)
+		let title: string
+		let image = hasImage ? searchParams.get('image') : null
 
-		console.log('Generating ImageResponse with', {
+		if (hasTitle) {
+			title =
+				searchParams.get('title')?.slice(0, 100) ||
+				'Learn Professional Programming'
+		} else {
+			title = 'Learn Professional Programming'
+		}
+
+		console.log('Generating ImageResponse with custom title', {
 			title,
 			image,
-			lessonCount,
-			instructor,
 		})
 
 		const response = new ImageResponse(
@@ -279,38 +196,13 @@ export async function GET(request: Request) {
 					</div>
 					<main tw="flex p-20 pb-24 relative z-10 flex-row w-full h-full flex-grow items-end justify-between">
 						<div tw="flex flex-col">
-							<div tw="text-[32px] uppercase mb-4 text-gray-300">
-								{postType
-									? postType.toUpperCase() +
-										(postType === 'course' ? ` - ${lessonCount} lessons` : '')
-									: ''}
-							</div>
 							<div
 								tw={`text-[64px] text-white leading-tight pr-16 max-w-[900px] line-clamp-3`}
 							>
 								{title}
 							</div>
 							<div tw="flex items-center mt-4 text-[32px] text-gray-200">
-								{`by ${instructor?.name || 'egghead instructor'}`}
-								<span>
-									{instructor?.email &&
-										instructor.image?.includes('gravatar.com') && (
-											<img
-												src={`https:${instructor.image}`}
-												tw="w-[48px] h-[48px] rounded-full ml-4"
-											/>
-										)}
-								</span>
-								<span>
-									{instructor?.email &&
-										instructor.image &&
-										!instructor.image?.includes('gravatar.com') && (
-											<img
-												src={instructor.image || ''}
-												tw="rounded-full ml-4 w-[48px] h-[48px]"
-											/>
-										)}
-								</span>
+								by egghead instructor
 							</div>
 						</div>
 					</main>

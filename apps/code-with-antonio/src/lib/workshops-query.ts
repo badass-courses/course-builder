@@ -24,6 +24,7 @@ import {
 	WorkshopRawSchema,
 	WorkshopSchema,
 	type CohortInfo,
+	type CreateWorkshopWithLessonsInput,
 	type ResourceRaw,
 	type SectionRaw,
 	type SolutionRaw,
@@ -911,30 +912,9 @@ export async function getWorkshopsForLesson(lessonId: string) {
  * Creates a workshop with lessons and sections in bulk
  * Supports product/pricing/coupon creation
  */
-export async function createWorkshopWithLessons(input: {
-	workshop: {
-		title: string
-		description?: string
-		tagIds?: { id: string; fields: { label: string; name: string } }[] | null
-	}
-	pricing: {
-		price?: number | null
-		quantity?: number | null
-	}
-	coupon?: {
-		enabled: boolean
-		percentageDiscount?: string
-		expires?: Date
-	}
-	structure: Array<
-		| {
-				type: 'section'
-				title: string
-				lessons: { title: string; videoResourceId?: string }[]
-		  }
-		| { type: 'lesson'; title: string; videoResourceId?: string }
-	>
-}) {
+export async function createWorkshopWithLessons(
+	input: CreateWorkshopWithLessonsInput,
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
