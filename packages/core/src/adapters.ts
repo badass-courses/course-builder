@@ -153,6 +153,70 @@ export interface CourseBuilderAdapter<
 		eventSeries: ContentResource
 		childEvents: ContentResource[]
 	}>
+	createCohort(
+		input: {
+			cohort: {
+				title: string
+				description?: string
+				tagIds?:
+					| { id: string; fields: { label: string; name: string } }[]
+					| null
+			}
+			dates: {
+				start: Date
+				end: Date
+			}
+			createProduct?: boolean
+			pricing: {
+				price?: number | null
+			}
+			coupon?: {
+				enabled: boolean
+				percentageDiscount?: string
+				expires?: Date
+			}
+			workshops: { id: string }[]
+		},
+		userId: string,
+	): Promise<{
+		cohort: ContentResource
+		product?: any
+	}>
+	createWorkshop(
+		input: {
+			workshop: {
+				title: string
+				description?: string
+				tagIds?:
+					| { id: string; fields: { label: string; name: string } }[]
+					| null
+			}
+			createProduct?: boolean
+			pricing: {
+				price?: number | null
+				quantity?: number | null
+			}
+			coupon?: {
+				enabled: boolean
+				percentageDiscount?: string
+				expires?: Date
+			}
+			structure: Array<
+				| {
+						type: 'section'
+						title: string
+						lessons: { title: string; videoResourceId?: string }[]
+				  }
+				| { type: 'lesson'; title: string; videoResourceId?: string }
+			>
+		},
+		userId: string,
+	): Promise<{
+		workshop: ContentResource
+		sections: ContentResource[]
+		lessons: ContentResource[]
+		product?: any
+	}>
 	createCoupon(input: {
 		quantity: string
 		maxUses: number
@@ -530,6 +594,17 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	createEventSeries: async (_) => {
 		return { eventSeries: null as any, childEvents: [] }
+	},
+	createCohort: async (_) => {
+		return { cohort: null as any, product: undefined }
+	},
+	createWorkshop: async (_) => {
+		return {
+			workshop: null as any,
+			sections: [],
+			lessons: [],
+			product: undefined,
+		}
 	},
 	getContentResource: async (_) => {
 		return null
