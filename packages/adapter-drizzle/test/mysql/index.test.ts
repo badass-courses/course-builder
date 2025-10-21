@@ -517,6 +517,7 @@ describe('createWorkshop', () => {
 		// Verify lessons are linked to workshop
 		const lessonLinks = await db.query.contentResourceResource.findMany({
 			where: eq(contentResourceResource.resourceOfId, result.workshop.id),
+			orderBy: (table, { asc }) => [asc(table.position)],
 		})
 		expect(lessonLinks).toHaveLength(2)
 		expect(lessonLinks[0]?.position).toBe(0)
