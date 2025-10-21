@@ -113,3 +113,28 @@ export type CohortAccess = {
 	expiresAt: Date | null
 	discordRoleId?: string
 }
+
+/**
+ * Input type for cohort creation with workshops
+ */
+export type CreateCohortWithWorkshopsInput = {
+	cohort: {
+		title: string
+		description?: string
+		tagIds?: { id: string; fields: { label: string; name: string } }[] | null
+	}
+	dates: {
+		start: Date
+		end: Date
+	}
+	createProduct?: boolean
+	pricing: {
+		price?: number | null
+	}
+	coupon?: {
+		enabled: boolean
+		percentageDiscount?: string
+		expires?: Date
+	}
+	workshops: { id: string }[]
+}

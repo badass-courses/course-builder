@@ -34,7 +34,12 @@ import {
 } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 
-import { CohortAccess, CohortSchema, type Cohort } from './cohort'
+import {
+	CohortAccess,
+	CohortSchema,
+	type Cohort,
+	type CreateCohortWithWorkshopsInput,
+} from './cohort'
 import { getPricingData } from './pricing-query'
 import { upsertPostToTypeSense } from './typesense-query'
 import { WorkshopSchema } from './workshops'
@@ -416,27 +421,9 @@ export async function getCohortPricing(
  * Creates a cohort with workshops in bulk
  * Supports product/pricing/coupon creation
  */
-export async function createCohortWithWorkshops(input: {
-	cohort: {
-		title: string
-		description?: string
-		tagIds?: { id: string; fields: { label: string; name: string } }[] | null
-	}
-	dates: {
-		start: Date
-		end: Date
-	}
-	createProduct?: boolean
-	pricing: {
-		price?: number | null
-	}
-	coupon?: {
-		enabled: boolean
-		percentageDiscount?: string
-		expires?: Date
-	}
-	workshops: { id: string }[]
-}) {
+export async function createCohortWithWorkshops(
+	input: CreateCohortWithWorkshopsInput,
+) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
