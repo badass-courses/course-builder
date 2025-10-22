@@ -3198,6 +3198,507 @@ export function mySqlDrizzleAdapter(
 
 			return { eventSeries, childEvents }
 		},
+		async createCohort(
+			input: {
+				cohort: {
+					title: string
+					description?: string
+					tagIds?:
+						| { id: string; fields: { label: string; name: string } }[]
+						| null
+				}
+				dates: {
+					start: Date
+					end: Date
+				}
+				createProduct?: boolean
+				pricing: {
+					price?: number | null
+				}
+				coupon?: {
+					enabled: boolean
+					percentageDiscount?: string
+					expires?: Date
+				}
+				workshops: { id: string }[]
+			},
+			userId: string,
+		) {
+			const hash = guid()
+			const cohortId = `cohort~${hash}`
+
+			// Transaction only handles database operations
+			const cohort = await client.transaction(async (tx) => {
+				// Create cohort content resource
+				await tx.insert(contentResource).values({
+					id: cohortId,
+					type: 'cohort',
+					createdById: userId,
+					fields: {
+						title: input.cohort.title,
+						description: input.cohort.description,
+						state: 'draft',
+						visibility: 'unlisted',
+						slug: slugify(`${input.cohort.title}~${hash}`),
+						startsAt: input.dates.start,
+						endsAt: input.dates.end,
+					},
+				})
+
+				// Fetch created cohort
+				const cohort = await tx.query.contentResource.findFirst({
+					where: eq(contentResource.id, cohortId),
+					with: {
+						resources: {
+							with: {
+								resource: true,
+							},
+							orderBy: asc(contentResourceResource.position),
+						},
+					},
+				})
+
+				if (!cohort) {
+					throw new Error('Failed to create cohort')
+				}
+
+				const parsedCohort = ContentResourceSchema.safeParse(cohort)
+				if (!parsedCohort.success) {
+					throw new Error('Invalid cohort data')
+				}
+
+				// Associate tags with cohort
+				if (input.cohort.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						input.cohort.tagIds.map((tag) => ({
+							contentResourceId: cohortId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
+				// Link workshops to cohort
+				let position = 0
+				for (const workshop of input.workshops) {
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: cohortId,
+						resourceId: workshop.id,
+						position,
+					})
+					position++
+				}
+
+				return parsedCohort.data
+			})
+
+			// Handle product and coupon creation outside transaction
+			let product: any = null
+			if (
+				input.createProduct &&
+				input.pricing.price &&
+				input.pricing.price > 0
+			) {
+				try {
+					product = await adapter.createProduct({
+						name: input.cohort.title,
+						price: input.pricing.price,
+						quantityAvailable: -1,
+						type: 'cohort',
+						state: 'published',
+						visibility: 'public',
+					})
+
+					if (product) {
+						// Link product to cohort resource
+						await client.insert(contentResourceProduct).values({
+							resourceId: cohortId,
+							productId: product.id,
+							position: 0,
+							metadata: {
+								addedBy: userId,
+							},
+						})
+
+						// Create coupon if enabled
+						if (
+							input.coupon?.enabled &&
+							input.coupon.percentageDiscount &&
+							input.coupon.expires
+						) {
+							try {
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
+								await adapter.createCoupon({
+									percentageDiscount: input.coupon.percentageDiscount,
+									expires: finalExpires || null,
+									restrictedToProductId: product.id,
+									default: true,
+									maxUses: -1,
+									quantity: '-1',
+									status: 1,
+									fields: {},
+								})
+								logger.debug('cohort.create.coupon.success', {
+									cohortId,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Failed to create coupon for cohort: ${couponError}`,
+									),
+								)
+								logger.debug('cohort.create.coupon.failed', {
+									cohortId,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw - cohort creation should succeed even if coupon fails
+							}
+						}
+					}
+				} catch (productError) {
+					logger.error(
+						new Error(`Failed to create product for cohort: ${productError}`),
+					)
+					logger.debug('cohort.create.product.failed', {
+						cohortId,
+						userId,
+						price: input.pricing.price,
+					})
+					// Don't throw - cohort creation should succeed even if product fails
+				}
+			}
+
+			return {
+				cohort,
+				product,
+			}
+		},
+		async createWorkshop(
+			input: {
+				workshop: {
+					title: string
+					description?: string
+					tagIds?:
+						| { id: string; fields: { label: string; name: string } }[]
+						| null
+				}
+				createProduct?: boolean
+				pricing: {
+					price?: number | null
+					quantity?: number | null
+				}
+				coupon?: {
+					enabled: boolean
+					percentageDiscount?: string
+					expires?: Date
+				}
+				structure: Array<
+					| {
+							type: 'section'
+							title: string
+							lessons: { title: string; videoResourceId?: string }[]
+					  }
+					| { type: 'lesson'; title: string; videoResourceId?: string }
+				>
+			},
+			userId: string,
+		) {
+			const hash = guid()
+			const workshopId = `workshop~${hash}`
+
+			// Transaction only handles database operations
+			const result = await client.transaction(async (tx) => {
+				// Create workshop content resource
+				await tx.insert(contentResource).values({
+					id: workshopId,
+					type: 'workshop',
+					createdById: userId,
+					fields: {
+						title: input.workshop.title,
+						description: input.workshop.description,
+						state: 'draft',
+						visibility: 'unlisted',
+						slug: slugify(`${input.workshop.title}~${hash}`),
+					},
+				})
+
+				// Fetch created workshop
+				const workshop = await tx.query.contentResource.findFirst({
+					where: eq(contentResource.id, workshopId),
+					with: {
+						resources: {
+							with: {
+								resource: {
+									with: {
+										resources: {
+											with: {
+												resource: true,
+											},
+											orderBy: asc(contentResourceResource.position),
+										},
+									},
+								},
+							},
+							orderBy: asc(contentResourceResource.position),
+						},
+					},
+				})
+
+				if (!workshop) {
+					throw new Error('Failed to create workshop')
+				}
+
+				const parsedWorkshop = ContentResourceSchema.safeParse(workshop)
+				if (!parsedWorkshop.success) {
+					throw new Error('Invalid workshop data')
+				}
+
+				// Associate tags with workshop
+				if (input.workshop.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						input.workshop.tagIds.map((tag) => ({
+							contentResourceId: workshopId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
+				// Create sections and lessons
+				const createdSections: ContentResource[] = []
+				const createdLessons: ContentResource[] = []
+				let position = 0
+
+				for (const item of input.structure) {
+					if (item.type === 'section') {
+						// Create section
+						const sectionHash = guid()
+						const sectionId = `section~${sectionHash}`
+
+						await tx.insert(contentResource).values({
+							id: sectionId,
+							type: 'section',
+							createdById: userId,
+							fields: {
+								title: item.title,
+								state: 'draft',
+								visibility: 'unlisted',
+								slug: slugify(`${item.title}~${sectionHash}`),
+							},
+						})
+
+						// Link section to workshop
+						await tx.insert(contentResourceResource).values({
+							resourceOfId: workshopId,
+							resourceId: sectionId,
+							position,
+						})
+
+						const section = await tx.query.contentResource.findFirst({
+							where: eq(contentResource.id, sectionId),
+						})
+
+						if (section) {
+							createdSections.push(section as ContentResource)
+						}
+
+						// Create lessons in section
+						let lessonPosition = 0
+						for (const lessonData of item.lessons) {
+							const lessonHash = guid()
+							const lessonId = `lesson_${lessonHash}`
+
+							await tx.insert(contentResource).values({
+								id: lessonId,
+								type: 'lesson',
+								createdById: userId,
+								fields: {
+									title: lessonData.title,
+									state: 'draft',
+									visibility: 'unlisted',
+									slug: slugify(`${lessonData.title}~${lessonHash}`),
+									lessonType: 'lesson',
+								},
+							})
+
+							// Link video if provided
+							if (lessonData.videoResourceId) {
+								await tx.insert(contentResourceResource).values({
+									resourceOfId: lessonId,
+									resourceId: lessonData.videoResourceId,
+									position: 0,
+								})
+							}
+
+							// Link lesson to section
+							await tx.insert(contentResourceResource).values({
+								resourceOfId: sectionId,
+								resourceId: lessonId,
+								position: lessonPosition,
+							})
+
+							const lesson = await tx.query.contentResource.findFirst({
+								where: eq(contentResource.id, lessonId),
+							})
+
+							if (lesson) {
+								createdLessons.push(lesson as ContentResource)
+							}
+
+							lessonPosition++
+						}
+
+						position++
+					} else {
+						// Create top-level lesson
+						const lessonHash = guid()
+						const lessonId = `lesson_${lessonHash}`
+
+						await tx.insert(contentResource).values({
+							id: lessonId,
+							type: 'lesson',
+							createdById: userId,
+							fields: {
+								title: item.title,
+								state: 'draft',
+								visibility: 'unlisted',
+								slug: slugify(`${item.title}~${lessonHash}`),
+								lessonType: 'lesson',
+							},
+						})
+
+						// Link video if provided
+						if (item.videoResourceId) {
+							await tx.insert(contentResourceResource).values({
+								resourceOfId: lessonId,
+								resourceId: item.videoResourceId,
+								position: 0,
+							})
+						}
+
+						// Link lesson to workshop
+						await tx.insert(contentResourceResource).values({
+							resourceOfId: workshopId,
+							resourceId: lessonId,
+							position,
+						})
+
+						const lesson = await tx.query.contentResource.findFirst({
+							where: eq(contentResource.id, lessonId),
+						})
+
+						if (lesson) {
+							createdLessons.push(lesson as ContentResource)
+						}
+
+						position++
+					}
+				}
+
+				return {
+					workshop: parsedWorkshop.data,
+					sections: createdSections,
+					lessons: createdLessons,
+				}
+			})
+
+			// Handle product and coupon creation outside transaction
+			let product: any = null
+			if (
+				input.createProduct &&
+				input.pricing.price &&
+				input.pricing.price > 0
+			) {
+				try {
+					product = await adapter.createProduct({
+						name: input.workshop.title,
+						price: input.pricing.price,
+						quantityAvailable: input.pricing.quantity ?? -1,
+						type: 'self-paced',
+						state: 'published',
+						visibility: 'public',
+					})
+
+					if (product) {
+						// Link product to workshop resource
+						await client.insert(contentResourceProduct).values({
+							resourceId: workshopId,
+							productId: product.id,
+							position: 0,
+							metadata: {
+								addedBy: userId,
+							},
+						})
+
+						// Create coupon if enabled
+						if (
+							input.coupon?.enabled &&
+							input.coupon.percentageDiscount &&
+							input.coupon.expires
+						) {
+							try {
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
+								await adapter.createCoupon({
+									percentageDiscount: input.coupon.percentageDiscount,
+									expires: finalExpires || null,
+									restrictedToProductId: product.id,
+									default: true,
+									maxUses: -1,
+									quantity: '-1',
+									status: 1,
+									fields: {},
+								})
+								logger.debug('workshop.create.coupon.success', {
+									workshopId,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Failed to create coupon for workshop: ${couponError}`,
+									),
+								)
+								logger.debug('workshop.create.coupon.failed', {
+									workshopId,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw - workshop creation should succeed even if coupon fails
+							}
+						}
+					}
+				} catch (productError) {
+					logger.error(
+						new Error(`Failed to create product for workshop: ${productError}`),
+					)
+					logger.debug('workshop.create.product.failed', {
+						workshopId,
+						userId,
+						price: input.pricing.price,
+					})
+					// Don't throw - workshop creation should succeed even if product fails
+				}
+			}
+
+			return {
+				...result,
+				product,
+			}
+		},
 		async createCoupon(input: {
 			quantity: string
 			maxUses: number
