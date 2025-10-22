@@ -3266,6 +3266,19 @@ export function mySqlDrizzleAdapter(
 					throw new Error('Invalid cohort data')
 				}
 
+				// Associate tags with cohort
+				if (input.cohort.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						input.cohort.tagIds.map((tag) => ({
+							contentResourceId: cohortId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
 				// Create product if enabled and price > 0
 				let product: any = null
 				if (
