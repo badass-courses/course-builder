@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { createEvent, createEventSeries } from '@/lib/events-query'
 import { api } from '@/trpc/react'
+import { Plus } from 'lucide-react'
 import { z } from 'zod'
 
 import {
@@ -70,8 +71,9 @@ export default function CreateNewEventDialog({
 				open={open}
 			>
 				<DialogTrigger asChild>
-					<Button className={cn(className)} variant={variant}>
+					<Button size="lg" className={cn(className)} variant={variant}>
 						{buttonLabel}
+						<Plus className="size-3 opacity-80" strokeWidth={3} />
 					</Button>
 				</DialogTrigger>
 				<DialogContent className="max-h-[90vh] overflow-y-auto">

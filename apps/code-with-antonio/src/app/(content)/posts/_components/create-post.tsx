@@ -8,7 +8,7 @@ import { useResource } from '@/components/resource-form/resource-context'
 import { NewResourceWithVideoForm } from '@/components/resources-crud/new-resource-with-video-form'
 import { createPost } from '@/lib/posts-query'
 import { getVideoResource } from '@/lib/video-resource-query'
-import { ExternalLink } from 'lucide-react'
+import { EditIcon, ExternalLink } from 'lucide-react'
 import pluralize from 'pluralize'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -46,6 +46,10 @@ export interface CreatePostProps {
 	 * @default true
 	 */
 	uploadEnabled?: boolean
+	/**
+	 * Called when processing is started
+	 */
+	setIsProcessing?: (isProcessing: boolean) => void
 }
 
 /**
@@ -59,33 +63,45 @@ export function CreatePost({
 	topLevelResourceTypes,
 	onNavigationStart,
 	uploadEnabled = true,
+	setIsProcessing,
 }: CreatePostProps = {}): JSX.Element {
 	const router = useRouter()
 	const [isPending, startTransition] = useTransition()
 	const resource = useResource()
 	const parentResource = resource?.resource
-	const [resourceUrl, setResourceUrl] = useState<string | null>(null)
+	const [resourceEditUrl, setResourceEditUrl] = useState<string | null>(null)
+	const [resourceViewUrl, setResourceViewUrl] = useState<string | null>(null)
 
 	return (
 		<>
 			<NewResourceWithVideoForm
 				className=""
-				onResourceCreated={async (resource: ContentResource) => {
-					const editUrl = getResourcePath(
-						resource.type,
-						resource.fields?.slug || resource.id,
-						'edit',
-						parentResource && {
-							parentType: parentResource.type,
-							parentSlug: parentResource.fields?.slug || parentResource.id,
-						},
-					)
-					setResourceUrl(editUrl)
+				onResourceCreated={async (
+					resource: ContentResource,
+					title,
+					resetForm: () => void,
+				) => {
+					const getUrl = (type: 'edit' | 'view') =>
+						getResourcePath(
+							resource.type,
+							resource.fields?.slug || resource.id,
+							type,
+							parentResource && {
+								parentType: parentResource.type,
+								parentSlug: parentResource.fields?.slug || parentResource.id,
+							},
+						)
+					setResourceEditUrl(getUrl('edit'))
+					setResourceViewUrl(getUrl('view'))
 
 					// Then notify parent components
 					if (onResourceCreated) {
 						await onResourceCreated(resource)
 					}
+					if (setIsProcessing) {
+						setIsProcessing(false)
+					}
+					resetForm()
 				}}
 				createResource={async (input) => {
 					// All posts get created the same way now
@@ -103,16 +119,25 @@ export function CreatePost({
 					</>
 				)}
 			</NewResourceWithVideoForm>
-			{resourceUrl && (
+			{resourceEditUrl && (
 				<div className="flex items-center justify-center gap-2 pt-2">
 					Resource created.{' '}
 					<Link
-						href={resourceUrl}
+						href={resourceEditUrl}
 						target="_blank"
 						className="inline-flex items-center underline"
 					>
-						Edit <ExternalLink className="ml-1 size-4" />
+						Edit <EditIcon className="ml-1 size-4" />
 					</Link>
+					{resourceViewUrl && (
+						<Link
+							href={resourceViewUrl}
+							target="_blank"
+							className="inline-flex items-center underline"
+						>
+							View <ExternalLink className="ml-1 size-4" />
+						</Link>
+					)}
 				</div>
 			)}
 		</>

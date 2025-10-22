@@ -1,30 +1,90 @@
 'use client'
 
-import { useState } from 'react'
 import { useQueryState } from 'nuqs'
-import {
-	useClearRefinements,
-	useConfigure,
-	useRefinementList,
-} from 'react-instantsearch'
+import { useRefinementList } from 'react-instantsearch'
 
 import { Separator } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-export const free = ['tutorial', 'article', 'nextUp', 'post']
+const FREE_TYPES = ['tutorial', 'post', 'list', 'article']
 
+/**
+ * BrowseBy navigation component for filtering content by type.
+ * Provides preset filters for content categories: Newest, Cohort-based, Self-paced, and Free.
+ */
 export default function BrowseBy() {
-	const { refine: clear } = useClearRefinements({})
-	const { refine } = useRefinementList({
+	const { items, refine } = useRefinementList({
 		attribute: 'type',
 		operator: 'or',
 	})
-	const [queryParam] = useQueryState<string[]>('type', {
-		defaultValue: [],
-		parse: (value) => value.split(','),
-	})
 
-	const [values, setValues] = useState<string[]>(queryParam)
+	// Read URL to determine initial active state (before InstantSearch is ready)
+	const [typeParam] = useQueryState('type')
+
+	// Get currently selected type values from InstantSearch (once it's initialized)
+	const selectedTypes = items
+		.filter((item) => item.isRefined)
+		.map((item) => item.value)
+
+	// If InstantSearch hasn't initialized yet, use URL params
+	const activeTypes =
+		selectedTypes.length > 0
+			? selectedTypes
+			: typeParam
+				? typeParam.split(',')
+				: []
+
+	// Check if specific types are active (use activeTypes for initial render support)
+	const isNewestActive = activeTypes.length === 0
+	const isCohortActive =
+		activeTypes.length === 1 && activeTypes.includes('cohort')
+	const isWorkshopActive =
+		activeTypes.length === 1 && activeTypes.includes('workshop')
+	const isFreeActive =
+		activeTypes.length === FREE_TYPES.length &&
+		FREE_TYPES.every((type) => activeTypes.includes(type))
+
+	const handleNewestClick = () => {
+		// Unrefine all currently refined items
+		items.forEach((item) => {
+			if (item.isRefined) {
+				refine(item.value)
+			}
+		})
+	}
+
+	const handleCohortClick = () => {
+		// Unrefine all currently refined items
+		items.forEach((item) => {
+			if (item.isRefined) {
+				refine(item.value)
+			}
+		})
+		// Then refine cohort
+		refine('cohort')
+	}
+
+	const handleWorkshopClick = () => {
+		// Unrefine all currently refined items
+		items.forEach((item) => {
+			if (item.isRefined) {
+				refine(item.value)
+			}
+		})
+		// Then refine workshop
+		refine('workshop')
+	}
+
+	const handleFreeClick = () => {
+		// Unrefine all currently refined items
+		items.forEach((item) => {
+			if (item.isRefined) {
+				refine(item.value)
+			}
+		})
+		// Then refine all free types
+		FREE_TYPES.forEach((type) => refine(type))
+	}
 
 	return (
 		<ul className="flex flex-col gap-5">
@@ -35,29 +95,19 @@ export default function BrowseBy() {
 			<li>
 				<button
 					className={cn({
-						'text-primary': values.includes('newest') || values.length === 0,
+						'text-primary': isNewestActive,
 					})}
-					onClick={() => {
-						clear()
-						setValues(['newest'])
-					}}
+					onClick={handleNewestClick}
 				>
 					Newest
 				</button>
 			</li>
 			<li>
 				<button
-					className={cn(
-						{},
-						{
-							'text-primary': values.includes('cohort'),
-						},
-					)}
-					onClick={() => {
-						clear()
-						refine('cohort')
-						setValues(['cohort'])
-					}}
+					className={cn({
+						'text-primary': isCohortActive,
+					})}
+					onClick={handleCohortClick}
 				>
 					Cohort-based
 				</button>
@@ -65,13 +115,9 @@ export default function BrowseBy() {
 			<li>
 				<button
 					className={cn({
-						'text-primary': values.includes('workshop'),
+						'text-primary': isWorkshopActive,
 					})}
-					onClick={() => {
-						clear()
-						refine('workshop')
-						setValues(['workshop'])
-					}}
+					onClick={handleWorkshopClick}
 				>
 					Self-paced
 				</button>
@@ -79,20 +125,9 @@ export default function BrowseBy() {
 			<li>
 				<button
 					className={cn({
-						'text-primary':
-							values.includes('tutorial') ||
-							values.includes('article') ||
-							values.includes('nextUp') ||
-							values.includes('post'),
+						'text-primary': isFreeActive,
 					})}
-					onClick={() => {
-						clear()
-						refine('tutorial')
-						refine('article')
-						refine('nextUp')
-						refine('post')
-						setValues(['tutorial', 'article', 'nextUp', 'post'])
-					}}
+					onClick={handleFreeClick}
 				>
 					Free
 				</button>

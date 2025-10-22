@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createCohortWithWorkshops } from '@/lib/cohorts-query'
 import { getAllWorkshops } from '@/lib/workshops-query'
 import { api } from '@/trpc/react'
+import { Plus } from 'lucide-react'
 import { z } from 'zod'
 
 import {
@@ -95,8 +96,9 @@ export default function CreateNewCohortDialog({
 				open={open}
 			>
 				<DialogTrigger asChild>
-					<Button className={cn(className)} variant={variant}>
+					<Button size="lg" className={cn(className)} variant={variant}>
 						{buttonLabel}
+						<Plus className="size-3 opacity-80" strokeWidth={3} />
 					</Button>
 				</DialogTrigger>
 				<DialogContent className="max-h-[90vh] overflow-y-auto">

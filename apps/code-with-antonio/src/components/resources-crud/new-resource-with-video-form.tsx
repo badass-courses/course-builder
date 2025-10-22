@@ -95,7 +95,11 @@ export function NewResourceWithVideoForm({
 }: {
 	getVideoResource: (idOrSlug?: string) => Promise<VideoResource | null>
 	createResource: (values: NewPostInput) => Promise<ContentResource>
-	onResourceCreated: (resource: ContentResource, title: string) => Promise<void>
+	onResourceCreated: (
+		resource: ContentResource,
+		title: string,
+		resetForm: () => void,
+	) => Promise<void>
 	availableResourceTypes?: string[] | undefined
 	defaultPostType?: string
 	className?: string
@@ -260,7 +264,7 @@ export function NewResourceWithVideoForm({
 				description: `Successfully created ${selectedType}: ${values.title}`,
 			})
 
-			await onResourceCreated(resource, form.watch('title'))
+			await onResourceCreated(resource, form.watch('title'), form.reset)
 		} catch (error) {
 			let errorMessage = 'Error creating resource'
 			let errorType = 'unknown_error'

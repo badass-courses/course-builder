@@ -60,7 +60,7 @@ export default function Footer() {
 								Home
 							</Link>
 							<Link
-								href="/cohorts"
+								href="/browse?type=cohort"
 								className="hover:text-foreground transition"
 							>
 								Cohorts

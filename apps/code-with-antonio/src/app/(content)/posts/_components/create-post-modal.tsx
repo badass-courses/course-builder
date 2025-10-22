@@ -101,7 +101,6 @@ export function CreatePostModal({
 		setIsProcessing(true)
 		if (onResourceCreated) {
 			await onResourceCreated(resource)
-			setIsProcessing(false)
 		}
 	}
 
@@ -109,7 +108,7 @@ export function CreatePostModal({
 		<Dialog
 			open={isOpen}
 			onOpenChange={(open) => {
-				if (isProcessing) return // prevent closing while processing
+				// if (isProcessing) return // prevent closing while processing
 				if (onOpenChange) {
 					onOpenChange(open)
 				}
@@ -145,6 +144,7 @@ export function CreatePostModal({
 					availableResourceTypes={availableResourceTypes}
 					topLevelResourceTypes={topLevelResourceTypes}
 					uploadEnabled={uploadEnabled}
+					setIsProcessing={setIsProcessing}
 				/>
 			</DialogContent>
 		</Dialog>

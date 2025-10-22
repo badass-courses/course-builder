@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createWorkshopWithLessons } from '@/lib/workshops-query'
 import { getUniqueFilename } from '@/utils/get-unique-filename'
 import { UploadDropzone } from '@/utils/uploadthing'
-import { YoutubeIcon } from 'lucide-react'
+import { Plus, YoutubeIcon } from 'lucide-react'
 
 import {
 	Button,
@@ -71,8 +71,9 @@ export default function CreateNewWorkshopDialog({
 				open={open}
 			>
 				<DialogTrigger asChild>
-					<Button className={cn(className)} variant={variant}>
+					<Button size="lg" className={cn(className)} variant={variant}>
 						{buttonLabel}
+						<Plus className="size-3 opacity-80" strokeWidth={3} />
 					</Button>
 				</DialogTrigger>
 				<DialogContent className="max-h-[90vh] overflow-y-auto">
