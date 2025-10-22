@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"typesense": "^1.8.2",
-		"typesense-instantsearch-adapter": "^2.8.0"
+		"typesense-instantsearch-adapter": "^2.9.0"
 	},
 	"devDependencies": {
 		"tsup": "8.0.2",
