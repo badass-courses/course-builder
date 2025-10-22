@@ -3461,6 +3461,19 @@ export function mySqlDrizzleAdapter(
 					throw new Error('Invalid workshop data')
 				}
 
+				// Associate tags with workshop
+				if (input.workshop.tagIds) {
+					await tx.insert(contentResourceTag).values(
+						input.workshop.tagIds.map((tag) => ({
+							contentResourceId: workshopId,
+							tagId: tag.id,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+							position: 0,
+						})),
+					)
+				}
+
 				// Create sections and lessons
 				const createdSections: ContentResource[] = []
 				const createdLessons: ContentResource[] = []
