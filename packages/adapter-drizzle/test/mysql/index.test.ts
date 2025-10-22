@@ -477,6 +477,7 @@ describe('createWorkshop', () => {
 
 		const input = {
 			workshop: { title: 'Paid Workshop' },
+			createProduct: true,
 			pricing: { price: 250, quantity: -1 },
 			structure: [],
 		}
