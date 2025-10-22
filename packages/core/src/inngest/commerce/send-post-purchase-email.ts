@@ -11,6 +11,7 @@ import { NEW_PURCHASE_CREATED_EVENT } from './event-new-purchase-created'
 export const sendPostPurchaseEmailConfig = {
 	id: `send-post-purchase-email`,
 	name: 'Send Post Purchase Email',
+	idempotency: 'event.data.checkoutSessionId',
 }
 export const sendPostPurchaseEmailTrigger: CoreInngestTrigger = {
 	event: NEW_PURCHASE_CREATED_EVENT,
