@@ -3239,8 +3239,8 @@ export function mySqlDrizzleAdapter(
 						state: 'draft',
 						visibility: 'unlisted',
 						slug: slugify(`${input.cohort.title}~${hash}`),
-						startsAt: input.dates.start.toISOString(),
-						endsAt: input.dates.end.toISOString(),
+						startsAt: input.dates.start,
+						endsAt: input.dates.end,
 					},
 				})
 
