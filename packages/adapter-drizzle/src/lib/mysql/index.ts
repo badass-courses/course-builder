@@ -3227,7 +3227,8 @@ export function mySqlDrizzleAdapter(
 			const hash = guid()
 			const cohortId = `cohort~${hash}`
 
-			const result = await client.transaction(async (tx) => {
+			// Transaction only handles database operations
+			const cohort = await client.transaction(async (tx) => {
 				// Create cohort content resource
 				await tx.insert(contentResource).values({
 					id: cohortId,
@@ -3279,13 +3280,28 @@ export function mySqlDrizzleAdapter(
 					)
 				}
 
-				// Create product if enabled and price > 0
-				let product: any = null
-				if (
-					input.createProduct &&
-					input.pricing.price &&
-					input.pricing.price > 0
-				) {
+				// Link workshops to cohort
+				let position = 0
+				for (const workshop of input.workshops) {
+					await tx.insert(contentResourceResource).values({
+						resourceOfId: cohortId,
+						resourceId: workshop.id,
+						position,
+					})
+					position++
+				}
+
+				return parsedCohort.data
+			})
+
+			// Handle product and coupon creation outside transaction
+			let product: any = null
+			if (
+				input.createProduct &&
+				input.pricing.price &&
+				input.pricing.price > 0
+			) {
+				try {
 					product = await adapter.createProduct({
 						name: input.cohort.title,
 						price: input.pricing.price,
@@ -3296,7 +3312,8 @@ export function mySqlDrizzleAdapter(
 					})
 
 					if (product) {
-						await tx.insert(contentResourceProduct).values({
+						// Link product to cohort resource
+						await client.insert(contentResourceProduct).values({
 							resourceId: cohortId,
 							productId: product.id,
 							position: 0,
@@ -3311,39 +3328,58 @@ export function mySqlDrizzleAdapter(
 							input.coupon.percentageDiscount &&
 							input.coupon.expires
 						) {
-							const finalExpires = normalizeExpirationDate(input.coupon.expires)
-							await adapter.createCoupon({
-								percentageDiscount: input.coupon.percentageDiscount,
-								expires: finalExpires || null,
-								restrictedToProductId: product.id,
-								default: true,
-								maxUses: -1,
-								quantity: '-1',
-								status: 1,
-								fields: {},
-							})
+							try {
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
+								await adapter.createCoupon({
+									percentageDiscount: input.coupon.percentageDiscount,
+									expires: finalExpires || null,
+									restrictedToProductId: product.id,
+									default: true,
+									maxUses: -1,
+									quantity: '-1',
+									status: 1,
+									fields: {},
+								})
+								logger.debug('cohort.create.coupon.success', {
+									cohortId,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Failed to create coupon for cohort: ${couponError}`,
+									),
+								)
+								logger.debug('cohort.create.coupon.failed', {
+									cohortId,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw - cohort creation should succeed even if coupon fails
+							}
 						}
 					}
-				}
-
-				// Link workshops to cohort
-				let position = 0
-				for (const workshop of input.workshops) {
-					await tx.insert(contentResourceResource).values({
-						resourceOfId: cohortId,
-						resourceId: workshop.id,
-						position,
+				} catch (productError) {
+					logger.error(
+						new Error(`Failed to create product for cohort: ${productError}`),
+					)
+					logger.debug('cohort.create.product.failed', {
+						cohortId,
+						userId,
+						price: input.pricing.price,
 					})
-					position++
+					// Don't throw - cohort creation should succeed even if product fails
 				}
+			}
 
-				return {
-					cohort: parsedCohort.data,
-					product,
-				}
-			})
-
-			return result
+			return {
+				cohort,
+				product,
+			}
 		},
 		async createWorkshop(
 			input: {
@@ -3378,6 +3414,7 @@ export function mySqlDrizzleAdapter(
 			const hash = guid()
 			const workshopId = `workshop~${hash}`
 
+			// Transaction only handles database operations
 			const result = await client.transaction(async (tx) => {
 				// Create workshop content resource
 				await tx.insert(contentResource).values({
@@ -3422,49 +3459,6 @@ export function mySqlDrizzleAdapter(
 				const parsedWorkshop = ContentResourceSchema.safeParse(workshop)
 				if (!parsedWorkshop.success) {
 					throw new Error('Invalid workshop data')
-				}
-
-				// Create product if price > 0
-				let product: any = null
-				if (input.pricing.price && input.pricing.price > 0) {
-					product = await adapter.createProduct({
-						name: input.workshop.title,
-						price: input.pricing.price,
-						quantityAvailable: input.pricing.quantity ?? -1,
-						type: 'self-paced',
-						state: 'published',
-						visibility: 'public',
-					})
-
-					if (product) {
-						await tx.insert(contentResourceProduct).values({
-							resourceId: workshopId,
-							productId: product.id,
-							position: 0,
-							metadata: {
-								addedBy: userId,
-							},
-						})
-
-						// Create coupon if enabled
-						if (
-							input.coupon?.enabled &&
-							input.coupon.percentageDiscount &&
-							input.coupon.expires
-						) {
-							const finalExpires = normalizeExpirationDate(input.coupon.expires)
-							await adapter.createCoupon({
-								percentageDiscount: input.coupon.percentageDiscount,
-								expires: finalExpires || null,
-								restrictedToProductId: product.id,
-								default: true,
-								maxUses: -1,
-								quantity: '-1',
-								status: 1,
-								fields: {},
-							})
-						}
-					}
 				}
 
 				// Create sections and lessons
@@ -3602,11 +3596,91 @@ export function mySqlDrizzleAdapter(
 					workshop: parsedWorkshop.data,
 					sections: createdSections,
 					lessons: createdLessons,
-					product,
 				}
 			})
 
-			return result
+			// Handle product and coupon creation outside transaction
+			let product: any = null
+			if (input.pricing.price && input.pricing.price > 0) {
+				try {
+					product = await adapter.createProduct({
+						name: input.workshop.title,
+						price: input.pricing.price,
+						quantityAvailable: input.pricing.quantity ?? -1,
+						type: 'self-paced',
+						state: 'published',
+						visibility: 'public',
+					})
+
+					if (product) {
+						// Link product to workshop resource
+						await client.insert(contentResourceProduct).values({
+							resourceId: workshopId,
+							productId: product.id,
+							position: 0,
+							metadata: {
+								addedBy: userId,
+							},
+						})
+
+						// Create coupon if enabled
+						if (
+							input.coupon?.enabled &&
+							input.coupon.percentageDiscount &&
+							input.coupon.expires
+						) {
+							try {
+								const finalExpires = normalizeExpirationDate(
+									input.coupon.expires,
+								)
+								await adapter.createCoupon({
+									percentageDiscount: input.coupon.percentageDiscount,
+									expires: finalExpires || null,
+									restrictedToProductId: product.id,
+									default: true,
+									maxUses: -1,
+									quantity: '-1',
+									status: 1,
+									fields: {},
+								})
+								logger.debug('workshop.create.coupon.success', {
+									workshopId,
+									productId: product.id,
+									userId,
+									percentageDiscount: input.coupon.percentageDiscount,
+								})
+							} catch (couponError) {
+								logger.error(
+									new Error(
+										`Failed to create coupon for workshop: ${couponError}`,
+									),
+								)
+								logger.debug('workshop.create.coupon.failed', {
+									workshopId,
+									productId: product.id,
+									userId,
+								})
+								// Don't throw - workshop creation should succeed even if coupon fails
+							}
+						}
+					}
+				} catch (productError) {
+					logger.error(
+						new Error(`Failed to create product for workshop: ${productError}`),
+					)
+					logger.debug('workshop.create.product.failed', {
+						workshopId,
+						userId,
+						price: input.pricing.price,
+					})
+					// Don't throw - workshop creation should succeed even if product fails
+				}
+			}
+
+			return {
+				...result,
+				product,
+			}
 		},
 		async createCoupon(input: {
 			quantity: string
