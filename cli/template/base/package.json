@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"@t3-oss/env-nextjs": "^0.7.1",
-		"next": "16.0.0-beta.0",
+		"next": "16.0.0",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"zod": "^4.1.12"
@@ -26,7 +26,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.11.0",
 		"@typescript-eslint/parser": "^8.46.0",
 		"eslint": "^8.54.0",
-		"eslint-config-next": "16.0.0-beta.0",
+		"eslint-config-next": "16.0.0",
 		"typescript": "5.4.5"
 	}
 }

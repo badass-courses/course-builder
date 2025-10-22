@@ -4,13 +4,7 @@ import { FileText, Mail, TagIcon, TicketIcon } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
 
-const AdminLayout = async ({
-	children,
-	params,
-}: {
-	children: React.ReactNode
-	params: Promise<{ module: string }>
-}) => {
+const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div
 			className={cn(

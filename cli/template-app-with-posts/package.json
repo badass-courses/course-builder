@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
-		"next": "16.0.0-beta.0",
+		"next": "16.0.0",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
 		"zod": "^3.22.4",
@@ -62,7 +62,7 @@
 		"postcss": "^8.4.47",
 		"autoprefixer": "^10.4.14",
 		"eslint": "^9.37.0",
-		"eslint-config-next": "16.0.0-beta.0",
+		"eslint-config-next": "16.0.0",
 		"partykit": "0.0.104",
 		"vitest": "1.6.0",
 		"vite-tsconfig-paths": "^5.1.4",
