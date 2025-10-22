@@ -61,6 +61,8 @@ export const NewProductSchema = z.object({
 		.enum(['public', 'private', 'unlisted'])
 		.default('unlisted')
 		.optional(),
+	openEnrollment: z.string().datetime().nullish(),
+	closeEnrollment: z.string().datetime().nullish(),
 })
 
 export type NewProduct = z.infer<typeof NewProductSchema>

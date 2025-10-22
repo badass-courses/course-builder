@@ -1649,6 +1649,10 @@ export function mySqlDrizzleAdapter(
 					state: input.state || 'draft',
 					visibility: input.visibility || 'unlisted',
 					slug: slugify(`${input.name}-${hash}`),
+					...(input.openEnrollment && { openEnrollment: input.openEnrollment }),
+					...(input.closeEnrollment && {
+						closeEnrollment: input.closeEnrollment,
+					}),
 				},
 			}
 
@@ -3309,6 +3313,8 @@ export function mySqlDrizzleAdapter(
 						type: 'cohort',
 						state: 'published',
 						visibility: 'public',
+						openEnrollment: new Date().toISOString(),
+						closeEnrollment: input.dates.start.toISOString(),
 					})
 
 					if (product) {
