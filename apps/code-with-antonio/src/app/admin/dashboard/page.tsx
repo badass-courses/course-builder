@@ -17,12 +17,12 @@ import {
 	CardDescription,
 	CardHeader,
 	CardTitle,
-	CreateEventForm,
 } from '@coursebuilder/ui'
 
 import CreateNewCohortDialog from '../../(content)/cohorts/_components/create-new-cohort-dialog'
 import CreateNewEventDialog from '../../(content)/events/_components/create-new-event-dialog'
 import CreateNewWorkshopDialog from '../../(content)/workshops/_components/create-new-workshop-dialog'
+import AllResourcesList from './_components/all-resources.server'
 
 function CompletionCount({ count }: { count: number }) {
 	return (
@@ -45,7 +45,11 @@ function EmptyState({ type }: { type: 'posts' | 'lists' }) {
 	)
 }
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>
+}) {
 	const { ability } = await getServerAuthSession()
 	if (ability.cannot('manage', 'all')) {
 		notFound()
@@ -82,7 +86,8 @@ export default async function AdminDashboardPage() {
 					Create new content and track engagement.
 				</p>
 			</div>
-			<div className="grid grid-cols-3 gap-5">
+
+			<section className="grid grid-cols-3 gap-5">
 				<Card className="relative flex flex-col justify-between">
 					<CardHeader className="">
 						<CardTitle>Posts</CardTitle>
@@ -169,8 +174,10 @@ export default async function AdminDashboardPage() {
 						/>
 					</CardContent>
 				</Card>
-			</div>
-			<div className="flex flex-col gap-5">
+			</section>
+
+			<AllResourcesList searchParams={searchParams} />
+			<section className="flex flex-col gap-5">
 				{listStats.length > 0 && (
 					<Card>
 						<CardHeader>
@@ -288,7 +295,7 @@ export default async function AdminDashboardPage() {
 						)}
 					</CardContent>
 				</Card>
-			</div>
+			</section>
 		</main>
 	)
 }
