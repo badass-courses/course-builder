@@ -3614,7 +3614,11 @@ export function mySqlDrizzleAdapter(
 
 			// Handle product and coupon creation outside transaction
 			let product: any = null
-			if (input.pricing.price && input.pricing.price > 0) {
+			if (
+				input.createProduct &&
+				input.pricing.price &&
+				input.pricing.price > 0
+			) {
 				try {
 					product = await adapter.createProduct({
 						name: input.workshop.title,
