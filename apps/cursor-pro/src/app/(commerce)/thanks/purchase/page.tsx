@@ -82,7 +82,6 @@ const getServerSideProps = async (session_id: string) => {
 				if (errorCheck.shouldShowError) {
 					return {
 						paymentSucceededButProcessingFailed: true,
-						stripeEventId: errorCheck.stripeEventId,
 					}
 				}
 
