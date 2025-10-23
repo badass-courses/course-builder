@@ -7,6 +7,7 @@ import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
+import { env } from '@/env.mjs'
 import {
 	cancelPurchaseTransfer,
 	getPurchaseTransferForPurchaseId,
@@ -82,7 +83,6 @@ const getServerSideProps = async (session_id: string) => {
 				if (errorCheck.shouldShowError) {
 					return {
 						paymentSucceededButProcessingFailed: true,
-						stripeEventId: errorCheck.stripeEventId,
 					}
 				}
 
