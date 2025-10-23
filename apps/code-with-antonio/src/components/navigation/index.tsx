@@ -187,18 +187,23 @@ const Navigation = ({ className }: { className?: string }) => {
 					</NavigationMenu>
 					{showSearch && (
 						<form
-							className="relative flex w-full max-w-xs shrink-0"
+							className="relative flex w-full max-w-xs sm:shrink-0"
 							onSubmit={handleSearch}
 						>
 							<SearchIcon className="text-muted-foreground absolute left-6 top-1/2 size-4 -translate-y-1/2" />
 							<Input
 								name="query"
 								placeholder="What do you want to learn today?"
-								className="bg-input border-border ml-3 w-full rounded-full border pl-10"
+								className="bg-input border-border ml-3 hidden w-full rounded-full border pl-10 sm:flex"
 								type="search"
 								disabled={isSearching}
-								// onChange={(event) => refine(event.currentTarget.value)}
-								// defaultValue={queryParam || ''}
+							/>
+							<Input
+								name="query"
+								placeholder="Search"
+								className="bg-input border-border ml-3 flex w-full rounded-full border pl-10 sm:hidden"
+								type="search"
+								disabled={isSearching}
 							/>
 						</form>
 					)}

@@ -62,14 +62,14 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex aspect-square h-full shrink-0 items-center justify-center border-l px-5"
+				className="flex aspect-square h-full shrink-0 items-center justify-center px-5"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
 				{!isMobileMenuOpen ? (
-					<Menu className="h-5 w-5" />
+					<Menu className="size-6" />
 				) : (
-					<X className="h-5 w-5" />
+					<X className="size-6" />
 				)}
 			</Button>
 			<Sheet
