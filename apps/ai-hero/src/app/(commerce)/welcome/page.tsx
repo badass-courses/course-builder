@@ -74,10 +74,20 @@ const getPurchaseDetailsForWelcome = async (query: {
 	const paymentProvider = stripeProvider
 
 	if (session_id && paymentProvider) {
-		const { chargeIdentifier } = await paymentProvider.getPurchaseInfo(
+		const purchaseInfo = await paymentProvider.getPurchaseInfo(
 			session_id,
 			courseBuilderAdapter,
 		)
+
+		if (
+			'error' in purchaseInfo &&
+			purchaseInfo.error === 'paymentSucceededButProcessingFailed'
+		) {
+			redirect(`/thanks/purchase?session_id=${session_id}`)
+		}
+
+		const validPurchaseInfo = purchaseInfo as any
+		const { chargeIdentifier } = validPurchaseInfo
 
 		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 

@@ -20,6 +20,7 @@ import { authOptions, getServerAuthSession } from '@/server/auth'
 import { SubscriptionWelcomePage } from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
+import { checkForPaymentSuccessWithoutPurchase } from '@coursebuilder/core'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
 import { isString } from '@coursebuilder/nodash'
 
@@ -74,10 +75,20 @@ const getPurchaseDetailsForWelcome = async (query: {
 	const paymentProvider = stripeProvider
 
 	if (session_id && paymentProvider) {
-		const { chargeIdentifier } = await paymentProvider.getPurchaseInfo(
+		const purchaseInfo = await paymentProvider.getPurchaseInfo(
 			session_id,
 			courseBuilderAdapter,
 		)
+
+		// Check if the response indicates a payment succeeded but processing failed
+		if (
+			'error' in purchaseInfo &&
+			purchaseInfo.error === 'paymentSucceededButProcessingFailed'
+		) {
+			redirect(`/thanks/purchase?session_id=${session_id}`)
+		}
+
+		const { chargeIdentifier } = purchaseInfo as any
 
 		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 
