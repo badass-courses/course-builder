@@ -6,7 +6,6 @@ import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import type { AdapterUser } from '@auth/core/adapters'
-import cookie, { serialize, type CookieSerializeOptions } from 'cookie'
 import { format } from 'date-fns'
 import { z } from 'zod'
 
@@ -52,11 +51,10 @@ export const convertkitRouter = createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			const session = ctx.session
 			let subscriber
-			const convertkitId = ctx.headers.get(
-				process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY || 'ck_subscriber_id',
-			)
+			const cookieStore = await cookies()
+			const convertkitId = cookieStore.get('ck_subscriber_id')?.value
 
-			const subscriberCookie = ctx.headers.get('ck_subscriber')
+			const subscriberCookie = cookieStore.get('ck_subscriber')?.value
 
 			let fields: Record<string, string> = {
 				last_surveyed_on: formatDate(new Date()),
@@ -116,8 +114,7 @@ export const convertkitRouter = createTRPCRouter({
 			}
 
 			if (updatedSubscriber) {
-				setCookie(
-					ctx.headers,
+				cookieStore.set(
 					'ck_subscriber',
 					JSON.stringify(deepOmitNull(updatedSubscriber)),
 					{
@@ -129,8 +126,7 @@ export const convertkitRouter = createTRPCRouter({
 					},
 				)
 
-				setCookie(
-					ctx.headers,
+				cookieStore.set(
 					'ck_subscriber_id',
 					JSON.stringify(updatedSubscriber.id),
 					{
@@ -154,11 +150,10 @@ export const convertkitRouter = createTRPCRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			let subscriber
-			const convertkitId = ctx.headers.get(
-				process.env.NEXT_PUBLIC_CONVERTKIT_SUBSCRIBER_KEY || 'ck_subscriber_id',
-			)
+			const cookieStore = await cookies()
+			const convertkitId = cookieStore.get('ck_subscriber_id')?.value
 
-			const subscriberCookie = ctx.headers.get('ck_subscriber')
+			const subscriberCookie = cookieStore.get('ck_subscriber')?.value
 
 			if (convertkitId) {
 				subscriber = SubscriberSchema.parse(
@@ -177,8 +172,7 @@ export const convertkitRouter = createTRPCRouter({
 				...input,
 			})
 
-			setCookie(
-				ctx.headers,
+			cookieStore.set(
 				'ck_subscriber',
 				JSON.stringify(deepOmitNull(updatedSubscriber)),
 				{
@@ -213,13 +207,4 @@ function deepOmitNull(obj: any): any {
 	}
 
 	return obj === null ? undefined : obj
-}
-
-export function setCookie(
-	resHeaders: Headers,
-	name: string,
-	value: string,
-	options?: CookieSerializeOptions,
-) {
-	resHeaders.append('Set-Cookie', cookie.serialize(name, value, options))
 }
