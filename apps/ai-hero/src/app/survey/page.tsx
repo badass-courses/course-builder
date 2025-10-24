@@ -9,6 +9,7 @@ import {
 	type QuestionResource,
 } from '@coursebuilder/survey'
 
+import { setSubscriberCookie } from '../(content)/survey/actions'
 import {
 	dataTypescript2024,
 	TYPESCRIPT_2024_SURVEY_ID,
@@ -37,22 +38,45 @@ export default function Survey() {
 		subscriberData,
 		status === 'pending',
 	)
-	const answerSurveyMutation = api.convertkit.answerSurvey.useMutation()
+	const answerSurveyMutation = api.convertkit.answerSurvey.useMutation({
+		onSuccess: async (data) => {
+			if (data && 'id' in data) {
+				await setSubscriberCookie(data)
+			}
+		},
+	})
 	const answerSurveyMultipleMutation =
-		api.convertkit.answerSurveyMultiple.useMutation()
+		api.convertkit.answerSurveyMultiple.useMutation({
+			onSuccess: async (data) => {
+				if (data && 'id' in data) {
+					await setSubscriberCookie(data)
+				}
+			},
+		})
 	const [email, setEmail] = React.useState<string | null>(null)
 
 	const handleEmailSubmit = async (email: string) => {
-		// Here you would typically send the email and answers to your backend
-
 		setEmail(email)
 		sendToMachine({ type: 'EMAIL_COLLECTED' })
+
+		// Submit all answers with the email
+		answerSurveyMultipleMutation.mutate({
+			email,
+			answers,
+			surveyId: TYPESCRIPT_2024_SURVEY_ID,
+		})
 	}
 
 	React.useEffect(() => {
-		if (isComplete && machineState.matches('offerComplete')) {
+		// Fallback: submit if already complete without email submission
+		if (
+			isComplete &&
+			machineState.matches('offerComplete') &&
+			!email &&
+			subscriber?.email_address
+		) {
 			answerSurveyMultipleMutation.mutate({
-				email: email || subscriber?.email_address,
+				email: subscriber.email_address,
 				answers,
 				surveyId: TYPESCRIPT_2024_SURVEY_ID,
 			})

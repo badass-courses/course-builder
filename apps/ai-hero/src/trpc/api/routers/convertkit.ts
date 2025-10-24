@@ -1,18 +1,11 @@
 import { cookies } from 'next/headers'
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
-import { env } from '@/env.mjs'
 import { answerSurvey } from '@/lib/surveys-query'
 import { SubscriberSchema } from '@/schemas/subscriber'
-import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import type { AdapterUser } from '@auth/core/adapters'
 import { format } from 'date-fns'
 import { z } from 'zod'
-
-import { find, isEmpty } from '@coursebuilder/nodash'
-
-const convertkitBaseUrl =
-	process.env.CONVERTKIT_BASE_URL || 'https://api.convertkit.com/v3/'
 
 export function formatDate(date: Date) {
 	return format(date, 'yyyy-MM-dd HH:mm:ss z')
@@ -98,6 +91,7 @@ export const convertkitRouter = createTRPCRouter({
 			}
 
 			if (!subscriber) {
+				console.log('no subscriber found')
 				return { error: 'no subscriber found' }
 			}
 
@@ -112,32 +106,7 @@ export const convertkitRouter = createTRPCRouter({
 					subscriberId: updatedSubscriber?.id,
 				})
 			}
-
-			if (updatedSubscriber) {
-				cookieStore.set(
-					'ck_subscriber',
-					JSON.stringify(deepOmitNull(updatedSubscriber)),
-					{
-						secure: process.env.NODE_ENV === 'production',
-						path: '/',
-						httpOnly: true,
-						sameSite: 'lax',
-						maxAge: 31556952,
-					},
-				)
-
-				cookieStore.set(
-					'ck_subscriber_id',
-					JSON.stringify(updatedSubscriber.id),
-					{
-						secure: process.env.NODE_ENV === 'production',
-						path: '/',
-						httpOnly: true,
-						sameSite: 'lax',
-						maxAge: 31556952,
-					},
-				)
-			}
+			console.log('updatedSubscriber', updatedSubscriber)
 
 			return updatedSubscriber
 		}),
@@ -171,18 +140,6 @@ export const convertkitRouter = createTRPCRouter({
 				subscriber,
 				...input,
 			})
-
-			cookieStore.set(
-				'ck_subscriber',
-				JSON.stringify(deepOmitNull(updatedSubscriber)),
-				{
-					secure: process.env.NODE_ENV === 'production',
-					path: '/',
-					httpOnly: true,
-					sameSite: 'lax',
-					maxAge: 31556952,
-				},
-			)
 
 			return updatedSubscriber
 		}),
