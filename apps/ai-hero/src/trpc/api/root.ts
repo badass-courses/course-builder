@@ -12,6 +12,7 @@ import { usersRouter } from '@/trpc/api/routers/users'
 import { videoResourceRouter } from '@/trpc/api/routers/videoResource'
 import { createTRPCRouter } from '@/trpc/api/trpc'
 
+import { convertkitRouter } from './routers/convertkit'
 import { emailsRouter } from './routers/emails'
 import { tagsRouter } from './routers/tags'
 import { typesenseRouter } from './routers/typesense'
@@ -37,6 +38,7 @@ export const appRouter = createTRPCRouter({
 	typesense: typesenseRouter,
 	tags: tagsRouter,
 	emails: emailsRouter,
+	convertkit: convertkitRouter,
 })
 
 // export type definition of API
