@@ -3,11 +3,11 @@ import * as React from 'react'
 import { useMachine } from '@xstate/react'
 import isEmpty from 'lodash/isEmpty'
 
-import { surveyData } from './config'
 import { offerMachine } from './offer-machine'
-import type { Subscriber } from './types'
+import type { QuizResource, Subscriber } from './types'
 
 export const useSurveyPopupOfferMachine = (
+	surveyData: QuizResource,
 	offerId: string = 'ask',
 	subscriber: Subscriber,
 	loadingSubscriber: boolean,
@@ -17,7 +17,7 @@ export const useSurveyPopupOfferMachine = (
 		input: {},
 	})
 
-	const availableQuestions = surveyData[offerId].questions
+	const availableQuestions = surveyData.questions
 
 	React.useEffect(() => {
 		if (process.env.NODE_ENV === 'development')

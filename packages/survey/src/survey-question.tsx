@@ -20,13 +20,12 @@ import {
 } from '@coursebuilder/ui'
 import Spinner from '@coursebuilder/ui/primitives/spinner'
 
-import { SurveyConfig } from './config'
 import {
 	surveyMachine,
 	SurveyMachineContext,
 	SurveyMachineEvent,
 } from './survey-machine'
-import { Choice, QuestionResource } from './types'
+import { Choice, QuestionResource, SurveyConfig } from './types'
 
 export type FormValues = {
 	answer: string | string[] | null

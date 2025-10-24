@@ -3,12 +3,12 @@
 import * as React from 'react'
 import { useMachine } from '@xstate/react'
 
-import { surveyData, type SurveyConfig } from './config'
 import { offerMachine } from './offer-machine'
 import { SurveyMachineContext } from './survey-machine'
-import type { QuestionResource, QuestionSet } from './types'
+import type { QuestionResource, QuizResource } from './types'
 
 export const useSurveyPageOfferMachine = (
+	surveyData: QuizResource,
 	surveyId: string,
 	subscriber: any,
 	loadingSubscriber: boolean,
@@ -31,7 +31,7 @@ export const useSurveyPageOfferMachine = (
 	const [answers, setAnswers] = React.useState<
 		Record<string, string | string[]>
 	>({})
-	const availableQuestions = surveyData[surveyId].questions
+	const availableQuestions = surveyData.questions
 
 	React.useEffect(() => {
 		if (process.env.NODE_ENV === 'development')

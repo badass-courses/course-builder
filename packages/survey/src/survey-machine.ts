@@ -4,8 +4,7 @@ import isEmpty from 'lodash/isEmpty'
 import shuffle from 'lodash/shuffle'
 import { assign, createMachine, fromPromise } from 'xstate'
 
-import { SurveyConfig } from './config'
-import { QuestionResource, QuestionSet } from './types'
+import type { QuestionResource, QuestionSet, SurveyConfig } from './types'
 
 /**
  * Context type for the survey state machine

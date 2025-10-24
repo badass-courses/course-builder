@@ -17,4 +17,3 @@ export {
 } from './survey-question'
 export * from './use-survey-page-offer-machine'
 export * from './use-survey-popup-offer-machine'
-export * from './config'

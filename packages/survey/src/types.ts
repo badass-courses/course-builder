@@ -78,3 +78,21 @@ export type MultipleChoiceAnswer = {
 export type Offer = Record<string, any>
 
 export type Survey = Record<string, SurveyQuestion | string>
+
+export type SurveyConfig = {
+	afterCompletionMessages: {
+		neutral: {
+			default: string
+			last: string
+		}
+		correct: {
+			default: string
+			last: string
+		}
+		incorrect: {
+			default: string
+			last: string
+		}
+	}
+	questionBodyRenderer: ((question: any) => React.ReactNode) | undefined
+}

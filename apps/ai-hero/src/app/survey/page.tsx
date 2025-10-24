@@ -5,12 +5,15 @@ import LayoutClient from '@/components/layout-client'
 import { api } from '@/trpc/react'
 
 import {
-	TYPESCRIPT_2024_SURVEY_ID,
-	typescript2024SurveyConfig,
 	useSurveyPageOfferMachine,
 	type QuestionResource,
 } from '@coursebuilder/survey'
 
+import {
+	dataTypescript2024,
+	TYPESCRIPT_2024_SURVEY_ID,
+} from './data-typescript-2024'
+import { surveyConfig } from './survey-config'
 import { SurveyRenderer } from './survey-renderer'
 
 export default function Survey() {
@@ -29,6 +32,7 @@ export default function Survey() {
 		answers,
 		machineState,
 	} = useSurveyPageOfferMachine(
+		dataTypescript2024,
 		TYPESCRIPT_2024_SURVEY_ID,
 		subscriberData,
 		status === 'pending',
@@ -40,6 +44,7 @@ export default function Survey() {
 
 	const handleEmailSubmit = async (email: string) => {
 		// Here you would typically send the email and answers to your backend
+
 		setEmail(email)
 		sendToMachine({ type: 'EMAIL_COLLECTED' })
 	}
@@ -78,7 +83,7 @@ export default function Survey() {
 							}
 							await handleSubmitAnswer(context)
 						}}
-						surveyConfig={typescript2024SurveyConfig}
+						surveyConfig={surveyConfig}
 						sendToMachine={sendToMachine}
 						isComplete={isComplete}
 						showEmailQuestion={machineState.matches('collectEmail')}
