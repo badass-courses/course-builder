@@ -9,6 +9,7 @@
 @source '../../node_modules/@coursebuilder/ui/primitives/**/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}';
+@source '../../node_modules/@coursebuilder/ui/src/**/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/index.tsx';
 @source '../../../../node_modules/.pnpm/@uploadthing+react@7.1.5_next@15.3.0-canary.31_react@19.0.0_uploadthing@7.4.4/node_modules/@uploadthing/react/dist/**';
 

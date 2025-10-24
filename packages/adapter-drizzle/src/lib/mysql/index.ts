@@ -33,6 +33,8 @@ import {
 	MerchantCoupon,
 	merchantCouponSchema,
 	MerchantCustomer,
+	MerchantEvents,
+	merchantEventsSchema,
 	merchantPriceSchema,
 	MerchantProduct,
 	merchantProductSchema,
@@ -135,6 +137,10 @@ import {
 } from './schemas/commerce/merchant-charge.js'
 import { getMerchantCouponSchema } from './schemas/commerce/merchant-coupon.js'
 import { getMerchantCustomerSchema } from './schemas/commerce/merchant-customer.js'
+import {
+	getMerchantEventsRelationsSchema,
+	getMerchantEventsSchema,
+} from './schemas/commerce/merchant-events.js'
 import { getMerchantPriceSchema } from './schemas/commerce/merchant-price.js'
 import { getMerchantProductSchema } from './schemas/commerce/merchant-product.js'
 import { getMerchantSessionSchema } from './schemas/commerce/merchant-session.js'
@@ -272,6 +278,8 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		merchantAccount: getMerchantAccountSchema(mysqlTable),
 		merchantCharge: getMerchantChargeSchema(mysqlTable),
 		merchantChargeRelations: getMerchantChargeRelationsSchema(mysqlTable),
+		merchantEvents: getMerchantEventsSchema(mysqlTable),
+		merchantEventsRelations: getMerchantEventsRelationsSchema(mysqlTable),
 		merchantCoupon: getMerchantCouponSchema(mysqlTable),
 		merchantCustomer: getMerchantCustomerSchema(mysqlTable),
 		merchantPrice: getMerchantPriceSchema(mysqlTable),
@@ -375,6 +383,7 @@ export function mySqlDrizzleAdapter(
 		merchantCoupon,
 		merchantCharge,
 		merchantAccount,
+		merchantEvents,
 		merchantPrice,
 		merchantCustomer,
 		merchantSession,
@@ -1015,6 +1024,45 @@ export function mySqlDrizzleAdapter(
 				merchantAccountId: options.merchantAccountId,
 				userId: options.user.id,
 			})
+		},
+		async createMerchantEvent(options: {
+			merchantAccountId: string
+			identifier: string
+			payload: Record<string, any>
+		}): Promise<MerchantEvents> {
+			const eventId = `me_${v4()}`
+
+			await client.insert(merchantEvents).values({
+				id: eventId,
+				merchantAccountId: options.merchantAccountId,
+				identifier: options.identifier,
+				payload: options.payload,
+			})
+
+			const createdEvent = await client.query.merchantEvents.findFirst({
+				where: eq(merchantEvents.id, eventId),
+			})
+
+			return merchantEventsSchema.parse(createdEvent)
+		},
+		async getMerchantEventByIdentifier(
+			identifier: string,
+		): Promise<MerchantEvents | null> {
+			const event = await client.query.merchantEvents.findFirst({
+				where: eq(merchantEvents.identifier, identifier),
+			})
+
+			return event ? merchantEventsSchema.parse(event) : null
+		},
+		async getMerchantEventsByAccount(
+			merchantAccountId: string,
+		): Promise<MerchantEvents[]> {
+			const events = await client.query.merchantEvents.findMany({
+				where: eq(merchantEvents.merchantAccountId, merchantAccountId),
+				orderBy: [desc(merchantEvents.createdAt)],
+			})
+
+			return events.map((event) => merchantEventsSchema.parse(event))
 		},
 		async findOrCreateUser(
 			email: string,
