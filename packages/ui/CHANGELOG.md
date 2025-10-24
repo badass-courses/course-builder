@@ -1,5 +1,46 @@
 # @coursebuilder/ui
 
+## 2.0.8
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [#588](https://github.com/badass-courses/course-builder/pull/588)
+  [`43405a9`](https://github.com/badass-courses/course-builder/commit/43405a9d232d97234e671fe951472318c19632de)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump mux
+
+- [#549](https://github.com/badass-courses/course-builder/pull/549)
+  [`14a6804`](https://github.com/badass-courses/course-builder/commit/14a68045e0051ce54fb129ff5bce37a371788f3d)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade accordion to
+  latest
+
+- [`9a1d398`](https://github.com/badass-courses/course-builder/commit/9a1d398b6471b4a17764a5c8bbe6648926fd8014)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - style tweaks
+
+- [#573](https://github.com/badass-courses/course-builder/pull/573)
+  [`b2fd748`](https://github.com/badass-courses/course-builder/commit/b2fd7486d47dfc63dfc16e5af48b298bbbcc56a5)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add navigation menu
+  component
+
+- [`942042c`](https://github.com/badass-courses/course-builder/commit/942042c0ea02354d0d59db4bc9ceb073993f6f0c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add workshop creation
+  dialog and form components
+
+- Updated dependencies
+  [[`fff302b`](https://github.com/badass-courses/course-builder/commit/fff302b9a483f8d9b6209bf5ec3fa57830c3e8e9),
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`1b92a3a`](https://github.com/badass-courses/course-builder/commit/1b92a3ac602291f219370fb264d8e0099f54963c),
+  [`f11c60f`](https://github.com/badass-courses/course-builder/commit/f11c60f9b08d7955ea840af15cc0d14d7c44f633),
+  [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3),
+  [`79764de`](https://github.com/badass-courses/course-builder/commit/79764deb0346fca813e01d2e2409712990990d8e),
+  [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147),
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)]:
+  - @coursebuilder/core@1.1.0
+
 ## 2.0.7
 
 ### Patch Changes
