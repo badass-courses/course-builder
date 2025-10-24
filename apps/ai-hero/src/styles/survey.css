@@ -1,0 +1,120 @@
+#ask {
+	/* ——— QUIZ ——— */
+
+	@apply flex h-full min-h-[calc(100vh-var(--nav-height))] flex-grow items-center justify-center px-5 py-16;
+
+	[data-sr-quiz='answered'] {
+		[data-sr-quiz-question-body] {
+			@apply hidden;
+		}
+		[data-sr-quiz-question-header] {
+			@apply hidden;
+		}
+
+		[data-sr-quiz-question-footer] {
+			@apply flex h-96 items-center justify-center;
+		}
+	}
+	[data-sr-quiz-question-footer] {
+		@apply hidden;
+	}
+
+	/* ——— QUESTION ——— */
+	[data-sr-quiz-question] {
+		@apply mx-auto w-full max-w-2xl;
+
+		/* ——— HEADER ——— */
+		[data-sr-quiz-question-header] {
+			@apply prose prose-lg dark:prose-invert sm:prose-xl lg:prose-2xl prose-p:first-of-type:my-0 text-foreground w-full max-w-none pb-6 font-medium leading-normal;
+
+			pre {
+				@apply p-0;
+			}
+		}
+
+		/* ——— BODY ——— */
+		[data-sr-quiz-question-body] {
+			@apply list-none;
+			& > li {
+				@apply list-none;
+			}
+		}
+		[data-sr-quiz-question-error] {
+			@apply text-gray-300;
+		}
+		/* ——— CHOICES ——— */
+		[data-sr-quiz-question-choices] {
+			@apply flex flex-col space-y-3;
+			label {
+				@apply inline-flex items-center gap-3;
+			}
+		}
+
+		/* ——— CHOICE ——— */
+		[data-sr-quiz-question-choice] {
+			img {
+				@apply w-full;
+			}
+
+			input {
+				@apply mr-2;
+			}
+			p {
+				@apply flex-grow leading-tight;
+			}
+		}
+
+		[data-sr-quiz-question-choice='correct'] {
+			label {
+				@apply border-green-500/40;
+			}
+			span {
+				@apply bg-green-500 text-white;
+			}
+		}
+
+		[data-sr-quiz-question-choice='incorrect'] {
+			label {
+				@apply cursor-default border-red-500/40;
+			}
+			span {
+				@apply bg-red-500 text-white;
+			}
+		}
+
+		/* ——— TEXTAREA ——— */
+		[data-sr-quiz-question-input] {
+			label {
+				@apply sr-only inline-block pb-2 text-lg text-gray-300;
+			}
+			textarea {
+				@apply w-full rounded-lg border border-gray-800 bg-black/40 p-3;
+			}
+		}
+
+		/* ——— ANSWER ——— */
+		[data-sr-quiz-question-answer] {
+			@apply prose max-w-none pt-5;
+			pre {
+				@apply mb-5 p-0;
+			}
+		}
+
+		/* ——— FOOTER ——— */
+		[data-sr-quiz-question-footer] {
+			@apply mx-auto flex w-full max-w-sm items-center justify-center text-center text-5xl font-semibold shadow-lg;
+		}
+
+		/* —— SUBMIT —— */
+		[data-sr-button] {
+			@apply bg-primary text-primary-foreground mt-5 inline-flex cursor-pointer items-center rounded-md border-none px-5 py-3 font-semibold transition;
+			svg {
+				@apply h-6 w-6;
+			}
+		}
+
+		[data-sr-button][disabled] {
+			@apply cursor-not-allowed;
+		}
+	}
+}
