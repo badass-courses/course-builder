@@ -50,7 +50,6 @@ export const convertkitRouter = createTRPCRouter({
 			}),
 		)
 		.mutation(async ({ ctx, input }) => {
-			// const { session } = await getServerAuthSession()
 			const session = ctx.session
 			let subscriber
 			const convertkitId = ctx.headers.get(
@@ -94,7 +93,7 @@ export const convertkitRouter = createTRPCRouter({
 
 				subscriber = await emailListProvider.subscribeToList({
 					listId: process.env.CONVERTKIT_SIGNUP_FORM,
-					user: session?.user as AdapterUser,
+					user: (session?.user || { email: input.email }) as AdapterUser,
 					fields,
 					listType: 'form',
 				})
