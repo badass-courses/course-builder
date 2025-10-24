@@ -16,9 +16,7 @@
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
-		"typecheck": "tsc --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@coursebuilder/ui": "workspace:*",
