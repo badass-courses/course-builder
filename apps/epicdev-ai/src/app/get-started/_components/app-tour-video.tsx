@@ -9,6 +9,7 @@ const AppTourVideo = ({
 }) => {
 	return (
 		<MuxPlayer
+			preferPlayback="mse"
 			playbackId={playbackId}
 			accentColor="#3b82f6"
 			className="w-full rounded"

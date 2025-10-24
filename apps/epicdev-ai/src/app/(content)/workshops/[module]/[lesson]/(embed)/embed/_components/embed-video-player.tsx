@@ -110,6 +110,7 @@ export function EmbedVideoPlayer({
 				</div>
 			)}
 			<MuxPlayer
+				preferPlayback="mse"
 				ref={playerRef}
 				metadata={{
 					video_id: resource.id,

@@ -161,6 +161,7 @@ export function AuthedVideoPlayer({
 
 	return playbackId ? (
 		<MuxPlayer
+			preferPlayback="mse"
 			metadata={{
 				video_id: currentResource.id,
 				video_title: title || currentResource.fields?.title,
