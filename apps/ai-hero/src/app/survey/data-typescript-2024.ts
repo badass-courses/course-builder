@@ -1,4 +1,4 @@
-import type { QuizResource } from '@coursebuilder/survey'
+import type { QuizResource } from '@coursebuilder/survey/types'
 
 export const TYPESCRIPT_2024_SURVEY_ID = 'typescript_2024'
 
@@ -231,7 +231,7 @@ export const dataTypescript2024: QuizResource = {
 			],
 		},
 		final_story: {
-			question: getFinalQuestion,
+			question: getFinalQuestion as unknown as string,
 			required: false,
 			type: 'essay',
 		},

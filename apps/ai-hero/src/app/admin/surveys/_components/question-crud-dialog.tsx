@@ -1,10 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-	createQuestionAction,
-	updateQuestionAction,
-} from '@/lib/surveys-actions'
+import { createQuestionAction, updateQuestionAction } from '@/lib/surveys-query'
 import {
 	QuestionFieldsSchema,
 	type Choice,
@@ -49,6 +46,14 @@ type QuestionCrudDialogProps = {
 	children: React.ReactNode
 }
 
+// Helper to get question text (handles both string and function)
+const getQuestionText = (question: any): string => {
+	if (typeof question === 'function') {
+		return question({})
+	}
+	return question || 'Untitled Question'
+}
+
 export default function QuestionCrudDialog({
 	surveyId,
 	question,
@@ -57,7 +62,6 @@ export default function QuestionCrudDialog({
 	children,
 }: QuestionCrudDialogProps) {
 	const [isOpen, setIsOpen] = React.useState(false)
-	const [isSubmitting, setIsSubmitting] = React.useState(false)
 	const [choices, setChoices] = React.useState<Choice[]>(
 		question?.fields?.choices || [],
 	)
@@ -79,6 +83,8 @@ export default function QuestionCrudDialog({
 			allowMultiple: false,
 		},
 	})
+
+	const isSubmitting = form.formState.isSubmitting
 
 	React.useEffect(() => {
 		if (question?.fields) {
@@ -256,7 +262,6 @@ export default function QuestionCrudDialog({
 			return
 		}
 
-		setIsSubmitting(true)
 		try {
 			// Validate dependency requirements
 			if (hasDependency) {
@@ -265,7 +270,6 @@ export default function QuestionCrudDialog({
 						type: 'manual',
 						message: 'Parent question is required when dependency is enabled',
 					})
-					setIsSubmitting(false)
 					return
 				}
 				if (!values.dependsOn?.answer) {
@@ -273,7 +277,6 @@ export default function QuestionCrudDialog({
 						type: 'manual',
 						message: 'Answer value is required when dependency is enabled',
 					})
-					setIsSubmitting(false)
 					return
 				}
 			}
@@ -322,8 +325,6 @@ export default function QuestionCrudDialog({
 			}
 		} catch (error) {
 			console.error('Failed to save question:', error)
-		} finally {
-			setIsSubmitting(false)
 		}
 	}
 
@@ -391,11 +392,7 @@ export default function QuestionCrudDialog({
 											<SelectItem value="multiple-choice">
 												Multiple Choice
 											</SelectItem>
-											<SelectItem value="multiple-image-choice">
-												Multiple Image Choice
-											</SelectItem>
 											<SelectItem value="essay">Essay</SelectItem>
-											<SelectItem value="code">Code</SelectItem>
 										</SelectContent>
 									</Select>
 									<FormMessage />
@@ -445,7 +442,7 @@ export default function QuestionCrudDialog({
 													.filter((q) => q.id !== question?.id)
 													.map((q) => (
 														<SelectItem key={q.id} value={q.id}>
-															{q.fields?.question || 'Untitled Question'}
+															{getQuestionText(q.fields?.question)}
 														</SelectItem>
 													))}
 											</SelectContent>

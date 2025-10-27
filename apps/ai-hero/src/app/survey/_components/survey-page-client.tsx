@@ -3,12 +3,12 @@
 import React from 'react'
 import { api } from '@/trpc/react'
 
-import {
-	useSurveyPageOfferMachine,
-	type QuestionResource,
-	type QuizResource,
-	type SurveyConfig,
-} from '@coursebuilder/survey'
+import { useSurveyPageOfferMachine } from '@coursebuilder/survey'
+import type {
+	QuestionResource,
+	QuizResource,
+	SurveyConfig,
+} from '@coursebuilder/survey/types'
 
 import { setSubscriberCookie } from '../../(content)/survey/actions'
 import { SurveyRenderer } from '../survey-renderer'

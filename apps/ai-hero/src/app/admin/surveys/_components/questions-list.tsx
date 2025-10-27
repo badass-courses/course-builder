@@ -4,7 +4,7 @@ import * as React from 'react'
 import {
 	deleteQuestionAction,
 	updateQuestionPositionsAction,
-} from '@/lib/surveys-actions'
+} from '@/lib/surveys-query'
 import type { Question } from '@/lib/surveys-schemas'
 import {
 	ArrowDown,
@@ -99,6 +99,14 @@ export function QuestionsList({
 		}
 	}
 
+	// Helper to get question text (handles both string and function)
+	const getQuestionText = (question: any): string => {
+		if (typeof question === 'function') {
+			return question({})
+		}
+		return question || 'Untitled Question'
+	}
+
 	return (
 		<div className="space-y-4">
 			<div className="flex justify-between">
@@ -155,7 +163,9 @@ export function QuestionsList({
 									<div className="flex items-start justify-between">
 										<div className="flex-1">
 											<p className="font-medium">
-												{question.fields?.question || 'Untitled Question'}
+												{typeof question.fields?.question === 'function'
+													? getQuestionText(question.fields?.question)
+													: question.fields?.question || 'Untitled Question'}
 											</p>
 											<div className="text-muted-foreground mt-1 flex flex-wrap gap-2 text-xs">
 												<span className="rounded bg-gray-100 px-2 py-0.5 dark:bg-gray-500/20 dark:text-gray-200">
@@ -176,8 +186,13 @@ export function QuestionsList({
 													<span>
 														Depends on:{' '}
 														<span className="font-medium">
-															{parentQuestion.fields?.question ||
-																'Untitled Question'}
+															{typeof parentQuestion.fields?.question ===
+															'function'
+																? getQuestionText(
+																		parentQuestion.fields?.question,
+																	)
+																: parentQuestion.fields?.question ||
+																	'Untitled Question'}
 														</span>
 														{' = '}
 														<span className="rounded bg-purple-100 px-2 py-0.5 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200">

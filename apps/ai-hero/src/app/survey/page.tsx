@@ -4,10 +4,8 @@ import React from 'react'
 import LayoutClient from '@/components/layout-client'
 import { api } from '@/trpc/react'
 
-import {
-	useSurveyPageOfferMachine,
-	type QuestionResource,
-} from '@coursebuilder/survey'
+import { useSurveyPageOfferMachine } from '@coursebuilder/survey'
+import type { QuestionResource } from '@coursebuilder/survey/types'
 
 import { setSubscriberCookie } from '../(content)/survey/actions'
 import {

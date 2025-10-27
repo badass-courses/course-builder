@@ -1,9 +1,9 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
 import { db } from '@/db'
 import { contentResource, contentResourceResource } from '@/db/schema'
-import { inngest } from '@/inngest/inngest.server'
 import type { Subscriber } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -17,7 +17,8 @@ import type {
 	QuizResource,
 	SurveyConfig,
 	QuestionResource as SurveyQuestionResource,
-} from '@coursebuilder/survey'
+	SurveyQuestionType,
+} from '@coursebuilder/survey/types'
 
 import {
 	DEFAULT_AFTER_COMPLETION_MESSAGES,
@@ -32,6 +33,8 @@ import {
 export async function createSurvey(input: {
 	title: string
 	slug?: string
+	state?: SurveyFields['state']
+	visibility?: SurveyFields['visibility']
 	afterCompletionMessages?: SurveyFields['afterCompletionMessages']
 }) {
 	const { session, ability } = await getServerAuthSession()
@@ -53,8 +56,8 @@ export async function createSurvey(input: {
 		fields: {
 			title: input.title,
 			slug: surveySlug,
-			state: 'draft' as const,
-			visibility: 'unlisted' as const,
+			state: input.state || ('draft' as const),
+			visibility: input.visibility || ('unlisted' as const),
 			afterCompletionMessages:
 				input.afterCompletionMessages || DEFAULT_AFTER_COMPLETION_MESSAGES,
 		},
@@ -607,4 +610,148 @@ export const answerSurvey = async ({
 		})
 		return { error: 'Failed to update subscriber fields' }
 	}
+}
+
+/**
+ * Server action to create a new survey
+ */
+export async function createSurveyAction(input: {
+	title: string
+	slug?: string
+	state?: SurveyFields['state']
+	visibility?: SurveyFields['visibility']
+	afterCompletionMessages?: any
+}) {
+	const survey = await createSurvey(input)
+	revalidatePath('/admin/surveys')
+	const parsedSurvey = SurveyWithQuestionsSchema.safeParse(survey)
+	if (!parsedSurvey.success) {
+		throw new Error('Failed to parse survey')
+	}
+	return parsedSurvey.data
+}
+
+/**
+ * Server action to update a survey
+ */
+export async function updateSurveyAction(input: {
+	id: string
+	fields: SurveyFields
+}) {
+	const survey = await updateSurvey(input)
+	revalidatePath('/admin/surveys')
+	revalidatePath(`/admin/surveys/${input.id}`)
+	const parsedSurvey = SurveyWithQuestionsSchema.safeParse(survey)
+	if (!parsedSurvey.success) {
+		throw new Error('Failed to parse survey')
+	}
+	return parsedSurvey.data
+}
+
+/**
+ * Server action to delete a survey
+ */
+export async function deleteSurveyAction(surveyId: string) {
+	const result = await deleteSurvey(surveyId)
+	revalidatePath('/admin/surveys')
+	return result
+}
+
+/**
+ * Server action to create a question
+ */
+export async function createQuestionAction(input: {
+	surveyId?: string
+	slug: string
+	question: string
+	type: SurveyQuestionType
+	choices?: Array<{
+		answer: string
+		label?: string
+		image?: string
+	}>
+	required?: boolean
+	shuffleChoices?: boolean
+	allowMultiple?: boolean
+	dependsOn?: {
+		questionId: string
+		answer: string
+	}
+}) {
+	const question = await createQuestion(input)
+	if (input.surveyId) {
+		revalidatePath(`/admin/surveys/${input.surveyId}`)
+	}
+	revalidatePath('/admin/surveys')
+	return question
+}
+
+/**
+ * Server action to update a question
+ */
+export async function updateQuestionAction(input: {
+	id: string
+	fields: any
+	surveyId?: string
+}) {
+	const question = await updateQuestion(input)
+	if (input.surveyId) {
+		revalidatePath(`/admin/surveys/${input.surveyId}`)
+	}
+	revalidatePath('/admin/surveys')
+	return question
+}
+
+/**
+ * Server action to delete a question
+ */
+export async function deleteQuestionAction(input: {
+	questionId: string
+	surveyId?: string
+}) {
+	const result = await deleteQuestion(input.questionId)
+	if (input.surveyId) {
+		revalidatePath(`/admin/surveys/${input.surveyId}`)
+	}
+	revalidatePath('/admin/surveys')
+	return result
+}
+
+/**
+ * Server action to add a question to a survey
+ */
+export async function addQuestionToSurveyAction(input: {
+	surveyId: string
+	questionId: string
+	position?: number
+}) {
+	const result = await addQuestionToSurvey(input)
+	revalidatePath(`/admin/surveys/${input.surveyId}`)
+	revalidatePath('/admin/surveys')
+	return result
+}
+
+/**
+ * Server action to remove a question from a survey
+ */
+export async function removeQuestionFromSurveyAction(input: {
+	surveyId: string
+	questionId: string
+}) {
+	const result = await removeQuestionFromSurvey(input)
+	revalidatePath(`/admin/surveys/${input.surveyId}`)
+	revalidatePath('/admin/surveys')
+	return result
+}
+
+/**
+ * Server action to update question positions
+ */
+export async function updateQuestionPositionsAction(input: {
+	surveyId: string
+	questions: Array<{ questionId: string; position: number }>
+}) {
+	const result = await updateQuestionPositions(input)
+	revalidatePath(`/admin/surveys/${input.surveyId}`)
+	return result
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { deleteSurveyAction } from '@/lib/surveys-actions'
+import { deleteSurveyAction } from '@/lib/surveys-query'
 import type { SurveyWithQuestions } from '@/lib/surveys-schemas'
 import { ExternalLink, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 

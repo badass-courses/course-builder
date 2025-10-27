@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import type { QuizResource, SurveyConfig } from '@coursebuilder/survey'
+import type { QuizResource, SurveyConfig } from '@coursebuilder/survey/types'
 
 import {
 	dataTypescript2024,

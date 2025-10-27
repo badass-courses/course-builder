@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { updateSurveyAction } from '@/lib/surveys-actions'
 import type {
 	Question,
 	Survey,

@@ -1,6 +1,8 @@
 import React from 'react'
 
 import {
+	OfferMachineEvent,
+	SurveyMachineContext,
 	SurveyQuestion,
 	SurveyQuestionAnswer,
 	SurveyQuestionBody,
@@ -10,11 +12,11 @@ import {
 	SurveyQuestionFooter,
 	SurveyQuestionHeader,
 	SurveyQuestionSubmit,
-	type OfferMachineEvent,
-	type QuestionResource,
-	type SurveyConfig,
-	type SurveyMachineContext,
 } from '@coursebuilder/survey'
+import type {
+	QuestionResource,
+	SurveyConfig,
+} from '@coursebuilder/survey/types'
 
 /**
  * Survey renderer component demonstrating the composable styling pattern.

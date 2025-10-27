@@ -1,31 +1,19 @@
 import { z } from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+import {
+	ChoiceSchema,
+	QuestionResourceSchema,
+} from '@coursebuilder/survey/types'
 
 /**
  * Shared Zod schemas for survey and question content resources
  */
 
-// Choice schema for multiple-choice questions
-export const ChoiceSchema = z.object({
-	answer: z.string(),
-	label: z.string().optional(),
-	image: z.string().optional(),
-})
-
 // Question fields schema matching QuestionResource from survey package
-export const QuestionFieldsSchema = z.object({
+export const QuestionFieldsSchema = QuestionResourceSchema.extend({
+	question: z.string(), // Admin CRUD only handles string questions
 	slug: z.string(),
-	question: z.string(),
-	type: z.enum(['multiple-choice', 'multiple-image-choice', 'essay', 'code']),
-	tagId: z.number().optional(),
-	correct: z.union([z.array(z.string()), z.string()]).optional(),
-	answer: z.string().optional(),
-	choices: z.array(ChoiceSchema).optional(),
-	template: z.string().optional(),
-	shuffleChoices: z.boolean().optional(),
-	allowMultiple: z.boolean().optional(),
-	required: z.boolean().optional(),
 	dependsOn: z
 		.object({
 			questionId: z.string(),

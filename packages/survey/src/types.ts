@@ -1,3 +1,5 @@
+import z from 'zod'
+
 export type Subscriber = any
 
 export type QuizResource = {
@@ -6,37 +8,52 @@ export type QuizResource = {
 	questions: QuestionSet
 }
 
-export type QuestionResource = {
-	question: string | ((answers: Record<string, string | string[]>) => string)
-	type: 'multiple-choice' | 'multiple-image-choice' | 'essay' | 'code'
-	tagId?: number
-	correct?: string[] | string
-	answer?: string
-	choices?: Choice[]
-	template?: string
-	shuffleChoices?: boolean
-	allowMultiple?: boolean
-	required?: boolean
-	dependsOn?: {
-		question: string
-		answer: string
-	}
-	code?: {
-		filename: string
-		active: boolean
-		code: string
-	}[]
-}
+export const SurveyQuestionTypeSchema = z.enum([
+	'multiple-choice',
+	'essay',
+	'multiple-image-choice',
+])
+export type SurveyQuestionType = z.infer<typeof SurveyQuestionTypeSchema>
 
-export type QuestionSet = {
-	[key: string]: QuestionResource
-}
+export const ChoiceSchema = z.object({
+	answer: z.string(),
+	label: z.string().optional(),
+	image: z.string().optional(),
+})
+export type Choice = z.infer<typeof ChoiceSchema>
 
-export type Choice = {
-	answer: string
-	label?: string
-	image?: string
-}
+export const QuestionResourceSchema = z.object({
+	question: z.union([z.string(), z.function().returns(z.string())]),
+	type: SurveyQuestionTypeSchema,
+	tagId: z.number().optional(),
+	correct: z.union([z.array(z.string()), z.string()]).optional(),
+	answer: z.string().optional(),
+	choices: z.array(ChoiceSchema).optional(),
+	template: z.string().optional(),
+	shuffleChoices: z.boolean().optional(),
+	allowMultiple: z.boolean().optional(),
+	required: z.boolean().optional(),
+	dependsOn: z
+		.object({
+			question: z.string(),
+			answer: z.string(),
+		})
+		.optional(),
+	code: z
+		.array(
+			z.object({
+				filename: z.string(),
+				active: z.boolean(),
+				code: z.string(),
+			}),
+		)
+		.optional(),
+})
+export type QuestionResource = z.infer<typeof QuestionResourceSchema>
+
+export const QuestionSetSchema = z.record(z.string(), QuestionResourceSchema)
+
+export type QuestionSet = z.infer<typeof QuestionSetSchema>
 
 export type SurveyState = {
 	subscriber?: Subscriber

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { createSurveyAction, updateSurveyAction } from '@/lib/surveys-actions'
+import { createSurveyAction, updateSurveyAction } from '@/lib/surveys-query'
 import {
 	DEFAULT_AFTER_COMPLETION_MESSAGES,
 	SurveyFieldsSchema,
@@ -13,6 +13,10 @@ import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 
 import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
 	Button,
 	Dialog,
 	DialogContent,
@@ -21,6 +25,7 @@ import {
 	DialogTrigger,
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -47,18 +52,19 @@ export default function SurveyCrudDialog({
 	children,
 }: SurveyCrudDialogProps) {
 	const [isOpen, setIsOpen] = React.useState(false)
-	const [isSubmitting, setIsSubmitting] = React.useState(false)
 
 	const form = useForm<FormSchemaType>({
 		resolver: zodResolver(SurveyFieldsSchema),
 		defaultValues: survey?.fields || {
 			title: '',
 			slug: '',
-			state: 'draft',
-			visibility: 'unlisted',
+			state: 'published',
+			visibility: 'public',
 			afterCompletionMessages: DEFAULT_AFTER_COMPLETION_MESSAGES,
 		},
 	})
+
+	const isSubmitting = form.formState.isSubmitting
 
 	React.useEffect(() => {
 		if (survey?.fields) {
@@ -67,7 +73,6 @@ export default function SurveyCrudDialog({
 	}, [survey, form])
 
 	const handleSubmit = async (values: FormSchemaType) => {
-		setIsSubmitting(true)
 		try {
 			let result
 			if (survey) {
@@ -80,6 +85,8 @@ export default function SurveyCrudDialog({
 					title: values.title,
 					slug: values.slug,
 					afterCompletionMessages: values.afterCompletionMessages,
+					state: values.state,
+					visibility: values.visibility,
 				})
 			}
 
@@ -90,8 +97,6 @@ export default function SurveyCrudDialog({
 			}
 		} catch (error) {
 			console.error('Failed to save survey:', error)
-		} finally {
-			setIsSubmitting(false)
 		}
 	}
 
@@ -128,7 +133,8 @@ export default function SurveyCrudDialog({
 							name="slug"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Slug (optional)</FormLabel>
+									<FormLabel>Slug</FormLabel>
+									<FormDescription>Used to access the survey.</FormDescription>
 									<FormControl>
 										<Input
 											placeholder="survey-slug"
@@ -194,98 +200,103 @@ export default function SurveyCrudDialog({
 							/>
 						</div>
 
-						<div className="space-y-4 rounded-lg border p-4">
-							<h3 className="font-semibold">Completion Messages</h3>
+						<div className="rounded-lg border">
+							<Accordion type="multiple">
+								<AccordionItem value="completion-messages">
+									<AccordionTrigger className="hover:bg-muted rounded-t-lg p-4 hover:no-underline">
+										Completion Messages
+									</AccordionTrigger>
+									<AccordionContent className="flex flex-col gap-4 p-4">
+										<div className="space-y-2">
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.neutral.default"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Neutral - Default</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.neutral.last"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Neutral - Last Question</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
+										<div className="space-y-2">
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.correct.default"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Correct - Default</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-							<div className="space-y-2">
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.neutral.default"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Neutral - Default</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.correct.last"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Correct - Last Question</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
 
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.neutral.last"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Neutral - Last Question</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
+										<div className="space-y-2">
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.incorrect.default"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Incorrect - Default</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-							<div className="space-y-2">
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.correct.default"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Correct - Default</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.correct.last"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Correct - Last Question</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.incorrect.default"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Incorrect - Default</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="afterCompletionMessages.incorrect.last"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Incorrect - Last Question</FormLabel>
-											<FormControl>
-												<Input {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.incorrect.last"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Incorrect - Last Question</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
+									</AccordionContent>
+								</AccordionItem>
+							</Accordion>
 						</div>
 
 						<div className="flex justify-end gap-2">

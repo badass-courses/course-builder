@@ -30,10 +30,10 @@ export default async function SurveyDetailPage({
 	return (
 		<main className="flex w-full justify-between p-10">
 			<div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
-				<div className="mb-5 flex w-full items-center gap-4">
-					<Button variant="ghost" size="sm" asChild>
+				<div className="mb-5 flex w-full flex-col items-start gap-4">
+					<Button variant="link" size="sm" asChild className="px-0">
 						<Link href="/admin/surveys">
-							<ChevronLeft className="mr-2 h-4 w-4" />
+							<ChevronLeft className="size-4" />
 							Back to Surveys
 						</Link>
 					</Button>
