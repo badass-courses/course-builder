@@ -40,7 +40,6 @@
 			}
 		}
 		[data-sr-quiz-question-error] {
-			@apply text-gray-300;
 		}
 		/* ——— CHOICES ——— */
 		[data-sr-quiz-question-choices] {

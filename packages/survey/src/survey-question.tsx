@@ -233,7 +233,12 @@ export function SurveyQuestionChoices({
 				) : (
 					<RadioGroup
 						value={currentValue as string}
-						onValueChange={(value) => setValue('answer', value)}
+						onValueChange={(value) =>
+							setValue('answer', value, {
+								shouldValidate: true,
+								shouldDirty: true,
+							})
+						}
 						disabled={isAnswered}
 					>
 						{currentQuestion?.choices?.map((choice: Choice, i: number) => {
@@ -296,11 +301,15 @@ export function SurveyQuestionChoice({
 	const handleCheckboxChange = (checked: boolean) => {
 		const currentAnswers = isArray(currentValue) ? currentValue : []
 		if (checked) {
-			setValue('answer', [...currentAnswers, choice.answer])
+			setValue('answer', [...currentAnswers, choice.answer], {
+				shouldValidate: true,
+				shouldDirty: true,
+			})
 		} else {
 			setValue(
 				'answer',
 				currentAnswers.filter((a: string) => a !== choice.answer),
+				{ shouldValidate: true, shouldDirty: true },
 			)
 		}
 	}
