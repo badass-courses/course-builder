@@ -84,14 +84,14 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 			currentQuestionId={currentQuestionId}
 		>
 			<SurveyQuestionHeader className="text-2xl font-bold" />
-			<SurveyQuestionBody className="space-y-6">
+			<SurveyQuestionBody className="flex flex-col gap-1 space-y-6">
 				{currentQuestion.type === 'essay' ? (
 					<SurveyQuestionEssay />
 				) : (
-					<SurveyQuestionChoices className="grid gap-3 [&_label]:text-base [&_label]:font-normal" />
+					<SurveyQuestionChoices className="[&_label]:hover:bg-muted divide-border flex flex-col gap-0 divide-y [&_label]:w-full [&_label]:p-3 [&_label]:text-base [&_label]:font-normal" />
 				)}
-				<SurveyQuestionSubmit className="dark:bg-primary dark:text-primary-foreground bg-blue-600 text-white hover:bg-blue-700">
-					Submit Answer
+				<SurveyQuestionSubmit className="dark:bg-primary dark:text-primary-foreground cursor-pointer bg-blue-600 text-white hover:bg-blue-700">
+					Submit
 				</SurveyQuestionSubmit>
 				<SurveyQuestionAnswer />
 			</SurveyQuestionBody>

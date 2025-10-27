@@ -386,18 +386,24 @@ export function SurveyQuestionChoice({
 					{choice.image && <img src={choice.image} alt={choice.answer} />}
 					{hasMultipleCorrectAnswers ? (
 						<div className={cn('flex items-center gap-2')}>
-							<Checkbox
-								value={choice.answer}
-								checked={
-									isArray(currentValue)
-										? currentValue.includes(choice.answer)
-										: currentValue === choice.answer
-								}
-								onCheckedChange={handleCheckboxChange}
-								disabled={isAnswered}
-								id={choiceId}
-							/>
-							<Label htmlFor={choiceId}>
+							<Label
+								htmlFor={choiceId}
+								className={cn(
+									'flex cursor-pointer items-center gap-2 leading-none',
+								)}
+							>
+								<Checkbox
+									value={choice.answer}
+									checked={
+										isArray(currentValue)
+											? currentValue.includes(choice.answer)
+											: currentValue === choice.answer
+									}
+									onCheckedChange={handleCheckboxChange}
+									disabled={isAnswered}
+									id={choiceId}
+									className="cursor-pointer"
+								/>
 								<span>{choice.label || choice.answer || alphabet[index]}</span>
 								{isAnswered && hasCorrectAnswer && (
 									<span className={cn('text-sm opacity-75')}>
@@ -408,11 +414,17 @@ export function SurveyQuestionChoice({
 						</div>
 					) : (
 						<div className={cn('flex items-center gap-2')}>
-							<RadioGroupItem value={choice.answer} id={choiceId} />
 							<Label
 								htmlFor={choiceId}
-								className={cn('flex items-center gap-2 leading-none')}
+								className={cn(
+									'flex cursor-pointer items-center gap-2 leading-none',
+								)}
 							>
+								<RadioGroupItem
+									className="cursor-pointer"
+									value={choice.answer}
+									id={choiceId}
+								/>
 								<span>{choice.label || choice.answer || alphabet[index]}</span>
 								{isAnswered && hasCorrectAnswer && (
 									<span className={cn('text-sm opacity-75')}>

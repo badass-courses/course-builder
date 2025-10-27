@@ -35,7 +35,7 @@ export default async function SurveyBySlugPage({
 
 	return (
 		<LayoutClient withContainer withNavigation={false} withFooter={false}>
-			<div className="bg-size-[12px_12px] flex h-full min-h-[100svh] w-full grid-cols-6 grid-rows-3 bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:grid sm:bg-none dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)]">
+			<div className="bg-size-[12px_12px] flex h-full min-h-[100svh] w-full grid-cols-6 grid-rows-[1fr_auto_1fr] bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:grid sm:bg-none dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)]">
 				<div className="hidden h-full w-full sm:flex" />
 				<div className="border-border col-span-4 hidden h-full w-full items-start justify-center border-x p-10 sm:flex">
 					<div>
