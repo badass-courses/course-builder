@@ -23,7 +23,7 @@ export async function generateMetadata(
 	const survey = await getSurvey(params.slug)
 
 	return {
-		title: `Survey - ${survey?.fields?.title.replace('Survey: ', '')}`,
+		title: `Survey - ${survey?.fields?.title.replace('Survey', '').trim()}`,
 		openGraph: {
 			images: [
 				{
