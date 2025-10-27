@@ -81,11 +81,18 @@ export default function Survey() {
 				surveyId: TYPESCRIPT_2024_SURVEY_ID,
 			})
 		}
-	}, [isComplete])
+	}, [
+		isComplete,
+		machineState,
+		email,
+		subscriber,
+		answers,
+		answerSurveyMultipleMutation,
+	])
 
 	return (
 		<LayoutClient withContainer>
-			<div id="ask">
+			<div className="relative flex min-h-[calc(100vh-var(--nav-height))] items-center justify-center">
 				{isLoading ? (
 					<div className="text-center text-2xl">Loading survey...</div>
 				) : !currentQuestion && !isPresenting ? (

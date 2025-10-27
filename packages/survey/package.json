@@ -21,6 +21,7 @@
 	"dependencies": {
 		"@coursebuilder/ui": "workspace:*",
 		"@hookform/resolvers": "^3.3.2",
+		"@radix-ui/react-slot": "^1.1.0",
 		"@xstate/react": "^4.1.1",
 		"date-fns": "^2.30.0",
 		"lodash": "^4.17.21",

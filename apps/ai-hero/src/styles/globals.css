@@ -6,7 +6,6 @@
 @import './video-block-newsletter-cta.css';
 /* @import './commerce.css'; */
 @import './login.css' layer(utilities);
-@import './survey.css' layer(utilities);
 
 @plugin '@tailwindcss/typography';
 

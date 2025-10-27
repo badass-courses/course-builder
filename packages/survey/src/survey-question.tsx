@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Slot } from '@radix-ui/react-slot'
 import { useMachine } from '@xstate/react'
 import isArray from 'lodash/isArray'
 import isEmpty from 'lodash/isEmpty'
@@ -19,6 +20,7 @@ import {
 	Textarea,
 } from '@coursebuilder/ui'
 import Spinner from '@coursebuilder/ui/primitives/spinner'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import {
 	surveyMachine,
@@ -67,14 +69,19 @@ const useSurveyQuestion = () => {
 }
 
 /**
- * Main survey question component that manages the question state and form
+ * Root survey question component that manages question state and form.
+ * Renders as a form element by default.
+ *
+ * @param asChild - If true, merges props into immediate child instead of rendering form
  */
 export function SurveyQuestion({
 	children,
-	className = '',
+	className,
+	asChild,
 	id: providedId,
 	...props
-}: SurveyQuestionProps) {
+}: SurveyQuestionProps & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'form'
 	const generatedId = React.useId()
 	const id = providedId || generatedId
 	const [surveyMachineState, sentToSurveyMachine] = useMachine(surveyMachine, {
@@ -165,57 +172,76 @@ export function SurveyQuestion({
 
 	return (
 		<SurveyQuestionContext.Provider value={context}>
-			<form
-				className={className}
-				onSubmit={form.handleSubmit(onSubmit)}
+			<Comp
+				className={cn('', className)}
+				onSubmit={asChild ? undefined : form.handleSubmit(onSubmit)}
 				data-sr-quiz-question=""
 			>
 				{children}
-			</form>
+			</Comp>
 		</SurveyQuestionContext.Provider>
 	)
 }
 
 /**
- * Header component for displaying the question text
+ * Header component for displaying the question text.
+ * Renders as a legend element by default with Markdown support.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default question rendering when provided
  */
 export function SurveyQuestionHeader({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'legend'>) {
+}: React.ComponentPropsWithoutRef<'legend'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'legend'
 	const { currentQuestion, config, surveyMachineState } = useSurveyQuestion()
 
 	const answers = surveyMachineState.context.allAnswers
 	const { questionBodyRenderer } = config
 
 	return (
-		<legend {...props} data-sr-quiz-question-header="">
-			{children}
-			{questionBodyRenderer ? (
-				questionBodyRenderer(currentQuestion?.question)
-			) : (
-				<Markdown>
-					{typeof currentQuestion?.question === 'function'
-						? currentQuestion.question(answers)
-						: currentQuestion?.question}
-				</Markdown>
-			)}
-		</legend>
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-header=""
+			{...props}
+		>
+			{children ||
+				(questionBodyRenderer ? (
+					questionBodyRenderer(currentQuestion?.question)
+				) : (
+					<Markdown>
+						{typeof currentQuestion?.question === 'function'
+							? currentQuestion.question(answers)
+							: currentQuestion?.question}
+					</Markdown>
+				))}
+		</Comp>
 	)
 }
 
-type SurveyQuestionChoicesProps = React.ComponentPropsWithoutRef<'ul'> & {
+type SurveyQuestionChoicesProps = React.ComponentPropsWithoutRef<'div'> & {
 	grid?: boolean
+	asChild?: boolean
 }
 
 /**
- * Container component for rendering multiple choice options
+ * Container component for rendering multiple choice options.
+ * Automatically renders RadioGroup for single-choice or Checkboxes for multi-choice.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default choice rendering when provided
  */
 export function SurveyQuestionChoices({
 	children,
+	className,
+	asChild,
 	grid = false,
 	...props
 }: SurveyQuestionChoicesProps) {
+	const Comp = asChild ? Slot : 'div'
 	const {
 		surveyMachineState,
 		form: {
@@ -233,65 +259,76 @@ export function SurveyQuestionChoices({
 	const isAnswered = surveyMachineState.matches('answered')
 
 	return (
-		<div data-sr-quiz-question-choices-wrapper="">
-			<ul {...props} data-sr-quiz-question-choices="">
-				{children}
-				{hasMultipleCorrectAnswers ? (
-					currentQuestion?.choices?.map((choice: Choice, i: number) => {
-						return (
-							<SurveyQuestionChoice
-								key={choice.answer}
-								choice={choice}
-								index={i}
-							/>
-						)
-					})
-				) : (
-					<RadioGroup
-						value={currentValue as string}
-						onValueChange={(value) =>
-							setValue('answer', value, {
-								shouldValidate: true,
-								shouldDirty: true,
+		<Comp data-sr-quiz-question-choices-wrapper="" {...props}>
+			{
+				<>
+					<ul data-sr-quiz-question-choices="" className={cn('', className)}>
+						{hasMultipleCorrectAnswers ? (
+							currentQuestion?.choices?.map((choice: Choice, i: number) => {
+								return (
+									<SurveyQuestionChoice
+										key={choice.answer}
+										choice={choice}
+										index={i}
+									/>
+								)
 							})
-						}
-						disabled={isAnswered}
-					>
-						{currentQuestion?.choices?.map((choice: Choice, i: number) => {
-							return (
-								<SurveyQuestionChoice
-									key={choice.answer}
-									choice={choice}
-									index={i}
-								/>
-							)
-						})}
-					</RadioGroup>
-				)}
-				{errors?.answer && (
-					<div data-sr-quiz-question-error="">
-						{errors.answer.message as string}
-					</div>
-				)}
-			</ul>
-		</div>
+						) : (
+							<RadioGroup
+								value={currentValue as string}
+								onValueChange={(value) =>
+									setValue('answer', value, {
+										shouldValidate: true,
+										shouldDirty: true,
+									})
+								}
+								disabled={isAnswered}
+							>
+								{currentQuestion?.choices?.map((choice: Choice, i: number) => {
+									return (
+										<SurveyQuestionChoice
+											key={choice.answer}
+											choice={choice}
+											index={i}
+										/>
+									)
+								})}
+							</RadioGroup>
+						)}
+					</ul>
+					{errors?.answer && (
+						<div data-sr-quiz-question-error="" className="mt-3">
+							{errors.answer.message as string}
+						</div>
+					)}
+				</>
+			}
+		</Comp>
 	)
 }
 
 type SurveyQuestionChoiceProps = React.ComponentPropsWithoutRef<'li'> & {
 	choice: Choice
 	index: number
+	asChild?: boolean
 }
 
 /**
- * Individual choice item component with radio or checkbox input
+ * Individual choice item component with radio or checkbox input.
+ * Renders default label/input structure but can be fully customized.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default choice rendering when provided
  */
 export function SurveyQuestionChoice({
 	children,
+	className,
+	asChild,
 	choice,
 	index,
 	...props
 }: SurveyQuestionChoiceProps) {
+	const Comp = asChild ? Slot : 'li'
 	const { surveyMachineState, form, currentAnswer, currentQuestion } =
 		useSurveyQuestion()
 	const isAnswered = surveyMachineState.matches('answered')
@@ -331,8 +368,8 @@ export function SurveyQuestionChoice({
 	}
 
 	return (
-		<li
-			{...props}
+		<Comp
+			className={cn('', className)}
 			data-sr-quiz-question-choice={
 				isAnswered && hasCorrectAnswer
 					? isCorrectChoice(choice)
@@ -340,47 +377,66 @@ export function SurveyQuestionChoice({
 						: 'incorrect'
 					: ''
 			}
+			{...props}
 		>
-			{choice.image && <img src={choice.image} alt={choice.answer} />}
-			{hasMultipleCorrectAnswers ? (
-				<Label>
-					<Checkbox
-						value={choice.answer}
-						checked={
-							isArray(currentValue)
-								? currentValue.includes(choice.answer)
-								: currentValue === choice.answer
-						}
-						onCheckedChange={handleCheckboxChange}
-						disabled={isAnswered}
-					/>
-					<p>{choice.label || alphabet[index]}</p>
-					{isAnswered && hasCorrectAnswer && (
-						<span>{isCorrectChoice(choice) ? 'correct' : 'incorrect'}</span>
+			{children || (
+				<>
+					{choice.image && <img src={choice.image} alt={choice.answer} />}
+					{hasMultipleCorrectAnswers ? (
+						<Label className={cn('flex items-center gap-2')}>
+							<Checkbox
+								value={choice.answer}
+								checked={
+									isArray(currentValue)
+										? currentValue.includes(choice.answer)
+										: currentValue === choice.answer
+								}
+								onCheckedChange={handleCheckboxChange}
+								disabled={isAnswered}
+							/>
+							<span>{choice.label || alphabet[index]}</span>
+							{isAnswered && hasCorrectAnswer && (
+								<span className={cn('text-sm opacity-75')}>
+									{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
+								</span>
+							)}
+						</Label>
+					) : (
+						<div className={cn('flex items-center gap-2')}>
+							<RadioGroupItem value={choice.answer} id={choiceId} />
+							<Label
+								htmlFor={choiceId}
+								className={cn('flex items-center gap-2')}
+							>
+								<span>{choice.label || alphabet[index]}</span>
+								{isAnswered && hasCorrectAnswer && (
+									<span className={cn('text-sm opacity-75')}>
+										{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
+									</span>
+								)}
+							</Label>
+						</div>
 					)}
-				</Label>
-			) : (
-				<div className="flex items-center gap-3">
-					<RadioGroupItem value={choice.answer} id={choiceId} />
-					<Label htmlFor={choiceId}>
-						<p>{choice.label || alphabet[index]}</p>
-						{isAnswered && hasCorrectAnswer && (
-							<span>{isCorrectChoice(choice) ? 'correct' : 'incorrect'}</span>
-						)}
-					</Label>
-				</div>
+				</>
 			)}
-		</li>
+		</Comp>
 	)
 }
 
 /**
- * Text input component for essay-style questions
+ * Text input component for essay-style questions.
+ * Renders Label and Textarea by default.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default input rendering when provided
  */
 export function SurveyQuestionInput({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'div'
 	const { surveyMachineState, form } = useSurveyQuestion()
 	const {
 		formState: { errors },
@@ -389,97 +445,143 @@ export function SurveyQuestionInput({
 	const isAnswered = surveyMachineState.matches('answered')
 
 	return (
-		<div {...props} data-sr-quiz-question-input={errors?.answer ? 'error' : ''}>
-			<Label htmlFor="answer">Your answer</Label>
-			<Textarea
-				{...register('answer')}
-				rows={6}
-				id="answer"
-				disabled={isAnswered}
-				placeholder="Type your answer..."
-			/>
-			{errors?.answer && (
-				<div data-sr-quiz-question-error="">
-					{errors.answer.message as string}
-				</div>
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-input={errors?.answer ? 'error' : ''}
+			{...props}
+		>
+			{children || (
+				<>
+					<Label htmlFor="answer">Your answer</Label>
+					<Textarea
+						{...register('answer')}
+						rows={6}
+						id="answer"
+						disabled={isAnswered}
+						placeholder="Type your answer..."
+					/>
+					{errors?.answer && (
+						<div data-sr-quiz-question-error="">
+							{errors.answer.message as string}
+						</div>
+					)}
+				</>
 			)}
-		</div>
+		</Comp>
 	)
 }
 
 /**
- * Container for the question body content
+ * Container for the question body content.
+ * Renders as a div by default.
+ *
+ * @param asChild - If true, merges props into immediate child
  */
 export function SurveyQuestionBody({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'div'
 	return (
-		<div {...props} data-sr-quiz-question-body="">
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-body=""
+			{...props}
+		>
 			{children}
-		</div>
+		</Comp>
 	)
 }
 
 /**
- * Component for displaying the answer/explanation after question is answered
+ * Component for displaying the answer/explanation after question is answered.
+ * Only renders when question is in 'answered' state.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default answer rendering when provided
  */
 export function SurveyQuestionAnswer({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'div'
 	const { surveyMachineState, currentQuestion, config } = useSurveyQuestion()
 	const { questionBodyRenderer } = config
 	const isAnswered = surveyMachineState.matches('answered')
 	return isAnswered && currentQuestion.answer ? (
-		<div {...props} data-sr-quiz-question-answer="">
-			<>
-				{questionBodyRenderer ? (
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-answer=""
+			{...props}
+		>
+			{children ||
+				(questionBodyRenderer ? (
 					questionBodyRenderer(currentQuestion.answer)
 				) : (
 					<Markdown>{currentQuestion.answer}</Markdown>
-				)}
-				{children}
-			</>
-		</div>
+				))}
+		</Comp>
 	) : null
 }
 
 /**
- * Submit button component
+ * Submit button component.
+ * Hides when question is answered. Shows spinner during submission.
+ *
+ * @param asChild - If true, merges props into immediate child instead of rendering default Button
+ * @param children - Button content, defaults to "Submit"
  */
 export function SurveyQuestionSubmit({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'button'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : Button
 	const { surveyMachineState } = useSurveyQuestion()
 
 	const isAnswered = surveyMachineState.matches('answered')
 	const isSubmitting = surveyMachineState.matches('answering')
 
 	return isAnswered ? null : (
-		<div {...props} data-sr-quiz-question-submit="">
-			<Button disabled={isAnswered || isSubmitting} type="submit">
-				{isSubmitting ? (
+		<Comp
+			className={cn('', className)}
+			disabled={isAnswered || isSubmitting}
+			type="submit"
+			data-sr-quiz-question-submit=""
+			{...props}
+		>
+			{children ||
+				(isSubmitting ? (
 					<>
 						<Spinner className="h-4 w-4" />
 						<span>Submitting...</span>
 					</>
 				) : (
-					children
-				)}
-			</Button>
-		</div>
+					'Submit'
+				))}
+		</Comp>
 	)
 }
 
 /**
- * Footer component that displays after-answer messages
+ * Footer component that displays after-answer messages.
+ * Only renders when question is in 'answered' state.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default message rendering when provided
  */
 export function SurveyQuestionFooter({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'footer'>) {
+}: React.ComponentPropsWithoutRef<'footer'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'footer'
 	const { surveyMachineState, isLast, config } = useSurveyQuestion()
 	const focusRef = React.useRef<HTMLDivElement>(null)
 	const isAnswered = surveyMachineState.matches('answered')
@@ -495,34 +597,46 @@ export function SurveyQuestionFooter({
 	const { afterCompletionMessages } = config
 
 	return isAnswered ? (
-		<footer {...props} data-sr-quiz-question-footer="">
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-footer=""
+			{...props}
+		>
 			<div ref={focusRef} tabIndex={-1}>
-				<Markdown>
-					{answeredNeutral
-						? isLast
-							? afterCompletionMessages.neutral.last
-							: afterCompletionMessages.neutral.default
-						: answeredCorrectly
+				{children || (
+					<Markdown>
+						{answeredNeutral
 							? isLast
-								? afterCompletionMessages.correct.last
-								: afterCompletionMessages.correct.default
-							: isLast
-								? afterCompletionMessages.incorrect.last
-								: afterCompletionMessages.incorrect.default}
-				</Markdown>
-				{children}
+								? afterCompletionMessages.neutral.last
+								: afterCompletionMessages.neutral.default
+							: answeredCorrectly
+								? isLast
+									? afterCompletionMessages.correct.last
+									: afterCompletionMessages.correct.default
+								: isLast
+									? afterCompletionMessages.incorrect.last
+									: afterCompletionMessages.incorrect.default}
+					</Markdown>
+				)}
 			</div>
-		</footer>
+		</Comp>
 	) : null
 }
 
 /**
- * Essay-style textarea component for long-form text answers
+ * Essay-style textarea component for long-form text answers.
+ * Renders Textarea with minimal styling by default.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default textarea rendering when provided
  */
 export function SurveyQuestionEssay({
 	children,
+	className,
+	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'div'>) {
+}: React.ComponentPropsWithoutRef<'div'> & { asChild?: boolean }) {
+	const Comp = asChild ? Slot : 'div'
 	const { form, surveyMachineState } = useSurveyQuestion()
 	const isAnswered = surveyMachineState.matches('answered')
 	const {
@@ -531,19 +645,27 @@ export function SurveyQuestionEssay({
 	} = form
 
 	return (
-		<div {...props} data-sr-quiz-question-essay="">
-			<Textarea
-				{...register('answer')}
-				disabled={isAnswered}
-				rows={6}
-				className="w-full rounded border p-2"
-				placeholder="Type your answer here..."
-			/>
-			{errors.answer && (
-				<div className="text-red-500">{errors.answer.message as string}</div>
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-essay=""
+			{...props}
+		>
+			{children || (
+				<>
+					<Textarea
+						{...register('answer')}
+						disabled={isAnswered}
+						rows={6}
+						placeholder="Type your answer here..."
+					/>
+					{errors.answer && (
+						<div data-sr-quiz-question-error="">
+							{errors.answer.message as string}
+						</div>
+					)}
+				</>
 			)}
-			{children}
-		</div>
+		</Comp>
 	)
 }
 
@@ -552,15 +674,26 @@ type SurveyQuestionEmailProps = Omit<
 	'onSubmit'
 > & {
 	onSubmit: (email: string) => void
+	asChild?: boolean
+	children?: React.ReactNode
 }
 
 /**
- * Email capture component for survey completion
+ * Email capture component for survey completion.
+ * Renders a form with email input and submit button by default.
+ *
+ * @param asChild - If true, merges props into immediate child
+ * @param children - Fully overrides default email form when provided
+ * @param onSubmit - Callback fired with email value when form is submitted
  */
 export function SurveyQuestionEmail({
 	onSubmit,
+	children,
+	className,
+	asChild,
 	...props
 }: SurveyQuestionEmailProps) {
+	const Comp = asChild ? Slot : 'div'
 	const [email, setEmail] = useState('')
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -569,27 +702,48 @@ export function SurveyQuestionEmail({
 	}
 
 	return (
-		<div {...props} data-sr-quiz-question-email="">
-			<h2 className="mb-4 text-2xl font-bold">
-				Thank you for completing the survey!
-			</h2>
-			<p className="mb-4">
-				Please enter your email to receive updates and insights based on the
-				survey results:
-			</p>
-			<form onSubmit={handleSubmit}>
-				<Input
-					type="email"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-					required
-					className="mb-4 w-full"
-					placeholder="Your email"
-				/>
-				<Button type="submit" className="w-full">
-					Submit
-				</Button>
-			</form>
-		</div>
+		<Comp
+			className={cn('', className)}
+			data-sr-quiz-question-email=""
+			{...props}
+		>
+			{children || (
+				<>
+					<h2 className={cn('text-2xl font-semibold')}>
+						Thank you for completing the survey!
+					</h2>
+					<p className={cn('mt-2')}>
+						Please enter your email to receive updates and insights based on the
+						survey results:
+					</p>
+					<form onSubmit={handleSubmit} className={cn('mt-4')}>
+						<Input
+							type="email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							required
+							placeholder="Your email"
+						/>
+						<Button type="submit" className={cn('mt-4')}>
+							Submit
+						</Button>
+					</form>
+				</>
+			)}
+		</Comp>
 	)
+}
+
+export {
+	SurveyQuestion as Root,
+	SurveyQuestionHeader as Header,
+	SurveyQuestionBody as Body,
+	SurveyQuestionChoices as Choices,
+	SurveyQuestionChoice as Choice,
+	SurveyQuestionInput as Input,
+	SurveyQuestionEssay as Essay,
+	SurveyQuestionAnswer as Answer,
+	SurveyQuestionSubmit as Submit,
+	SurveyQuestionFooter as Footer,
+	SurveyQuestionEmail as Email,
 }

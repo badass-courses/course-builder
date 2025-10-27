@@ -16,6 +16,11 @@ import {
 	type SurveyMachineContext,
 } from '@coursebuilder/survey'
 
+/**
+ * Survey renderer component demonstrating the composable styling pattern.
+ * Each component accepts className to customize appearance with Tailwind.
+ */
+
 type SurveyPageProps = {
 	currentQuestion: QuestionResource
 	currentQuestionId: string
@@ -51,7 +56,10 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 	if (showEmailQuestion) {
 		return (
 			<div className="mx-auto max-w-2xl p-6">
-				<SurveyQuestionEmail onSubmit={onEmailSubmit} />
+				<SurveyQuestionEmail
+					onSubmit={onEmailSubmit}
+					className="bg-card border-border space-y-4 rounded-xl border p-8 shadow-sm"
+				/>
 			</div>
 		)
 	}
@@ -67,15 +75,16 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 			handleSubmitAnswer={handleAnswerSubmit}
 			currentQuestion={currentQuestion}
 			currentQuestionId={currentQuestionId}
+			className="sm:bg-card border-border mx-auto w-full max-w-lg space-y-6 px-8 sm:rounded-xl sm:border sm:px-8 sm:py-8 sm:shadow-sm"
 		>
-			<SurveyQuestionHeader />
-			<SurveyQuestionBody>
+			<SurveyQuestionHeader className="text-2xl font-bold" />
+			<SurveyQuestionBody className="space-y-6">
 				{currentQuestion.type === 'essay' ? (
 					<SurveyQuestionEssay />
 				) : (
-					<SurveyQuestionChoices />
+					<SurveyQuestionChoices className="space-y-2" />
 				)}
-				<SurveyQuestionSubmit>Submit</SurveyQuestionSubmit>
+				<SurveyQuestionSubmit className="">Submit Answer</SurveyQuestionSubmit>
 				<SurveyQuestionAnswer />
 			</SurveyQuestionBody>
 			<SurveyQuestionFooter />

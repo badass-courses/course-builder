@@ -13,6 +13,17 @@ export {
 	SurveyQuestionSubmit,
 	SurveyQuestionEssay,
 	SurveyQuestionEmail,
+	Root,
+	Header,
+	Body,
+	Choices,
+	Choice,
+	Input,
+	Essay,
+	Answer,
+	Submit,
+	Footer,
+	Email,
 	type FormValues,
 } from './survey-question'
 export * from './use-survey-page-offer-machine'
