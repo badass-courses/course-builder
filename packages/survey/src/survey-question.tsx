@@ -83,16 +83,6 @@ export function SurveyQuestion({
 	const hasMultipleCorrectAnswers = isArray(props.currentQuestion.correct)
 	const { currentQuestion, currentQuestionId } = props
 
-	React.useEffect(() => {
-		if (currentQuestion) {
-			sentToSurveyMachine({
-				type: 'LOAD_QUESTION',
-				currentQuestion,
-				currentQuestionId,
-			})
-		}
-	}, [currentQuestion, currentQuestionId, sentToSurveyMachine])
-
 	// Create validation schema
 	const createValidationSchema = () => {
 		const hasCorrect = props.currentQuestion.correct
@@ -130,6 +120,32 @@ export function SurveyQuestion({
 		defaultValues: { answer: null },
 		mode: 'onChange',
 	})
+
+	React.useEffect(() => {
+		if (currentQuestion) {
+			// Get saved answer for this question from allAnswers or use default
+			const savedAnswer =
+				surveyMachineState.context.allAnswers?.[currentQuestionId]
+			const hasMultiple =
+				isArray(currentQuestion.correct) || currentQuestion.allowMultiple
+			const defaultValue = savedAnswer ?? (hasMultiple ? [] : null)
+
+			// Reset form with appropriate default value before loading new question
+			form.reset({ answer: defaultValue })
+
+			sentToSurveyMachine({
+				type: 'LOAD_QUESTION',
+				currentQuestion,
+				currentQuestionId,
+			})
+		}
+	}, [
+		currentQuestion,
+		currentQuestionId,
+		sentToSurveyMachine,
+		surveyMachineState.context.allAnswers,
+		form,
+	])
 
 	const onSubmit = async (values: FormValues) => {
 		console.log('form on submit', values)
