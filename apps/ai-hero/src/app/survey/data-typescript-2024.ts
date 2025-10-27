@@ -242,12 +242,12 @@ function getFinalQuestion(answers: Record<string, string | string[]>): string {
 	const role = answers.role
 	const challenge = answers.current_challenge
 	const skillLevel = answers.skill_level
+	const learningPriority = answers.learning_priority
 
 	// Team Leader variant
 	if (
 		(role === 'tech_lead' || role === 'manager') &&
-		(challenge === 'team_adoption' ||
-			answers.learning_priority === 'team_adoption')
+		(challenge === 'team_adoption' || learningPriority === 'team_adoption')
 	) {
 		return "Tell us more about your team's TypeScript journey? What specific challenges are you facing with adoption, and what would make the biggest impact for your team right now?"
 	}
@@ -256,7 +256,7 @@ function getFinalQuestion(answers: Record<string, string | string[]>): string {
 	if (
 		skillLevel === 'beginner' ||
 		skillLevel === 'advanced-beginner' ||
-		challenge === 'fundamentals'
+		learningPriority === 'fundamentals'
 	) {
 		return "Tell us about what motivated you to learn TypeScript and what specific concepts or patterns you're most excited to master? What would help you feel more confident using TypeScript in your projects?"
 	}
