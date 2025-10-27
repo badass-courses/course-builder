@@ -1,10 +1,11 @@
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
 import { inngest } from '@/inngest/inngest.server'
 import type { Subscriber } from '@/schemas/subscriber'
+import { log } from '@/server/logger'
 
 /**
- * updates a custom field on email list with the current date/time
- * when a learner completes a survey
+ * Updates a subscriber custom field with the provided survey answer.
+ * Use for learner/customer activity only (not internal ops).
  *
  * @param subscriber
  * @param question
@@ -20,6 +21,9 @@ export const answerSurvey = async ({
 	answer: string
 }) => {
 	try {
+		if (!subscriber?.id || !subscriber?.email_address) {
+			return { error: 'Missing subscriber identifiers' }
+		}
 		if (emailListProvider.updateSubscriberFields) {
 			const response = await emailListProvider.updateSubscriberFields({
 				subscriberId: subscriber.id.toString(),
@@ -34,6 +38,11 @@ export const answerSurvey = async ({
 			return { error: 'updateSubscriberFields is not supported' }
 		}
 	} catch (error) {
+		log.error('answerSurvey failed', {
+			err: (error as Error)?.message,
+			subscriberId: subscriber?.id,
+			question,
+		})
 		return { error: 'Failed to update subscriber fields' }
 	}
 }
