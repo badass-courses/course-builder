@@ -82,7 +82,7 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 				{currentQuestion.type === 'essay' ? (
 					<SurveyQuestionEssay />
 				) : (
-					<SurveyQuestionChoices className="space-y-2" />
+					<SurveyQuestionChoices className="grid gap-3 [&_label]:text-base [&_label]:font-normal" />
 				)}
 				<SurveyQuestionSubmit className="">Submit Answer</SurveyQuestionSubmit>
 				<SurveyQuestionAnswer />
