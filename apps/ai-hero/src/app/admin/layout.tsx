@@ -15,7 +15,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
 		<LayoutClient>
 			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-5 md:grid">
-				<div className="bg-card col-span-2 hidden overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] md:block">
+				<div className="bg-muted border-border col-span-2 hidden overflow-hidden border-r md:block">
 					<div className="flex h-full max-h-screen flex-col gap-2">
 						<nav className="">
 							<ul>
