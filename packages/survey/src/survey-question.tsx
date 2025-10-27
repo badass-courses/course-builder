@@ -19,6 +19,7 @@ import {
 	RadioGroupItem,
 	Textarea,
 } from '@coursebuilder/ui'
+import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import Spinner from '@coursebuilder/ui/primitives/spinner'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -275,6 +276,7 @@ export function SurveyQuestionChoices({
 							})
 						) : (
 							<RadioGroup
+								className={cn('', className)}
 								value={currentValue as string}
 								onValueChange={(value) =>
 									setValue('answer', value, {
@@ -383,32 +385,47 @@ export function SurveyQuestionChoice({
 				<>
 					{choice.image && <img src={choice.image} alt={choice.answer} />}
 					{hasMultipleCorrectAnswers ? (
-						<Label className={cn('flex items-center gap-2')}>
-							<Checkbox
-								value={choice.answer}
-								checked={
-									isArray(currentValue)
-										? currentValue.includes(choice.answer)
-										: currentValue === choice.answer
-								}
-								onCheckedChange={handleCheckboxChange}
-								disabled={isAnswered}
-							/>
-							<span>{choice.label || alphabet[index]}</span>
-							{isAnswered && hasCorrectAnswer && (
-								<span className={cn('text-sm opacity-75')}>
-									{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
-								</span>
-							)}
-						</Label>
-					) : (
 						<div className={cn('flex items-center gap-2')}>
-							<RadioGroupItem value={choice.answer} id={choiceId} />
 							<Label
 								htmlFor={choiceId}
-								className={cn('flex items-center gap-2')}
+								className={cn(
+									'flex cursor-pointer items-center gap-2 leading-none',
+								)}
 							>
-								<span>{choice.label || alphabet[index]}</span>
+								<Checkbox
+									value={choice.answer}
+									checked={
+										isArray(currentValue)
+											? currentValue.includes(choice.answer)
+											: currentValue === choice.answer
+									}
+									onCheckedChange={handleCheckboxChange}
+									disabled={isAnswered}
+									id={choiceId}
+									className="cursor-pointer"
+								/>
+								<span>{choice.label || choice.answer || alphabet[index]}</span>
+								{isAnswered && hasCorrectAnswer && (
+									<span className={cn('text-sm opacity-75')}>
+										{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
+									</span>
+								)}
+							</Label>
+						</div>
+					) : (
+						<div className={cn('flex items-center gap-2')}>
+							<Label
+								htmlFor={choiceId}
+								className={cn(
+									'flex cursor-pointer items-center gap-2 leading-none',
+								)}
+							>
+								<RadioGroupItem
+									className="cursor-pointer"
+									value={choice.answer}
+									id={choiceId}
+								/>
+								<span>{choice.label || choice.answer || alphabet[index]}</span>
 								{isAnswered && hasCorrectAnswer && (
 									<span className={cn('text-sm opacity-75')}>
 										{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
@@ -540,7 +557,11 @@ export function SurveyQuestionSubmit({
 	className,
 	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'button'> & { asChild?: boolean }) {
+}: React.ComponentPropsWithoutRef<'button'> & {
+	asChild?: boolean
+	variant?: ButtonProps['variant']
+	size?: ButtonProps['size']
+}) {
 	const Comp = asChild ? Slot : Button
 	const { surveyMachineState } = useSurveyQuestion()
 
@@ -553,6 +574,8 @@ export function SurveyQuestionSubmit({
 			disabled={isAnswered || isSubmitting}
 			type="submit"
 			data-sr-quiz-question-submit=""
+			variant={props.variant || 'default'}
+			size={props.size || 'lg'}
 			{...props}
 		>
 			{children ||

@@ -174,6 +174,7 @@ import {
 	TableHeader,
 	TableRow,
 } from './primitives/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './primitives/tabs'
 import { Textarea } from './primitives/textarea'
 import {
 	Toast,
@@ -364,4 +365,8 @@ export {
 	FieldSeparator,
 	FieldSet,
 	FieldTitle,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
 }

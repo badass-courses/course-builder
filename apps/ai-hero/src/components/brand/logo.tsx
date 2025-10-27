@@ -1,10 +1,16 @@
 import { cn } from '@/utils/cn'
 
-export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
+export const Logo: React.FC<{
+	className?: string
+	withAuthor?: boolean
+	specialLabel?: string
+}> = ({ className = '', withAuthor = false, specialLabel = '' }) => {
 	return (
 		<div className={cn('flex items-center gap-2', className)}>
 			<svg
-				className="w-7"
+				className={cn('w-7', {
+					'w-8': withAuthor,
+				})}
 				xmlns="http://www.w3.org/2000/svg"
 				width={className ? undefined : 280}
 				height={className ? undefined : 280}
@@ -25,8 +31,15 @@ export const Logo: React.FC<{ className?: string }> = ({ className = '' }) => {
 					</clipPath>
 				</defs>
 			</svg>
-			<span className={cn('leading-none! text-xl font-semibold', {})}>
-				<span className="font-mono">AI</span>hero
+			<span
+				className={cn('leading-none! flex flex-col text-xl font-semibold', {})}
+			>
+				<div className="inline-flex items-center gap-1">
+					<span className="font-mono">AI</span>hero
+				</div>
+				{withAuthor && (
+					<span className="text-xs font-normal opacity-80">by Matt Pocock</span>
+				)}
 			</span>
 		</div>
 	)

@@ -14,10 +14,14 @@ export default function LayoutClient({
 	children,
 	withContainer = false,
 	className,
+	withNavigation = true,
+	withFooter = true,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
+	withNavigation?: boolean
+	withFooter?: boolean
 }) {
 	return (
 		<div
@@ -35,9 +39,9 @@ export default function LayoutClient({
 				</div>
 			)}
 			<div className="border-x">
-				<Navigation />
+				{withNavigation && <Navigation />}
 				{children}
-				<Footer />
+				{withFooter && <Footer />}
 			</div>
 			{withContainer && (
 				<div className="absolute bottom-0 right-0 top-0 flex flex-col">

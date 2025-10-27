@@ -5,6 +5,7 @@ import { SubscriberSchema } from '@/schemas/subscriber'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import type { AdapterUser } from '@auth/core/adapters'
 import { format } from 'date-fns'
+import { toSnakeCase } from 'drizzle-orm/casing'
 import { z } from 'zod'
 
 export function formatDate(date: Date) {
@@ -52,7 +53,9 @@ export const convertkitRouter = createTRPCRouter({
 			let fields: Record<string, string> = {
 				last_surveyed_on: formatDate(new Date()),
 				...(input.surveyId && {
-					[`completed_${input.surveyId}_survey_on`]: formatDate(new Date()),
+					[`completed_${toSnakeCase(input.surveyId)}_survey_on`]: formatDate(
+						new Date(),
+					),
 				}),
 			}
 
