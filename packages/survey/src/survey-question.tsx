@@ -397,7 +397,7 @@ export function SurveyQuestionChoice({
 								id={choiceId}
 							/>
 							<Label htmlFor={choiceId}>
-								<span>{choice.label || alphabet[index]}</span>
+								<span>{choice.label || choice.answer || alphabet[index]}</span>
 								{isAnswered && hasCorrectAnswer && (
 									<span className={cn('text-sm opacity-75')}>
 										{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
@@ -412,7 +412,7 @@ export function SurveyQuestionChoice({
 								htmlFor={choiceId}
 								className={cn('flex items-center gap-2 leading-none')}
 							>
-								<span>{choice.label || alphabet[index]}</span>
+								<span>{choice.label || choice.answer || alphabet[index]}</span>
 								{isAnswered && hasCorrectAnswer && (
 									<span className={cn('text-sm opacity-75')}>
 										{isCorrectChoice(choice) ? 'correct' : 'incorrect'}
