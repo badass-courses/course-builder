@@ -25,7 +25,7 @@ import {
 	SurveyWithQuestionsSchema,
 	type QuestionFields,
 	type SurveyFields,
-} from './surveys-schemas'
+} from './surveys'
 
 /**
  * Creates a new survey with default configuration
@@ -213,7 +213,7 @@ export async function getSurvey(slugOrId: string) {
  */
 export async function getAllSurveys() {
 	const { session, ability } = await getServerAuthSession()
-	const { SurveyWithQuestionsSchema } = await import('./surveys-schemas')
+	const { SurveyWithQuestionsSchema } = await import('./surveys')
 
 	if (!session?.user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')

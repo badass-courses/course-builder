@@ -2,11 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import type {
-	Question,
-	Survey,
-	SurveyWithQuestions,
-} from '@/lib/surveys-schemas'
+import type { Question, Survey, SurveyWithQuestions } from '@/lib/surveys'
 
 import {
 	Button,

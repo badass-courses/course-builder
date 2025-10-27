@@ -1,13 +1,13 @@
 'use client'
 
 import * as React from 'react'
-import { createSurveyAction, updateSurveyAction } from '@/lib/surveys-query'
 import {
 	DEFAULT_AFTER_COMPLETION_MESSAGES,
 	SurveyFieldsSchema,
 	type Survey,
 	type SurveyWithQuestions,
-} from '@/lib/surveys-schemas'
+} from '@/lib/surveys'
+import { createSurveyAction, updateSurveyAction } from '@/lib/surveys-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'

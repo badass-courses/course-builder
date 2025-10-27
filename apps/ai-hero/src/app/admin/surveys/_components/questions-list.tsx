@@ -1,11 +1,11 @@
 'use client'
 
 import * as React from 'react'
+import type { Question } from '@/lib/surveys'
 import {
 	deleteQuestionAction,
 	updateQuestionPositionsAction,
 } from '@/lib/surveys-query'
-import type { Question } from '@/lib/surveys-schemas'
 import {
 	ArrowDown,
 	ArrowRight,

@@ -1,12 +1,8 @@
 'use client'
 
 import * as React from 'react'
+import { QuestionFieldsSchema, type Choice, type Question } from '@/lib/surveys'
 import { createQuestionAction, updateQuestionAction } from '@/lib/surveys-query'
-import {
-	QuestionFieldsSchema,
-	type Choice,
-	type Question,
-} from '@/lib/surveys-schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
 import slugify from '@sindresorhus/slugify'
 import { Plus, Trash2 } from 'lucide-react'
