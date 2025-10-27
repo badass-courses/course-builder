@@ -20,6 +20,7 @@ import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sy
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { partialRefundWorkflow } from './functions/partial-refund'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
 	apiProductTransferWorkflow,
@@ -27,6 +28,7 @@ import {
 } from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { updateRefundedAmountWorkflow } from './functions/update-refunded-amount'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
@@ -50,6 +52,7 @@ export const inngestConfig = {
 		addSubscriptionRoleDiscord,
 		removePurchaseRoleDiscord,
 		postPurchaseWorkflow,
+		partialRefundWorkflow,
 		productTransferWorkflow,
 		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
@@ -63,5 +66,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		updateRefundedAmountWorkflow,
 	],
 }
