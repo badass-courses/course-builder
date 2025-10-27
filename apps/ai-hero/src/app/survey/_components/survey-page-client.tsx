@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Spinner from '@/components/spinner'
 import { api } from '@/trpc/react'
 
 import { useSurveyPageOfferMachine } from '@coursebuilder/survey'
@@ -102,12 +103,19 @@ export function SurveyPageClient({
 	}, [isComplete, machineState, email, subscriber, answers, surveyId])
 
 	if (isLoading) {
-		return <div className="text-center text-2xl">Loading survey...</div>
+		return (
+			<div className="flex items-center justify-center gap-3 py-10 text-center text-lg">
+				<Spinner className="size-5" />{' '}
+				<span className="">
+					Loading survey<span className="animate-pulse">...</span>
+				</span>
+			</div>
+		)
 	}
 
 	if (!currentQuestion && !isPresenting) {
 		return (
-			<div className="text-center text-2xl">
+			<div className="flex items-center justify-center py-10 text-center text-2xl">
 				No survey available at this time.
 			</div>
 		)

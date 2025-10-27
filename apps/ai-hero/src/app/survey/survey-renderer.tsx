@@ -1,4 +1,5 @@
 import React from 'react'
+import { CheckCircle } from 'lucide-react'
 
 import {
 	OfferMachineEvent,
@@ -45,9 +46,12 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 	showEmailQuestion,
 	onEmailSubmit,
 	completionMessageComponent = (
-		<div className="mt-6 text-center">
+		<div className="flex flex-col gap-3 py-10 text-center">
 			<h2 className="text-2xl font-bold">Thank you for your responses!</h2>
-			<p className="mt-2">Your answers have been recorded.</p>
+			<p className="inline-block text-center text-emerald-600 dark:text-emerald-300">
+				<CheckCircle className="inline-block size-4" /> Your answers have been
+				recorded.
+			</p>
 		</div>
 	),
 }) => {
@@ -72,12 +76,12 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 
 	return (
 		<SurveyQuestion
+			className="flex w-full flex-col gap-5"
 			config={surveyConfig}
 			isLast={false}
 			handleSubmitAnswer={handleAnswerSubmit}
 			currentQuestion={currentQuestion}
 			currentQuestionId={currentQuestionId}
-			className="sm:bg-card border-border mx-auto w-full max-w-lg space-y-6 px-8 sm:rounded-xl sm:border sm:px-8 sm:py-8 sm:shadow-sm"
 		>
 			<SurveyQuestionHeader className="text-2xl font-bold" />
 			<SurveyQuestionBody className="space-y-6">
@@ -86,7 +90,9 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 				) : (
 					<SurveyQuestionChoices className="grid gap-3 [&_label]:text-base [&_label]:font-normal" />
 				)}
-				<SurveyQuestionSubmit className="">Submit Answer</SurveyQuestionSubmit>
+				<SurveyQuestionSubmit className="dark:bg-primary dark:text-primary-foreground bg-blue-600 text-white hover:bg-blue-700">
+					Submit Answer
+				</SurveyQuestionSubmit>
 				<SurveyQuestionAnswer />
 			</SurveyQuestionBody>
 			<SurveyQuestionFooter />

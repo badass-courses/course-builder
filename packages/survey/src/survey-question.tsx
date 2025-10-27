@@ -19,6 +19,7 @@ import {
 	RadioGroupItem,
 	Textarea,
 } from '@coursebuilder/ui'
+import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import Spinner from '@coursebuilder/ui/primitives/spinner'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -544,7 +545,11 @@ export function SurveyQuestionSubmit({
 	className,
 	asChild,
 	...props
-}: React.ComponentPropsWithoutRef<'button'> & { asChild?: boolean }) {
+}: React.ComponentPropsWithoutRef<'button'> & {
+	asChild?: boolean
+	variant?: ButtonProps['variant']
+	size?: ButtonProps['size']
+}) {
 	const Comp = asChild ? Slot : Button
 	const { surveyMachineState } = useSurveyQuestion()
 
@@ -557,6 +562,8 @@ export function SurveyQuestionSubmit({
 			disabled={isAnswered || isSubmitting}
 			type="submit"
 			data-sr-quiz-question-submit=""
+			variant={props.variant || 'default'}
+			size={props.size || 'lg'}
 			{...props}
 		>
 			{children ||

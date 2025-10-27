@@ -240,7 +240,6 @@ Create a `SurveyConfig` to customize behavior:
 import { SurveyConfig } from '@coursebuilder/survey'
 
 const config: SurveyConfig = {
-  answerSubmitUrl: process.env.NEXT_PUBLIC_CONVERTKIT_ANSWER_URL,
   afterCompletionMessages: {
     neutral: {
       default: 'Thanks!',

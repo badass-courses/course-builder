@@ -1,10 +1,15 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Logo } from '@/components/brand/logo'
 import LayoutClient from '@/components/layout-client'
 import {
 	buildSurveyConfig,
 	getSurvey,
 	transformSurveyToQuizResource,
 } from '@/lib/surveys-query'
+import { Plus } from 'lucide-react'
+
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { SurveyPageClient } from '../_components/survey-page-client'
 
@@ -29,13 +34,55 @@ export default async function SurveyBySlugPage({
 	const surveyConfig = await buildSurveyConfig(survey.fields)
 
 	return (
-		<LayoutClient withContainer>
-			<div className="relative flex min-h-[calc(100vh-var(--nav-height))] items-center justify-center">
-				<SurveyPageClient
-					quizResource={quizResource}
-					surveyConfig={surveyConfig}
-					surveyId={survey.fields?.slug}
-				/>
+		<LayoutClient withContainer withNavigation={false} withFooter={false}>
+			<div className="bg-size-[12px_12px] flex h-full min-h-[100svh] w-full grid-cols-6 grid-rows-3 bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:grid sm:bg-none dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)]">
+				<div className="hidden h-full w-full sm:flex" />
+				<div className="border-border col-span-4 hidden h-full w-full items-start justify-center border-x p-10 sm:flex">
+					<div>
+						<Link href="/">
+							<span
+								className={cn(
+									'leading-none! inline-flex flex-col items-center justify-center gap-2 text-xl font-semibold',
+									{},
+								)}
+							>
+								<Logo
+									className="inline-flex opacity-80 transition-all ease-out hover:opacity-100"
+									withAuthor={true}
+								/>
+							</span>
+						</Link>
+					</div>
+				</div>
+				<div className="hidden h-full w-full sm:flex" />
+				<div className="border-border bg-size-[12px_12px] hidden h-full w-full border-y bg-transparent bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:flex dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)]" />
+				<div className="border-border bg-card relative col-span-4 mx-auto flex w-full shrink-0 justify-center p-5 pt-10 sm:items-center sm:border sm:p-10">
+					<Plus
+						className="absolute -left-2 -top-2 hidden size-4 opacity-50 sm:block"
+						strokeWidth={1}
+					/>
+					<Plus
+						className="absolute -right-2 -top-2 hidden size-4 opacity-50 sm:block"
+						strokeWidth={1}
+					/>
+					<SurveyPageClient
+						quizResource={quizResource}
+						surveyConfig={surveyConfig}
+						surveyId={survey.fields?.slug}
+					/>
+					<Plus
+						className="absolute -bottom-2 -left-2 hidden size-4 opacity-50 sm:block"
+						strokeWidth={1}
+					/>
+					<Plus
+						className="absolute -bottom-2 -right-2 hidden size-4 opacity-50 sm:block"
+						strokeWidth={1}
+					/>
+				</div>
+				<div className="border-border bg-size-[12px_12px] hidden h-full w-full border-y bg-transparent bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:flex dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
+				<div className="hidden h-full w-full sm:flex" />
+				<div className="border-border col-span-4 hidden h-full w-full border-x sm:flex" />
+				<div className="hidden h-full w-full sm:flex" />
 			</div>
 		</LayoutClient>
 	)

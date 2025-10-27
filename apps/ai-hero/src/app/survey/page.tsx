@@ -91,34 +91,36 @@ export default function Survey() {
 	return (
 		<LayoutClient withContainer>
 			<div className="relative flex min-h-[calc(100vh-var(--nav-height))] items-center justify-center">
-				{isLoading ? (
-					<div className="text-center text-2xl">Loading survey...</div>
-				) : !currentQuestion && !isPresenting ? (
-					<div className="text-center text-2xl">
-						No survey available at this time.
-					</div>
-				) : (
-					<SurveyRenderer
-						currentQuestionId={currentQuestionId}
-						currentQuestion={currentQuestion as QuestionResource}
-						handleSubmitAnswer={async (context) => {
-							if (email || subscriber?.email_address) {
-								answerSurveyMutation.mutate({
-									answer: Array.isArray(context.answer)
-										? context.answer.join(', ')
-										: context.answer,
-									question: context.currentQuestionId,
-								})
-							}
-							await handleSubmitAnswer(context)
-						}}
-						surveyConfig={surveyConfig}
-						sendToMachine={sendToMachine}
-						isComplete={isComplete}
-						showEmailQuestion={machineState.matches('collectEmail')}
-						onEmailSubmit={handleEmailSubmit}
-					/>
-				)}
+				<div className="border-border flex min-h-[calc(100vh-var(--nav-height))] w-full max-w-2xl items-center justify-center border-x">
+					{isLoading ? (
+						<div className="py-10 text-center text-2xl">Loading survey...</div>
+					) : !currentQuestion && !isPresenting ? (
+						<div className="py-10 text-center text-2xl">
+							No survey available at this time.
+						</div>
+					) : (
+						<SurveyRenderer
+							currentQuestionId={currentQuestionId}
+							currentQuestion={currentQuestion as QuestionResource}
+							handleSubmitAnswer={async (context) => {
+								if (email || subscriber?.email_address) {
+									answerSurveyMutation.mutate({
+										answer: Array.isArray(context.answer)
+											? context.answer.join(', ')
+											: context.answer,
+										question: context.currentQuestionId,
+									})
+								}
+								await handleSubmitAnswer(context)
+							}}
+							surveyConfig={surveyConfig}
+							sendToMachine={sendToMachine}
+							isComplete={isComplete}
+							showEmailQuestion={machineState.matches('collectEmail')}
+							onEmailSubmit={handleEmailSubmit}
+						/>
+					)}
+				</div>
 			</div>
 		</LayoutClient>
 	)
