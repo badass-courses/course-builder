@@ -83,15 +83,10 @@ import {
 	type RequestConceptSelection,
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
-import { PARTIAL_REFUND_EVENT, PartialRefund } from './events/partial-refund'
 import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
-import {
-	UPDATE_REFUNDED_AMOUNT_EVENT,
-	UpdateRefundedAmount,
-} from './events/update-refunded-amount'
 import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
@@ -130,8 +125,6 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
-	[PARTIAL_REFUND_EVENT]: PartialRefund
-	[UPDATE_REFUNDED_AMOUNT_EVENT]: UpdateRefundedAmount
 }
 
 const callbackBase =
