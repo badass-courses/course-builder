@@ -1,17 +1,38 @@
+import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Logo } from '@/components/brand/logo'
 import LayoutClient from '@/components/layout-client'
+import { env } from '@/env.mjs'
 import {
 	buildSurveyConfig,
 	getSurvey,
 	transformSurveyToQuizResource,
 } from '@/lib/surveys-query'
+import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { Plus } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { SurveyPageClient } from '../_components/survey-page-client'
+
+export async function generateMetadata(
+	props: { params: Promise<{ slug: string }> } & ResolvingMetadata,
+): Promise<Metadata> {
+	const params = await props.params
+	const survey = await getSurvey(params.slug)
+
+	return {
+		title: `Survey - ${survey?.fields?.title.replace('Survey: ', '')}`,
+		openGraph: {
+			images: [
+				{
+					url: `${env.NEXT_PUBLIC_URL}/api/og/default?title=${survey?.fields?.title}`,
+				},
+			],
+		},
+	}
+}
 
 export default async function SurveyBySlugPage({
 	params,
@@ -35,7 +56,7 @@ export default async function SurveyBySlugPage({
 
 	return (
 		<LayoutClient withContainer withNavigation={false} withFooter={false}>
-			<div className="bg-size-[12px_12px] flex h-full min-h-[100svh] w-full grid-cols-6 grid-rows-[1fr_auto_1fr] bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:grid sm:bg-none dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)]">
+			<div className="bg-size-[12px_12px] flex h-full min-h-[100svh] w-full grid-cols-6 grid-rows-[1fr_auto_1fr] bg-[radial-gradient(rgba(0,0,0,0.08)_1px,transparent_1px)] sm:grid sm:bg-none dark:bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] sm:dark:bg-none">
 				<div className="hidden h-full w-full sm:flex" />
 				<div className="border-border col-span-4 hidden h-full w-full items-start justify-center border-x p-10 sm:flex">
 					<div>
