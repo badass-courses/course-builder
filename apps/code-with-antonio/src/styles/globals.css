@@ -294,6 +294,21 @@
 }
 
 @layer base {
+	[data-sr-button='default'] {
+		@apply bg-linear-180 from-primary relative cursor-pointer to-[color-mix(in_hsl,_var(--primary)_20%,_var(--foreground)_20%)];
+
+		/* soft inner shadow small */
+		box-shadow:
+			inset 0 2px 1px 1px rgba(255, 255, 255, 0.2),
+			inset 0 -1px 1px 1px rgba(0, 0, 0, 0.2) !important;
+	}
+	[data-sr-button='secondary'] {
+		@apply ring-foreground/10 ring-1; /* soft inner small */
+		box-shadow:
+			inset 0 2px 1px 1px rgba(255, 255, 255, 0.1),
+			inset 0 -1px 1px 1px rgba(0, 0, 0, 0.5) shadow ring-1 !important;
+	}
+
 	* {
 		@apply border-border outline-ring/50 selection:bg-primary selection:text-primary-foreground;
 	}
