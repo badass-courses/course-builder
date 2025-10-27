@@ -5,8 +5,6 @@
 		"baseUrl": ".",
 		"declaration": true,
 		"declarationMap": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
