@@ -52,6 +52,9 @@ export const useSurveyPageOfferMachine = (
 				)
 				let nextIndex = currentIndex === -1 ? 0 : currentIndex + 1
 
+				// Use machine context answers (synchronous) instead of hook state (async)
+				const machineAnswers = machineState.context.answers || {}
+
 				// Find next valid question
 				while (nextIndex < questionKeys.length) {
 					const nextQuestionId = questionKeys[nextIndex]
@@ -60,10 +63,14 @@ export const useSurveyPageOfferMachine = (
 					const dependencyMet =
 						!nextQuestion.dependsOn ||
 						((): boolean => {
-							const storedAnswer = answers[nextQuestion.dependsOn.question]
-							return Array.isArray(storedAnswer)
-								? storedAnswer.includes(nextQuestion.dependsOn.answer)
-								: storedAnswer === nextQuestion.dependsOn.answer
+							const storedAnswer =
+								machineAnswers[nextQuestion.dependsOn.question]
+							const expected = nextQuestion.dependsOn.answer
+							const met = Array.isArray(storedAnswer)
+								? storedAnswer.includes(expected)
+								: storedAnswer === expected
+
+							return met
 						})()
 
 					if (dependencyMet) {
@@ -71,7 +78,7 @@ export const useSurveyPageOfferMachine = (
 							typeof nextQuestion.question === 'function'
 								? {
 										...nextQuestion,
-										question: nextQuestion.question(answers),
+										question: nextQuestion.question(machineAnswers),
 									}
 								: nextQuestion
 
@@ -102,16 +109,16 @@ export const useSurveyPageOfferMachine = (
 	const currentQuestionId = machineState.context.currentOfferId
 
 	const handleSubmitAnswer = async (context: SurveyMachineContext) => {
-		let answer = context.answer
-
-		// If the question is an essay, the answer might be an empty string
-		// In this case, we'll use the formik values
-		if (currentQuestion.type === 'essay' && (!answer || answer === '')) {
-			answer = context.answer
-		}
+		const answer = context.answer
 
 		setAnswers((prev) => {
 			return { ...prev, [context.currentQuestionId]: answer }
+		})
+
+		sendToMachine({
+			type: 'RESPONDED_TO_OFFER',
+			answer,
+			currentQuestionId: context.currentQuestionId,
 		})
 	}
 

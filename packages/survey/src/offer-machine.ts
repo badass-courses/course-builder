@@ -13,7 +13,11 @@ export type OfferMachineEvent =
 	| { type: 'OFFER_ELIGIBILITY_VERIFIED' }
 	| { type: 'CURRENT_OFFER_READY'; currentOffer: Offer; currentOfferId: string }
 	| { type: 'NO_CURRENT_OFFER_FOUND' }
-	| { type: 'RESPONDED_TO_OFFER' }
+	| {
+			type: 'RESPONDED_TO_OFFER'
+			answer: string | string[]
+			currentQuestionId: string
+	  }
 	| { type: 'POST_OFFER_CTA_AVAILABLE' }
 	| { type: 'DISMISSAL_ACKNOWLEDGED' }
 	| { type: 'OFFER_COMPLETE' }
@@ -28,7 +32,7 @@ export type OfferContext = {
 	askAllQuestions?: boolean
 	bypassNagProtection?: boolean
 	surveyId?: string
-	answers?: Record<string, string>
+	answers?: Record<string, string | string[]>
 }
 
 export type OfferMachineInput = Partial<OfferContext>
@@ -149,9 +153,21 @@ export const offerMachine = setup({
 					{
 						target: 'loadingCurrentOffer',
 						guard: 'shouldAskAllQuestions',
+						actions: assign({
+							answers: ({ context, event }) => ({
+								...context.answers,
+								[event.currentQuestionId]: event.answer,
+							}),
+						}),
 					},
 					{
 						target: 'offerComplete',
+						actions: assign({
+							answers: ({ context, event }) => ({
+								...context.answers,
+								[event.currentQuestionId]: event.answer,
+							}),
+						}),
 					},
 				],
 				OFFER_DISMISSED: {

@@ -46,8 +46,6 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 }) => {
 	const handleAnswerSubmit = async (context: SurveyMachineContext) => {
 		await handleSubmitAnswer(context)
-		console.log('handleAnswerSubmit (survey page)', context)
-		sendToMachine({ type: 'RESPONDED_TO_OFFER' })
 	}
 
 	if (showEmailQuestion) {
