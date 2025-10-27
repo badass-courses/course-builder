@@ -59,8 +59,12 @@ export const useSurveyPageOfferMachine = (
 
 					const dependencyMet =
 						!nextQuestion.dependsOn ||
-						answers[nextQuestion.dependsOn.question] ===
-							nextQuestion.dependsOn.answer
+						((): boolean => {
+							const storedAnswer = answers[nextQuestion.dependsOn.question]
+							return Array.isArray(storedAnswer)
+								? storedAnswer.includes(nextQuestion.dependsOn.answer)
+								: storedAnswer === nextQuestion.dependsOn.answer
+						})()
 
 					if (dependencyMet) {
 						const processedQuestion =
