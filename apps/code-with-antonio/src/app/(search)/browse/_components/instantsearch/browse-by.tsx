@@ -94,40 +94,44 @@ export default function BrowseBy() {
 			</li>
 			<li>
 				<button
-					className={cn({
+					className={cn('cursor-pointer', {
 						'text-primary': isNewestActive,
 					})}
 					onClick={handleNewestClick}
+					aria-pressed={isNewestActive}
 				>
 					Newest
 				</button>
 			</li>
 			<li>
 				<button
-					className={cn({
+					className={cn('cursor-pointer', {
 						'text-primary': isCohortActive,
 					})}
 					onClick={handleCohortClick}
+					aria-pressed={isCohortActive}
 				>
 					Cohort-based
 				</button>
 			</li>
 			<li>
 				<button
-					className={cn({
+					className={cn('cursor-pointer', {
 						'text-primary': isWorkshopActive,
 					})}
 					onClick={handleWorkshopClick}
+					aria-pressed={isWorkshopActive}
 				>
 					Self-paced
 				</button>
 			</li>
 			<li>
 				<button
-					className={cn({
+					className={cn('cursor-pointer', {
 						'text-primary': isFreeActive,
 					})}
 					onClick={handleFreeClick}
+					aria-pressed={isFreeActive}
 				>
 					Free
 				</button>
