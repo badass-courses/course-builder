@@ -127,7 +127,6 @@ export function PostPlayer({
 		<div className={cn('relative h-full w-full', className)}>
 			{playbackId ? (
 				<MuxPlayer
-					preferPlayback="mse"
 					metadata={{
 						video_id: videoResource?.id,
 						video_title: title || videoResource?.id,

@@ -206,7 +206,6 @@ export function EmbedPlayer({
 			}}
 		>
 			<MuxPlayer
-				preferPlayback="mse"
 				ref={playerRef}
 				playbackId={playbackId}
 				metadata={{
