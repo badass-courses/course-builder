@@ -1,5 +1,7 @@
+import { questionResponse } from '@/db/schema'
 import { z } from 'zod'
 
+import { questionResponseSchema, userSchema } from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import {
 	ChoiceSchema,
@@ -33,6 +35,10 @@ export const QuestionFieldsSchema = QuestionResourceSchema.extend({
 
 // After completion messages schema
 export const AfterCompletionMessagesSchema = z.object({
+	askForEmail: z.object({
+		title: z.string(),
+		description: z.string(),
+	}),
 	neutral: z.object({
 		default: z.string(),
 		last: z.string(),
@@ -102,9 +108,14 @@ export type SurveyWithQuestions = z.infer<typeof SurveyWithQuestionsSchema>
 
 // Default values
 export const DEFAULT_AFTER_COMPLETION_MESSAGES: AfterCompletionMessages = {
+	askForEmail: {
+		title: 'Thank you for completing the survey!',
+		description:
+			'Please enter your email to receive updates and insights based on the survey results:',
+	},
 	neutral: {
 		default: 'Thanks!',
-		last: 'Thanks!',
+		last: 'Thank you for your responses!',
 	},
 	correct: {
 		default: 'Correct!',
@@ -115,3 +126,14 @@ export const DEFAULT_AFTER_COMPLETION_MESSAGES: AfterCompletionMessages = {
 		last: "Not quite! That's the final question.",
 	},
 }
+
+export const QuestionResponseSchema = questionResponse
+
+export const QuestionResponseWithUserSchema = questionResponseSchema.extend({
+	user: userSchema.optional().nullable(),
+	question: QuestionSchema,
+})
+
+export type QuestionResponseWithUser = z.infer<
+	typeof QuestionResponseWithUserSchema
+>

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getSurvey } from '@/lib/surveys-query'
+import { getSurvey, getSurveyResponses } from '@/lib/surveys-query'
 import { getServerAuthSession } from '@/server/auth'
 import { ChevronLeft } from 'lucide-react'
 
@@ -27,6 +27,8 @@ export default async function SurveyDetailPage({
 		notFound()
 	}
 
+	const responsesLoader = getSurveyResponses(survey.id)
+
 	return (
 		<main className="flex w-full justify-between p-10">
 			<div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
@@ -41,7 +43,7 @@ export default async function SurveyDetailPage({
 						{survey.fields?.title || 'Untitled Survey'}
 					</h1>
 				</div>
-				<SurveyDetailClient survey={survey} />
+				<SurveyDetailClient survey={survey} responsesLoader={responsesLoader} />
 			</div>
 		</main>
 	)

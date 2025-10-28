@@ -68,13 +68,7 @@ export type SurveyState = {
 export type SurveyQuestion = {
 	heading: string
 	subheading: string
-	type:
-		| 'opt-out'
-		| 'cta-email'
-		| 'cta-done'
-		| 'multiple-choice'
-		| 'multi-line'
-		| 'cta-link'
+	type: SurveyQuestionType
 	first?: boolean
 	random?: boolean
 	other?: boolean
@@ -98,6 +92,10 @@ export type Survey = Record<string, SurveyQuestion | string>
 
 export type SurveyConfig = {
 	afterCompletionMessages: {
+		askForEmail: {
+			title: string
+			description: string
+		}
 		neutral: {
 			default: string
 			last: string

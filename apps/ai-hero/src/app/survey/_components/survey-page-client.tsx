@@ -2,6 +2,8 @@
 
 import React from 'react'
 import Spinner from '@/components/spinner'
+import { useConvertkitSubscriberUrlParam } from '@/hooks/use-convertkit-subscriber-url-param'
+import { setSubscriberCookie } from '@/lib/convertkit'
 import { api } from '@/trpc/react'
 
 import { useSurveyPageOfferMachine } from '@coursebuilder/survey'
@@ -11,8 +13,7 @@ import type {
 	SurveyConfig,
 } from '@coursebuilder/survey/types'
 
-import { setSubscriberCookie } from '../../(content)/survey/actions'
-import { SurveyRenderer } from '../survey-renderer'
+import { SurveyRenderer } from './survey-renderer'
 
 type SurveyPageClientProps = {
 	quizResource: QuizResource
@@ -25,8 +26,12 @@ export function SurveyPageClient({
 	surveyConfig,
 	surveyId,
 }: SurveyPageClientProps) {
+	const cookieReady = useConvertkitSubscriberUrlParam()
+
 	const { data: subscriberData, status } =
-		api.ability.getCurrentSubscriberFromCookie.useQuery()
+		api.ability.getCurrentSubscriberFromCookie.useQuery(undefined, {
+			enabled: cookieReady,
+		})
 
 	const {
 		currentQuestion,
@@ -64,20 +69,20 @@ export function SurveyPageClient({
 		})
 
 	const [email, setEmail] = React.useState<string | null>(null)
+	const hasSubmittedRef = React.useRef(false)
 
 	const handleEmailSubmit = async (email: string) => {
 		setEmail(email)
+		hasSubmittedRef.current = true
 		sendToMachine({ type: 'EMAIL_COLLECTED' })
 
-		// Submit all answers with the email
+		// Submit all answers from the machine context
 		answerSurveyMultipleMutation.mutate({
 			email,
-			answers,
+			answers: machineState.context.answers || {},
 			surveyId: surveyId,
 		})
 	}
-
-	const hasSubmittedRef = React.useRef(false)
 
 	// Reset submission flag when survey changes
 	React.useEffect(() => {
@@ -85,7 +90,8 @@ export function SurveyPageClient({
 	}, [surveyId])
 
 	React.useEffect(() => {
-		// Fallback: submit if already complete without email submission
+		// Fallback: only for authenticated users who didn't go through email collection
+		// (their answers were already written per-question, just update completion timestamp)
 		if (
 			isComplete &&
 			machineState.matches('offerComplete') &&
@@ -94,13 +100,14 @@ export function SurveyPageClient({
 			!hasSubmittedRef.current
 		) {
 			hasSubmittedRef.current = true
+			// Just update the completion timestamp in ConvertKit, don't write answers again
 			answerSurveyMultipleMutation.mutate({
 				email: subscriber.email_address,
-				answers,
+				answers: {}, // Empty - answers already written per-question
 				surveyId: surveyId,
 			})
 		}
-	}, [isComplete, machineState, email, subscriber, answers, surveyId])
+	}, [isComplete, machineState, email, subscriber, surveyId])
 
 	if (isLoading) {
 		return (
@@ -126,12 +133,14 @@ export function SurveyPageClient({
 			currentQuestionId={currentQuestionId}
 			currentQuestion={currentQuestion as QuestionResource}
 			handleSubmitAnswer={async (context) => {
-				if (email || subscriber?.email_address) {
+				// Only write per-question for authenticated users with subscriber
+				if (subscriber?.email_address) {
 					answerSurveyMutation.mutate({
 						answer: Array.isArray(context.answer)
 							? context.answer.join(', ')
 							: context.answer,
 						question: context.currentQuestionId,
+						surveyId: surveyId,
 					})
 				}
 				await handleSubmitAnswer(context)

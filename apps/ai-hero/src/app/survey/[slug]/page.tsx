@@ -9,7 +9,6 @@ import {
 	getSurvey,
 	transformSurveyToQuizResource,
 } from '@/lib/surveys-query'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { Plus } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'

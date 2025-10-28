@@ -127,7 +127,6 @@ export default function SurveyCrudDialog({
 								</FormItem>
 							)}
 						/>
-
 						<FormField
 							control={form.control}
 							name="slug"
@@ -203,10 +202,43 @@ export default function SurveyCrudDialog({
 						<div className="rounded-lg border">
 							<Accordion type="multiple">
 								<AccordionItem value="completion-messages">
-									<AccordionTrigger className="hover:bg-muted rounded-t-lg p-4 hover:no-underline">
-										Completion Messages
+									<AccordionTrigger className="hover:bg-muted flex items-center justify-between rounded-t-lg p-4 hover:no-underline">
+										<div className="flex w-full items-center justify-between">
+											Completion Messages{' '}
+											<span className="text-muted-foreground text-xs">
+												Markdown is supported
+											</span>
+										</div>
 									</AccordionTrigger>
 									<AccordionContent className="flex flex-col gap-4 p-4">
+										<div className="space-y-2">
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.askForEmail.title"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Ask for Email - Title</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={form.control}
+												name="afterCompletionMessages.askForEmail.description"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel>Ask for Email - Description</FormLabel>
+														<FormControl>
+															<Input {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
 										<div className="space-y-2">
 											<FormField
 												control={form.control}

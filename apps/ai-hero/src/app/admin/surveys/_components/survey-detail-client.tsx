@@ -2,8 +2,14 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import type { Question, Survey, SurveyWithQuestions } from '@/lib/surveys'
+import type {
+	Question,
+	QuestionResponseWithUser,
+	Survey,
+	SurveyWithQuestions,
+} from '@/lib/surveys'
 
+import type { QuestionResponse } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Card,
@@ -18,11 +24,14 @@ import {
 
 import { QuestionsList } from './questions-list'
 import SurveyCrudDialog from './survey-crud-dialog'
+import SurveyResponses, { downloadResponsesAsCsv } from './survey-responses'
 
 export function SurveyDetailClient({
 	survey: initialSurvey,
+	responsesLoader,
 }: {
 	survey: SurveyWithQuestions
+	responsesLoader: Promise<QuestionResponseWithUser[] | null>
 }) {
 	const [survey, setSurvey] = React.useState<SurveyWithQuestions>(initialSurvey)
 	const router = useRouter()
@@ -51,20 +60,11 @@ export function SurveyDetailClient({
 				<TabsList>
 					<TabsTrigger value="questions">Questions</TabsTrigger>
 					<TabsTrigger value="settings">Settings</TabsTrigger>
+					<TabsTrigger value="responses">Responses</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="questions" className="space-y-4">
-					<Card>
-						<CardHeader>
-							<CardTitle>Survey Questions</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<QuestionsList
-								surveyId={survey.id}
-								initialQuestions={questions}
-							/>
-						</CardContent>
-					</Card>
+					<QuestionsList surveyId={survey.id} initialQuestions={questions} />
 				</TabsContent>
 
 				<TabsContent value="settings" className="space-y-4">
@@ -106,6 +106,18 @@ export function SurveyDetailClient({
 								<p className="text-sm font-medium">After Completion Messages</p>
 								<div className="mt-2 space-y-2 rounded-lg border p-3 text-sm">
 									<div>
+										<span className="font-medium">Ask for Email: </span>
+										<span className="text-muted-foreground">
+											{survey.fields?.afterCompletionMessages?.askForEmail
+												?.title || 'Thank you for completing the survey!'}
+										</span>{' '}
+										<span className="text-muted-foreground">
+											{survey.fields?.afterCompletionMessages?.askForEmail
+												?.description ||
+												'Please enter your email to receive updates and insights based on the survey results:'}
+										</span>
+									</div>
+									<div>
 										<span className="font-medium">Neutral: </span>
 										<span className="text-muted-foreground">
 											{survey.fields?.afterCompletionMessages?.neutral?.default}
@@ -130,6 +142,12 @@ export function SurveyDetailClient({
 							</div>
 						</CardContent>
 					</Card>
+				</TabsContent>
+
+				<TabsContent value="responses" className="space-y-4">
+					<React.Suspense fallback={<div>Loading responses...</div>}>
+						<SurveyResponses responsesLoader={responsesLoader} />
+					</React.Suspense>
 				</TabsContent>
 			</Tabs>
 		</div>

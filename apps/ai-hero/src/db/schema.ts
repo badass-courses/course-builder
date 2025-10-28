@@ -60,6 +60,8 @@ export const {
 	contributionTypes,
 	contributionTypesRelations,
 	resourceProgress,
+	questionResponse,
+	questionResponseRelations,
 	contentResourceProduct,
 	contentResourceProductRelations,
 	upgradableProducts,
