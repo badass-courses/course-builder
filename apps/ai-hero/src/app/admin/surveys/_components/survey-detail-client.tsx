@@ -2,8 +2,14 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import type { Question, Survey, SurveyWithQuestions } from '@/lib/surveys'
+import type {
+	Question,
+	QuestionResponseWithUser,
+	Survey,
+	SurveyWithQuestions,
+} from '@/lib/surveys'
 
+import type { QuestionResponse } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Card,
@@ -18,11 +24,14 @@ import {
 
 import { QuestionsList } from './questions-list'
 import SurveyCrudDialog from './survey-crud-dialog'
+import SurveyResponses, { downloadResponsesAsCsv } from './survey-responses'
 
 export function SurveyDetailClient({
 	survey: initialSurvey,
+	responses: initialResponses,
 }: {
 	survey: SurveyWithQuestions
+	responses: QuestionResponseWithUser[] | null
 }) {
 	const [survey, setSurvey] = React.useState<SurveyWithQuestions>(initialSurvey)
 	const router = useRouter()
@@ -51,6 +60,7 @@ export function SurveyDetailClient({
 				<TabsList>
 					<TabsTrigger value="questions">Questions</TabsTrigger>
 					<TabsTrigger value="settings">Settings</TabsTrigger>
+					<TabsTrigger value="responses">Responses</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="questions" className="space-y-4">
@@ -128,6 +138,29 @@ export function SurveyDetailClient({
 									</div>
 								</div>
 							</div>
+						</CardContent>
+					</Card>
+				</TabsContent>
+
+				<TabsContent value="responses" className="space-y-4">
+					<Card>
+						<CardHeader className="flex flex-row items-center justify-between">
+							<CardTitle>Survey Responses</CardTitle>
+							<Button
+								onClick={() =>
+									initialResponses && downloadResponsesAsCsv(initialResponses)
+								}
+								variant="outline"
+								size="sm"
+							>
+								Export as CSV
+							</Button>
+						</CardHeader>
+						<CardContent>
+							{initialResponses && (
+								<SurveyResponses responses={initialResponses} />
+							)}
+							{!initialResponses && <div>No responses yet.</div>}
 						</CardContent>
 					</Card>
 				</TabsContent>

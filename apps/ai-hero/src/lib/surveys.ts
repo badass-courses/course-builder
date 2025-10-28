@@ -1,5 +1,7 @@
+import { questionResponse } from '@/db/schema'
 import { z } from 'zod'
 
+import { questionResponseSchema, userSchema } from '@coursebuilder/core/schemas'
 import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
 import {
 	ChoiceSchema,
@@ -115,3 +117,14 @@ export const DEFAULT_AFTER_COMPLETION_MESSAGES: AfterCompletionMessages = {
 		last: "Not quite! That's the final question.",
 	},
 }
+
+export const QuestionResponseSchema = questionResponse
+
+export const QuestionResponseWithUserSchema = questionResponseSchema.extend({
+	user: userSchema.optional().nullable(),
+	question: QuestionSchema,
+})
+
+export type QuestionResponseWithUser = z.infer<
+	typeof QuestionResponseWithUserSchema
+>

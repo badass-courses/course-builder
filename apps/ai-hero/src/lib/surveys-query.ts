@@ -3,7 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { emailListProvider } from '@/coursebuilder/email-list-provider'
 import { db } from '@/db'
-import { contentResource, contentResourceResource } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceResource,
+	questionResponse,
+} from '@/db/schema'
 import type { Subscriber } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -13,6 +17,8 @@ import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { toSnakeCase } from 'drizzle-orm/casing'
 import { z } from 'zod'
 
+import { userSchema } from '@coursebuilder/core/schemas'
+import { questionResponseSchema } from '@coursebuilder/core/schemas/question-response-schema'
 import type {
 	QuizResource,
 	SurveyConfig,
@@ -22,6 +28,7 @@ import type {
 
 import {
 	DEFAULT_AFTER_COMPLETION_MESSAGES,
+	QuestionResponseWithUserSchema,
 	SurveyWithQuestionsSchema,
 	type QuestionFields,
 	type SurveyFields,
@@ -754,4 +761,26 @@ export async function updateQuestionPositionsAction(input: {
 	const result = await updateQuestionPositions(input)
 	revalidatePath(`/admin/surveys/${input.surveyId}`)
 	return result
+}
+
+export async function getSurveyResponses(surveyId: string) {
+	const responses = await db.query.questionResponse.findMany({
+		where: eq(questionResponse.surveyId, surveyId),
+		with: {
+			user: true,
+			question: true,
+		},
+	})
+
+	if (!responses) {
+		return null
+	}
+
+	const parsedResponses = z
+		.array(QuestionResponseWithUserSchema)
+		.safeParse(responses)
+	if (!parsedResponses.success) {
+		throw new Error('Failed to parse responses')
+	}
+	return parsedResponses.data
 }
