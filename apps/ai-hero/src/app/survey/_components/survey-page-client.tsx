@@ -132,6 +132,7 @@ export function SurveyPageClient({
 							? context.answer.join(', ')
 							: context.answer,
 						question: context.currentQuestionId,
+						surveyId: surveyId,
 					})
 				}
 				await handleSubmitAnswer(context)

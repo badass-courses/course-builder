@@ -109,6 +109,7 @@ export default function Survey() {
 											? context.answer.join(', ')
 											: context.answer,
 										question: context.currentQuestionId,
+										surveyId: TYPESCRIPT_2024_SURVEY_ID,
 									})
 								}
 								await handleSubmitAnswer(context)
