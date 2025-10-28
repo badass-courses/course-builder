@@ -80,7 +80,7 @@
 		"@coursebuilder/ui": "^2.0.7",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
-		"@mux/mux-player-react": "^3.6.1",
+		"@mux/mux-player-react": "^3.7.0",
 		"@radix-ui/react-alert-dialog": "^1.1.2",
 		"@radix-ui/react-slot": "^1.1.0",
 		"@radix-ui/react-switch": "^1.1.1",
