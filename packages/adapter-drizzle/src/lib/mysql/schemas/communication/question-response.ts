@@ -1,8 +1,8 @@
 import { relations, sql } from 'drizzle-orm'
 import {
 	index,
+	json,
 	MySqlTableFn,
-	text,
 	timestamp,
 	varchar,
 } from 'drizzle-orm/mysql-core'
@@ -24,19 +24,15 @@ export function getQuestionResponseSchema(mysqlTable: MySqlTableFn) {
 			questionId: varchar('questionId', { length: 255 }).notNull(),
 			userId: varchar('userId', { length: 255 }),
 			emailListSubscriberId: varchar('emailListSubscriberId', { length: 255 }),
-			answer: text('answer').notNull(),
+			fields: json('fields').$type<Record<string, any>>().default({}),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
 				fsp: 3,
-			})
-				.default(sql`CURRENT_TIMESTAMP(3)`)
-				.notNull(),
+			}).default(sql`CURRENT_TIMESTAMP(3)`),
 			updatedAt: timestamp('updatedAt', {
 				mode: 'date',
 				fsp: 3,
-			})
-				.default(sql`CURRENT_TIMESTAMP(3)`)
-				.notNull(),
+			}).default(sql`CURRENT_TIMESTAMP(3)`),
 			deletedAt: timestamp('deletedAt', {
 				mode: 'date',
 				fsp: 3,
@@ -49,8 +45,6 @@ export function getQuestionResponseSchema(mysqlTable: MySqlTableFn) {
 			emailListSubscriberIdIdx: index('emailListSubscriberId_idx').on(
 				qr.emailListSubscriberId,
 			),
-			createdAtIdx: index('createdAt_idx').on(qr.createdAt),
-			surveyUserIdx: index('survey_user_idx').on(qr.surveyId, qr.userId),
 			surveySubscriberIdx: index('survey_subscriber_idx').on(
 				qr.surveyId,
 				qr.emailListSubscriberId,
