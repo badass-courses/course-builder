@@ -56,7 +56,7 @@ export function SurveyDetailClient({
 
 	return (
 		<div className="space-y-6">
-			<Tabs defaultValue="questions" className="w-full">
+			<Tabs defaultValue="responses" className="w-full">
 				<TabsList>
 					<TabsTrigger value="questions">Questions</TabsTrigger>
 					<TabsTrigger value="settings">Settings</TabsTrigger>
@@ -64,17 +64,7 @@ export function SurveyDetailClient({
 				</TabsList>
 
 				<TabsContent value="questions" className="space-y-4">
-					<Card>
-						<CardHeader>
-							<CardTitle>Survey Questions</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<QuestionsList
-								surveyId={survey.id}
-								initialQuestions={questions}
-							/>
-						</CardContent>
-					</Card>
+					<QuestionsList surveyId={survey.id} initialQuestions={questions} />
 				</TabsContent>
 
 				<TabsContent value="settings" className="space-y-4">

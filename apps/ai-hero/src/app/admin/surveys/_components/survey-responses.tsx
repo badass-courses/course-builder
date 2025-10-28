@@ -2,7 +2,7 @@ import { use } from 'react'
 import { CopyButton } from '@/components/codehike/copy-button'
 import type { QuestionResponseWithUser } from '@/lib/surveys'
 import { format } from 'date-fns'
-import { CopyIcon, InfoIcon } from 'lucide-react'
+import { InfoIcon } from 'lucide-react'
 
 import {
 	Badge,
@@ -21,7 +21,6 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-	useToast,
 } from '@coursebuilder/ui'
 
 export default function SurveyResponses({
@@ -73,7 +72,7 @@ export default function SurveyResponses({
 	return (
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between">
-				<CardTitle>Survey Responses</CardTitle>
+				<CardTitle>Survey Responses ({responses.length})</CardTitle>
 				<Button
 					onClick={() => responses && downloadResponsesAsCsv(responses)}
 					variant="outline"

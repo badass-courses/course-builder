@@ -764,6 +764,11 @@ export async function updateQuestionPositionsAction(input: {
 }
 
 export async function getSurveyResponses(surveyId: string) {
+	const { session, ability } = await getServerAuthSession()
+
+	if (!session?.user || !ability.can('manage', 'all')) {
+		return null
+	}
 	const responses = await db.query.questionResponse.findMany({
 		where: eq(questionResponse.surveyId, surveyId),
 		with: {
