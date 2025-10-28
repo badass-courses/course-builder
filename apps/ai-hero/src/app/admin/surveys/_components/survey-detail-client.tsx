@@ -56,7 +56,7 @@ export function SurveyDetailClient({
 
 	return (
 		<div className="space-y-6">
-			<Tabs defaultValue="responses" className="w-full">
+			<Tabs defaultValue="questions" className="w-full">
 				<TabsList>
 					<TabsTrigger value="questions">Questions</TabsTrigger>
 					<TabsTrigger value="settings">Settings</TabsTrigger>
@@ -105,6 +105,18 @@ export function SurveyDetailClient({
 							<div>
 								<p className="text-sm font-medium">After Completion Messages</p>
 								<div className="mt-2 space-y-2 rounded-lg border p-3 text-sm">
+									<div>
+										<span className="font-medium">Ask for Email: </span>
+										<span className="text-muted-foreground">
+											{survey.fields?.afterCompletionMessages?.askForEmail
+												?.title || 'Thank you for completing the survey!'}
+										</span>{' '}
+										<span className="text-muted-foreground">
+											{survey.fields?.afterCompletionMessages?.askForEmail
+												?.description ||
+												'Please enter your email to receive updates and insights based on the survey results:'}
+										</span>
+									</div>
 									<div>
 										<span className="font-medium">Neutral: </span>
 										<span className="text-muted-foreground">

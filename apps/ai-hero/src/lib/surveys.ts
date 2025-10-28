@@ -35,6 +35,10 @@ export const QuestionFieldsSchema = QuestionResourceSchema.extend({
 
 // After completion messages schema
 export const AfterCompletionMessagesSchema = z.object({
+	askForEmail: z.object({
+		title: z.string(),
+		description: z.string(),
+	}),
 	neutral: z.object({
 		default: z.string(),
 		last: z.string(),
@@ -104,9 +108,14 @@ export type SurveyWithQuestions = z.infer<typeof SurveyWithQuestionsSchema>
 
 // Default values
 export const DEFAULT_AFTER_COMPLETION_MESSAGES: AfterCompletionMessages = {
+	askForEmail: {
+		title: 'Thank you for completing the survey!',
+		description:
+			'Please enter your email to receive updates and insights based on the survey results:',
+	},
 	neutral: {
 		default: 'Thanks!',
-		last: 'Thanks!',
+		last: 'Thank you for your responses!',
 	},
 	correct: {
 		default: 'Correct!',

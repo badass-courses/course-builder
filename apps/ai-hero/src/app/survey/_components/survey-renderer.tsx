@@ -1,5 +1,6 @@
 import React from 'react'
 import { CheckCircle } from 'lucide-react'
+import Markdown from 'react-markdown'
 
 import {
 	OfferMachineEvent,
@@ -47,7 +48,16 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 	onEmailSubmit,
 	completionMessageComponent = (
 		<div className="flex flex-col gap-3 py-10 text-center">
-			<h2 className="text-2xl font-bold">Thank you for your responses!</h2>
+			<Markdown
+				components={{
+					p: ({ children }) => (
+						<h2 className="text-2xl font-bold">{children}</h2>
+					),
+				}}
+			>
+				{surveyConfig.afterCompletionMessages.neutral.last ||
+					'Thank you for your responses!'}
+			</Markdown>
 			<p className="inline-block text-center text-emerald-600 dark:text-emerald-300">
 				<CheckCircle className="inline-block size-4" /> Your answers have been
 				recorded.
@@ -57,17 +67,6 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 }) => {
 	const handleAnswerSubmit = async (context: SurveyMachineContext) => {
 		await handleSubmitAnswer(context)
-	}
-
-	if (showEmailQuestion) {
-		return (
-			<div className="mx-auto max-w-2xl p-6">
-				<SurveyQuestionEmail
-					onSubmit={onEmailSubmit}
-					className="bg-card border-border space-y-4 rounded-xl border p-8 shadow-sm"
-				/>
-			</div>
-		)
 	}
 
 	if (isComplete) {
@@ -83,19 +82,27 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 			currentQuestion={currentQuestion}
 			currentQuestionId={currentQuestionId}
 		>
-			<SurveyQuestionHeader className="text-2xl font-bold" />
-			<SurveyQuestionBody className="flex flex-col gap-1 space-y-6">
-				{currentQuestion.type === 'essay' ? (
-					<SurveyQuestionEssay />
-				) : (
-					<SurveyQuestionChoices className="[&_label]:hover:bg-muted divide-border flex flex-col gap-0 divide-y [&_label]:w-full [&_label]:p-3 [&_label]:text-base [&_label]:font-normal" />
-				)}
-				<SurveyQuestionSubmit className="dark:bg-primary dark:text-primary-foreground cursor-pointer bg-blue-600 text-white hover:bg-blue-700">
-					Submit
-				</SurveyQuestionSubmit>
-				<SurveyQuestionAnswer />
-			</SurveyQuestionBody>
-			<SurveyQuestionFooter />
+			{showEmailQuestion ? (
+				<div className="mx-auto">
+					<SurveyQuestionEmail onSubmit={onEmailSubmit} className="" />
+				</div>
+			) : (
+				<>
+					<SurveyQuestionHeader className="text-2xl font-bold" />
+					<SurveyQuestionBody className="flex flex-col gap-1 space-y-6">
+						{currentQuestion.type === 'essay' ? (
+							<SurveyQuestionEssay />
+						) : (
+							<SurveyQuestionChoices className="[&_label]:hover:bg-muted divide-border flex flex-col gap-0 divide-y [&_label]:w-full [&_label]:p-3 [&_label]:text-base [&_label]:font-normal" />
+						)}
+						<SurveyQuestionSubmit className="dark:bg-primary dark:text-primary-foreground cursor-pointer bg-blue-600 text-white hover:bg-blue-700">
+							Submit
+						</SurveyQuestionSubmit>
+						<SurveyQuestionAnswer />
+					</SurveyQuestionBody>
+					<SurveyQuestionFooter />
+				</>
+			)}
 		</SurveyQuestion>
 	)
 }

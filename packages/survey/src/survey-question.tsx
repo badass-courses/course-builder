@@ -723,7 +723,7 @@ export function SurveyQuestionEmail({
 		e.preventDefault()
 		onSubmit(email)
 	}
-
+	const { config } = useSurveyQuestion()
 	return (
 		<Comp
 			className={cn('', className)}
@@ -732,13 +732,24 @@ export function SurveyQuestionEmail({
 		>
 			{children || (
 				<>
-					<h2 className={cn('text-2xl font-semibold')}>
-						Thank you for completing the survey!
-					</h2>
-					<p className={cn('mt-2')}>
-						Please enter your email to receive updates and insights based on the
-						survey results:
-					</p>
+					<Markdown
+						components={{
+							p: ({ children }) => (
+								<h2 className="text-2xl font-bold">{children}</h2>
+							),
+						}}
+					>
+						{config.afterCompletionMessages.askForEmail.title ||
+							'Thank you for completing the survey!'}
+					</Markdown>
+					<Markdown
+						components={{
+							p: ({ children }) => <p className={cn('mt-2')}>{children}</p>,
+						}}
+					>
+						{config.afterCompletionMessages.askForEmail.description ||
+							'Please enter your email to receive updates and insights based on the survey results:'}
+					</Markdown>
 					<form onSubmit={handleSubmit} className={cn('mt-4')}>
 						<Input
 							type="email"
