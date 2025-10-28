@@ -27,7 +27,7 @@ export default async function SurveyDetailPage({
 		notFound()
 	}
 
-	const responses = await getSurveyResponses(survey.id)
+	const responsesLoader = getSurveyResponses(survey.id)
 
 	return (
 		<main className="flex w-full justify-between p-10">
@@ -43,7 +43,7 @@ export default async function SurveyDetailPage({
 						{survey.fields?.title || 'Untitled Survey'}
 					</h1>
 				</div>
-				<SurveyDetailClient survey={survey} responses={responses} />
+				<SurveyDetailClient survey={survey} responsesLoader={responsesLoader} />
 			</div>
 		</main>
 	)

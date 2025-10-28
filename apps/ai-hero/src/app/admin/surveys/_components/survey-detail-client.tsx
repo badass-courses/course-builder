@@ -28,10 +28,10 @@ import SurveyResponses, { downloadResponsesAsCsv } from './survey-responses'
 
 export function SurveyDetailClient({
 	survey: initialSurvey,
-	responses: initialResponses,
+	responsesLoader,
 }: {
 	survey: SurveyWithQuestions
-	responses: QuestionResponseWithUser[] | null
+	responsesLoader: Promise<QuestionResponseWithUser[] | null>
 }) {
 	const [survey, setSurvey] = React.useState<SurveyWithQuestions>(initialSurvey)
 	const router = useRouter()
@@ -143,26 +143,9 @@ export function SurveyDetailClient({
 				</TabsContent>
 
 				<TabsContent value="responses" className="space-y-4">
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between">
-							<CardTitle>Survey Responses</CardTitle>
-							<Button
-								onClick={() =>
-									initialResponses && downloadResponsesAsCsv(initialResponses)
-								}
-								variant="outline"
-								size="sm"
-							>
-								Export as CSV
-							</Button>
-						</CardHeader>
-						<CardContent>
-							{initialResponses && (
-								<SurveyResponses responses={initialResponses} />
-							)}
-							{!initialResponses && <div>No responses yet.</div>}
-						</CardContent>
-					</Card>
+					<React.Suspense fallback={<div>Loading responses...</div>}>
+						<SurveyResponses responsesLoader={responsesLoader} />
+					</React.Suspense>
 				</TabsContent>
 			</Tabs>
 		</div>

@@ -1,3 +1,4 @@
+import { use } from 'react'
 import { CopyButton } from '@/components/codehike/copy-button'
 import type { QuestionResponseWithUser } from '@/lib/surveys'
 import { format } from 'date-fns'
@@ -6,6 +7,10 @@ import { CopyIcon, InfoIcon } from 'lucide-react'
 import {
 	Badge,
 	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
 	Table,
 	TableBody,
 	TableCell,
@@ -20,10 +25,14 @@ import {
 } from '@coursebuilder/ui'
 
 export default function SurveyResponses({
-	responses,
+	responsesLoader,
 }: {
-	responses: QuestionResponseWithUser[]
+	responsesLoader: Promise<QuestionResponseWithUser[] | null>
 }) {
+	const responses = use(responsesLoader)
+	if (!responses) {
+		return <div>No responses yet.</div>
+	}
 	const UserCell = ({
 		user,
 	}: {
@@ -62,41 +71,55 @@ export default function SurveyResponses({
 	}
 
 	return (
-		<div className="w-full overflow-x-auto">
-			<TooltipProvider>
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="min-w-[300px]">Answer</TableHead>
-							<TableHead className="min-w-[300px]">Question</TableHead>
-							<TableHead className="min-w-[200px]">User</TableHead>
-							<TableHead className="min-w-[200px]">Created At</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{responses.map((response) => (
-							<TableRow key={response.id}>
-								<TableCell className="min-w-[300px] max-w-[500px]">
-									{response.fields.answer}
-								</TableCell>
-								<TableCell className="max-w-[500px]">
-									<p className="line-clamp-2">
-										{response.question.fields?.question}
-									</p>
-									<Badge variant="outline" className="mt-2">
-										{response.question.fields?.type}
-									</Badge>
-								</TableCell>
-								<UserCell user={response.user} />
-								<TableCell className="min-w-[200px] whitespace-nowrap">
-									{format(response.createdAt, 'MM/dd/yyyy hh:mm a')}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TooltipProvider>
-		</div>
+		<Card>
+			<CardHeader className="flex flex-row items-center justify-between">
+				<CardTitle>Survey Responses</CardTitle>
+				<Button
+					onClick={() => responses && downloadResponsesAsCsv(responses)}
+					variant="outline"
+					size="sm"
+				>
+					Export as CSV
+				</Button>
+			</CardHeader>
+			<CardContent>
+				<div className="w-full overflow-x-auto">
+					<TooltipProvider>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead className="min-w-[300px]">Answer</TableHead>
+									<TableHead className="min-w-[300px]">Question</TableHead>
+									<TableHead className="min-w-[200px]">User</TableHead>
+									<TableHead className="min-w-[200px]">Created At</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{responses.map((response) => (
+									<TableRow key={response.id}>
+										<TableCell className="min-w-[300px] max-w-[500px]">
+											{response.fields.answer}
+										</TableCell>
+										<TableCell className="max-w-[500px]">
+											<p className="line-clamp-2">
+												{response.question.fields?.question}
+											</p>
+											<Badge variant="outline" className="mt-2">
+												{response.question.fields?.type}
+											</Badge>
+										</TableCell>
+										<UserCell user={response.user} />
+										<TableCell className="min-w-[200px] whitespace-nowrap">
+											{format(response.createdAt, 'MM/dd/yyyy hh:mm a')}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</TooltipProvider>
+				</div>{' '}
+			</CardContent>
+		</Card>
 	)
 }
 
