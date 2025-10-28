@@ -81,6 +81,7 @@ export const SurveyRenderer: React.FC<SurveyPageProps> = ({
 			handleSubmitAnswer={handleAnswerSubmit}
 			currentQuestion={currentQuestion}
 			currentQuestionId={currentQuestionId}
+			asChild={showEmailQuestion}
 		>
 			{showEmailQuestion ? (
 				<div className="mx-auto">
