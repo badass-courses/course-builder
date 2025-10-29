@@ -117,7 +117,7 @@ export function EditResourcesForm({
 		// Mobile version
 		<Accordion type="multiple" defaultValue={['body']}>
 			<EditResourcesActionBar
-				resource={resource}
+				resource={{ ...resource, ...form.getValues() }}
 				resourcePath={getResourcePath(
 					resource.fields?.slug,
 					resource.fields?.path,
@@ -190,7 +190,7 @@ export function EditResourcesForm({
 		// Desktop version
 		<>
 			<EditResourcesActionBar
-				resource={resource}
+				resource={{ ...resource, ...form.getValues() }}
 				resourcePath={getResourcePath(
 					resource.fields?.slug,
 					resource.fields?.path,

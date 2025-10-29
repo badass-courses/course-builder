@@ -59,8 +59,8 @@ export default {
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
 	'primary-newsletter-tittle':
-		'Join over 7,000 Developers Becoming AI Engineers',
-	'primary-newsletter-byline': `Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.`,
+		'Early access to cohorts on React/Next/AI and a limited launch discount.',
+	'primary-newsletter-byline': `Join builder’s list to get notified when new cohorts open, unlock early-bird pricing, and never miss a new course.`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
 	'video-newsletter-title': 'Ship AI Apps That Work',

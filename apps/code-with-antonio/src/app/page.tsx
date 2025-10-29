@@ -82,7 +82,7 @@ const Home = async (props: Props) => {
 								modern development
 							</h2>
 							<Button asChild variant="secondary" size="lg" className="mt-4">
-								<Link href="/workshops">
+								<Link href="/browse">
 									Browse courses <ChevronRight className="size-4" />
 								</Link>
 							</Button>

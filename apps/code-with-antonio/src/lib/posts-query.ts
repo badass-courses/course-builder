@@ -380,7 +380,12 @@ export async function updatePost(
 			changes: Object.keys(input.fields),
 		})
 
-		revalidate && revalidateTag('posts', 'max')
+		if (revalidate) {
+			revalidateTag('posts', 'max')
+			revalidatePath(`/posts/${postSlug}/edit`)
+			revalidatePath(`/${postSlug}`)
+		}
+
 		return result
 	} catch (error) {
 		await log.error('post.update.failed', {

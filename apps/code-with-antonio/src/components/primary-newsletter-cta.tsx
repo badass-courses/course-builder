@@ -72,27 +72,16 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'flex flex-col items-center justify-center px-5',
+				'bg-muted ring-border flex flex-col items-center justify-center rounded-xl p-5 ring-1 sm:p-10',
 				className,
 			)}
 		>
 			{children ? (
 				children
 			) : (
-				<div className="relative z-10 flex max-w-3xl flex-col items-center justify-center px-5 pb-5 pt-10 sm:pb-10">
-					<CldImage
-						loading="lazy"
-						src="https://res.cloudinary.com/total-typescript/image/upload/v1741008166/aihero.dev/assets/textured-logo-mark_2x_ecauns.png"
-						alt=""
-						aria-hidden="true"
-						width={130}
-						height={130}
-						className="mb-8 rotate-12"
-					/>
-					<h2 className="font-heading text-center text-2xl font-semibold sm:text-3xl dark:text-white">
-						{title}
-					</h2>
-					<h3 className="pt-5 text-center font-sans text-lg font-normal opacity-90 sm:pt-8 sm:text-xl sm:font-light lg:text-2xl">
+				<div className="w-full text-center">
+					<h2 className="text-xl font-semibold sm:text-2xl">{title}</h2>
+					<h3 className="mt-1 text-balance text-base font-normal opacity-90 sm:text-lg">
 						{byline}
 					</h3>
 				</div>
@@ -115,24 +104,29 @@ export const PrimaryNewsletterCta: React.FC<
 						</p>
 					</div>
 				)}
-				<div
-					className={cn('', {
-						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
-							subscriber,
-					})}
-				>
-					<SubscribeToConvertkitForm
-						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
-						actionLabel={actionLabel}
-						className="[&_input]:border-foreground/40 relative z-10 [&_button]:mt-3 [&_button]:h-16 [&_button]:sm:text-lg [&_input]:h-16"
-					/>
-					<p
-						data-nospam=""
-						className="text-muted-foreground inline-flex items-center pt-8 text-xs opacity-75 sm:text-sm"
+				<div className="bg-muted ring-border mt-5 w-full rounded-xl p-1 ring-1">
+					<div
+						className={cn(
+							'bg-card ring-border flex w-full flex-col gap-2 rounded-lg px-5 py-5 shadow-sm ring-1',
+							{
+								'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
+									subscriber,
+							},
+						)}
 					>
-						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
-						Unsubscribe at any time.
-					</p>
+						<SubscribeToConvertkitForm
+							onSuccess={onSuccess ? onSuccess : handleOnSuccess}
+							actionLabel={actionLabel}
+							className="flex w-full max-w-sm flex-col items-start gap-3 text-left lg:max-w-full lg:flex-row lg:items-end"
+						/>
+						<p
+							data-nospam=""
+							className="text-muted-foreground inline-flex items-center text-xs sm:text-xs"
+						>
+							<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your
+							privacy. Unsubscribe at any time.
+						</p>
+					</div>
 				</div>
 			</div>
 		</section>

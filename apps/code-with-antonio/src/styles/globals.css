@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 /* @import '@code-hike/mdx/dist/index.css' layer(base); */
-@import './primary-newsletter-cta.css';
+/* @import './primary-newsletter-cta.css'; */
 @import './tip-newsletter-cta.css';
 @import './video-block-newsletter-cta.css';
 @import './login.css' layer(utilities);

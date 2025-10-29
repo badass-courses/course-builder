@@ -87,9 +87,12 @@ export default function Footer() {
 					{status === 'pending' ? (
 						<div className="w-full" />
 					) : subscriber ? (
-						<div>
-							<Link href="/login">Log in</Link>
-						</div>
+						<Link
+							className="hover:text-foreground text-muted-foreground shrink-0 transition"
+							href="/login"
+						>
+							Log in
+						</Link>
 					) : (
 						<SubscribeToConvertkitForm
 							emailPlaceholder="Your email"

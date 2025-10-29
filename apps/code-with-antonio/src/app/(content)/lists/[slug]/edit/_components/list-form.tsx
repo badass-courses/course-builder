@@ -91,7 +91,10 @@ export function EditListForm({ resource }: { resource: List }) {
 			tags: resource?.tags ?? [],
 		}),
 		getResourcePath: (slug) => `/${slug}`,
-		updateResource: async (resource) => {
+		updateResource: async (
+			resource,
+			action: 'save' | 'publish' | 'archive' | 'unpublish' = 'save',
+		) => {
 			if (!resource.id || !resource.fields) {
 				throw new Error('Invalid resource data')
 			}
@@ -114,7 +117,7 @@ export function EditListForm({ resource }: { resource: List }) {
 					resources: resource.resources ?? [],
 					tags: resource.tags ?? [],
 				},
-				'save',
+				action as 'save' | 'publish' | 'archive' | 'unpublish',
 			)
 
 			if (!result) {
