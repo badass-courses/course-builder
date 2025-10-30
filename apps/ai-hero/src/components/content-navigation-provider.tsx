@@ -1,13 +1,10 @@
 'use client'
 
 import * as React from 'react'
-import type { NestedContentResource } from '@/lib/content-navigation'
-
-import type { ContentResource } from '@coursebuilder/core/schemas'
+import type { ResourceNavigation } from '@/lib/content-navigation'
 
 type ContentNavigationContextValue =
-	| (NestedContentResource & {
-			parents?: ContentResource[]
+	| (ResourceNavigation & {
 			isSidebarCollapsed: boolean
 			setIsSidebarCollapsed: (collapsed: boolean) => void
 	  })
@@ -26,9 +23,7 @@ export const ContentNavigationProvider = ({
 	navigationDataLoader,
 }: {
 	children: React.ReactNode
-	navigationDataLoader: Promise<
-		(NestedContentResource & { parents?: ContentResource[] }) | null
-	>
+	navigationDataLoader: Promise<ResourceNavigation | null>
 }) => {
 	const navigationData = React.use(navigationDataLoader)
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)

@@ -1,7 +1,7 @@
 'use client'
 
 import { WorkshopNavigationProvider } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
-import type { NestedContentResource } from '@/lib/content-navigation'
+import type { ResourceNavigation } from '@/lib/content-navigation'
 import type { Workshop } from '@/lib/workshops'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
@@ -13,7 +13,7 @@ export const WorkshopListRowRenderer = ({
 	workshop,
 	className,
 }: {
-	workshopNavDataLoader: Promise<NestedContentResource | null>
+	workshopNavDataLoader: Promise<ResourceNavigation | null>
 	workshop: Workshop
 	className?: string
 }) => {

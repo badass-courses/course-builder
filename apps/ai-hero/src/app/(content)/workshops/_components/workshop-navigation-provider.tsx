@@ -4,9 +4,7 @@ import {
 	ContentNavigationProvider,
 	useContentNavigation,
 } from '@/components/content-navigation-provider'
-import type { NestedContentResource } from '@/lib/content-navigation'
-
-import type { ContentResource } from '@coursebuilder/core/schemas'
+import type { ResourceNavigation } from '@/lib/content-navigation'
 
 /**
  * Workshop-specific navigation provider
@@ -17,9 +15,7 @@ export const WorkshopNavigationProvider = ({
 	workshopNavDataLoader,
 }: {
 	children: React.ReactNode
-	workshopNavDataLoader: Promise<
-		(NestedContentResource & { parents?: ContentResource[] }) | null
-	>
+	workshopNavDataLoader: Promise<ResourceNavigation | null>
 }) => {
 	return (
 		<ContentNavigationProvider navigationDataLoader={workshopNavDataLoader}>

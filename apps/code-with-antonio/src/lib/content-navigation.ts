@@ -3,6 +3,7 @@ import { z } from 'zod'
 import {
 	ContentResourceResourceSchema,
 	ContentResourceSchema,
+	productSchema,
 	type ContentResource,
 } from '@coursebuilder/core/schemas'
 
@@ -23,11 +24,12 @@ const Level1ResourceWrapperSchema = ContentResourceResourceSchema.extend({
 	}),
 })
 
-export const NestedContentResourceSchema = ContentResourceSchema.extend({
+export const ResourceNavigationSchema = ContentResourceSchema.extend({
 	resources: z.array(Level1ResourceWrapperSchema).nullable().optional(),
+	parents: z.array(productSchema).optional(),
 })
 
-export type NestedContentResource = z.infer<typeof NestedContentResourceSchema>
+export type ResourceNavigation = z.infer<typeof ResourceNavigationSchema>
 export type Level1ResourceWrapper = z.infer<typeof Level1ResourceWrapperSchema>
 export type Level2ResourceWrapper = z.infer<typeof Level2ResourceWrapperSchema>
 
@@ -35,7 +37,7 @@ export type Level2ResourceWrapper = z.infer<typeof Level2ResourceWrapperSchema>
  * Helper function to find a section ID for a given resource slug
  */
 export function findSectionIdForResourceSlug(
-	navigation: NestedContentResource | null,
+	navigation: ResourceNavigation | null,
 	resourceSlug?: string | null,
 ): string | null {
 	if (!navigation?.resources || !resourceSlug) return null
@@ -59,7 +61,7 @@ export function findSectionIdForResourceSlug(
  * Helper function to get the first resource slug
  */
 export function getFirstResourceSlug(
-	navigation: NestedContentResource | null,
+	navigation: ResourceNavigation | null,
 ): string | null {
 	if (!navigation?.resources) return null
 
@@ -78,7 +80,7 @@ export function getFirstResourceSlug(
  * Helper function to flatten all resources (useful for iteration)
  */
 export function flattenNavigationResources(
-	navigation: NestedContentResource | null,
+	navigation: ResourceNavigation | null,
 ) {
 	if (!navigation?.resources) return []
 

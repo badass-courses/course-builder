@@ -108,8 +108,9 @@ export function WorkshopResourceList(props: Props) {
 	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
 		workshopNavigation
 
-	// Parents are cohorts or other parent resources
-	const cohort = workshopNavigation.parents?.[0]
+	const cohortProduct =
+		workshopNavigation?.parents?.[0]?.type === 'cohort' &&
+		workshopNavigation?.parents?.[0]
 
 	return (
 		<nav
@@ -189,13 +190,15 @@ export function WorkshopResourceList(props: Props) {
 									<div className="flex items-center gap-0.5">
 										<Link
 											href={
-												cohort
-													? `/cohorts/${cohort.fields?.slug}`
+												cohortProduct
+													? `/cohorts/${cohortProduct.resources?.[0]?.resource.fields?.slug}`
 													: '/workshops'
 											}
 											className="text-foreground text-base font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
 										>
-											{cohort ? cohort.fields?.title : 'Workshops'}
+											{cohortProduct
+												? cohortProduct.resources?.[0]?.resource.fields?.title
+												: 'Workshops'}
 										</Link>
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>

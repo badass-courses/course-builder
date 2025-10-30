@@ -1,7 +1,7 @@
 import type {
 	Level1ResourceWrapper,
 	Level2ResourceWrapper,
-	NestedContentResource,
+	ResourceNavigation,
 } from '@/lib/content-navigation'
 
 import type { ContentResourceResource } from '@coursebuilder/core/schemas'
@@ -11,7 +11,7 @@ import type { ContentResourceResource } from '@coursebuilder/core/schemas'
  * and returns the next and previous resources relative to the current one.
  */
 export function getAdjacentWorkshopResources(
-	navigation: NestedContentResource | null,
+	navigation: ResourceNavigation | null,
 	currentResourceId: string,
 ): {
 	nextResource: ContentResourceResource | null

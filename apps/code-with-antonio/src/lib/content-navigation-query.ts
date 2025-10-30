@@ -8,11 +8,13 @@ import {
 } from '@/db/schema'
 import { asc, eq, or, sql } from 'drizzle-orm'
 
+import { productSchema } from '@coursebuilder/core/schemas'
+
 import {
-	NestedContentResourceSchema,
+	ResourceNavigationSchema,
 	type Level1ResourceWrapper,
 	type Level2ResourceWrapper,
-	type NestedContentResource,
+	type ResourceNavigation,
 } from './content-navigation'
 
 /**
@@ -58,25 +60,62 @@ export async function getContentNavigation(slugOrId: string) {
 		return null
 	}
 
-	// Fetch products containing this resource
-	const productRelations = await db.query.contentResourceProduct.findMany({
-		where: eq(contentResourceProduct.resourceId, resource.id),
-		with: {
-			product: {
-				with: {
-					resources: {
-						with: {
-							resource: true,
+	// Fetch products containing this resource (directly or via parent resources)
+	// First get direct product relations
+	const directProductRelations = await db.query.contentResourceProduct.findMany(
+		{
+			where: eq(contentResourceProduct.resourceId, resource.id),
+			with: {
+				product: {
+					with: {
+						resources: {
+							with: {
+								resource: true,
+							},
+							orderBy: asc(contentResourceProduct.position),
 						},
-						orderBy: asc(contentResourceProduct.position),
 					},
 				},
 			},
 		},
+	)
+
+	// Then check if this resource is nested under a parent (e.g., workshop under cohort)
+	const parentRelations = await db.query.contentResourceResource.findMany({
+		where: eq(contentResourceResource.resourceId, resource.id),
 	})
 
+	// Get products for parent resources
+	const parentProductRelations =
+		parentRelations.length > 0
+			? await db.query.contentResourceProduct.findMany({
+					where: or(
+						...parentRelations.map((rel) =>
+							eq(contentResourceProduct.resourceId, rel.resourceOfId),
+						),
+					),
+					with: {
+						product: {
+							with: {
+								resources: {
+									with: {
+										resource: true,
+									},
+									orderBy: asc(contentResourceProduct.position),
+								},
+							},
+						},
+					},
+				})
+			: []
+
+	const productRelations = [
+		...directProductRelations,
+		...parentProductRelations,
+	]
+
 	// Validate the main resource
-	const validatedResource = NestedContentResourceSchema.safeParse(resource)
+	const validatedResource = ResourceNavigationSchema.safeParse(resource)
 	if (!validatedResource.success) {
 		console.error('Failed to parse resource:', validatedResource.error)
 		return null
@@ -85,13 +124,11 @@ export async function getContentNavigation(slugOrId: string) {
 	// Filter out videoResource types from nested resources
 	const filteredResource = filterVideoResources(validatedResource.data)
 
-	// Extract products from relations and filter resources to workshops only
+	// Extract and validate products from relations
 	const products = productRelations
 		.map((rel) => rel.product)
 		.filter((p): p is NonNullable<typeof p> => p !== null && p !== undefined)
-		.map((product) => ({
-			...product,
-		}))
+		.map((product) => productSchema.parse(product))
 
 	const result = {
 		...filteredResource,
@@ -133,9 +170,7 @@ function filterLevel1Resources(
 /**
  * Filters out videoResource types from the entire navigation tree
  */
-function filterVideoResources(
-	data: NestedContentResource,
-): NestedContentResource {
+function filterVideoResources(data: ResourceNavigation): ResourceNavigation {
 	return {
 		...data,
 		resources: filterLevel1Resources(data.resources),
