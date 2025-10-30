@@ -6,7 +6,6 @@ import { notFound, redirect } from 'next/navigation'
 import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
-import { env } from '@/env.mjs'
 import {
 	cancelPurchaseTransfer,
 	getPurchaseTransferForPurchaseId,
@@ -21,7 +20,6 @@ import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/pur
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
 import * as InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
-import { checkForPaymentSuccessWithoutPurchase } from '@coursebuilder/core'
 import {
 	EXISTING_BULK_COUPON,
 	INDIVIDUAL_TO_BULK_UPGRADE,
@@ -29,7 +27,6 @@ import {
 	NEW_INDIVIDUAL_PURCHASE,
 } from '@coursebuilder/core/schemas/purchase-type'
 import { logger } from '@coursebuilder/core/utils/logger'
-import { PaymentSuccessButProcessingFailed } from '@coursebuilder/ui'
 
 export const maxDuration = 100
 
@@ -74,17 +71,6 @@ const getServerSideProps = async (session_id: string) => {
 			logger.debug('purchase', { purchase })
 
 			if (!purchase || !email) {
-				const errorCheck = await checkForPaymentSuccessWithoutPurchase(
-					session_id,
-					courseBuilderAdapter,
-				)
-
-				if (errorCheck.shouldShowError) {
-					return {
-						paymentSucceededButProcessingFailed: true,
-					}
-				}
-
 				throw new Error('Purchase or email not found')
 			}
 
@@ -172,18 +158,6 @@ async function PurchaseThanksPageLoaded({
 }) {
 	const token = await getServerAuthSession()
 
-	const result = await getServerSideProps(session_id)
-
-	if ('paymentSucceededButProcessingFailed' in result) {
-		return (
-			<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
-				<PaymentSuccessButProcessingFailed
-					supportEmail={env.NEXT_PUBLIC_SUPPORT_EMAIL}
-				/>
-			</main>
-		)
-	}
-
 	const {
 		purchase,
 		email,
@@ -193,7 +167,7 @@ async function PurchaseThanksPageLoaded({
 		product,
 		stripeProductName,
 		redemptionsLeft,
-	} = result
+	} = await getServerSideProps(session_id)
 
 	if (email === token?.session?.user?.email) {
 		return redirect('/welcome?purchaseId=' + purchase.id)
