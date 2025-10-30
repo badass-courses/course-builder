@@ -10,10 +10,7 @@ import {
 } from '@/hooks/use-mux-player-prefs'
 import { setProgressForResource } from '@/lib/progress'
 import { track } from '@/utils/analytics'
-import {
-	getAdjacentWorkshopResources,
-	type AdjacentResource,
-} from '@/utils/get-adjacent-workshop-resources'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import MuxPlayer, {
 	type MuxPlayerProps,
@@ -22,6 +19,7 @@ import MuxPlayer, {
 
 import type {
 	ContentResource,
+	ContentResourceResource,
 	ModuleProgress,
 } from '@coursebuilder/core/schemas'
 import {
@@ -197,8 +195,8 @@ async function handleOnVideoEnded({
 	bingeMode: boolean
 	moduleSlug?: string
 	moduleType?: 'tutorial' | 'workshop'
-	nextResource?: AdjacentResource | null
-	prevResource?: AdjacentResource | null
+	nextResource?: ContentResourceResource | null
+	prevResource?: ContentResourceResource | null
 	router: ReturnType<typeof useRouter>
 	moduleProgress: ModuleProgress | null
 	addLessonProgress: (lessonId: string) => void
@@ -219,7 +217,7 @@ async function handleOnVideoEnded({
 		if (bingeMode && nextResource && playerRef?.current) {
 			dispatchVideoPlayerOverlay({ type: 'LOADING' })
 			// playerRef.current.playbackId = nextLessonPlaybackId
-			if (nextResource.type !== 'solution') {
+			if (nextResource.resource?.type !== 'solution') {
 				console.log(
 					'setting lesson complete',
 					isSolution ? prevResource : currentResource,
@@ -239,10 +237,15 @@ async function handleOnVideoEnded({
 			)
 
 			router.push(
-				getResourcePath(nextResource.type, nextResource.slug, 'view', {
-					parentType: moduleType as string,
-					parentSlug: moduleSlug as string,
-				}),
+				getResourcePath(
+					nextResource.resource?.type || '',
+					nextResource.resource?.fields?.slug || '',
+					'view',
+					{
+						parentType: moduleType as string,
+						parentSlug: moduleSlug as string,
+					},
+				),
 			)
 		} else if (bingeMode) {
 			if (nextResource) {
@@ -264,10 +267,15 @@ async function handleOnVideoEnded({
 			if (nextResource) {
 				// setTimeout(() => {
 				router.push(
-					getResourcePath(nextResource.type, nextResource.slug, 'view', {
-						parentType: moduleType as string,
-						parentSlug: moduleSlug as string,
-					}),
+					getResourcePath(
+						nextResource.resource?.type || '',
+						nextResource.resource?.fields?.slug || '',
+						'view',
+						{
+							parentType: moduleType as string,
+							parentSlug: moduleSlug as string,
+						},
+					),
 				)
 				// }, 250)
 			} else {

@@ -31,12 +31,35 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				return ''
 		}
 	}
+
+	// For solutions, construct URL using parent resources (solutions use parent lesson's slug)
+	const getResourceHref = () => {
+		if (hit.type === 'solution') {
+			const parentLesson = hit.parentResources?.find(
+				(p) => p.type === 'lesson' || p.type === 'exercise',
+			)
+			const parentWorkshop = hit.parentResources?.find(
+				(p) =>
+					p.type === 'workshop' || p.type === 'list' || p.type === 'tutorial',
+			)
+
+			if (parentLesson && parentWorkshop) {
+				return getResourcePath(hit.type, parentLesson.slug, 'view', {
+					parentSlug: parentWorkshop.slug,
+					parentType: parentWorkshop.type,
+				})
+			}
+		}
+
+		return getResourcePath(hit.type, hit.slug, 'view')
+	}
+
 	return (
 		<li className="">
 			<ResourceTeaser
 				variant="card"
 				title={hit.title}
-				href={getResourcePath(hit.type, hit.slug, 'view')}
+				href={getResourceHref()}
 				description={hit.summary}
 				metadata={
 					hit.type === 'cohort' && hit.startsAt && hit.endsAt
@@ -61,7 +84,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 			{/* <Link
 				prefetch
 				className="to-secondary hover:bg-linear-to-l group flex flex-col items-baseline justify-between gap-2 from-transparent px-5 py-5 transition ease-in-out sm:py-5 md:flex-row lg:px-6"
-				href={getResourcePath(hit.type, hit.slug, 'view')}
+				href={getResourceHref()}
 			>
 				<div className="flex flex-col gap-2 md:w-4/6">
 					<span className="pr-5 text-lg font-semibold sm:truncate lg:text-xl">

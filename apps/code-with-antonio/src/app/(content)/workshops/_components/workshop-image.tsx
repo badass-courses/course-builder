@@ -3,7 +3,7 @@
 import { use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getFirstLessonSlug } from '@/lib/workshops'
+import { getFirstResourceSlug } from '@/lib/content-navigation'
 import { PlayIcon } from '@heroicons/react/24/solid'
 
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
@@ -25,7 +25,7 @@ export default function WorkshopImage({
 	>
 }) {
 	const workshopNavigation = useWorkshopNavigation()
-	const firstLessonSlug = getFirstLessonSlug(workshopNavigation)
+	const firstLessonSlug = getFirstResourceSlug(workshopNavigation)
 	const { moduleProgress } = useModuleProgress()
 	const isWorkshopInProgress =
 		moduleProgress?.nextResource?.fields?.slug &&
@@ -33,8 +33,8 @@ export default function WorkshopImage({
 	const ability = use(abilityLoader)
 	const canView = ability?.canViewWorkshop
 	const url = isWorkshopInProgress
-		? `/workshops/${workshopNavigation?.slug}/${moduleProgress?.nextResource?.fields?.slug}`
-		: `/workshops/${workshopNavigation?.slug}/${firstLessonSlug}`
+		? `/workshops/${workshopNavigation?.fields?.slug}/${moduleProgress?.nextResource?.fields?.slug}`
+		: `/workshops/${workshopNavigation?.fields?.slug}/${firstLessonSlug}`
 	const Comp = ({ children }: { children: React.ReactNode }) =>
 		canView ? (
 			<Link
@@ -53,7 +53,7 @@ export default function WorkshopImage({
 		<Comp>
 			<Image
 				priority
-				alt={workshopNavigation?.title || ''}
+				alt={workshopNavigation?.fields?.title || ''}
 				src={imageUrl}
 				width={480}
 				height={270}

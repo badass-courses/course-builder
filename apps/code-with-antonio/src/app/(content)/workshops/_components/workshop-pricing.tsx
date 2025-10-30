@@ -29,10 +29,14 @@ export function WorkshopPricingClient({
 	const cancelUrl = product ? `${env.NEXT_PUBLIC_URL}${pathname}` : ''
 	const workshopNavigation = useWorkshopNavigation()
 	const workshops =
-		workshopNavigation?.cohorts?.[0]?.resources?.map((resource) => ({
-			title: resource.title,
-			slug: resource.slug,
-		})) ||
+		((workshopNavigation?.parents?.[0]?.resources as any)
+			?.map((wrapper: { resource: any }) => ({
+				title: wrapper.resource.fields?.title,
+				slug: wrapper.resource.fields?.slug,
+			}))
+			.filter((w: { title: any; slug: any }) => w.title && w.slug) as
+			| { title: string; slug: string }[]
+			| undefined) ||
 		product?.resources?.map((resource) => ({
 			title: resource.resource.fields.title,
 			slug: resource.resource.fields.slug,

@@ -4,7 +4,8 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import Spinner from '@/components/spinner'
-import { getFirstLessonSlug, MinimalWorkshop } from '@/lib/workshops'
+import { getFirstResourceSlug } from '@/lib/content-navigation'
+import { MinimalWorkshop } from '@/lib/workshops'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Github } from 'lucide-react'
 
@@ -34,7 +35,7 @@ export function StartLearningWorkshopButton({
 	workshop: MinimalWorkshop
 }) {
 	const workshopNavigation = useWorkshopNavigation()
-	const firstLessonSlug = getFirstLessonSlug(workshopNavigation)
+	const firstLessonSlug = getFirstResourceSlug(workshopNavigation)
 	const { moduleProgress } = useModuleProgress()
 	const isWorkshopInProgress =
 		moduleProgress?.nextResource?.fields?.slug &&
@@ -127,7 +128,7 @@ export function GetAccessButton({
 }) {
 	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
-	const cohort = workshopNavigation?.cohorts[0]
+	const cohort = workshopNavigation?.parents?.[0]
 	if (canView || !cohort) return null
 
 	return (
@@ -143,7 +144,7 @@ export function GetAccessButton({
 			)}
 			asChild
 		>
-			<Link prefetch href={`/cohorts/${cohort?.slug}`}>
+			<Link prefetch href={`/cohorts/${cohort?.fields?.slug}`}>
 				Get Access
 			</Link>
 		</Button>

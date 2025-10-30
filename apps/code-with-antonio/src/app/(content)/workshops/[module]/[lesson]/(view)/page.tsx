@@ -24,18 +24,20 @@ export async function generateStaticParams() {
 			workshop.fields?.slug,
 		)
 
-		workshopNavigation?.resources.forEach((resource) => {
+		workshopNavigation?.resources?.forEach((wrapper) => {
+			const resource = wrapper.resource
 			if (resource.type === 'lesson') {
 				routeParams.push({
 					module: workshop.fields?.slug,
-					lesson: resource.slug,
+					lesson: resource.fields?.slug,
 				})
 			} else if (resource.type === 'section') {
-				resource.resources.forEach((sectionResource) => {
+				resource.resources?.forEach((sectionWrapper) => {
+					const sectionResource = sectionWrapper.resource
 					if (sectionResource.type === 'lesson') {
 						routeParams.push({
 							module: workshop.fields?.slug,
-							lesson: sectionResource.slug,
+							lesson: sectionResource.fields?.slug,
 						})
 					}
 				})
