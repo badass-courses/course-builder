@@ -10,9 +10,12 @@ export async function getNextResource(
 	const navigation = await getCachedWorkshopNavigation(moduleSlugOrId)
 
 	const flattenedNavResources =
-		navigation?.resources.flatMap((resource) => {
+		navigation?.resources?.flatMap((wrapper) => {
+			const resource = wrapper.resource
 			if (resource.type === 'section') {
-				return resource.resources
+				return (
+					resource.resources?.map((r: { resource: any }) => r.resource) || []
+				)
 			} else {
 				return [resource]
 			}

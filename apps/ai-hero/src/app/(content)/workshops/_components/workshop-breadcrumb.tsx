@@ -9,15 +9,16 @@ import { useWorkshopNavigation } from './workshop-navigation-provider'
 
 export default function WorkshopBreadcrumb() {
 	const navigation = useWorkshopNavigation()
-	const cohort = navigation?.cohorts?.[0]
+	const cohort =
+		navigation?.parents?.[0]?.type === 'cohort' && navigation?.parents?.[0]
 
 	if (!cohort) return null
 
 	return (
 		<div className="inline-flex items-center gap-2">
-			<Link href={`/cohorts/${cohort.slug}`}>
+			<Link href={`/cohorts/${cohort.fields?.slug}`}>
 				<Button variant="link" className="p-0 text-lg font-normal">
-					{cohort?.title}
+					{cohort?.fields?.title}
 				</Button>
 			</Link>
 			<span className="opacity-50">/</span>

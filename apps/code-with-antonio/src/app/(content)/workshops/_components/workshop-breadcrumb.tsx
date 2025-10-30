@@ -9,7 +9,8 @@ import { useWorkshopNavigation } from './workshop-navigation-provider'
 
 export default function WorkshopBreadcrumb() {
 	const navigation = useWorkshopNavigation()
-	const cohort = navigation?.parents?.[0]
+	const cohort =
+		navigation?.parents?.[0]?.type === 'cohort' && navigation?.parents?.[0]
 
 	if (!cohort) return null
 

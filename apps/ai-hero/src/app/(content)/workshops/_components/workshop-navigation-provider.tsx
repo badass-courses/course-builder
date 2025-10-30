@@ -1,43 +1,37 @@
 'use client'
 
-import * as React from 'react'
-import { WorkshopNavigation } from '@/lib/workshops'
+import {
+	ContentNavigationProvider,
+	useContentNavigation,
+} from '@/components/content-navigation-provider'
+import type { NestedContentResource } from '@/lib/content-navigation'
 
-const WorkshopNavigationContext = React.createContext<
-	| (WorkshopNavigation & {
-			isSidebarCollapsed: boolean
-			setIsSidebarCollapsed: (isSidebarCollapsed: boolean) => void
-	  })
-	| null
->(null)
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
+/**
+ * Workshop-specific navigation provider
+ * Thin wrapper around generic ContentNavigationProvider
+ */
 export const WorkshopNavigationProvider = ({
 	children,
 	workshopNavDataLoader,
 }: {
 	children: React.ReactNode
-	workshopNavDataLoader: Promise<WorkshopNavigation | null>
+	workshopNavDataLoader: Promise<
+		(NestedContentResource & { parents?: ContentResource[] }) | null
+	>
 }) => {
-	const workshopNavigation = React.use(workshopNavDataLoader)
-	const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
-
 	return (
-		<WorkshopNavigationContext.Provider
-			value={
-				workshopNavigation
-					? { ...workshopNavigation, isSidebarCollapsed, setIsSidebarCollapsed }
-					: null
-			}
-		>
+		<ContentNavigationProvider navigationDataLoader={workshopNavDataLoader}>
 			{children}
-		</WorkshopNavigationContext.Provider>
+		</ContentNavigationProvider>
 	)
 }
 
+/**
+ * Workshop-specific hook for accessing navigation
+ * Uses the generic useContentNavigation under the hood
+ */
 export const useWorkshopNavigation = () => {
-	const context = React.useContext(WorkshopNavigationContext)
-	if (!context) {
-		console.error('no workshop navigation data')
-	}
-	return context
+	return useContentNavigation()
 }

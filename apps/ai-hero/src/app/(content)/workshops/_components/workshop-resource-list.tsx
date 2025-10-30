@@ -7,7 +7,11 @@ import { createAppAbility, type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { CldImage } from '@/components/cld-image'
-import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
+import {
+	findSectionIdForResourceSlug,
+	type Level1ResourceWrapper,
+	type Level2ResourceWrapper,
+} from '@/lib/content-navigation'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { subject } from '@casl/ability'
@@ -72,7 +76,7 @@ export function WorkshopResourceList(props: Props) {
 
 	const ability = createAppAbility(abilityRules || [])
 
-	const sectionId = findSectionIdForLessonSlug(
+	const sectionId = findSectionIdForResourceSlug(
 		workshopNavigation,
 		props.currentLessonSlug,
 	)
@@ -104,7 +108,8 @@ export function WorkshopResourceList(props: Props) {
 	const { resources, setIsSidebarCollapsed, isSidebarCollapsed } =
 		workshopNavigation
 
-	const cohort = workshopNavigation.cohorts?.[0]
+	// Parents are cohorts or other parent resources
+	const cohort = workshopNavigation.parents?.[0]
 
 	return (
 		<nav
@@ -183,18 +188,22 @@ export function WorkshopResourceList(props: Props) {
 								<div className="flex flex-col leading-tight">
 									<div className="flex items-center gap-0.5">
 										<Link
-											href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
+											href={
+												cohort
+													? `/cohorts/${cohort.fields?.slug}`
+													: '/workshops'
+											}
 											className="text-foreground text-base font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
 										>
-											{cohort ? cohort.title : 'Workshops'}
+											{cohort ? cohort.fields?.title : 'Workshops'}
 										</Link>
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>
 									<Link
 										className="font-heading text-balance text-lg font-bold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"
-										href={`/workshops/${workshopNavigation.slug}`}
+										href={`/workshops/${workshopNavigation.fields?.slug}`}
 									>
-										{workshopNavigation.title}
+										{workshopNavigation.fields?.title}
 									</Link>
 									<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 								</div>
@@ -215,117 +224,123 @@ export function WorkshopResourceList(props: Props) {
 							type="single"
 							collapsible
 							className={cn('flex flex-col', wrapperClassName)}
-							defaultValue={sectionId || resources[0]?.id}
+							defaultValue={sectionId || resources?.[0]?.resource?.id}
 						>
 							<ol className="">
-								{resources.map((resource: NavigationResource, i: number) => {
-									const isActiveGroup =
-										(resource.type === 'section' ||
-											resource.type === 'lesson') &&
-										resource.resources.some(
-											(item) => props.currentLessonSlug === item.slug,
-										)
-									const isSectionCompleted =
-										resource.type === 'section' &&
-										resource.resources?.every((item) =>
-											moduleProgress?.completedLessons?.some(
-												(progress) =>
-													progress.resourceId === item.id &&
-													progress.completedAt,
-											),
-										)
+								{resources
+									?.filter((r) => r?.resource)
+									.map(({ resource, metadata }, i: number) => {
+										const childResources =
+											resource.resources
+												?.map((r) => r.resource)
+												.filter(Boolean) || []
+										const isActiveGroup =
+											(resource.type === 'section' ||
+												resource.type === 'lesson') &&
+											childResources.some(
+												(item) => props.currentLessonSlug === item.fields?.slug,
+											)
+										const isSectionCompleted =
+											resource.type === 'section' &&
+											childResources.every((item) =>
+												moduleProgress?.completedLessons?.some(
+													(progress) =>
+														progress.resourceId === item.id &&
+														progress.completedAt,
+												),
+											)
 
-									const firstLesson =
-										resource.type === 'section' && resource.resources[0]
-									const firstLessonId = firstLesson && firstLesson.id
+										const firstLesson =
+											resource.type === 'section' && childResources[0]
+										const firstLessonId = firstLesson && firstLesson.id
 
-									const canViewWorkshop =
-										firstLessonId &&
-										ability.can(
-											'read',
-											subject('Content', { id: workshopNavigation.id }),
-										)
+										const canViewWorkshop =
+											firstLessonId &&
+											ability.can(
+												'read',
+												subject('Content', { id: workshopNavigation.id }),
+											)
 
-									return resource.type === 'section' ? (
-										// sections
-										<li key={`${resource.id}-accordion`}>
-											<AccordionItem value={resource.id} className="border-0">
-												<AccordionTrigger
-													className={cn(
-														'hover:bg-muted bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
-														{
-															'bg-muted dark:text-primary text-blue-600':
-																isActiveGroup,
-														},
-													)}
-												>
-													<div className="flex w-full items-center">
-														<h3 className="flex items-center gap-1 pr-2">
-															{isSectionCompleted && (
-																<Check
-																	className="-ml-1.5 w-4 shrink-0"
-																	aria-hidden="true"
-																/>
-															)}
-															{resource.title}
-														</h3>
-														{resource.resources.length > 0 && (
-															<span className="self-end text-sm font-normal opacity-50">
-																({resource.resources.length})
-															</span>
+										return resource.type === 'section' ? (
+											// sections
+											<li key={`${resource.id}-accordion`}>
+												<AccordionItem value={resource.id} className="border-0">
+													<AccordionTrigger
+														className={cn(
+															'hover:bg-muted bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
+															{
+																'bg-muted dark:text-primary text-blue-600':
+																	isActiveGroup,
+															},
 														)}
-													</div>
-													<div>
-														{abilityStatus === 'success' && (
-															<>
-																{resource?.tier === 'free' &&
-																!canViewWorkshop ? (
-																	<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
-																		<Play className="size-3" /> Free
-																	</div>
-																) : !canViewWorkshop ? (
-																	<Lock className="w-3 text-gray-500" />
-																) : null}
-															</>
-														)}
-													</div>
-												</AccordionTrigger>
-												{resource.resources.length > 0 && (
-													// section lessons
-													<AccordionContent className="pb-0">
-														<ol className="divide-border bg-background divide-y border-b">
-															{resource.resources.map((item, index: number) => {
-																return (
-																	<LessonResource
-																		lesson={item}
-																		moduleId={workshopNavigation.id}
-																		index={index}
-																		moduleProgress={moduleProgress}
-																		ability={ability}
-																		abilityStatus={abilityStatus}
-																		key={item.id}
+													>
+														<div className="flex w-full items-center">
+															<h3 className="flex items-center gap-1 pr-2">
+																{isSectionCompleted && (
+																	<Check
+																		className="-ml-1.5 w-4 shrink-0"
+																		aria-hidden="true"
 																	/>
-																)
-															})}
-														</ol>
-													</AccordionContent>
-												)}
-											</AccordionItem>
-										</li>
-									) : (
-										// top-level lessons
-										<LessonResource
-											className={cn('border-b')}
-											lesson={resource}
-											index={i}
-											moduleProgress={moduleProgress}
-											moduleId={workshopNavigation.id}
-											ability={ability}
-											abilityStatus={abilityStatus}
-											key={resource.id}
-										/>
-									)
-								})}
+																)}
+																{resource.fields?.title}
+															</h3>
+															{childResources.length > 0 && (
+																<span className="self-end text-sm font-normal opacity-50">
+																	({childResources.length})
+																</span>
+															)}
+														</div>
+														<div>
+															{abilityStatus === 'success' && (
+																<>
+																	{metadata?.tier === 'free' &&
+																	!canViewWorkshop ? (
+																		<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
+																			<Play className="size-3" /> Free
+																		</div>
+																	) : !canViewWorkshop ? (
+																		<Lock className="w-3 text-gray-500" />
+																	) : null}
+																</>
+															)}
+														</div>
+													</AccordionTrigger>
+													{childResources.length > 0 && (
+														// section lessons
+														<AccordionContent className="pb-0">
+															<ol className="divide-border bg-background divide-y border-b">
+																{childResources.map((item, index: number) => {
+																	return (
+																		<LessonResource
+																			lesson={item}
+																			moduleId={workshopNavigation.id}
+																			index={index}
+																			moduleProgress={moduleProgress}
+																			ability={ability}
+																			abilityStatus={abilityStatus}
+																			key={item.id}
+																		/>
+																	)
+																})}
+															</ol>
+														</AccordionContent>
+													)}
+												</AccordionItem>
+											</li>
+										) : (
+											// top-level lessons
+											<LessonResource
+												className={cn('border-b')}
+												lesson={resource}
+												index={i}
+												moduleProgress={moduleProgress}
+												moduleId={workshopNavigation.id}
+												ability={ability}
+												abilityStatus={abilityStatus}
+												key={resource.id}
+											/>
+										)
+									})}
 							</ol>
 						</Accordion>
 					</ScrollArea>
@@ -369,7 +384,7 @@ const LessonResource = ({
 	className,
 	moduleId,
 }: {
-	lesson: NavigationResource
+	lesson: Level1ResourceWrapper['resource'] | Level2ResourceWrapper['resource']
 	moduleProgress?: ModuleProgress | null
 	index: number
 	ability: AppAbility
@@ -380,17 +395,17 @@ const LessonResource = ({
 	const params = useParams()
 	const pathname = usePathname()
 	const isOnSolution = pathname.includes('/solution')
+	const lessonSlug = lesson.fields?.slug as string
+	const childResources = lesson.resources?.map((r) => r.resource) || []
 	const solution =
 		lesson.type === 'lesson' &&
-		lesson.resources?.find((resource) => resource.type === 'solution')
+		childResources.find((resource) => resource.type === 'solution')
 	const isActiveSolution =
-		lesson.slug === params.lesson && pathname.includes('/solution')
+		lessonSlug === params.lesson && pathname.includes('/solution')
 
-	const isActiveLesson = lesson.slug === params.lesson && !isOnSolution
+	const isActiveLesson = lessonSlug === params.lesson && !isOnSolution
 	const isActiveGroup =
-		(isActiveLesson &&
-			lesson.type === 'lesson' &&
-			lesson?.resources?.length > 0) ||
+		(isActiveLesson && lesson.type === 'lesson' && childResources.length > 0) ||
 		isActiveSolution
 
 	const isCompleted = moduleProgress?.completedLessons?.some(
@@ -456,7 +471,7 @@ const LessonResource = ({
 									</span>
 								)}
 
-								<span className="w-full text-base">{lesson.title}</span>
+								<span className="w-full text-base">{lesson.fields?.title}</span>
 								{abilityStatus === 'success' && !canViewLesson && (
 									<Lock
 										className="absolute right-5 w-3 text-gray-500"
@@ -469,7 +484,7 @@ const LessonResource = ({
 						return canViewLesson ? (
 							<Link
 								className={cn('hover:bg-muted', baseStyles)}
-								href={`/workshops/${params.module}/${lesson.slug}`}
+								href={`/workshops/${params.module}/${lesson.fields?.slug}`}
 								prefetch
 							>
 								{rowContent}
@@ -486,7 +501,9 @@ const LessonResource = ({
 							size="icon"
 							className="absolute right-0.5 scale-75"
 						>
-							<Link href={`/workshops/${params.module}/${lesson.slug}/edit`}>
+							<Link
+								href={`/workshops/${params.module}/${lesson.fields?.slug}/edit`}
+							>
 								<Pen className="w-3" />
 							</Link>
 						</Button>
@@ -508,7 +525,7 @@ const LessonResource = ({
 								},
 							)}
 							prefetch={true}
-							href={`/workshops/${params.module}/${lesson.slug}`}
+							href={`/workshops/${params.module}/${lesson.fields?.slug}`}
 						>
 							Problem
 						</Link>
@@ -526,7 +543,7 @@ const LessonResource = ({
 								},
 							)}
 							prefetch={true}
-							href={`/workshops/${params.module}/${lesson.slug}/solution`}
+							href={`/workshops/${params.module}/${lesson.fields?.slug}/solution`}
 						>
 							Solution
 						</Link>

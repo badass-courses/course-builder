@@ -12,10 +12,7 @@ import { setProgressForResource } from '@/lib/progress'
 import { MinimalWorkshop } from '@/lib/workshops'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
-import {
-	getAdjacentWorkshopResources,
-	type AdjacentResource,
-} from '@/utils/get-adjacent-workshop-resources'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
@@ -29,6 +26,7 @@ import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
 import type {
 	ContentResource,
+	ContentResourceResource,
 	Product,
 	Purchase,
 } from '@coursebuilder/core/schemas'
@@ -90,7 +88,12 @@ export const CompletedLessonOverlay: React.FC<{
 						: 'Up Next:'}
 				</p>
 				<p className="font-heading text-xl font-bold sm:text-2xl">
-					{nextLesson?.title}
+					{nextLesson?.resource?.type === 'solution'
+						? getAdjacentWorkshopResources(
+								workshopNavigation,
+								nextLesson.resourceId,
+							)?.prevResource?.resource?.fields?.title || 'Next Resource'
+						: nextLesson?.resource?.fields?.title || 'Next Resource'}
 				</p>
 				{session?.user ? (
 					<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
@@ -141,7 +144,7 @@ export const CompletedLessonOverlay: React.FC<{
 						moduleType={moduleType}
 						resource={resource}
 						nextResource={nextLesson}
-						prevResource={prevLesson}
+						prevResource={prevLesson?.resource}
 					/>
 				)}
 			</div>
@@ -207,13 +210,14 @@ export const CompletedModuleOverlay: React.FC<{
 		})
 	}, []) // Empty deps array to only run once on mount
 
-	const cohort = moduleNavigation?.cohorts?.[0]
+	const cohort = moduleNavigation?.parents?.[0]
 
 	const currentWorkshopIndexInCohort =
 		cohort?.resources?.findIndex(
-			(workshop) => workshop.id === moduleNavigation?.id,
+			(workshop) => workshop.resource.id === moduleNavigation?.id,
 		) || 0
-	const nextWorkshop = cohort?.resources[currentWorkshopIndexInCohort + 1]
+	const nextWorkshop =
+		cohort?.resources?.[currentWorkshopIndexInCohort + 1]?.resource
 
 	return (
 		<div
@@ -222,7 +226,8 @@ export const CompletedModuleOverlay: React.FC<{
 		>
 			<p className="font-heading text-center text-xl font-bold">Great job!</p>
 			<p className="text-center text-sm sm:text-base">
-				You&apos;ve completed the "{moduleNavigation?.title}" {moduleType}.
+				You&apos;ve completed the "{moduleNavigation?.fields?.title}"{' '}
+				{moduleType}.
 			</p>
 			<span id="rewardId" />
 			<div className="flex w-full items-center justify-center gap-3">
@@ -240,10 +245,10 @@ export const CompletedModuleOverlay: React.FC<{
 				</Button>
 				{nextWorkshop && (
 					<Button asChild variant="default">
-						<Link href={`/workshops/${nextWorkshop?.slug}`}>
+						<Link href={`/workshops/${nextWorkshop?.fields?.slug}`}>
 							Continue{' '}
 							<span className="hidden pl-1 sm:inline">
-								to {nextWorkshop?.title}
+								to {nextWorkshop?.fields?.title}
 							</span>
 						</Link>
 					</Button>
@@ -268,8 +273,8 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: AdjacentResource
-	prevResource?: AdjacentResource
+	nextResource?: ContentResourceResource
+	prevResource?: ContentResourceResource
 	className?: string
 }> = ({ resource, nextResource, prevResource, moduleType, className }) => {
 	const router = useRouter()
@@ -299,25 +304,27 @@ const ContinueButton: React.FC<{
 				className,
 			)}
 			onClick={async () => {
-				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
+				if (!isCurrentLessonCompleted && !isProblemLesson) {
 					startTransition(async () => {
 						// when on solution, we want to add progress to the previous lesson (problem)
-						addLessonProgress(isSolution ? prevResource?.id : resource.id)
+						const resourceIdToComplete =
+							isSolution && prevResource ? prevResource.resourceId : resource.id
+						addLessonProgress(resourceIdToComplete)
 						await setProgressForResource({
-							resourceId: isSolution ? prevResource?.id : resource.id,
+							resourceId: resourceIdToComplete,
 							isCompleted: true,
 						})
 					})
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
 				if (nextResource && moduleNavigation) {
-					if (nextResource.type === 'solution') {
+					if (nextResource.resource?.type === 'solution') {
 						return router.push(
-							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+							`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${resource?.fields?.slug}/solution`,
 						)
 					}
 					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.slug}`,
+						`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${nextResource?.resource?.fields?.slug}`,
 					)
 				}
 			}}
@@ -352,11 +359,11 @@ export const SoftBlockOverlay: React.FC<{
 			className="z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleNavigation?.title}
+				moduleTitle={moduleNavigation?.fields?.title}
 				onSuccess={async (subscriber?: Subscriber) => {
 					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
-							moduleNavigation.slug,
+							moduleNavigation.fields?.slug,
 							resource?.fields?.slug,
 						)
 						dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -366,11 +373,11 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleNavigation?.coverImage && (
+				{moduleNavigation?.fields?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
-						src={moduleNavigation.coverImage}
-						alt={moduleNavigation.title}
+						src={moduleNavigation.fields.coverImage}
+						alt={moduleNavigation.fields.title}
 						width={150}
 						height={150}
 					/>

@@ -78,10 +78,23 @@ export default function UpNext({
 
 	// Helper function to find if current resource is a solution and get its parent lesson
 	const findParentLessonForSolution = (resourceId: string) => {
-		for (const resource of navigation.resources) {
+		if (!navigation?.resources) return null
+
+		// Flatten all resources to find lessons
+		const flatResources = navigation.resources.flatMap((wrapper) => {
+			const resource = wrapper.resource
+			if (resource.type === 'section' && resource.resources) {
+				return resource.resources.map((r: { resource: any }) => r.resource)
+			}
+			return [resource]
+		})
+
+		for (const resource of flatResources) {
 			if (resource.type === 'lesson' && resource.resources) {
 				const solutionResource = resource.resources.find(
-					(r) => r.id === resourceId && r.type === 'solution',
+					(wrapper: { resource: any }) =>
+						wrapper.resource.id === resourceId &&
+						wrapper.resource.type === 'solution',
 				)
 				if (solutionResource) {
 					return resource
@@ -93,14 +106,27 @@ export default function UpNext({
 
 	// Helper function to check if a lesson has a solution
 	const lessonHasSolution = (lessonId: string) => {
-		const lesson = navigation.resources.find(
+		if (!navigation?.resources) return false
+
+		// Flatten all resources to find the lesson
+		const flatResources = navigation.resources.flatMap((wrapper) => {
+			const resource = wrapper.resource
+			if (resource.type === 'section' && resource.resources) {
+				return resource.resources.map((r: { resource: any }) => r.resource)
+			}
+			return [resource]
+		})
+
+		const lesson = flatResources.find(
 			(r) => r.id === lessonId && r.type === 'lesson',
 		)
 		return (
 			lesson?.type === 'lesson' &&
 			lesson.resources &&
 			lesson.resources.length > 0 &&
-			lesson.resources.some((r: any) => r.type === 'solution')
+			lesson.resources.some(
+				(wrapper: { resource: any }) => wrapper.resource.type === 'solution',
+			)
 		)
 	}
 
@@ -113,14 +139,32 @@ export default function UpNext({
 			return {
 				shouldComplete: true,
 				resourceToComplete: parentLesson.id,
-				resourceSlugForRevalidation: parentLesson.slug,
+				resourceSlugForRevalidation: parentLesson.fields?.slug,
 			}
 		}
 
 		// Current resource is not a solution, check if it's a lesson
-		const currentResource = navigation.resources.find(
+		if (!navigation?.resources) {
+			return {
+				shouldComplete: false,
+				resourceToComplete: null,
+				resourceSlugForRevalidation: null,
+			}
+		}
+
+		// Flatten all resources to find the current resource
+		const flatResources = navigation.resources.flatMap((wrapper) => {
+			const resource = wrapper.resource
+			if (resource.type === 'section' && resource.resources) {
+				return resource.resources.map((r: { resource: any }) => r.resource)
+			}
+			return [resource]
+		})
+
+		const currentResource = flatResources.find(
 			(r) => r.id === currentResourceId,
 		)
+
 		if (currentResource?.type === 'lesson') {
 			if (lessonHasSolution(currentResourceId)) {
 				// Lesson has a solution, don't complete it
@@ -134,7 +178,7 @@ export default function UpNext({
 				return {
 					shouldComplete: true,
 					resourceToComplete: currentResourceId,
-					resourceSlugForRevalidation: currentResource.slug,
+					resourceSlugForRevalidation: currentResource.fields?.slug,
 				}
 			}
 		}
@@ -150,7 +194,10 @@ export default function UpNext({
 	const completionLogic = getCompletionLogic()
 
 	// For solution resources, we need to use the parent lesson's slug
-	const nextResourceSlug = nextResource.slug
+	const nextResourceSlug =
+		nextResource.resource?.type === 'solution'
+			? findParentLessonForSolution(nextResource.resourceId)?.fields?.slug || ''
+			: nextResource.resource?.fields?.slug || ''
 
 	const isCompleted = Boolean(
 		moduleProgress?.completedLessons?.some(
@@ -169,10 +216,10 @@ export default function UpNext({
 		<>
 			<PrefetchNextResource
 				nextResource={{
-					type: nextResource.type,
+					type: nextResource.resource?.type || '',
 					slug: nextResourceSlug,
 				}}
-				workshopSlug={navigation.slug}
+				workshopSlug={navigation.fields?.slug || null}
 			/>
 			<nav
 				className={cn(
@@ -187,12 +234,12 @@ export default function UpNext({
 						<Link
 							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-blue-600 hover:underline lg:text-xl"
 							href={getResourcePath(
-								nextResource.type,
+								nextResource.resource?.type || '',
 								nextResourceSlug,
 								'view',
 								{
 									parentType: 'workshop',
-									parentSlug: navigation.slug,
+									parentSlug: navigation.fields?.slug || '',
 								},
 							)}
 							onClick={async () => {
@@ -212,7 +259,7 @@ export default function UpNext({
 								}
 							}}
 						>
-							{nextResource.title}
+							{nextResource.resource?.fields?.title || 'Next Resource'}
 							<ArrowRight className="hidden w-4 sm:block" />
 						</Link>
 						{!session?.user && (

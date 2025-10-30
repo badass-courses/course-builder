@@ -16,7 +16,14 @@ import {
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { subject } from '@casl/ability'
-import { Check, Lock, PanelLeftClose, PanelLeftOpen, Pen } from 'lucide-react'
+import {
+	Check,
+	Lock,
+	PanelLeftClose,
+	PanelLeftOpen,
+	Pen,
+	Play,
+} from 'lucide-react'
 import { useMeasure } from 'react-use'
 
 import type {
@@ -226,7 +233,7 @@ export function WorkshopResourceList(props: Props) {
 							<ol className="">
 								{resources
 									?.filter((r) => r?.resource)
-									.map(({ resource }, i: number) => {
+									.map(({ resource, metadata }, i: number) => {
 										const childResources =
 											resource.resources
 												?.map((r) => r.resource)
@@ -246,6 +253,17 @@ export function WorkshopResourceList(props: Props) {
 														progress.completedAt,
 												),
 											)
+										const firstLesson =
+											resource.type === 'section' && childResources[0]
+										const firstLessonId = firstLesson && firstLesson.id
+
+										const canViewWorkshop =
+											firstLessonId &&
+											ability.can(
+												'read',
+												subject('Content', { id: workshopNavigation.id }),
+											)
+
 										return resource.type === 'section' ? (
 											// sections
 											<li key={`${resource.id}-accordion`}>
@@ -272,6 +290,20 @@ export function WorkshopResourceList(props: Props) {
 																<span className="self-end text-sm font-normal opacity-50">
 																	({childResources.length})
 																</span>
+															)}
+														</div>
+														<div>
+															{abilityStatus === 'success' && (
+																<>
+																	{metadata?.tier === 'free' &&
+																	!canViewWorkshop ? (
+																		<div className="text-muted-foreground inline-flex shrink-0 items-center gap-0.5 rounded border px-1.5 py-1 text-xs font-medium leading-none">
+																			<Play className="size-3" /> Free
+																		</div>
+																	) : !canViewWorkshop ? (
+																		<Lock className="w-3 text-gray-500" />
+																	) : null}
+																</>
 															)}
 														</div>
 													</AccordionTrigger>
