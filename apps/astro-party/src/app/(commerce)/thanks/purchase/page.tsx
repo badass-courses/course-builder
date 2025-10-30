@@ -178,7 +178,7 @@ async function PurchaseThanksPageLoaded({
 
 	if ('paymentSucceededButProcessingFailed' in result) {
 		return (
-			<Layout withContainer>
+			<Layout>
 				<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
 					<PaymentSuccessButProcessingFailed
 						supportEmail={env.NEXT_PUBLIC_SUPPORT_EMAIL}
