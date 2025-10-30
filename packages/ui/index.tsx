@@ -162,6 +162,32 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from './primitives/sheet'
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupAction,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarInput,
+	SidebarInset,
+	SidebarMenu,
+	SidebarMenuAction,
+	SidebarMenuBadge,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarMenuSkeleton,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
+	SidebarProvider,
+	SidebarRail,
+	SidebarSeparator,
+	SidebarTrigger,
+	useSidebar,
+} from './primitives/sidebar'
 import { Skeleton } from './primitives/skeleton'
 import { Switch } from './primitives/switch'
 import {
@@ -174,6 +200,7 @@ import {
 	TableHeader,
 	TableRow,
 } from './primitives/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './primitives/tabs'
 import { Textarea } from './primitives/textarea'
 import {
 	Toast,
@@ -366,4 +393,32 @@ export {
 	FieldSet,
 	FieldTitle,
 	PaymentSuccessButProcessingFailed,
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupAction,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarInput,
+	SidebarInset,
+	SidebarMenu,
+	SidebarMenuAction,
+	SidebarMenuBadge,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarMenuSkeleton,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
+	SidebarProvider,
+	SidebarRail,
+	SidebarSeparator,
+	SidebarTrigger,
+	useSidebar,
 }

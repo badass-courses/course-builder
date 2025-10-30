@@ -1,9 +1,11 @@
 'use server'
 
 import { Suspense } from 'react'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
-import { count, desc, inArray } from 'drizzle-orm'
+import { deletePostInTypeSense } from '@/lib/typesense-query'
+import { count, desc, eq, inArray } from 'drizzle-orm'
 
 import { AllResourcesClient } from './all-resource.client'
 
@@ -16,6 +18,20 @@ const RESOURCE_TYPES = [
 	'post',
 	'list',
 ]
+
+export async function deleteResource(resourceId: string) {
+	await db
+		.delete(contentResource)
+		.where(eq(contentResource.id, resourceId))
+		.then(() => {
+			deletePostInTypeSense(resourceId).then(() => {
+				revalidatePath('/admin/dashboard')
+			})
+		})
+		.catch((error) => {
+			console.error('Error deleting resource:', error)
+		})
+}
 
 /**
  * Loads paginated content resources with their relationships

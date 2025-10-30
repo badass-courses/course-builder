@@ -159,6 +159,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				})
 			) : (
 				<Button
+					data-sr-button="default"
 					variant="default"
 					size="lg"
 					disabled={

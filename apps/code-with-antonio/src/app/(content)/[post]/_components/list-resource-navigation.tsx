@@ -29,7 +29,7 @@ export default function ListResourceNavigation({
 		return (
 			<div
 				className={cn(
-					'bg-muted/50 scrollbar-thin top-(--nav-height) sticky flex h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 items-start justify-start overflow-y-auto border-r p-5',
+					'bg-muted ring-border scrollbar-thin sticky top-2 flex h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 items-start justify-start overflow-y-auto rounded-lg border-r p-5 ring-1',
 					className,
 					{ 'w-0': !isExpanded },
 				)}
@@ -48,7 +48,7 @@ export default function ListResourceNavigation({
 		<>
 			<aside
 				className={cn(
-					'bg-muted/50 scrollbar-thin top-(--nav-height) sticky hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 overflow-y-auto border-r xl:block',
+					'bg-muted scrollbar-thin ring-border sticky top-4 mt-4 hidden h-[calc(100vh-var(--nav-height))] w-full max-w-[320px] shrink-0 overflow-y-auto rounded-xl shadow-sm ring-1 xl:block',
 					className,
 					{
 						'w-0': !isExpanded,
@@ -79,15 +79,14 @@ export default function ListResourceNavigation({
 			>
 				{/* List header with title */}
 				{withHeader && (
-					<div className="bg-muted/50 relative flex flex-col border-b p-5">
+					<div className="bg-muted relative flex flex-col border-b p-5">
 						<Link
 							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-bold hover:underline"
 							href={`/${list.fields.slug}`}
 						>
-							<Book className="text-primary w-4" /> {list.fields.title}
+							{list.fields.title}
 						</Link>
-						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
-						<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
+						<AutoPlayToggle className="text-muted-foreground [&_button]:ring-border hover:text-foreground [&_button]:scale-80 relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:ring-1" />
 					</div>
 				)}
 				{/* Resource navigation list */}
@@ -107,7 +106,7 @@ export default function ListResourceNavigation({
 									<Link
 										aria-current={isActive ? 'page' : undefined}
 										className={cn(
-											'hover:bg-linear-to-l dark:hover:bg-linear-to-l relative flex items-start gap-2 py-2 pl-2 pr-5 font-medium transition duration-150 ease-in-out hover:from-transparent hover:to-gray-200 sm:py-3 dark:hover:bg-gray-900 dark:hover:from-transparent dark:hover:to-gray-800',
+											'relative flex items-start gap-2 py-2 pl-2 pr-5 font-medium transition duration-150 ease-in-out sm:py-3',
 											{
 												'': isCompleted,
 												'before:absolute before:left-[17px] before:top-0 before:h-full before:w-px before:bg-gray-200 before:content-[""] dark:before:bg-gray-800':
@@ -115,7 +114,7 @@ export default function ListResourceNavigation({
 												'before:bg-linear-to-b dark:before:bg-linear-to-b before:from-transparent before:via-gray-500 before:to-transparent dark:before:from-transparent dark:before:via-gray-500 dark:before:to-transparent':
 													isActive,
 												'opacity-[0.85] hover:opacity-100': !isActive,
-												'bg-gray-200 dark:bg-gray-800/75': isActive,
+												'bg-card shadow-sm': isActive,
 											},
 										)}
 										href={`/${resource.fields.slug}`}

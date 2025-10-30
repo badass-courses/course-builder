@@ -2,6 +2,8 @@
 
 import { use } from 'react'
 import Link from 'next/link'
+import { useConfirm } from '@/hooks/use-confirm'
+import { PencilIcon, TrashIcon } from 'lucide-react'
 
 import {
 	Badge,
@@ -18,6 +20,8 @@ import {
 import { Button, buttonVariants } from '@coursebuilder/ui/primitives/button'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
+
+import { deleteResource } from './all-resources.server'
 
 type ResourceData = Awaited<
 	ReturnType<
@@ -42,9 +46,25 @@ export function AllResourcesClient({
 	dataPromise: Promise<ResourceData>
 }) {
 	const { resources, currentPage, totalPages } = use(dataPromise)
+	const [ConfirmDialog, confirm] = useConfirm()
+
+	const handleDelete = async (resourceId: string, resourceTitle: string) => {
+		const confirmed = await confirm({
+			title: 'Delete Resource',
+			description: `Are you sure you want to delete "${resourceTitle}"? This action cannot be undone.`,
+			confirmText: 'Delete',
+			cancelText: 'Cancel',
+			variant: 'destructive',
+		})
+
+		if (confirmed) {
+			await deleteResource(resourceId)
+		}
+	}
 
 	return (
 		<div className="space-y-4">
+			<ConfirmDialog />
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -155,6 +175,35 @@ export function AllResourcesClient({
 									) : (
 										<span className="text-muted-foreground text-sm">—</span>
 									)}
+								</TableCell>
+								<TableCell className="flex items-center gap-1">
+									<Button variant="outline" size="icon" asChild>
+										<Link
+											href={getResourcePath(
+												resource.type,
+												resource.fields?.slug,
+												'edit',
+												{
+													parentSlug: effectiveParent?.fields?.slug,
+													parentType: effectiveParent?.type ?? '',
+												},
+											)}
+										>
+											<PencilIcon className="size-4" />
+										</Link>
+									</Button>
+									<Button
+										variant="outline"
+										size="icon"
+										onClick={() =>
+											handleDelete(
+												resource.id,
+												resource.fields?.title || 'Untitled',
+											)
+										}
+									>
+										<TrashIcon className="size-4" />
+									</Button>
 								</TableCell>
 							</TableRow>
 						)

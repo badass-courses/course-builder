@@ -180,6 +180,10 @@ import {
 	getCommunicationPreferencesSchema,
 } from './schemas/communication/communication-preferences.js'
 import {
+	getQuestionResponseRelationsSchema,
+	getQuestionResponseSchema,
+} from './schemas/communication/question-response.js'
+import {
 	getContentContributionRelationsSchema,
 	getContentContributionsSchema,
 } from './schemas/content/content-contributions.js'
@@ -315,6 +319,8 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contributionTypes: getContributionTypesSchema(mysqlTable),
 		contributionTypesRelations: getContributionTypesRelationsSchema(mysqlTable),
 		resourceProgress: getResourceProgressSchema(mysqlTable),
+		questionResponse: getQuestionResponseSchema(mysqlTable),
+		questionResponseRelations: getQuestionResponseRelationsSchema(mysqlTable),
 		upgradableProducts: getUpgradableProductsSchema(mysqlTable),
 		upgradableProductsRelations:
 			getUpgradableProductsRelationsSchema(mysqlTable),

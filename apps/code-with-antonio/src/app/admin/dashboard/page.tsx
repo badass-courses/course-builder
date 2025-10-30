@@ -114,7 +114,7 @@ export default async function AdminDashboardPage({
 						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="tutorial" />
+						<CreatePostModal defaultResourceType="list" />
 					</CardContent>
 				</Card>
 				<Card className="relative flex flex-col justify-between">

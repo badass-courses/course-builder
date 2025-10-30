@@ -1,5 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
+import LayoutClient from '@/components/layout-client'
 import { getList } from '@/lib/lists-query'
 import { getServerAuthSession } from '@/server/auth'
 import { subject } from '@casl/ability'
@@ -44,5 +45,9 @@ export default async function ListEditPage(props: {
 		redirect(`/${list?.fields?.slug}`)
 	}
 
-	return <EditListForm key={list.fields.slug} resource={list} />
+	return (
+		<LayoutClient>
+			<EditListForm key={list.fields.slug} resource={{ ...list }} />
+		</LayoutClient>
+	)
 }

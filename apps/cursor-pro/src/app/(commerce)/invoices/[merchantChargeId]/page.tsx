@@ -36,7 +36,7 @@ async function getChargeDetails(merchantChargeId: string) {
 
 	if (merchantCharge && merchantCharge.identifier) {
 		const charge = await stripe.charges.retrieve(merchantCharge.identifier, {
-			expand: ['customer'],
+			expand: ['customer', 'refunds'],
 		})
 
 		const purchase = await getPurchaseForStripeCharge(merchantCharge.identifier)
@@ -120,7 +120,8 @@ const Invoice = async (props: {
 	}
 	const created = fromUnixTime(charge.created)
 	const date = format(created, 'MMMM d, y')
-	const amount = charge.amount / 100
+	const amountRefunded = charge.amount_refunded / 100
+	const amount = (charge.amount - charge.amount_refunded) / 100
 
 	const instructorName = `${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME} ${process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}`
 	const productName = `${process.env.NEXT_PUBLIC_SITE_TITLE} by ${instructorName}`
@@ -243,7 +244,7 @@ const Invoice = async (props: {
 												{amount === null
 													? `${charge.currency.toUpperCase()} 0.00`
 													: `${charge.currency.toUpperCase()} ${formatUsd(
-															amount,
+															amount + amountRefunded,
 														)}`}
 											</td>
 										</tr>
@@ -251,15 +252,27 @@ const Invoice = async (props: {
 										<tr className="table-row">
 											<td>{product.name}</td>
 											<td>
-												{charge.currency.toUpperCase()} {formatUsd(amount)}
+												{charge.currency.toUpperCase()}{' '}
+												{formatUsd(charge.amount / 100)}
 											</td>
 											<td>1</td>
 											<td className="text-right">
 												{amount === null
 													? `${charge.currency.toUpperCase()} 0.00`
 													: `${charge.currency.toUpperCase()} ${formatUsd(
-															amount,
+															amount + amountRefunded,
 														)}`}
+											</td>
+										</tr>
+									)}
+									{amountRefunded > 0 && (
+										<tr className="table-row">
+											<td className="text-red-600">Refund</td>
+											<td></td>
+											<td></td>
+											<td className="text-right text-red-600">
+												{charge.currency.toUpperCase()} -
+												{formatUsd(amountRefunded)}
 											</td>
 										</tr>
 									)}

@@ -411,9 +411,7 @@ export async function updateList(
 		console.error('Failed to update post in Typesense', e)
 	}
 
-	revalidate && revalidateTag('lists', 'max')
-
-	return courseBuilderAdapter.updateContentResourceFields({
+	const result = await courseBuilderAdapter.updateContentResourceFields({
 		id: currentList.id,
 		fields: {
 			...currentList.fields,
@@ -421,6 +419,14 @@ export async function updateList(
 			slug: listSlug,
 		},
 	})
+
+	if (revalidate) {
+		revalidateTag('lists', 'max')
+		revalidatePath(`/lists/${listSlug}/edit`)
+		revalidatePath(`/${listSlug}`)
+	}
+
+	return result
 }
 
 export async function deleteList(id: string) {
