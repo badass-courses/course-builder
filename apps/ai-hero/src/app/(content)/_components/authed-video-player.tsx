@@ -235,18 +235,19 @@ async function handleOnVideoEnded({
 				moduleType,
 				currentResource.type as 'lesson' | 'exercise' | 'solution',
 			)
+			const nextResourceType = nextResource.resource?.type
+			const nextResourceSlug = nextResource.resource?.fields?.slug
 
-			router.push(
-				getResourcePath(
-					nextResource.resource?.type || '',
-					nextResource.resource?.fields?.slug || '',
-					'view',
-					{
-						parentType: moduleType as string,
-						parentSlug: moduleSlug as string,
-					},
-				),
-			)
+			if (nextResourceType && nextResourceSlug && moduleType && moduleSlug) {
+				router.push(
+					getResourcePath(nextResourceType, nextResourceSlug, 'view', {
+						parentType: moduleType,
+						parentSlug: moduleSlug,
+					}),
+				)
+			} else {
+				console.error('Missing required resource or module data for navigation')
+			}
 		} else if (bingeMode) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
