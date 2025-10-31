@@ -18,8 +18,55 @@ import {
 } from './content-navigation'
 
 /**
+ * Fields that should be preserved in navigation (excludes heavy content like body)
+ */
+const NAVIGATION_FIELDS = ['slug', 'title', 'visibility', 'state'] as const
+
+/**
+ * Strips heavy fields from a resource's fields object, keeping only navigation-required fields
+ */
+function stripHeavyFields(
+	fields: Record<string, any> | null | undefined,
+): Record<string, any> | null | undefined {
+	if (!fields) return fields
+
+	const stripped: Record<string, any> = {}
+	for (const key of NAVIGATION_FIELDS) {
+		if (key in fields && fields[key] !== undefined) {
+			stripped[key] = fields[key]
+		}
+	}
+
+	return Object.keys(stripped).length > 0 ? stripped : null
+}
+
+/**
+ * Recursively strips heavy fields from nested resources
+ */
+function stripHeavyFieldsFromResource(resource: any): any {
+	if (!resource) return resource
+
+	const strippedFields = stripHeavyFields(resource.fields)
+
+	const result = {
+		...resource,
+		fields: strippedFields,
+	}
+
+	if (resource.resources) {
+		result.resources = resource.resources.map((wrapper: any) => ({
+			...wrapper,
+			resource: stripHeavyFieldsFromResource(wrapper.resource),
+		}))
+	}
+
+	return result
+}
+
+/**
  * Fetches content navigation
  * Returns ContentResource with nested resources and optional parents (products)
+ * Optimized to exclude heavy fields like body content for better performance
  */
 export async function getContentNavigation(slugOrId: string) {
 	// Fetch main resource with all nested resources (3 levels deep to include solutions)
@@ -114,8 +161,28 @@ export async function getContentNavigation(slugOrId: string) {
 		...parentProductRelations,
 	]
 
+	// Strip heavy fields from main resource and nested resources
+	const strippedResource = stripHeavyFieldsFromResource(resource)
+
+	// Strip heavy fields from product resources
+	const strippedProductRelations = productRelations.map((rel) => ({
+		...rel,
+		product: rel.product
+			? {
+					...rel.product,
+					fields: stripHeavyFields(rel.product.fields),
+					resources: rel.product.resources?.map((productRel) => ({
+						...productRel,
+						resource: productRel.resource
+							? stripHeavyFieldsFromResource(productRel.resource)
+							: productRel.resource,
+					})),
+				}
+			: rel.product,
+	}))
+
 	// Validate the main resource
-	const validatedResource = ResourceNavigationSchema.safeParse(resource)
+	const validatedResource = ResourceNavigationSchema.safeParse(strippedResource)
 	if (!validatedResource.success) {
 		console.error('Failed to parse resource:', validatedResource.error)
 		return null
@@ -125,7 +192,7 @@ export async function getContentNavigation(slugOrId: string) {
 	const filteredResource = filterVideoResources(validatedResource.data)
 
 	// Extract and validate products from relations
-	const products = productRelations
+	const products = strippedProductRelations
 		.map((rel) => rel.product)
 		.filter((p): p is NonNullable<typeof p> => p !== null && p !== undefined)
 		.map((product) => productSchema.parse(product))
