@@ -29,14 +29,13 @@ export function WorkshopPricingClient({
 	const cancelUrl = product ? `${env.NEXT_PUBLIC_URL}${pathname}` : ''
 	const workshopNavigation = useWorkshopNavigation()
 	const workshops =
-		workshopNavigation?.cohorts?.[0]?.resources?.map((resource) => ({
-			title: resource.title,
-			slug: resource.slug,
-		})) ||
-		product?.resources?.map((resource) => ({
-			title: resource.resource.fields.title,
-			slug: resource.resource.fields.slug,
-		}))
+		(workshopNavigation?.parents?.[0]?.resources &&
+			workshopNavigation?.parents?.[0]?.resources.map((resource) => ({
+				title: resource.resource.fields?.title,
+				slug: resource.resource.fields?.slug,
+			}))) ||
+		[]
+
 	const { allowPurchase } = React.use(searchParams)
 
 	return product && (product.fields.state === 'published' || allowPurchase) ? (

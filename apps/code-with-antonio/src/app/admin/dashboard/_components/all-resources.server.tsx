@@ -17,6 +17,7 @@ const RESOURCE_TYPES = [
 	'workshop',
 	'post',
 	'list',
+	'solution',
 ]
 
 export async function deleteResource(resourceId: string) {
