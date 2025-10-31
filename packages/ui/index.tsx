@@ -220,6 +220,7 @@ import {
 	TooltipTrigger,
 } from './primitives/tooltip'
 import { useToast } from './primitives/use-toast'
+import { PaymentSuccessButProcessingFailed } from './src/components/payment-success-but-processing-failed'
 import { CreateWorkshopForm } from './workshop-creation/create-workshop-form'
 import { LessonVideoField } from './workshop-creation/lesson-video-field'
 
@@ -391,6 +392,7 @@ export {
 	FieldSeparator,
 	FieldSet,
 	FieldTitle,
+	PaymentSuccessButProcessingFailed,
 	Tabs,
 	TabsContent,
 	TabsList,

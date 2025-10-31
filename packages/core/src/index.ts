@@ -79,3 +79,4 @@ export interface CourseBuilderConfig {
 }
 
 export { formatPricesForProduct } from './lib/pricing/format-prices-for-product'
+export { checkForPaymentSuccessWithoutPurchase } from './lib/pricing/purchase-page-utils'
