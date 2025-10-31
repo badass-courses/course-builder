@@ -1,5 +1,6 @@
 'use server'
 
+import { flattenNavigationResources } from '@/lib/content-navigation'
 import { getCachedLesson } from '@/lib/lessons-query'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 
@@ -9,17 +10,7 @@ export async function getNextResource(
 ) {
 	const navigation = await getCachedWorkshopNavigation(moduleSlugOrId)
 
-	const flattenedNavResources =
-		navigation?.resources?.flatMap((wrapper) => {
-			const resource = wrapper.resource
-			if (resource.type === 'section') {
-				return (
-					resource.resources?.map((r: { resource: any }) => r.resource) || []
-				)
-			} else {
-				return [resource]
-			}
-		}) || []
+	const flattenedNavResources = flattenNavigationResources(navigation) || []
 
 	const navIndex =
 		flattenedNavResources?.findIndex(

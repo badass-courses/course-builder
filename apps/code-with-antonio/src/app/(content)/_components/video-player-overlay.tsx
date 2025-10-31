@@ -37,6 +37,7 @@ import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { revalidateModuleLesson } from '../actions'
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
@@ -164,6 +165,7 @@ export const CompletedLessonOverlay: React.FC<{
 			action={action}
 			resource={resource}
 			moduleType={moduleType}
+			moduleSlug={moduleSlug}
 			prevResource={prevLesson}
 		/>
 	)
@@ -173,8 +175,15 @@ export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
+	moduleSlug?: string
 	prevResource?: any
-}> = ({ action, resource, moduleType = 'tutorial', prevResource }) => {
+}> = ({
+	action,
+	resource,
+	moduleType = 'tutorial',
+	moduleSlug,
+	prevResource,
+}) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
@@ -196,15 +205,22 @@ export const CompletedModuleOverlay: React.FC<{
 		if (!resource) return
 		reward()
 		if (isCurrentLessonCompleted) return
-		startTransition(() => {
-			handleSetLessonComplete({
-				currentResource:
-					resource.type === 'solution' && prevResource
-						? prevResource
-						: resource,
+		startTransition(async () => {
+			const resourceToComplete =
+				resource.type === 'solution' && prevResource ? prevResource : resource
+			await handleSetLessonComplete({
+				currentResource: resourceToComplete,
 				moduleProgress: moduleProgress,
 				addLessonProgress: addLessonProgress,
 			})
+			if (moduleSlug && moduleType) {
+				await revalidateModuleLesson(
+					moduleSlug,
+					resourceToComplete.fields?.slug as string,
+					moduleType,
+					resourceToComplete.type as 'lesson' | 'exercise' | 'solution',
+				)
+			}
 		})
 	}, []) // Empty deps array to only run once on mount
 
@@ -313,11 +329,24 @@ const ContinueButton: React.FC<{
 						// when on solution, we want to add progress to the previous lesson (problem)
 						const resourceIdToComplete =
 							isSolution && prevResource ? prevResource.id : resource.id
+						const resourceToComplete =
+							isSolution && prevResource ? prevResource : resource
 						addLessonProgress(resourceIdToComplete)
 						await setProgressForResource({
 							resourceId: resourceIdToComplete,
 							isCompleted: true,
 						})
+						if (
+							moduleNavigation?.fields?.slug &&
+							resourceToComplete?.fields?.slug
+						) {
+							await revalidateModuleLesson(
+								moduleNavigation.fields.slug,
+								resourceToComplete.fields.slug,
+								moduleType,
+								resourceToComplete.type as 'lesson' | 'exercise' | 'solution',
+							)
+						}
 					})
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}

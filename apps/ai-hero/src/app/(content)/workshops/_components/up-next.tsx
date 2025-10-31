@@ -4,7 +4,10 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { env } from '@/env.mjs'
-import { findParentLessonForSolution } from '@/lib/content-navigation'
+import {
+	findParentLessonForSolution,
+	flattenNavigationResources,
+} from '@/lib/content-navigation'
 import { setProgressForResource } from '@/lib/progress'
 import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import { ArrowRight } from 'lucide-react'
@@ -81,15 +84,8 @@ export default function UpNext({
 	const lessonHasSolution = (lessonId: string) => {
 		if (!navigation?.resources) return false
 
-		// Flatten all resources to find the lesson
-		const flatResources = navigation.resources.flatMap((wrapper) => {
-			const resource = wrapper.resource
-			if (resource.type === 'section' && resource.resources) {
-				return resource.resources.map((r: { resource: any }) => r.resource)
-			}
-			return [resource]
-		})
-
+		// Use flattenNavigationResources to get all resources, then find the lesson
+		const flatResources = flattenNavigationResources(navigation)
 		const lesson = flatResources.find(
 			(r) => r.id === lessonId && r.type === 'lesson',
 		)
@@ -97,9 +93,7 @@ export default function UpNext({
 			lesson?.type === 'lesson' &&
 			lesson.resources &&
 			lesson.resources.length > 0 &&
-			lesson.resources.some(
-				(wrapper: { resource: any }) => wrapper.resource.type === 'solution',
-			)
+			lesson.resources.some((wrapper) => wrapper.resource?.type === 'solution')
 		)
 	}
 
@@ -128,15 +122,8 @@ export default function UpNext({
 			}
 		}
 
-		// Flatten all resources to find the current resource
-		const flatResources = navigation.resources.flatMap((wrapper) => {
-			const resource = wrapper.resource
-			if (resource.type === 'section' && resource.resources) {
-				return resource.resources.map((r: { resource: any }) => r.resource)
-			}
-			return [resource]
-		})
-
+		// Use flattenNavigationResources to find the current resource
+		const flatResources = flattenNavigationResources(navigation)
 		const currentResource = flatResources.find(
 			(r) => r.id === currentResourceId,
 		)

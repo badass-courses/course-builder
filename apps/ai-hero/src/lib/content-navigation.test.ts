@@ -593,15 +593,16 @@ describe('content-navigation', () => {
 			])
 
 			const flattened = flattenNavigationResources(navigation)
-			// flattenNavigationResources only recurses into sections, not lessons
-			// so solutions are not included in the flattened output
-			expect(flattened).toHaveLength(1)
+			// flattenNavigationResources now includes solutions nested within lessons
+			expect(flattened).toHaveLength(2)
 			expect(flattened[0]?.id).toBe('lesson-1')
+			expect(flattened[1]?.id).toBe('solution-1')
+			expect(flattened[1]?.type).toBe('solution')
 		})
 
-		it('does not recurse into lesson resources (solutions)', () => {
-			// Verify that flattenNavigationResources doesn't recurse into lessons
-			// by checking it only returns lessons, not their nested solutions
+		it('includes solutions when recursing into lesson resources', () => {
+			// Verify that flattenNavigationResources now includes solutions
+			// nested within lessons
 			const lesson = createResource({
 				id: 'lesson-1',
 				type: 'lesson',
@@ -618,10 +619,12 @@ describe('content-navigation', () => {
 			])
 
 			const flattened = flattenNavigationResources(navigation)
-			// Should only include the lesson, not the solution nested within it
-			expect(flattened).toHaveLength(1)
+			// Should include both the lesson and its nested solution
+			expect(flattened).toHaveLength(2)
 			expect(flattened[0]?.id).toBe('lesson-1')
 			expect(flattened[0]?.type).toBe('lesson')
+			expect(flattened[1]?.id).toBe('solution-1')
+			expect(flattened[1]?.type).toBe('solution')
 		})
 
 		it('handles mixed structures (sections and top-level lessons)', () => {

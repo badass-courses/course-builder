@@ -32,6 +32,7 @@ export const ResourceNavigationSchema = ContentResourceSchema.extend({
 export type ResourceNavigation = z.infer<typeof ResourceNavigationSchema>
 export type Level1ResourceWrapper = z.infer<typeof Level1ResourceWrapperSchema>
 export type Level2ResourceWrapper = z.infer<typeof Level2ResourceWrapperSchema>
+export type Level3ResourceWrapper = z.infer<typeof Level3ResourceWrapperSchema>
 
 /**
  * Helper function to find a section ID for a given resource slug
@@ -67,6 +68,11 @@ const resolveFirstSlug = (resource: ContentResource): string | null => {
 		return null
 	}
 
+	// Skip video resources
+	if (resource.type === 'videoResource') {
+		return null
+	}
+
 	return resource.fields?.slug || null
 }
 
@@ -87,6 +93,47 @@ export function getFirstResourceSlug(
 	return null
 }
 
+const collectResources = (
+	wrapper:
+		| Level1ResourceWrapper
+		| Level2ResourceWrapper
+		| Level3ResourceWrapper,
+	accumulator: ContentResource[],
+) => {
+	const resource = wrapper.resource
+
+	// Skip sections - only recurse into their children
+	if (resource.type === 'section' && resource.resources) {
+		// Recurse into sections to collect their children (lessons - Level2ResourceWrapper)
+		const level2Wrappers = z
+			.array(Level2ResourceWrapperSchema)
+			.parse(resource.resources)
+		for (const childWrapper of level2Wrappers) {
+			collectResources(childWrapper, accumulator)
+		}
+		return
+	}
+
+	// Filter out video resources
+	if (resource.type === 'videoResource') {
+		return
+	}
+
+	// Parse and add the resource itself (lessons, solutions, etc.)
+	const parsedResource = ContentResourceSchema.parse(resource)
+	accumulator.push(parsedResource)
+
+	// If this is a lesson with nested resources (solutions - Level3ResourceWrapper), include them
+	if (resource.type === 'lesson' && resource.resources) {
+		const level3Wrappers = z
+			.array(Level3ResourceWrapperSchema)
+			.parse(resource.resources)
+		for (const childWrapper of level3Wrappers) {
+			collectResources(childWrapper, accumulator)
+		}
+	}
+}
+
 /**
  * Helper function to flatten all resources (useful for iteration)
  */
@@ -97,16 +144,8 @@ export function flattenNavigationResources(
 
 	const flattened: ContentResource[] = []
 
-	for (const { resource } of navigation.resources) {
-		if (resource.type === 'section' && resource.resources) {
-			flattened.push(
-				...resource.resources.map((r) =>
-					ContentResourceSchema.parse(r.resource),
-				),
-			)
-		} else {
-			flattened.push(ContentResourceSchema.parse(resource))
-		}
+	for (const level1Wrapper of navigation.resources) {
+		collectResources(level1Wrapper, flattened)
 	}
 
 	return flattened
