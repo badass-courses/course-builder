@@ -4,7 +4,7 @@ import type {
 	ResourceNavigation,
 } from '@/lib/content-navigation'
 
-import type { ContentResourceResource } from '@coursebuilder/core/schemas'
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 /**
  * Flattens all navigation resources, including nested solutions,
@@ -14,8 +14,8 @@ export function getAdjacentWorkshopResources(
 	navigation: ResourceNavigation | null,
 	currentResourceId: string,
 ): {
-	nextResource: ContentResourceResource | null
-	prevResource: ContentResourceResource | null
+	nextResource: ContentResource | null
+	prevResource: ContentResource | null
 	isSolutionNext: boolean
 } {
 	const defaultReturn = {
@@ -28,7 +28,7 @@ export function getAdjacentWorkshopResources(
 	}
 
 	// Create a fully flattened array of all resources, including lessons' solutions
-	const flattenedNavResources: ContentResourceResource[] = []
+	const flattenedNavResources: ContentResource[] = []
 
 	// Helper function to process a resource and its solutions
 	const processResource = (
@@ -36,8 +36,10 @@ export function getAdjacentWorkshopResources(
 	) => {
 		const resource = wrapper.resource
 
-		// Add the wrapper itself
-		flattenedNavResources.push(wrapper)
+		// Add the actual resource (not the wrapper)
+		// Type assertion needed because wrapper.resource has nested wrapper types
+		// but at runtime it's compatible with ContentResource
+		flattenedNavResources.push(resource as ContentResource)
 
 		// Add solutions if this is a lesson with solutions
 		if (
@@ -50,8 +52,8 @@ export function getAdjacentWorkshopResources(
 				(r) => r.resource?.type === 'solution',
 			)
 
-			if (solutionWrapper) {
-				flattenedNavResources.push(solutionWrapper)
+			if (solutionWrapper?.resource) {
+				flattenedNavResources.push(solutionWrapper.resource as ContentResource)
 			}
 		}
 	}
@@ -71,7 +73,7 @@ export function getAdjacentWorkshopResources(
 
 	// Find the index of the current resource
 	const navIndex = flattenedNavResources.findIndex(
-		(wrapper) => wrapper.resourceId === currentResourceId,
+		(resource) => resource.id === currentResourceId,
 	)
 
 	if (navIndex === -1) {
@@ -85,6 +87,6 @@ export function getAdjacentWorkshopResources(
 	return {
 		nextResource,
 		prevResource,
-		isSolutionNext: nextResource?.resource?.type === 'solution',
+		isSolutionNext: nextResource?.type === 'solution',
 	}
 }

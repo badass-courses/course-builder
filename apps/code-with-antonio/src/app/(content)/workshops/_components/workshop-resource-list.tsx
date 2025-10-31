@@ -116,6 +116,11 @@ export function WorkshopResourceList(props: Props) {
 		workshopNavigation?.parents?.[0]?.type === 'cohort' &&
 		workshopNavigation?.parents?.[0]
 
+	const cohortResource =
+		cohortProduct && cohortProduct?.resources?.[0]?.resource
+	const cohortSlug = cohortResource?.fields?.slug
+	const cohortTitle = cohortResource?.fields?.title
+
 	return (
 		<nav
 			onClick={() => {
@@ -194,15 +199,11 @@ export function WorkshopResourceList(props: Props) {
 									<div className="flex items-center gap-0.5">
 										<Link
 											href={
-												cohortProduct
-													? `/cohorts/${cohortProduct.resources?.[0]?.resource.fields?.slug}`
-													: '/workshops'
+												cohortSlug ? `/cohorts/${cohortSlug}` : '/workshops'
 											}
 											className="text-foreground text-base font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
 										>
-											{cohortProduct
-												? cohortProduct.resources?.[0]?.resource.fields?.title
-												: 'Workshops'}
+											{cohortTitle ?? 'Workshops'}
 										</Link>
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>

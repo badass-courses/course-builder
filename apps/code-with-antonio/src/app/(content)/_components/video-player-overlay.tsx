@@ -72,6 +72,7 @@ export const CompletedLessonOverlay: React.FC<{
 
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const { moduleProgress } = useModuleProgress()
+	const { data: session } = useSession()
 
 	const percentCompleted = moduleProgress?.percentCompleted || 0
 
@@ -87,23 +88,33 @@ export const CompletedLessonOverlay: React.FC<{
 						: 'Up Next:'}
 				</p>
 				<p className="font-heading text-xl font-bold sm:text-2xl">
-					{nextLesson?.resource?.type === 'solution'
-						? getAdjacentWorkshopResources(
-								workshopNavigation,
-								nextLesson.resourceId,
-							)?.prevResource?.resource?.fields?.title || 'Next Resource'
-						: nextLesson?.resource?.fields?.title || 'Next Resource'}
+					{nextLesson?.type === 'solution'
+						? getAdjacentWorkshopResources(workshopNavigation, nextLesson.id)
+								?.prevResource?.fields?.title || 'Next Resource'
+						: nextLesson?.fields?.title || 'Next Resource'}
 				</p>
-				<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
-					<Progress
-						value={percentCompleted}
-						className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
-					/>
-					<div className="opacity-85">
-						{moduleProgress?.completedLessonsCount || 0}/
-						{moduleProgress?.totalLessonsCount || 0} completed
+				{session?.user ? (
+					<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
+						<Progress
+							value={percentCompleted}
+							className="bg-foreground/20 h-1 w-[150px] sm:w-[200px]"
+						/>
+						<div className="opacity-85">
+							{moduleProgress?.completedLessonsCount || 0}/
+							{moduleProgress?.totalLessonsCount || 0} completed
+						</div>
 					</div>
-				</div>
+				) : (
+					<div className="mt-3 text-sm sm:mt-8">
+						<Link
+							href="/login"
+							className="dark:text-primary text-blue-600 hover:underline"
+						>
+							Log in
+						</Link>{' '}
+						to track your progress.
+					</div>
+				)}
 			</div>
 			<div className="flex w-full items-center justify-center gap-3">
 				<Button
@@ -131,7 +142,7 @@ export const CompletedLessonOverlay: React.FC<{
 						moduleType={moduleType}
 						resource={resource}
 						nextResource={nextLesson}
-						prevResource={prevLesson?.resource}
+						prevResource={prevLesson}
 					/>
 				)}
 			</div>
@@ -260,10 +271,16 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: ContentResourceResource
-	prevResource?: ContentResourceResource
+	nextResource?: ContentResource
+	prevResource?: ContentResource | null
 	className?: string
-}> = ({ resource, nextResource, prevResource, moduleType, className }) => {
+}> = ({
+	resource,
+	nextResource,
+	prevResource = null,
+	moduleType,
+	className,
+}) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const pathname = usePathname()
@@ -282,11 +299,12 @@ const ContinueButton: React.FC<{
 	const isSolution = pathname.endsWith('/solution')
 
 	const [isPending, startTransition] = React.useTransition()
+	const { data: session } = useSession()
 
 	return (
 		<Button
 			className={cn(
-				'dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground bg-white text-black hover:bg-white/80',
+				'dark:bg-primary dark:hover:bg-primary/90 dark:text-primary-foreground cursor-pointer bg-white text-black hover:bg-white/80',
 				className,
 			)}
 			onClick={async () => {
@@ -294,7 +312,7 @@ const ContinueButton: React.FC<{
 					startTransition(async () => {
 						// when on solution, we want to add progress to the previous lesson (problem)
 						const resourceIdToComplete =
-							isSolution && prevResource ? prevResource.resourceId : resource.id
+							isSolution && prevResource ? prevResource.id : resource.id
 						addLessonProgress(resourceIdToComplete)
 						await setProgressForResource({
 							resourceId: resourceIdToComplete,
@@ -304,20 +322,20 @@ const ContinueButton: React.FC<{
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
 				if (nextResource && moduleNavigation) {
-					if (nextResource.resource?.type === 'solution') {
+					if (nextResource.type === 'solution') {
 						return router.push(
 							`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${resource?.fields?.slug}/solution`,
 						)
 					}
 					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${nextResource?.resource?.fields?.slug}`,
+						`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${nextResource?.fields?.slug}`,
 					)
 				}
 			}}
 			type="submit"
 			disabled={isPending}
 		>
-			{isCurrentLessonCompleted && !isPending
+			{(isCurrentLessonCompleted && !isPending) || !session?.user
 				? 'Continue'
 				: isProblemLesson
 					? 'Continue'

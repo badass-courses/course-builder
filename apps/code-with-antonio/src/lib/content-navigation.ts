@@ -54,7 +54,20 @@ export function findSectionIdForResourceSlug(
 			return null // Top-level resource
 		}
 	}
-	return navigation.resources[0]?.resource.id || null
+	return null
+}
+
+const resolveFirstSlug = (resource: ContentResource): string | null => {
+	if (resource.type === 'section' && resource.resources) {
+		for (const child of resource.resources) {
+			const slug = resolveFirstSlug(child.resource)
+			if (slug) return slug
+		}
+
+		return null
+	}
+
+	return resource.fields?.slug || null
 }
 
 /**
@@ -65,15 +78,13 @@ export function getFirstResourceSlug(
 ): string | null {
 	if (!navigation?.resources) return null
 
-	const firstResourceWrapper = navigation.resources[0]
-	if (!firstResourceWrapper) return null
-
-	const firstResource = firstResourceWrapper.resource
-	if (firstResource.type === 'section' && firstResource.resources) {
-		return firstResource.resources[0]?.resource.fields?.slug || null
+	for (const resourceWrapper of navigation.resources ?? []) {
+		const resource = ContentResourceSchema.parse(resourceWrapper.resource)
+		const slug = resolveFirstSlug(resource)
+		if (slug) return slug
 	}
 
-	return firstResource.fields?.slug || null
+	return null
 }
 
 /**
@@ -84,15 +95,63 @@ export function flattenNavigationResources(
 ) {
 	if (!navigation?.resources) return []
 
-	const flattened = []
+	const flattened: ContentResource[] = []
 
 	for (const { resource } of navigation.resources) {
 		if (resource.type === 'section' && resource.resources) {
-			flattened.push(...resource.resources.map((r) => r.resource))
+			flattened.push(
+				...resource.resources.map((r) =>
+					ContentResourceSchema.parse(r.resource),
+				),
+			)
 		} else {
-			flattened.push(resource)
+			flattened.push(ContentResourceSchema.parse(resource))
 		}
 	}
 
 	return flattened
+}
+
+/**
+ * Helper function to find the parent lesson for a solution resource
+ */
+export function findParentLessonForSolution(
+	navigation: ResourceNavigation | null,
+	solutionResourceId: string,
+): ContentResource | null {
+	if (!navigation?.resources) return null
+
+	// Iterate through sections to find lessons
+	for (const level1Wrapper of navigation.resources) {
+		const level1Resource = level1Wrapper.resource
+
+		// If it's a section, iterate through its resources (lessons)
+		if (level1Resource.type === 'section' && level1Resource.resources) {
+			for (const level2Wrapper of level1Resource.resources) {
+				const level2Resource = level2Wrapper.resource
+				// Check if this lesson contains the solution
+				if (level2Resource.type === 'lesson' && level2Resource.resources) {
+					const solutionResource = level2Resource.resources.find(
+						(level3Wrapper) =>
+							level3Wrapper.resource.id === solutionResourceId &&
+							level3Wrapper.resource.type === 'solution',
+					)
+					if (solutionResource) {
+						return ContentResourceSchema.parse(level2Resource)
+					}
+				}
+			}
+		} else if (level1Resource.type === 'lesson' && level1Resource.resources) {
+			// Top-level lesson (no section)
+			const solutionResource = level1Resource.resources.find(
+				(level2Wrapper) =>
+					level2Wrapper.resource.id === solutionResourceId &&
+					level2Wrapper.resource.type === 'solution',
+			)
+			if (solutionResource) {
+				return ContentResourceSchema.parse(level1Resource)
+			}
+		}
+	}
+	return null
 }

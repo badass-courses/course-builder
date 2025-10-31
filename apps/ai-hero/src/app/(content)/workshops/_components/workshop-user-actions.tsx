@@ -128,7 +128,11 @@ export function GetAccessButton({
 }) {
 	const { canViewWorkshop: canView } = React.use(abilityLoader)
 	const workshopNavigation = useWorkshopNavigation()
-	const cohort = workshopNavigation?.parents?.[0]
+
+	const cohort =
+		workshopNavigation?.parents?.[0]?.type === 'cohort' &&
+		workshopNavigation?.parents?.[0]
+
 	if (canView || !cohort) return null
 
 	return (
