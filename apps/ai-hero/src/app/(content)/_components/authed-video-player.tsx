@@ -8,12 +8,13 @@ import {
 	handleTextTrackChange,
 	setPreferredTextTrack,
 } from '@/hooks/use-mux-player-prefs'
+import {
+	findParentLessonForSolution,
+	type ResourceNavigation,
+} from '@/lib/content-navigation'
 import { setProgressForResource } from '@/lib/progress'
 import { track } from '@/utils/analytics'
-import {
-	getAdjacentWorkshopResources,
-	type AdjacentResource,
-} from '@/utils/get-adjacent-workshop-resources'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import MuxPlayer, {
 	type MuxPlayerProps,
@@ -22,6 +23,7 @@ import MuxPlayer, {
 
 import type {
 	ContentResource,
+	ContentResourceResource,
 	ModuleProgress,
 } from '@coursebuilder/core/schemas'
 import {
@@ -145,6 +147,7 @@ export function AuthedVideoPlayer({
 					router,
 					moduleProgress,
 					addLessonProgress,
+					navigation,
 				})
 			})
 		},
@@ -184,6 +187,7 @@ async function handleOnVideoEnded({
 	currentResource,
 	canView,
 	router,
+	navigation,
 }: {
 	canView?: boolean
 	resource: ContentResource
@@ -197,11 +201,12 @@ async function handleOnVideoEnded({
 	bingeMode: boolean
 	moduleSlug?: string
 	moduleType?: 'tutorial' | 'workshop'
-	nextResource?: AdjacentResource | null
-	prevResource?: AdjacentResource | null
+	nextResource?: ContentResource | null
+	prevResource?: ContentResource | null
 	router: ReturnType<typeof useRouter>
 	moduleProgress: ModuleProgress | null
 	addLessonProgress: (lessonId: string) => void
+	navigation: ResourceNavigation | null
 }) {
 	await track('completed: video', {
 		resourceSlug: resource?.fields?.slug,
@@ -237,13 +242,24 @@ async function handleOnVideoEnded({
 				moduleType,
 				currentResource.type as 'lesson' | 'exercise' | 'solution',
 			)
+			const nextResourceType = nextResource.type
+			// For solution resources, use the parent lesson's slug instead of the solution's slug
+			const nextResourceSlug =
+				nextResourceType === 'solution' && navigation
+					? findParentLessonForSolution(navigation, nextResource.id)?.fields
+							?.slug || nextResource.fields?.slug
+					: nextResource.fields?.slug
 
-			router.push(
-				getResourcePath(nextResource.type, nextResource.slug, 'view', {
-					parentType: moduleType as string,
-					parentSlug: moduleSlug as string,
-				}),
-			)
+			if (nextResourceType && nextResourceSlug && moduleType && moduleSlug) {
+				router.push(
+					getResourcePath(nextResourceType, nextResourceSlug, 'view', {
+						parentType: moduleType,
+						parentSlug: moduleSlug,
+					}),
+				)
+			} else {
+				console.error('Missing required resource or module data for navigation')
+			}
 		} else if (bingeMode) {
 			if (nextResource) {
 				dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -262,9 +278,17 @@ async function handleOnVideoEnded({
 			)
 
 			if (nextResource) {
+				// For solution resources, use the parent lesson's slug instead of the solution's slug
+				const nextResourceSlug =
+					nextResource.type === 'solution' && navigation
+						? findParentLessonForSolution(navigation, nextResource.id)?.fields
+								?.slug ||
+							nextResource.fields?.slug ||
+							''
+						: nextResource.fields?.slug || ''
 				// setTimeout(() => {
 				router.push(
-					getResourcePath(nextResource.type, nextResource.slug, 'view', {
+					getResourcePath(nextResource.type || '', nextResourceSlug, 'view', {
 						parentType: moduleType as string,
 						parentSlug: moduleSlug as string,
 					}),

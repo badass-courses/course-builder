@@ -32,7 +32,6 @@ import { Construction, Share2 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Course } from 'schema-dts'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
 	Button,
 	Dialog,

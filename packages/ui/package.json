@@ -21,7 +21,7 @@
 		"@hookform/resolvers": "^3.3.2",
 		"@internationalized/date": "3.7.0",
 		"@lezer/highlight": "^1.2.1",
-		"@mux/mux-player-react": "^3.7.0",
+		"@mux/mux-player-react": "^3.8.0",
 		"@radix-ui/react-accordion": "^1.2.1",
 		"@radix-ui/react-alert-dialog": "^1.1.2",
 		"@radix-ui/react-checkbox": "^1.1.2",

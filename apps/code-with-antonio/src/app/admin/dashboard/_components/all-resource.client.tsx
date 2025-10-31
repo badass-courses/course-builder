@@ -81,13 +81,19 @@ export function AllResourcesClient({
 						const parents = []
 						const immediateParent = resource.resourceOf?.[0]?.resourceOf
 						const grandParent = immediateParent?.resourceOf?.[0]?.resourceOf
+						const greatGrandParent = grandParent?.resourceOf?.[0]?.resourceOf
 
-						// Add grandparent (workshop/list) first if exists
+						// Add great-grandparent if exists
+						if (greatGrandParent?.fields?.title) {
+							parents.push(greatGrandParent.fields.title)
+						}
+
+						// Add grandparent (workshop/list) if exists
 						if (grandParent?.fields?.title) {
 							parents.push(grandParent.fields.title)
 						}
 
-						// Add immediate parent (section) if exists
+						// Add immediate parent (section/lesson) if exists
 						if (immediateParent?.fields?.title) {
 							parents.push(immediateParent.fields.title)
 						}
@@ -107,20 +113,52 @@ export function AllResourcesClient({
 							?.map((rp: any) => rp.product?.name)
 							.filter(Boolean)
 
+						// Get products from great-grandparent resource
+						const greatGrandParentProducts = greatGrandParent?.resourceProducts
+							?.map((rp: any) => rp.product?.name)
+							.filter(Boolean)
+
 						// Combine all products (removing duplicates)
 						const allProducts = Array.from(
 							new Set([
 								...(resourceProducts || []),
 								...(parentProducts || []),
 								...(grandParentProducts || []),
+								...(greatGrandParentProducts || []),
 							]),
 						)
 
-						// If immediate parent is a section, use grandparent for path
-						const effectiveParent =
-							immediateParent?.type === 'section'
-								? grandParent
-								: immediateParent
+						// Determine effective parent based on resource type and hierarchy
+						let effectiveParent = immediateParent
+						let resourceSlugForPath = resource.fields?.slug
+
+						// For solutions, we need the workshop/list parent and lesson slug
+						if (resource.type === 'solution') {
+							// Navigate up to find the parent lesson and workshop
+							if (
+								immediateParent?.type === 'lesson' ||
+								immediateParent?.type === 'exercise'
+							) {
+								// Solutions use their parent lesson's slug in the URL
+								resourceSlugForPath = immediateParent.fields?.slug
+
+								// Lesson/exercise parent - check if its parent is section or workshop
+								if (grandParent?.type === 'section') {
+									// Section -> need to go up one more to workshop
+									effectiveParent = greatGrandParent
+								} else if (
+									grandParent?.type === 'workshop' ||
+									grandParent?.type === 'list' ||
+									grandParent?.type === 'tutorial'
+								) {
+									// Direct workshop/list parent
+									effectiveParent = grandParent
+								}
+							}
+						} else if (immediateParent?.type === 'section') {
+							// For other resources, if immediate parent is section, use grandparent
+							effectiveParent = grandParent
+						}
 
 						return (
 							<TableRow key={resource.id}>
@@ -129,7 +167,7 @@ export function AllResourcesClient({
 										className="hover:underline"
 										href={getResourcePath(
 											resource.type,
-											resource.fields?.slug,
+											resourceSlugForPath,
 											'view',
 											{
 												parentSlug: effectiveParent?.fields?.slug,
@@ -181,7 +219,7 @@ export function AllResourcesClient({
 										<Link
 											href={getResourcePath(
 												resource.type,
-												resource.fields?.slug,
+												resourceSlugForPath,
 												'edit',
 												{
 													parentSlug: effectiveParent?.fields?.slug,

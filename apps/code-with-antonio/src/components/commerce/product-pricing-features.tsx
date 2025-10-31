@@ -1,5 +1,4 @@
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
-import type { WorkshopNavigation } from '@/lib/workshops'
 import {
 	BadgeCheck,
 	Check,

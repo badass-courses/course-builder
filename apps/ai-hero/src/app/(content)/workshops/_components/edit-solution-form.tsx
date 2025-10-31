@@ -256,7 +256,7 @@ export function EditSolutionForm({
 			},
 			getResourcePath: () => `/workshops/${moduleId}/${lessonSlug}`,
 			updateResource: async (updatedSolution: Partial<SolutionFormData>) => {
-				if (!solution?.id) {
+				if (!updatedSolution.id) {
 					// Create new solution
 					const result = await createSolution({
 						lessonId,

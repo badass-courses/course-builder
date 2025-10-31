@@ -118,7 +118,7 @@ export default async function PostPage(props: {
 											className="h-11 text-base"
 										>
 											<Link href={post.fields?.github} target="_blank">
-												<Github className="text-muted-foreground mr-2 h-4 w-4" />
+												<Github className="text-muted-foreground size-4" />
 												Source Code
 											</Link>
 										</Button>

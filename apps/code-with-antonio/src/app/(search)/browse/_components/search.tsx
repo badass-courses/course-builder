@@ -1,12 +1,13 @@
 'use client'
 
+import React from 'react'
 import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
 import { useQueryState } from 'nuqs'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
-import { Configure } from 'react-instantsearch'
+import { Configure, useInstantSearch } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import { InfiniteHits } from './infinite-hits'
@@ -37,6 +38,36 @@ function SearchWithErrorBoundary() {
 }
 
 export default SearchWithErrorBoundary
+
+/**
+ * Inner search content that triggers refresh on mount to handle client-side navigation
+ */
+function SearchContent() {
+	const { refresh } = useInstantSearch()
+
+	React.useEffect(() => {
+		refresh()
+	}, [refresh])
+
+	return (
+		<>
+			<Configure
+				filters={'visibility:public && state:published'}
+				hitsPerPage={40}
+			/>
+			<div className="grid min-h-[calc(100svh-77px)] grid-cols-12 gap-10 py-10">
+				<aside className="col-span-3">
+					<BrowseBy />
+				</aside>
+
+				<div className="col-span-9 flex flex-col gap-4">
+					<SearchBox />
+					<InfiniteHits />
+				</div>
+			</div>
+		</>
+	)
+}
 
 /**
  * Main search component with URL state synchronization via nuqs.
@@ -84,20 +115,7 @@ function Search() {
 				preserveSharedStateOnUnmount: true,
 			}}
 		>
-			<Configure
-				filters={'visibility:public && state:published'}
-				hitsPerPage={40}
-			/>
-			<div className="grid min-h-[calc(100svh-77px)] grid-cols-12 gap-10 py-10">
-				<aside className="col-span-3">
-					<BrowseBy />
-				</aside>
-
-				<div className="col-span-9 flex flex-col gap-4">
-					<SearchBox />
-					<InfiniteHits />
-				</div>
-			</div>
+			<SearchContent />
 		</InstantSearchNext>
 	)
 }

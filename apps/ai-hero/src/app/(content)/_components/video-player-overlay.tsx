@@ -12,10 +12,7 @@ import { setProgressForResource } from '@/lib/progress'
 import { MinimalWorkshop } from '@/lib/workshops'
 import type { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
-import {
-	getAdjacentWorkshopResources,
-	type AdjacentResource,
-} from '@/utils/get-adjacent-workshop-resources'
+import { getAdjacentWorkshopResources } from '@/utils/get-adjacent-workshop-resources'
 import type { AbilityForResource } from '@/utils/get-current-ability-rules'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import type { QueryStatus } from '@tanstack/react-query'
@@ -29,6 +26,7 @@ import InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { buildStripeCheckoutPath } from '@coursebuilder/core/pricing/build-stripe-checkout-path'
 import type {
 	ContentResource,
+	ContentResourceResource,
 	Product,
 	Purchase,
 } from '@coursebuilder/core/schemas'
@@ -39,6 +37,7 @@ import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-
 import type { CompletedAction } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { revalidateModuleLesson } from '../actions'
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { VideoOverlayWorkshopPricing } from '../workshops/_components/video-overlay-pricing-widget'
 import type { WorkshopPageProps } from '../workshops/_components/workshop-page-props'
@@ -90,7 +89,10 @@ export const CompletedLessonOverlay: React.FC<{
 						: 'Up Next:'}
 				</p>
 				<p className="font-heading text-xl font-bold sm:text-2xl">
-					{nextLesson?.title}
+					{nextLesson?.type === 'solution'
+						? getAdjacentWorkshopResources(workshopNavigation, nextLesson.id)
+								?.prevResource?.fields?.title || 'Next Resource'
+						: nextLesson?.fields?.title || 'Next Resource'}
 				</p>
 				{session?.user ? (
 					<div className="mt-3 flex items-center gap-3 text-sm sm:mt-8">
@@ -163,6 +165,7 @@ export const CompletedLessonOverlay: React.FC<{
 			action={action}
 			resource={resource}
 			moduleType={moduleType}
+			moduleSlug={moduleSlug}
 			prevResource={prevLesson}
 		/>
 	)
@@ -172,8 +175,15 @@ export const CompletedModuleOverlay: React.FC<{
 	action: CompletedAction
 	resource: ContentResource | null
 	moduleType?: 'workshop' | 'tutorial'
+	moduleSlug?: string
 	prevResource?: any
-}> = ({ action, resource, moduleType = 'tutorial', prevResource }) => {
+}> = ({
+	action,
+	resource,
+	moduleType = 'tutorial',
+	moduleSlug,
+	prevResource,
+}) => {
 	const { playerRef } = action
 	const session = useSession()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
@@ -195,25 +205,33 @@ export const CompletedModuleOverlay: React.FC<{
 		if (!resource) return
 		reward()
 		if (isCurrentLessonCompleted) return
-		startTransition(() => {
-			handleSetLessonComplete({
-				currentResource:
-					resource.type === 'solution' && prevResource
-						? prevResource
-						: resource,
+		startTransition(async () => {
+			const resourceToComplete =
+				resource.type === 'solution' && prevResource ? prevResource : resource
+			await handleSetLessonComplete({
+				currentResource: resourceToComplete,
 				moduleProgress: moduleProgress,
 				addLessonProgress: addLessonProgress,
 			})
+			if (moduleSlug && moduleType) {
+				await revalidateModuleLesson(
+					moduleSlug,
+					resourceToComplete.fields?.slug as string,
+					moduleType,
+					resourceToComplete.type as 'lesson' | 'exercise' | 'solution',
+				)
+			}
 		})
 	}, []) // Empty deps array to only run once on mount
 
-	const cohort = moduleNavigation?.cohorts?.[0]
+	const cohort = moduleNavigation?.parents?.[0]
 
 	const currentWorkshopIndexInCohort =
 		cohort?.resources?.findIndex(
-			(workshop) => workshop.id === moduleNavigation?.id,
+			(workshop) => workshop.resource.id === moduleNavigation?.id,
 		) || 0
-	const nextWorkshop = cohort?.resources[currentWorkshopIndexInCohort + 1]
+	const nextWorkshop =
+		cohort?.resources?.[currentWorkshopIndexInCohort + 1]?.resource
 
 	return (
 		<div
@@ -222,7 +240,8 @@ export const CompletedModuleOverlay: React.FC<{
 		>
 			<p className="font-heading text-center text-xl font-bold">Great job!</p>
 			<p className="text-center text-sm sm:text-base">
-				You&apos;ve completed the "{moduleNavigation?.title}" {moduleType}.
+				You&apos;ve completed the "{moduleNavigation?.fields?.title}"{' '}
+				{moduleType}.
 			</p>
 			<span id="rewardId" />
 			<div className="flex w-full items-center justify-center gap-3">
@@ -240,10 +259,10 @@ export const CompletedModuleOverlay: React.FC<{
 				</Button>
 				{nextWorkshop && (
 					<Button asChild variant="default">
-						<Link href={`/workshops/${nextWorkshop?.slug}`}>
+						<Link href={`/workshops/${nextWorkshop?.fields?.slug}`}>
 							Continue{' '}
 							<span className="hidden pl-1 sm:inline">
-								to {nextWorkshop?.title}
+								to {nextWorkshop?.fields?.title}
 							</span>
 						</Link>
 					</Button>
@@ -268,10 +287,16 @@ export const CompletedModuleOverlay: React.FC<{
 const ContinueButton: React.FC<{
 	resource: ContentResource
 	moduleType: 'workshop' | 'tutorial'
-	nextResource?: AdjacentResource
-	prevResource?: AdjacentResource
+	nextResource?: ContentResource
+	prevResource?: ContentResource | null
 	className?: string
-}> = ({ resource, nextResource, prevResource, moduleType, className }) => {
+}> = ({
+	resource,
+	nextResource,
+	prevResource = null,
+	moduleType,
+	className,
+}) => {
 	const router = useRouter()
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const pathname = usePathname()
@@ -299,25 +324,40 @@ const ContinueButton: React.FC<{
 				className,
 			)}
 			onClick={async () => {
-				if (!isCurrentLessonCompleted && !isProblemLesson && prevResource) {
+				if (!isCurrentLessonCompleted && !isProblemLesson) {
 					startTransition(async () => {
 						// when on solution, we want to add progress to the previous lesson (problem)
-						addLessonProgress(isSolution ? prevResource?.id : resource.id)
+						const resourceIdToComplete =
+							isSolution && prevResource ? prevResource.id : resource.id
+						const resourceToComplete =
+							isSolution && prevResource ? prevResource : resource
+						addLessonProgress(resourceIdToComplete)
 						await setProgressForResource({
-							resourceId: isSolution ? prevResource?.id : resource.id,
+							resourceId: resourceIdToComplete,
 							isCompleted: true,
 						})
+						if (
+							moduleNavigation?.fields?.slug &&
+							resourceToComplete?.fields?.slug
+						) {
+							await revalidateModuleLesson(
+								moduleNavigation.fields.slug,
+								resourceToComplete.fields.slug,
+								moduleType,
+								resourceToComplete.type as 'lesson' | 'exercise' | 'solution',
+							)
+						}
 					})
 					dispatchVideoPlayerOverlay({ type: 'LOADING' })
 				}
 				if (nextResource && moduleNavigation) {
 					if (nextResource.type === 'solution') {
 						return router.push(
-							`/${pluralize(moduleType)}/${moduleNavigation.slug}/${resource?.fields?.slug}/solution`,
+							`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${resource?.fields?.slug}/solution`,
 						)
 					}
 					return router.push(
-						`/${pluralize(moduleType)}/${moduleNavigation.slug}/${nextResource?.slug}`,
+						`/${pluralize(moduleType)}/${moduleNavigation.fields?.slug}/${nextResource?.fields?.slug}`,
 					)
 				}
 			}}
@@ -352,11 +392,11 @@ export const SoftBlockOverlay: React.FC<{
 			className="z-40 flex h-full w-full flex-col items-center justify-center gap-10 overflow-hidden p-5 py-16 text-lg sm:p-10 sm:py-10 lg:p-16"
 		>
 			<VideoBlockNewsletterCta
-				moduleTitle={moduleNavigation?.title}
+				moduleTitle={moduleNavigation?.fields?.title}
 				onSuccess={async (subscriber?: Subscriber) => {
 					if (subscriber && moduleNavigation && resource) {
 						await revalidateTutorialLesson(
-							moduleNavigation.slug,
+							moduleNavigation.fields?.slug,
 							resource?.fields?.slug,
 						)
 						dispatchVideoPlayerOverlay({ type: 'LOADING' })
@@ -366,11 +406,11 @@ export const SoftBlockOverlay: React.FC<{
 					}
 				}}
 			>
-				{moduleNavigation?.coverImage && (
+				{moduleNavigation?.fields?.coverImage && (
 					<CldImage
 						// className="flex sm:hidden"
-						src={moduleNavigation.coverImage}
-						alt={moduleNavigation.title}
+						src={moduleNavigation.fields.coverImage}
+						alt={moduleNavigation.fields.title}
 						width={150}
 						height={150}
 					/>
