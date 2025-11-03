@@ -94,11 +94,11 @@ export type CourseBuilderCoreEvents = {
 export const courseBuilderCoreFunctions = [
 	...coreVideoProcessingFunctions,
 	sendPostPurchaseEmail,
-	// stripeCheckoutSessionComplete,
-	// stripeCustomerSubscriptionCreated,
-	// stripeCustomerSubscriptionUpdated,
-	// stripeInvoicePaymentSucceeded,
-	// sendCreatorSlackNotification,
+	stripeCheckoutSessionComplete,
+	stripeCustomerSubscriptionCreated,
+	stripeCustomerSubscriptionUpdated,
+	stripeInvoicePaymentSucceeded,
+	sendCreatorSlackNotification,
 	resourceChat,
-	// updatePurchaseStatus,
+	updatePurchaseStatus,
 ]
