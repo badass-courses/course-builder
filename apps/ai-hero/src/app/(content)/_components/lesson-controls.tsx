@@ -83,7 +83,7 @@ export const LessonControls = async ({
 						className="hover:bg-muted/50 border-r-border h-full rounded-none border-0 bg-transparent sm:border-r"
 					>
 						<Link href={githubUrl} target="_blank">
-							<Github className="text-muted-foreground mr-2 h-4 w-4" />
+							<Github className="text-muted-foreground size-4" />
 							<span className="inline-block sm:hidden" aria-hidden="true">
 								Code
 							</span>
