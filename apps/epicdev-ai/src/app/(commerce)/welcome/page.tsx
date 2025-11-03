@@ -22,6 +22,7 @@ import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { checkForPaymentSuccessWithoutPurchase } from '@coursebuilder/core'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
+import { PurchaseInfoSchema } from '@coursebuilder/core/schemas/purchase-info'
 import { isString } from '@coursebuilder/nodash'
 
 async function getPurchaseForChargeId(chargeIdentifier: string) {
@@ -88,7 +89,8 @@ const getPurchaseDetailsForWelcome = async (query: {
 			redirect(`/thanks/purchase?session_id=${session_id}`)
 		}
 
-		const { chargeIdentifier } = purchaseInfo as any
+		const validPurchaseInfo = PurchaseInfoSchema.parse(purchaseInfo)
+		const { chargeIdentifier } = validPurchaseInfo
 
 		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 

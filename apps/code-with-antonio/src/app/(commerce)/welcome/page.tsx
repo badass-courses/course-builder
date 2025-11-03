@@ -21,6 +21,7 @@ import { SubscriptionWelcomePage } from '@coursebuilder/commerce-next/post-purch
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
+import { PurchaseInfoSchema } from '@coursebuilder/core/schemas/purchase-info'
 import { isString } from '@coursebuilder/nodash'
 
 async function getPurchaseForChargeId(chargeIdentifier: string) {
@@ -74,10 +75,20 @@ const getPurchaseDetailsForWelcome = async (query: {
 	const paymentProvider = stripeProvider
 
 	if (session_id && paymentProvider) {
-		const { chargeIdentifier } = await paymentProvider.getPurchaseInfo(
+		const purchaseInfo = await paymentProvider.getPurchaseInfo(
 			session_id,
 			courseBuilderAdapter,
 		)
+
+		if (
+			'error' in purchaseInfo &&
+			purchaseInfo.error === 'paymentSucceededButProcessingFailed'
+		) {
+			redirect(`/thanks/purchase?session_id=${session_id}`)
+		}
+
+		const validPurchaseInfo = PurchaseInfoSchema.parse(purchaseInfo)
+		const { chargeIdentifier } = validPurchaseInfo
 
 		const purchase = await getPurchaseForChargeId(chargeIdentifier)
 
