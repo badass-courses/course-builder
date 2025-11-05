@@ -75,7 +75,7 @@ const getServerSideProps = async (session_id: string) => {
 				quantity: seatsPurchased,
 				product: merchantProduct,
 				purchaseType,
-			} = purchaseInfo as PurchaseInfo
+			} = purchaseInfo
 
 			const stripeProductName = merchantProduct.name
 
