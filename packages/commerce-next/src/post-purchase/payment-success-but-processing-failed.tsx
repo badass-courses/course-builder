@@ -40,11 +40,11 @@ export function PaymentSuccessButProcessingFailed({
 
 				<div className="space-y-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
 					<p>
-						We’re experiencing a temporary issue while setting up your purchase.
+						We're experiencing a temporary issue while setting up your purchase.
 					</p>
 
 					<p>
-						If you haven’t received a confirmation email after 20–30 minutes,
+						If you haven't received a confirmation email after 20–30 minutes,
 						please reach out to us at{' '}
 						<a
 							href={`mailto:${supportEmail}`}
@@ -52,11 +52,11 @@ export function PaymentSuccessButProcessingFailed({
 						>
 							{supportEmail}
 						</a>{' '}
-						and we’ll help as soon as possible.
+						and we'll help as soon as possible.
 					</p>
 
 					<p>
-						We’re sorry for the inconvenience — we’ll make sure everything gets
+						We're sorry for the inconvenience — we'll make sure everything gets
 						sorted quickly.
 					</p>
 				</div>

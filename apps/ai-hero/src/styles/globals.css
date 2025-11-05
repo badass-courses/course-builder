@@ -17,7 +17,6 @@
 @source '../../node_modules/@coursebuilder/ui/feedback-widget/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/resources-crud/**/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/utils/**/*.{ts,tsx,mdx}';
-@source '../../node_modules/@coursebuilder/ui/src/**/*.{ts,tsx,mdx}';
 @source '../../node_modules/@coursebuilder/ui/index.tsx';
 @source '../../node_modules/@coursebuilder/commerce-next/src/**/*.{ts,tsx}';
 
