@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
+import { getParentResourceData } from '@/app/(content)/_components/navigation/module-resource-helpers'
 import type {
 	Level1ResourceWrapper,
 	Level2ResourceWrapper,
 	ResourceNavigation,
 } from '@/lib/content-navigation'
-import { getParentResourceData } from '@/lib/module-resource-helpers'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
