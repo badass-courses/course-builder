@@ -10,7 +10,7 @@ import type {
 import { cn } from '@/utils/cn'
 
 import type { ModuleProgress } from '@coursebuilder/core/schemas'
-import { Accordion, ScrollArea, ScrollBar } from '@coursebuilder/ui'
+import { Accordion, ScrollArea } from '@coursebuilder/ui'
 
 import { MODULE_RESOURCE_LIST_DATA_ATTRS } from './module-resource-helpers'
 import { ModuleResourceListLesson } from './module-resource-list-lesson'
@@ -31,7 +31,10 @@ type ModuleResourceListContentProps = {
 	moduleNavigation: ResourceNavigation
 	options?: ModuleResourceListOptions
 }
-
+/**
+ * Wraps module resources in a scrollable accordion, wiring progress,
+ * ability, and layout options for sections and lessons.
+ */
 export function ModuleResourceListContent({
 	resources,
 	sectionId,
@@ -125,7 +128,6 @@ export function ModuleResourceListContent({
 					})}
 				</ol>
 			</Accordion>
-			{/* <ScrollBar orientation="vertical" /> */}
 		</ScrollArea>
 	)
 }

@@ -8,6 +8,10 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 import { MODULE_RESOURCE_LIST_DATA_ATTRS } from './module-resource-helpers'
 import type { SolutionMenuProps } from './module-resource-list.types'
 
+/**
+ * Navigation menu for problem/solution resources
+ * Renders links to both the problem and solution views of a lesson
+ */
 export function ModuleResourceListSolutionMenu({
 	lesson,
 	isActiveLesson,

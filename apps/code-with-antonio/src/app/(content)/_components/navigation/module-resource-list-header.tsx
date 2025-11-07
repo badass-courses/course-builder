@@ -29,6 +29,10 @@ type ModuleResourceListHeaderProps = {
 	className?: string
 }
 
+/**
+ * Renders the module navigation header with collapse controls and
+ * top-level resource links.
+ */
 export function ModuleResourceListHeader({
 	moduleNavigation,
 	cohortData,

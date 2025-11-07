@@ -16,6 +16,10 @@ import { MODULE_RESOURCE_LIST_DATA_ATTRS } from './module-resource-helpers'
 import { ModuleResourceListLesson } from './module-resource-list-lesson'
 import type { SectionItemProps } from './module-resource-list.types'
 
+/**
+ * Renders an accordion section for module resources including progress,
+ * availability messaging, and child lessons.
+ */
 export function ModuleResourceListSection({
 	resource,
 	metadata,

@@ -1,5 +1,3 @@
-import { unstable_cache } from 'next/cache'
-import { notFound } from 'next/navigation'
 import { ContentNavigationProvider } from '@/app/(content)/_components/navigation/provider'
 import LayoutClient from '@/components/layout-client'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'

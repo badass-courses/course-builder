@@ -27,6 +27,10 @@ import { ModuleResourceListSolutionMenu } from './module-resource-list-solution-
 import type { LessonResourceProps } from './module-resource-list.types'
 import { useContentNavigation } from './provider'
 
+/**
+ * Renders a lesson row within the module resource navigation list, including
+ * progress state, ability gating, and optional solution links.
+ */
 export const ModuleResourceListLesson = React.memo(
 	function ModuleResourceListLesson({
 		lesson,

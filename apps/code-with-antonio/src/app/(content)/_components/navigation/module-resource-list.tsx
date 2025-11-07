@@ -30,6 +30,10 @@ type ModuleResourceListProps = {
 	options?: ModuleResourceListOptions
 }
 
+/**
+ * Renders the module navigation sidebar, wiring ability checks, progress data,
+ * and scroll-to-active behavior for the current module context.
+ */
 export default function ModuleResourceList({
 	currentLessonSlug,
 	className,
