@@ -160,7 +160,7 @@ export function TutorialLessonList(props: Props) {
 						</div>
 					</div>
 				)}
-				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
+				<ScrollArea className={cn(maxHeight)} ref={scrollAreaRef}>
 					<ol>
 						<Accordion
 							type="single"

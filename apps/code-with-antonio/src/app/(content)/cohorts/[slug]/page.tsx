@@ -41,6 +41,7 @@ import {
 	DefaultCertificateFallback,
 } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import ModuleResourceList from '../../_components/navigation/module-resource-list'
 import { CohortAdminActions } from './_components/cohort-admin-actions'
 import { WorkshopListRowRenderer } from './_components/cohort-list/workshop-list-row'
 import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
@@ -276,6 +277,13 @@ export default async function CohortPage(props: {
 						)}
 					</div>
 					<CohortSidebar cohort={cohort}>
+						<ModuleResourceList
+							options={{
+								stretchToFullViewportHeight: false,
+								isCollapsible: false,
+								withHeader: false,
+							}}
+						/>
 						{fields?.image && (
 							<CldImage
 								className="hidden lg:flex"

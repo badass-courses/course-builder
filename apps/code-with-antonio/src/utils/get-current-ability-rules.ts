@@ -2,27 +2,68 @@
 import { headers } from 'next/headers'
 import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
-import { entitlements, organizationMemberships } from '@/db/schema'
-import { getLesson } from '@/lib/lessons-query'
-import { getCachedMinimalWorkshop, getWorkshop } from '@/lib/workshops-query'
+import {
+	contentResource,
+	entitlements,
+	organizationMemberships,
+} from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { subject } from '@casl/ability'
 import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 // Import type without implementation
 import { type AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
 
 import { getResourceSection } from './get-resource-section'
 import { getWorkshopResourceIds } from './get-workshop-resource-ids'
 
+export async function getGenericResource(slugOrId?: string | null) {
+	if (!slugOrId) {
+		await log.error('No slug or id provided', { slugOrId })
+		return null
+	}
+
+	const resource = await db.query.contentResource.findFirst({
+		where: or(
+			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
+			eq(contentResource.id, slugOrId),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: {
+						with: {
+							resources: {
+								with: {
+									resource: true,
+								},
+							},
+						},
+					},
+				},
+			},
+			resourceProducts: {
+				with: {
+					product: true,
+				},
+			},
+		},
+	})
+	const parsedResource = ContentResourceSchema.safeParse(resource)
+
+	return parsedResource.success ? parsedResource.data : null
+}
+
 // Provide the actual implementation directly
 export async function getCurrentAbilityRules({
-	lessonId,
+	resourceId,
 	moduleId,
 	organizationId: orgId,
 }: {
-	lessonId?: string
+	resourceId?: string
 	moduleId?: string
 	organizationId?: string
 }) {
@@ -38,13 +79,13 @@ export async function getCurrentAbilityRules({
 
 	const { session } = await getServerAuthSession()
 
-	const lessonResource = lessonId && (await getLesson(lessonId))
-	const moduleResource = moduleId ? await getWorkshop(moduleId) : null
+	const resource = await getGenericResource(resourceId)
+	const moduleResource = await getGenericResource(moduleId)
 
 	const sectionResource =
-		lessonResource &&
+		resource &&
 		moduleResource &&
-		(await getResourceSection(lessonResource.id, moduleResource))
+		(await getResourceSection(resource.id, moduleResource))
 
 	const purchases = await courseBuilderAdapter.getPurchasesForUser(
 		session?.user?.id,
@@ -95,7 +136,7 @@ export async function getCurrentAbilityRules({
 		...(convertkitSubscriber && {
 			subscriber: convertkitSubscriber,
 		}),
-		...(lessonResource && { lesson: lessonResource }),
+		...(resource && { resource: resource }),
 		...(moduleResource && { module: moduleResource }),
 		...(sectionResource ? { section: sectionResource } : {}),
 		...(purchases && { purchases: purchases }),
@@ -104,7 +145,7 @@ export async function getCurrentAbilityRules({
 }
 
 export async function getAbilityForResource(
-	lessonId: string | undefined,
+	resourceId: string | undefined,
 	moduleId: string,
 ): Promise<
 	Omit<AbilityForResource, 'canView'> & {
@@ -114,20 +155,20 @@ export async function getAbilityForResource(
 	}
 > {
 	const abilityRules = await getCurrentAbilityRules({
-		lessonId,
+		resourceId,
 		moduleId,
 	})
-	const workshop = await getCachedMinimalWorkshop(moduleId)
-	const lesson = lessonId ? await getLesson(lessonId) : null
+	const moduleResource = await getGenericResource(moduleId)
+	const resource = await getGenericResource(resourceId)
 
 	const ability = createAppAbility(abilityRules || [])
 
-	const canViewWorkshop = workshop
-		? ability.can('read', subject('Content', { id: workshop.id }))
+	const canViewWorkshop = moduleResource
+		? ability.can('read', subject('Content', { id: moduleResource.id }))
 		: false
 
-	const canViewLesson = lesson?.id
-		? ability.can('read', subject('Content', { id: lesson.id }))
+	const canViewLesson = resource?.id
+		? ability.can('read', subject('Content', { id: resource.id }))
 		: false
 	const canInviteTeam = ability.can('read', 'Team')
 	const isRegionRestricted = ability.can('read', 'RegionRestriction')

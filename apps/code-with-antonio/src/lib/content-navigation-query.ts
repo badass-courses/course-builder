@@ -20,7 +20,14 @@ import {
 /**
  * Fields that should be preserved in navigation (excludes heavy content like body)
  */
-const NAVIGATION_FIELDS = ['slug', 'title', 'visibility', 'state'] as const
+const NAVIGATION_FIELDS = [
+	'slug',
+	'title',
+	'visibility',
+	'state',
+	'startsAt',
+	'timezone',
+] as const
 
 /**
  * Strips heavy fields from a resource's fields object, keeping only navigation-required fields

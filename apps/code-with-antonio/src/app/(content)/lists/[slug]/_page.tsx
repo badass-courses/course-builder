@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import ModuleResourceList from '@/app/(content)/_components/navigation/module-resource-list'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import { Share } from '@/components/share'
@@ -164,7 +165,12 @@ export default async function ListPage(props: {
 						{body || 'No tutorial body found.'}
 					</article>
 				</div>
-				<ListResources list={list} />
+				<div className="col-span-4">
+					<ModuleResourceList
+						options={{ isCollapsible: false, withHeader: false }}
+					/>
+				</div>
+				{/* <ListResources list={list} /> */}
 			</div>
 		</div>
 	)
