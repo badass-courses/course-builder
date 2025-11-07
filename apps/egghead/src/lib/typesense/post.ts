@@ -66,7 +66,7 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 			name: post.fields.title,
 			path: `/${post.fields.slug}`,
 			type: postType,
-			image: post.fields.image || post.tags?.[0]?.tag?.fields?.image_url,
+			image: post.fields.image || post.tags?.[0]?.tag?.fields?.image_url || '',
 			_tags: post.tags?.map(({ tag }) => tag.fields?.name),
 			...(primaryTagDbRow && {
 				primary_tag: primaryTagDbRow.tag,
@@ -89,6 +89,10 @@ export async function upsertPostToTypeSense(post: Post, action: PostAction) {
 				}),
 			belongs_to_resource:
 				courses.length > 0 ? courses[0]?.eggheadPlaylistId : null,
+			belongs_to_resource_title:
+				courses.length > 0 ? courses[0]?.courseTitle : '',
+			belongs_to_resource_slug:
+				courses.length > 0 ? courses[0]?.courseSlug : '',
 			...(courses.length > 0 && {
 				resources: courses.map((course) => ({
 					id: course.courseId,

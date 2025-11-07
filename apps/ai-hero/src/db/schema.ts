@@ -27,6 +27,8 @@ export const {
 	merchantAccount,
 	merchantCharge,
 	merchantChargeRelations,
+	merchantEvents,
+	merchantEventsRelations,
 	merchantCoupon,
 	merchantCustomer,
 	merchantPrice,

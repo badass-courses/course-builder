@@ -246,6 +246,25 @@ export async function processStripeWebhook(
 	event: any,
 	options: InternalOptions<'payment'>,
 ) {
+	// Log the webhook event to MerchantEvents table
+	try {
+		if (!options.adapter) return
+
+		const merchantAccount = await options.adapter.getMerchantAccount({
+			provider: 'stripe',
+		})
+
+		if (merchantAccount) {
+			await options.adapter.createMerchantEvent({
+				merchantAccountId: merchantAccount.id,
+				identifier: event.id,
+				payload: event,
+			})
+		}
+	} catch (error) {
+		console.error('Failed to log webhook event:', error)
+	}
+
 	const stripeProvider: InternalProvider<'payment'> = options.provider
 	const stripeAdapter = stripeProvider.options.paymentsAdapter
 	const courseBuilderAdapter = options.adapter

@@ -14,6 +14,7 @@ import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
+import { MerchantEvents } from './schemas/merchant-events-schema'
 import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
 import { MerchantSession } from './schemas/merchant-session'
@@ -311,6 +312,17 @@ export interface CourseBuilderAdapter<
 	getPurchasesForBulkCouponId(
 		bulkCouponId: string,
 	): Promise<(Purchase & { user: User })[]>
+	createMerchantEvent(options: {
+		merchantAccountId: string
+		identifier: string
+		payload: Record<string, any>
+	}): Promise<MerchantEvents>
+	getMerchantEventByIdentifier(
+		identifier: string,
+	): Promise<MerchantEvents | null>
+	getMerchantEventsByAccount(
+		merchantAccountId: string,
+	): Promise<MerchantEvents[]>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -410,6 +422,23 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		merchantAccountId: string
 	}): Promise<MerchantCustomer | null> {
 		return Promise.resolve(null)
+	},
+	createMerchantEvent(options: {
+		merchantAccountId: string
+		identifier: string
+		payload: Record<string, any>
+	}): Promise<MerchantEvents> {
+		throw new Error('Method not implemented.')
+	},
+	getMerchantEventByIdentifier(
+		identifier: string,
+	): Promise<MerchantEvents | null> {
+		return Promise.resolve(null)
+	},
+	getMerchantEventsByAccount(
+		merchantAccountId: string,
+	): Promise<MerchantEvents[]> {
+		return Promise.resolve([])
 	},
 	findOrCreateUser(
 		email: string,

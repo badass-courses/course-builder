@@ -35,6 +35,8 @@ export const TypesensePostSchema = z.object({
 	path: z.string().optional(),
 	published_at_timestamp: z.number().nullish(),
 	belongs_to_resource: z.number().nullish(),
+	belongs_to_resource_title: z.string().optional(),
+	belongs_to_resource_slug: z.string().optional(),
 	resources: z
 		.array(
 			z.object({
