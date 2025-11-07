@@ -4,7 +4,7 @@ import React from 'react'
 import {
 	ContentNavigationProvider,
 	useContentNavigation,
-} from '@/components/content-navigation-provider'
+} from '@/app/(content)/_components/navigation/provider'
 import type { ResourceNavigation } from '@/lib/content-navigation'
 
 /**

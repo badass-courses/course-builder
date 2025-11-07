@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SubscribeToConvertkitForm } from '@/convertkit'
@@ -18,8 +18,12 @@ export default function Footer() {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
-	const { theme, setTheme } = useTheme()
+	const { resolvedTheme: theme, setTheme } = useTheme()
 	const [mounted, setMounted] = useState(false)
+
+	useEffect(() => {
+		setMounted(true)
+	}, [])
 
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
@@ -129,7 +133,9 @@ export default function Footer() {
 							<div
 								className={cn(
 									'border-border bg-background absolute h-6 w-6 rounded-full border transition-transform duration-200',
-									theme === 'dark' ? 'translate-x-6' : 'translate-x-0',
+									mounted && theme === 'dark'
+										? 'translate-x-6'
+										: 'translate-x-0',
 								)}
 							>
 								<div className="flex h-full w-full items-center justify-center">

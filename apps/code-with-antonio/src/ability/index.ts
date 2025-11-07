@@ -1,5 +1,3 @@
-import { Lesson } from '@/lib/lessons'
-import type { Workshop } from '@/lib/workshops'
 import {
 	AbilityBuilder,
 	createMongoAbility,
@@ -199,8 +197,8 @@ export function getAbilityRules(options: GetAbilityOptions = {}) {
 type ViewerAbilityInput = {
 	user?: User | null
 	subscriber?: any
-	lesson?: Lesson
-	module?: Workshop
+	resource?: ContentResource
+	module?: ContentResource
 	section?: ContentResource
 	isSolution?: boolean
 	country?: string
@@ -221,7 +219,7 @@ export function defineRulesForPurchases(
 		country,
 		purchases = [],
 		module,
-		lesson,
+		resource,
 		entitlementTypes,
 		allModuleResourceIds,
 	} = viewerAbilityInput
@@ -315,13 +313,16 @@ export function defineRulesForPurchases(
 		can('read', 'Content')
 	}
 
-	if (canViewTalk(viewerAbilityInput)) {
+	if (canViewList(viewerAbilityInput)) {
 		can('read', 'Content')
 	}
 
-	// if (canViewTutorial(viewerAbilityInput)) {
-	// 	can('read', 'Content')
-	// }
+	// Grant access to all lessons within tutorial modules
+	if (module?.type === 'list' && allModuleResourceIds?.length) {
+		can('read', 'Content', {
+			id: { $in: allModuleResourceIds },
+		})
+	}
 
 	if (hasRole({ user, role: 'admin' })) {
 		can('manage', 'all')
@@ -343,7 +344,10 @@ export function defineRulesForPurchases(
 				})
 
 				// Check module start date
-				const moduleStartsAt = module?.fields?.startsAt
+				const moduleStartsAt =
+					module?.fields && 'startsAt' in module.fields
+						? module.fields?.startsAt
+						: null
 				const moduleStarted =
 					!moduleStartsAt || new Date(moduleStartsAt) < new Date()
 
@@ -434,11 +438,14 @@ export function defineRulesForPurchases(
 
 	// lesson check
 	// TODO: validate
-	const lessonModule = module?.resources?.find(
-		(resource) => resource.resourceId === lesson?.id,
+	const moduleResource = module?.resources?.find(
+		(moduleResource) => moduleResource.resourceId === resource?.id,
 	)
-	if (user?.entitlements && lessonModule) {
-		const moduleStartsAt = module?.fields?.startsAt
+	if (user?.entitlements && moduleResource) {
+		const moduleStartsAt =
+			module?.fields && 'startsAt' in module.fields
+				? module?.fields?.startsAt
+				: null
 		const moduleStarted =
 			moduleStartsAt && new Date(moduleStartsAt) < new Date()
 
@@ -459,47 +466,42 @@ export function defineRulesForPurchases(
 	return rules
 }
 
-// const canViewTutorial = ({ user, subscriber, module }: ViewerAbilityInput) => {
-// 	const contentIsTutorial = module?.type === 'tutorial'
-// 	const viewer = user || subscriber
-// 	const emailIsNotRequiredToWatch =
-// 		process.env.NEXT_PUBLIC_TUTORIALS_EMAIL_NOT_REQUIRED === 'true'
-
-// 	return (contentIsTutorial && Boolean(viewer)) || emailIsNotRequiredToWatch
-// }
-
-const canViewTip = ({ lesson }: ViewerAbilityInput) => {
-	return lesson?.type === 'tip'
+const canViewList = ({ module }: ViewerAbilityInput) => {
+	return module?.type === 'list'
 }
 
-const canViewTalk = ({ lesson }: ViewerAbilityInput) => {
-	return lesson?.type === 'talk'
+const canViewTip = ({ resource }: ViewerAbilityInput) => {
+	return resource?.type === 'tip'
+}
+
+const canViewTalk = ({ resource }: ViewerAbilityInput) => {
+	return resource?.type === 'talk'
 }
 
 const isFreelyVisible = ({
 	module,
 	section,
-	lesson,
+	resource,
 	isSolution,
 }: ViewerAbilityInput) => {
-	const hasId = lesson && 'id' in lesson
+	const hasId = resource && 'id' in resource
 
 	// return false if it is a 'Solution'
-	if (isSolution || lesson?.type === 'solution' || !hasId) {
+	if (isSolution || resource?.type === 'solution' || !hasId) {
 		return false
 	}
 
-	const lessons = z
+	const resources = z
 		.array(z.object({ resourceId: z.string() }))
-		.parse(section ? section.resources : module?.resources || [])
+		.parse(section?.resources || module?.resources || [])
 
 	const isFirstLesson =
-		(lesson?.type === 'exercise' ||
-			lesson?.type === 'explainer' ||
-			lesson?.type === 'lesson') &&
-		lesson.id === lessons?.[0]?.resourceId
+		(resource?.type === 'exercise' ||
+			resource?.type === 'explainer' ||
+			resource?.type === 'lesson') &&
+		resource.id === resources?.[0]?.resourceId
 
-	return false //isFirstLesson && lesson && !isSolution
+	return false //isFirstLesson && resource && !isSolution
 }
 
 /**

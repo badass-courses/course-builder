@@ -66,20 +66,21 @@ export const abilityRouter = createTRPCRouter({
 		.input(
 			z
 				.object({
-					lessonId: z.string().optional(),
+					resourceId: z.string().optional(),
 					moduleId: z.string().optional(),
 				})
 				.optional(),
 		)
 		.query(async ({ ctx, input }) => {
 			const abilityRules = await getCurrentAbilityRules({
-				lessonId: input?.lessonId,
+				resourceId: input?.resourceId,
 				moduleId: input?.moduleId,
 			})
 
 			return abilityRules
 		}),
 	getCurrentSubscriberFromCookie: publicProcedure.query(async ({ ctx }) => {
-		return getSubscriberFromCookie()
+		const subscriber = await getSubscriberFromCookie()
+		return subscriber
 	}),
 })

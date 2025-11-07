@@ -117,7 +117,7 @@ export function WorkshopResourceList(props: Props) {
 				)}
 				<ScrollArea
 					className={cn('h-full min-h-max', maxHeight)}
-					viewportRef={scrollAreaRef}
+					ref={scrollAreaRef}
 				>
 					<Accordion
 						type="single"

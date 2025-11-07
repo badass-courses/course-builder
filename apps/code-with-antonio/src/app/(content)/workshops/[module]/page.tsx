@@ -2,8 +2,8 @@ import * as React from 'react'
 import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
+import ModuleResourceList from '@/app/(content)/_components/navigation/module-resource-list'
 import { EditWorkshopButton } from '@/app/(content)/workshops/_components/edit-workshop-button'
-import { WorkshopResourceList } from '@/app/(content)/workshops/_components/workshop-resource-list'
 import {
 	ContentTitle,
 	GetAccessButton,
@@ -262,12 +262,13 @@ export default async function ModulePage(props: Props) {
 									<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
 										Content
 									</h3>
-									<WorkshopResourceList
-										isCollapsible={false}
-										className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
-										withHeader={false}
-										maxHeight="h-auto"
-										wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
+									<ModuleResourceList
+										className="border-border rounded-lg border"
+										options={{
+											stretchToFullViewportHeight: false,
+											isCollapsible: false,
+											withHeader: false,
+										}}
 									/>
 								</div>
 							)}
@@ -303,12 +304,14 @@ export default async function ModulePage(props: Props) {
 															</>
 														) : (
 															<>
-																<WorkshopResourceList
-																	isCollapsible={false}
+																<ModuleResourceList
 																	className="border-r-0! w-full max-w-none"
-																	withHeader={false}
-																	maxHeight="h-auto"
 																	wrapperClassName="overflow-hidden pb-0 hidden md:block"
+																	options={{
+																		stretchToFullViewportHeight: false,
+																		isCollapsible: false,
+																		withHeader: false,
+																	}}
 																/>
 																<div className="p-3">
 																	<Certificate
@@ -320,12 +323,14 @@ export default async function ModulePage(props: Props) {
 													</WorkshopSidebar>
 												</>
 											) : (
-												<WorkshopResourceList
-													isCollapsible={false}
+												<ModuleResourceList
 													className="border-r-0! w-full max-w-none"
-													withHeader={false}
-													maxHeight="h-auto"
 													wrapperClassName="overflow-hidden pb-0"
+													options={{
+														stretchToFullViewportHeight: false,
+														isCollapsible: false,
+														withHeader: false,
+													}}
 												/>
 											)
 										}}
@@ -333,11 +338,13 @@ export default async function ModulePage(props: Props) {
 								</React.Suspense>
 							) : (
 								<WorkshopSidebar workshop={workshop}>
-									<WorkshopResourceList
-										isCollapsible={false}
+									<ModuleResourceList
 										className="border-r-0! w-full max-w-none"
-										withHeader={false}
-										maxHeight="h-auto"
+										options={{
+											stretchToFullViewportHeight: false,
+											isCollapsible: false,
+											withHeader: false,
+										}}
 										wrapperClassName="overflow-hidden pb-0"
 									/>
 								</WorkshopSidebar>

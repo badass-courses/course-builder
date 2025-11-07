@@ -2,9 +2,9 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Spinner from '@/components/spinner'
-import { AlignLeft, Book, Check } from 'lucide-react'
+import { AlignLeft, Check } from 'lucide-react'
 
 import { Button, Sheet, SheetContent } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'

@@ -7,6 +7,7 @@ import { createAppAbility, type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { CldImage } from '@/components/cld-image'
+import { useScrollToActive } from '@/hooks/use-scroll-to-active'
 import {
 	findSectionIdForResourceSlug,
 	type Level1ResourceWrapper,
@@ -81,23 +82,7 @@ export function WorkshopResourceList(props: Props) {
 		props.currentLessonSlug,
 	)
 
-	const scrollAreaRef = React.useRef<HTMLDivElement>(null)
-
-	React.useEffect(() => {
-		// scroll to active resource on mount
-		const resourceToScrollToRef = document.querySelector(
-			'li[data-active="true"]',
-		)
-		const scrollArea = scrollAreaRef.current
-		if (resourceToScrollToRef && scrollArea) {
-			const scrollAreaTop = scrollArea.getBoundingClientRect().top
-			const activeResourceTop =
-				resourceToScrollToRef.getBoundingClientRect().top
-			const scrollPosition = activeResourceTop - scrollAreaTop
-
-			scrollArea.scrollTop += scrollPosition
-		}
-	}, [scrollAreaRef])
+	const scrollAreaRef = useScrollToActive(props.currentLessonSlug)
 
 	const [ref, { height: headerHeight }] = useMeasure()
 
@@ -222,7 +207,7 @@ export function WorkshopResourceList(props: Props) {
 								? 'auto'
 								: `calc(100vh - ${headerHeight}px - var(--nav-height))`,
 						}}
-						viewportRef={scrollAreaRef}
+						ref={scrollAreaRef}
 					>
 						<Accordion
 							type="single"

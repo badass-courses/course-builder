@@ -1,3 +1,4 @@
+import type { List } from '@/lib/lists'
 import { Module } from '@/lib/module'
 import type { Workshop } from '@/lib/workshops'
 
@@ -5,7 +6,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 
 export async function getResourceSection(
 	resourceId: string,
-	moduleResource?: Workshop | null,
+	moduleResource?: ContentResource | null,
 ): Promise<ContentResource | null> {
 	if (!moduleResource?.resources) return null
 	let sectionData = null

@@ -1,4 +1,7 @@
+import type { List } from '@/lib/lists'
 import type { Workshop } from '@/lib/workshops'
+
+import type { ContentResource } from '@coursebuilder/core/schemas'
 
 /**
  * Recursively collects **all** `resource.id`s contained within a `Workshop`.
@@ -14,9 +17,9 @@ import type { Workshop } from '@/lib/workshops'
  * @returns A flat array of **unique** resource ids contained in the workshop.
  */
 export function getWorkshopResourceIds(
-	workshop: Workshop | null | undefined,
+	moduleResource?: ContentResource | null,
 ): string[] {
-	if (!workshop?.resources) return []
+	if (!moduleResource?.resources) return []
 
 	const ids = new Set<string>()
 
@@ -46,7 +49,7 @@ export function getWorkshopResourceIds(
 		}
 	}
 
-	traverse(workshop.resources)
+	traverse(moduleResource.resources)
 
 	return Array.from(ids)
 }
