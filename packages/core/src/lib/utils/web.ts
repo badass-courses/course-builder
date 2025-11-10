@@ -154,12 +154,21 @@ export function toResponse(res: ResponseInternal): Response {
 		else headers.set('Set-Cookie', cookieHeader)
 	})
 
-	let body = res.body
+	let body: string | undefined = undefined
 
-	if (headers.get('content-type') === 'application/json')
-		body = JSON.stringify(res.body)
-	else if (headers.get('content-type') === 'application/x-www-form-urlencoded')
-		body = new URLSearchParams(res.body).toString()
+	if (headers.get('content-type') === 'application/json') {
+		// Ensure body is serialized to string before creating Response
+		body = JSON.stringify(res.body ?? null)
+	} else if (
+		headers.get('content-type') === 'application/x-www-form-urlencoded'
+	) {
+		body = new URLSearchParams(res.body as any).toString()
+	} else if (typeof res.body === 'string') {
+		body = res.body
+	} else if (res.body !== undefined && res.body !== null) {
+		// Fallback: try to stringify if body exists but isn't a string
+		body = String(res.body)
+	}
 
 	const status = res.redirect ? 302 : (res.status ?? 200)
 	const response = new Response(body, { headers, status })

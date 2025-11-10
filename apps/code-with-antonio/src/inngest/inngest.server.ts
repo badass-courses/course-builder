@@ -71,6 +71,10 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	BUNNY_TO_COURSEBUILDER_MIGRATION_EVENT,
+	type BunnyToCoursebuilderMigration,
+} from './events/bunny-collections'
+import {
 	COHORT_UPDATED_EVENT,
 	CohortUpdatedPayload,
 } from './events/cohort-management'
@@ -133,6 +137,7 @@ export type Events = {
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[RESOURCE_CREATED_EVENT]: ResourceCreated
 	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
+	[BUNNY_TO_COURSEBUILDER_MIGRATION_EVENT]: BunnyToCoursebuilderMigration
 }
 
 const callbackBase =

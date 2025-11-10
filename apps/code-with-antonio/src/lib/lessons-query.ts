@@ -51,7 +51,7 @@ export const getLessonVideoTranscript = async (
 	const result = await db.execute(query)
 
 	const parsedResult = z
-		.array(z.object({ transcript: z.string() }))
+		.array(z.object({ transcript: z.string().nullable() }))
 		.safeParse(result.rows)
 
 	if (!parsedResult.success) {
@@ -59,7 +59,7 @@ export const getLessonVideoTranscript = async (
 		return null
 	}
 
-	return parsedResult.data[0]?.transcript
+	return parsedResult.data[0]?.transcript || null
 }
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
@@ -82,7 +82,18 @@ export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
 		...videoResourceRow.fields,
 	}
 
-	return VideoResourceSchema.parse(videoResource)
+	// Parse with VideoResourceSchema but preserve bunnyNetHlsUrl if it exists
+	const parsed = VideoResourceSchema.parse(videoResource)
+
+	// Add bunnyNetHlsUrl back if it exists in fields (it's not in the schema)
+	if (videoResourceRow.fields?.bunnyNetHlsUrl) {
+		return {
+			...parsed,
+			bunnyNetHlsUrl: videoResourceRow.fields.bunnyNetHlsUrl,
+		}
+	}
+
+	return parsed
 }
 
 export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
@@ -96,7 +107,7 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 	const result = await db.execute(query)
 
 	const parsedResult = z
-		.array(z.object({ muxPlaybackId: z.string() }))
+		.array(z.object({ muxPlaybackId: z.string().nullable() }))
 		.safeParse(result.rows)
 
 	if (!parsedResult.success) {
@@ -104,7 +115,74 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 		return null
 	}
 
-	return parsedResult.data[0]?.muxPlaybackId
+	return parsedResult.data[0]?.muxPlaybackId || null
+}
+
+/**
+ * Get the video playback source for a lesson (either MUX playbackId or Bunny.net HLS URL)
+ * Returns an object with either playbackId (for MUX) or src (for Bunny.net)
+ */
+export const getLessonVideoPlaybackSource = async (lessonIdOrSlug: string) => {
+	const query = sql`SELECT 
+			cr_video.fields->>'$.muxPlaybackId' AS muxPlaybackId,
+			cr_video.fields->>'$.bunnyNetHlsUrl' AS bunnyNetHlsUrl
+		FROM ${contentResource} AS cr_lesson
+		JOIN ${contentResourceResource} AS crr ON cr_lesson.id = crr.resourceOfId
+		JOIN ${contentResource} AS cr_video ON crr.resourceId = cr_video.id
+		WHERE (cr_lesson.id = ${lessonIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_lesson.fields, '$.slug')) = ${lessonIdOrSlug})
+			AND cr_video.type = 'videoResource'
+		LIMIT 1;`
+	const result = await db.execute(query)
+
+	if (!result.rows.length) return null
+
+	const row = result.rows[0] as any
+
+	// MySQL JSON extraction returns string 'null' for JSON null values, or the actual string value
+	// We need to handle both cases
+	const muxPlaybackIdRaw = row.muxPlaybackId
+	const bunnyNetHlsUrlRaw = row.bunnyNetHlsUrl
+
+	// Clean up: convert string 'null' or actual null to null, keep valid strings
+	const muxPlaybackId =
+		muxPlaybackIdRaw &&
+		muxPlaybackIdRaw !== 'null' &&
+		muxPlaybackIdRaw !== 'NULL' &&
+		typeof muxPlaybackIdRaw === 'string' &&
+		muxPlaybackIdRaw.trim() !== ''
+			? muxPlaybackIdRaw.trim()
+			: null
+
+	const bunnyNetHlsUrl =
+		bunnyNetHlsUrlRaw &&
+		bunnyNetHlsUrlRaw !== 'null' &&
+		bunnyNetHlsUrlRaw !== 'NULL' &&
+		typeof bunnyNetHlsUrlRaw === 'string' &&
+		bunnyNetHlsUrlRaw.trim() !== ''
+			? bunnyNetHlsUrlRaw.trim()
+			: null
+
+	// Debug logging
+	if (process.env.NODE_ENV === 'development') {
+		console.log('getLessonVideoPlaybackSource raw data:', {
+			muxPlaybackIdRaw,
+			bunnyNetHlsUrlRaw,
+			muxPlaybackId,
+			bunnyNetHlsUrl,
+			rowType: typeof row,
+			rowKeys: Object.keys(row || {}),
+		})
+	}
+
+	// Return MUX playbackId if available, otherwise Bunny.net HLS URL
+	if (muxPlaybackId) {
+		return { playbackId: muxPlaybackId, src: null }
+	}
+	if (bunnyNetHlsUrl) {
+		return { playbackId: null, src: bunnyNetHlsUrl }
+	}
+
+	return null
 }
 
 export const addVideoResourceToLesson = async ({

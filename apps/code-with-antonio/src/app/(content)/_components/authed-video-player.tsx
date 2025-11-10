@@ -40,6 +40,7 @@ import { useModuleProgress } from './module-progress-provider'
 export function AuthedVideoPlayer({
 	title,
 	muxPlaybackId,
+	bunnyNetHlsUrl,
 	className,
 	playbackIdLoader,
 	abilityLoader,
@@ -49,6 +50,7 @@ export function AuthedVideoPlayer({
 	...props
 }: {
 	muxPlaybackId?: string
+	bunnyNetHlsUrl?: string
 	title?: string
 	playbackIdLoader?: Promise<string | null | undefined>
 	className?: string
@@ -71,6 +73,9 @@ export function AuthedVideoPlayer({
 			? use(playbackIdLoader)
 			: muxPlaybackId
 		: muxPlaybackId
+
+	// Use Bunny.net HLS URL if no MUX playbackId is available
+	const videoSrc = !playbackId && bunnyNetHlsUrl ? bunnyNetHlsUrl : undefined
 	const playerRef = React.useRef<MuxPlayerRefAttributes>(null)
 	const { dispatch: dispatchVideoPlayerOverlay } = useVideoPlayerOverlay()
 	const {
@@ -156,14 +161,15 @@ export function AuthedVideoPlayer({
 		},
 	} as MuxPlayerProps
 
-	return playbackId ? (
+	return playbackId || videoSrc ? (
 		<MuxPlayer
 			metadata={{
 				video_id: currentResource.id,
 				video_title: title || currentResource.fields?.title,
 			}}
 			ref={playerRef}
-			playbackId={playbackId}
+			{...(playbackId ? { playbackId } : {})}
+			{...(videoSrc ? { src: videoSrc } : {})}
 			className={cn(className)}
 			{...playerProps}
 			{...props}

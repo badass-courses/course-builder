@@ -16,6 +16,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { migrateBunnyToCoursebuilder } from './functions/bunny/migrate-to-coursebuilder'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
@@ -63,5 +64,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		migrateBunnyToCoursebuilder,
 	],
 }

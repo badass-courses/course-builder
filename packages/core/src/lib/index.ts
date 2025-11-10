@@ -46,6 +46,14 @@ export async function CourseBuilderInternal(
 				return await actions.getSubscriber(options, cookies)
 			case 'purchases':
 				return await actions.getUserPurchases(request, cookies, options)
+			case 'webhook':
+				// Allow GET for webhook testing/debugging, but return a helpful message
+				return {
+					status: 405,
+					body: { error: 'Webhook endpoints require POST requests' },
+					headers: { 'Content-Type': 'application/json' },
+					cookies,
+				}
 		}
 	} else {
 		switch (action) {

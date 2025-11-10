@@ -28,10 +28,36 @@ export const orderTranscriptHandler: CoreInngestHandler = async ({
 		throw new NonRetriableError('Video Resource not found')
 	}
 
+	// Create raw-transcript resource before ordering transcript
+	// This matches the normal flow - raw-transcript is created when transcript is ordered
+	const rawTranscriptId = `raw-transcript-${videoResource.id}`
+	await step.run('Create raw-transcript resource', async () => {
+		const existingRawTranscript = await db.getContentResource(rawTranscriptId)
+
+		if (!existingRawTranscript) {
+			await db.createContentResource({
+				id: rawTranscriptId,
+				type: 'raw-transcript',
+				fields: {
+					// Empty initially, will be filled by Deepgram webhook
+					deepgramResults: null,
+				},
+				createdById: event.data.createdById || videoResource.createdById,
+			})
+
+			// Link raw-transcript to video resource
+			await db.addResourceToResource({
+				childResourceId: rawTranscriptId,
+				parentResourceId: videoResource.id,
+			})
+		}
+	})
+
 	const deepgram = await step.run('Order Transcript [Deepgram]', async () => {
 		return await transcriptProvider.initiateTranscription({
 			mediaUrl: event.data.originalMediaUrl,
 			resourceId: event.data.videoResourceId,
+			createdById: event.data.createdById, // Pass through for webhook handler
 		})
 	})
 

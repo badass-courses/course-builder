@@ -39,6 +39,7 @@ export default function Deepgram(
 		initiateTranscription: async (transcriptOptions: {
 			mediaUrl: string
 			resourceId: string
+			createdById?: string // Optional: pass through to webhook callback
 		}) => {
 			const deepgramUrl = `https://api.deepgram.com/v1/listen`
 
@@ -46,6 +47,14 @@ export default function Deepgram(
 			const utteranceSpiltThreshold = 0.5
 
 			// just weird URL differences between dev and prod
+
+			// Build callback params - include createdById if provided
+			const callbackParams: Record<string, string> = {
+				videoResourceId: transcriptOptions.resourceId,
+			}
+			if (transcriptOptions.createdById) {
+				callbackParams.createdById = transcriptOptions.createdById
+			}
 
 			const deepgramParams = new URLSearchParams({
 				model: 'whisper-large',
@@ -55,7 +64,7 @@ export default function Deepgram(
 				utt_split: String(utteranceSpiltThreshold),
 				callback: getCallbackUrl({
 					baseUrl: `${options.callbackUrl}`,
-					params: { videoResourceId: transcriptOptions.resourceId },
+					params: callbackParams,
 				}),
 			})
 

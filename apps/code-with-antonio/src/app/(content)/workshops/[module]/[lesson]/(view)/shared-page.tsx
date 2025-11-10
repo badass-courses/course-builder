@@ -12,8 +12,9 @@ import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import type { Lesson } from '@/lib/lessons'
 import {
-	getLessonMuxPlaybackId,
+	getLessonVideoPlaybackSource,
 	getLessonVideoTranscript,
+	getVideoResourceForLesson,
 } from '@/lib/lessons-query'
 import { MinimalWorkshop } from '@/lib/workshops'
 import { cn } from '@/utils/cn'
@@ -193,10 +194,16 @@ async function PlayerContainer({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 
-	// const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
-	const muxPlaybackId = ability.canViewLesson
-		? await getLessonMuxPlaybackId(lesson.id)
+	// Get video playback source (either MUX playbackId or Bunny.net HLS URL)
+	const playbackSource = ability.canViewLesson
+		? await getLessonVideoPlaybackSource(lesson.id)
 		: null
+
+	// Get full video resource to check state (for MUX videos only)
+	const fullVideoResource = lesson?.id
+		? await getVideoResourceForLesson(lesson.id)
+		: null
+
 	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
 		return resource.type === 'videoResource'
 	})
@@ -204,8 +211,56 @@ async function PlayerContainer({
 		videoResource &&
 		`${env.NEXT_PUBLIC_URL}/api/thumbnails?videoResourceId=${videoResource.resourceId}&time=${lesson.fields?.thumbnailTime || 0}`
 
-	if (!muxPlaybackId) {
-		return null
+	const muxPlaybackId = playbackSource?.playbackId || null
+	const bunnyNetHlsUrl = playbackSource?.src || null
+
+	// Debug logging
+	if (process.env.NODE_ENV === 'development') {
+		console.log('Video playback source:', {
+			playbackSource,
+			muxPlaybackId,
+			bunnyNetHlsUrl,
+			fullVideoResource: fullVideoResource
+				? {
+						id: fullVideoResource.id,
+						state: fullVideoResource.state,
+						bunnyNetHlsUrl: fullVideoResource.bunnyNetHlsUrl,
+						muxPlaybackId: fullVideoResource.muxPlaybackId,
+					}
+				: null,
+		})
+	}
+
+	// For Bunny.net videos, they're always ready. For MUX videos, check state
+	const isBunnyNetVideo = bunnyNetHlsUrl !== null
+	const isMuxVideoReady = muxPlaybackId && fullVideoResource?.state === 'ready'
+	const canPlayVideo = isBunnyNetVideo || isMuxVideoReady
+
+	if (!canPlayVideo) {
+		// Show loading state only for MUX videos that are processing
+		return (
+			<section
+				aria-label="video"
+				className="dark relative flex flex-col items-center justify-center border-b bg-black text-white dark:text-white"
+			>
+				<div className="flex h-full max-h-[75vh] w-full items-center justify-center">
+					<div className="text-center">
+						<p className="text-lg">
+							{fullVideoResource?.state === 'processing'
+								? 'Video is processing...'
+								: fullVideoResource?.state === 'preparing'
+									? 'Video is preparing...'
+									: 'Video is not available'}
+						</p>
+						{fullVideoResource?.state === 'processing' && (
+							<p className="mt-2 text-sm opacity-75">
+								This may take a few minutes. Please check back soon.
+							</p>
+						)}
+					</div>
+				</div>
+			</section>
+		)
 	}
 
 	return (
@@ -251,8 +306,8 @@ async function PlayerContainer({
 					</WorkshopPricing>
 					<AuthedVideoPlayer
 						className="aspect-video h-full max-h-[75vh] w-full max-w-full overflow-hidden"
-						muxPlaybackId={muxPlaybackId}
-						// playbackIdLoader={playbackIdLoader}
+						muxPlaybackId={muxPlaybackId || undefined}
+						bunnyNetHlsUrl={bunnyNetHlsUrl || undefined}
 						resource={lesson}
 						abilityLoader={abilityLoader}
 						moduleSlug={params.module}

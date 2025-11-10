@@ -11,6 +11,7 @@ export const VideoResourceCreatedEventSchema = z.object({
 	videoResourceId: z.string(),
 	originalMediaUrl: z.string(),
 	moduleSlug: z.string().optional(),
+	createdById: z.string().optional(), // Optional: pass through for webhook handler
 })
 
 export type VideoResourceCreatedEvent = z.infer<

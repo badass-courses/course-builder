@@ -84,6 +84,9 @@ export const env = createEnv({
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
 		AXIOM_TOKEN: z.string().optional(),
+		BUNNY_NET_API_KEY: z.string().optional(),
+		BUNNY_NET_VIDEO_LIBRARY_ID: z.string().optional(),
+		BUNNY_NET_CDN_HOSTNAME: z.string().optional(),
 	},
 
 	/**
@@ -175,6 +178,9 @@ export const env = createEnv({
 		PINECONE_API_KEY: process.env.PINECONE_API_KEY,
 		AXIOM_TOKEN: process.env.AXIOM_TOKEN,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
+		BUNNY_NET_API_KEY: process.env.BUNNY_NET_API_KEY,
+		BUNNY_NET_VIDEO_LIBRARY_ID: process.env.BUNNY_NET_VIDEO_LIBRARY_ID,
+		BUNNY_NET_CDN_HOSTNAME: process.env.BUNNY_NET_CDN_HOSTNAME,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
