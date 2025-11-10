@@ -166,6 +166,7 @@ export interface ResourceFormConfig<
 				itemId: string,
 				fields: Record<string, any>,
 			) => void | Promise<void>
+			onQuickEdit?: (itemId: string) => void | Promise<void>
 		}
 	}
 }
@@ -323,6 +324,11 @@ export function withResourceForm<
 										await config.bodyPanelConfig?.listEditorConfig?.onResourceUpdate?.(
 											itemId,
 											fields,
+										)
+									},
+									onQuickEdit: async (itemId) => {
+										await config.bodyPanelConfig?.listEditorConfig?.onQuickEdit?.(
+											itemId,
 										)
 									},
 								}}

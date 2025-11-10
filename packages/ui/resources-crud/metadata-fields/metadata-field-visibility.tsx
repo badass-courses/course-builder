@@ -17,18 +17,23 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '../../primitives/select'
+import { cn } from '../../utils/cn'
 
 export function MetadataFieldVisibility({
 	form,
+	className,
+	name = 'fields.visibility',
 }: {
 	form: UseFormReturn<any>
+	className?: string
+	name?: string
 }) {
 	return (
 		<FormField
 			control={form.control}
-			name="fields.visibility"
+			name={name}
 			render={({ field }) => (
-				<FormItem className="px-5">
+				<FormItem className={cn('px-5', className)}>
 					<FormLabel className="text-lg font-bold">Visibility</FormLabel>
 					<Select onValueChange={field.onChange} defaultValue={field.value}>
 						<FormControl>

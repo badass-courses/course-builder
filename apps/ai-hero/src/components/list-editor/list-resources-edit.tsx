@@ -141,6 +141,7 @@ export default function ListResourcesEdit({
 				onRefresh={() => refresh()}
 				showTierSelector={config.selection.showTierSelector}
 				onResourceUpdate={config.onResourceUpdate}
+				onQuickEdit={config.onQuickEdit}
 			/>
 		)
 	}
