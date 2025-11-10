@@ -95,6 +95,12 @@ export interface ListEditorConfig {
 		itemId: string,
 		fields: Record<string, any>,
 	) => Promise<void>
+	/**
+	 * Function to handle quick edit
+	 * @param {string} itemId - ID of the item being quick edited
+	 * @returns {Promise<void>}
+	 */
+	onQuickEdit?: (itemId: string) => Promise<void>
 }
 /**
  * Default configuration for list editor.

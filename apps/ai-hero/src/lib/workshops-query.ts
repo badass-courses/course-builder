@@ -220,7 +220,7 @@ export async function getAllWorkshops() {
 		? ['public', 'private', 'unlisted']
 		: ['public']
 
-	const workshops: ContentResource[] = await db.query.contentResource.findMany({
+	const workshops = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'workshop'),
 			inArray(

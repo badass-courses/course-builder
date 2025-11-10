@@ -30,6 +30,7 @@ export type TreeContextValue = {
 		itemId: string,
 		fields: Record<string, any>,
 	) => Promise<void>
+	onQuickEdit?: (itemId: string) => Promise<void>
 }
 export const TreeContext = createContext<TreeContextValue>({
 	dispatch: () => {},
@@ -41,6 +42,7 @@ export const TreeContext = createContext<TreeContextValue>({
 	rootResource: null,
 	registerTreeItem: () => {},
 	onResourceUpdate: () => Promise.resolve(),
+	onQuickEdit: () => Promise.resolve(),
 })
 
 export type DependencyContext = {

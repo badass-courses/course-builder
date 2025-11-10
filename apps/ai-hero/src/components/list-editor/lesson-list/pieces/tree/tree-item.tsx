@@ -172,6 +172,7 @@ const TreeItem = memo(function TreeItem({
 		rootResource,
 		rootResourceId,
 		onResourceUpdate,
+		onQuickEdit,
 	} = useContext(TreeContext)
 	const { DropIndicator, attachInstruction, extractInstruction } =
 		useContext(DependencyContext)
@@ -568,6 +569,16 @@ const TreeItem = memo(function TreeItem({
 									</Link>
 								</ContextMenuItem>
 								<ContextMenuSeparator />
+								{item.type === 'workshop' && onQuickEdit && (
+									<ContextMenuItem
+										onClick={async () => {
+											console.log('TEST')
+											await onQuickEdit(item.id)
+										}}
+									>
+										Quick Edit
+									</ContextMenuItem>
+								)}
 								<ContextMenuItem asChild>
 									<Link
 										target="_blank"

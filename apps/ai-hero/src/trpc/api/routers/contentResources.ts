@@ -1,6 +1,7 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getList } from '@/lib/lists-query'
+import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import {
 	createTRPCRouter,
@@ -59,4 +60,9 @@ export const contentResourceRouter = createTRPCRouter({
 		)
 		return total
 	}),
+	getWorkshop: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input }) => {
+			return await getWorkshop(input.id)
+		}),
 })
