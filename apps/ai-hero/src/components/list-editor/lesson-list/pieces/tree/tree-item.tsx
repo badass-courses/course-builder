@@ -572,7 +572,6 @@ const TreeItem = memo(function TreeItem({
 								{item.type === 'workshop' && onQuickEdit && (
 									<ContextMenuItem
 										onClick={async () => {
-											console.log('TEST')
 											await onQuickEdit(item.id)
 										}}
 									>
