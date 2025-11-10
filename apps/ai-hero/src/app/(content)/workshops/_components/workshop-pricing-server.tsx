@@ -3,10 +3,7 @@ import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
-import {
-	getCachedWorkshopProduct,
-	getWorkshopProduct,
-} from '@/lib/workshops-query'
+import { getCachedWorkshopProduct } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'

@@ -7,6 +7,7 @@ import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
+import { DiscountCountdown } from '@/components/mdx/mdx-components'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases, users } from '@/db/schema'
@@ -16,18 +17,18 @@ import { Cohort } from '@/lib/cohort'
 import { getCohort } from '@/lib/cohorts-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getProviders, getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { differenceInCalendarDays } from 'date-fns'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
+import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
@@ -239,7 +240,67 @@ export default async function CohortPage(props: {
 			})
 		: null
 
-	const { content } = await compileMDX(cohort.fields.body || '')
+	let defaultCoupon = null
+	let saleData = null
+
+	if (product) {
+		const coupons = await courseBuilderAdapter.getDefaultCoupon([product.id])
+		if (coupons?.defaultCoupon) {
+			defaultCoupon = coupons.defaultCoupon
+			saleData = await getSaleBannerData(defaultCoupon)
+		}
+	}
+
+	const { content } = await compileMDX(
+		cohort.fields.body || '',
+		{
+			Enroll: ({ children = 'Enroll Now' }) =>
+				cohortProps.product ? (
+					<Pricing.Root
+						{...cohortProps}
+						product={cohortProps.product}
+						country={cohortProps.country}
+						options={{
+							withTitle: false,
+							withImage: false,
+						}}
+						userId={cohortProps?.userId}
+						pricingDataLoader={cohortProps.pricingDataLoader}
+						className="mt-5 items-start justify-start"
+					>
+						<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative h-auto w-full cursor-pointer rounded-lg bg-blue-600 px-8 font-semibold hover:bg-blue-700 sm:h-14 sm:w-auto md:px-16">
+							<span className="relative z-10">{children}</span>
+							<div
+								style={{
+									backgroundSize: '200% 100%',
+								}}
+								className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+							/>
+						</Pricing.BuyButton>
+					</Pricing.Root>
+				) : null,
+			HasDiscount: ({ children }) => {
+				return defaultCoupon ? children : null
+			},
+			DiscountCountdown: ({ children }) => {
+				return defaultCoupon?.expires ? (
+					<DiscountCountdown date={new Date(defaultCoupon?.expires)} />
+				) : null
+			},
+		},
+		{
+			scope: {
+				...(saleData
+					? { ...saleData }
+					: {
+							percentOff: 0,
+							discountFormatted: '0%',
+							discountType: 'percentage',
+							discountValue: 0,
+						}),
+			},
+		},
+	)
 
 	return (
 		<LayoutClient withContainer>

@@ -15,6 +15,7 @@ export type SaleBannerData = {
 	productName: string
 	productType: string | null
 	productPath: string
+	expires: string | null
 }
 
 /**
@@ -77,6 +78,7 @@ export async function getSaleBannerData(
 			discountValue,
 			discountFormatted,
 			percentOff, // for backward compatibility
+			expires: coupon.expires ? new Date(coupon.expires).toISOString() : null,
 			productName: result.product.name,
 			productType: result.product.type,
 			productPath: getResourcePath(
