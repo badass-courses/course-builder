@@ -1,3 +1,5 @@
+'use client'
+
 import * as React from 'react'
 import Image from 'next/image'
 import { Slot } from '@radix-ui/react-slot'

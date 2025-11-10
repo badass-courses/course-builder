@@ -5,7 +5,10 @@ import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
-import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
+import {
+	compileMDX as _compileMDX,
+	type MDXRemoteProps,
+} from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
@@ -36,14 +39,19 @@ const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
  *
  * @param source - MDX source content to compile
+ * @param options - Options to compile the MDX content in
+ * @param options.scope - Scope to compile the MDX content in
+ * @param components - Components to use in the MDX content
  * @returns Compiled MDX content
  */
 export async function compileMDX(
 	source: string,
-	components?: Record<string, React.ComponentType<any>>,
+	components: MDXRemoteProps['components'] = {},
+	options: MDXRemoteProps['options'] = {},
 ) {
 	return await _compileMDX({
 		source: source,
+
 		components: {
 			...components,
 			Code: (props) => <DynamicCode {...props} />,
@@ -125,6 +133,7 @@ export async function compileMDX(
 				],
 				recmaPlugins: [[recmaCodeHike, { components: { code: 'Code' } }]],
 			},
+			...options,
 		},
 	})
 }

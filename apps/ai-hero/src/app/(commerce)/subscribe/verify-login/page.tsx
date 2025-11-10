@@ -38,11 +38,7 @@ export default async function VerifyLoginPage({
 
 	let callbackUrl = `${env.COURSEBUILDER_URL}/subscribe/logged-in`
 
-	console.log({ checkoutUrl, checkoutParams, product })
-
 	const parsedCheckoutParams = CheckoutParamsSchema.safeParse(checkoutParams)
-
-	console.dir({ parsedCheckoutParams }, { depth: null })
 
 	if (!parsedCheckoutParams.success) {
 		return redirect('/login')
