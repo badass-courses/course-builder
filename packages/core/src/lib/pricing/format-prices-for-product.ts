@@ -219,22 +219,36 @@ export async function formatPricesForProduct(
 	let totalDiscountAmount = 0
 
 	if (stackingPath === 'stack' && stackableDiscounts.length > 0) {
-		let currentPrice = fullPrice - fixedDiscountForUpgrade
+		let currentPrice = fullPrice
 
 		for (const discount of stackableDiscounts) {
-			if (discount.discountType === 'fixed') {
+			if (discount.source === 'default' || discount.source === 'user') {
+				if (discount.discountType === 'percentage') {
+					const discountAmount = currentPrice * discount.amount
+					currentPrice = Math.max(0, currentPrice - discountAmount)
+					totalDiscountAmount += discountAmount
+				} else if (discount.discountType === 'fixed') {
+					const discountAmount = (discount.amount / 100) * quantity
+					currentPrice = Math.max(0, currentPrice - discountAmount)
+					totalDiscountAmount += discountAmount
+				}
+			}
+		}
+
+		// Apply entitlement credits AFTER the main coupon
+		// These are special credits based on entitlements
+		for (const discount of stackableDiscounts) {
+			if (discount.source === 'entitlement') {
 				const discountAmount = (discount.amount / 100) * quantity
 				currentPrice = Math.max(0, currentPrice - discountAmount)
 				totalDiscountAmount += discountAmount
 			}
 		}
 
-		for (const discount of stackableDiscounts) {
-			if (discount.discountType === 'percentage') {
-				const discountAmount = currentPrice * discount.amount
-				currentPrice = Math.max(0, currentPrice - discountAmount)
-				totalDiscountAmount += discountAmount
-			}
+		// Apply upgrade discount last (if any)
+		currentPrice = Math.max(0, currentPrice - fixedDiscountForUpgrade)
+		if (fixedDiscountForUpgrade > 0) {
+			totalDiscountAmount += fixedDiscountForUpgrade
 		}
 
 		calculatedPrice = currentPrice
