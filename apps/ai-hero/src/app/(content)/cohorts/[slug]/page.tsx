@@ -313,7 +313,10 @@ export default async function CohortPage(props: {
 				/>
 			),
 			DiscountDeadline: ({ format }: { format?: 'short' | 'long' }) => (
-				<DiscountDeadline format={format} saleData={saleData} />
+				<DiscountDeadline
+					format={format}
+					expires={defaultCoupon?.expires ?? null}
+				/>
 			),
 			HasPurchased: ({
 				productSlug,

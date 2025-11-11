@@ -1,21 +1,19 @@
 'use client'
 
-import type { SaleBannerData } from '@/lib/sale-banner'
-
 /**
  * Display discount deadline date in MDX content
- * Receives already-fetched sale data from server
+ * Receives coupon expiration date from server
  */
 export function DiscountDeadline({
 	format = 'long',
-	saleData,
+	expires,
 }: {
 	format?: 'short' | 'long'
-	saleData: SaleBannerData | null
+	expires: Date | string | null
 }) {
-	if (!saleData?.expires) return null
+	if (!expires) return null
 
-	const dateObj = new Date(saleData.expires)
+	const dateObj = typeof expires === 'string' ? new Date(expires) : expires
 	const options: Intl.DateTimeFormatOptions =
 		format === 'long'
 			? { month: 'long', day: 'numeric', year: 'numeric' }
