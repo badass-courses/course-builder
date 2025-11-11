@@ -18,6 +18,7 @@ const DetermineCouponToApplyParamsSchema = z.object({
 	productId: z.string(),
 	purchaseToBeUpgraded: PurchaseSchema.nullable(),
 	autoApplyPPP: z.boolean(),
+	preferStacking: z.boolean().default(false),
 	usedCoupon: z
 		.object({
 			merchantCouponId: z.string().nullable().optional(),
@@ -25,6 +26,7 @@ const DetermineCouponToApplyParamsSchema = z.object({
 		})
 		.nullable()
 		.optional(),
+	usedCouponId: z.string().optional(),
 	unitPrice: z.number(),
 })
 
@@ -49,13 +51,20 @@ export const determineCouponToApply = async (
 		productId,
 		purchaseToBeUpgraded,
 		autoApplyPPP,
+		preferStacking,
 		usedCoupon,
+		usedCouponId,
 		unitPrice,
 	} = DetermineCouponToApplyParamsSchema.parse(params)
 	// TODO: What are the lookups and logic checks we can
 	// skip when there is no appliedMerchantCouponId?
 
-	const { getMerchantCoupon, getPurchasesForUser } = prismaCtx
+	const {
+		getMerchantCoupon,
+		getPurchasesForUser,
+		getEntitlementsForUser,
+		getCoupon,
+	} = prismaCtx
 
 	// if usedCoupon is restricted to a different product, we shouldn't apply it
 	const couponRestrictedToDifferentProduct =
@@ -70,6 +79,16 @@ export const determineCouponToApply = async (
 
 	const specialMerchantCouponToApply =
 		candidateMerchantCoupon?.type === SPECIAL_TYPE
+			? candidateMerchantCoupon
+			: null
+
+	// Also check if the candidate coupon is a default coupon (percentage or fixed) that should be stackable
+	// This allows default discounts (like 40% early bird or fixed amount) to stack with special credits
+	const defaultCouponToApply =
+		candidateMerchantCoupon &&
+		candidateMerchantCoupon.type !== SPECIAL_TYPE &&
+		((candidateMerchantCoupon.percentageDiscount ?? 0) > 0 ||
+			(candidateMerchantCoupon.amountDiscount ?? 0) > 0)
 			? candidateMerchantCoupon
 			: null
 
@@ -152,12 +171,178 @@ export const determineCouponToApply = async (
 		}
 	}
 
+	// Query entitlements for stackable coupon discounts
+	const stackableDiscounts: Array<{
+		coupon: MinimalMerchantCoupon
+		source: 'default' | 'user' | 'entitlement'
+		discountType: 'fixed' | 'percentage'
+		amount: number // in cents or percentage (0-1)
+		couponId: string
+	}> = []
+
+	/**
+	 * Helper function to add a merchant coupon to stackable discounts if it has a valid discount
+	 */
+	const addStackableDiscount = (
+		merchantCoupon: MinimalMerchantCoupon,
+		source: 'default' | 'user' | 'entitlement',
+		couponId: string,
+	) => {
+		const amountDiscount = merchantCoupon.amountDiscount ?? 0
+		const percentageDiscount = merchantCoupon.percentageDiscount ?? 0
+
+		if (amountDiscount > 0) {
+			stackableDiscounts.push({
+				coupon: merchantCoupon,
+				source,
+				discountType: 'fixed',
+				amount: amountDiscount,
+				couponId,
+			})
+		} else if (percentageDiscount > 0) {
+			stackableDiscounts.push({
+				coupon: merchantCoupon,
+				source,
+				discountType: 'percentage',
+				amount: percentageDiscount,
+				couponId,
+			})
+		}
+	}
+
+	// Check for entitlement-based coupons first to determine if stacking should be enabled
+	// Stacking should ONLY be enabled if the user has entitlement-based coupons
+	// This ensures we don't accidentally allow stacking for regular users
+	let shouldEnableStacking = preferStacking
+	let couponEntitlements: Awaited<ReturnType<typeof getEntitlementsForUser>> =
+		[]
+
+	if (userId) {
+		// Always check entitlements if userId exists
+		couponEntitlements = await getEntitlementsForUser({
+			userId,
+			sourceType: 'COUPON',
+			entitlementType: 'et_83732df61b0c95ea',
+		})
+
+		// If entitlements exist, enable stacking (even if preferStacking was false)
+		if (couponEntitlements.length > 0) {
+			shouldEnableStacking = true
+		}
+	}
+
+	if (userId && shouldEnableStacking) {
+		// Use the already-queried entitlements for coupon-based special credits
+
+		// Get coupons for each entitlement and check if they're stackable
+		for (const entitlement of couponEntitlements) {
+			const coupon = await getCoupon(entitlement.sourceId)
+			if (!coupon || !coupon.merchantCouponId) {
+				continue
+			}
+
+			// Check if coupon is stackable
+			const isStackable = coupon.fields?.stackable === true
+			if (!isStackable) {
+				continue
+			}
+
+			// Check if coupon is restricted to a different product
+			if (
+				coupon.restrictedToProductId &&
+				coupon.restrictedToProductId !== productId
+			) {
+				continue
+			}
+
+			// Get merchant coupon
+			const merchantCoupon = await getMerchantCoupon(coupon.merchantCouponId)
+			if (!merchantCoupon) {
+				continue
+			}
+
+			// Add to stackable discounts if it has a valid discount
+			addStackableDiscount(
+				{
+					id: merchantCoupon.id,
+					type: merchantCoupon.type,
+					status: merchantCoupon.status,
+					percentageDiscount: merchantCoupon.percentageDiscount,
+					amountDiscount: merchantCoupon.amountDiscount,
+				},
+				'entitlement',
+				coupon.id,
+			)
+		}
+
+		// Add the user-entered or default special coupon if it's stackable
+		if (specialMerchantCouponToApply) {
+			const usedCouponRecord = usedCoupon?.merchantCouponId
+				? await getCoupon(usedCoupon.merchantCouponId)
+				: null
+			const isStackable =
+				usedCouponRecord?.fields?.stackable === true ||
+				(usedCouponRecord === null &&
+					specialMerchantCouponToApply.type === SPECIAL_TYPE)
+
+			if (isStackable) {
+				addStackableDiscount(
+					specialMerchantCouponToApply,
+					usedCoupon ? 'user' : 'default',
+					usedCoupon?.merchantCouponId || '',
+				)
+			}
+		}
+
+		// Add default coupon (percentage or fixed, like 40% early bird or fixed amount) if it's stackable
+		// This allows default discounts to stack with special credits
+		if (defaultCouponToApply && shouldEnableStacking) {
+			// Get the coupon record to check if it's stackable
+			// Only fetch if we have a coupon ID to look up
+			const couponRecord = usedCouponId ? await getCoupon(usedCouponId) : null
+
+			const isStackable = couponRecord?.fields?.stackable === true
+
+			if (isStackable) {
+				addStackableDiscount(
+					defaultCouponToApply,
+					usedCoupon ? 'user' : 'default',
+					couponRecord?.id || usedCouponId || '',
+				)
+			}
+		}
+	}
+
+	// Determine stacking path
+	// Rules:
+	// - If PPP is available and shouldEnableStacking = false → use PPP only (exclusive)
+	// - If PPP is available and shouldEnableStacking = true → stack all discounts (ignore PPP)
+	// - If no PPP and shouldEnableStacking = true → stack all applicable discounts
+	// - If no PPP and shouldEnableStacking = false → no stacking
+	let stackingPath: 'stack' | 'ppp' | 'none' = 'none'
+
+	if (pppDetails.status === VALID_PPP) {
+		if (shouldEnableStacking) {
+			// Stacking is enabled (via entitlements), so ignore PPP and stack all discounts
+			stackingPath = stackableDiscounts.length > 0 ? 'stack' : 'none'
+		} else {
+			// Stacking not enabled, so use PPP only and exclude all other discounts
+			stackingPath = 'ppp'
+			stackableDiscounts.length = 0
+		}
+	} else if (stackableDiscounts.length > 0 && shouldEnableStacking) {
+		// No PPP available, but we have stackable discounts and stacking is enabled
+		stackingPath = 'stack'
+	}
+
 	return {
 		appliedMerchantCoupon: couponToApply || undefined,
 		appliedCouponType,
 		appliedDiscountType,
 		availableCoupons,
 		bulk: consideredBulk,
+		stackableDiscounts,
+		stackingPath,
 	}
 }
 

@@ -295,9 +295,6 @@ const CouponGeneratorForm = ({
 								Entitlements will be created immediately upon coupon creation.
 								This action cannot be undone.
 							</p>
-							<p className="text-muted-foreground text-xs">
-								Note: Team purchases will be handled in a later step.
-							</p>
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

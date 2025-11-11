@@ -2,6 +2,7 @@ import { type Adapter } from '@auth/core/adapters'
 
 import {
 	ContentResourceResource,
+	Entitlement,
 	MerchantCharge,
 	NewProduct,
 	UpgradableProduct,
@@ -508,6 +509,12 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	}): Promise<MerchantCoupon[]> {
 		return Promise.resolve([])
 	},
+	getMerchantCouponForTypeAndAmount(params: {
+		type: string
+		amountDiscount: number
+	}): Promise<MerchantCoupon | null> {
+		return Promise.resolve(null)
+	},
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null> {
 		return Promise.resolve(null)
 	},
@@ -570,6 +577,13 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		return Promise.resolve(null)
 	},
 	getPurchasesForUser(userId?: string): Promise<Purchase[]> {
+		return Promise.resolve([])
+	},
+	getEntitlementsForUser(params: {
+		userId: string
+		sourceType?: string
+		entitlementType?: string
+	}): Promise<Entitlement[]> {
 		return Promise.resolve([])
 	},
 	getUserById(userId: string): Promise<User | null> {
@@ -756,6 +770,11 @@ interface SkillProductsCommerceSdk {
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchaseCountForProduct(productId: string): Promise<number>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
+	getEntitlementsForUser(params: {
+		userId: string
+		sourceType?: string
+		entitlementType?: string
+	}): Promise<Entitlement[]>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>
 	getMerchantProductForProductId(
 		productId: string,
@@ -805,6 +824,10 @@ interface SkillProductsCommerceSdk {
 		type: string
 		percentageDiscount: number
 	}): Promise<MerchantCoupon[]>
+	getMerchantCouponForTypeAndAmount(params: {
+		type: string
+		amountDiscount: number
+	}): Promise<MerchantCoupon | null>
 	getCoupon(couponIdOrCode: string): Promise<Coupon | null>
 	getDefaultCoupon(productIds?: string[]): Promise<{
 		defaultMerchantCoupon: MerchantCoupon
