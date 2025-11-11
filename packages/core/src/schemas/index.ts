@@ -1,4 +1,5 @@
 export * from './coupon-schema'
+export * from './entitlement-schema'
 export * from './merchant-coupon-schema'
 export * from './merchant-customer-schema'
 export * from './merchant-product-schema'

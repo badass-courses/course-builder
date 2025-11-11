@@ -30,21 +30,24 @@ export type CouponInput = z.infer<typeof CouponInputSchema>
 /**
  * Creates a merchant coupon in Stripe and the database if it doesn't exist (percentage-based)
  * @param percentageDiscount - The percentage discount as a decimal (e.g., 0.25 for 25%)
+ * @param isSpecialCredit - Whether this is a special credit coupon (true) or regular special coupon (false)
  * @returns The merchant coupon ID
  */
 async function createOrFindMerchantCoupon(
 	percentageDiscount: number,
+	isSpecialCredit: boolean = false,
 ): Promise<string | null> {
 	if (percentageDiscount >= 1) {
 		return null
 	}
 
 	const percentageForStripe = Math.floor(percentageDiscount * 100)
+	const couponType = isSpecialCredit ? 'special credit' : 'special'
 
 	const existingMerchantCoupon = await db.query.merchantCoupon.findFirst({
 		where: and(
 			eq(merchantCouponTable.percentageDiscount, percentageDiscount.toString()),
-			eq(merchantCouponTable.type, 'special'),
+			eq(merchantCouponTable.type, couponType),
 		),
 	})
 
@@ -68,10 +71,13 @@ async function createOrFindMerchantCoupon(
 
 	try {
 		// Create the coupon in Stripe
+		const couponName = isSpecialCredit
+			? `special credit ${percentageForStripe}%`
+			: `special ${percentageForStripe}%`
 		const stripeCouponId =
 			await stripeProvider.options.paymentsAdapter.createCoupon({
 				duration: 'forever',
-				name: `special ${percentageForStripe}%`,
+				name: couponName,
 				percent_off: percentageForStripe,
 				metadata: {
 					type: 'special',
@@ -86,7 +92,7 @@ async function createOrFindMerchantCoupon(
 			status: 1,
 			identifier: stripeCouponId,
 			percentageDiscount: percentageDiscount.toString(),
-			type: 'special',
+			type: couponType,
 		})
 
 		await log.info('coupon.merchant_coupon.created', {
@@ -108,19 +114,23 @@ async function createOrFindMerchantCoupon(
 /**
  * Creates a fixed discount merchant coupon with Stripe coupon for individual purchases
  * @param amountDiscount - The fixed discount amount in cents (e.g., 2000 for $20)
+ * @param isSpecialCredit - Whether this is a special credit coupon (true) or regular special coupon (false)
  * @returns The merchant coupon ID
  */
 async function createOrFindFixedMerchantCoupon(
 	amountDiscount: number,
+	isSpecialCredit: boolean = false,
 ): Promise<string | null> {
 	if (amountDiscount <= 0) {
 		return null
 	}
 
+	const couponType = isSpecialCredit ? 'special credit' : 'special'
+
 	const existingMerchantCoupon = await db.query.merchantCoupon.findFirst({
 		where: and(
 			eq(merchantCouponTable.amountDiscount, amountDiscount),
-			eq(merchantCouponTable.type, 'special'),
+			eq(merchantCouponTable.type, couponType),
 		),
 	})
 
@@ -145,10 +155,13 @@ async function createOrFindFixedMerchantCoupon(
 	try {
 		// Create the Stripe coupon for individual purchases
 		// For bulk purchases, a new transient coupon will be created at checkout
+		const couponName = isSpecialCredit
+			? `special credit $${(amountDiscount / 100).toFixed(2)}`
+			: `special $${(amountDiscount / 100).toFixed(2)}`
 		const stripeCouponId =
 			await stripeProvider.options.paymentsAdapter.createCoupon({
 				duration: 'forever',
-				name: `special $${(amountDiscount / 100).toFixed(2)}`,
+				name: couponName,
 				amount_off: amountDiscount,
 				currency: 'USD',
 				metadata: {
@@ -164,7 +177,7 @@ async function createOrFindFixedMerchantCoupon(
 			status: 1,
 			identifier: stripeCouponId,
 			amountDiscount,
-			type: 'special',
+			type: couponType,
 		})
 
 		await log.info('coupon.merchant_coupon_fixed.created', {
@@ -188,13 +201,22 @@ export async function createCoupon(input: CouponInput) {
 	if (ability.can('create', 'Content')) {
 		let merchantCouponId: string | null = null
 
+		// Check if this is a special credit coupon by looking for eligibilityCondition in fields
+		const isSpecialCredit =
+			input.fields?.eligibilityCondition !== undefined &&
+			input.fields?.eligibilityCondition !== null
+
 		// Create or find merchant coupon based on discount type
 		if (input.discountType === 'percentage' && input.percentageDiscount) {
 			const percentageDiscount = Number(input.percentageDiscount)
-			merchantCouponId = await createOrFindMerchantCoupon(percentageDiscount)
+			merchantCouponId = await createOrFindMerchantCoupon(
+				percentageDiscount,
+				isSpecialCredit,
+			)
 		} else if (input.discountType === 'fixed' && input.amountDiscount) {
 			merchantCouponId = await createOrFindFixedMerchantCoupon(
 				input.amountDiscount,
+				isSpecialCredit,
 			)
 		} else {
 			throw new Error(
