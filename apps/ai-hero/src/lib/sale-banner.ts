@@ -1,7 +1,7 @@
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { formatDiscount } from '@/utils/discount-formatter'
-import { eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import { getCouponForCode } from '@coursebuilder/core/lib/pricing/props-for-commerce'
 import type { Coupon } from '@coursebuilder/core/schemas'
@@ -45,7 +45,13 @@ export async function getSaleBannerData(
 				contentResource,
 				eq(contentResource.id, contentResourceProduct.resourceId),
 			)
-			.where(eq(products.id, coupon.restrictedToProductId))
+			.where(
+				and(
+					eq(products.id, coupon.restrictedToProductId),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.visibility")`, 'public'),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.state")`, 'published'),
+				),
+			)
 			.limit(1)
 
 		const result = rows[0]
