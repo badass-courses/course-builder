@@ -59,6 +59,9 @@ const formSchema = z
 		bypassSoldOut: z.boolean().default(false),
 		status: z.number().default(1),
 		default: z.boolean().default(false),
+		couponType: z.enum(['regular', 'specialCredit']).default('regular'),
+		eligibilityProductId: z.string().optional(),
+		stackable: z.boolean().default(false),
 	})
 	.refine(
 		(data) => {
@@ -72,6 +75,21 @@ const formSchema = z
 		{
 			message:
 				'Please provide either a percentage discount or a fixed amount discount',
+		},
+	)
+	.refine(
+		(data) => {
+			// If special credit, must have eligibility product
+			if (data.couponType === 'specialCredit') {
+				return (
+					data.eligibilityProductId !== undefined &&
+					data.eligibilityProductId !== ''
+				)
+			}
+			return true
+		},
+		{
+			message: 'Special Credit coupons must have an eligibility product',
 		},
 	)
 
@@ -94,6 +112,9 @@ const CouponGeneratorForm = ({
 			bypassSoldOut: false,
 			status: 1,
 			default: false,
+			couponType: 'regular',
+			eligibilityProductId: undefined,
+			stackable: false,
 		},
 	})
 	const [codes, setCodes] = React.useState<string[]>([])
@@ -102,8 +123,11 @@ const CouponGeneratorForm = ({
 	const { toast } = useToast()
 
 	const discountType = form.watch('discountType')
+	const couponType = form.watch('couponType')
 	const percentOffValue = form.watch('percentOff')
 	const amountOffValue = form.watch('amountOff')
+	const [isEligibilityProductIdOpen, setIsEligibilityProductIdOpen] =
+		React.useState(false)
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const { bypassSoldOut, ...couponDataFromForm } = values
 
@@ -125,6 +149,19 @@ const CouponGeneratorForm = ({
 			)
 		}
 
+		// Build fields object with eligibility condition if special credit
+		const fields: Record<string, any> = {
+			bypassSoldOut: bypassSoldOut,
+		}
+
+		if (couponDataFromForm.couponType === 'specialCredit') {
+			fields.eligibilityCondition = {
+				type: 'hasValidProductPurchase',
+				productId: couponDataFromForm.eligibilityProductId,
+			}
+			fields.stackable = couponDataFromForm.stackable
+		}
+
 		const codes = await createCoupon({
 			quantity: couponDataFromForm.quantity,
 			maxUses: Number(couponDataFromForm.maxUses),
@@ -143,9 +180,7 @@ const CouponGeneratorForm = ({
 					: undefined,
 			status: Number(couponDataFromForm.status),
 			default: couponDataFromForm.default,
-			fields: {
-				bypassSoldOut: bypassSoldOut,
-			},
+			fields,
 		})
 
 		if (Boolean(couponDataFromForm.default)) {
@@ -208,6 +243,48 @@ const CouponGeneratorForm = ({
 			<form className="" onSubmit={form.handleSubmit(onSubmit)}>
 				<fieldset className="flex grid-cols-2 flex-col gap-5 space-y-5 lg:grid lg:space-y-0 xl:grid-cols-3">
 					<FormField
+						name="couponType"
+						render={({ field }) => (
+							<FormItem className="space-y-3">
+								<FormLabel>Coupon Type</FormLabel>
+								<FormControl>
+									<div className="flex space-x-4">
+										<label className="flex cursor-pointer items-center space-x-2">
+											<input
+												type="radio"
+												value="regular"
+												checked={field.value === 'regular'}
+												onChange={() => {
+													field.onChange('regular')
+													form.setValue('eligibilityProductId', undefined)
+													form.setValue('stackable', false)
+												}}
+												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+											/>
+											<span>Regular</span>
+										</label>
+										<label className="flex cursor-pointer items-center space-x-2">
+											<input
+												type="radio"
+												value="specialCredit"
+												checked={field.value === 'specialCredit'}
+												onChange={() => {
+													field.onChange('specialCredit')
+												}}
+												className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+											/>
+											<span>Special Credit</span>
+										</label>
+									</div>
+								</FormControl>
+								<FormDescription>
+									Special Credit coupons require eligibility conditions and can
+									use either percentage or fixed amount discounts
+								</FormDescription>
+							</FormItem>
+						)}
+					/>
+					<FormField
 						name="discountType"
 						render={({ field }) => (
 							<FormItem className="space-y-3">
@@ -256,7 +333,71 @@ const CouponGeneratorForm = ({
 							</FormItem>
 						)}
 					/>
-					{form.watch('discountType') === 'percentage' ? (
+					{couponType === 'specialCredit' && discountType === 'fixed' ? (
+						<FormField
+							name="amountOff"
+							key="amountOff"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel htmlFor="amountOff" className="flex h-4">
+											Credit Amount ($)
+										</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												id="amountOff"
+												{...field}
+												value={field.value ?? ''}
+												placeholder={'150'}
+												min="0"
+												step="1"
+												onChange={(e) => {
+													field.onChange(e)
+												}}
+											/>
+										</FormControl>
+										<FormDescription>
+											Credit amount in dollars (e.g., 150 for $150 credit)
+										</FormDescription>
+									</FormItem>
+								)
+							}}
+						/>
+					) : couponType === 'specialCredit' &&
+					  discountType === 'percentage' ? (
+						<FormField
+							key="percentOff"
+							name="percentOff"
+							render={({ field }) => {
+								return (
+									<FormItem>
+										<FormLabel htmlFor="percentOff" className="flex h-4">
+											Credit Percentage
+										</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												id="percentOff"
+												{...field}
+												value={field.value ?? ''}
+												placeholder={'20'}
+												min="0"
+												max="100"
+												step="1"
+												onChange={(e) => {
+													field.onChange(e)
+												}}
+											/>
+										</FormControl>
+										<FormDescription>
+											Credit percentage (e.g., 20 for 20% off)
+										</FormDescription>
+									</FormItem>
+								)
+							}}
+						/>
+					) : discountType === 'percentage' ? (
 						<FormField
 							key="percentOff"
 							name="percentOff"
@@ -318,6 +459,128 @@ const CouponGeneratorForm = ({
 								)
 							}}
 						/>
+					)}
+					{couponType === 'specialCredit' && (
+						<>
+							<FormField
+								name="eligibilityProductId"
+								render={({ field }) => {
+									const value = field.value
+									return (
+										<FormItem className="flex flex-col">
+											<FormLabel htmlFor="eligibilityProductId">
+												Eligibility Product *
+											</FormLabel>
+											<FormControl>
+												<Popover
+													open={isEligibilityProductIdOpen}
+													onOpenChange={setIsEligibilityProductIdOpen}
+												>
+													<PopoverTrigger asChild>
+														<Button
+															variant="outline"
+															role="combobox"
+															aria-expanded={isEligibilityProductIdOpen}
+															className="justify-between"
+														>
+															<span className="truncate overflow-ellipsis">
+																{value
+																	? products.find(
+																			(product) => product.id === value,
+																		)?.name
+																	: 'Select product...'}
+															</span>
+															<ChevronsUpDown className="opacity-50" />
+														</Button>
+													</PopoverTrigger>
+													<PopoverContent className="p-0">
+														<Command>
+															<CommandInput
+																placeholder="Search product..."
+																className="h-9"
+															/>
+															<CommandList>
+																<CommandEmpty>No product found.</CommandEmpty>
+																<CommandGroup>
+																	{products.map((product) => {
+																		const displayName = `${product.name}${
+																			pastEventIds.some(
+																				(id) =>
+																					id ===
+																					product?.resources?.[0]?.resource.id,
+																			)
+																				? ' (Closed)'
+																				: ''
+																		}`
+																		return (
+																			<CommandItem
+																				key={product.id}
+																				value={displayName}
+																				onSelect={() => {
+																					field.onChange(
+																						product.id === value
+																							? undefined
+																							: product.id,
+																					)
+																					setIsEligibilityProductIdOpen(false)
+																				}}
+																				className="flex w-full items-center justify-between"
+																			>
+																				<span>{displayName}</span>{' '}
+																				<div className="flex items-center gap-1">
+																					<span className="text-muted-foreground text-sm">
+																						{product.type}
+																					</span>
+																					<Check
+																						className={cn(
+																							'ml-auto',
+																							value === product.id
+																								? 'opacity-100'
+																								: 'opacity-0',
+																						)}
+																					/>
+																				</div>
+																			</CommandItem>
+																		)
+																	})}
+																</CommandGroup>
+															</CommandList>
+														</Command>
+													</PopoverContent>
+												</Popover>
+											</FormControl>
+											<FormDescription>
+												Users must have a valid purchase of this product to be
+												eligible for this credit
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)
+								}}
+							/>
+							<FormField
+								name="stackable"
+								render={({ field }) => (
+									<FormItem className="flex flex-col">
+										<FormLabel
+											htmlFor="stackable"
+											className="mt-1.5 flex items-center gap-1.5"
+										>
+											<Checkbox
+												id="stackable"
+												checked={field.value}
+												onCheckedChange={field.onChange}
+											/>
+											Stackable
+										</FormLabel>
+										<FormDescription>
+											Allow this credit to stack with other discounts (e.g.,
+											Early Bird)
+										</FormDescription>
+									</FormItem>
+								)}
+							/>
+						</>
 					)}
 					<FormField
 						name="restrictedToProductId"

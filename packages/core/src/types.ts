@@ -341,3 +341,13 @@ export type PricingOptions = {
 }
 
 export { CheckoutParamsSchema, type CheckoutParams }
+
+// Export eligibility condition types
+export type {
+	CouponFields,
+	EligibilityCondition,
+} from './types/eligibility-conditions'
+export {
+	couponFieldsSchema,
+	eligibilityConditionSchema,
+} from './types/eligibility-conditions'
