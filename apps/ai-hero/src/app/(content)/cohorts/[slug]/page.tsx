@@ -130,7 +130,7 @@ export default async function CohortPage(props: {
 
 		const pricingDataLoader = getPricingData({
 			productId: product.id,
-			merchantCouponId: defaultCoupon?.merchantCouponId,
+			merchantCouponId: defaultCoupon?.merchantCouponId ?? undefined,
 			country: countryCode,
 			userId: user?.id,
 		})
@@ -295,7 +295,11 @@ export default async function CohortPage(props: {
 				children: React.ReactNode
 				fallback?: React.ReactNode
 			}) => {
-				return defaultCoupon ? children : fallback || null
+				return defaultCoupon ? (
+					<>{children}</>
+				) : fallback ? (
+					<>{fallback}</>
+				) : null
 			},
 			DiscountCountdown: ({ children }) => {
 				return defaultCoupon?.expires ? (
