@@ -245,6 +245,20 @@ export function createMockAdapter(
 			)
 		}),
 		getCoupon: vi.fn(async (id: string) => {
+			// Return a mock coupon if couponId is provided
+			if (id && id.startsWith('coupon_')) {
+				return {
+					id,
+					code: id,
+					merchantCouponId: id.replace('coupon_', 'coupon_fixed_'),
+					status: 0,
+					fields: {},
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+				} as Coupon
+			}
 			return null
 		}),
 		getPurchase: vi.fn(async (id: string) => {
@@ -336,6 +350,28 @@ export function createMockAdapter(
 				)
 			},
 		),
+		getMerchantCouponForTypeAndAmount: vi.fn(
+			async (options: { type: string; amountDiscount: number }) => {
+				// Find coupon matching type and amount
+				return (
+					Object.values(testMerchantCoupons).find(
+						(c) =>
+							c.type === options.type &&
+							c.amountDiscount === options.amountDiscount,
+					) || null
+				)
+			},
+		),
+		getEntitlementsForUser: vi.fn(async () => []),
+		getDefaultCoupon: vi.fn(async () => null),
+		createMerchantCoupon: vi.fn(async (options) => ({
+			id: `mcoupon_${Date.now()}`,
+			identifier: options.identifier,
+			merchantAccountId: options.merchantAccountId,
+			type: options.type,
+			amountDiscount: options.amountDiscount,
+			status: 1,
+		})),
 	} as unknown as CourseBuilderAdapter
 
 	return { ...defaultAdapter, ...overrides } as CourseBuilderAdapter

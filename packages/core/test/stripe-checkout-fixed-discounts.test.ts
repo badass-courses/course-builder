@@ -51,7 +51,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 			})
 
 			expect(mockCreatePromotionCode).toHaveBeenCalledWith({
-				coupon: expect.any(String),
+				coupon: testMerchantCoupons.fixedAmount20.identifier,
 				max_redemptions: 1,
 				expires_at: expect.any(Number),
 			})
@@ -83,6 +83,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.metadata).toMatchObject({
 				discountType: 'fixed',
@@ -116,7 +117,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 			})
 
 			expect(mockCreatePromotionCode).toHaveBeenCalledWith({
-				coupon: expect.any(String),
+				coupon: testMerchantCoupons.fixedAmount75.identifier,
 				max_redemptions: 1,
 				expires_at: expect.any(Number),
 			})
@@ -216,6 +217,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.metadata).toMatchObject({
 				discountType: 'percentage',
@@ -474,6 +476,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.customer).toBe('cus_existing')
 		})
@@ -539,6 +542,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.customer_creation).toBe('always')
 		})
@@ -571,6 +575,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.success_url).toContain('welcome')
 			expect(sessionCall.success_url).toContain('upgrade=true')
@@ -598,6 +603,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			expect(sessionCall.success_url).toContain('thanks/purchase')
 		})
@@ -637,6 +643,7 @@ describe('stripeCheckout with Fixed Discount Coupons', () => {
 				adapter: mockAdapter,
 			})
 
+			expect(mockCreateSession).toHaveBeenCalled()
 			const sessionCall = mockCreateSession.mock.calls[0][0]
 			const metadata = sessionCall.metadata
 
