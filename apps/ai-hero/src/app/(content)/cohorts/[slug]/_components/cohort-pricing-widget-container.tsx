@@ -6,6 +6,7 @@ import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-wid
 import { CldImage } from '@/components/cld-image'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
+import type { CohortPageProps } from '@/lib/cohort'
 import { track } from '@/utils/analytics'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -13,8 +14,6 @@ import { toSnakeCase } from 'drizzle-orm/casing'
 import { CheckCircle } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
-
-import type { CohortPageProps } from './cohort-page-props'
 
 export const CohortPricingWidgetContainer: React.FC<
 	CohortPageProps & { className?: string; searchParams?: ParsedUrlQuery }

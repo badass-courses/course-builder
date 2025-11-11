@@ -1,7 +1,6 @@
 import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
@@ -9,29 +8,22 @@ import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { DiscountCountdown } from '@/components/mdx/mdx-components'
 import config from '@/config'
-import { courseBuilderAdapter, db } from '@/db'
-import { products, purchases, users } from '@/db/schema'
+import { db } from '@/db'
+import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { checkCohortCertificateEligibility } from '@/lib/certificates'
-import { Cohort } from '@/lib/cohort'
-import { getCohort } from '@/lib/cohorts-query'
-import { getPricingData } from '@/lib/pricing-query'
-import { getModuleProgressForUser } from '@/lib/progress'
-import { getSaleBannerData } from '@/lib/sale-banner'
+import { CohortPageProps } from '@/lib/cohort'
+import { getCachedCohort, loadCohortPageData } from '@/lib/cohorts-query'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
-import { getProviders, getServerAuthSession } from '@/server/auth'
+import { getProviders } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { differenceInCalendarDays } from 'date-fns'
-import { count, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
-import { first } from '@coursebuilder/nodash'
 import {
 	Accordion,
 	AccordionContent,
@@ -46,7 +38,6 @@ import { ModuleProgressProvider } from '../../_components/module-progress-provid
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
-import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
 import ConnectDiscordButton from './_components/connect-discord-button'
@@ -59,7 +50,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const cohort = await getCohort(params.slug)
+	const cohort = await getCachedCohort(params.slug)
 
 	if (!cohort) {
 		return parent as Metadata
@@ -88,128 +79,48 @@ export default async function CohortPage(props: {
 	searchParams: Promise<ParsedUrlQuery>
 }) {
 	const searchParams = await props.searchParams
-	const { allowPurchase } = await props.searchParams
-
+	const { allowPurchase } = searchParams
 	const params = await props.params
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-	const currentOrganization = (await headers()).get('x-organization-id')
-	const cohort = await getCohort(params.slug)
+
+	const pageData = await loadCohortPageData(params.slug, searchParams)
+
+	const {
+		cohort,
+		session,
+		ability,
+		user,
+		currentOrganization,
+		hasCompletedCohort,
+		product,
+		pricingDataLoader,
+		commerceProps,
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity,
+		hasPurchasedCurrentProduct,
+		existingPurchase,
+		defaultCoupon,
+		saleData,
+		workshops,
+		workshopProgressMap,
+	} = pageData
 
 	if (!cohort) {
 		notFound()
 	}
 
-	const { hasCompletedCohort } = await checkCohortCertificateEligibility(
-		cohort.id,
-		user?.id,
-	)
-
-	const productParsed = productSchema.safeParse(
-		first(cohort.resourceProducts)?.product,
-	)
-
-	let cohortProps: CohortPageProps
-	let product: Product | null = null
-
-	if (productParsed.success) {
-		product = productParsed.data
-
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
-
-		const countryCode =
-			(await headers()).get('x-vercel-ip-country') ||
-			process.env.DEFAULT_COUNTRY ||
-			'US'
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					...searchParams,
-				},
-				userId: user?.id,
-				products: [productParsed.data],
-				countryCode,
-			},
-			courseBuilderAdapter,
-		)
-
-		const { count: purchaseCount } = await db
-			.select({ count: count() })
-			.from(purchases)
-			.where(eq(purchases.productId, product.id))
-			.then((res) => res[0] ?? { count: 0 })
-
-		const productWithQuantityAvailable = await db
-			.select({ quantityAvailable: products.quantityAvailable })
-			.from(products)
-			.where(eq(products.id, product.id))
-			.then((res) => res[0])
-
-		let quantityAvailable = -1
-
-		if (productWithQuantityAvailable) {
-			quantityAvailable =
-				productWithQuantityAvailable.quantityAvailable - purchaseCount
-		}
-
-		if (quantityAvailable < 0) {
-			quantityAvailable = -1
-		}
-
-		const baseProps = {
-			cohort,
-			availableBonuses: [],
-			purchaseCount,
-			quantityAvailable,
-			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
-			product,
-			pricingDataLoader,
-			organizationId: currentOrganization,
-			...commerceProps,
-		}
-
-		if (!user) {
-			cohortProps = baseProps
-		} else {
-			const purchaseForProduct = commerceProps.purchases?.find(
-				(purchase: Purchase) => {
-					return purchase.productId === productSchema.parse(product).id
-				},
-			)
-
-			if (!purchaseForProduct) {
-				cohortProps = baseProps
-			} else {
-				const { purchase, existingPurchase } =
-					await courseBuilderAdapter.getPurchaseDetails(
-						purchaseForProduct.id,
-						user.id,
-					)
-				cohortProps = {
-					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(
-						purchase &&
-							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
-					),
-					existingPurchase,
-				}
-			}
-		}
-	} else {
-		cohortProps = {
-			cohort,
-			availableBonuses: [],
-			quantityAvailable: -1,
-			totalQuantity: -1,
-			purchaseCount: 0,
-			pricingDataLoader: Promise.resolve({
-				formattedPrice: null,
-				purchaseToUpgrade: null,
-				quantityAvailable: -1,
-			}),
-		}
+	const cohortProps: CohortPageProps = {
+		cohort,
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity,
+		product: product ?? undefined,
+		pricingDataLoader,
+		hasPurchasedCurrentProduct,
+		existingPurchase,
+		...commerceProps,
+		organizationId: currentOrganization ?? commerceProps.organizationId,
 	}
 
 	const { fields } = cohort
@@ -217,17 +128,12 @@ export default async function CohortPage(props: {
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 
-	const workshops: Workshop[] =
-		cohort.resources?.map((resource) => resource.resource) ?? []
-
 	// Parse cohort start date once for day calculation
 	const cohortStartDate = startsAt ? new Date(startsAt) : null
 
 	const ALLOW_PURCHASE =
 		allowPurchase === 'true' ||
 		cohortProps?.product?.fields.state === 'published'
-
-	const hasPurchasedCurrentProduct = cohortProps.hasPurchasedCurrentProduct
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
@@ -240,22 +146,11 @@ export default async function CohortPage(props: {
 			})
 		: null
 
-	let defaultCoupon = null
-	let saleData = null
-
-	if (product) {
-		const coupons = await courseBuilderAdapter.getDefaultCoupon([product.id])
-		if (coupons?.defaultCoupon) {
-			defaultCoupon = coupons.defaultCoupon
-			saleData = await getSaleBannerData(defaultCoupon)
-		}
-	}
-
 	const { content } = await compileMDX(
 		cohort.fields.body || '',
 		{
 			Enroll: ({ children = 'Enroll Now' }) =>
-				cohortProps.product ? (
+				cohortProps.product && !hasPurchasedCurrentProduct ? (
 					<Pricing.Root
 						{...cohortProps}
 						product={cohortProps.product}
@@ -309,7 +204,7 @@ export default async function CohortPage(props: {
 					cohort={cohort}
 					quantityAvailable={cohortProps.quantityAvailable}
 				/>
-				{cohort && ability.can('update', 'Content') && (
+				{cohort && ability?.can?.('update', 'Content') && (
 					<div className="absolute right-3 top-3 z-10 flex items-center gap-2">
 						{product && (
 							<Button
@@ -400,7 +295,7 @@ export default async function CohortPage(props: {
 
 						<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
 							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
-							<ul className="flex flex-col gap-3">
+							<ul className="divide-border flex flex-col divide-y overflow-hidden rounded-xl border">
 								{workshops.map((workshop, index) => {
 									// Determine end date and timezone for the workshop
 									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
@@ -429,9 +324,9 @@ export default async function CohortPage(props: {
 											) + 1,
 										)
 									}
-									const moduleProgressLoader = getModuleProgressForUser(
-										workshop.fields.slug,
-									)
+									const moduleProgressLoader =
+										workshopProgressMap.get(workshop.fields.slug) ||
+										Promise.resolve(null)
 									return (
 										<li key={workshop.id}>
 											<ModuleProgressProvider
@@ -443,11 +338,11 @@ export default async function CohortPage(props: {
 												>
 													<AccordionItem
 														value={`${workshop.id}-body`}
-														className="bg-card shadow-xs overflow-hidden rounded border"
+														className="bg-card border-none"
 													>
-														<div className="relative flex items-stretch justify-between border-b">
+														<div className="relative flex items-stretch justify-between">
 															<Link
-																className="text-foreground hover:text-primary flex flex-col py-2 pl-4 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																className="text-foreground hover:text-primary flex flex-col py-3 pl-4 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
 																href={getResourcePath(
 																	'workshop',
 																	workshop.fields.slug,
@@ -466,20 +361,22 @@ export default async function CohortPage(props: {
 																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-full shrink-0 items-center justify-center rounded-none border-l bg-transparent"
 															/>
 														</div>
-														<AccordionContent className="pb-2">
-															{/* Display formatted workshop date/time */}
-															<div className="text-muted-foreground text-sm">
-																{/* {dayNumber !== null && (
+														{workshop.resources.length > 0 && (
+															<AccordionContent className="border-t pb-2">
+																{/* Display formatted workshop date/time */}
+																<div className="text-muted-foreground text-sm">
+																	{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-															</div>
-															<ol className="list-inside list-none">
-																<WorkshopListRowRenderer
-																	className="pl-10 [&_[data-state]]:left-5"
-																	workshop={workshop}
-																/>
-															</ol>
-														</AccordionContent>
+																</div>
+																<ol className="list-inside list-none">
+																	<WorkshopListRowRenderer
+																		className="pl-10 [&_[data-state]]:left-5"
+																		workshop={workshop}
+																	/>
+																</ol>
+															</AccordionContent>
+														)}
 													</AccordionItem>
 												</Accordion>
 											</ModuleProgressProvider>
@@ -536,9 +433,9 @@ export default async function CohortPage(props: {
 												) + 1,
 											)
 										}
-										const moduleProgressLoader = getModuleProgressForUser(
-											workshop.fields.slug,
-										)
+										const moduleProgressLoader =
+											workshopProgressMap.get(workshop.fields.slug) ||
+											Promise.resolve(null)
 										return (
 											<li key={workshop.id}>
 												<ModuleProgressProvider
@@ -570,7 +467,10 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						) : ALLOW_PURCHASE ? (
-							<CohortPricingWidgetContainer {...cohortProps} />
+							<CohortPricingWidgetContainer
+								{...cohortProps}
+								searchParams={searchParams}
+							/>
 						) : null}
 					</CohortSidebar>
 				</div>
