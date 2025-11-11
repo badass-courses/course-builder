@@ -4,7 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon, merchantCoupon as merchantCouponTable } from '@/db/schema'
-import { env } from '@/env.mjs'
+import { GRANT_COUPON_ENTITLEMENTS_EVENT } from '@/inngest/functions/coupon/grant-coupon-entitlements'
+import { inngest } from '@/inngest/inngest.server'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
@@ -201,12 +202,10 @@ export async function createCoupon(input: CouponInput) {
 	if (ability.can('create', 'Content')) {
 		let merchantCouponId: string | null = null
 
-		// Check if this is a special credit coupon by looking for eligibilityCondition in fields
 		const isSpecialCredit =
 			input.fields?.eligibilityCondition !== undefined &&
 			input.fields?.eligibilityCondition !== null
 
-		// Create or find merchant coupon based on discount type
 		if (input.discountType === 'percentage' && input.percentageDiscount) {
 			const percentageDiscount = Number(input.percentageDiscount)
 			merchantCouponId = await createOrFindMerchantCoupon(
@@ -225,6 +224,8 @@ export async function createCoupon(input: CouponInput) {
 		}
 
 		const codesArray: string[] = []
+		let firstCouponId: string | null = null
+
 		await db.transaction(async (trx) => {
 			for (let i = 0; i < Number(input.quantity); i++) {
 				const id = `coupon_${guid()}`
@@ -234,6 +235,9 @@ export async function createCoupon(input: CouponInput) {
 					id,
 				})
 				codesArray.push(id)
+				if (i === 0) {
+					firstCouponId = id
+				}
 			}
 		})
 
@@ -245,6 +249,20 @@ export async function createCoupon(input: CouponInput) {
 			merchantCouponId,
 			couponIds: codesArray,
 		})
+
+		// If this is a Special Credit coupon, trigger entitlement granting for the first coupon
+		if (isSpecialCredit && firstCouponId) {
+			await inngest.send({
+				name: GRANT_COUPON_ENTITLEMENTS_EVENT,
+				data: {
+					couponId: firstCouponId,
+				},
+			})
+
+			await log.info('coupon.entitlements.triggered', {
+				couponId: firstCouponId,
+			})
+		}
 
 		revalidatePath('/admin/coupons')
 		return codesArray

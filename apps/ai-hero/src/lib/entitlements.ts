@@ -10,17 +10,20 @@ export type EntitlementType =
 	| 'workshop_content_access'
 	| 'workshop_discord_role'
 	| 'subscription_tier'
+	| 'apply_special_credit'
 
 export enum EntitlementSourceType {
 	PURCHASE = 'PURCHASE',
 	SUBSCRIPTION = 'SUBSCRIPTION',
 	MANUAL = 'MANUAL',
+	COUPON = 'COUPON',
 }
 
 export type EntitlementSource =
 	| { type: EntitlementSourceType.PURCHASE; id: string }
 	| { type: EntitlementSourceType.SUBSCRIPTION; id: string }
 	| { type: EntitlementSourceType.MANUAL; id: string }
+	| { type: EntitlementSourceType.COUPON; id: string }
 
 /**
  * Soft delete all entitlements for a user when a refund occurs

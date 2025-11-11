@@ -39,6 +39,10 @@ import {
 	VideoDetached,
 } from '@/inngest/events/video-attachment'
 import {
+	GRANT_COUPON_ENTITLEMENTS_EVENT,
+	GrantCouponEntitlementsEvent,
+} from '@/inngest/functions/coupon/grant-coupon-entitlements'
+import {
 	SYNC_PURCHASE_TAGS_EVENT,
 	SyncPurchaseTags,
 } from '@/inngest/functions/sync-purchase-tags'
@@ -125,6 +129,7 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
 }
 
 const callbackBase =
