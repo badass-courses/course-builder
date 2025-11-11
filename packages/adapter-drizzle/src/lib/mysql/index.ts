@@ -2067,6 +2067,22 @@ export function mySqlDrizzleAdapter(
 
 			return parsedEntitlements.data
 		},
+		async getEntitlementTypeByName(
+			name: string,
+		): Promise<{ id: string; name: string } | null> {
+			const entitlementType = await client.query.entitlementTypes.findFirst({
+				where: eq(entitlementTypes.name, name),
+			})
+
+			if (!entitlementType) {
+				return null
+			}
+
+			return {
+				id: String(entitlementType.id),
+				name: String(entitlementType.name),
+			}
+		},
 		async getPurchaseDetails(
 			purchaseId: string,
 			userId: string,

@@ -586,6 +586,11 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	}): Promise<Entitlement[]> {
 		return Promise.resolve([])
 	},
+	getEntitlementTypeByName(
+		name: string,
+	): Promise<{ id: string; name: string } | null> {
+		return Promise.resolve(null)
+	},
 	getUserById(userId: string): Promise<User | null> {
 		return Promise.resolve(null)
 	},
@@ -775,6 +780,9 @@ interface SkillProductsCommerceSdk {
 		sourceType?: string
 		entitlementType?: string
 	}): Promise<Entitlement[]>
+	getEntitlementTypeByName(
+		name: string,
+	): Promise<{ id: string; name: string } | null>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>
 	getMerchantProductForProductId(
 		productId: string,
