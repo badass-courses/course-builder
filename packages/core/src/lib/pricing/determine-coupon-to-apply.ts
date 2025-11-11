@@ -294,9 +294,7 @@ export const determineCouponToApply = async (
 		if (specialMerchantCouponToApply) {
 			let usedCouponRecord: Coupon | null = null
 
-			if (usedCoupon && 'fields' in usedCoupon && 'id' in usedCoupon) {
-				usedCouponRecord = usedCoupon as Coupon
-			} else if (usedCouponId) {
+			if (usedCouponId) {
 				usedCouponRecord = await getCoupon(usedCouponId)
 			}
 

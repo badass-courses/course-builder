@@ -227,9 +227,8 @@ const checkForAvailableCoupons = async ({
 				quantity,
 			})
 
-		// When stacking is enabled, always prefer the default coupon as the main coupon
-		// Entitlement-based coupons should only be added to stackableDiscounts, not used as the main coupon
-		// This ensures the site-wide default (could be percentage or fixed) is always the base discount
+		// Always prefer the default coupon as the base coupon when one exists
+		// (stacking logic in formatPricesForProduct will add entitlement-based discounts on top)
 		if (defaultCoupon && defaultCoupon.merchantCouponId) {
 			const defaultMerchantCoupon =
 				await courseBuilderAdapter.getMerchantCoupon(
