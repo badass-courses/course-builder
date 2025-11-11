@@ -8,6 +8,9 @@ import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { DiscountCountdown } from '@/components/mdx/mdx-components'
+import { DiscountDeadline } from '@/components/pricing/discount-deadline'
+import { HasPurchased } from '@/components/pricing/has-purchased'
+import { PricingInline } from '@/components/pricing/pricing-inline'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases, users } from '@/db/schema'
@@ -111,18 +114,26 @@ export default async function CohortPage(props: {
 
 	let cohortProps: CohortPageProps
 	let product: Product | null = null
+	let defaultCoupon = null
 
 	if (productParsed.success) {
 		product = productParsed.data
 
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
+		// Get default coupon BEFORE creating pricingDataLoader
+		const coupons = await courseBuilderAdapter.getDefaultCoupon([product.id])
+		defaultCoupon = coupons?.defaultCoupon
 
 		const countryCode =
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
+
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+			merchantCouponId: defaultCoupon?.merchantCouponId ?? undefined,
+			country: countryCode,
+			userId: user?.id,
+		})
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
@@ -240,16 +251,14 @@ export default async function CohortPage(props: {
 			})
 		: null
 
-	let defaultCoupon = null
-	let saleData = null
+	// Get sale data from already-fetched defaultCoupon
+	const saleData = defaultCoupon ? await getSaleBannerData(defaultCoupon) : null
 
-	if (product) {
-		const coupons = await courseBuilderAdapter.getDefaultCoupon([product.id])
-		if (coupons?.defaultCoupon) {
-			defaultCoupon = coupons.defaultCoupon
-			saleData = await getSaleBannerData(defaultCoupon)
-		}
-	}
+	// Get product slug to ID map for HasPurchased component
+	const allProducts = await db.query.products.findMany({
+		where: eq(products.status, 1),
+	})
+	const productMap = new Map(allProducts.map((p) => [p.fields?.slug, p.id]))
 
 	const { content } = await compileMDX(
 		cohort.fields.body || '',
@@ -279,14 +288,54 @@ export default async function CohortPage(props: {
 						</Pricing.BuyButton>
 					</Pricing.Root>
 				) : null,
-			HasDiscount: ({ children }) => {
-				return defaultCoupon ? children : null
+			HasDiscount: ({
+				children,
+				fallback,
+			}: {
+				children: React.ReactNode
+				fallback?: React.ReactNode
+			}) => {
+				return defaultCoupon ? (
+					<>{children}</>
+				) : fallback ? (
+					<>{fallback}</>
+				) : null
 			},
 			DiscountCountdown: ({ children }) => {
 				return defaultCoupon?.expires ? (
 					<DiscountCountdown date={new Date(defaultCoupon?.expires)} />
 				) : null
 			},
+			PricingInline: ({ type }: { type: 'original' | 'discounted' }) => (
+				<PricingInline
+					type={type}
+					pricingDataLoader={cohortProps.pricingDataLoader}
+				/>
+			),
+			DiscountDeadline: ({ format }: { format?: 'short' | 'long' }) => (
+				<DiscountDeadline
+					format={format}
+					expires={defaultCoupon?.expires ?? null}
+				/>
+			),
+			HasPurchased: ({
+				productSlug,
+				productId,
+				children,
+			}: {
+				productSlug?: string
+				productId?: string
+				children: React.ReactNode
+			}) => (
+				<HasPurchased
+					productSlug={productSlug}
+					productId={productId}
+					purchases={cohortProps.purchases || []}
+					productMap={productMap}
+				>
+					{children}
+				</HasPurchased>
+			),
 		},
 		{
 			scope: {
