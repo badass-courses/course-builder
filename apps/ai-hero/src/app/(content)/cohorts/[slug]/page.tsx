@@ -455,9 +455,11 @@ export default async function CohortPage(props: {
 																)}
 															>
 																{workshop.fields.title}{' '}
-																<div className="mt-1 text-sm font-normal opacity-80">
-																	Available from {workshopDateString}
-																</div>
+																{workshopDateString && (
+																	<div className="mt-1 text-sm font-normal opacity-80">
+																		Available from {workshopDateString}
+																	</div>
+																)}
 															</Link>
 															<AccordionTrigger
 																aria-label="Toggle lessons"
