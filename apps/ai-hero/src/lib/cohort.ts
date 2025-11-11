@@ -135,4 +135,5 @@ export type CohortPageProps = {
 	userId?: string
 	pricingDataLoader: Promise<PricingData>
 	pricingWidgetOptions?: Partial<PricingOptions>
+	organizationId?: string | null
 } & CommerceProps

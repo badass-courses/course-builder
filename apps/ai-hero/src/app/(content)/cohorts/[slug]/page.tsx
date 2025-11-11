@@ -11,7 +11,7 @@ import config from '@/config'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { CohortPageProps } from '@/lib/cohort'
+import { CohortPageProps, type Cohort } from '@/lib/cohort'
 import { getCachedCohort, loadCohortPageData } from '@/lib/cohorts-query'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
@@ -120,7 +120,7 @@ export default async function CohortPage(props: {
 		hasPurchasedCurrentProduct,
 		existingPurchase,
 		...commerceProps,
-		organizationId: currentOrganization ?? commerceProps.organizationId,
+		organizationId: currentOrganization,
 	}
 
 	const { fields } = cohort
@@ -361,22 +361,23 @@ export default async function CohortPage(props: {
 																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-full shrink-0 items-center justify-center rounded-none border-l bg-transparent"
 															/>
 														</div>
-														{workshop.resources.length > 0 && (
-															<AccordionContent className="border-t pb-2">
-																{/* Display formatted workshop date/time */}
-																<div className="text-muted-foreground text-sm">
-																	{/* {dayNumber !== null && (
+														{workshop.resources &&
+															workshop.resources.length > 0 && (
+																<AccordionContent className="border-t pb-2">
+																	{/* Display formatted workshop date/time */}
+																	<div className="text-muted-foreground text-sm">
+																		{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-																</div>
-																<ol className="list-inside list-none">
-																	<WorkshopListRowRenderer
-																		className="pl-10 [&_[data-state]]:left-5"
-																		workshop={workshop}
-																	/>
-																</ol>
-															</AccordionContent>
-														)}
+																	</div>
+																	<ol className="list-inside list-none">
+																		<WorkshopListRowRenderer
+																			className="pl-10 [&_[data-state]]:left-5"
+																			workshop={workshop}
+																		/>
+																	</ol>
+																</AccordionContent>
+															)}
 													</AccordionItem>
 												</Accordion>
 											</ModuleProgressProvider>
