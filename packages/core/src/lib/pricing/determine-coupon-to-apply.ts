@@ -213,6 +213,7 @@ export const determineCouponToApply = async (
 	// Check for entitlement-based coupons first to determine if stacking should be enabled
 	// Stacking should ONLY be enabled if the user has entitlement-based coupons
 	// This ensures we don't accidentally allow stacking for regular users
+	// However, if preferStacking is explicitly false AND PPP is available, respect that choice (user prefers PPP)
 	let shouldEnableStacking = preferStacking
 	let couponEntitlements: Awaited<ReturnType<typeof getEntitlementsForUser>> =
 		[]
@@ -225,9 +226,14 @@ export const determineCouponToApply = async (
 			entitlementType: 'et_83732df61b0c95ea',
 		})
 
-		// If entitlements exist, enable stacking (even if preferStacking was false)
+		// If entitlements exist, enable stacking UNLESS:
+		// - preferStacking is explicitly false AND PPP is available (user prefers PPP over stacking)
 		if (couponEntitlements.length > 0) {
-			shouldEnableStacking = true
+			const shouldRespectPreferStackingFalse =
+				preferStacking === false && pppDetails.status === VALID_PPP
+			if (!shouldRespectPreferStackingFalse) {
+				shouldEnableStacking = true
+			}
 		}
 	}
 
