@@ -363,6 +363,15 @@ export function createMockAdapter(
 			},
 		),
 		getEntitlementsForUser: vi.fn(async () => []),
+		getEntitlementTypeByName: vi.fn(async (name: string) => {
+			if (name === 'apply_special_credit') {
+				return {
+					id: 'et_test_123',
+					name: 'apply_special_credit',
+				}
+			}
+			return null
+		}),
 		getDefaultCoupon: vi.fn(async () => null),
 		createMerchantCoupon: vi.fn(async (options) => ({
 			id: `mcoupon_${Date.now()}`,
