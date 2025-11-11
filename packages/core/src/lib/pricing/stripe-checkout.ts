@@ -323,15 +323,23 @@ export async function stripeCheckout({
 
 			// Only enable stacking if the user has an entitlement-based coupon
 			// Stacking should ONLY happen when there's an entitlement (special credit)
-			const hasEntitlementCoupon = userId
-				? (
-						await adapter.getEntitlementsForUser({
-							userId,
-							sourceType: 'COUPON',
-							entitlementType: 'et_83732df61b0c95ea',
-						})
-					).length > 0
-				: false
+
+			const specialCreditEntitlementType =
+				adapter && userId
+					? await adapter.getEntitlementTypeByName('apply_special_credit')
+					: null
+			const entitlementTypeId = specialCreditEntitlementType?.id
+
+			const hasEntitlementCoupon =
+				userId && entitlementTypeId && adapter
+					? (
+							await adapter.getEntitlementsForUser({
+								userId,
+								sourceType: 'COUPON',
+								entitlementType: entitlementTypeId,
+							})
+						).length > 0
+					: false
 
 			const pricingResult = await formatPricesForProduct({
 				productId,

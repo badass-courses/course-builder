@@ -64,6 +64,7 @@ export const determineCouponToApply = async (
 		getPurchasesForUser,
 		getEntitlementsForUser,
 		getCoupon,
+		getEntitlementTypeByName,
 	} = prismaCtx
 
 	// if usedCoupon is restricted to a different product, we shouldn't apply it
@@ -220,11 +221,19 @@ export const determineCouponToApply = async (
 
 	if (userId) {
 		// Always check entitlements if userId exists
-		couponEntitlements = await getEntitlementsForUser({
-			userId,
-			sourceType: 'COUPON',
-			entitlementType: 'et_83732df61b0c95ea',
-		})
+
+		const specialCreditEntitlementType = await getEntitlementTypeByName(
+			'apply_special_credit',
+		)
+		const entitlementTypeId = specialCreditEntitlementType?.id
+
+		if (entitlementTypeId) {
+			couponEntitlements = await getEntitlementsForUser({
+				userId,
+				sourceType: 'COUPON',
+				entitlementType: entitlementTypeId,
+			})
+		}
 
 		// If entitlements exist, enable stacking UNLESS:
 		// - preferStacking is explicitly false AND PPP is available (user prefers PPP over stacking)
