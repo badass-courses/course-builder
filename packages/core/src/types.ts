@@ -286,6 +286,14 @@ export type FormattedPrice = {
 	appliedMerchantCoupon?: MinimalMerchantCoupon
 	appliedDiscountType?: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none'
 	appliedFixedDiscount?: number
+	stackableDiscounts?: Array<{
+		couponId: string
+		discountType: 'fixed' | 'percentage'
+		amount: number
+		label: string
+	}>
+	totalDiscountAmount?: number
+	stackingPath?: 'stack' | 'ppp' | 'none'
 	upgradeFromPurchaseId?: string
 	upgradeFromPurchase?: Purchase
 	upgradedProduct?: ProductWithPrices | null
@@ -304,6 +312,7 @@ export type FormatPricesForProductOptions = {
 	upgradeFromPurchaseId?: string
 	userId?: string
 	autoApplyPPP?: boolean
+	preferStacking?: boolean
 	usedCouponId?: string
 }
 

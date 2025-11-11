@@ -210,8 +210,14 @@ const Price = ({
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
 	const appliedFixedDiscount = formattedPrice?.appliedFixedDiscount
 	const appliedDiscountType = formattedPrice?.appliedDiscountType
+	const stackableDiscounts = formattedPrice?.stackableDiscounts
+	const stackingPath = formattedPrice?.stackingPath
 
 	const fullPrice = formattedPrice?.fullPrice
+
+	const specialCredit = stackableDiscounts?.find(
+		(discount) => discount.label === 'Special Credit',
+	)
 
 	const percentOff = appliedMerchantCoupon
 		? Math.floor(+(appliedMerchantCoupon.percentageDiscount ?? 0) * 100)
@@ -232,80 +238,101 @@ const Price = ({
 	return (
 		<div className={cn('flex flex-col items-center', className)}>
 			{children || (
-				<div
-					className={cn(
-						'mt-2 flex h-[76px] items-center justify-center gap-0.5',
-						{
-							'flex h-[76px] items-center': status === 'pending',
-							hidden: status === 'error',
-						},
-					)}
-				>
-					{status === 'pending' ? (
-						<div className="flex h-12 items-center justify-center">
-							<span className="sr-only">Loading price</span>
-							<PriceSpinner aria-hidden="true" className="h-8 w-8" />
-						</div>
-					) : (
-						<>
-							<sup
-								className="font-heading -mt-3 text-base font-semibold opacity-60"
-								aria-hidden="true"
-							>
-								US
-							</sup>
-							<div
-								aria-live="polite"
-								className="text-foreground font-heading flex text-6xl font-bold"
-							>
-								{formattedPrice?.calculatedPrice &&
-									formatUsd(formattedPrice?.calculatedPrice).dollars}
-								<span
-									className="sup font-heading mt-1 pl-0.5 align-sub text-base text-sm opacity-60"
+				<>
+					<div
+						className={cn(
+							'mt-2 flex h-[76px] items-center justify-center gap-0.5',
+							{
+								'flex h-[76px] items-center': status === 'pending',
+								hidden: status === 'error',
+							},
+						)}
+					>
+						{status === 'pending' ? (
+							<div className="flex h-12 items-center justify-center">
+								<span className="sr-only">Loading price</span>
+								<PriceSpinner aria-hidden="true" className="h-8 w-8" />
+							</div>
+						) : (
+							<>
+								<sup
+									className="font-heading -mt-3 text-base font-semibold opacity-60"
 									aria-hidden="true"
 								>
+									US
+								</sup>
+								<div
+									aria-live="polite"
+									className="text-foreground font-heading flex text-6xl font-bold"
+								>
 									{formattedPrice?.calculatedPrice &&
-										formatUsd(formattedPrice?.calculatedPrice).cents}
-								</span>
-								{Boolean(
-									appliedMerchantCoupon || isDiscount(formattedPrice),
-								) && (
-									<>
-										<div
-											aria-hidden="true"
-											className="mt-1.5 flex flex-col items-center pl-3 font-normal"
-										>
-											<div className="text-foreground relative flex text-2xl leading-none line-through">
-												{'$' + fullPrice}
+										formatUsd(formattedPrice?.calculatedPrice).dollars}
+									<span
+										className="sup font-heading mt-1 pl-0.5 align-sub text-base text-sm opacity-60"
+										aria-hidden="true"
+									>
+										{formattedPrice?.calculatedPrice &&
+											formatUsd(formattedPrice?.calculatedPrice).cents}
+									</span>
+									{Boolean(
+										appliedMerchantCoupon || isDiscount(formattedPrice),
+									) && (
+										<>
+											<div
+												aria-hidden="true"
+												className="mt-1.5 flex flex-col items-center pl-3 font-normal"
+											>
+												<div className="text-foreground relative flex text-2xl leading-none line-through">
+													{'$' + fullPrice}
+												</div>
+												{/* Show percentage discount when stacking (40% is the main coupon), not the special credit */}
+												{stackingPath === 'stack' &&
+												appliedMerchantCoupon?.percentageDiscount ? (
+													<div
+														data-save-percent=""
+														className="text-primary text-base"
+													>
+														Save {percentOff}%
+													</div>
+												) : stackingPath === 'stack' && specialCredit ? (
+													<div className="text-primary text-base">
+														Save ${specialCredit.amount.toFixed(2)}
+													</div>
+												) : appliedDiscountType === 'fixed' &&
+												  appliedFixedDiscount ? (
+													<div className="text-primary text-base">
+														Save ${appliedFixedDiscount.toFixed(2)}
+													</div>
+												) : (
+													<div
+														data-save-percent=""
+														className="text-primary text-base"
+													>
+														Save {percentOff}%
+													</div>
+												)}
 											</div>
-											{appliedDiscountType === 'fixed' &&
-											appliedFixedDiscount ? (
-												<div className="text-primary text-base">
-													Save ${appliedFixedDiscount.toFixed(2)}
-												</div>
-											) : (
-												<div
-													data-save-percent=""
-													className="text-primary text-base"
-												>
-													Save {percentOff}%
-												</div>
-											)}
-										</div>
-										<div className="sr-only">
-											{appliedMerchantCoupon?.type === 'bulk' ? (
-												<div>Team discount.</div>
-											) : null}{' '}
-											{appliedDiscountType === 'fixed'
-												? fixedDiscountLabel
-												: percentOffLabel}
-										</div>
-									</>
-								)}
-							</div>
-						</>
+											<div className="sr-only">
+												{appliedMerchantCoupon?.type === 'bulk' ? (
+													<div>Team discount.</div>
+												) : null}{' '}
+												{appliedDiscountType === 'fixed'
+													? fixedDiscountLabel
+													: percentOffLabel}
+											</div>
+										</>
+									)}
+								</div>
+							</>
+						)}
+					</div>
+					{/* Display special credit message below price - always show if special credit exists */}
+					{stackingPath === 'stack' && specialCredit && (
+						<div className="text-primary p-4 text-sm">
+							You have a special credit of ${specialCredit.amount.toFixed(2)}
+						</div>
 					)}
-				</div>
+				</>
 			)}
 		</div>
 	)

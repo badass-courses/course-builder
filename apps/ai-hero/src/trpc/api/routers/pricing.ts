@@ -225,6 +225,24 @@ const checkForAvailableCoupons = async ({
 				quantity,
 			})
 
+		// When stacking is enabled, always prefer the default coupon as the main coupon
+		// Entitlement-based coupons should only be added to stackableDiscounts, not used as the main coupon
+		// This ensures the site-wide default (could be percentage or fixed) is always the base discount
+		if (defaultCoupon && defaultCoupon.merchantCouponId) {
+			const defaultMerchantCoupon =
+				await courseBuilderAdapter.getMerchantCoupon(
+					defaultCoupon.merchantCouponId,
+				)
+
+			if (defaultMerchantCoupon) {
+				return {
+					activeMerchantCoupon: defaultMerchantCoupon,
+					defaultCoupon,
+					usedCouponId: defaultCoupon.id,
+				}
+			}
+		}
+
 		return {
 			activeMerchantCoupon,
 			defaultCoupon,
@@ -335,6 +353,19 @@ export const pricingRouter = createTRPCRouter({
 					quantity,
 				})
 
+			// Only enable stacking if the user has an entitlement-based coupon
+			// Stacking should ONLY happen when there's an entitlement (special credit)
+			// NOT for regular users with PPP or site-wide coupons
+			const hasEntitlementCoupon = verifiedUserId
+				? (
+						await courseBuilderAdapter.getEntitlementsForUser({
+							userId: verifiedUserId,
+							sourceType: 'COUPON',
+							entitlementType: 'et_83732df61b0c95ea',
+						})
+					).length > 0
+				: false
+
 			const productPrices = await formatPricesForProduct({
 				productId,
 				country,
@@ -343,6 +374,7 @@ export const pricingRouter = createTRPCRouter({
 				...(upgradeFromPurchaseId && { upgradeFromPurchaseId }),
 				userId: verifiedUserId,
 				autoApplyPPP,
+				preferStacking: hasEntitlementCoupon,
 				usedCouponId,
 				ctx: courseBuilderAdapter,
 			})
