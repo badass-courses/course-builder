@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { CourseBuilderAdapter, MockCourseBuilderAdapter } from '../../adapters'
-import { MerchantCoupon, Purchase } from '../../schemas'
+import { Coupon, MerchantCoupon, Purchase } from '../../schemas'
 import { MinimalMerchantCoupon } from '../../types'
 import { getBulkDiscountPercent } from './bulk-coupon.js'
 import { getPPPDiscountPercent } from './parity-coupon.js'
@@ -283,19 +283,27 @@ export const determineCouponToApply = async (
 
 		// Add the user-entered or default special coupon if it's stackable
 		if (specialMerchantCouponToApply) {
-			const usedCouponRecord = usedCoupon?.merchantCouponId
-				? await getCoupon(usedCoupon.merchantCouponId)
-				: null
+			let usedCouponRecord: Coupon | null = null
+
+			if (usedCoupon && 'fields' in usedCoupon && 'id' in usedCoupon) {
+				usedCouponRecord = usedCoupon as Coupon
+			} else if (usedCouponId) {
+				usedCouponRecord = await getCoupon(usedCouponId)
+			}
+
 			const isStackable =
 				usedCouponRecord?.fields?.stackable === true ||
 				(usedCouponRecord === null &&
-					specialMerchantCouponToApply.type === SPECIAL_TYPE)
+					specialMerchantCouponToApply.type === SPECIAL_TYPE) ||
+				(shouldEnableStacking &&
+					specialMerchantCouponToApply.type === SPECIAL_TYPE &&
+					usedCouponRecord?.fields?.stackable !== false)
 
 			if (isStackable) {
 				addStackableDiscount(
 					specialMerchantCouponToApply,
 					usedCoupon ? 'user' : 'default',
-					usedCoupon?.merchantCouponId || '',
+					usedCouponRecord?.id || usedCouponId || '',
 				)
 			}
 		}
