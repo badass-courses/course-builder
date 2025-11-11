@@ -537,12 +537,18 @@ describe('determineCouponToApply', () => {
 		})
 
 		it('should enable stacking when user has entitlement-based coupons', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
 			const mockAdapter = createMockAdapter({
 				getPurchasesForUser: vi.fn(async () => []),
 				getEntitlementsForUser: vi.fn(async () => [
 					{
 						id: 'entitlement_1',
-						entitlementType: 'et_83732df61b0c95ea',
+						entitlementType: entitlementTypeId,
 						userId: 'user_1',
 						sourceType: 'COUPON',
 						sourceId: 'coupon_credit_150',
@@ -616,12 +622,19 @@ describe('determineCouponToApply', () => {
 		})
 
 		it('should prefer PPP over stacking when PPP is available', async () => {
+			// Get the entitlement type ID dynamically
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
 			const mockAdapter = createMockAdapter({
 				getPurchasesForUser: vi.fn(async () => []), // No valid purchases = PPP eligible
 				getEntitlementsForUser: vi.fn(async () => [
 					{
 						id: 'entitlement_1',
-						entitlementType: 'et_83732df61b0c95ea',
+						entitlementType: entitlementTypeId,
 						userId: 'user_ppp',
 						sourceType: 'COUPON',
 						sourceId: 'coupon_credit_150',
@@ -659,6 +672,13 @@ describe('determineCouponToApply', () => {
 		})
 
 		it('should stack discounts when preferStacking is true and no PPP', async () => {
+			// Get the entitlement type ID dynamically
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
 			const mockAdapter = createMockAdapter({
 				getPurchasesForUser: vi.fn(async () => [
 					testPurchases.validBasic, // Has valid purchase = not PPP eligible
@@ -666,7 +686,7 @@ describe('determineCouponToApply', () => {
 				getEntitlementsForUser: vi.fn(async () => [
 					{
 						id: 'entitlement_1',
-						entitlementType: 'et_83732df61b0c95ea',
+						entitlementType: entitlementTypeId,
 						userId: 'user_1',
 						sourceType: 'COUPON',
 						sourceId: 'coupon_credit_150',
