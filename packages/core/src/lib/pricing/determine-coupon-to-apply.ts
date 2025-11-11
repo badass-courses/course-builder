@@ -298,13 +298,16 @@ export const determineCouponToApply = async (
 				usedCouponRecord = await getCoupon(usedCouponId)
 			}
 
+			// Determine if coupon is stackable based on type:
+			// - Default coupons (default === true): stackable when entitlements exist (shouldEnableStacking)
+			// - Entitlement-based coupons (default === false): require explicit stackable: true flag
+			// - If coupon record can't be found: fail-closed (not stackable)
 			const isStackable =
-				usedCouponRecord?.fields?.stackable === true ||
-				(usedCouponRecord === null &&
-					specialMerchantCouponToApply.type === SPECIAL_TYPE) ||
-				(shouldEnableStacking &&
-					specialMerchantCouponToApply.type === SPECIAL_TYPE &&
-					usedCouponRecord?.fields?.stackable !== false)
+				usedCouponRecord?.default === true
+					? shouldEnableStacking
+					: usedCouponRecord?.default === false
+						? usedCouponRecord?.fields?.stackable === true
+						: false
 
 			if (isStackable) {
 				addStackableDiscount(
