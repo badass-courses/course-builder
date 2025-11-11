@@ -96,11 +96,11 @@ export type CohortPageData = {
 	cohort: Cohort
 	session: Awaited<ReturnType<typeof getServerAuthSession>>['session']
 	ability: Awaited<ReturnType<typeof getServerAuthSession>>['ability']
-	user: Awaited<ReturnType<typeof getServerAuthSession>>['session'] extends {
-		user: infer U
-	}
-		? U
-		: null
+	user:
+		| NonNullable<
+				Awaited<ReturnType<typeof getServerAuthSession>>['session']
+		  >['user']
+		| null
 	currentOrganization: string | null
 	hasCompletedCohort: boolean
 	product: Product | null
@@ -116,8 +116,9 @@ export type CohortPageData = {
 		  >['existingPurchase']
 		| null
 	defaultCoupon:
-		| Awaited<
-				ReturnType<typeof courseBuilderAdapter.getDefaultCoupon>
+		| Extract<
+				Awaited<ReturnType<typeof courseBuilderAdapter.getDefaultCoupon>>,
+				{ defaultCoupon: unknown }
 		  >['defaultCoupon']
 		| null
 	saleData: Awaited<ReturnType<typeof getSaleBannerData>> | null
@@ -238,9 +239,9 @@ export async function loadCohortPageData(
 		quantityAvailable =
 			productQuantity >= 0 ? Math.max(0, productQuantity - purchaseCount) : -1
 
-		if (user) {
+		if (user && product) {
 			const purchaseForProduct = commerceProps.purchases?.find(
-				(purchase: PurchaseSchema) => purchase.productId === product.id,
+				(purchase: PurchaseSchema) => purchase.productId === product!.id,
 			)
 
 			if (purchaseForProduct) {
