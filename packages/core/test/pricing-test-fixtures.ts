@@ -247,10 +247,14 @@ export function createMockAdapter(
 		getCoupon: vi.fn(async (id: string) => {
 			// Return a mock coupon if couponId is provided
 			if (id && id.startsWith('coupon_')) {
+				const merchantCoupon = Object.values(testMerchantCoupons).find(
+					(c) => c.id === id,
+				)
+
 				return {
 					id,
 					code: id,
-					merchantCouponId: id.replace('coupon_', 'coupon_fixed_'),
+					merchantCouponId: merchantCoupon?.id || id,
 					status: 0,
 					fields: {},
 					maxUses: -1,
