@@ -11,7 +11,7 @@ import { inngest } from '@/inngest/inngest.server'
 import { EntitlementSourceType } from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
-import { and, eq, inArray, isNull } from 'drizzle-orm'
+import { and, eq, gt, inArray, isNull } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
@@ -150,6 +150,8 @@ export const grantCouponEntitlements = inngest.createFunction(
 					where: and(
 						eq(purchases.productId, eligibilityCondition.condition.productId),
 						inArray(purchases.status, ['Valid']),
+						gt(purchases.totalAmount, '0'),
+						isNull(purchases.bulkCouponId),
 					),
 					with: {
 						user: true,
