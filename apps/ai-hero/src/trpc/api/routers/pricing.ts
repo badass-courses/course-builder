@@ -1,8 +1,10 @@
 import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
+import { entitlementTypes } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
+import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
@@ -356,15 +358,25 @@ export const pricingRouter = createTRPCRouter({
 			// Only enable stacking if the user has an entitlement-based coupon
 			// Stacking should ONLY happen when there's an entitlement (special credit)
 			// NOT for regular users with PPP or site-wide coupons
-			const hasEntitlementCoupon = verifiedUserId
-				? (
+			let hasEntitlementCoupon = false
+			if (verifiedUserId) {
+				// Look up entitlement type by canonical name to avoid hard-coding IDs
+				const couponCreditEntitlementType =
+					await db.query.entitlementTypes.findFirst({
+						where: eq(entitlementTypes.name, 'apply_special_credit'),
+					})
+
+				if (couponCreditEntitlementType) {
+					const entitlements =
 						await courseBuilderAdapter.getEntitlementsForUser({
 							userId: verifiedUserId,
 							sourceType: 'COUPON',
-							entitlementType: 'et_83732df61b0c95ea',
+							entitlementType: couponCreditEntitlementType.id,
 						})
-					).length > 0
-				: false
+
+					hasEntitlementCoupon = entitlements.length > 0
+				}
+			}
 
 			const productPrices = await formatPricesForProduct({
 				productId,
