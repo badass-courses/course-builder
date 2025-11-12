@@ -94,53 +94,10 @@ const Navigation = () => {
 						className="hidden items-stretch md:flex"
 					>
 						<NavigationMenuList className="divide-border flex h-full items-stretch gap-0 divide-x">
-							{navData.courses.length > 0 && (
-								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
-										Courses
-									</NavigationMenuTrigger>
-									<NavigationMenuContent>
-										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
-											{navData.courses.map((course) => (
-												<NavigationMenuLink key={course.href} asChild>
-													<Link
-														href={course.href}
-														className="relative flex flex-row items-center gap-5 pr-8"
-														onClick={() => {
-															track('navigation_menu_item_click', {
-																resource: course.title,
-																type: 'course',
-																category: 'navigation',
-															})
-														}}
-													>
-														<CldImage
-															src={course.image.src}
-															alt={course.image.alt}
-															width={course.image.width}
-															height={course.image.height}
-															className="rounded"
-														/>
-														<div className="flex flex-col">
-															<div className="text-lg font-semibold">
-																{course.title}
-															</div>
-															<div className="text-muted-foreground text-sm">
-																{course.description}
-															</div>
-														</div>
-														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
-													</Link>
-												</NavigationMenuLink>
-											))}
-										</ul>
-									</NavigationMenuContent>
-								</NavigationMenuItem>
-							)}
 							{navData.cohorts.length > 0 && (
 								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
-										Cohorts
+									<NavigationMenuTrigger className="dark:bg-background relative flex h-full items-center bg-white font-normal">
+										<span className="relative flex items-center">Cohorts</span>
 									</NavigationMenuTrigger>
 									<NavigationMenuContent className="w-full shrink-0">
 										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
@@ -219,6 +176,49 @@ const Navigation = () => {
 												</ul>
 											</>
 										)}
+									</NavigationMenuContent>
+								</NavigationMenuItem>
+							)}
+							{navData.courses.length > 0 && (
+								<NavigationMenuItem className="items-stretch">
+									<NavigationMenuTrigger className="dark:bg-background relative flex h-full items-center bg-white font-normal">
+										Courses
+									</NavigationMenuTrigger>
+									<NavigationMenuContent>
+										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
+											{navData.courses.map((course) => (
+												<NavigationMenuLink key={course.href} asChild>
+													<Link
+														href={course.href}
+														className="relative flex flex-row items-center gap-5 pr-8"
+														onClick={() => {
+															track('navigation_menu_item_click', {
+																resource: course.title,
+																type: 'course',
+																category: 'navigation',
+															})
+														}}
+													>
+														<CldImage
+															src={course.image.src}
+															alt={course.image.alt}
+															width={course.image.width}
+															height={course.image.height}
+															className="rounded"
+														/>
+														<div className="flex flex-col">
+															<div className="text-lg font-semibold">
+																{course.title}
+															</div>
+															<div className="text-muted-foreground text-sm">
+																{course.description}
+															</div>
+														</div>
+														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+													</Link>
+												</NavigationMenuLink>
+											))}
+										</ul>
 									</NavigationMenuContent>
 								</NavigationMenuItem>
 							)}
@@ -340,6 +340,7 @@ const Navigation = () => {
 					<ul className="hidden items-stretch md:flex">
 						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
+								className="hidden lg:flex"
 								label="Feedback"
 								onClick={() => {
 									setIsFeedbackDialogOpen(true)

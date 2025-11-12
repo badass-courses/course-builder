@@ -94,19 +94,30 @@ export const CohortSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between gap-5 border-t px-5 py-4 shadow-2xl transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between gap-5 border-t px-5 py-3 shadow-2xl transition-opacity duration-300 lg:hidden',
 				className,
 			)}
 		>
 			<div className="flex flex-col">
-				<p className="text-muted-foreground text-xs">{eventDateString}</p>
-				<p className="text-foreground text-balance text-sm font-semibold">
+				<p className="text-muted-foreground text-xs sm:text-sm">
+					{eventDateString}
+				</p>
+				<p className="text-foreground text-balance text-sm font-semibold sm:text-base">
 					{fields.title}
 				</p>
 			</div>
-			<Button className="dark:bg-primary rounded-lg bg-blue-600 shadow" asChild>
+			<Button
+				className="dark:bg-primary relative rounded-xl bg-blue-600 shadow"
+				asChild
+			>
 				<Link href="#buy" onClick={handleScrollToBuy}>
-					Enroll Now
+					<span className="relative z-10">Enroll Now</span>
+					<div
+						style={{
+							backgroundSize: '200% 100%',
+						}}
+						className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+					/>
 				</Link>
 			</Button>
 		</div>
