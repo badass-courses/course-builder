@@ -34,12 +34,10 @@ type CreditRefundResult =
 /**
  * Handle credit entitlements refund for both source and target purchases
  * @param purchase - The purchase being refunded
- * @param paymentProvider - Payment provider to access checkout session
  * @returns Object with credit refund details
  */
 async function handleCreditEntitlementsRefund(
 	purchase: any,
-	paymentProvider: any,
 ): Promise<CreditRefundResult> {
 	if (!purchase.userId || !purchase.productId) {
 		return {
@@ -190,10 +188,7 @@ export const refundEntitlements = inngest.createFunction(
 				'handle credit entitlements refund',
 				async () => {
 					try {
-						const result = await handleCreditEntitlementsRefund(
-							purchase,
-							paymentProvider,
-						)
+						const result = await handleCreditEntitlementsRefund(purchase)
 
 						if (
 							result.type === 'source' &&
