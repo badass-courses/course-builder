@@ -18,6 +18,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
+import { grantCouponEntitlements } from './functions/coupon/grant-coupon-entitlements'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
@@ -63,5 +64,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		grantCouponEntitlements,
 	],
 }

@@ -23,6 +23,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -44,6 +45,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -67,6 +69,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -91,6 +94,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -118,6 +122,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -144,6 +149,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -164,6 +170,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -183,6 +190,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: false,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -205,6 +213,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -230,6 +239,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -252,6 +262,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -276,6 +287,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -297,6 +309,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -320,6 +333,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 				usedCoupon: {
 					merchantCouponId: 'coupon_percent_25',
@@ -345,6 +359,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 				usedCoupon: {
 					merchantCouponId: 'coupon_percent_25',
@@ -371,6 +386,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -394,6 +410,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -418,6 +435,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -447,6 +465,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -465,6 +484,7 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
@@ -485,11 +505,383 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
+				preferStacking: false,
 				unitPrice: 100,
 			})
 
 			expect(result).toBeDefined()
 			expect(result.appliedDiscountType).toBe('fixed')
+		})
+	})
+
+	describe('Stackable Discounts and preferStacking', () => {
+		it('should default preferStacking to false', async () => {
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.stackingPath).toBe('none')
+		})
+
+		it('should enable stacking when user has entitlement-based coupons', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false, // Explicitly false, but should be enabled by entitlements
+				unitPrice: 100,
+			})
+
+			// Should have stackable discounts even though preferStacking was false
+			expect(result.stackableDiscounts.length).toBeGreaterThan(0)
+			expect(result.stackingPath).toBe('stack')
+		})
+
+		it('should not enable stacking when user has no entitlements', async () => {
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+				getEntitlementsForUser: vi.fn(async () => []), // No entitlements
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				userId: 'user_no_entitlements',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.stackingPath).toBe('none')
+		})
+
+		it('should prefer PPP over stacking when PPP is available', async () => {
+			// Get the entitlement type ID dynamically
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []), // No valid purchases = PPP eligible
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_ppp',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
+					{
+						id: 'merchant_coupon_ppp',
+						identifier: 'stripe_coupon_ppp',
+						percentageDiscount: 0.75,
+						type: 'ppp',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					},
+				]),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'IN', // India = PPP eligible
+				quantity: 1,
+				userId: 'user_ppp',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false, // User prefers PPP
+				unitPrice: 100,
+			})
+
+			// Should use PPP path, not stacking
+			expect(result.stackingPath).toBe('ppp')
+			expect(result.stackableDiscounts).toEqual([])
+		})
+
+		it('should stack discounts when preferStacking is true and no PPP', async () => {
+			// Get the entitlement type ID dynamically
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [
+					testPurchases.validBasic, // Has valid purchase = not PPP eligible
+				]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: true,
+				unitPrice: 100,
+			})
+
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBeGreaterThan(0)
+		})
+
+		it('should exclude entitlement-based credits when quantity > 1 (team purchase)', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 5,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.bulk).toBe(true)
+		})
+
+		it('should exclude entitlement-based credits when user has existing bulk purchase (consideredBulk = true)', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [
+					{
+						id: 'purchase_bulk_1',
+						productId: 'prod_basic',
+						userId: 'user_1',
+						status: 'Valid',
+						fields: {},
+						bulkCoupon: {
+							id: 'bulk_coupon_1',
+							code: 'BULK5',
+							maxUses: 5,
+							usedCount: 2,
+							status: 0,
+							default: false,
+							createdAt: new Date(),
+							expires: null,
+							fields: {},
+							percentageDiscount: 0,
+							merchantCouponId: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						},
+						createdAt: new Date(),
+						totalAmount: 500,
+					},
+				]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			// Entitlement-based credits should be excluded when consideredBulk = true
+			// (user has existing bulk purchase, so seatCount = 1 + 5 = 6 > 1)
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.bulk).toBe(true)
 		})
 	})
 })

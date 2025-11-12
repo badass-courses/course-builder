@@ -286,6 +286,15 @@ export type FormattedPrice = {
 	appliedMerchantCoupon?: MinimalMerchantCoupon
 	appliedDiscountType?: 'ppp' | 'bulk' | 'fixed' | 'percentage' | 'none'
 	appliedFixedDiscount?: number
+	stackableDiscounts?: Array<{
+		couponId: string
+		source: 'default' | 'user' | 'entitlement'
+		discountType: 'fixed' | 'percentage'
+		amount: number
+		label: string
+	}>
+	totalDiscountAmount?: number
+	stackingPath?: 'stack' | 'ppp' | 'none'
 	upgradeFromPurchaseId?: string
 	upgradeFromPurchase?: Purchase
 	upgradedProduct?: ProductWithPrices | null
@@ -304,6 +313,7 @@ export type FormatPricesForProductOptions = {
 	upgradeFromPurchaseId?: string
 	userId?: string
 	autoApplyPPP?: boolean
+	preferStacking?: boolean
 	usedCouponId?: string
 }
 
@@ -341,3 +351,13 @@ export type PricingOptions = {
 }
 
 export { CheckoutParamsSchema, type CheckoutParams }
+
+// Export eligibility condition types
+export type {
+	CouponFields,
+	EligibilityCondition,
+} from './types/eligibility-conditions'
+export {
+	couponFieldsSchema,
+	eligibilityConditionSchema,
+} from './types/eligibility-conditions'

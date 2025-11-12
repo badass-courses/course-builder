@@ -7,9 +7,12 @@ import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { DiscountCountdown } from '@/components/mdx/mdx-components'
+import { DiscountDeadline } from '@/components/pricing/discount-deadline'
+import { HasPurchased } from '@/components/pricing/has-purchased'
+import { PricingInline } from '@/components/pricing/pricing-inline'
 import config from '@/config'
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { products, users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { CohortPageProps, type Cohort } from '@/lib/cohort'
 import { getCachedCohort, loadCohortPageData } from '@/lib/cohorts-query'
@@ -146,6 +149,11 @@ export default async function CohortPage(props: {
 			})
 		: null
 
+	// Get product slug to ID map for HasPurchased component
+	const allProducts = await db.query.products.findMany({
+		where: eq(products.status, 1),
+	})
+	const productMap = new Map(allProducts.map((p) => [p.fields?.slug, p.id]))
 	const { content } = await compileMDX(
 		cohort.fields.body || '',
 		{
@@ -174,14 +182,54 @@ export default async function CohortPage(props: {
 						</Pricing.BuyButton>
 					</Pricing.Root>
 				) : null,
-			HasDiscount: ({ children }) => {
-				return defaultCoupon ? children : null
+			HasDiscount: ({
+				children,
+				fallback,
+			}: {
+				children: React.ReactNode
+				fallback?: React.ReactNode
+			}) => {
+				return defaultCoupon ? (
+					<>{children}</>
+				) : fallback ? (
+					<>{fallback}</>
+				) : null
 			},
 			DiscountCountdown: ({ children }) => {
 				return defaultCoupon?.expires ? (
 					<DiscountCountdown date={new Date(defaultCoupon?.expires)} />
 				) : null
 			},
+			PricingInline: ({ type }: { type: 'original' | 'discounted' }) => (
+				<PricingInline
+					type={type}
+					pricingDataLoader={cohortProps.pricingDataLoader}
+				/>
+			),
+			DiscountDeadline: ({ format }: { format?: 'short' | 'long' }) => (
+				<DiscountDeadline
+					format={format}
+					expires={defaultCoupon?.expires ?? null}
+				/>
+			),
+			HasPurchased: ({
+				productSlug,
+				productId,
+				children,
+			}: {
+				productSlug?: string
+				productId?: string
+				children: React.ReactNode
+			}) => (
+				<HasPurchased
+					productSlug={productSlug}
+					productId={productId}
+					purchases={cohortProps.purchases || []}
+					productMap={productMap}
+				>
+					{children}
+				</HasPurchased>
+			),
 		},
 		{
 			scope: {

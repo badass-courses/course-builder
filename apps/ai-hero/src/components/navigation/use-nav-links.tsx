@@ -72,19 +72,7 @@ export function useNavLinks(): NavigationMenuData {
 		},
 	]
 
-	const cohorts: CohortItem[] = [
-		{
-			href: '/cohorts/build-deepsearch-in-typescript',
-			image: {
-				src: 'https://res.cloudinary.com/total-typescript/image/upload/c_limit,w_828/f_auto/q_auto/v1748619829/cohorts/cohort-5uyf5/kttfkqzngqj6uvbpgjhl',
-				alt: 'Build DeepSearch in TypeScript',
-				width: 766 / 5,
-				height: 408 / 5,
-			},
-			title: 'Build DeepSearch in TypeScript',
-			subtitle: 'July 14—July 25, 2025',
-		},
-	]
+	const cohorts: CohortItem[] = []
 
 	const freeTutorials = {
 		featured: {

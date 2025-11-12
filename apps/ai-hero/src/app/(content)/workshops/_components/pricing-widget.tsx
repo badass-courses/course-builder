@@ -1,11 +1,13 @@
 'use client'
 
-import * as React from 'react'
-import { ProductPricingFeatures } from '@/components/commerce/product-pricing-features'
+import {
+	ProductPricingFeatures,
+	type ProductPricingFeature,
+} from '@/components/commerce/product-pricing-features'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { Product, Purchase } from '@coursebuilder/core/schemas'
 import type {
 	CommerceProps,
 	FormattedPrice,
@@ -19,7 +21,7 @@ export type PricingData = {
 	quantityAvailable: number
 }
 
-export const PricingWidget: React.FC<{
+export type PricingWidgetProps = {
 	product: Product
 	quantityAvailable: number
 	commerceProps: CommerceProps
@@ -31,15 +33,25 @@ export const PricingWidget: React.FC<{
 		slug: string
 	}[]
 	className?: string
-}> = ({
+	prependFeatures?: ProductPricingFeature[]
+}
+
+/**
+ * Pricing widget for product detail surfaces, handling dynamic pricing data,
+ * coupon flows, and optional feature overrides.
+ *
+ * @param props - Pricing configuration.
+ */
+export const PricingWidget = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
-	quantityAvailable,
+	quantityAvailable: _quantityAvailable,
 	workshops,
 	className,
-}) => {
+	prependFeatures,
+}: PricingWidgetProps) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
 	const couponId =
@@ -85,6 +97,7 @@ export const PricingWidget: React.FC<{
 			<ProductPricingFeatures
 				workshops={workshops ?? []}
 				productType={product.type}
+				prependFeatures={prependFeatures}
 			/>
 		</Pricing.Root>
 	)

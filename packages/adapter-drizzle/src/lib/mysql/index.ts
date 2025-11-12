@@ -28,6 +28,8 @@ import { type CourseBuilderAdapter } from '@coursebuilder/core/adapters'
 import {
 	Coupon,
 	couponSchema,
+	Entitlement,
+	entitlementSchema,
 	MerchantCharge,
 	merchantChargeSchema,
 	MerchantCoupon,
@@ -405,6 +407,8 @@ export function mySqlDrizzleAdapter(
 		roles: roleTable,
 		merchantSubscription: merchantSubscriptionTable,
 		subscription: subscriptionTable,
+		entitlements: entitlementTable,
+		entitlementTypes,
 	} = createTables(tableFn)
 
 	const adapter: CourseBuilderAdapter = {
@@ -1449,6 +1453,26 @@ export function mySqlDrizzleAdapter(
 
 			return null
 		},
+		async getMerchantCouponForTypeAndAmount(params: {
+			type: string
+			amountDiscount: number
+		}): Promise<MerchantCoupon | null> {
+			const foundMerchantCoupon = await client.query.merchantCoupon.findFirst({
+				where: and(
+					eq(merchantCoupon.type, params.type),
+					eq(merchantCoupon.amountDiscount, params.amountDiscount),
+				),
+			})
+
+			const parsed = merchantCouponSchema
+				.nullable()
+				.safeParse(foundMerchantCoupon)
+			if (parsed.success) {
+				return parsed.data
+			}
+
+			return null
+		},
 		async getMerchantCoupon(
 			merchantCouponId: string,
 		): Promise<MerchantCoupon | null> {
@@ -1992,6 +2016,72 @@ export function mySqlDrizzleAdapter(
 			}
 
 			return parsedPurchases.data
+		},
+		async getEntitlementsForUser(params: {
+			userId: string
+			sourceType?: string
+			entitlementType?: string
+		}): Promise<Entitlement[]> {
+			const { userId, sourceType, entitlementType } = params
+
+			if (!userId) {
+				return []
+			}
+
+			const conditions = [eq(entitlementTable.userId, userId)]
+
+			if (sourceType) {
+				conditions.push(eq(entitlementTable.sourceType, sourceType))
+			}
+
+			if (entitlementType) {
+				conditions.push(eq(entitlementTable.entitlementType, entitlementType))
+			}
+
+			// Only return active entitlements (not deleted, not expired)
+			conditions.push(isNull(entitlementTable.deletedAt))
+			const expiresCondition = or(
+				isNull(entitlementTable.expiresAt),
+				gte(entitlementTable.expiresAt, sql`CURRENT_TIMESTAMP`),
+			)
+			if (expiresCondition) {
+				conditions.push(expiresCondition)
+			}
+
+			const userEntitlements = await client.query.entitlements.findMany({
+				where: conditions.length > 0 ? and(...conditions) : undefined,
+				orderBy: asc(entitlementTable.createdAt),
+			})
+
+			const parsedEntitlements = z
+				.array(entitlementSchema)
+				.safeParse(userEntitlements)
+
+			if (!parsedEntitlements.success) {
+				console.error(
+					'[getEntitlementsForUser] Error parsing entitlements',
+					JSON.stringify(parsedEntitlements.error),
+				)
+				return []
+			}
+
+			return parsedEntitlements.data
+		},
+		async getEntitlementTypeByName(
+			name: string,
+		): Promise<{ id: string; name: string } | null> {
+			const entitlementType = await client.query.entitlementTypes.findFirst({
+				where: eq(entitlementTypes.name, name),
+			})
+
+			if (!entitlementType) {
+				return null
+			}
+
+			return {
+				id: String(entitlementType.id),
+				name: String(entitlementType.name),
+			}
 		},
 		async getPurchaseDetails(
 			purchaseId: string,

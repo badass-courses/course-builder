@@ -8,7 +8,10 @@ import { first, isEmpty } from '@coursebuilder/nodash'
 
 import { Product, Purchase, UpgradableProduct } from '../../schemas'
 import { PaymentsAdapter, PaymentsProviderConsumerConfig } from '../../types'
-import { getFixedDiscountForIndividualUpgrade } from './format-prices-for-product'
+import {
+	formatPricesForProduct,
+	getFixedDiscountForIndividualUpgrade,
+} from './format-prices-for-product'
 import { getCalculatedPrice } from './get-calculated-price'
 
 export const CheckoutParamsSchema = z.object({
@@ -292,9 +295,68 @@ export async function stripeCheckout({
 
 			const isRecurring = stripePrice?.recurring
 
+			// Calculate pricing to get stackable discounts
+			const country = params.country || process.env.DEFAULT_COUNTRY || 'US'
+
+			const productPrice = await adapter.getPriceForProduct(productId)
+			const unitPrice = productPrice?.unitAmount || 0
+
+			// Get active merchant coupon (default coupon should be selected)
+			const { activeMerchantCoupon, usedCouponId: activeUsedCouponId } =
+				await (async () => {
+					// This is a simplified version - in production you'd want to use the same logic
+					// as checkForAvailableCoupons, but for now we'll get the default coupon
+					const defaultCoupons = await adapter.getDefaultCoupon([productId])
+					if (defaultCoupons?.defaultMerchantCoupon) {
+						return {
+							activeMerchantCoupon: defaultCoupons.defaultMerchantCoupon,
+							usedCouponId: defaultCoupons.defaultCoupon.id,
+						}
+					}
+					return {
+						activeMerchantCoupon: couponId
+							? await adapter.getMerchantCoupon(couponId as string)
+							: null,
+						usedCouponId: usedCouponId,
+					}
+				})()
+
+			// Only enable stacking if the user has an entitlement-based coupon
+			// Stacking should ONLY happen when there's an entitlement (special credit)
+
+			const specialCreditEntitlementType =
+				adapter && userId
+					? await adapter.getEntitlementTypeByName('apply_special_credit')
+					: null
+			const entitlementTypeId = specialCreditEntitlementType?.id
+
+			const hasEntitlementCoupon =
+				userId && entitlementTypeId && adapter
+					? (
+							await adapter.getEntitlementsForUser({
+								userId,
+								sourceType: 'COUPON',
+								entitlementType: entitlementTypeId,
+							})
+						).length > 0
+					: false
+
+			const pricingResult = await formatPricesForProduct({
+				productId,
+				country,
+				quantity,
+				merchantCouponId: activeMerchantCoupon?.id,
+				...(upgradeFromPurchaseId && { upgradeFromPurchaseId }),
+				userId,
+				autoApplyPPP: true,
+				preferStacking: hasEntitlementCoupon,
+				usedCouponId: activeUsedCouponId,
+				ctx: adapter,
+			})
+
 			const merchantCoupon = couponId
 				? await adapter.getMerchantCoupon(couponId as string)
-				: null
+				: activeMerchantCoupon
 
 			const stripeCouponPercentOff =
 				merchantCoupon && merchantCoupon.identifier
@@ -313,6 +375,16 @@ export async function stripeCheckout({
 			let discounts = []
 			let appliedPPPStripeCouponId: string | undefined | null = undefined
 			let upgradedFromPurchaseId: string | undefined | null = undefined
+
+			// Handle stackable discounts - create a combined coupon in Stripe
+			const stackableDiscounts = pricingResult.stackableDiscounts || []
+			const stackingPath = pricingResult.stackingPath || 'none'
+
+			const usedEntitlementCouponIds = stackableDiscounts
+				.filter((discount) => discount.source === 'entitlement')
+				.map((discount) => discount.couponId)
+				.filter((id): id is string => Boolean(id))
+				.join(',')
 
 			const isUpgrade = Boolean(
 				(availableUpgrade || upgradeFromPurchase?.status === 'Restricted') &&
@@ -384,6 +456,62 @@ export async function stripeCheckout({
 
 					discounts.push({
 						coupon: couponId,
+					})
+				}
+			}
+			// Stripe only allows ONE discount per checkout, so we combine all stackable discounts into one coupon
+			// We create ONE reusable Stripe coupon and multiple promotion codes (one per checkout)
+			if (
+				!isUpgrade &&
+				stackingPath === 'stack' &&
+				stackableDiscounts.length > 0
+			) {
+				const totalDiscountInCents = Math.round(
+					(pricingResult.totalDiscountAmount || 0) * 100,
+				)
+
+				if (totalDiscountInCents > 0) {
+					// Find or create a reusable merchant coupon for this discount amount
+					// This ensures we only create ONE Stripe coupon per discount amount,
+					// and reuse it for all users with the same combined discount
+					let stackedMerchantCoupon =
+						await adapter.getMerchantCouponForTypeAndAmount({
+							type: 'stacked',
+							amountDiscount: totalDiscountInCents,
+						})
+
+					let stripeCouponIdentifier: string
+
+					if (stackedMerchantCoupon?.identifier) {
+						stripeCouponIdentifier = stackedMerchantCoupon.identifier
+					} else {
+						stripeCouponIdentifier = await config.paymentsAdapter.createCoupon({
+							amount_off: totalDiscountInCents,
+							name: `Stacked Discount $${(totalDiscountInCents / 100).toFixed(2)}`,
+							duration: 'forever',
+							currency: 'USD',
+							metadata: {
+								type: 'stacked',
+							},
+						})
+
+						await adapter.createMerchantCoupon({
+							identifier: stripeCouponIdentifier,
+							merchantAccountId: merchantProduct.merchantAccountId,
+							type: 'stacked',
+							amountDiscount: totalDiscountInCents,
+						})
+					}
+
+					const promotionCodeId =
+						await config.paymentsAdapter.createPromotionCode({
+							coupon: stripeCouponIdentifier,
+							max_redemptions: 1,
+							expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+						})
+
+					discounts.push({
+						promotion_code: promotionCodeId,
 					})
 				}
 			} else if (merchantCoupon) {
@@ -486,6 +614,9 @@ export async function stripeCheckout({
 				country: params.country || process.env.DEFAULT_COUNTRY || 'US',
 				ip_address: ip_address || '',
 				...(usedCouponId && { usedCouponId }),
+				...(usedEntitlementCouponIds && {
+					usedEntitlementCouponIds,
+				}),
 				productId: loadedProduct.id,
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),

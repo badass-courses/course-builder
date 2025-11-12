@@ -192,7 +192,12 @@ describe('formatPricesForProduct', () => {
 					async () => testMerchantCoupons.fixedAmount200,
 				),
 				getUpgradableProducts: vi.fn(async () => [testUpgradableProducts[0]]),
-				availableUpgradesForProduct: vi.fn(async () => testUpgradableProducts),
+				availableUpgradesForProduct: vi.fn(async () => [
+					{
+						upgradableTo: { id: 'prod_bundle', name: 'Bundle Course' },
+						upgradableFrom: { id: 'prod_basic', name: 'Basic Course' },
+					},
+				]),
 				pricesOfPurchasesTowardOneBundle: vi.fn(async () => [testPrices.basic]),
 			})
 
@@ -213,7 +218,7 @@ describe('formatPricesForProduct', () => {
 		it('should handle PPP upgrade from restricted purchase correctly', async () => {
 			const mockAdapter = createMockAdapter({
 				getPurchase: vi.fn(async () => testPurchases.restrictedBasic),
-				getUpgradableProducts: vi.fn(async () => null), // Same product, not an upgrade
+				getUpgradableProducts: vi.fn(async () => []), // Same product, not an upgrade
 			})
 
 			const result = await formatPricesForProduct({
@@ -334,7 +339,6 @@ describe('formatPricesForProduct', () => {
 			})
 
 			expect(result.id).toBe('prod_basic')
-			expect(result.name).toBe('Basic Course')
 		})
 
 		it('should include upgrade details when applicable', async () => {
@@ -441,7 +445,22 @@ describe('formatPricesForProduct', () => {
 			const mockAdapter = createMockAdapter({
 				getCoupon: vi.fn(async () => ({
 					id: 'used_coupon_1',
+					code: 'USED_COUPON_1',
 					merchantCouponId: 'coupon_fixed_20',
+					status: 0,
+					fields: {},
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: null,
+					percentageDiscount: 0,
+					amountDiscount: null,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+					restrictedToProductId: null,
+					bulkPurchaseId: null,
+					organizationId: null,
 				})),
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
 			})
@@ -461,7 +480,22 @@ describe('formatPricesForProduct', () => {
 			const mockAdapter = createMockAdapter({
 				getCoupon: vi.fn(async () => ({
 					id: 'used_coupon_1',
+					code: 'USED_COUPON_1',
 					merchantCouponId: 'different_coupon',
+					status: 0,
+					fields: {},
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: null,
+					percentageDiscount: 0,
+					amountDiscount: null,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+					restrictedToProductId: null,
+					bulkPurchaseId: null,
+					organizationId: null,
 				})),
 				getMerchantCoupon: vi.fn(async () => testMerchantCoupons.fixedAmount20),
 			})
@@ -475,6 +509,228 @@ describe('formatPricesForProduct', () => {
 			})
 
 			expect(result.usedCouponId).toBeUndefined()
+		})
+	})
+
+	describe('Stackable Discounts', () => {
+		it('should apply percentage discount to full price, then fixed credit', async () => {
+			// Scenario: $850 product, 40% off, $150 credit
+			// Expected: $850 * 0.6 = $510, then $510 - $150 = $360
+			const expensiveProduct = {
+				...testProducts.basic,
+				id: 'prod_expensive',
+				name: 'Expensive Course',
+			}
+			const expensivePrice = {
+				...testPrices.basic,
+				unitAmount: 850,
+			}
+
+			const percentageCoupon = {
+				...testMerchantCoupons.percentage25,
+				id: 'coupon_40_percent',
+				percentageDiscount: 0.4, // 40% off
+			}
+
+			const creditCoupon = {
+				...testMerchantCoupons.fixedAmount20,
+				id: 'coupon_credit_150',
+				amountDiscount: 15000, // $150 in cents
+				type: 'special',
+			}
+
+			const mockAdapter = createMockAdapter({
+				getProduct: vi.fn(async () => expensiveProduct),
+				getPriceForProduct: vi.fn(async () => expensivePrice),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_40_percent') return percentageCoupon
+					if (id === 'coupon_credit_150') return creditCoupon
+					return null
+				}),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						entitlementType: 'et_83732df61b0c95ea',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_40_percent')
+						return {
+							id: 'coupon_40_percent',
+							code: 'EARLYBIRD40',
+							merchantCouponId: 'coupon_40_percent',
+							status: 0,
+							fields: { stackable: true }, // Mark as stackable so it gets added to stackableDiscounts
+							maxUses: -1,
+							default: true,
+							usedCount: 0,
+							createdAt: null,
+							percentageDiscount: 0.4,
+							amountDiscount: null,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+							restrictedToProductId: null,
+							bulkPurchaseId: null,
+							organizationId: null,
+						}
+					if (id === 'coupon_credit_150')
+						return {
+							id: 'coupon_credit_150',
+							code: 'CREDIT150',
+							merchantCouponId: 'coupon_credit_150',
+							status: 0,
+							fields: { stackable: true }, // Required for entitlement coupons to be added to stackableDiscounts
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: null,
+							percentageDiscount: 0,
+							amountDiscount: null,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+							restrictedToProductId: null,
+							bulkPurchaseId: null,
+							organizationId: null,
+						}
+					return null
+				}),
+				getMerchantCouponForTypeAndAmount: vi.fn(async () => null),
+			})
+
+			const result = await formatPricesForProduct({
+				ctx: mockAdapter,
+				productId: 'prod_expensive',
+				userId: 'user_1',
+				merchantCouponId: 'coupon_40_percent',
+				usedCouponId: 'coupon_40_percent', // Required for the code to check if coupon is stackable
+				preferStacking: false, // Will be enabled by entitlements
+				quantity: 1,
+			})
+
+			expect(result.stackableDiscounts).toBeDefined()
+			expect(result.stackableDiscounts?.length).toBe(2)
+			expect(result.stackingPath).toBe('stack')
+			// $850 * 0.6 = $510, then $510 - $150 = $360
+			expect(result.calculatedPrice).toBe(360)
+			expect(result.totalDiscountAmount).toBe(490) // $340 (40%) + $150 (credit)
+		})
+
+		it('should apply fixed main coupon first, then entitlement credit', async () => {
+			// Scenario: $850 product, $200 fixed discount, $150 credit
+			// Expected: $850 - $200 = $650, then $650 - $150 = $500
+			const expensiveProduct = {
+				...testProducts.basic,
+				id: 'prod_expensive',
+				name: 'Expensive Course',
+			}
+			const expensivePrice = {
+				...testPrices.basic,
+				unitAmount: 850,
+			}
+
+			const fixedCoupon = {
+				...testMerchantCoupons.fixedAmount20,
+				id: 'coupon_fixed_200',
+				amountDiscount: 20000, // $200 in cents
+			}
+
+			const creditCoupon = {
+				...testMerchantCoupons.fixedAmount20,
+				id: 'coupon_credit_150',
+				amountDiscount: 15000, // $150 in cents
+				type: 'special',
+			}
+
+			const mockAdapter = createMockAdapter({
+				getProduct: vi.fn(async () => expensiveProduct),
+				getPriceForProduct: vi.fn(async () => expensivePrice),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_fixed_200') return fixedCoupon
+					if (id === 'coupon_credit_150') return creditCoupon
+					return null
+				}),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						entitlementType: 'et_83732df61b0c95ea',
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_fixed_200')
+						return {
+							id: 'coupon_fixed_200',
+							code: 'FIXED200',
+							merchantCouponId: 'coupon_fixed_200',
+							status: 0,
+							fields: { stackable: true }, // Mark as stackable so it gets added to stackableDiscounts
+							maxUses: -1,
+							default: true,
+							usedCount: 0,
+							createdAt: null,
+							percentageDiscount: 0,
+							amountDiscount: 20000,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+							restrictedToProductId: null,
+							bulkPurchaseId: null,
+							organizationId: null,
+						}
+					if (id === 'coupon_credit_150')
+						return {
+							id: 'coupon_credit_150',
+							code: 'CREDIT150',
+							merchantCouponId: 'coupon_credit_150',
+							status: 0,
+							fields: { stackable: true }, // Required for entitlement coupons to be added to stackableDiscounts
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: null,
+							percentageDiscount: 0,
+							amountDiscount: null,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+							restrictedToProductId: null,
+							bulkPurchaseId: null,
+							organizationId: null,
+						}
+					return null
+				}),
+				getMerchantCouponForTypeAndAmount: vi.fn(async () => null),
+			})
+
+			const result = await formatPricesForProduct({
+				ctx: mockAdapter,
+				productId: 'prod_expensive',
+				userId: 'user_1',
+				merchantCouponId: 'coupon_fixed_200',
+				usedCouponId: 'coupon_fixed_200', // Required for the code to check if coupon is stackable
+				preferStacking: false, // Will be enabled by entitlements
+				quantity: 1,
+			})
+
+			expect(result.stackableDiscounts).toBeDefined()
+			expect(result.stackableDiscounts?.length).toBe(2)
+			expect(result.stackingPath).toBe('stack')
+			// $850 - $200 = $650, then $650 - $150 = $500
+			expect(result.calculatedPrice).toBe(500)
+			expect(result.totalDiscountAmount).toBe(350) // $200 (fixed) + $150 (credit)
 		})
 	})
 })

@@ -80,6 +80,9 @@ export const {
 	organizationMembershipRelations,
 	organizationMembershipRoles,
 	organizationMembershipRolesRelations,
+	entitlementTypes,
+	entitlements,
+	entitlementsRelations,
 } = createTables(mysqlTable)
 export const schema = {
 	accounts,
@@ -149,6 +152,9 @@ export const schema = {
 	organizationMembershipRelations,
 	organizationMembershipRoles,
 	organizationMembershipRolesRelations,
+	entitlementTypes,
+	entitlements,
+	entitlementsRelations,
 }
 
 export const db = drizzle(poolConnection, { schema, mode: 'default' })

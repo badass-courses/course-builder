@@ -8,6 +8,7 @@ export const CheckoutSessionMetadataSchema = z.object({
 	country: z.string().default('US'),
 	ip_address: z.string().default(''),
 	usedCouponId: z.string().optional(),
+	usedEntitlementCouponIds: z.string().optional(),
 	productId: z.string(),
 	product: z.string(),
 	userId: z.string().optional(),
