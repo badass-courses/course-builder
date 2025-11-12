@@ -118,7 +118,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			if: 'event.data.productType == "cohort" || event.data.productType == "self-paced"',
 		},
 	],
-	async ({ event, step, db: adapter }) => {
+	async ({ event, step, db: adapter, paymentProvider }) => {
 		const productType = event.data.productType as ProductType
 		const entitlementConfig = ENTITLEMENT_CONFIG[productType]
 
@@ -157,7 +157,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 		const isFullPriceCouponRedemption = Boolean(purchase.redeemedBulkCouponId)
 
-		// Step 4.5: Grant coupon-based entitlements for new purchase
+		// Step 5: Grant coupon-based entitlements for new purchase
 		// If someone buys a product that has an eligibility condition (e.g., crash course),
 		// grant them the entitlement for any matching coupons
 		await step.run('grant coupon entitlements for new purchase', async () => {
@@ -259,7 +259,70 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			}
 		})
 
-		// Step 5: Get bulk coupon data if needed
+		// Step 6: Mark entitlement-based coupons as used (set deletedAt) if they were used in this checkout
+		await step.run('mark entitlement coupons as used', async () => {
+			const checkoutSessionId = event.data.checkoutSessionId
+			if (!checkoutSessionId || !purchase.userId) {
+				return { marked: 0, reason: 'No checkout session ID or user ID' }
+			}
+
+			if (!paymentProvider) {
+				return { marked: 0, reason: 'No payment provider available' }
+			}
+
+			const checkoutSession =
+				await paymentProvider.options.paymentsAdapter.getCheckoutSession(
+					checkoutSessionId,
+				)
+
+			const usedEntitlementCouponIds =
+				checkoutSession.metadata?.usedEntitlementCouponIds
+
+			if (!usedEntitlementCouponIds) {
+				return { marked: 0, reason: 'No entitlement coupons used' }
+			}
+
+			const couponIds = usedEntitlementCouponIds
+				.split(',')
+				.map((id) => id.trim())
+				.filter((id) => id.length > 0)
+
+			if (couponIds.length === 0) {
+				return { marked: 0, reason: 'No valid coupon IDs' }
+			}
+
+			const specialCreditEntitlementType =
+				await db.query.entitlementTypes.findFirst({
+					where: eq(entitlementTypes.name, 'apply_special_credit'),
+				})
+
+			if (!specialCreditEntitlementType) {
+				return { marked: 0, reason: 'Entitlement type not found' }
+			}
+
+			const result = await db
+				.update(entitlements)
+				.set({ deletedAt: new Date() })
+				.where(
+					and(
+						eq(entitlements.userId, purchase.userId),
+						eq(entitlements.entitlementType, specialCreditEntitlementType.id),
+						eq(entitlements.sourceType, EntitlementSourceType.COUPON),
+						sql`${entitlements.sourceId} IN (${sql.join(
+							couponIds.map((id) => sql`${id}`),
+							sql`, `,
+						)})`,
+						isNull(entitlements.deletedAt),
+					),
+				)
+
+			return {
+				marked: result.rowsAffected || 0,
+				couponIds,
+			}
+		})
+
+		// Step 7: Get bulk coupon data if needed
 		const bulkCouponData = await step.run(`get bulk coupon data`, async () => {
 			if (isFullPriceCouponRedemption && purchase.redeemedBulkCouponId) {
 				const couponWithBulkPurchases =
@@ -278,7 +341,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			return null
 		})
 
-		// Step 6: Find and get the primary resource
+		// Step 8: Find and get the primary resource
 		const resourceType = getResourceType(productType)
 		const primaryResourceId = product.resources?.find(
 			(resource) => resource.resource?.type === resourceType,
@@ -295,7 +358,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			throw new Error(`${resourceType} resource not found`)
 		}
 
-		// Step 7: Calculate day one unlock date for cohorts
+		// Step 9: Calculate day one unlock date for cohorts
 		const dayOneUnlockDate =
 			productType === 'cohort'
 				? (() => {
@@ -312,7 +375,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 					})()
 				: null
 
-		// Step 8: Handle team purchases
+		// Step 10: Handle team purchases
 		if (isTeamPurchase) {
 			const bulkCoupon = await step.run('get bulk coupon', async () => {
 				if (purchase.bulkCouponId) {
