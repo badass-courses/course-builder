@@ -192,7 +192,6 @@ export async function loadCohortPageData(
 
 	if (productParsed.success) {
 		product = productParsed.data
-		pricingDataLoader = getPricingData({ productId: product.id })
 
 		const countryCode =
 			headerList.get('x-vercel-ip-country') ||
@@ -231,6 +230,34 @@ export async function loadCohortPageData(
 			...commercePropsResult,
 			products: [product],
 		}
+
+		// Determine the active merchant coupon for pricing data
+		let merchantCouponId: string | undefined
+		let usedCouponId: string | undefined
+
+		if (defaultCouponFromAdapter?.merchantCouponId) {
+			merchantCouponId = defaultCouponFromAdapter.merchantCouponId
+			usedCouponId = defaultCouponFromAdapter.id
+		} else if (commerceProps.couponIdFromCoupon) {
+			// If there's a coupon from commerce props, get its merchant coupon
+			const coupon = await courseBuilderAdapter.couponForIdOrCode({
+				couponId: commerceProps.couponIdFromCoupon,
+			})
+			if (coupon?.merchantCoupon?.id) {
+				merchantCouponId = coupon.merchantCoupon.id
+				usedCouponId = coupon.id
+			}
+		} else if (commerceProps.couponFromCode?.merchantCoupon?.id) {
+			merchantCouponId = commerceProps.couponFromCode.merchantCoupon.id
+			usedCouponId = commerceProps.couponFromCode.id
+		}
+
+		// Create pricing data loader with coupon information
+		pricingDataLoader = getPricingData({
+			productId: product.id,
+			merchantCouponId,
+			usedCouponId,
+		})
 
 		purchaseCount = purchaseCountResult.count
 		const productQuantity = productQuantityResult?.quantityAvailable ?? -1

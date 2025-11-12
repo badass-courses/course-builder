@@ -189,7 +189,9 @@ export default async function CohortPage(props: {
 				children: React.ReactNode
 				fallback?: React.ReactNode
 			}) => {
-				return defaultCoupon ? (
+				// Only show discount if there's an active default coupon (site-wide sale)
+				const hasDefaultCoupon = saleData || defaultCoupon
+				return hasDefaultCoupon ? (
 					<>{children}</>
 				) : fallback ? (
 					<>{fallback}</>

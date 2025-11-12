@@ -77,7 +77,7 @@ export const PricingWidget = ({
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs cursor-pointer bg-blue-600 text-lg font-semibold hover:bg-blue-700">
+					<Pricing.BuyButton className="dark:bg-primary relative mt-3 h-16 max-w-xs cursor-pointer overflow-hidden rounded-xl bg-blue-600 text-lg font-semibold shadow-xl hover:bg-blue-700 dark:hover:brightness-110">
 						<span className="relative z-10">
 							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
 						</span>
