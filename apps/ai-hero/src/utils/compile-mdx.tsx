@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { CheckList } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { ThemeImage } from '@/components/cld-image'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
@@ -117,6 +117,7 @@ export async function compileMDX(
 				</Testimonial>
 			),
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
+			CldImage: ({ ...props }) => <CldImage {...props} />,
 		},
 		options: {
 			mdxOptions: {
