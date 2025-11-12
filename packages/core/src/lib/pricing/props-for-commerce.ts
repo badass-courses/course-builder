@@ -109,7 +109,7 @@ export async function propsForCommerce(
 	)
 	const allowPurchase = true
 
-	const purchases = userId ? await adapter.getPurchasesForUser(userId) : false
+	const purchases = userId ? await adapter.getPurchasesForUser(userId) : null
 
 	const couponIdFromCoupon =
 		(query.coupon as string) || (couponFromCode?.isValid && couponFromCode.id)
@@ -120,9 +120,8 @@ export async function propsForCommerce(
 			couponFromCode: couponFromCode,
 		}),
 		...(couponIdFromCoupon && { couponIdFromCoupon }),
-		...(purchases && {
-			purchases: [
-				...purchases.map((purchase) => {
+		purchases: Array.isArray(purchases)
+			? purchases.map((purchase) => {
 					return {
 						...purchase,
 						totalAmount:
@@ -131,9 +130,8 @@ export async function propsForCommerce(
 								? Number(purchase.totalAmount)
 								: purchase.totalAmount,
 					}
-				}),
-			],
-		}),
+				})
+			: [],
 		products,
 		allowPurchase,
 		country: countryCode,

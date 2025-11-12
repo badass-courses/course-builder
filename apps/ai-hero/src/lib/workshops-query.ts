@@ -51,6 +51,67 @@ export const getCachedWorkshopProduct = unstable_cache(
 	{ revalidate: 3600, tags: ['workshop'] },
 )
 
+export const getCachedAllWorkshopProducts = unstable_cache(
+	async (workshopIdOrSlug: string) => getAllWorkshopProducts(workshopIdOrSlug),
+	['workshop'],
+	{ revalidate: 3600, tags: ['workshop'] },
+)
+
+/**
+ * Gets all products associated with a workshop (both standalone and cohort products)
+ * Returns products sorted by priority: standalone first, then cohort products
+ */
+export async function getAllWorkshopProducts(workshopIdOrSlug: string) {
+	const query = sql`
+WITH ProductCandidates AS (
+    -- Directly associated product (standalone)
+    SELECT
+        p.*,
+        1 as priority,
+        'standalone' as productSource
+    FROM ${contentResource} cr
+    LEFT JOIN ${contentResourceProduct} crp ON cr.id = crp.resourceId
+    LEFT JOIN ${productTable} p ON crp.productId = p.id
+    WHERE
+        (cr.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) = ${workshopIdOrSlug})
+        AND cr.type = 'workshop'
+        AND p.id IS NOT NULL
+
+    UNION ALL
+
+    -- Product associated via a cohort
+    SELECT
+        p_cohort.*,
+        2 as priority,
+        'cohort' as productSource
+    FROM ${contentResource} cr_workshop -- The workshop itself
+    -- Link workshop to its parent resource (which we'll check is a cohort)
+    JOIN ${contentResourceResource} crr_workshop_to_parent ON cr_workshop.id = crr_workshop_to_parent.resourceId
+    -- The parent resource, ensuring it's a cohort
+    JOIN ${contentResource} cr_cohort ON crr_workshop_to_parent.resourceOfId = cr_cohort.id AND cr_cohort.type = 'cohort'
+    -- Link cohort to product
+    LEFT JOIN ${contentResourceProduct} crp_cohort ON cr_cohort.id = crp_cohort.resourceId
+    LEFT JOIN ${productTable} p_cohort ON crp_cohort.productId = p_cohort.id
+    WHERE
+        (cr_workshop.id = ${workshopIdOrSlug} OR JSON_UNQUOTE(JSON_EXTRACT(cr_workshop.fields, '$.slug')) = ${workshopIdOrSlug})
+        AND cr_workshop.type = 'workshop' -- Ensure the initial resource is a workshop
+        AND p_cohort.id IS NOT NULL
+)
+SELECT *
+FROM ProductCandidates
+ORDER BY priority ASC;`
+	const results = await db.execute(query)
+
+	const parsedProducts = z.array(productSchema).safeParse(results.rows)
+
+	if (!parsedProducts.success) {
+		console.debug('Error parsing products', parsedProducts.error)
+		return []
+	}
+
+	return parsedProducts.data
+}
+
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
 	// This query finds a product associated with a workshop in two ways:
 	// 1. Direct association: Workshop -> Product

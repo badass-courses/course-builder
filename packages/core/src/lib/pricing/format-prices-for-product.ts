@@ -322,7 +322,9 @@ export async function formatPricesForProduct(
 		fullPrice: fixedDiscountForUpgrade > 0 ? fullPriceWithUpgrade : fullPrice,
 		fixedDiscountForUpgrade,
 		calculatedPrice,
-		availableCoupons: result.availableCoupons,
+		availableCoupons: Array.isArray(result.availableCoupons)
+			? result.availableCoupons
+			: [],
 		appliedMerchantCoupon,
 		appliedDiscountType,
 		appliedFixedDiscount:

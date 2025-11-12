@@ -596,9 +596,9 @@ const PPPToggle = ({
 
 	const { isDowngrade } = usePriceCheck()
 
-	const availablePPPCoupon = formattedPrice?.availableCoupons.find(
-		(coupon) => coupon?.type === 'ppp',
-	)
+	const availablePPPCoupon = Array.isArray(formattedPrice?.availableCoupons)
+		? formattedPrice.availableCoupons.find((coupon) => coupon?.type === 'ppp')
+		: undefined
 
 	const appliedPPPCoupon =
 		activeMerchantCoupon?.type === 'ppp' ? activeMerchantCoupon : null

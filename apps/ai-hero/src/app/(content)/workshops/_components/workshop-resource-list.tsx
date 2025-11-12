@@ -182,7 +182,7 @@ export function WorkshopResourceList(props: Props) {
 											href={
 												cohortSlug ? `/cohorts/${cohortSlug}` : '/workshops'
 											}
-											className="text-foreground block w-full truncate text-sm font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
+											className="text-foreground block truncate text-sm font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
 										>
 											{cohortTitle ?? 'Workshops'}
 										</Link>

@@ -185,19 +185,21 @@ export default async function ModulePage(props: Props) {
 	const { content: body } = await compileMDX(workshop.fields.body || '', {
 		EnrollNow: (props) => (
 			<WorkshopPricing moduleSlug={params.module} searchParams={searchParams}>
-				{(workshopProps) => (
-					<InlineBuyButton
-						resource={workshop}
-						pricingDataLoader={workshopProps.pricingDataLoader}
-						pricingProps={workshopProps as any}
-						centered={false}
-						resourceType="workshop"
-						pricingOptions={{
-							withTitle: false,
-							withImage: false,
-						}}
-					/>
-				)}
+				{(workshopProps) =>
+					!workshopProps.hasPurchasedCurrentProduct && (
+						<InlineBuyButton
+							resource={workshop}
+							pricingDataLoader={workshopProps.pricingDataLoader}
+							pricingProps={workshopProps as any}
+							centered={false}
+							resourceType="workshop"
+							pricingOptions={{
+								withTitle: false,
+								withImage: false,
+							}}
+						/>
+					)
+				}
 			</WorkshopPricing>
 		),
 	})

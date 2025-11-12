@@ -288,7 +288,7 @@ export default async function CohortPage(props: {
 									alt={fields?.title}
 								/>
 							)}
-							<div className="mt-5 flex w-full flex-col items-center pl-5 text-center lg:mt-0 lg:items-start lg:pl-10 lg:text-left">
+							<div className="mt-5 flex w-full flex-col items-center px-5 text-center lg:mt-0 lg:items-start lg:pl-10 lg:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 									<span className="text-xs font-medium uppercase tracking-wider">
 										Cohort-based Course
