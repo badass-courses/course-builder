@@ -90,7 +90,7 @@ async function handleCreditEntitlementsRefund(
 			productId: purchase.productId,
 			unusedCreditsRevoked: result.sourcePurchase.unusedCreditsRevoked,
 			creditEntitlementIds: unusedIds,
-			message: `Revoked ${unusedIds.length} unused credit(s) granted by product ${purchase.productId} only`,
+			message: `Revoked ${result.sourcePurchase.unusedCreditsRevoked} unused credit(s) granted by product ${purchase.productId} only`,
 		})
 	}
 
