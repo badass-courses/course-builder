@@ -37,8 +37,11 @@ export function EditWorkshopButton({
 							)}
 						>
 							<Button asChild size="sm" variant="outline">
-								<Link href={`/${pluralize(moduleType)}/${moduleSlug}/edit`}>
-									Edit Workshop
+								<Link
+									className="capitalize"
+									href={`/${pluralize(moduleType)}/${moduleSlug}/edit`}
+								>
+									Edit {moduleType}
 								</Link>
 							</Button>
 							{product && (
