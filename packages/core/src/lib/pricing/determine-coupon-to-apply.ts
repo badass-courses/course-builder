@@ -113,12 +113,15 @@ export const determineCouponToApply = async (
 		unitPrice,
 	})
 
+	const merchantCouponForBulk =
+		candidateMerchantCoupon || specialMerchantCouponToApply
+
 	const { bulkCouponToBeApplied, consideredBulk } = await getBulkCouponDetails({
 		prismaCtx,
 		userId,
 		productId,
 		quantity,
-		appliedMerchantCoupon: specialMerchantCouponToApply,
+		appliedMerchantCoupon: merchantCouponForBulk,
 		pppApplied: pppDetails.pppApplied,
 		unitPrice,
 	})
@@ -198,7 +201,11 @@ export const determineCouponToApply = async (
 	}
 
 	let couponToApply: MinimalMerchantCoupon | null = null
-	if (merchantCouponId && candidateMerchantCoupon) {
+	if (pppDetails.status === VALID_PPP) {
+		couponToApply = pppDetails.pppCouponToBeApplied
+	} else if (bulkCouponToBeApplied) {
+		couponToApply = bulkCouponToBeApplied
+	} else if (merchantCouponId && candidateMerchantCoupon) {
 		couponToApply = candidateMerchantCoupon
 
 		if (shouldEnableStacking && usedCouponId) {
@@ -207,10 +214,6 @@ export const determineCouponToApply = async (
 				addStackableDiscount(candidateMerchantCoupon, 'user', usedCouponId)
 			}
 		}
-	} else if (pppDetails.status === VALID_PPP) {
-		couponToApply = pppDetails.pppCouponToBeApplied
-	} else if (bulkCouponToBeApplied) {
-		couponToApply = bulkCouponToBeApplied
 	} else {
 		couponToApply = specialMerchantCouponToApply
 	}
