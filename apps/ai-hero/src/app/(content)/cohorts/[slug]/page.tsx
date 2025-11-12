@@ -278,7 +278,7 @@ export default async function CohortPage(props: {
 
 				<div className="flex flex-col lg:flex-row">
 					<div>
-						<header className="flex w-full flex-col items-center justify-between pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
+						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
 							{fields?.image && (
 								<CldImage
 									className="flex w-full lg:hidden"
@@ -376,7 +376,7 @@ export default async function CohortPage(props: {
 													>
 														<div className="relative flex items-stretch justify-between">
 															<Link
-																className="text-foreground hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
+																className="text-foreground dark:bg-foreground/2 hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col bg-white py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
 																href={getResourcePath(
 																	'workshop',
 																	workshop.fields.slug,
@@ -402,7 +402,7 @@ export default async function CohortPage(props: {
 														</div>
 														{workshop.resources &&
 															workshop.resources.length > 0 && (
-																<AccordionContent className="border-t pb-2">
+																<AccordionContent className="bg-background border-t pb-2 dark:bg-transparent">
 																	{/* Display formatted workshop date/time */}
 																	<div className="text-muted-foreground text-sm">
 																		{/* {dayNumber !== null && (
