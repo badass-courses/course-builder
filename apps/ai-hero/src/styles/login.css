@@ -1,7 +1,7 @@
 [data-login-template] {
 	@apply container relative mx-auto flex min-h-[calc(100dvh)] w-full flex-grow flex-col items-center justify-center p-5 sm:p-10;
 	[data-title] {
-		@apply font-heading text-balance pt-3 text-center text-3xl font-extrabold sm:text-3xl;
+		@apply font-heading text-balance pt-3 text-center text-3xl font-bold sm:text-4xl;
 		span {
 			@apply text-muted-foreground block pt-2 text-center font-sans text-lg font-normal;
 		}
@@ -24,7 +24,7 @@
 				}
 			}
 			[data-input] {
-				@apply bg-card h-14 rounded-xl pl-12 text-base;
+				@apply bg-card dark:bg-foreground/3 h-14 rounded-xl pl-12 text-base;
 			}
 		}
 		[data-button] {
@@ -37,7 +37,7 @@
 	[data-providers-container] {
 		@apply w-full space-y-2 pt-8 sm:mx-auto sm:max-w-md sm:pt-10;
 		[data-button] {
-			@apply border-border bg-card hover:bg-primary/2 dark:hover:text-primary h-14 w-full cursor-pointer rounded-xl transition ease-out hover:text-blue-600 hover:brightness-100;
+			@apply border-border dark:bg-foreground/3 bg-card hover:bg-primary/2 dark:hover:text-primary h-14 w-full cursor-pointer rounded-xl transition ease-out hover:text-blue-600 hover:brightness-100;
 		}
 	}
 }

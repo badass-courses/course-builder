@@ -78,7 +78,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 
 	return (
 		<main data-login-template="" className={className}>
-			<div className="bg-card ring-border rounded-2xl p-10 shadow-xl ring-1">
+			<div className="bg-card ring-border max-w-xl rounded-2xl p-10 shadow-xl ring-1">
 				{image ? image : null}
 				<h1 data-title="">
 					{title ? title : `Log in`}

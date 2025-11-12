@@ -8,8 +8,8 @@ export const Logo: React.FC<{
 	return (
 		<div className={cn('flex items-center gap-2', className)}>
 			<svg
-				className={cn('w-7', {
-					'w-8': withAuthor,
+				className={cn('size-7', {
+					'size-8': withAuthor,
 				})}
 				xmlns="http://www.w3.org/2000/svg"
 				width={className ? undefined : 280}
