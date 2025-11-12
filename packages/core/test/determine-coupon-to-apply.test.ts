@@ -734,5 +734,154 @@ describe('determineCouponToApply', () => {
 			expect(result.stackingPath).toBe('stack')
 			expect(result.stackableDiscounts.length).toBeGreaterThan(0)
 		})
+
+		it('should exclude entitlement-based credits when quantity > 1 (team purchase)', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 5,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.bulk).toBe(true)
+		})
+
+		it('should exclude entitlement-based credits when user has existing bulk purchase (consideredBulk = true)', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [
+					{
+						id: 'purchase_bulk_1',
+						productId: 'prod_basic',
+						userId: 'user_1',
+						status: 'Valid',
+						fields: {},
+						bulkCoupon: {
+							id: 'bulk_coupon_1',
+							code: 'BULK5',
+							maxUses: 5,
+							usedCount: 2,
+							status: 0,
+							default: false,
+							createdAt: new Date(),
+							expires: null,
+							fields: {},
+							percentageDiscount: 0,
+							merchantCouponId: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						},
+						createdAt: new Date(),
+						totalAmount: 500,
+					},
+				]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async () => ({
+					id: 'merchant_coupon_credit_150',
+					identifier: 'stripe_coupon_credit_150',
+					amountDiscount: 15000,
+					type: 'special credit',
+					status: 1,
+					merchantAccountId: 'merchant_1',
+				})),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			// Entitlement-based credits should be excluded when consideredBulk = true
+			// (user has existing bulk purchase, so seatCount = 1 + 5 = 6 > 1)
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.bulk).toBe(true)
+		})
 	})
 })
