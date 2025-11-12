@@ -4,5 +4,8 @@
 	"vitest.disableWorkspaceWarning": true,
 	"workbench.colorCustomizations": {
 		"activityBar.activeBorder": "#120A31"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}
 }
