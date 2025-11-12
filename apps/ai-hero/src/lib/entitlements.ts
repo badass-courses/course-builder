@@ -1,6 +1,11 @@
 import { db } from '@/db'
-import { entitlements, organizationMemberships, purchases } from '@/db/schema'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import {
+	entitlements,
+	entitlementTypes,
+	organizationMemberships,
+	purchases,
+} from '@/db/schema'
+import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
@@ -430,6 +435,145 @@ export async function removeAllUserEntitlementsInOrganization(
 			and(
 				eq(entitlements.userId, userId),
 				eq(entitlements.organizationId, organizationId),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
+}
+
+/**
+ * Get credit entitlements that were granted by a source purchase
+ * (e.g., when user purchased crash course, they got a credit entitlement)
+ *
+ * IMPORTANT: This ONLY returns credits granted by the specific product being refunded.
+ * It filters by metadata.eligibilityProductId to ensure we only get credits
+ * attached to this product, not all credits the user has.
+ *
+ * @param productId - The product ID of the source purchase (used to filter credits)
+ * @param userId - The user ID who made the purchase
+ * @returns Array of credit entitlements (both used and unused) that were granted by THIS product only
+ */
+export async function getCreditEntitlementsForSourcePurchase(
+	productId: string,
+	userId: string,
+) {
+	const specialCreditEntitlementType =
+		await db.query.entitlementTypes.findFirst({
+			where: eq(entitlementTypes.name, 'apply_special_credit'),
+		})
+
+	if (!specialCreditEntitlementType) {
+		return []
+	}
+
+	const creditEntitlements = await db.query.entitlements.findMany({
+		where: (entitlements, { and, eq, sql }) =>
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.entitlementType, specialCreditEntitlementType.id),
+				eq(entitlements.sourceType, EntitlementSourceType.COUPON),
+				sql`JSON_EXTRACT(${entitlements.metadata}, '$.eligibilityProductId') = ${productId}`,
+			),
+	})
+
+	return creditEntitlements
+}
+
+/**
+ * Get credit entitlements that were used by a target purchase
+ * (e.g., when user used a credit to buy Cohort 002)
+ * @param purchaseId - The purchase ID that may have used credits
+ * @param userId - The user ID who made the purchase
+ * @param paymentProvider - Payment provider to access checkout session
+ * @returns Object with entitlements and coupon IDs that were used
+ */
+export async function getCreditEntitlementsUsedByPurchase(
+	purchaseId: string,
+	userId: string,
+	paymentProvider: any,
+) {
+	const purchase = await db.query.purchases.findFirst({
+		where: eq(purchases.id, purchaseId),
+	})
+
+	if (!purchase || !purchase.merchantSessionId) {
+		return { entitlements: [], couponIds: [] }
+	}
+
+	const merchantSessionRecord = await db.query.merchantSession.findFirst({
+		where: (merchantSession, { eq }) =>
+			eq(merchantSession.id, purchase.merchantSessionId as string),
+	})
+
+	if (!merchantSessionRecord?.identifier || !paymentProvider) {
+		return { entitlements: [], couponIds: [] }
+	}
+
+	const checkoutSession =
+		await paymentProvider.options.paymentsAdapter.getCheckoutSession(
+			merchantSessionRecord.identifier,
+		)
+
+	const usedEntitlementCouponIds =
+		checkoutSession.metadata?.usedEntitlementCouponIds
+
+	if (!usedEntitlementCouponIds) {
+		return { entitlements: [], couponIds: [] }
+	}
+
+	const couponIds = usedEntitlementCouponIds
+		.split(',')
+		.map((id: string) => id.trim())
+		.filter((id: string) => id.length > 0)
+
+	if (couponIds.length === 0) {
+		return { entitlements: [], couponIds: [] }
+	}
+
+	const specialCreditEntitlementType =
+		await db.query.entitlementTypes.findFirst({
+			where: eq(entitlementTypes.name, 'apply_special_credit'),
+		})
+
+	if (!specialCreditEntitlementType) {
+		return { entitlements: [], couponIds }
+	}
+
+	const creditEntitlements = await db.query.entitlements.findMany({
+		where: (entitlements, { and, eq, sql }) =>
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.entitlementType, specialCreditEntitlementType.id),
+				eq(entitlements.sourceType, EntitlementSourceType.COUPON),
+				sql`${entitlements.sourceId} IN (${sql.join(
+					couponIds.map((id: string) => sql`${id}`),
+					sql`, `,
+				)})`,
+			),
+	})
+
+	return { entitlements: creditEntitlements, couponIds }
+}
+
+/**
+ * Soft delete unused credit entitlements
+ * @param entitlementIds - Array of entitlement IDs to soft delete
+ * @returns Number of entitlements deleted
+ */
+export async function softDeleteCreditEntitlements(entitlementIds: string[]) {
+	if (entitlementIds.length === 0) {
+		return { rowsAffected: 0 }
+	}
+
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				inArray(entitlements.id, entitlementIds),
 				isNull(entitlements.deletedAt),
 			),
 		)
