@@ -42,7 +42,7 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 	if (!mounted || !url) {
 		return (
 			<Shimmer
-				className=""
+				className={cn('', props.className)}
 				style={{
 					aspectRatio: `${width} / ${height}`,
 					maxWidth: width,

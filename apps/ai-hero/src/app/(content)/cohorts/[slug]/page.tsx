@@ -278,7 +278,7 @@ export default async function CohortPage(props: {
 
 				<div className="flex flex-col lg:flex-row">
 					<div>
-						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
+						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b md:gap-10 lg:flex-row lg:pt-8">
 							{fields?.image && (
 								<CldImage
 									className="flex w-full lg:hidden"
@@ -288,7 +288,7 @@ export default async function CohortPage(props: {
 									alt={fields?.title}
 								/>
 							)}
-							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+							<div className="mt-5 flex w-full flex-col items-center pl-5 text-center lg:mt-0 lg:items-start lg:pl-10 lg:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 									<span className="text-xs font-medium uppercase tracking-wider">
 										Cohort-based Course
@@ -387,7 +387,24 @@ export default async function CohortPage(props: {
 																	<span className="text-muted-foreground text-[10px] font-normal opacity-75">
 																		{index + 1}
 																	</span>{' '}
-																	<span>{workshop.fields.title}</span>
+																	<span className="inline-flex items-center gap-2">
+																		<svg
+																			className="text-muted-foreground size-3"
+																			xmlns="http://www.w3.org/2000/svg"
+																			width="12"
+																			height="12"
+																			viewBox="0 0 12 12"
+																		>
+																			<title>video-player</title>
+																			<g fill="currentColor">
+																				<path
+																					d="M10.5,1h-9A1.5,1.5,0,0,0,0,2.5v7A1.5,1.5,0,0,0,1.5,11h9A1.5,1.5,0,0,0,12,9.5v-7A1.5,1.5,0,0,0,10.5,1ZM4,9V3L9,6Z"
+																					fill="currentColor"
+																				/>
+																			</g>
+																		</svg>
+																		{workshop.fields.title}
+																	</span>
 																</span>
 																{workshopDateString && (
 																	<div className="mt-1 text-sm font-normal opacity-80">
@@ -397,12 +414,12 @@ export default async function CohortPage(props: {
 															</Link>
 															<AccordionTrigger
 																aria-label="Toggle lessons"
-																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent"
+																className="hover:bg-muted dark:hover:[&_svg]:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent hover:[&_svg]:text-blue-600"
 															/>
 														</div>
 														{workshop.resources &&
 															workshop.resources.length > 0 && (
-																<AccordionContent className="bg-background border-t pb-2 dark:bg-transparent">
+																<AccordionContent className="bg-background border-t dark:bg-transparent">
 																	{/* Display formatted workshop date/time */}
 																	<div className="text-muted-foreground text-sm">
 																		{/* {dayNumber !== null && (

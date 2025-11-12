@@ -42,7 +42,7 @@ export function WorkshopLessonItem({
 			{canViewLesson ? (
 				<Link
 					className={cn(
-						'text-foreground/90 hover:dark:text-primary hover:bg-muted/50 inline-flex w-full items-center py-2.5 pl-10 pr-10 text-base font-medium transition ease-in-out hover:text-blue-600',
+						'text-foreground/90 hover:dark:text-primary hover:bg-card hover:dark:bg-foreground/2 inline-flex min-h-12 w-full items-center py-2.5 pl-11 pr-5 text-base font-medium leading-tight transition ease-out hover:text-blue-600 sm:min-h-11',
 						className,
 					)}
 					href={getResourcePath(resource.type, resource.fields?.slug, 'view', {
@@ -58,7 +58,7 @@ export function WorkshopLessonItem({
 					) : (
 						<span
 							data-state=""
-							className="absolute left-3 pl-1 text-[10px] opacity-75"
+							className="text-muted-foreground absolute left-3 pl-1 text-[10px] opacity-75"
 						>
 							{index}
 						</span>
