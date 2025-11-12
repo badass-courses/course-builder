@@ -302,7 +302,6 @@ export default async function CohortPage(props: {
 								</>
 							)} */}
 								</div>
-
 								<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
 									{fields.title}
 								</h1>
@@ -377,14 +376,19 @@ export default async function CohortPage(props: {
 													>
 														<div className="relative flex items-stretch justify-between">
 															<Link
-																className="text-foreground hover:text-primary flex flex-col py-3 pl-4 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
+																className="text-foreground hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
 																href={getResourcePath(
 																	'workshop',
 																	workshop.fields.slug,
 																	'view',
 																)}
 															>
-																{workshop.fields.title}{' '}
+																<span className="inline-flex items-center gap-3">
+																	<span className="text-muted-foreground text-[10px] font-normal opacity-75">
+																		{index + 1}
+																	</span>{' '}
+																	<span>{workshop.fields.title}</span>
+																</span>
 																{workshopDateString && (
 																	<div className="mt-1 text-sm font-normal opacity-80">
 																		Available from {workshopDateString}
@@ -393,7 +397,7 @@ export default async function CohortPage(props: {
 															</Link>
 															<AccordionTrigger
 																aria-label="Toggle lessons"
-																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-full shrink-0 items-center justify-center rounded-none border-l bg-transparent"
+																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent"
 															/>
 														</div>
 														{workshop.resources &&

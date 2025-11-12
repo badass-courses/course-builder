@@ -53,7 +53,7 @@ export const CohortSidebar = ({
 					<ScrollArea className="h-full max-h-[calc(100vh-var(--nav-height))] [&_[data-slot='scroll-area-scrollbar']]:opacity-50">
 						{children}
 						{!Boolean(windowHeight - 63 > height) && (
-							<div className="from-card absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t to-transparent" />
+							<div className="from-card pointer-events-none absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t to-transparent" />
 						)}
 					</ScrollArea>
 				</div>

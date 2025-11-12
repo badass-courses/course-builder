@@ -47,7 +47,9 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 	const content = (
 		<>
 			{icon && icon}
-			<span>{label}</span>
+			<span className="wrap-break-word whitespace-normal text-balance">
+				{label}
+			</span>
 		</>
 	)
 
@@ -61,7 +63,6 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 			<Button
 				className={cn(
 					styles[variant],
-
 					{
 						'': isActive,
 						'bg-muted': isActive && variant === 'menu',

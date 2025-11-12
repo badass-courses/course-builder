@@ -51,6 +51,7 @@ export type NavigationMenuData = {
 		href: string
 		label: React.ReactNode | string
 	}
+	pastCohorts: CohortItem[]
 }
 
 /**
@@ -72,7 +73,33 @@ export function useNavLinks(): NavigationMenuData {
 		},
 	]
 
-	const cohorts: CohortItem[] = []
+	const cohorts: CohortItem[] = [
+		{
+			href: '/cohorts/build-your-own-ai-personal-assistant-in-typescript',
+			image: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1762890580/cohorts/cohort-ytorn/dmkvhhpfp5kg9ew5rtef.jpg',
+				alt: 'Build Your Own AI Personal Assistant in TypeScript',
+				width: 960 / 6,
+				height: 540 / 6,
+			},
+			title: 'Build Your Own AI Personal Assistant in TypeScript',
+			subtitle: 'December 8—12, 2025',
+		},
+	]
+
+	const pastCohorts: CohortItem[] = [
+		{
+			href: '/cohorts/build-deepsearch-in-typescript',
+			image: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1748619829/cohorts/cohort-5uyf5/kttfkqzngqj6uvbpgjhl.jpg',
+				alt: 'Build DeepSearch in TypeScript',
+				width: 776 / 6,
+				height: 507 / 6,
+			},
+			title: 'Build DeepSearch in TypeScript',
+			subtitle: 'July, 2025',
+		},
+	]
 
 	const freeTutorials = {
 		featured: {
@@ -119,5 +146,6 @@ export function useNavLinks(): NavigationMenuData {
 		cohorts,
 		freeTutorials,
 		browseAll,
+		pastCohorts,
 	}
 }
