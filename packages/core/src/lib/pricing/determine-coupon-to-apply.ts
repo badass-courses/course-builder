@@ -248,9 +248,16 @@ export const determineCouponToApply = async (
 
 	if (userId && shouldEnableStacking) {
 		// Use the already-queried entitlements for coupon-based special credits
+		// Note: Entitlement-based credits (like crash course credit) should NOT apply to team/bulk purchases
+		// Only individual purchases (quantity === 1) can use these credits
 
 		// Get coupons for each entitlement and check if they're stackable
+		// Skip if this is a team/bulk purchase (quantity > 1)
 		for (const entitlement of couponEntitlements) {
+			// Don't apply entitlement-based credits to team/bulk purchases
+			if (quantity > 1 || consideredBulk) {
+				continue
+			}
 			const coupon = await getCoupon(entitlement.sourceId)
 			if (!coupon || !coupon.merchantCouponId) {
 				continue
@@ -320,6 +327,7 @@ export const determineCouponToApply = async (
 
 		// Add default coupon (percentage or fixed, like 40% early bird or fixed amount) if it's stackable
 		// This allows default discounts to stack with special credits
+		// (entitlement credits are excluded for team purchases above)
 		if (defaultCouponToApply && shouldEnableStacking) {
 			// Get the coupon record to check if it's stackable
 			// Only fetch if we have a coupon ID to look up

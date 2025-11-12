@@ -1,6 +1,6 @@
 import config from '@/config'
 import { db } from '@/db'
-import { entitlementTypes } from '@/db/schema'
+import { coupon, entitlements, entitlementTypes } from '@/db/schema'
 import LiveOfficeHoursInvitation, {
 	generateICSAttachments,
 } from '@/emails/live-office-hours-invitation'
@@ -15,7 +15,7 @@ import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { isAfter, parse } from 'date-fns'
 import { formatInTimeZone, zonedTimeToUtc } from 'date-fns-tz'
-import { eq } from 'drizzle-orm'
+import { and, eq, isNotNull, isNull, sql } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
@@ -156,6 +156,108 @@ export const postPurchaseWorkflow = inngest.createFunction(
 		// Step 4: Determine purchase characteristics
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 		const isFullPriceCouponRedemption = Boolean(purchase.redeemedBulkCouponId)
+
+		// Step 4.5: Grant coupon-based entitlements for new purchase
+		// If someone buys a product that has an eligibility condition (e.g., crash course),
+		// grant them the entitlement for any matching coupons
+		await step.run('grant coupon entitlements for new purchase', async () => {
+			const isEligiblePurchase =
+				purchase.status === 'Valid' &&
+				Number(purchase.totalAmount) > 0 &&
+				!purchase.bulkCouponId
+
+			if (!isEligiblePurchase || !purchase.userId) {
+				return {
+					checked: true,
+					reason: 'Purchase not eligible for coupon entitlements',
+				}
+			}
+			const couponsWithEligibility = await db.query.coupon.findMany({
+				where: (coupons, { sql, and, eq, isNotNull }) =>
+					and(
+						eq(coupons.status, 1),
+						sql`JSON_EXTRACT(${coupons.fields}, '$.eligibilityCondition.productId') = ${purchase.productId}`,
+						isNotNull(
+							sql`JSON_EXTRACT(${coupons.fields}, '$.eligibilityCondition.type')`,
+						),
+					),
+			})
+
+			if (couponsWithEligibility.length === 0) {
+				return { checked: true, matchingCoupons: 0 }
+			}
+			const couponCreditEntitlementType =
+				await db.query.entitlementTypes.findFirst({
+					where: eq(entitlementTypes.name, 'apply_special_credit'),
+				})
+
+			if (!couponCreditEntitlementType) {
+				await log.warn('coupon.entitlements.type_not_found', {
+					productId: purchase.productId,
+					userId: purchase.userId,
+				})
+				return { checked: true, error: 'Entitlement type not found' }
+			}
+			const personalOrgResult = await ensurePersonalOrganizationWithLearnerRole(
+				{ id: user.id, email: user.email },
+				adapter,
+			)
+
+			let granted = 0
+			const grantedCouponIds: string[] = []
+
+			const userId = user.id
+			for (const coupon of couponsWithEligibility) {
+				const existingEntitlement = await db.query.entitlements.findFirst({
+					where: (entitlements, { and, eq, isNull }) =>
+						and(
+							eq(entitlements.userId, userId),
+							eq(entitlements.sourceId, coupon.id),
+							eq(entitlements.sourceType, EntitlementSourceType.COUPON),
+							eq(entitlements.entitlementType, couponCreditEntitlementType.id),
+							isNull(entitlements.deletedAt),
+						),
+				})
+
+				if (existingEntitlement) {
+					continue
+				}
+
+				const entitlementId = `${coupon.id}-${guid()}`
+				await db.insert(entitlements).values({
+					id: entitlementId,
+					userId,
+					organizationId: personalOrgResult.organization.id,
+					organizationMembershipId: personalOrgResult.membership.id,
+					entitlementType: couponCreditEntitlementType.id,
+					sourceType: EntitlementSourceType.COUPON,
+					sourceId: coupon.id,
+					metadata: {
+						eligibilityProductId: purchase.productId,
+					},
+				})
+
+				granted++
+				grantedCouponIds.push(coupon.id)
+			}
+
+			if (granted > 0) {
+				await log.info('coupon.entitlements.granted_for_new_purchase', {
+					userId: purchase.userId,
+					productId: purchase.productId,
+					purchaseId: purchase.id,
+					granted,
+					couponIds: grantedCouponIds,
+				})
+			}
+
+			return {
+				checked: true,
+				matchingCoupons: couponsWithEligibility.length,
+				granted,
+				couponIds: grantedCouponIds,
+			}
+		})
 
 		// Step 5: Get bulk coupon data if needed
 		const bulkCouponData = await step.run(`get bulk coupon data`, async () => {
