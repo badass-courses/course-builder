@@ -1,5 +1,6 @@
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
+import { getAllWorkshopsInCohort } from '@/lib/cohorts-query'
 import { getList } from '@/lib/lists-query'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -64,5 +65,22 @@ export const contentResourceRouter = createTRPCRouter({
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input }) => {
 			return await getWorkshop(input.id)
+		}),
+	getNextWorkshopInCohort: publicProcedure
+		.input(
+			z.object({
+				cohortId: z.string(),
+				currentWorkshopId: z.string(),
+			}),
+		)
+		.query(async ({ input }) => {
+			const workshops = await getAllWorkshopsInCohort(input.cohortId)
+			const currentIndex = workshops.findIndex(
+				(w) => w.id === input.currentWorkshopId,
+			)
+			if (currentIndex === -1 || currentIndex === workshops.length - 1) {
+				return null
+			}
+			return workshops[currentIndex + 1] ?? null
 		}),
 })
