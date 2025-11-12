@@ -304,6 +304,7 @@ export async function formatPricesForProduct(
 		stackingPath === 'stack' && stackableDiscounts.length > 0
 			? stackableDiscounts.map((discount) => ({
 					couponId: discount.couponId,
+					source: discount.source,
 					discountType: discount.discountType,
 					amount:
 						discount.discountType === 'fixed'

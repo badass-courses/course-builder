@@ -380,6 +380,12 @@ export async function stripeCheckout({
 			const stackableDiscounts = pricingResult.stackableDiscounts || []
 			const stackingPath = pricingResult.stackingPath || 'none'
 
+			const usedEntitlementCouponIds = stackableDiscounts
+				.filter((discount) => discount.source === 'entitlement')
+				.map((discount) => discount.couponId)
+				.filter((id): id is string => Boolean(id))
+				.join(',')
+
 			const isUpgrade = Boolean(
 				(availableUpgrade || upgradeFromPurchase?.status === 'Restricted') &&
 					upgradeFromPurchase,
@@ -608,6 +614,9 @@ export async function stripeCheckout({
 				country: params.country || process.env.DEFAULT_COUNTRY || 'US',
 				ip_address: ip_address || '',
 				...(usedCouponId && { usedCouponId }),
+				...(usedEntitlementCouponIds && {
+					usedEntitlementCouponIds,
+				}),
 				productId: loadedProduct.id,
 				product: loadedProduct.name,
 				...(user && { userId: user.id }),
