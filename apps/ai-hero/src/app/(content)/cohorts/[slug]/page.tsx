@@ -39,6 +39,7 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import { EditWorkshopButton } from '../../workshops/_components/edit-workshop-button'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
@@ -66,13 +67,11 @@ export async function generateMetadata(
 		openGraph: {
 			images: [
 				{
-					url: `${env.NEXT_PUBLIC_URL}/api/og/default?title=${encodeURIComponent(cohort.fields.title)}`,
+					url:
+						cohort?.fields?.image ||
+						`${env.NEXT_PUBLIC_URL}/api/og/default?title=${encodeURIComponent(cohort.fields.title)}`,
+					alt: cohort?.fields?.title,
 				},
-				// getOGImageUrlForResource({
-				// 	fields: { slug: cohort.fields.slug },
-				// 	id: cohort.id,
-				// 	updatedAt: cohort.updatedAt,
-				// }),
 			],
 		},
 	}
@@ -253,34 +252,13 @@ export default async function CohortPage(props: {
 					cohort={cohort}
 					quantityAvailable={cohortProps.quantityAvailable}
 				/>
-				{cohort && ability?.can?.('update', 'Content') && (
-					<div className="absolute right-3 top-3 z-10 flex items-center gap-2">
-						{product && (
-							<Button
-								asChild
-								size="sm"
-								variant="secondary"
-								className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
-							>
-								<Link
-									href={`/products/${product?.fields?.slug || product?.id}/edit`}
-								>
-									Edit Product
-								</Link>
-							</Button>
-						)}
-						<Button
-							asChild
-							size="sm"
-							variant="secondary"
-							className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
-						>
-							<Link href={`/cohorts/${cohort.fields?.slug || cohort.id}/edit`}>
-								Edit Cohort
-							</Link>
-						</Button>
-					</div>
-				)}
+				<EditWorkshopButton
+					className=""
+					moduleType="cohort"
+					moduleSlug={cohort.fields?.slug || cohort.id}
+					product={product}
+				/>
+
 				{hasPurchasedCurrentProduct ? (
 					<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">
 						<div className="flex items-center">
