@@ -35,9 +35,14 @@ type DetermineCouponToApplyParams = z.infer<
 >
 
 const SPECIAL_TYPE = 'special' as const
+const SPECIAL_CREDIT_TYPE = 'special credit' as const
 const PPP_TYPE = 'ppp' as const
 const BULK_TYPE = 'bulk' as const
 const NONE_TYPE = 'none' as const
+
+const isSpecialCouponType = (type: string | null | undefined): boolean => {
+	return type === SPECIAL_TYPE || type === SPECIAL_CREDIT_TYPE
+}
 
 export const determineCouponToApply = async (
 	params: DetermineCouponToApplyParams,
@@ -79,7 +84,7 @@ export const determineCouponToApply = async (
 			: null
 
 	const specialMerchantCouponToApply =
-		candidateMerchantCoupon?.type === SPECIAL_TYPE
+		candidateMerchantCoupon && isSpecialCouponType(candidateMerchantCoupon.type)
 			? candidateMerchantCoupon
 			: null
 
@@ -87,7 +92,8 @@ export const determineCouponToApply = async (
 	// This allows default discounts (like 40% early bird or fixed amount) to stack with special credits
 	const defaultCouponToApply =
 		candidateMerchantCoupon &&
-		candidateMerchantCoupon.type !== SPECIAL_TYPE &&
+		!isSpecialCouponType(candidateMerchantCoupon.type) &&
+		!merchantCouponId &&
 		((candidateMerchantCoupon.percentageDiscount ?? 0) > 0 ||
 			(candidateMerchantCoupon.amountDiscount ?? 0) > 0)
 			? candidateMerchantCoupon
@@ -117,8 +123,91 @@ export const determineCouponToApply = async (
 		unitPrice,
 	})
 
+	const stackableDiscounts: Array<{
+		coupon: MinimalMerchantCoupon
+		source: 'default' | 'user' | 'entitlement'
+		discountType: 'fixed' | 'percentage'
+		amount: number // in cents or percentage (0-1)
+		couponId: string
+	}> = []
+
+	function addStackableDiscount(
+		merchantCoupon: MinimalMerchantCoupon,
+		source: 'default' | 'user' | 'entitlement',
+		couponId: string,
+	) {
+		const rawAmountDiscount = merchantCoupon.amountDiscount ?? 0
+		const rawPercentageDiscount = merchantCoupon.percentageDiscount ?? 0
+
+		const amountDiscount =
+			typeof rawAmountDiscount === 'string'
+				? parseFloat(rawAmountDiscount)
+				: rawAmountDiscount
+
+		const percentageDiscount =
+			typeof rawPercentageDiscount === 'string'
+				? parseFloat(rawPercentageDiscount)
+				: rawPercentageDiscount
+
+		if (amountDiscount > 0) {
+			stackableDiscounts.push({
+				coupon: merchantCoupon,
+				source,
+				discountType: 'fixed',
+				amount: amountDiscount,
+				couponId,
+			})
+		} else if (percentageDiscount > 0) {
+			stackableDiscounts.push({
+				coupon: merchantCoupon,
+				source,
+				discountType: 'percentage',
+				amount: percentageDiscount,
+				couponId,
+			})
+		}
+	}
+
+	// Check for entitlements FIRST to determine if stacking should be enabled
+	// This needs to happen before we determine which coupon to apply, so we can add custom coupons to stackable discounts
+	let shouldEnableStacking = preferStacking
+	let couponEntitlements: Awaited<ReturnType<typeof getEntitlementsForUser>> =
+		[]
+
+	if (userId) {
+		const specialCreditEntitlementType = await getEntitlementTypeByName(
+			'apply_special_credit',
+		)
+		const entitlementTypeId = specialCreditEntitlementType?.id
+
+		if (entitlementTypeId) {
+			couponEntitlements = await getEntitlementsForUser({
+				userId,
+				sourceType: 'COUPON',
+				entitlementType: entitlementTypeId,
+			})
+		}
+
+		if (couponEntitlements.length > 0) {
+			const shouldRespectPreferStackingFalse =
+				preferStacking === false && pppDetails.status === VALID_PPP
+			if (!shouldRespectPreferStackingFalse) {
+				shouldEnableStacking = true
+			}
+		}
+	}
+
 	let couponToApply: MinimalMerchantCoupon | null = null
-	if (pppDetails.status === VALID_PPP) {
+	if (merchantCouponId && candidateMerchantCoupon) {
+		couponToApply = candidateMerchantCoupon
+
+		if (shouldEnableStacking && usedCouponId) {
+			const usedCouponRecord = await getCoupon(usedCouponId)
+			if (usedCouponRecord) {
+				addStackableDiscount(candidateMerchantCoupon, 'user', usedCouponId)
+			}
+		}
+	} else if (pppDetails.status === VALID_PPP) {
 		couponToApply = pppDetails.pppCouponToBeApplied
 	} else if (bulkCouponToBeApplied) {
 		couponToApply = bulkCouponToBeApplied
@@ -138,7 +227,7 @@ export const determineCouponToApply = async (
 		.transform((couponType) => {
 			if (couponType === PPP_TYPE) {
 				return PPP_TYPE
-			} else if (couponType === SPECIAL_TYPE) {
+			} else if (isSpecialCouponType(couponType)) {
 				return SPECIAL_TYPE
 			} else if (couponType === BULK_TYPE) {
 				return BULK_TYPE
@@ -169,80 +258,6 @@ export const determineCouponToApply = async (
 			couponToApply.percentageDiscount > 0
 		) {
 			appliedDiscountType = 'percentage'
-		}
-	}
-
-	// Query entitlements for stackable coupon discounts
-	const stackableDiscounts: Array<{
-		coupon: MinimalMerchantCoupon
-		source: 'default' | 'user' | 'entitlement'
-		discountType: 'fixed' | 'percentage'
-		amount: number // in cents or percentage (0-1)
-		couponId: string
-	}> = []
-
-	/**
-	 * Helper function to add a merchant coupon to stackable discounts if it has a valid discount
-	 */
-	const addStackableDiscount = (
-		merchantCoupon: MinimalMerchantCoupon,
-		source: 'default' | 'user' | 'entitlement',
-		couponId: string,
-	) => {
-		const amountDiscount = merchantCoupon.amountDiscount ?? 0
-		const percentageDiscount = merchantCoupon.percentageDiscount ?? 0
-
-		if (amountDiscount > 0) {
-			stackableDiscounts.push({
-				coupon: merchantCoupon,
-				source,
-				discountType: 'fixed',
-				amount: amountDiscount,
-				couponId,
-			})
-		} else if (percentageDiscount > 0) {
-			stackableDiscounts.push({
-				coupon: merchantCoupon,
-				source,
-				discountType: 'percentage',
-				amount: percentageDiscount,
-				couponId,
-			})
-		}
-	}
-
-	// Check for entitlement-based coupons first to determine if stacking should be enabled
-	// Stacking should ONLY be enabled if the user has entitlement-based coupons
-	// This ensures we don't accidentally allow stacking for regular users
-	// However, if preferStacking is explicitly false AND PPP is available, respect that choice (user prefers PPP)
-	let shouldEnableStacking = preferStacking
-	let couponEntitlements: Awaited<ReturnType<typeof getEntitlementsForUser>> =
-		[]
-
-	if (userId) {
-		// Always check entitlements if userId exists
-
-		const specialCreditEntitlementType = await getEntitlementTypeByName(
-			'apply_special_credit',
-		)
-		const entitlementTypeId = specialCreditEntitlementType?.id
-
-		if (entitlementTypeId) {
-			couponEntitlements = await getEntitlementsForUser({
-				userId,
-				sourceType: 'COUPON',
-				entitlementType: entitlementTypeId,
-			})
-		}
-
-		// If entitlements exist, enable stacking UNLESS:
-		// - preferStacking is explicitly false AND PPP is available (user prefers PPP over stacking)
-		if (couponEntitlements.length > 0) {
-			const shouldRespectPreferStackingFalse =
-				preferStacking === false && pppDetails.status === VALID_PPP
-			if (!shouldRespectPreferStackingFalse) {
-				shouldEnableStacking = true
-			}
 		}
 	}
 

@@ -139,52 +139,17 @@ async function getActiveMerchantCoupon({
 		code,
 	})
 
-	if (
-		// compare the discounts if there is a coupon and site/sale running
-		incomingCoupon?.merchantCoupon &&
-		couponIsValid(incomingCoupon) &&
-		defaultMerchantCoupon
-	) {
-		// use whichever coupon provides the bigger discount
-		// by calculating actual discount amounts in dollars
-		const { merchantCoupon: incomingMerchantCoupon } = incomingCoupon
-		const subtotal = unitPrice * quantity
-
-		// Calculate incoming coupon discount amount
-		const incomingDiscountAmount =
-			incomingMerchantCoupon.amountDiscount !== null &&
-			incomingMerchantCoupon.amountDiscount !== undefined &&
-			incomingMerchantCoupon.amountDiscount > 0
-				? (incomingMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
-				: (incomingMerchantCoupon.percentageDiscount || 0) * subtotal
-
-		// Calculate default coupon discount amount
-		const defaultDiscountAmount =
-			defaultMerchantCoupon.amountDiscount !== null &&
-			defaultMerchantCoupon.amountDiscount !== undefined &&
-			defaultMerchantCoupon.amountDiscount > 0
-				? (defaultMerchantCoupon.amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
-				: (defaultMerchantCoupon.percentageDiscount || 0) * subtotal
-
-		// Choose the coupon with the higher discount amount
-		if (incomingDiscountAmount >= defaultDiscountAmount) {
-			activeMerchantCoupon = incomingMerchantCoupon
-			usedCouponId = incomingCoupon.id
-		} else {
-			activeMerchantCoupon = defaultMerchantCoupon
-			usedCouponId = defaultCoupons?.defaultCoupon?.id
-		}
-	} else if (
-		// if it's a coupon, use it
+	// If a custom coupon code/couponId was explicitly provided, it should ALWAYS override the default
+	const hasExplicitCustomCoupon =
+		(siteCouponId || code) &&
 		incomingCoupon?.merchantCoupon &&
 		couponIsValid(incomingCoupon)
-	) {
+
+	if (hasExplicitCustomCoupon) {
+		// Custom coupon provided - always use it, overriding default
 		activeMerchantCoupon = incomingCoupon.merchantCoupon
 		usedCouponId = incomingCoupon.id
-	} else if (
-		// if a sale is running, use that
-		defaultMerchantCoupon
-	) {
+	} else if (defaultMerchantCoupon) {
 		activeMerchantCoupon = defaultMerchantCoupon
 		usedCouponId = defaultCoupons?.defaultCoupon?.id
 	}
@@ -204,6 +169,7 @@ async function getActiveMerchantCoupon({
 const checkForAvailableCoupons = async ({
 	merchantCoupon,
 	couponId,
+	code,
 	productId,
 	unitPrice,
 	quantity,
@@ -222,27 +188,10 @@ const checkForAvailableCoupons = async ({
 			await getActiveMerchantCoupon({
 				siteCouponId: couponId,
 				productId,
-				code: undefined,
+				code,
 				unitPrice,
 				quantity,
 			})
-
-		// Always prefer the default coupon as the base coupon when one exists
-		// (stacking logic in formatPricesForProduct will add entitlement-based discounts on top)
-		if (defaultCoupon && defaultCoupon.merchantCouponId) {
-			const defaultMerchantCoupon =
-				await courseBuilderAdapter.getMerchantCoupon(
-					defaultCoupon.merchantCouponId,
-				)
-
-			if (defaultMerchantCoupon) {
-				return {
-					activeMerchantCoupon: defaultMerchantCoupon,
-					defaultCoupon,
-					usedCouponId: defaultCoupon.id,
-				}
-			}
-		}
 
 		return {
 			activeMerchantCoupon,
@@ -349,6 +298,7 @@ export const pricingRouter = createTRPCRouter({
 				await checkForAvailableCoupons({
 					merchantCoupon,
 					couponId,
+					code: input.code,
 					productId,
 					unitPrice,
 					quantity,

@@ -253,9 +253,13 @@ export async function formatPricesForProduct(
 
 		calculatedPrice = currentPrice
 	} else {
-		// Use existing logic for non-stacking scenarios
+		const rawPercentOfDiscount = appliedMerchantCoupon?.percentageDiscount
 		const percentOfDiscount =
-			appliedMerchantCoupon?.percentageDiscount ?? undefined
+			rawPercentOfDiscount !== null && rawPercentOfDiscount !== undefined
+				? typeof rawPercentOfDiscount === 'string'
+					? parseFloat(rawPercentOfDiscount)
+					: rawPercentOfDiscount
+				: undefined
 		const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
 
 		// Discount stacking rules:

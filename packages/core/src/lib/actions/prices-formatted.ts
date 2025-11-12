@@ -102,57 +102,18 @@ async function getActiveMerchantCoupon({
 		code,
 	})
 
-	if (
-		// compare the discounts if there is a coupon and site/sale running
-		incomingCoupon?.merchantCoupon &&
-		couponIsValid(incomingCoupon) &&
-		defaultMerchantCoupon
-	) {
-		// use whichever coupon provides the bigger discount
-		const { merchantCoupon: incomingMerchantCoupon } = incomingCoupon
-
-		// Get product price to compare actual discount amounts
-		const product = productId
-			? await courseBuilderAdapter.getProduct(productId)
-			: null
-		const price = product
-			? await courseBuilderAdapter.getPriceForProduct(productId!)
-			: null
-		const unitPrice = price?.unitAmount || 0
-
-		// Calculate actual discount amounts in dollars
-		const incomingDiscountAmount =
-			incomingMerchantCoupon.amountDiscount !== null &&
-			incomingMerchantCoupon.amountDiscount !== undefined &&
-			incomingMerchantCoupon.amountDiscount > 0
-				? incomingMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
-				: (incomingMerchantCoupon.percentageDiscount ?? 0) * unitPrice
-
-		const defaultDiscountAmount =
-			defaultMerchantCoupon.amountDiscount !== null &&
-			defaultMerchantCoupon.amountDiscount !== undefined &&
-			defaultMerchantCoupon.amountDiscount > 0
-				? defaultMerchantCoupon.amountDiscount / 100 // Convert cents to dollars
-				: (defaultMerchantCoupon.percentageDiscount ?? 0) * unitPrice
-
-		if (incomingDiscountAmount >= defaultDiscountAmount) {
-			activeMerchantCoupon = incomingMerchantCoupon
-			usedCouponId = incomingCoupon.id
-		} else {
-			activeMerchantCoupon = defaultMerchantCoupon
-			usedCouponId = defaultCoupons?.defaultCoupon?.id
-		}
-	} else if (
-		// if it's a coupon, use it
+	// If a custom coupon code/couponId was explicitly provided, it should ALWAYS override the default
+	// This allows admins to give specific people custom coupons that override site-wide defaults
+	const hasExplicitCustomCoupon =
+		(siteCouponId || code) &&
 		incomingCoupon?.merchantCoupon &&
 		couponIsValid(incomingCoupon)
-	) {
+
+	if (hasExplicitCustomCoupon) {
+		// Custom coupon provided - always use it, overriding default
 		activeMerchantCoupon = incomingCoupon.merchantCoupon
 		usedCouponId = incomingCoupon.id
-	} else if (
-		// if a sale is running, use that
-		defaultMerchantCoupon
-	) {
+	} else if (defaultMerchantCoupon) {
 		activeMerchantCoupon = defaultMerchantCoupon
 		usedCouponId = defaultCoupons?.defaultCoupon?.id
 	}
@@ -195,18 +156,17 @@ const checkForAvailableCoupons = async ({
 			defaultCoupon: undefined,
 		}
 	} else {
+		// getActiveMerchantCoupon now handles the logic:
+		// - If custom coupon code/couponId provided, it overrides default
+		// - Otherwise, uses default coupon
+		// Special credit coupons (entitlement-based) will stack on top via formatPricesForProduct
 		const { activeMerchantCoupon, defaultCoupon, usedCouponId } =
 			await getActiveMerchantCoupon({
 				siteCouponId: couponId,
 				productId,
-				code: undefined,
+				code: undefined, // Note: code parameter not available in this context, but couponId should work
 				courseBuilderAdapter,
 			})
-
-		const minimalDefaultCoupon = defaultCoupon && {
-			expires: defaultCoupon.expires?.toISOString(),
-			percentageDiscount: defaultCoupon.percentageDiscount?.toString() || '0',
-		}
 
 		return {
 			activeMerchantCoupon,
@@ -277,9 +237,11 @@ export async function getPricesFormatted(
 			productId,
 			courseBuilderAdapter: options.adapter,
 		})
+
 	const usedCoupon = usedCouponId
 		? await options.adapter.getCoupon(usedCouponId)
 		: null
+
 	const productPrices = await formatPricesForProduct({
 		productId,
 		country,

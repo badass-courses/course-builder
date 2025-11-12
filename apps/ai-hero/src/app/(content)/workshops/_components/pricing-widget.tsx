@@ -54,9 +54,11 @@ export const PricingWidget = ({
 }: PricingWidgetProps) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
+	// Priority: couponIdFromCoupon (from ?coupon=) > couponFromCode.id (from ?code=)
+	// This ensures custom coupons from URL params always override defaults
 	const couponId =
 		commerceProps?.couponIdFromCoupon ||
-		(validCoupon ? couponFromCode?.id : undefined)
+		(validCoupon && couponFromCode?.id ? couponFromCode.id : undefined)
 
 	return (
 		<Pricing.Root

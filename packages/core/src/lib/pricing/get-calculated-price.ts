@@ -37,7 +37,9 @@ export function getCalculatedPrice({
 		finalPrice = priceAfterUpgradeDiscount - totalDiscount
 	} else {
 		// Percentage discount from merchant coupon
-		const discountMultiplier = 1 - percentOfDiscount
+		const normalizedPercentDiscount =
+			typeof percentOfDiscount === 'number' ? percentOfDiscount : 0
+		const discountMultiplier = 1 - normalizedPercentDiscount
 		finalPrice = priceAfterUpgradeDiscount * discountMultiplier
 	}
 

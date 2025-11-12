@@ -232,14 +232,11 @@ export async function loadCohortPageData(
 		}
 
 		// Determine the active merchant coupon for pricing data
+		// Custom coupons from URL params should ALWAYS override the default coupon
 		let merchantCouponId: string | undefined
 		let usedCouponId: string | undefined
 
-		if (defaultCouponFromAdapter?.merchantCouponId) {
-			merchantCouponId = defaultCouponFromAdapter.merchantCouponId
-			usedCouponId = defaultCouponFromAdapter.id
-		} else if (commerceProps.couponIdFromCoupon) {
-			// If there's a coupon from commerce props, get its merchant coupon
+		if (commerceProps.couponIdFromCoupon) {
 			const coupon = await courseBuilderAdapter.couponForIdOrCode({
 				couponId: commerceProps.couponIdFromCoupon,
 			})
@@ -250,6 +247,9 @@ export async function loadCohortPageData(
 		} else if (commerceProps.couponFromCode?.merchantCoupon?.id) {
 			merchantCouponId = commerceProps.couponFromCode.merchantCoupon.id
 			usedCouponId = commerceProps.couponFromCode.id
+		} else if (defaultCouponFromAdapter?.merchantCouponId) {
+			merchantCouponId = defaultCouponFromAdapter.merchantCouponId
+			usedCouponId = defaultCouponFromAdapter.id
 		}
 
 		// Create pricing data loader with coupon information
