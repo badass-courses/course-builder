@@ -8,7 +8,7 @@ import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { useInView } from 'framer-motion'
 import { useMeasure } from 'react-use'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, ScrollArea } from '@coursebuilder/ui'
 
 export const CohortSidebar = ({
 	children,
@@ -46,11 +46,16 @@ export const CohortSidebar = ({
 				<div
 					ref={sidebarRef}
 					className={cn('', {
-						'md:top-(--nav-height) md:sticky':
-							sticky && windowHeight - 63 > height,
+						'md:top-(--nav-height) md:sticky': true, // sticky && windowHeight - 63 > height,
+						'': true, // scrollable
 					})}
 				>
-					{children}
+					<ScrollArea className="h-full max-h-[calc(100vh-var(--nav-height))] [&_[data-slot='scroll-area-scrollbar']]:opacity-50">
+						{children}
+						{!Boolean(windowHeight - 63 > height) && (
+							<div className="from-card absolute bottom-0 left-0 h-20 w-full bg-gradient-to-t to-transparent" />
+						)}
+					</ScrollArea>
 				</div>
 			</div>
 
@@ -89,14 +94,19 @@ export const CohortSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-4 transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between gap-5 border-t px-5 py-4 shadow-2xl transition-opacity duration-300 md:hidden',
 				className,
 			)}
 		>
-			<p>{eventDateString}</p>
-			<Button asChild>
+			<div className="flex flex-col">
+				<p className="text-muted-foreground text-xs">{eventDateString}</p>
+				<p className="text-foreground text-balance text-sm font-semibold">
+					{fields.title}
+				</p>
+			</div>
+			<Button className="dark:bg-primary rounded-lg bg-blue-600 shadow" asChild>
 				<Link href="#buy" onClick={handleScrollToBuy}>
-					Enroll today
+					Enroll Now
 				</Link>
 			</Button>
 		</div>

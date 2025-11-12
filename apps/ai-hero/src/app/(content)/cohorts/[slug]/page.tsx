@@ -405,7 +405,8 @@ export default async function CohortPage(props: {
 																	</div>
 																	<ol className="list-inside list-none">
 																		<WorkshopListRowRenderer
-																			className="pl-10 [&_[data-state]]:left-5"
+																			workshopIndex={index + 1}
+																			className=""
 																			workshop={workshop}
 																		/>
 																	</ol>
@@ -480,10 +481,14 @@ export default async function CohortPage(props: {
 															value={workshop.id}
 															className='data-[state="open"]:bg-muted/60 transition-colors ease-out'
 														>
-															<WorkshopSidebarItem workshop={workshop} />
+															<WorkshopSidebarItem
+																index={index + 1}
+																workshop={workshop}
+															/>
 															<AccordionContent>
 																<ol className="divide-border border-border list-inside list-none divide-y border-t">
 																	<WorkshopListRowRenderer
+																		workshopIndex={index + 1}
 																		workshop={workshop}
 																	/>
 																</ol>
@@ -517,9 +522,11 @@ export default async function CohortPage(props: {
 const WorkshopListRowRenderer = ({
 	workshop,
 	className,
+	workshopIndex,
 }: {
 	workshop: Workshop
 	className?: string
+	workshopIndex: number
 }) => {
 	const workshopNavDataLoader = getCachedWorkshopNavigation(
 		workshop.fields.slug,
@@ -527,7 +534,11 @@ const WorkshopListRowRenderer = ({
 
 	return (
 		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>
-			<WorkshopLessonList workshop={workshop} className={className} />
+			<WorkshopLessonList
+				workshop={workshop}
+				className={className}
+				workshopIndex={workshopIndex}
+			/>
 		</WorkshopNavigationProvider>
 	)
 }

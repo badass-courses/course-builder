@@ -175,7 +175,7 @@ export const CohortPricingWidgetContainer: React.FC<
 	return (
 		<>
 			{enrollmentState.type === 'open' || allowPurchase ? (
-				<div className={cn('border-b px-5 pb-5', className)}>
+				<div className={cn('px-5 pb-5', className)}>
 					{renderImage()}
 					<p className="opacit-50 -mb-7 flex w-full items-center justify-center pt-5 text-center text-base">
 						{eventDateString}

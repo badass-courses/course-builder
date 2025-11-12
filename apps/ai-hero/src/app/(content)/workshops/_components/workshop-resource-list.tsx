@@ -176,17 +176,19 @@ export function WorkshopResourceList(props: Props) {
 										alt={workshopNavigation.title}
 									/>
 								)} */}
-								<div className="flex flex-col leading-tight">
-									<div className="flex items-center gap-0.5">
+								<div className="flex min-w-0 flex-col gap-0.5">
+									<div className="flex items-center pr-10">
 										<Link
 											href={
 												cohortSlug ? `/cohorts/${cohortSlug}` : '/workshops'
 											}
-											className="text-foreground text-base font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
+											className="text-foreground block w-full truncate text-sm font-normal opacity-75 hover:underline dark:font-light dark:opacity-100"
 										>
 											{cohortTitle ?? 'Workshops'}
 										</Link>
-										<span className="px-1 font-mono opacity-50">/</span>
+										<span className="text-muted-foreground px-1 font-mono text-sm opacity-50">
+											/
+										</span>
 									</div>
 									<Link
 										className="font-heading text-balance text-lg font-bold leading-tight tracking-tight hover:underline xl:text-xl xl:leading-tight"

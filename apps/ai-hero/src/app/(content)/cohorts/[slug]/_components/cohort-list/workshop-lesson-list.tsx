@@ -12,9 +12,11 @@ import { WorkshopLessonItem } from './workshop-lesson-item'
 export function WorkshopLessonList({
 	workshop,
 	className,
+	workshopIndex,
 }: {
 	workshop: Workshop
 	className?: string
+	workshopIndex: number
 }) {
 	const workshopNavigation = useWorkshopNavigation()
 
@@ -35,8 +37,8 @@ export function WorkshopLessonList({
 			{workshop.resources?.map(({ resource }, index) => {
 				return (
 					<WorkshopLessonItem
-						index={index + 1}
-						className={cn('pl-13 rounded', className)}
+						index={`${workshopIndex}.${index + 1}`}
+						className={cn('', className)}
 						key={resource.id}
 						resource={resource}
 						workshopSlug={workshop.fields.slug}
