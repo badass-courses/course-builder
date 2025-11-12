@@ -24,6 +24,7 @@ import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { differenceInCalendarDays } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
@@ -326,8 +327,14 @@ export default async function CohortPage(props: {
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="mt-5 text-balance text-lg font-light sm:text-xl">
-										{fields.description}
+									<h2 className="dark:text-primary mt-5 text-balance text-lg font-normal text-blue-700 sm:text-xl lg:text-2xl">
+										<ReactMarkdown
+											components={{
+												p: ({ children }) => <>{children}</>,
+											}}
+										>
+											{fields.description}
+										</ReactMarkdown>
 									</h2>
 								)}
 								<Contributor

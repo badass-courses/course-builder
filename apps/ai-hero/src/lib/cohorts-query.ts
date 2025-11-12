@@ -239,9 +239,11 @@ export async function loadCohortPageData(
 		quantityAvailable =
 			productQuantity >= 0 ? Math.max(0, productQuantity - purchaseCount) : -1
 
-		if (user && product) {
+		const currentProductId = product?.id
+
+		if (user && currentProductId) {
 			const purchaseForProduct = commerceProps.purchases?.find(
-				(purchase: PurchaseSchema) => purchase.productId === product!.id,
+				(purchase: PurchaseSchema) => purchase.productId === currentProductId,
 			)
 
 			if (purchaseForProduct) {
