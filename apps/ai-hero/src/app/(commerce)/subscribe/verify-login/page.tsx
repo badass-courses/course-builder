@@ -86,7 +86,11 @@ export default async function VerifyLoginPage({
 	)
 
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient
+			withFooter={false}
+			withNavigation={false}
+			withContainer={false}
+		>
 			<Login
 				title="Log in to join"
 				csrfToken={csrfToken}

@@ -12,7 +12,7 @@ import { Button, ScrollArea } from '@coursebuilder/ui'
 
 export const CohortSidebar = ({
 	children,
-	sticky = true,
+
 	cohort,
 }: {
 	children: React.ReactNode

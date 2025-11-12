@@ -444,7 +444,7 @@ export default async function CohortPage(props: {
 							</ul>
 						</div>
 					</div>
-					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
+					<CohortSidebar cohort={cohort}>
 						{fields?.image && (
 							<CldImage
 								className="hidden lg:flex"

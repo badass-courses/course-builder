@@ -17,6 +17,7 @@ export default async function LoginPage() {
 	return (
 		<LayoutClient withContainer>
 			<Login
+				className="!min-h-[calc(100dvh-var(--nav-height))]"
 				csrfToken={csrfToken}
 				providers={providers}
 				title={`Log In`}
