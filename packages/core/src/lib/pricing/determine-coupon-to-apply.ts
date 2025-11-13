@@ -307,14 +307,35 @@ export const determineCouponToApply = async (
 
 			// Determine if coupon is stackable based on type:
 			// - Default coupons (default === true): stackable when entitlements exist (shouldEnableStacking)
+			// - param coupons (usedCouponId exists): also stackable when entitlements exist, unless explicitly disabled
 			// - Entitlement-based coupons (default === false): require explicit stackable: true flag
-			// - If coupon record can't be found: fail-closed (not stackable)
-			const isStackable =
-				usedCouponRecord?.default === true
-					? shouldEnableStacking
-					: usedCouponRecord?.default === false
-						? usedCouponRecord?.fields?.stackable === true
-						: false
+
+			const determineIsStackable = (): boolean => {
+				// Default coupons: stackable when entitlements exist
+				if (usedCouponRecord?.default === true) {
+					return shouldEnableStacking
+				}
+
+				if (usedCouponId) {
+					const stackableField = usedCouponRecord?.fields?.stackable
+					if (stackableField === false) {
+						return false
+					}
+					return shouldEnableStacking
+				}
+
+				if (usedCouponRecord?.default === false) {
+					return usedCouponRecord?.fields?.stackable === true
+				}
+
+				const stackableField = usedCouponRecord?.fields?.stackable
+				if (stackableField === false) {
+					return false
+				}
+				return shouldEnableStacking
+			}
+
+			const isStackable = determineIsStackable()
 
 			if (isStackable) {
 				addStackableDiscount(
@@ -333,7 +354,19 @@ export const determineCouponToApply = async (
 			// Only fetch if we have a coupon ID to look up
 			const couponRecord = usedCouponId ? await getCoupon(usedCouponId) : null
 
-			const isStackable = couponRecord?.fields?.stackable === true
+			const determineIsStackableForDefault = (): boolean => {
+				if (couponRecord?.default === true) {
+					return shouldEnableStacking
+				}
+
+				const stackableField = couponRecord?.fields?.stackable
+				if (stackableField === false) {
+					return false
+				}
+				return shouldEnableStacking
+			}
+
+			const isStackable = determineIsStackableForDefault()
 
 			if (isStackable) {
 				addStackableDiscount(
