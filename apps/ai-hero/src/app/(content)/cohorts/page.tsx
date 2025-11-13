@@ -37,7 +37,7 @@ export default async function EventIndexPage() {
 						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
 							Live
 						</span>{' '}
-						<span className="text-gray-100">Cohorts</span>
+						<span className="dark:text-gray-100">Cohorts</span>
 					</h1>
 				</div>
 				<CohortsList />
@@ -124,7 +124,7 @@ async function CohortsList() {
 									<CardTitle className="text-lg font-normal text-gray-100 sm:text-2xl">
 										<Link
 											href={`/cohorts/${cohort.fields.slug || cohort.id}`}
-											className="w-full text-balance hover:underline"
+											className="w-full text-balance text-black hover:underline dark:text-gray-100"
 										>
 											{cohort?.fields?.title}
 										</Link>
