@@ -338,9 +338,19 @@ export const determineCouponToApply = async (
 			const isStackable = determineIsStackable()
 
 			if (isStackable) {
+				// Determine source:
+				// - If coupon record has default === true, it's a default/site-wide coupon → 'default'
+				// - If usedCouponId exists and coupon is NOT default, it came from URL params → 'user'
+				// - Otherwise, it's a default/site-wide coupon → 'default'
+				const source =
+					usedCouponRecord?.default === true
+						? 'default'
+						: usedCouponId
+							? 'user'
+							: 'default'
 				addStackableDiscount(
 					specialMerchantCouponToApply,
-					usedCoupon ? 'user' : 'default',
+					source,
 					usedCouponRecord?.id || usedCouponId || '',
 				)
 			}
@@ -369,9 +379,15 @@ export const determineCouponToApply = async (
 			const isStackable = determineIsStackableForDefault()
 
 			if (isStackable) {
+				const source =
+					couponRecord?.default === true
+						? 'default'
+						: usedCouponId
+							? 'user'
+							: 'default'
 				addStackableDiscount(
 					defaultCouponToApply,
-					usedCoupon ? 'user' : 'default',
+					source,
 					couponRecord?.id || usedCouponId || '',
 				)
 			}
