@@ -1,5 +1,9 @@
 import { db } from '@/db'
-import { entitlements, organizationMemberships } from '@/db/schema'
+import {
+	entitlements,
+	entitlementTypes,
+	organizationMemberships,
+} from '@/db/schema'
 import {
 	PRODUCT_TYPE_CONFIG,
 	type ProductType,
@@ -114,4 +118,59 @@ export async function createResourceEntitlements(
 	}
 
 	return createdEntitlements
+}
+
+/**
+ * Filter workshops to only those the user does NOT have entitlements for
+ *
+ * Checks both cohort_content_access and workshop_content_access entitlements.
+ * Only considers active (non-expired, non-deleted) entitlements.
+ *
+ * @param userEntitlements - Array of user entitlements from getAllUserEntitlements()
+ * @param workshops - Array of workshop content resources to filter
+ * @returns Array of workshops the user does NOT have access to
+ *
+ * @example
+ * ```ts
+ * const entitlements = await getAllUserEntitlements(userId)
+ * const allWorkshops = await getAllWorkshops()
+ * const unpurchased = await filterForUnpurchasedWorkshops(entitlements, allWorkshops)
+ * ```
+ */
+export async function filterForUnpurchasedWorkshops(
+	userEntitlements: Array<{
+		entitlementType: string
+		metadata: Record<string, any> | null
+	}>,
+	workshops: Array<{ id: string; [key: string]: any }>,
+): Promise<Array<{ id: string; [key: string]: any }>> {
+	// Get entitlement type IDs for cohort and workshop content access
+	const contentAccessTypes = await db.query.entitlementTypes.findMany({
+		where: or(
+			eq(entitlementTypes.name, PRODUCT_TYPE_CONFIG.cohort.contentAccess),
+			eq(
+				entitlementTypes.name,
+				PRODUCT_TYPE_CONFIG['self-paced'].contentAccess,
+			),
+		),
+	})
+
+	const contentAccessTypeIds = new Set(contentAccessTypes.map((t) => t.id))
+
+	// Filter to only cohort/workshop content access entitlements
+	const relevantEntitlements = userEntitlements.filter((entitlement) =>
+		contentAccessTypeIds.has(entitlement.entitlementType),
+	)
+
+	// Extract all content IDs the user has access to
+	const accessibleContentIds = new Set<string>()
+	for (const entitlement of relevantEntitlements) {
+		const metadata = entitlement.metadata as { contentIds?: string[] } | null
+		if (metadata?.contentIds) {
+			metadata.contentIds.forEach((id) => accessibleContentIds.add(id))
+		}
+	}
+
+	// Return only workshops the user does NOT have access to
+	return workshops.filter((workshop) => !accessibleContentIds.has(workshop.id))
 }
