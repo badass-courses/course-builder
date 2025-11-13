@@ -965,7 +965,7 @@ describe('determineCouponToApply', () => {
 			const result = await determineCouponToApply({
 				prismaCtx: mockAdapter,
 				merchantCouponId: 'merchant_coupon_url_40',
-				usedCouponId: 'coupon_url_40',
+				usedCouponId: 'coupon_url_40', // URL param coupon
 				country: 'US',
 				quantity: 1,
 				userId: 'user_1',
