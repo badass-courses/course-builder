@@ -34,8 +34,6 @@ export default function WelcomeCohortEmail({
 	if (process.env.LOG_LEVEL === 'debug') {
 		console.debug('Rendering WelcomeCohortEmail', { cohortTitle })
 	}
-
-	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
 	const dayOneIsInFuture = isAfter(
 		zonedTimeToUtc(
@@ -54,7 +52,7 @@ export default function WelcomeCohortEmail({
 					<Section style={section}>
 						<Heading style={heading}>Welcome to {cohortTitle}! 🎉</Heading>
 
-						{dayOneIsInFuture ? (
+						{dayOneIsInFuture && dayOneUnlockDate !== 'TBD' ? (
 							<Section style={contentSection}>
 								<Text style={text}>
 									<strong>Heads up:</strong> <strong>Day 1</strong> unlocks on{' '}
