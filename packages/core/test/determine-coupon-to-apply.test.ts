@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { determineCouponToApply } from '../src/lib/pricing/determine-coupon-to-apply'
+import { Coupon, MerchantCoupon } from '../src/schemas'
 import {
 	createMockAdapter,
 	testMerchantCoupons,
@@ -882,6 +883,371 @@ describe('determineCouponToApply', () => {
 			// (user has existing bulk purchase, so seatCount = 1 + 5 = 6 > 1)
 			expect(result.stackableDiscounts).toEqual([])
 			expect(result.bulk).toBe(true)
+		})
+	})
+
+	describe('URL Coupon Stacking Logic', () => {
+		it('should stack URL coupon (type special) with special credits when entitlements exist', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_url_40') {
+						return {
+							id: 'coupon_url_40',
+							code: 'URL40',
+							merchantCouponId: 'merchant_coupon_url_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_150',
+						code: 'CREDIT150',
+						merchantCouponId: 'merchant_coupon_credit_150',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_url_40') {
+						return {
+							id: 'merchant_coupon_url_40',
+							identifier: 'stripe_coupon_url_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_150',
+						identifier: 'stripe_coupon_credit_150',
+						amountDiscount: 15000,
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_url_40',
+				usedCouponId: 'coupon_url_40',
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts.length).toBe(2)
+			expect(result.stackingPath).toBe('stack')
+
+			const urlCouponInStack = result.stackableDiscounts.find(
+				(d) => d.couponId === 'coupon_url_40',
+			)
+			expect(urlCouponInStack).toBeDefined()
+			expect(urlCouponInStack?.source).toBe('user')
+			expect(urlCouponInStack?.discountType).toBe('percentage')
+			expect(urlCouponInStack?.amount).toBe(0.4)
+
+			const specialCreditInStack = result.stackableDiscounts.find(
+				(d) => d.couponId === 'coupon_credit_150',
+			)
+			expect(specialCreditInStack).toBeDefined()
+			expect(specialCreditInStack?.source).toBe('entitlement')
+		})
+
+		it('should NOT stack URL coupon when stackable field is explicitly false', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_url_40') {
+						return {
+							id: 'coupon_url_40',
+							code: 'URL40',
+							merchantCouponId: 'merchant_coupon_url_40',
+							status: 0,
+							fields: { stackable: false },
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_150',
+						code: 'CREDIT150',
+						merchantCouponId: 'merchant_coupon_credit_150',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_url_40') {
+						return {
+							id: 'merchant_coupon_url_40',
+							identifier: 'stripe_coupon_url_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_150',
+						identifier: 'stripe_coupon_credit_150',
+						amountDiscount: 15000,
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_url_40',
+				usedCouponId: 'coupon_url_40',
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			const urlCouponInStack = result.stackableDiscounts.find(
+				(d) => d.couponId === 'coupon_url_40',
+			)
+			expect(urlCouponInStack).toBeUndefined()
+
+			expect(result.stackableDiscounts.length).toBe(1)
+			expect(result.stackableDiscounts[0].couponId).toBe('coupon_credit_150')
+		})
+
+		it('should stack default coupon (default === true) with special credits when entitlements exist', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_default_40') {
+						return {
+							id: 'coupon_default_40',
+							code: 'DEFAULT40',
+							merchantCouponId: 'merchant_coupon_default_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: true,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_150',
+						code: 'CREDIT150',
+						merchantCouponId: 'merchant_coupon_credit_150',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_default_40') {
+						return {
+							id: 'merchant_coupon_default_40',
+							identifier: 'stripe_coupon_default_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_150',
+						identifier: 'stripe_coupon_credit_150',
+						amountDiscount: 15000,
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_default_40',
+				usedCouponId: 'coupon_default_40',
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			// Default coupon should stack when entitlements exist
+			expect(result.stackableDiscounts.length).toBe(2)
+			expect(result.stackingPath).toBe('stack')
+
+			const defaultCouponInStack = result.stackableDiscounts.find(
+				(d) => d.couponId === 'coupon_default_40',
+			)
+			expect(defaultCouponInStack).toBeDefined()
+			expect(defaultCouponInStack?.source).toBe('default')
+		})
+
+		it('should NOT stack URL coupon when no entitlements exist', async () => {
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]),
+				getEntitlementsForUser: vi.fn(async () => []), // No entitlements
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_url_40') {
+						return {
+							id: 'coupon_url_40',
+							code: 'URL40',
+							merchantCouponId: 'merchant_coupon_url_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return null
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_url_40') {
+						return {
+							id: 'merchant_coupon_url_40',
+							identifier: 'stripe_coupon_url_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return null
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_url_40',
+				usedCouponId: 'coupon_url_40',
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			// Should not stack when no entitlements exist
+			expect(result.stackableDiscounts).toEqual([])
+			expect(result.stackingPath).toBe('none')
 		})
 	})
 })
