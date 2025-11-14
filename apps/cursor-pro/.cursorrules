@@ -1,2 +1,0 @@
-apps/epic-dev/src/utils/analytics.ts - use the `track` function for critical clientside analytics
-apps/epic-dev/src/server/logger.ts - use log for server side logging and metrics
