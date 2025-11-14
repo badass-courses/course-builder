@@ -5,6 +5,9 @@ import {
 	createWorkshopEntitlement,
 } from '@/lib/entitlements'
 import { getWorkshop } from '@/lib/workshops-query'
+import { formatInTimeZone } from 'date-fns-tz'
+
+import type { ContentResource, Product } from '@coursebuilder/core/schemas'
 
 import {
 	USER_ADDED_TO_COHORT_EVENT,
@@ -63,6 +66,40 @@ export const ENTITLEMENT_CONFIG = {
 
 export type ProductType = keyof typeof PRODUCT_TYPE_CONFIG
 
+const RESOURCE_TYPE_TO_PRODUCT_TYPE: Partial<Record<string, ProductType>> = {
+	cohort: 'cohort',
+	workshop: 'self-paced',
+}
+
+/**
+ * Resolve the product type that should be used for a given resource type.
+ *
+ * @param resourceType - The content resource type (e.g. `cohort`, `workshop`)
+ * @returns The matching product type when supported, otherwise null
+ */
+export const resolveProductTypeForResource = (
+	resourceType?: string | null,
+): ProductType | null => {
+	if (!resourceType) return null
+	return RESOURCE_TYPE_TO_PRODUCT_TYPE[resourceType] ?? null
+}
+
+/**
+ * Retrieve the first product associated with a content resource.
+ *
+ * @param resource - The content resource containing optional `resourceProducts`
+ * @returns The first related product if present, otherwise null
+ */
+export const getProductForResource = (
+	resource: Pick<ContentResource, 'resourceProducts'>,
+): Product | null => {
+	const resourceProduct = resource.resourceProducts?.find((productJoin) =>
+		Boolean(productJoin.product),
+	)
+
+	return (resourceProduct?.product as Product) ?? null
+}
+
 /**
  * Get resource data based on product type
  */
@@ -83,4 +120,79 @@ export const getResourceData = async (
 export const getDiscordRoleId = (productType: ProductType, product: any) => {
 	const config = PRODUCT_TYPE_CONFIG[productType]
 	return config.getDiscordRoleId(product)
+}
+
+/**
+ * Resource context for processing in workflows
+ */
+export type ResourceContext = {
+	resourceId: string
+	resourceType: string
+	productType: ProductType
+	productForResource: Product | null
+	dayOneUnlockDate?: string | null
+}
+
+/**
+ * Gather all resource contexts from a product.
+ * Each resource gets its own product type based on its resource type or its own product.
+ *
+ * @param product - The product containing resources
+ * @param purchasedProductType - The product type of the purchased product
+ * @returns Array of resource contexts to process
+ */
+export const gatherResourceContexts = async (
+	product: any,
+	purchasedProductType: ProductType,
+): Promise<ResourceContext[]> => {
+	const contexts: ResourceContext[] = []
+
+	if (!product.resources || product.resources.length === 0) {
+		return contexts
+	}
+
+	for (const resourceItem of product.resources) {
+		if (!resourceItem.resource) continue
+
+		const resource = resourceItem.resource
+		const resourceType = resource.type
+
+		// Try to get the resource's own product first
+		const productForResource = getProductForResource(resource)
+		const resourceProductType = productForResource?.fields?.type
+			? (productForResource.fields.type as ProductType)
+			: resolveProductTypeForResource(resourceType)
+
+		// If we can't determine product type, skip this resource
+		if (!resourceProductType) {
+			continue
+		}
+
+		// Calculate day one unlock date for cohort resources
+		let dayOneUnlockDate: string | null = null
+		if (resourceProductType === 'cohort') {
+			const dayOneStartsAt = resource.resources?.find(
+				(r: any) => r.position === 0,
+			)?.resource?.fields?.startsAt
+			if (dayOneStartsAt) {
+				dayOneUnlockDate = formatInTimeZone(
+					new Date(dayOneStartsAt),
+					'America/Los_Angeles',
+					'MMMM do, yyyy',
+				)
+			} else {
+				dayOneUnlockDate = 'TBD'
+			}
+		}
+
+		contexts.push({
+			resourceId: resource.id,
+			resourceType,
+			productType: resourceProductType,
+			productForResource: productForResource || null,
+			dayOneUnlockDate,
+		})
+	}
+
+	return contexts
 }
