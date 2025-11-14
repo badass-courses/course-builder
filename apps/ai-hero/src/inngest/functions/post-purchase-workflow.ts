@@ -251,7 +251,16 @@ export const postPurchaseWorkflow = inngest.createFunction(
 		})
 
 		// Step 6: Mark entitlement-based coupons as used (set deletedAt) if they were used in this checkout
+		// Note: Entitlement coupons are only used in real Stripe checkout sessions (NEW_PURCHASE_CREATED_EVENT).
+		// Full-price coupon redemptions (FULL_PRICE_COUPON_REDEEMED_EVENT) don't use entitlement coupons.
 		await step.run('mark entitlement coupons as used', async () => {
+			if (event.name === FULL_PRICE_COUPON_REDEEMED_EVENT) {
+				return {
+					marked: 0,
+					reason: 'Coupon redemption - no entitlement coupons to process',
+				}
+			}
+
 			const checkoutSessionId = event.data.checkoutSessionId
 			if (!checkoutSessionId || !purchase.userId) {
 				return { marked: 0, reason: 'No checkout session ID or user ID' }
@@ -261,10 +270,25 @@ export const postPurchaseWorkflow = inngest.createFunction(
 				return { marked: 0, reason: 'No payment provider available' }
 			}
 
-			const checkoutSession =
-				await paymentProvider.options.paymentsAdapter.getCheckoutSession(
+			let checkoutSession
+			try {
+				checkoutSession =
+					await paymentProvider.options.paymentsAdapter.getCheckoutSession(
+						checkoutSessionId,
+					)
+			} catch (error: any) {
+				await log.warn('checkout.session.not_found', {
 					checkoutSessionId,
-				)
+					purchaseId: purchase.id,
+					userId: purchase.userId,
+					eventName: event.name,
+					error: error.message,
+				})
+				return {
+					marked: 0,
+					reason: 'Checkout session not found',
+				}
+			}
 
 			const usedEntitlementCouponIds =
 				checkoutSession.metadata?.usedEntitlementCouponIds
