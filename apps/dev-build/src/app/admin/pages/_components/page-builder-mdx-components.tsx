@@ -107,23 +107,34 @@ const Instructor = ({
 	return (
 		<section
 			className={cn(
-				'not-prose relative flex w-full flex-col items-center gap-16 border-y px-5 py-16 lg:flex-row lg:px-16',
+				'not-prose relative flex w-full flex-col items-center gap-16 py-10 lg:flex-row',
 				className,
 			)}
 		>
 			<CldImage
 				loading="lazy"
-				src="https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png"
+				src="https://res.cloudinary.com/johnlindquist/image/upload/c_limit,w_640/f_auto/q_auto/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm?_a=BAVAZGE70"
 				alt={config.author}
-				width={290}
-				height={290}
-				className="shrink-0 rotate-2"
+				width={320}
+				height={240}
+				className="shrink-0"
 			/>
 
 			<div className="">
-				<h3 className="mb-5 text-3xl font-bold">Hi, I'm {config.author}</h3>
-				<div className="flex flex-col gap-3 text-xl leading-relaxed">
-					{children}
+				<h3 className="mb-5 text-3xl font-bold">Your Instructor</h3>
+				<div className="flex flex-col gap-3 text-lg leading-relaxed">
+					{children || (
+						<p>
+							John Lindquist is a co‑founder of egghead.io and pioneered the
+							standard of bite-sized education over the past 13 years. He's
+							taught workshops about a varitey of frameworks worldwide, served
+							as a WebStorm evangelist at JetBrains, and led technical
+							architecture teams at Isobar for clients like the Air Force, HBO,
+							and Bloomberg. He now focuses on pushing the boundaries of
+							AI‑assisted workflows and sharing those discoveries with the
+							developer community.
+						</p>
+					)}
 				</div>
 			</div>
 		</section>

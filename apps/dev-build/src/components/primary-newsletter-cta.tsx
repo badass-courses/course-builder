@@ -68,11 +68,10 @@ export const PrimaryNewsletterCta: React.FC<
 
 	return (
 		<section
-			// data-theme="elysium"
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-muted ring-border flex flex-col items-center justify-center rounded-xl p-5 ring-1 sm:p-10',
+				'bg-muted ring-border not-prose flex flex-col items-center justify-center rounded-xl p-5 ring-1 sm:p-10',
 				className,
 			)}
 		>

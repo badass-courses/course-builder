@@ -15,6 +15,8 @@ import { ChevronRight } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 
+import { Instructor } from './admin/pages/_components/page-builder-mdx-components'
+
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
@@ -46,7 +48,6 @@ const Home = async (props: Props) => {
 	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
 	// 	await getPricingProps({ searchParams })
 	const isCommerceEnabled = await commerceEnabled()
-	// const page = await getPage('homepage-default')
 	// const firstPageResource = page?.resources?.[0] && {
 	// 	path: page.resources[0]?.resource?.fields?.slug,
 	// 	title: page.resources[0]?.resource?.fields?.title,
@@ -54,7 +55,11 @@ const Home = async (props: Props) => {
 	const searchParams = await props.searchParams
 	const activeCoupon = await getActiveCoupon(searchParams)
 	const saleBannerData = await getSaleBannerData(activeCoupon)
-	// const { content: bodyContent } = await compileMDX(page?.fields?.body || '')
+	const page = await getPage('root')
+	const { content: bodyContent } = await compileMDX(page?.fields?.body || '', {
+		Instructor: () => <Instructor />,
+		PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
+	})
 
 	return (
 		<LayoutClient
@@ -72,20 +77,27 @@ const Home = async (props: Props) => {
 								Bite-sized video tutorials, step‑by‑step exercises, and a
 								community where we can keep refining techniques together.
 							</h2>
-							<Button asChild variant="secondary" size="lg" className="mt-4">
+							{/* TODO: Re-enable when there's some content */}
+							{/* <Button asChild variant="secondary" size="lg" className="mt-4">
 								<Link href="/browse">
 									Browse courses <ChevronRight className="size-4" />
 								</Link>
-							</Button>
+							</Button> */}
 						</div>
 					</div>
 				</section>
-
-				<section>
+				<section className="relative z-10">
+					<article className="container">
+						<div className="prose dark:prose-invert prose-lg mx-auto w-full max-w-4xl">
+							{bodyContent}
+						</div>
+					</article>
+				</section>
+				{/* <section>
 					<div className="container items-center justify-center pb-10 pt-16">
 						<PrimaryNewsletterCta className="mx-auto max-w-3xl" />
 					</div>
-				</section>
+				</section> */}
 			</div>
 		</LayoutClient>
 	)
