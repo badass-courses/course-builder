@@ -60,7 +60,7 @@ export const PricingWidget = ({
 
 	return (
 		<Pricing.Root
-			className={cn('relative w-full border-b pb-5', className)}
+			className={cn('relative w-full pb-5', className)}
 			product={product}
 			couponId={couponId}
 			country={commerceProps.country}

@@ -114,7 +114,7 @@ const Home = async (props: Props) => {
 				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
 					<div className="">
 						<Link
-							className="bg-background bg-size-[24px_32px] dark:bg-size-[24px_32px] group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]"
+							className="bg-stripes group mx-auto flex w-full flex-wrap items-center justify-center gap-1 border-b px-2 py-2 text-center font-sans text-sm font-medium tracking-tight underline-offset-2"
 							href={saleBannerData.productPath}
 							prefetch
 						>
@@ -214,7 +214,7 @@ const Home = async (props: Props) => {
 											</div>
 										}
 									>
-										<div className="mt-10 flex flex-col items-center justify-center border-t sm:flex-row">
+										<div className="bg-stripes mt-10 flex flex-col items-center justify-center border-t sm:flex-row">
 											<div
 												id="buy"
 												className="not-prose bg-card mx-auto w-full max-w-md pb-5 pt-3 sm:border-x"

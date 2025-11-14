@@ -79,7 +79,7 @@ export default function ListResourceNavigation({
 			>
 				{/* List header with title */}
 				{withHeader && (
-					<div className="bg-muted/50 relative flex flex-col border-b p-5">
+					<div className="bg-muted/50 bg-stripes relative flex flex-col border-b p-5">
 						<Link
 							className="font-heading relative z-10 inline-flex items-center gap-2 text-xl font-bold hover:underline"
 							href={`/${list.fields.slug}`}
@@ -87,7 +87,6 @@ export default function ListResourceNavigation({
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
 						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
-						<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 					</div>
 				)}
 				{/* Resource navigation list */}

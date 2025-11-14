@@ -137,7 +137,7 @@ export function WorkshopResourceList(props: Props) {
 					{withHeader && (
 						<div
 							ref={ref as any}
-							className={cn('relative z-10 w-full border-b pl-2')}
+							className={cn('bg-stripes relative z-10 w-full border-b pl-2')}
 						>
 							{isCollapsible && (
 								<Tooltip delayDuration={0}>
@@ -199,7 +199,6 @@ export function WorkshopResourceList(props: Props) {
 									<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
 								</div>
 							</div>
-							<div className="bg-size-[14px_14px] absolute inset-0 z-0 h-full w-full bg-transparent bg-[radial-gradient(rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]" />
 						</div>
 					)}
 					<ScrollArea

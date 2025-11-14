@@ -327,121 +327,128 @@ export default async function CohortPage(props: {
 							{content}
 						</article>
 
-						<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
-							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
-							<ul className="divide-border flex flex-col divide-y overflow-hidden rounded-xl border">
-								{workshops.map((workshop, index) => {
-									// Determine end date and timezone for the workshop
-									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-									const workshopTimezone = workshop.fields.timezone || PT
+						<div className="mt-2 border-t py-8">
+							<div className="px-5 sm:px-8 lg:px-10">
+								<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
+							</div>
+							<div className="flex w-full">
+								<ul className="divide-border flex w-full flex-col divide-y border-y">
+									{workshops.map((workshop, index) => {
+										// Determine end date and timezone for the workshop
+										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+										const workshopTimezone = workshop.fields.timezone || PT
 
-									// Format workshop date/time range (only start)
-									const {
-										dateString: workshopDateString,
-										timeString: workshopTimeString,
-									} = formatCohortDateRange(
-										workshop.fields.startsAt,
-										null, // Pass null for end date
-										workshopTimezone,
-									)
-
-									// Calculate Day number
-									let dayNumber: number | null = null
-									if (cohortStartDate && workshop.fields.startsAt) {
-										const workshopStartDate = new Date(workshop.fields.startsAt)
-										// Calculate difference, add 1, and ensure it's at least 1
-										dayNumber = Math.max(
-											1,
-											differenceInCalendarDays(
-												workshopStartDate,
-												cohortStartDate,
-											) + 1,
+										// Format workshop date/time range (only start)
+										const {
+											dateString: workshopDateString,
+											timeString: workshopTimeString,
+										} = formatCohortDateRange(
+											workshop.fields.startsAt,
+											null, // Pass null for end date
+											workshopTimezone,
 										)
-									}
-									const moduleProgressLoader =
-										workshopProgressMap.get(workshop.fields.slug) ||
-										Promise.resolve(null)
-									return (
-										<li key={workshop.id}>
-											<ModuleProgressProvider
-												moduleProgressLoader={moduleProgressLoader}
-											>
-												<Accordion
-													type="multiple"
-													defaultValue={[`${workshop.id}-body`]}
+
+										// Calculate Day number
+										let dayNumber: number | null = null
+										if (cohortStartDate && workshop.fields.startsAt) {
+											const workshopStartDate = new Date(
+												workshop.fields.startsAt,
+											)
+											// Calculate difference, add 1, and ensure it's at least 1
+											dayNumber = Math.max(
+												1,
+												differenceInCalendarDays(
+													workshopStartDate,
+													cohortStartDate,
+												) + 1,
+											)
+										}
+										const moduleProgressLoader =
+											workshopProgressMap.get(workshop.fields.slug) ||
+											Promise.resolve(null)
+										return (
+											<li key={workshop.id}>
+												<ModuleProgressProvider
+													moduleProgressLoader={moduleProgressLoader}
 												>
-													<AccordionItem
-														value={`${workshop.id}-body`}
-														className="bg-card border-none"
+													<Accordion
+														type="multiple"
+														defaultValue={[`${workshop.id}-body`]}
 													>
-														<div className="relative flex items-stretch justify-between">
-															<Link
-																className="text-foreground dark:bg-foreground/2 hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col bg-white py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
-																href={getResourcePath(
-																	'workshop',
-																	workshop.fields.slug,
-																	'view',
-																)}
-															>
-																<span className="inline-flex items-center gap-3">
-																	<span className="text-muted-foreground text-[10px] font-normal opacity-75">
-																		{index + 1}
-																	</span>{' '}
-																	<span className="inline-flex items-center gap-2">
-																		<svg
-																			className="text-muted-foreground size-3"
-																			xmlns="http://www.w3.org/2000/svg"
-																			width="12"
-																			height="12"
-																			viewBox="0 0 12 12"
-																		>
-																			<title>video-player</title>
-																			<g fill="currentColor">
-																				<path
-																					d="M10.5,1h-9A1.5,1.5,0,0,0,0,2.5v7A1.5,1.5,0,0,0,1.5,11h9A1.5,1.5,0,0,0,12,9.5v-7A1.5,1.5,0,0,0,10.5,1ZM4,9V3L9,6Z"
-																					fill="currentColor"
-																				/>
-																			</g>
-																		</svg>
-																		{workshop.fields.title}
+														<AccordionItem
+															value={`${workshop.id}-body`}
+															className="bg-card border-none"
+														>
+															<div className="relative flex items-stretch justify-between">
+																<Link
+																	className="text-foreground dark:bg-foreground/2 hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col bg-white py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
+																	href={getResourcePath(
+																		'workshop',
+																		workshop.fields.slug,
+																		'view',
+																	)}
+																>
+																	<span className="inline-flex items-center gap-3">
+																		<span className="text-muted-foreground text-[10px] font-normal opacity-75">
+																			{index + 1}
+																		</span>{' '}
+																		<span className="inline-flex items-center gap-2">
+																			<svg
+																				className="text-muted-foreground size-3"
+																				xmlns="http://www.w3.org/2000/svg"
+																				width="12"
+																				height="12"
+																				viewBox="0 0 12 12"
+																			>
+																				<title>video-player</title>
+																				<g fill="currentColor">
+																					<path
+																						d="M10.5,1h-9A1.5,1.5,0,0,0,0,2.5v7A1.5,1.5,0,0,0,1.5,11h9A1.5,1.5,0,0,0,12,9.5v-7A1.5,1.5,0,0,0,10.5,1ZM4,9V3L9,6Z"
+																						fill="currentColor"
+																					/>
+																				</g>
+																			</svg>
+																			{workshop.fields.title}
+																		</span>
 																	</span>
-																</span>
-																{workshopDateString && (
-																	<div className="mt-1 text-sm font-normal opacity-80">
-																		Available from {workshopDateString}
-																	</div>
-																)}
-															</Link>
-															<AccordionTrigger
-																aria-label="Toggle lessons"
-																className="hover:bg-muted dark:hover:[&_svg]:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent hover:[&_svg]:text-blue-600"
-															/>
-														</div>
-														{workshop.resources &&
-															workshop.resources.length > 0 && (
-																<AccordionContent className="bg-background border-t dark:bg-transparent">
-																	{/* Display formatted workshop date/time */}
-																	<div className="text-muted-foreground text-sm">
-																		{/* {dayNumber !== null && (
+																	{workshopDateString && (
+																		<div className="mt-1 pl-9 text-sm font-normal opacity-80">
+																			Available from {workshopDateString}
+																		</div>
+																	)}
+																</Link>
+																<AccordionTrigger
+																	aria-label="Toggle lessons"
+																	className="hover:bg-muted dark:hover:[&_svg]:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent hover:[&_svg]:text-blue-600"
+																/>
+															</div>
+															{workshop.resources &&
+																workshop.resources.length > 0 && (
+																	<AccordionContent className="bg-background border-t dark:bg-transparent">
+																		{/* Display formatted workshop date/time */}
+																		<div className="text-muted-foreground text-sm">
+																			{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-																	</div>
-																	<ol className="list-inside list-none">
-																		<WorkshopListRowRenderer
-																			workshopIndex={index + 1}
-																			className=""
-																			workshop={workshop}
-																		/>
-																	</ol>
-																</AccordionContent>
-															)}
-													</AccordionItem>
-												</Accordion>
-											</ModuleProgressProvider>
-										</li>
-									)
-								})}
-							</ul>
+																		</div>
+																		<ol className="list-inside list-none">
+																			<WorkshopListRowRenderer
+																				workshopIndex={index + 1}
+																				className=""
+																				workshop={workshop}
+																			/>
+																		</ol>
+																	</AccordionContent>
+																)}
+														</AccordionItem>
+													</Accordion>
+												</ModuleProgressProvider>
+											</li>
+										)
+									})}
+								</ul>
+								<div className="bg-stripes hidden min-h-0 w-4 shrink-0 border-y border-l sm:flex" />
+							</div>
 						</div>
 					</div>
 					<CohortSidebar cohort={cohort}>
