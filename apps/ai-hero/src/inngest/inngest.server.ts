@@ -89,6 +89,10 @@ import {
 	type RequestVideoSplitPoints,
 } from './events/split_video'
 import {
+	UPDATE_ENTITLEMENTS_CRASH_COURSE_EVENT,
+	UpdateEntitlementsCrashCourse,
+} from './events/update-entitlements-crash-course'
+import {
 	UPDATE_REFUNDED_AMOUNT_EVENT,
 	UpdateRefundedAmount,
 } from './events/update-refunded-amount'
@@ -132,6 +136,7 @@ export type Events = {
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[PARTIAL_REFUND_EVENT]: PartialRefund
 	[UPDATE_REFUNDED_AMOUNT_EVENT]: UpdateRefundedAmount
+	[UPDATE_ENTITLEMENTS_CRASH_COURSE_EVENT]: UpdateEntitlementsCrashCourse
 }
 
 const callbackBase =

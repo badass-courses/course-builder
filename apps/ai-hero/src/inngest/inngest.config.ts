@@ -28,6 +28,7 @@ import {
 } from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { updateCrashCourseEntitlements } from './functions/update-crash-course-entitlements'
 import { updateRefundedAmountWorkflow } from './functions/update-refunded-amount'
 import {
 	videoResourceAttached,
@@ -67,5 +68,6 @@ export const inngestConfig = {
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 		updateRefundedAmountWorkflow,
+		updateCrashCourseEntitlements,
 	],
 }
