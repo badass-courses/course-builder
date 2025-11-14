@@ -29,26 +29,17 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 // Import shared configuration and utilities
 import {
 	ENTITLEMENT_CONFIG,
+	gatherResourceContexts,
 	getDiscordRoleId,
 	getResourceData,
 	PRODUCT_TYPE_CONFIG,
 	ProductType,
+	type ResourceContext,
 } from '../config/product-types'
 import {
 	USER_ADDED_TO_COHORT_EVENT,
 	USER_ADDED_TO_WORKSHOP_EVENT,
 } from './discord/add-discord-role-workflow'
-
-/**
- * Get resource type based on product type
- */
-const getResourceType = (productType: ProductType) => {
-	const config = PRODUCT_TYPE_CONFIG[productType]
-	if (!config) {
-		throw new Error(`Unsupported product type: ${productType}`)
-	}
-	return config.resourceType
-}
 
 /**
  * Generate content URL based on product type and resource
@@ -341,39 +332,33 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			return null
 		})
 
-		// Step 8: Find and get the primary resource
-		const resourceType = getResourceType(productType)
-		const primaryResourceId = product.resources?.find(
-			(resource) => resource.resource?.type === resourceType,
-		)?.resource.id
-
-		const primaryResource = await step.run(
-			`get ${resourceType} resource`,
+		// Step 8: Gather all resource contexts from the product
+		const resourceContexts = await step.run(
+			`gather all resource contexts`,
 			async () => {
-				return getResourceData(primaryResourceId, productType)
+				return gatherResourceContexts(product, productType)
 			},
 		)
 
-		if (!primaryResource) {
-			throw new Error(`${resourceType} resource not found`)
+		if (resourceContexts.length === 0) {
+			throw new Error(`No resources found for product`)
 		}
 
-		// Step 9: Calculate day one unlock date for cohorts
-		const dayOneUnlockDate =
-			productType === 'cohort'
-				? (() => {
-						const dayOneStartsAt = primaryResource.resources?.find(
-							(resource) => resource.position === 0,
-						)?.resource?.fields?.startsAt
-						return dayOneStartsAt
-							? formatInTimeZone(
-									new Date(dayOneStartsAt),
-									'America/Los_Angeles',
-									'MMMM do, yyyy',
-								)
-							: 'TBD'
-					})()
-				: null
+		// Step 9: Load full resource data for each context
+		const resourceDataMap = await step.run(
+			`load resource data for all contexts`,
+			async () => {
+				const dataMap: Record<string, any> = {}
+				for (const context of resourceContexts) {
+					const resourceData = await getResourceData(
+						context.resourceId,
+						context.productType,
+					)
+					dataMap[context.resourceId] = resourceData
+				}
+				return dataMap
+			},
+		)
 
 		// Step 10: Handle team purchases
 		if (isTeamPurchase) {
@@ -384,95 +369,88 @@ export const postPurchaseWorkflow = inngest.createFunction(
 				return null
 			})
 
-			await step.run(`send welcome email to team purchaser`, async () => {
-				const parsedPrimaryResource =
-					ContentResourceSchema.parse(primaryResource)
-				const contentUrl = generateContentUrl(
-					parsedPrimaryResource,
-					productType,
-					dayOneUnlockDate,
+			// Send welcome email for each resource context
+			for (const context of resourceContexts) {
+				const resourceData = resourceDataMap[context.resourceId]
+				if (!resourceData) continue
+
+				const resourceConfig = PRODUCT_TYPE_CONFIG[context.productType]
+				if (!resourceConfig) continue
+
+				await step.run(
+					`send welcome email to team purchaser for ${context.resourceType}`,
+					async () => {
+						const parsedResource = ContentResourceSchema.parse(resourceData)
+						const contentUrl = generateContentUrl(
+							parsedResource,
+							context.productType,
+							context.dayOneUnlockDate,
+						)
+
+						if (context.productType === 'cohort') {
+							const ComponentToSend = getCohortWelcomeEmailVariant({
+								isTeamPurchase: true,
+								isFullPriceCouponRedemption,
+							})
+
+							await sendAnEmail({
+								Component: ComponentToSend,
+								componentProps: {
+									cohortTitle:
+										parsedResource.fields?.title || parsedResource.fields?.slug,
+									url: contentUrl,
+									dayOneUnlockDate: context.dayOneUnlockDate || 'TBD',
+									quantity: bulkCoupon?.maxUses || 1,
+									userFirstName: user.name?.split(' ')[0],
+								},
+								Subject: `Welcome to ${parsedResource.fields?.title || config.defaultTitle}!`,
+								To: user.email,
+								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								type: 'transactional',
+							})
+						} else {
+							const ComponentToSend = getWorkshopWelcomeEmailVariant({
+								isTeamPurchase: true,
+								isFullPriceCouponRedemption,
+							})
+
+							await sendAnEmail({
+								Component: ComponentToSend,
+								componentProps: {
+									workshopTitle:
+										parsedResource.fields?.title || parsedResource.fields?.slug,
+									url: contentUrl,
+									quantity: bulkCoupon?.maxUses || 1,
+									userFirstName: user.name?.split(' ')[0],
+								},
+								Subject: `Welcome to ${parsedResource.fields?.title || config.defaultTitle}!`,
+								To: user.email,
+								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+								type: 'transactional',
+							})
+						}
+
+						await log.info(`${resourceConfig.logPrefix}_welcome_email.sent`, {
+							purchaseId: purchase.id,
+							resourceId: context.resourceId,
+							resourceType: context.resourceType,
+							productType: context.productType,
+							emailType: 'team_purchaser',
+						})
+					},
 				)
-
-				if (productType === 'cohort') {
-					const ComponentToSend = getCohortWelcomeEmailVariant({
-						isTeamPurchase: true,
-						isFullPriceCouponRedemption,
-					})
-
-					await sendAnEmail({
-						Component: ComponentToSend,
-						componentProps: {
-							cohortTitle:
-								parsedPrimaryResource.fields?.title ||
-								parsedPrimaryResource.fields?.slug,
-							url: contentUrl,
-							dayOneUnlockDate: dayOneUnlockDate || 'TBD',
-							quantity: bulkCoupon?.maxUses || 1,
-							userFirstName: user.name?.split(' ')[0],
-						},
-						Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
-						To: user.email,
-						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-						type: 'transactional',
-					})
-				} else {
-					const ComponentToSend = getWorkshopWelcomeEmailVariant({
-						isTeamPurchase: true,
-						isFullPriceCouponRedemption,
-					})
-
-					await sendAnEmail({
-						Component: ComponentToSend,
-						componentProps: {
-							workshopTitle:
-								parsedPrimaryResource.fields?.title ||
-								parsedPrimaryResource.fields?.slug,
-							url: contentUrl,
-							quantity: bulkCoupon?.maxUses || 1,
-							userFirstName: user.name?.split(' ')[0],
-						},
-						Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
-						To: user.email,
-						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-						type: 'transactional',
-					})
-				}
-
-				await log.info(`${entitlementConfig.logPrefix}_welcome_email.sent`, {
-					purchaseId: purchase.id,
-					emailType: 'team_purchaser',
-				})
-			})
+			}
 
 			// Handle commented out live office hours logic
 			if (isFullPriceCouponRedemption) {
 				// Future: Live office hours invitation logic
 			}
 		} else {
-			// Step 9: Handle individual purchases
+			// Step 11: Handle individual purchases
 			if (['Valid', 'Restricted'].includes(purchase.status)) {
-				// Get entitlement types
-				const contentAccessEntitlementType = await step.run(
-					`get ${entitlementConfig.logPrefix} content access entitlement type`,
-					async () => {
-						return await db.query.entitlementTypes.findFirst({
-							where: eq(entitlementTypes.name, entitlementConfig.contentAccess),
-						})
-					},
-				)
-
-				const discordRoleEntitlementType = await step.run(
-					`get ${entitlementConfig.logPrefix} discord role entitlement type`,
-					async () => {
-						return await db.query.entitlementTypes.findFirst({
-							where: eq(entitlementTypes.name, entitlementConfig.discordRole),
-						})
-					},
-				)
-
-				// Ensure organization membership
+				// Ensure organization membership (shared across all resources)
 				const { organizationId, orgMembership } = await step.run(
 					`ensure org membership`,
 					async () => {
@@ -519,73 +497,104 @@ export const postPurchaseWorkflow = inngest.createFunction(
 					},
 				)
 
-				if (contentAccessEntitlementType && primaryResource) {
-					// Send Discord role event
-					const discordRoleId = getDiscordRoleId(productType, product)
+				// Process each resource context
+				for (const context of resourceContexts) {
+					const resourceData = resourceDataMap[context.resourceId]
+					if (!resourceData) continue
 
-					if (productType === 'cohort') {
-						await step.sendEvent('send-discord-role-event', {
-							name: USER_ADDED_TO_COHORT_EVENT,
-							data: {
-								cohortId: primaryResource.id,
-								userId: user.id,
-								discordRoleId,
-							},
-						})
-					} else {
-						await step.sendEvent('send-discord-role-event', {
-							name: USER_ADDED_TO_WORKSHOP_EVENT,
-							data: {
-								workshopId: primaryResource.id,
-								userId: user.id,
-								discordRoleId,
-							},
-						})
-					}
+					const resourceConfig = PRODUCT_TYPE_CONFIG[context.productType]
+					if (!resourceConfig) continue
 
-					// Create Discord role entitlement
-					await step.run(
-						`add ${entitlementConfig.logPrefix} discord entitlement`,
+					// Get entitlement types for this resource's product type
+					const contentAccessEntitlementType = await step.run(
+						`get ${resourceConfig.logPrefix} content access entitlement type for ${context.resourceId}`,
 						async () => {
-							if (!discordRoleEntitlementType) {
-								return `no ${entitlementConfig.logPrefix} discord role entitlement type found`
-							}
-
-							if (!discordRoleId) {
-								return `no discord ${entitlementConfig.logPrefix} role id found`
-							}
-
-							if (!primaryResource.id) {
-								return `no ${entitlementConfig.logPrefix} resource id found`
-							}
-
-							const entitlementId = `${primaryResource.id}-discord-${guid()}`
-							await entitlementConfig.createEntitlement({
-								id: entitlementId,
-								userId: user.id,
-								organizationId,
-								organizationMembershipId: orgMembership.id,
-								entitlementType: discordRoleEntitlementType.id,
-								sourceType: EntitlementSourceType.PURCHASE,
-								sourceId: purchase.id,
-								metadata: {
-									discordRoleId,
-								},
+							return await db.query.entitlementTypes.findFirst({
+								where: eq(entitlementTypes.name, resourceConfig.contentAccess),
 							})
-
-							return {
-								entitlementId,
-							}
 						},
 					)
 
+					const discordRoleEntitlementType = await step.run(
+						`get ${resourceConfig.logPrefix} discord role entitlement type for ${context.resourceId}`,
+						async () => {
+							return await db.query.entitlementTypes.findFirst({
+								where: eq(entitlementTypes.name, resourceConfig.discordRole),
+							})
+						},
+					)
+
+					if (!contentAccessEntitlementType) continue
+
+					// Determine which product to use for Discord role ID
+					// Prefer the resource's own product, fallback to purchased product
+					const productForDiscord = context.productForResource || product
+					const discordRoleId = getDiscordRoleId(
+						context.productType,
+						productForDiscord,
+					)
+
+					// Send Discord role event
+					if (context.productType === 'cohort') {
+						await step.sendEvent(
+							`send-discord-role-event for ${context.resourceId}`,
+							{
+								name: USER_ADDED_TO_COHORT_EVENT,
+								data: {
+									cohortId: resourceData.id,
+									userId: user.id,
+									discordRoleId,
+								},
+							},
+						)
+					} else {
+						await step.sendEvent(
+							`send-discord-role-event for ${context.resourceId}`,
+							{
+								name: USER_ADDED_TO_WORKSHOP_EVENT,
+								data: {
+									workshopId: resourceData.id,
+									userId: user.id,
+									discordRoleId,
+								},
+							},
+						)
+					}
+
+					// Create Discord role entitlement
+					if (discordRoleEntitlementType && discordRoleId) {
+						await step.run(
+							`add ${resourceConfig.logPrefix} discord entitlement for ${context.resourceId}`,
+							async () => {
+								const entitlementId = `${resourceData.id}-discord-${guid()}`
+								await resourceConfig.createEntitlement({
+									id: entitlementId,
+									userId: user.id,
+									organizationId,
+									organizationMembershipId: orgMembership.id,
+									entitlementType: discordRoleEntitlementType.id,
+									sourceType: EntitlementSourceType.PURCHASE,
+									sourceId: purchase.id,
+									metadata: {
+										discordRoleId,
+									},
+								})
+
+								return {
+									entitlementId,
+									resourceId: context.resourceId,
+								}
+							},
+						)
+					}
+
 					// Create content access entitlements
 					await step.run(
-						`add user to ${entitlementConfig.logPrefix} via entitlement`,
+						`add user to ${resourceConfig.logPrefix} via entitlement for ${context.resourceId}`,
 						async () => {
 							const createdEntitlements = await createResourceEntitlements(
-								productType,
-								primaryResource,
+								context.productType,
+								resourceData,
 								{
 									user,
 									purchase,
@@ -596,10 +605,13 @@ export const postPurchaseWorkflow = inngest.createFunction(
 							)
 
 							await log.info(
-								`${entitlementConfig.logPrefix}_entitlements_created`,
+								`${resourceConfig.logPrefix}_entitlements_created`,
 								{
 									userId: user.id,
-									[`${entitlementConfig.logPrefix}Id`]: primaryResource.id,
+									resourceId: context.resourceId,
+									resourceType: context.resourceType,
+									productType: context.productType,
+									[`${resourceConfig.logPrefix}Id`]: resourceData.id,
 									entitlementsCreated: createdEntitlements.length,
 									organizationId,
 									organizationMembershipId: orgMembership.id,
@@ -612,80 +624,83 @@ export const postPurchaseWorkflow = inngest.createFunction(
 								organizationId,
 								organizationMembershipId: orgMembership.id,
 								userId: user.id,
+								resourceId: context.resourceId,
 							}
 						},
 					)
 
 					// Send welcome email
-					await step.run(`send welcome email to individual`, async () => {
-						const parsedPrimaryResource =
-							ContentResourceSchema.parse(primaryResource)
-						const contentUrl = generateContentUrl(
-							parsedPrimaryResource,
-							productType,
-							dayOneUnlockDate,
-						)
+					await step.run(
+						`send welcome email to individual for ${context.resourceId}`,
+						async () => {
+							const parsedResource = ContentResourceSchema.parse(resourceData)
+							const contentUrl = generateContentUrl(
+								parsedResource,
+								context.productType,
+								context.dayOneUnlockDate,
+							)
 
-						if (productType === 'cohort') {
-							const ComponentToSend = getCohortWelcomeEmailVariant({
-								isTeamPurchase: false,
-								isFullPriceCouponRedemption,
-							})
+							if (context.productType === 'cohort') {
+								const ComponentToSend = getCohortWelcomeEmailVariant({
+									isTeamPurchase: false,
+									isFullPriceCouponRedemption,
+								})
 
-							await sendAnEmail({
-								Component: ComponentToSend,
-								componentProps: {
-									cohortTitle:
-										parsedPrimaryResource.fields?.title ||
-										parsedPrimaryResource.fields?.slug,
-									url: contentUrl,
-									dayOneUnlockDate: dayOneUnlockDate || 'TBD',
-									quantity: purchase.totalAmount || 1,
-									userFirstName: user.name?.split(' ')[0],
-								},
-								Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
-								To: user.email,
-								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								type: 'transactional',
-							})
-						} else {
-							const ComponentToSend = getWorkshopWelcomeEmailVariant({
-								isTeamPurchase: false,
-								isFullPriceCouponRedemption,
-							})
+								await sendAnEmail({
+									Component: ComponentToSend,
+									componentProps: {
+										cohortTitle:
+											parsedResource.fields?.title ||
+											parsedResource.fields?.slug,
+										url: contentUrl,
+										dayOneUnlockDate: context.dayOneUnlockDate || 'TBD',
+										quantity: purchase.totalAmount || 1,
+										userFirstName: user.name?.split(' ')[0],
+									},
+									Subject: `Welcome to ${parsedResource.fields?.title || config.defaultTitle}!`,
+									To: user.email,
+									ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+									From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+									type: 'transactional',
+								})
+							} else {
+								const ComponentToSend = getWorkshopWelcomeEmailVariant({
+									isTeamPurchase: false,
+									isFullPriceCouponRedemption,
+								})
 
-							await sendAnEmail({
-								Component: ComponentToSend,
-								componentProps: {
-									workshopTitle:
-										parsedPrimaryResource.fields?.title ||
-										parsedPrimaryResource.fields?.slug,
-									url: contentUrl,
-									quantity: purchase.totalAmount || 1,
-									userFirstName: user.name?.split(' ')[0],
-								},
-								Subject: `Welcome to ${parsedPrimaryResource.fields?.title || config.defaultTitle}!`,
-								To: user.email,
-								ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
-								type: 'transactional',
-							})
-						}
+								await sendAnEmail({
+									Component: ComponentToSend,
+									componentProps: {
+										workshopTitle:
+											parsedResource.fields?.title ||
+											parsedResource.fields?.slug,
+										url: contentUrl,
+										quantity: purchase.totalAmount || 1,
+										userFirstName: user.name?.split(' ')[0],
+									},
+									Subject: `Welcome to ${parsedResource.fields?.title || config.defaultTitle}!`,
+									To: user.email,
+									ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+									From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+									type: 'transactional',
+								})
+							}
 
-						await log.info(
-							`${entitlementConfig.logPrefix}_welcome_email.sent`,
-							{
+							await log.info(`${resourceConfig.logPrefix}_welcome_email.sent`, {
 								purchaseId: purchase.id,
+								resourceId: context.resourceId,
+								resourceType: context.resourceType,
+								productType: context.productType,
 								emailType: isFullPriceCouponRedemption
 									? 'coupon_redeemer'
 									: 'individual',
-							},
-						)
-					})
-
-					// Future: Live office hours email logic
+							})
+						},
+					)
 				}
+
+				// Future: Live office hours email logic
 			} else {
 				// send a slack message or something because it seems broken
 			}
@@ -695,7 +710,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 			purchase,
 			product,
 			user,
-			primaryResource,
+			resourceContexts,
 			isTeamPurchase,
 			isFullPriceCouponRedemption,
 			bulkCouponData,
