@@ -1,0 +1,20 @@
+/* @reference './globals.css'; */
+
+#video-block-newsletter-cta [data-sr-convertkit-subscribe-form] {
+	@apply mx-auto flex w-full max-w-[420px] flex-col;
+	input {
+		@apply bg-input border-foreground/5 h-16 border px-5 text-base;
+	}
+	[data-sr-fieldset] {
+		@apply w-full;
+	}
+	[data-sr-input-label] {
+		@apply mt-3 inline-block pb-1 text-base font-normal;
+	}
+	[data-sr-input-asterisk] {
+		@apply opacity-50;
+	}
+	[data-sr-button] {
+		@apply mt-4 py-8 text-base font-medium;
+	}
+}
