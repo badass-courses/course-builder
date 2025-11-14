@@ -159,8 +159,8 @@ export const gatherResourceContexts = async (
 
 		// Try to get the resource's own product first
 		const productForResource = getProductForResource(resource)
-		const resourceProductType = productForResource?.fields?.type
-			? (productForResource.fields.type as ProductType)
+		const resourceProductType = productForResource?.type
+			? (productForResource.type as ProductType)
 			: resolveProductTypeForResource(resourceType)
 
 		// If we can't determine product type, skip this resource
