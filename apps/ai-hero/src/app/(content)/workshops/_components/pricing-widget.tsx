@@ -72,7 +72,7 @@ export const PricingWidget = ({
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
-					<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
+					<Pricing.Name className="text-foreground mb-0 font-semibold sm:text-xl" />
 					<Pricing.LiveQuantity />
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
