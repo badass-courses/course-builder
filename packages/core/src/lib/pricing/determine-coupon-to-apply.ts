@@ -175,7 +175,7 @@ export const determineCouponToApply = async (
 	// Query entitlements for stackable coupon discounts
 	const stackableDiscounts: Array<{
 		coupon: MinimalMerchantCoupon
-		source: 'default' | 'user' | 'entitlement'
+		source: 'default' | 'user' | 'entitlement' | 'ppp'
 		discountType: 'fixed' | 'percentage'
 		amount: number // in cents or percentage (0-1)
 		couponId: string
@@ -186,7 +186,7 @@ export const determineCouponToApply = async (
 	 */
 	const addStackableDiscount = (
 		merchantCoupon: MinimalMerchantCoupon,
-		source: 'default' | 'user' | 'entitlement',
+		source: 'default' | 'user' | 'entitlement' | 'ppp',
 		couponId: string,
 	) => {
 		const amountDiscount = merchantCoupon.amountDiscount ?? 0
@@ -476,9 +476,16 @@ export const determineCouponToApply = async (
 			if (preferStacking === false) {
 				// User prefers PPP, so use PPP + credits, remove default
 				stackingPath = 'stack'
-				// Remove default coupons from stackable discounts, keep only credits
-				// PPP will be applied through appliedMerchantCoupon
 				stackableDiscounts.length = 0
+				// Add PPP to stackableDiscounts when stacking with credits
+				if (pppDetails.pppCouponToBeApplied) {
+					addStackableDiscount(
+						pppDetails.pppCouponToBeApplied,
+						'ppp', // PPP is identified by its own source type
+						pppDetails.pppCouponToBeApplied.id,
+					)
+				}
+				// Add credit discounts
 				stackableDiscounts.push(...creditDiscounts)
 				// Ensure PPP is set as the coupon to apply so it gets applied along with credits
 				couponToApply = pppDetails.pppCouponToBeApplied
@@ -497,8 +504,17 @@ export const determineCouponToApply = async (
 		} else if (hasPPP) {
 			// Only PPP available - stack credits with PPP
 			stackingPath = 'stack'
-			// Keep only credit discounts (PPP will be applied through appliedMerchantCoupon)
+			// Clear and rebuild stackableDiscounts to include both PPP and credits
 			stackableDiscounts.length = 0
+			// Add PPP to stackableDiscounts when stacking with credits
+			if (pppDetails.pppCouponToBeApplied) {
+				addStackableDiscount(
+					pppDetails.pppCouponToBeApplied,
+					'default', // PPP is treated as a default-type discount for stacking purposes
+					pppDetails.pppCouponToBeApplied.id,
+				)
+			}
+			// Add credit discounts
 			stackableDiscounts.push(...creditDiscounts)
 			// Ensure PPP is set as the coupon to apply so it gets applied along with credits
 			couponToApply = pppDetails.pppCouponToBeApplied

@@ -221,9 +221,17 @@ export async function formatPricesForProduct(
 	if (stackingPath === 'stack' && stackableDiscounts.length > 0) {
 		let currentPrice = fullPrice
 
-		// Apply PPP percentage discount first if it's in appliedMerchantCoupon
-		// This allows credit + PPP stacking
+		const pppInStackable = stackableDiscounts.some(
+			(d) =>
+				d.coupon?.type === 'ppp' ||
+				(d.source === 'default' &&
+					d.discountType === 'percentage' &&
+					appliedMerchantCoupon?.type === 'ppp' &&
+					d.couponId === appliedMerchantCoupon.id),
+		)
+
 		if (
+			!pppInStackable &&
 			appliedMerchantCoupon?.type === 'ppp' &&
 			appliedMerchantCoupon?.percentageDiscount
 		) {
@@ -234,7 +242,11 @@ export async function formatPricesForProduct(
 		}
 
 		for (const discount of stackableDiscounts) {
-			if (discount.source === 'default' || discount.source === 'user') {
+			if (
+				discount.source === 'default' ||
+				discount.source === 'user' ||
+				discount.source === 'ppp'
+			) {
 				if (discount.discountType === 'percentage') {
 					const discountAmount = currentPrice * discount.amount
 					currentPrice = Math.max(0, currentPrice - discountAmount)
@@ -314,17 +326,26 @@ export async function formatPricesForProduct(
 	// Format stackable discounts for return
 	const formattedStackableDiscounts =
 		stackingPath === 'stack' && stackableDiscounts.length > 0
-			? stackableDiscounts.map((discount) => ({
-					couponId: discount.couponId,
-					source: discount.source,
-					discountType: discount.discountType,
-					amount:
-						discount.discountType === 'fixed'
-							? discount.amount / 100
-							: discount.amount,
-					label:
-						discount.source === 'entitlement' ? 'Special Credit' : 'Discount',
-				}))
+			? stackableDiscounts.map((discount) => {
+					// Determine the correct label based on the source
+					let label = 'Discount'
+					if (discount.source === 'entitlement') {
+						label = 'Special Credit'
+					} else if (discount.source === 'ppp') {
+						label = 'PPP Discount'
+					}
+
+					return {
+						couponId: discount.couponId,
+						source: discount.source,
+						discountType: discount.discountType,
+						amount:
+							discount.discountType === 'fixed'
+								? discount.amount / 100
+								: discount.amount,
+						label,
+					}
+				})
 			: undefined
 
 	return {
