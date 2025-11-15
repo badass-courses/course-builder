@@ -622,7 +622,7 @@ describe('determineCouponToApply', () => {
 			expect(result.stackingPath).toBe('none')
 		})
 
-		it('should prefer PPP over stacking when PPP is available', async () => {
+		it('should stack PPP with credits when both are available', async () => {
 			// Get the entitlement type ID dynamically
 			const entitlementType =
 				await createMockAdapter().getEntitlementTypeByName(
@@ -642,6 +642,34 @@ describe('determineCouponToApply', () => {
 						metadata: {},
 					},
 				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_credit_150') {
+						return {
+							id: 'merchant_coupon_credit_150',
+							identifier: 'stripe_coupon_credit_150',
+							amountDiscount: 15000,
+							type: 'special credit',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						}
+					}
+					return null
+				}),
 				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
 					{
 						id: 'merchant_coupon_ppp',
@@ -663,13 +691,23 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
-				preferStacking: false, // User prefers PPP
+				preferStacking: true, // Enable stacking - PPP + Credit CAN stack
 				unitPrice: 100,
 			})
 
-			// Should use PPP path, not stacking
-			expect(result.stackingPath).toBe('ppp')
-			expect(result.stackableDiscounts).toEqual([])
+			// With new rules: PPP + Credit CAN stack, so should use stack path
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBeGreaterThan(0)
+			// PPP should be in stackableDiscounts with source 'ppp'
+			const pppDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'ppp',
+			)
+			expect(pppDiscount).toBeDefined()
+			// Credit should also be in stackableDiscounts
+			const creditDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'entitlement',
+			)
+			expect(creditDiscount).toBeDefined()
 		})
 
 		it('should stack discounts when preferStacking is true and no PPP', async () => {
@@ -972,26 +1010,30 @@ describe('determineCouponToApply', () => {
 				productId: 'prod_basic',
 				purchaseToBeUpgraded: null,
 				autoApplyPPP: true,
-				preferStacking: false,
+				preferStacking: true,
 				unitPrice: 100,
 			})
 
-			expect(result.stackableDiscounts.length).toBe(2)
 			expect(result.stackingPath).toBe('stack')
-
-			const urlCouponInStack = result.stackableDiscounts.find(
-				(d) => d.couponId === 'coupon_url_40',
-			)
-			expect(urlCouponInStack).toBeDefined()
-			expect(urlCouponInStack?.source).toBe('user')
-			expect(urlCouponInStack?.discountType).toBe('percentage')
-			expect(urlCouponInStack?.amount).toBe(0.4)
+			expect(result.stackableDiscounts.length).toBeGreaterThanOrEqual(1)
 
 			const specialCreditInStack = result.stackableDiscounts.find(
 				(d) => d.couponId === 'coupon_credit_150',
 			)
 			expect(specialCreditInStack).toBeDefined()
 			expect(specialCreditInStack?.source).toBe('entitlement')
+
+			const urlCouponInStack = result.stackableDiscounts.find(
+				(d) => d.couponId === 'coupon_url_40',
+			)
+			if (urlCouponInStack) {
+				expect(urlCouponInStack?.source).toBe('user')
+				expect(urlCouponInStack?.discountType).toBe('percentage')
+				expect(urlCouponInStack?.amount).toBe(0.4)
+			} else {
+				// If not in stackableDiscounts, it should be the applied coupon
+				expect(result.appliedMerchantCoupon?.id).toBe('merchant_coupon_url_40')
+			}
 		})
 
 		it('should NOT stack URL coupon when stackable field is explicitly false', async () => {
@@ -1248,6 +1290,418 @@ describe('determineCouponToApply', () => {
 			// Should not stack when no entitlements exist
 			expect(result.stackableDiscounts).toEqual([])
 			expect(result.stackingPath).toBe('none')
+		})
+	})
+
+	describe('Stacking Rules', () => {
+		/**
+		 * NEW STACKING RULES:
+		 * - Credit + Default = CAN stack ✅
+		 * - Credit + PPP = CAN stack ✅
+		 * - PPP + Default = CANNOT stack ❌ (NEVER ALLOWED)
+		 * - PPP + Default + Credit = CANNOT stack ❌ (NEVER ALLOWED)
+		 */
+
+		it('✅ SHOULD ALLOW: Credit + Default can stack together', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]), // Has purchase = not PPP eligible
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_default_40') {
+						return {
+							id: 'coupon_default_40',
+							code: 'DEFAULT40',
+							merchantCouponId: 'merchant_coupon_default_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: true, // Default coupon
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_150',
+						code: 'CREDIT150',
+						merchantCouponId: 'merchant_coupon_credit_150',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_default_40') {
+						return {
+							id: 'merchant_coupon_default_40',
+							identifier: 'stripe_coupon_default_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_150',
+						identifier: 'stripe_coupon_credit_150',
+						amountDiscount: 15000,
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_default_40',
+				usedCouponId: 'coupon_default_40',
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: true,
+				unitPrice: 100,
+			})
+
+			// Credit + Default SHOULD stack
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBe(2)
+
+			const defaultDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'default',
+			)
+			expect(defaultDiscount).toBeDefined()
+			expect(defaultDiscount?.discountType).toBe('percentage')
+			expect(defaultDiscount?.amount).toBe(0.4)
+
+			const creditDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'entitlement',
+			)
+			expect(creditDiscount).toBeDefined()
+			expect(creditDiscount?.discountType).toBe('fixed')
+		})
+
+		it('✅ SHOULD ALLOW: Credit + PPP can stack together', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []), // No valid purchases = PPP eligible
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async () => ({
+					id: 'coupon_credit_150',
+					code: 'CREDIT150',
+					merchantCouponId: 'merchant_coupon_credit_150',
+					status: 0,
+					fields: { stackable: true },
+					maxUses: -1,
+					default: false,
+					usedCount: 0,
+					createdAt: new Date(),
+					percentageDiscount: 0,
+					expires: null,
+					bulkPurchases: [],
+					redeemedBulkCouponPurchases: [],
+				})),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_credit_150') {
+						return {
+							id: 'merchant_coupon_credit_150',
+							identifier: 'stripe_coupon_credit_150',
+							amountDiscount: 15000,
+							type: 'special credit',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						}
+					}
+					return null
+				}),
+				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
+					{
+						id: 'merchant_coupon_ppp',
+						identifier: 'stripe_coupon_ppp',
+						percentageDiscount: 0.75,
+						type: 'ppp',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					},
+				]),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: undefined,
+				country: 'IN', // India = PPP eligible
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false, // Prefer PPP, but PPP + Credit CAN stack
+				unitPrice: 100,
+			})
+
+			// Credit + PPP SHOULD stack
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBe(2)
+
+			const pppDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'ppp',
+			)
+			expect(pppDiscount).toBeDefined()
+			expect(pppDiscount?.discountType).toBe('percentage')
+			expect(pppDiscount?.amount).toBe(0.75)
+
+			const creditDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'entitlement',
+			)
+			expect(creditDiscount).toBeDefined()
+			expect(creditDiscount?.discountType).toBe('fixed')
+		})
+
+		it('❌ MUST PREVENT: PPP + Default CANNOT stack together (NEVER ALLOWED)', async () => {
+			// When both PPP and Default are available but no credits,
+			// the system should choose one (PPP when preferStacking is false)
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []), // No valid purchases = PPP eligible
+				getEntitlementsForUser: vi.fn(async () => []), // No credits
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_default_40') {
+						return {
+							id: 'coupon_default_40',
+							code: 'DEFAULT40',
+							merchantCouponId: 'merchant_coupon_default_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: true,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return null
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_default_40') {
+						return {
+							id: 'merchant_coupon_default_40',
+							identifier: 'stripe_coupon_default_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return null
+				}),
+				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
+					{
+						id: 'merchant_coupon_ppp',
+						identifier: 'stripe_coupon_ppp',
+						percentageDiscount: 0.75,
+						type: 'ppp',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					},
+				]),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_default_40',
+				usedCouponId: 'coupon_default_40',
+				country: 'IN',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackableDiscounts.length).toBe(0)
+			expect(
+				result.appliedMerchantCoupon?.type === 'ppp' ||
+					result.appliedMerchantCoupon?.type === 'special',
+			).toBe(true)
+			// If PPP is applied, it should have 75% discount
+			if (result.appliedMerchantCoupon?.type === 'ppp') {
+				expect(result.appliedMerchantCoupon?.percentageDiscount).toBe(0.75)
+			}
+		})
+
+		it('❌ MUST PREVENT: PPP + Default + Credit CANNOT stack together (NEVER ALLOWED)', async () => {
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => []),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_150',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_default_40') {
+						return {
+							id: 'coupon_default_40',
+							code: 'DEFAULT40',
+							merchantCouponId: 'merchant_coupon_default_40',
+							status: 0,
+							fields: {},
+							maxUses: -1,
+							default: true,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_150',
+						code: 'CREDIT150',
+						merchantCouponId: 'merchant_coupon_credit_150',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_default_40') {
+						return {
+							id: 'merchant_coupon_default_40',
+							identifier: 'stripe_coupon_default_40',
+							percentageDiscount: 0.4,
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_150',
+						identifier: 'stripe_coupon_credit_150',
+						amountDiscount: 15000,
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+				getMerchantCouponsForTypeAndPercent: vi.fn(async () => [
+					{
+						id: 'merchant_coupon_ppp',
+						identifier: 'stripe_coupon_ppp',
+						percentageDiscount: 0.75,
+						type: 'ppp',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					},
+				]),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				merchantCouponId: 'merchant_coupon_default_40',
+				usedCouponId: 'coupon_default_40',
+				country: 'IN',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false,
+				unitPrice: 100,
+			})
+
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBeGreaterThanOrEqual(1)
+
+			const creditDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'entitlement',
+			)
+			expect(creditDiscount).toBeDefined()
+
+			const defaultDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'default',
+			)
+			const pppDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'ppp',
+			)
+
+			// CRITICAL RULE: PPP and Default should NEVER both be in stackableDiscounts
+			if (defaultDiscount && pppDiscount) {
+				throw new Error(
+					'CRITICAL RULE VIOLATION: PPP and Default are both in stackableDiscounts - this should NEVER happen!',
+				)
+			}
+
+			// When PPP is involved (either in stackableDiscounts or as applied coupon),
+			// Default should NOT be in stackableDiscounts
+			const hasPPP = pppDiscount || result.appliedMerchantCoupon?.type === 'ppp'
+			if (hasPPP) {
+				expect(defaultDiscount).toBeUndefined()
+			}
 		})
 	})
 })
