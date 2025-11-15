@@ -302,10 +302,20 @@ export async function stripeCheckout({
 			const unitPrice = productPrice?.unitAmount || 0
 
 			// Get active merchant coupon (default coupon should be selected)
+			// we should use that instead of the default
 			const { activeMerchantCoupon, usedCouponId: activeUsedCouponId } =
 				await (async () => {
-					// This is a simplified version - in production you'd want to use the same logic
-					// as checkForAvailableCoupons, but for now we'll get the default coupon
+					if (couponId) {
+						const selectedCoupon = await adapter.getMerchantCoupon(
+							couponId as string,
+						)
+						if (selectedCoupon) {
+							return {
+								activeMerchantCoupon: selectedCoupon,
+								usedCouponId: usedCouponId || couponId,
+							}
+						}
+					}
 					const defaultCoupons = await adapter.getDefaultCoupon([productId])
 					if (defaultCoupons?.defaultMerchantCoupon) {
 						return {
@@ -314,9 +324,7 @@ export async function stripeCheckout({
 						}
 					}
 					return {
-						activeMerchantCoupon: couponId
-							? await adapter.getMerchantCoupon(couponId as string)
-							: null,
+						activeMerchantCoupon: null,
 						usedCouponId: usedCouponId,
 					}
 				})()
@@ -341,11 +349,15 @@ export async function stripeCheckout({
 						).length > 0
 					: false
 
+			const merchantCouponIdForPricing = couponId
+				? couponId
+				: activeMerchantCoupon?.id
+
 			const pricingResult = await formatPricesForProduct({
 				productId,
 				country,
 				quantity,
-				merchantCouponId: activeMerchantCoupon?.id,
+				merchantCouponId: merchantCouponIdForPricing,
 				...(upgradeFromPurchaseId && { upgradeFromPurchaseId }),
 				userId,
 				autoApplyPPP: true,
@@ -461,11 +473,34 @@ export async function stripeCheckout({
 			}
 			// Stripe only allows ONE discount per checkout, so we combine all stackable discounts into one coupon
 			// We create ONE reusable Stripe coupon and multiple promotion codes (one per checkout)
-			if (
+			// When stacking is enabled, we need to create a fixed coupon for the total discount amount
+			// STACKING RULES:
+			// - Default + Credit = CAN stack (allowed)
+			// - PPP + Credit = CAN stack (allowed)
+			// - PPP + Default = CANNOT stack (NEVER allowed - mutually exclusive)
+			// - PPP + Default + Credit = CANNOT stack (NEVER allowed)
+			//
+			const totalDiscountAmount = pricingResult.totalDiscountAmount || 0
+			const appliedMerchantCoupon = pricingResult.appliedMerchantCoupon
+
+			const hasCredits = stackableDiscounts.length > 0
+			const hasPPP = appliedMerchantCoupon?.type === 'ppp'
+			const hasDefault =
+				merchantCoupon?.type !== 'ppp' &&
+				merchantCoupon?.type !== 'special' &&
+				merchantCoupon?.type !== 'bulk'
+
+			const needsStacking =
 				!isUpgrade &&
-				stackingPath === 'stack' &&
-				stackableDiscounts.length > 0
-			) {
+				totalDiscountAmount > 0 &&
+				hasCredits &&
+				(stackingPath === 'stack' ||
+					(hasPPP && hasCredits) ||
+					(hasDefault && hasCredits))
+
+			const hasStackingDiscount = needsStacking
+
+			if (hasStackingDiscount) {
 				const totalDiscountInCents = Math.round(
 					(pricingResult.totalDiscountAmount || 0) * 100,
 				)
@@ -513,44 +548,76 @@ export async function stripeCheckout({
 					discounts.push({
 						promotion_code: promotionCodeId,
 					})
+					console.log('✅ [STACKED COUPON APPLIED]', {
+						promotionCodeId,
+						totalDiscountInCents: Math.round(totalDiscountAmount * 100),
+					})
 				}
-			} else if (merchantCoupon) {
-				// no ppp for bulk purchases
-				const isNotPPP = merchantCoupon.type !== 'ppp'
-				if (isNotPPP || quantity === 1) {
-					appliedPPPStripeCouponId =
-						merchantCoupon.type === 'ppp'
-							? merchantCoupon?.identifier
-							: undefined
+			} else if (merchantCoupon && !hasStackingDiscount) {
+				const shouldApplyCoupon =
+					appliedMerchantCoupon?.type === 'ppp'
+						? merchantCoupon.type === 'ppp'
+						: true
 
-					// Handle fixed amount discounts vs percentage discounts
-					if (merchantCoupon.amountDiscount) {
-						if (quantity > 1) {
-							// For multi-seat purchases, create a coupon with adjusted amount
-							const couponId = await config.paymentsAdapter.createCoupon({
-								amount_off: merchantCoupon.amountDiscount * quantity,
-								name: merchantCoupon.type || 'Fixed Discount',
-								max_redemptions: 1,
-								redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
-								currency: 'USD',
-								applies_to: {
-									products: [merchantProductIdentifier],
-								},
-							})
+				if (!shouldApplyCoupon) {
+					console.log(' [SKIPPING COUPON - CONFLICT]', {
+						merchantCouponType: merchantCoupon.type,
+						appliedMerchantCouponType: appliedMerchantCoupon?.type,
+						reason: 'PPP and Default cannot both be applied',
+					})
+				} else {
+					console.log('[APPLYING COUPON]', {
+						merchantCouponType: merchantCoupon.type,
+						merchantCouponId: merchantCoupon.id,
+					})
+					// no ppp for bulk purchases
+					const isNotPPP = merchantCoupon.type !== 'ppp'
+					if (isNotPPP || quantity === 1) {
+						appliedPPPStripeCouponId =
+							merchantCoupon.type === 'ppp'
+								? merchantCoupon?.identifier
+								: undefined
 
-							// Store the newly created coupon in the database for tracking
-							await adapter.createMerchantCoupon({
-								identifier: couponId,
-								merchantAccountId: merchantProduct.merchantAccountId,
-								type: `${merchantCoupon.type} bulk`,
-								amountDiscount: merchantCoupon.amountDiscount * quantity,
-							})
+						// Handle fixed amount discounts vs percentage discounts
+						if (merchantCoupon.amountDiscount) {
+							if (quantity > 1) {
+								// For multi-seat purchases, create a coupon with adjusted amount
+								const couponId = await config.paymentsAdapter.createCoupon({
+									amount_off: merchantCoupon.amountDiscount * quantity,
+									name: merchantCoupon.type || 'Fixed Discount',
+									max_redemptions: 1,
+									redeem_by: TWELVE_FOUR_HOURS_FROM_NOW,
+									currency: 'USD',
+									applies_to: {
+										products: [merchantProductIdentifier],
+									},
+								})
 
-							discounts.push({
-								coupon: couponId,
-							})
+								// Store the newly created coupon in the database for tracking
+								await adapter.createMerchantCoupon({
+									identifier: couponId,
+									merchantAccountId: merchantProduct.merchantAccountId,
+									type: `${merchantCoupon.type} bulk`,
+									amountDiscount: merchantCoupon.amountDiscount * quantity,
+								})
+
+								discounts.push({
+									coupon: couponId,
+								})
+							} else if (merchantCoupon.identifier) {
+								// For single seat, use promotion code with original coupon
+								const promotionCodeId =
+									await config.paymentsAdapter.createPromotionCode({
+										coupon: merchantCoupon.identifier,
+										max_redemptions: 1,
+										expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
+									})
+								discounts.push({
+									promotion_code: promotionCodeId,
+								})
+							}
 						} else if (merchantCoupon.identifier) {
-							// For single seat, use promotion code with original coupon
+							// For percentage discounts, use promotion code
 							const promotionCodeId =
 								await config.paymentsAdapter.createPromotionCode({
 									coupon: merchantCoupon.identifier,
@@ -561,17 +628,6 @@ export async function stripeCheckout({
 								promotion_code: promotionCodeId,
 							})
 						}
-					} else if (merchantCoupon.identifier) {
-						// For percentage discounts, use promotion code
-						const promotionCodeId =
-							await config.paymentsAdapter.createPromotionCode({
-								coupon: merchantCoupon.identifier,
-								max_redemptions: 1,
-								expires_at: TWELVE_FOUR_HOURS_FROM_NOW,
-							})
-						discounts.push({
-							promotion_code: promotionCodeId,
-						})
 					}
 				}
 			}
@@ -630,6 +686,16 @@ export async function stripeCheckout({
 						? merchantCoupon.amountDiscount
 						: stripeCouponPercentOff * 100,
 				}),
+			})
+
+			console.log('🔍 [FINAL CHECKOUT SESSION]', {
+				discountsCount: discounts.length,
+				discounts,
+				calculatedPrice: pricingResult.calculatedPrice,
+				totalDiscountAmount: pricingResult.totalDiscountAmount,
+				unitPrice,
+				quantity,
+				expectedTotal: pricingResult.calculatedPrice * quantity,
 			})
 
 			const sessionUrl = await config.paymentsAdapter.createCheckoutSession({

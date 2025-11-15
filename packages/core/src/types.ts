@@ -288,7 +288,7 @@ export type FormattedPrice = {
 	appliedFixedDiscount?: number
 	stackableDiscounts?: Array<{
 		couponId: string
-		source: 'default' | 'user' | 'entitlement'
+		source: 'default' | 'user' | 'entitlement' | 'ppp'
 		discountType: 'fixed' | 'percentage'
 		amount: number
 		label: string
