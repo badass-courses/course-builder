@@ -224,6 +224,7 @@ export async function formatPricesForProduct(
 		const pppInStackable = stackableDiscounts.some(
 			(d) =>
 				d.coupon?.type === 'ppp' ||
+				d.source === 'ppp' ||
 				(d.source === 'default' &&
 					d.discountType === 'percentage' &&
 					appliedMerchantCoupon?.type === 'ppp' &&

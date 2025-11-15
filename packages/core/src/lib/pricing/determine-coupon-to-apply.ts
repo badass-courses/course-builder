@@ -510,7 +510,7 @@ export const determineCouponToApply = async (
 			if (pppDetails.pppCouponToBeApplied) {
 				addStackableDiscount(
 					pppDetails.pppCouponToBeApplied,
-					'default', // PPP is treated as a default-type discount for stacking purposes
+					'ppp',
 					pppDetails.pppCouponToBeApplied.id,
 				)
 			}
