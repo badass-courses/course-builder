@@ -39,6 +39,10 @@ import {
 	VideoDetached,
 } from '@/inngest/events/video-attachment'
 import {
+	CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT,
+	CreatePPPCreditCouponsForPurchasersEvent,
+} from '@/inngest/functions/coupon/create-ppp-credit-coupons-for-purchasers'
+import {
 	GRANT_COUPON_ENTITLEMENTS_EVENT,
 	GrantCouponEntitlementsEvent,
 } from '@/inngest/functions/coupon/grant-coupon-entitlements'
@@ -130,6 +134,7 @@ export type Events = {
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
+	[CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT]: CreatePPPCreditCouponsForPurchasersEvent
 }
 
 const callbackBase =

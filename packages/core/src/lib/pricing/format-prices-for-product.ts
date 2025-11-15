@@ -221,6 +221,18 @@ export async function formatPricesForProduct(
 	if (stackingPath === 'stack' && stackableDiscounts.length > 0) {
 		let currentPrice = fullPrice
 
+		// Apply PPP percentage discount first if it's in appliedMerchantCoupon
+		// This allows credit + PPP stacking
+		if (
+			appliedMerchantCoupon?.type === 'ppp' &&
+			appliedMerchantCoupon?.percentageDiscount
+		) {
+			const pppDiscountAmount =
+				currentPrice * appliedMerchantCoupon.percentageDiscount
+			currentPrice = Math.max(0, currentPrice - pppDiscountAmount)
+			totalDiscountAmount += pppDiscountAmount
+		}
+
 		for (const discount of stackableDiscounts) {
 			if (discount.source === 'default' || discount.source === 'user') {
 				if (discount.discountType === 'percentage') {
