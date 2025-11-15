@@ -82,7 +82,7 @@ async function createOrFindFixedMerchantCoupon(
 				amount_off: amountDiscount,
 				currency: 'USD',
 				metadata: {
-					type: 'special',
+					type: couponType,
 				},
 			})
 
