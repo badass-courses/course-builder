@@ -440,21 +440,10 @@ export const createPPPCreditCouponsForPurchasers = inngest.createFunction(
 			},
 		)
 
-		// Grant entitlements for each created coupon
-		const entitlementsResult = await step.run(
-			'grant entitlements to purchasers',
-			async () => {
-				let entitlementsGranted = 0
-				let entitlementsSkipped = 0
-				let entitlementsFailed = 0
-				const grantedUserIds: string[] = []
-				const skippedUserIds: string[] = []
-
-				for (const {
-					couponId,
-					userId,
-					amountInCents,
-				} of couponData.couponData) {
+		// Grant entitlements for each created coupon - one step per person
+		const entitlementResults = await Promise.all(
+			couponData.couponData.map(({ couponId, userId, amountInCents }) =>
+				step.run(`grant entitlement to user ${userId}`, async () => {
 					try {
 						// Get user data
 						const user = await db.query.users.findFirst({
@@ -469,8 +458,12 @@ export const createPPPCreditCouponsForPurchasers = inngest.createFunction(
 									userId,
 								},
 							)
-							entitlementsFailed++
-							continue
+							return {
+								status: 'failed' as const,
+								userId,
+								couponId,
+								reason: 'User not found or missing email',
+							}
 						}
 
 						// Ensure personal organization
@@ -495,9 +488,20 @@ export const createPPPCreditCouponsForPurchasers = inngest.createFunction(
 						})
 
 						if (existingEntitlement) {
-							entitlementsSkipped++
-							skippedUserIds.push(userId)
-							continue
+							await log.info(
+								'coupon.create_ppp_credit_for_purchasers.entitlement_already_exists',
+								{
+									userId,
+									couponId,
+									entitlementId: existingEntitlement.id,
+								},
+							)
+							return {
+								status: 'skipped' as const,
+								userId,
+								couponId,
+								reason: 'Entitlement already exists',
+							}
 						}
 
 						// Create entitlement
@@ -515,10 +519,23 @@ export const createPPPCreditCouponsForPurchasers = inngest.createFunction(
 							},
 						})
 
-						entitlementsGranted++
-						grantedUserIds.push(userId)
+						await log.info(
+							'coupon.create_ppp_credit_for_purchasers.entitlement_granted',
+							{
+								userId,
+								couponId,
+								entitlementId,
+								amountInCents,
+							},
+						)
+
+						return {
+							status: 'granted' as const,
+							userId,
+							couponId,
+							entitlementId,
+						}
 					} catch (error) {
-						entitlementsFailed++
 						await log.error(
 							'coupon.create_ppp_credit_for_purchasers.entitlement_grant_failed',
 							{
@@ -528,6 +545,34 @@ export const createPPPCreditCouponsForPurchasers = inngest.createFunction(
 								stack: error instanceof Error ? error.stack : undefined,
 							},
 						)
+						return {
+							status: 'failed' as const,
+							userId,
+							couponId,
+							reason: error instanceof Error ? error.message : 'Unknown error',
+						}
+					}
+				}),
+			),
+		)
+		const entitlementsResult = await step.run(
+			'aggregate entitlement results',
+			async () => {
+				let entitlementsGranted = 0
+				let entitlementsSkipped = 0
+				let entitlementsFailed = 0
+				const grantedUserIds: string[] = []
+				const skippedUserIds: string[] = []
+
+				for (const result of entitlementResults) {
+					if (result.status === 'granted') {
+						entitlementsGranted++
+						grantedUserIds.push(result.userId)
+					} else if (result.status === 'skipped') {
+						entitlementsSkipped++
+						skippedUserIds.push(result.userId)
+					} else {
+						entitlementsFailed++
 					}
 				}
 
