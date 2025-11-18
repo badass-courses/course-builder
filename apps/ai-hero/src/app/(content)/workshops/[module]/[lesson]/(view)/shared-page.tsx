@@ -22,8 +22,9 @@ import {
 	getAbilityForResource,
 	type AbilityForResource,
 } from '@/utils/get-current-ability-rules'
+import { Check } from 'lucide-react'
 
-import { Input, Skeleton } from '@coursebuilder/ui'
+import { Skeleton } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import { LessonBody } from '../../../_components/lesson-body'
@@ -52,7 +53,17 @@ export async function LessonPage({
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '', {
 		input: (props) =>
 			props.type === 'checkbox' ? (
-				<Input className="inline-block size-4" {...props} disabled={false} />
+				<label className="group relative mr-1 inline-flex translate-y-2.5 items-center justify-center hover:cursor-pointer">
+					<input
+						{...props}
+						type="checkbox"
+						className={cn(
+							'border-foreground/20 bg-background hover:border-primary hover:shadow-primary/20 dark:bg-input/30 checked:border-primary checked:bg-primary checked:shadow-primary/30 dark:checked:bg-primary focus-visible:ring-ring peer relative size-8 shrink-0 appearance-none rounded-full border-2 transition-all duration-200 checked:shadow-md hover:scale-110 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+						)}
+						disabled={false}
+					/>
+					<Check className="peer-checked:text-primary-foreground text-foreground pointer-events-none absolute size-6 opacity-20 transition-all duration-200 group-hover:opacity-30 peer-checked:opacity-100" />
+				</label>
 			) : (
 				<input {...props} />
 			),

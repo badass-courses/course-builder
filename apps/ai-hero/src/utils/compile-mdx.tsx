@@ -30,6 +30,11 @@ const TableWrapper = dynamic(() =>
 		(mod) => mod.TableWrapper,
 	),
 )
+const Spoiler = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.Spoiler,
+	),
+)
 const DynamicCode = dynamic(() =>
 	import('@/components/codehike/code').then((mod) => mod.Code),
 )
@@ -51,7 +56,6 @@ export async function compileMDX(
 ) {
 	return await _compileMDX({
 		source: source,
-
 		components: {
 			...components,
 			Code: (props) => <DynamicCode {...props} />,
@@ -117,6 +121,7 @@ export async function compileMDX(
 				</Testimonial>
 			),
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
+			Spoiler: ({ children }) => <Spoiler>{children}</Spoiler>,
 			CldImage: ({ ...props }) => <CldImage {...props} />,
 		},
 		options: {

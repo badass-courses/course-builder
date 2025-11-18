@@ -329,6 +329,7 @@
 }
 li.task-list-item {
 	@apply list-none;
+	padding-inline-start: 0;
 	p {
 		/* @apply inline-flex items-center gap-2 pb-0; */
 	}
