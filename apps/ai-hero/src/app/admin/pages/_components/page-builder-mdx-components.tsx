@@ -606,6 +606,47 @@ const TableWrapper = ({ children }: { children: React.ReactNode }) => {
 	)
 }
 
+/**
+ * Wraps a codeblock and blurs it initially with a reveal button
+ * The codeblock should already have a copy button
+ */
+const Spoiler = ({ children }: { children: React.ReactNode }) => {
+	const [isRevealed, setIsRevealed] = React.useState(false)
+
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<div className="relative">
+				<div
+					aria-hidden={!isRevealed}
+					className={cn('transition-all duration-300', {
+						'pointer-events-none select-none blur-md': !isRevealed,
+					})}
+				>
+					{children}
+				</div>
+				{!isRevealed && (
+					<button
+						onClick={() => setIsRevealed(true)}
+						className="hover:ring-foreground/5 group absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-lg bg-transparent ring-2 ring-transparent transition-all duration-500"
+						aria-label="Reveal solution code"
+					>
+						<Button
+							variant="outline"
+							asChild
+							className="dark:group-hover:bg-input/60 hover:bg-input/60 group-md rounded-lg transition-all duration-300 hover:bg-white group-hover:bg-white"
+						>
+							<span>Reveal Solution</span>
+						</Button>
+					</button>
+				)}
+				<div aria-live="polite" aria-atomic="true" className="sr-only">
+					{isRevealed && 'Solution code revealed'}
+				</div>
+			</div>
+		</div>
+	)
+}
+
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -635,4 +676,5 @@ export {
 	ShinyText,
 	FAQ,
 	TableWrapper,
+	Spoiler,
 }
