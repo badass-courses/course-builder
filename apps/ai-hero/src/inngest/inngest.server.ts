@@ -12,6 +12,10 @@ import {
 	EnsurePersonalOrganization,
 } from '@/inngest/events/ensure-personal-organization'
 import {
+	GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT,
+	GrantCouponEntitlementsForPurchase,
+} from '@/inngest/events/grant-coupon-entitlements-for-purchase'
+import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
@@ -134,6 +138,7 @@ export type Events = {
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
+	[GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT]: GrantCouponEntitlementsForPurchase
 	[CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT]: CreatePPPCreditCouponsForPurchasersEvent
 }
 
