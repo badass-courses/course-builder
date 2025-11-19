@@ -37,7 +37,7 @@ const contentVariants = cva('flex flex-col gap-5', {
 	variants: {
 		variant: {
 			horizontal: 'items-start gap-6',
-			card: 'flex-1 p-2.5',
+			card: 'flex-1 p-4',
 		},
 	},
 	defaultVariants: {
@@ -50,7 +50,7 @@ const titleVariants = cva('', {
 		variant: {
 			horizontal:
 				'sm:text-3xl text-2xl font-medium leading-tight text-foreground',
-			card: 'line-clamp-2 text-lg font-semibold leading-7 text-foreground',
+			card: 'text-lg font-semibold leading-7 text-foreground', // line-clamp-2
 		},
 	},
 	defaultVariants: {
@@ -150,7 +150,7 @@ const ResourceTeaser = ({
 								{titleSlot || title}
 							</h2>
 							{metadata && (
-								<p className="text-muted-foreground text-sm leading-none">
+								<p className="text-muted-foreground text-sm capitalize leading-none">
 									{metadata}
 								</p>
 							)}

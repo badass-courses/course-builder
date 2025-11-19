@@ -103,16 +103,16 @@ export default function PostToC({ markdown }: { markdown: string }) {
 	return (
 		<nav
 			ref={containerRef}
-			className="bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y"
+			className="bg-background relative z-50 mt-5 flex min-w-[200px] flex-col"
 			aria-label="On this page"
 		>
-			<div className="max-w-(--breakpoint-xl) mx-auto flex w-full items-center px-5 md:px-10 lg:px-16">
+			<div className="mx-auto flex w-full items-center">
 				<button
 					onClick={() => {
 						setIsOpen(!isOpen)
 					}}
 					aria-expanded={isOpen}
-					className="flex h-10 items-center justify-start gap-1 px-0 text-sm sm:text-base"
+					className="flex h-10 items-center justify-start gap-1 px-0 text-sm hover:cursor-pointer sm:text-base"
 				>
 					<div>
 						<AlignLeft className="size-4" />

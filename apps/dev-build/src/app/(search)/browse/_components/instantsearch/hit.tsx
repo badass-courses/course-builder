@@ -66,10 +66,10 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						? `${formatInTimeZone(new Date(hit.startsAt), 'America/Los_Angeles', 'MMM d, yyyy')} — ${formatInTimeZone(new Date(hit.endsAt), 'America/Los_Angeles', 'MMM d, yyyy')}`
 						: getMetadataForType(hit.type)
 				}
-				thumbnailUrl={
-					hit.image ||
-					'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760615686/thumbnail-article_2x_sl3c0e.jpg'
-				}
+				// thumbnailUrl={
+				// 	hit.image ||
+				// 	'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760615686/thumbnail-article_2x_sl3c0e.jpg'
+				// }
 				tags={hit.tags?.map((tag) => tag.fields?.label || tag.fields?.name)}
 				titleSlot={
 					<Highlight

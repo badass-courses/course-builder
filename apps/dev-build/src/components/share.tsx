@@ -34,21 +34,13 @@ export const Share = ({
 	return (
 		<div
 			className={cn(
-				'[&_a]:hover:bg-foreground/5 [&_button]:hover:bg-foreground/5 relative flex items-stretch rounded border [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:border-r [&_a]:p-3 [&_a]:first-of-type:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
+				'[&_a]:hover:bg-foreground/5 [&_button]:hover:bg-foreground/5 relative flex items-stretch rounded [&_a]:flex [&_a]:aspect-square [&_a]:w-full [&_a]:max-w-14 [&_a]:items-center [&_a]:justify-center [&_a]:p-3 [&_a]:first-of-type:rounded-l [&_button]:flex [&_button]:items-center [&_button]:p-3 [&_button]:px-5',
 				className,
 			)}
 		>
-			<div
-				className="via-foreground/10 bg-linear-to-r absolute -top-px left-0 h-px w-full from-transparent to-transparent"
-				aria-hidden="true"
-			/>
-			<div
-				className="via-foreground/10 bg-linear-to-r absolute -bottom-px left-0 h-px w-2/3 from-transparent to-transparent"
-				aria-hidden="true"
-			/>
 			<a
-				href={`https://bsky.app/intent/compose?text=${encodeURIComponent(`${title ? `${title} ` : ''} by ${config.bluesky.handle} 
-        
+				href={`https://bsky.app/intent/compose?text=${encodeURIComponent(`${title ? `${title} ` : ''} by ${config.bluesky.handle}
+
         ${url}`)}`}
 				target="_blank"
 				rel="noopener noreferrer"

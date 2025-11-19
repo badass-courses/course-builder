@@ -67,16 +67,16 @@ export default async function PostPage(props: {
 				})}
 			>
 				<div className="relative z-10 mx-auto flex w-full items-center justify-between">
-					{!list ? (
+					{/* {!list ? (
 						<Link
-							href="/posts"
+							href="/browse"
 							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
 						>
 							← All Posts
 						</Link>
 					) : (
 						<div />
-					)}
+					)} */}
 				</div>
 				<div className="relative z-10 xl:pl-12">
 					<article className="relative flex h-full flex-col">
@@ -84,7 +84,7 @@ export default async function PostPage(props: {
 							<PostTitle post={post} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
-									<Contributor className="flex [&_img]:w-8" />
+									<Contributor className="flex [&_img]:size-10" />
 									{post.fields?.github && (
 										<Button
 											asChild
@@ -128,7 +128,7 @@ export default async function PostPage(props: {
 								/>
 							</div>
 						)}
-						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 border-t pl-5">
+						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 pl-5">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
 								className="inline-flex rounded-none border-y-0"
@@ -222,7 +222,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
+					className="-mx-6 mb-6 flex flex-col items-center justify-center border-b bg-black sm:-mx-10 sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}

@@ -91,7 +91,14 @@ const Navigation = ({ className }: { className?: string }) => {
 					<Link href="/" tabIndex={isRoot ? -1 : 0}>
 						<Logo />
 					</Link>
-					<NavigationMenu
+					<Link
+						href="/browse"
+						className="hover:bg-muted ml-3 hidden h-8 items-center gap-1 rounded-lg px-3 py-4 text-sm font-medium transition ease-out md:flex"
+					>
+						Browse
+						<ChevronRight className="size-3" />
+					</Link>
+					{/* <NavigationMenu
 						delayDuration={0}
 						skipDelayDuration={0}
 						viewport={true}
@@ -191,7 +198,7 @@ const Navigation = ({ className }: { className?: string }) => {
 								</NavigationMenuItem>
 							)}
 						</NavigationMenuList>
-					</NavigationMenu>
+					</NavigationMenu> */}
 					{showSearch && (
 						<form
 							className="relative flex w-full max-w-xs sm:shrink-0"

@@ -30,7 +30,7 @@ export const Contributor: React.FC<{
 export const ContributorImage = ({
 	contributor,
 	className,
-	imageSize = 76,
+	imageSize = 100,
 }: {
 	contributor?: { name: string; lastName: string }
 	className?: string
@@ -39,13 +39,13 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/johnlindquist/image/upload/c_limit,w_640/f_auto/q_auto/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm'
+				'https://res.cloudinary.com/johnlindquist/image/upload/c_thumb,g_face,w_350,h_350,z_1.9/f_auto/q_auto/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm'
 			}
 			alt={config.author}
 			width={imageSize}
 			height={imageSize}
 			quality={100}
-			className={cn('', className)}
+			className={cn('rounded-full', className)}
 		/>
 	)
 }
