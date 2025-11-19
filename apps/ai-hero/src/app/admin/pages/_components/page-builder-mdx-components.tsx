@@ -3,7 +3,7 @@
 import React, { use } from 'react'
 import { FaqItem } from '@/app/faq/_components/faq-item'
 import { AnimatedTitle } from '@/components/brand/animated-word'
-import { CldImage } from '@/components/cld-image'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
 import config from '@/config'
 import type { Page } from '@/lib/pages'
@@ -426,6 +426,22 @@ const data = {
 				children: 'Table Content',
 			},
 		},
+		{
+			name: 'ThemeImage',
+			component: ThemeImage,
+			description:
+				'Displays an image based on the current theme (light or dark). Requires width, height, and urls object with light and dark image src. Also supports additional Cloudinary image props.',
+			props: {
+				urls: {
+					dark: 'https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png',
+					light:
+						'https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png',
+				},
+				alt: 'Matt in new studio',
+				width: 290,
+				height: 290,
+			},
+		},
 	],
 	layout: [
 		{
@@ -544,7 +560,15 @@ const PageBlocks = () => {
 								e.dataTransfer.setData(
 									'text/plain',
 									`<${item.name} ${Object.entries(item.props)
-										.map(([key, value]) => `${key}="${value}"`)
+										.map(([key, value]) => {
+											if (typeof value === 'object' && value !== null) {
+												const objectString = Object.entries(value)
+													.map(([k, v]) => `${k}: "${v}"`)
+													.join(', ')
+												return `${key}={{${objectString}}}`
+											}
+											return `${key}="${String(value)}"`
+										})
 										.join(' ')} />`,
 								)
 							}
