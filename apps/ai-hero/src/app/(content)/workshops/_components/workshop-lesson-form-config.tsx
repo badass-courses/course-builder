@@ -68,7 +68,12 @@ export const createWorkshopLessonFormConfig = (
 			icon: () => (
 				<ComponentIcon strokeWidth={1.5} size={24} width={18} height={18} />
 			),
-			toolComponent: <PageBlocks />,
+			toolComponent: (
+				<div className="mt-3 px-5">
+					<h3 className="mb-3 inline-flex text-xl font-bold">MDX Components</h3>
+					<PageBlocks />
+				</div>
+			),
 		},
 		mediaUploadTool,
 		{
