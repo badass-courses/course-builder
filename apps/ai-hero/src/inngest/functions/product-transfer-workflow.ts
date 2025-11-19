@@ -105,7 +105,6 @@ const removeEntitlementsFromSource = async (
 /**
  * Transfer coupon entitlements from source to target user
  * Uses eligibilityProductId in metadata to match entitlements to the purchase
- * Follows the same pattern: soft delete from source, create new for target
  */
 const transferCouponEntitlements = async (
 	step: any,
@@ -149,26 +148,29 @@ const transferCouponEntitlements = async (
 		const sourceEntitlementIds = unusedEntitlements.map((e) => e.id)
 		const createdEntitlementIds: string[] = []
 
-		for (const sourceEntitlement of unusedEntitlements) {
-			await db
-				.update(entitlements)
-				.set({ deletedAt: new Date() })
-				.where(eq(entitlements.id, sourceEntitlement.id))
+		await db.transaction(async (tx) => {
+			for (const sourceEntitlement of unusedEntitlements) {
+				await tx
+					.update(entitlements)
+					.set({ deletedAt: new Date() })
+					.where(eq(entitlements.id, sourceEntitlement.id))
 
-			const newEntitlementId = `${sourceEntitlement.sourceId}-${guid()}`
-			await db.insert(entitlements).values({
-				id: newEntitlementId,
-				userId: targetUser.id,
-				organizationId: targetOrganization.id,
-				organizationMembershipId: targetMembership.id,
-				entitlementType: couponCreditEntitlementType.id,
-				sourceType: EntitlementSourceType.COUPON,
-				sourceId: sourceEntitlement.sourceId,
-				metadata: sourceEntitlement.metadata,
-			})
+				// Create new entitlement for target user with same coupon details
+				const newEntitlementId = `${sourceEntitlement.sourceId}-${guid()}`
+				await tx.insert(entitlements).values({
+					id: newEntitlementId,
+					userId: targetUser.id,
+					organizationId: targetOrganization.id,
+					organizationMembershipId: targetMembership.id,
+					entitlementType: couponCreditEntitlementType.id,
+					sourceType: EntitlementSourceType.COUPON,
+					sourceId: sourceEntitlement.sourceId,
+					metadata: sourceEntitlement.metadata,
+				})
 
-			createdEntitlementIds.push(newEntitlementId)
-		}
+				createdEntitlementIds.push(newEntitlementId)
+			}
+		})
 
 		log.info('Transferred coupon entitlements', {
 			purchaseId: purchase.id,
