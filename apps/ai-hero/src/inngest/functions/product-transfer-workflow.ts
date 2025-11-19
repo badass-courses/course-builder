@@ -8,6 +8,7 @@ import {
 	createCohortEntitlement,
 	createWorkshopEntitlement,
 	EntitlementSourceType,
+	getCreditEntitlementsForSourcePurchase,
 } from '@/lib/entitlements'
 import { createResourceEntitlements } from '@/lib/entitlements-query'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
@@ -98,6 +99,92 @@ const removeEntitlementsFromSource = async (
 			purchaseId: purchase.id,
 			productType: config.logPrefix,
 		})
+	})
+}
+
+/**
+ * Transfer coupon entitlements from source to target user
+ * Uses eligibilityProductId in metadata to match entitlements to the purchase
+ * Follows the same pattern: soft delete from source, create new for target
+ */
+const transferCouponEntitlements = async (
+	step: any,
+	purchase: any,
+	sourceUser: any,
+	targetUser: any,
+	targetOrganization: any,
+	targetMembership: any,
+) => {
+	await step.run(`transfer coupon entitlements`, async () => {
+		const couponEntitlements = await getCreditEntitlementsForSourcePurchase(
+			purchase.productId,
+			sourceUser.id,
+		)
+
+		const unusedEntitlements = couponEntitlements.filter(
+			(entitlement) => !entitlement.deletedAt,
+		)
+
+		if (unusedEntitlements.length === 0) {
+			log.info('No coupon entitlements to transfer', {
+				purchaseId: purchase.id,
+				productId: purchase.productId,
+				sourceUserId: sourceUser.id,
+			})
+			return { transferred: 0 }
+		}
+
+		const couponCreditEntitlementType =
+			await db.query.entitlementTypes.findFirst({
+				where: eq(entitlementTypes.name, 'apply_special_credit'),
+			})
+
+		if (!couponCreditEntitlementType) {
+			log.info('Coupon credit entitlement type not found, skipping transfer', {
+				purchaseId: purchase.id,
+			})
+			return { transferred: 0 }
+		}
+
+		const sourceEntitlementIds = unusedEntitlements.map((e) => e.id)
+		const createdEntitlementIds: string[] = []
+
+		for (const sourceEntitlement of unusedEntitlements) {
+			await db
+				.update(entitlements)
+				.set({ deletedAt: new Date() })
+				.where(eq(entitlements.id, sourceEntitlement.id))
+
+			const newEntitlementId = `${sourceEntitlement.sourceId}-${guid()}`
+			await db.insert(entitlements).values({
+				id: newEntitlementId,
+				userId: targetUser.id,
+				organizationId: targetOrganization.id,
+				organizationMembershipId: targetMembership.id,
+				entitlementType: couponCreditEntitlementType.id,
+				sourceType: EntitlementSourceType.COUPON,
+				sourceId: sourceEntitlement.sourceId,
+				metadata: sourceEntitlement.metadata,
+			})
+
+			createdEntitlementIds.push(newEntitlementId)
+		}
+
+		log.info('Transferred coupon entitlements', {
+			purchaseId: purchase.id,
+			productId: purchase.productId,
+			sourceUserId: sourceUser.id,
+			targetUserId: targetUser.id,
+			entitlementsTransferred: unusedEntitlements.length,
+			sourceEntitlementIds,
+			createdEntitlementIds,
+		})
+
+		return {
+			transferred: unusedEntitlements.length,
+			sourceEntitlementIds,
+			createdEntitlementIds,
+		}
 	})
 }
 
@@ -464,6 +551,17 @@ async function handleProductTransfer({
 			discordRoleEntitlementType,
 			product,
 		})
+
+		// Transfer coupon entitlements from source to target user
+		// Uses eligibilityProductId in metadata to match entitlements to this purchase
+		await transferCouponEntitlements(
+			step,
+			purchase,
+			sourceUser,
+			targetUser,
+			targetUserOrganization,
+			targetUserOrgMembership,
+		)
 	}
 
 	// Log successful completion
