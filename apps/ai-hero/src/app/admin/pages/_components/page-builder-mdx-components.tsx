@@ -375,27 +375,55 @@ const ProjectVideo = ({
 const data = {
 	content: [
 		{
+			name: 'Video',
+			component: MDXVideo,
+			description:
+				'Displays an inline video player. Requires resourceId (content resource ID) and optional thumbnailTime. You can also use the Videos tab to drag and drop a video resource into the editor.',
+			props: {
+				resourceId: '123',
+			},
+		},
+		{
+			name: 'CldImage',
+			component: CldImage,
+			description:
+				'Displays a Cloudinary image. Requires width, height, and cloudinary image src. Also supports additional Cloudinary image props.',
+			props: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1741011187/aihero.dev/assets/matt-in-new-studio-square_2x_hutwgm.png',
+				alt: 'Matt in new studio',
+				width: 290,
+				height: 290,
+			},
+		},
+		{
 			name: 'Spoiler',
 			component: Spoiler,
+			description:
+				'Displays a spoiler content, usually a code block with a reveal button. Requires children content.',
 			props: {
 				children: `This is the spoiler content, usually a code block`,
 			},
 		},
-		{
-			name: 'TableWrapper',
-			component: TableWrapper,
-			props: {
-				children: 'Table Content',
-			},
-		},
+
 		{
 			name: 'ProjectVideo',
 			component: ProjectVideo,
+			description:
+				'Displays a video player with command buttons and recommendation section. Requires resourceId (content resource ID), exerciseId (e.g. 04.04.01), and recommendation (recommendation text).',
 			props: {
 				resourceId: '123',
 				exerciseId: '04.04.01',
 				recommendation:
 					'This is an essential commit. Implement it yourself, and use the guides below as a reference.',
+			},
+		},
+		{
+			name: 'TableWrapper',
+			component: TableWrapper,
+			description:
+				'Displays a responsive and expandable table. Requires table content.',
+			props: {
+				children: 'Table Content',
 			},
 		},
 	],
@@ -471,10 +499,11 @@ const BlockItem = ({
 		name: string
 		component: React.FC<any>
 		props: any
+		description?: string
 	}
 	onDragStart: (e: any) => void
 }) => {
-	return (
+	const content = (
 		<div
 			draggable
 			onDragStart={onDragStart}
@@ -484,6 +513,21 @@ const BlockItem = ({
 			<GripVertical className="h-4 w-4 opacity-50" />
 		</div>
 	)
+
+	if (item.description) {
+		return (
+			<TooltipProvider delayDuration={0}>
+				<Tooltip>
+					<TooltipTrigger asChild>{content}</TooltipTrigger>
+					<TooltipContent side="left" className="max-w-xs">
+						{item.description}
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
+		)
+	}
+
+	return content
 }
 
 const PageBlocks = () => {
