@@ -4,12 +4,19 @@ import React, { use } from 'react'
 import { FaqItem } from '@/app/faq/_components/faq-item'
 import { AnimatedTitle } from '@/components/brand/animated-word'
 import { CldImage } from '@/components/cld-image'
+import MDXVideo from '@/components/content/mdx-video'
 import config from '@/config'
 import type { Page } from '@/lib/pages'
 import { formatFaq } from '@/utils/format-faq'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { GripVertical, ZoomIn } from 'lucide-react'
+import {
+	GitBranch,
+	GripVertical,
+	Lightbulb,
+	RotateCcw,
+	ZoomIn,
+} from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import {
@@ -18,6 +25,10 @@ import {
 	Dialog,
 	DialogContent,
 	DialogTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -180,7 +191,214 @@ const Testimonial = ({
 	)
 }
 
+const TableWrapper = ({ children }: { children: React.ReactNode }) => {
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<div className="bg-background relative">
+				<div className="relative z-0 w-full overflow-x-auto pr-10">
+					<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-xs [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-sm [&_td_code]:whitespace-normal [&_td_code]:break-words [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_th_code]:whitespace-normal [&_th_code]:break-words [&_tr:not(:last-child)_td]:border-b">
+						{children}
+					</div>
+				</div>
+				{/* <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-20 w-4 bg-gradient-to-r to-transparent" /> */}
+				<div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l to-transparent" />
+			</div>
+			<Dialog>
+				<DialogTrigger asChild>
+					<Button
+						size="icon"
+						variant="outline"
+						className="absolute -top-5 right-0 z-20"
+					>
+						<ZoomIn />
+						<span className="sr-only">View Table</span>
+					</Button>
+				</DialogTrigger>
+				<DialogContent className="max-w-none sm:max-w-[90%]">
+					<div className="relative w-full overflow-x-auto pb-5">
+						<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-sm [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-base [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_thead_th:nth-child(1)]:w-[400px] [&_thead_th:nth-child(2)]:w-[220px] [&_thead_th:nth-child(3)]:w-[300px] [&_thead_th:nth-child(4)]:w-[300px] [&_tr:not(:last-child)_td]:border-b">
+							{children}
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
+		</div>
+	)
+}
+
+/**
+ * Wraps a codeblock and blurs it initially with a reveal button
+ * The codeblock should already have a copy button
+ */
+const Spoiler = ({ children }: { children: React.ReactNode }) => {
+	const [isRevealed, setIsRevealed] = React.useState(false)
+
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<div className="relative">
+				<div
+					aria-hidden={!isRevealed}
+					className={cn('transition-all duration-300', {
+						'pointer-events-none select-none blur-md': !isRevealed,
+					})}
+				>
+					{children}
+				</div>
+				{!isRevealed && (
+					<button
+						onClick={() => setIsRevealed(true)}
+						className="hover:ring-foreground/5 group absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-lg bg-transparent ring-2 ring-transparent transition-all duration-500"
+						aria-label="Reveal solution code"
+					>
+						<Button
+							variant="outline"
+							asChild
+							className="dark:group-hover:bg-input/60 hover:bg-input/60 group-md rounded-lg transition-all duration-300 hover:bg-white group-hover:bg-white"
+						>
+							<span>Reveal Solution</span>
+						</Button>
+					</button>
+				)}
+				<div aria-live="polite" aria-atomic="true" className="sr-only">
+					{isRevealed && 'Solution code revealed'}
+				</div>
+			</div>
+		</div>
+	)
+}
+
+/**
+ * Displays a video player with command buttons and recommendation section
+ * Command buttons copy pnpm commands to clipboard for resetting or cherry-picking exercises
+ */
+const ProjectVideo = ({
+	children,
+	resourceId,
+	exerciseId,
+	recommendation,
+}: {
+	children?: React.ReactNode
+	resourceId: string
+	exerciseId: string
+	recommendation: string
+}) => {
+	const [resetCopied, setResetCopied] = React.useState(false)
+	const [cherryPickCopied, setCherryPickCopied] = React.useState(false)
+
+	const resetCommand = `pnpm reset ${exerciseId}`
+	const cherryPickCommand = `pnpm cherry-pick ${exerciseId}`
+
+	const handleCopyReset = async () => {
+		await navigator.clipboard.writeText(resetCommand)
+		setResetCopied(true)
+		setTimeout(() => setResetCopied(false), 2000)
+	}
+
+	const handleCopyCherryPick = async () => {
+		await navigator.clipboard.writeText(cherryPickCommand)
+		setCherryPickCopied(true)
+		setTimeout(() => setCherryPickCopied(false), 2000)
+	}
+
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<MDXVideo resourceId={resourceId} className="mb-0" />
+			<TooltipProvider delayDuration={0}>
+				<div className="mt-2 grid w-full grid-cols-1 items-center gap-2 md:grid-cols-2">
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleCopyReset}
+								className="group relative h-9 gap-2 rounded-lg hover:cursor-pointer"
+							>
+								<RotateCcw className="h-4 w-4" />
+								<span className="font-mono text-sm">{resetCommand}</span>
+								{resetCopied && (
+									<span className="text-muted-foreground bg-background absolute inset-0 flex items-center justify-center gap-2 rounded-lg font-mono text-sm">
+										Copied!
+									</span>
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent
+							side="bottom"
+							className="max-w-xs rounded-lg text-center"
+						>
+							Copy to clipboard a command that resets your project to match a
+							specific commit (guided experience).
+						</TooltipContent>
+					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleCopyCherryPick}
+								className="group relative h-9 gap-2 rounded-lg hover:cursor-pointer"
+							>
+								<GitBranch className="h-4 w-4" />
+								<span className="font-mono text-sm">{cherryPickCommand}</span>
+								{cherryPickCopied && (
+									<span className="text-muted-foreground bg-background absolute inset-0 flex items-center justify-center gap-2 rounded-lg font-mono text-sm">
+										Copied!
+									</span>
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent
+							side="bottom"
+							className="max-w-xs rounded-lg text-center"
+						>
+							Copy to clipboard a command that cherry-picks changes from a
+							specific commit (for custom builds).
+						</TooltipContent>
+					</Tooltip>
+				</div>
+			</TooltipProvider>
+			{recommendation && (
+				<div className="bg-muted mt-2 rounded-lg border p-4">
+					<div className="flex items-start gap-3">
+						<Lightbulb className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+						<div className="flex-1">
+							<div className="mb-1 text-sm font-semibold">Recommendation:</div>
+							<p className="text-muted-foreground text-sm">{recommendation}</p>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	)
+}
+
 const data = {
+	content: [
+		{
+			name: 'Spoiler',
+			component: Spoiler,
+			props: {
+				children: `This is the spoiler content, usually a code block`,
+			},
+		},
+		{
+			name: 'TableWrapper',
+			component: TableWrapper,
+			props: {
+				children: 'Table Content',
+			},
+		},
+		{
+			name: 'ProjectVideo',
+			component: ProjectVideo,
+			props: {
+				resourceId: '123',
+				exerciseId: '04.04.01',
+				recommendation:
+					'This is an essential commit. Implement it yourself, and use the guides below as a reference.',
+			},
+		},
+	],
 	layout: [
 		{
 			name: 'Spacer',
@@ -271,6 +489,25 @@ const BlockItem = ({
 const PageBlocks = () => {
 	return (
 		<div className="flex flex-col gap-4">
+			<div className="flex flex-wrap items-center gap-1">
+				<strong className="mb-1">Content</strong>
+				{data.content.map((item, index) => {
+					return (
+						<BlockItem
+							key={item.name}
+							item={item}
+							onDragStart={(e) =>
+								e.dataTransfer.setData(
+									'text/plain',
+									`<${item.name} ${Object.entries(item.props)
+										.map(([key, value]) => `${key}="${value}"`)
+										.join(' ')} />`,
+								)
+							}
+						/>
+					)
+				})}
+			</div>
 			<div className="flex flex-wrap items-center gap-1">
 				<strong className="mb-1">Layout</strong>
 				{data.layout.map((item, index) => {
@@ -571,82 +808,6 @@ const FAQ = ({
 	)
 }
 
-const TableWrapper = ({ children }: { children: React.ReactNode }) => {
-	return (
-		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
-			<div className="bg-background relative">
-				<div className="relative z-0 w-full overflow-x-auto pr-10">
-					<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-xs [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-sm [&_td_code]:whitespace-normal [&_td_code]:break-words [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_th_code]:whitespace-normal [&_th_code]:break-words [&_tr:not(:last-child)_td]:border-b">
-						{children}
-					</div>
-				</div>
-				{/* <div className="from-background pointer-events-none absolute inset-y-0 left-0 z-20 w-4 bg-gradient-to-r to-transparent" /> */}
-				<div className="from-background pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l to-transparent" />
-			</div>
-			<Dialog>
-				<DialogTrigger asChild>
-					<Button
-						size="icon"
-						variant="outline"
-						className="absolute -top-5 right-0 z-20"
-					>
-						<ZoomIn />
-						<span className="sr-only">View Table</span>
-					</Button>
-				</DialogTrigger>
-				<DialogContent className="max-w-none sm:max-w-[90%]">
-					<div className="relative w-full overflow-x-auto pb-5">
-						<div className="[&_tr:not(:last-child)_td]:border-border min-w-max [&_code]:text-sm [&_table]:w-auto [&_table]:border-separate [&_table]:border-spacing-0 [&_td]:min-w-[100px] [&_td]:px-2 [&_td]:py-2 [&_td]:align-top [&_td]:text-base [&_th]:min-w-[100px] [&_th]:px-2 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:text-sm [&_th]:font-semibold [&_thead_th:nth-child(1)]:w-[400px] [&_thead_th:nth-child(2)]:w-[220px] [&_thead_th:nth-child(3)]:w-[300px] [&_thead_th:nth-child(4)]:w-[300px] [&_tr:not(:last-child)_td]:border-b">
-							{children}
-						</div>
-					</div>
-				</DialogContent>
-			</Dialog>
-		</div>
-	)
-}
-
-/**
- * Wraps a codeblock and blurs it initially with a reveal button
- * The codeblock should already have a copy button
- */
-const Spoiler = ({ children }: { children: React.ReactNode }) => {
-	const [isRevealed, setIsRevealed] = React.useState(false)
-
-	return (
-		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
-			<div className="relative">
-				<div
-					aria-hidden={!isRevealed}
-					className={cn('transition-all duration-300', {
-						'pointer-events-none select-none blur-md': !isRevealed,
-					})}
-				>
-					{children}
-				</div>
-				{!isRevealed && (
-					<button
-						onClick={() => setIsRevealed(true)}
-						className="hover:ring-foreground/5 group absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-lg bg-transparent ring-2 ring-transparent transition-all duration-500"
-						aria-label="Reveal solution code"
-					>
-						<Button
-							variant="outline"
-							asChild
-							className="dark:group-hover:bg-input/60 hover:bg-input/60 group-md rounded-lg transition-all duration-300 hover:bg-white group-hover:bg-white"
-						>
-							<span>Reveal Solution</span>
-						</Button>
-					</button>
-				)}
-				<div aria-live="polite" aria-atomic="true" className="sr-only">
-					{isRevealed && 'Solution code revealed'}
-				</div>
-			</div>
-		</div>
-	)
-}
-
 // These are all passed down to the Preview component so need to match with options above
 
 const allMdxPageBuilderComponents = {
@@ -660,6 +821,9 @@ const allMdxPageBuilderComponents = {
 	Testimonial,
 	AnimatedTitle,
 	ShinyText,
+	Spoiler,
+	TableWrapper,
+	ProjectVideo,
 }
 
 export {
@@ -677,4 +841,5 @@ export {
 	FAQ,
 	TableWrapper,
 	Spoiler,
+	ProjectVideo,
 }

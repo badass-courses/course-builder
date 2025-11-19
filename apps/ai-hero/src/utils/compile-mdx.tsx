@@ -39,6 +39,11 @@ const DynamicCode = dynamic(() =>
 	import('@/components/codehike/code').then((mod) => mod.Code),
 )
 const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
+const DynamicProjectVideo = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.ProjectVideo,
+	),
+)
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -122,6 +127,13 @@ export async function compileMDX(
 			),
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
 			Spoiler: ({ children }) => <Spoiler>{children}</Spoiler>,
+			ProjectVideo: ({ resourceId, exerciseId, recommendation }) => (
+				<DynamicProjectVideo
+					resourceId={resourceId}
+					exerciseId={exerciseId}
+					recommendation={recommendation}
+				/>
+			),
 			CldImage: ({ ...props }) => <CldImage {...props} />,
 		},
 		options: {
