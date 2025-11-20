@@ -23,6 +23,7 @@ export function getOGImageUrlForResource(
 		updatedAt?: Date | string | null
 	},
 	baseUrl: string,
+	dynamicRoute: boolean = true,
 ): string {
 	const slug = resource?.fields?.slug || resource.id
 	const updatedAt =
@@ -30,7 +31,11 @@ export function getOGImageUrlForResource(
 			? resource.updatedAt
 			: resource.updatedAt?.toISOString()
 
-	return `${baseUrl}/api/og/${encodeURIComponent(slug)}${updatedAt ? `?updatedAt=${encodeURIComponent(updatedAt)}` : ''}`
+	const url = dynamicRoute
+		? `${baseUrl}/api/og/${encodeURIComponent(slug)}${updatedAt ? `?updatedAt=${encodeURIComponent(updatedAt)}` : ''}`
+		: `${baseUrl}/api/og?resource=${resource?.fields?.slug || resource.id}${updatedAt ? `&updatedAt=${encodeURI(updatedAt)}` : ''}`
+
+	return url
 }
 
 /**

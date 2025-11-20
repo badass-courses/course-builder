@@ -9,5 +9,5 @@ export const getOGImageUrlForResource = (resource: {
 	id: string
 	updatedAt?: Date | string | null
 }) => {
-	return getOGImage(resource, env.NEXT_PUBLIC_URL)
+	return getOGImage(resource, env.NEXT_PUBLIC_URL, false)
 }
