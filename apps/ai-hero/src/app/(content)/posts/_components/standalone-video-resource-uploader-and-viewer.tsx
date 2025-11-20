@@ -189,6 +189,17 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem
 											onClick={() => {
+												navigator.clipboard.writeText(videoResource.id)
+												toast({
+													title: 'Copied to clipboard',
+													description: 'Video ID copied',
+												})
+											}}
+										>
+											Copy Video ID
+										</DropdownMenuItem>
+										<DropdownMenuItem
+											onClick={() => {
 												form.setValue(
 													'fields.body',
 													`${form.watch('fields.body')}\n<Video resourceId="${videoResource.id}" />`,

@@ -15,6 +15,7 @@ import {
 } from '../../codemirror/editor'
 import { ResizableHandle, ResizablePanel } from '../../primitives/resizable'
 import { ScrollArea } from '../../primitives/scroll-area'
+import { Textarea } from '../../primitives/textarea'
 import { cn } from '../../utils/cn'
 
 export function EditResourcesBodyPanel({
@@ -113,7 +114,11 @@ export function EditResourcesBodyPanel({
 	return (
 		<>
 			{children}
-			{hasMounted && (
+			<Textarea
+				{...form.register('fields.body')}
+				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] p-5 text-base"
+			/>
+			{/* {hasMounted && (
 				<MarkdownEditor
 					previewProps={{
 						components: {
@@ -149,7 +154,7 @@ export function EditResourcesBodyPanel({
 							: [...defaultCommands]
 					}
 				/>
-			)}
+			)} */}
 		</>
 	)
 }
