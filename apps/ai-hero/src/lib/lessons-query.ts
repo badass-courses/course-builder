@@ -359,6 +359,7 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 
 	if (revalidate) {
 		revalidateTag('lesson', 'max')
+		revalidateTag('workshop-navigation', 'max')
 	}
 
 	return updatedResource

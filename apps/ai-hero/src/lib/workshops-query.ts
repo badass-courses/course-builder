@@ -34,7 +34,7 @@ import { upsertPostToTypeSense } from './typesense-query'
 export const getCachedWorkshopNavigation = unstable_cache(
 	async (slug: string) => getWorkshopNavigation(slug),
 	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
+	{ revalidate: 3600, tags: ['workshop', 'workshop-navigation'] },
 )
 
 /**
