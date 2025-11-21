@@ -80,10 +80,8 @@ export default function RootLayout({
 							<Party />
 							<ThemeProvider
 								attribute="class"
-								// forcedTheme="light"
-								// themes={['light']}
-								defaultTheme="light"
-								enableSystem={false}
+								enableSystem={true}
+								defaultTheme="system"
 								disableTransitionOnChange
 							>
 								<HolyLoader
