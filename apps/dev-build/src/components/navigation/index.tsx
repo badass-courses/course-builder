@@ -8,7 +8,7 @@ import { useSaleToastNotifier } from '@/hooks/use-sale-toast-notifier'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { ChevronRight, SearchIcon } from 'lucide-react'
+import { ChevronRight, SearchIcon, SettingsIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import Countdown from 'react-countdown'
 
@@ -78,6 +78,9 @@ const Navigation = ({ className }: { className?: string }) => {
 	}
 
 	const showSearch = pathname !== '/browse'
+	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
+	const ability = createAppAbility(abilityRules || [])
+	const isAdmin = ability.can('manage', 'all')
 
 	return (
 		<header
@@ -231,12 +234,22 @@ const Navigation = ({ className }: { className?: string }) => {
 					</div>
 				)} */}
 					<ul className="hidden items-stretch md:flex">
-						{sessionStatus === 'authenticated' && (
+						{sessionStatus === 'authenticated' && !isAdmin && (
 							<NavLinkItem
 								label="Feedback"
 								onClick={() => {
 									setIsFeedbackDialogOpen(true)
 								}}
+							/>
+						)}
+						{isAdmin && (
+							<NavLinkItem
+								label="Admin"
+								className="gap-1 hover:[&_svg]:opacity-90"
+								icon={
+									<SettingsIcon className="size-4 opacity-50 transition-opacity duration-300 ease-in-out" />
+								}
+								href="/admin/dashboard"
 							/>
 						)}
 						{/* {sessionStatus === 'unauthenticated' && !subscriber && (

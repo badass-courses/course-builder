@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic'
 import { ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
+import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
 import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
@@ -48,6 +49,7 @@ export async function compileMDX(
 			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
+			PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
 			Mermaid: (props) => (
 				<Mermaid
 					{...props}

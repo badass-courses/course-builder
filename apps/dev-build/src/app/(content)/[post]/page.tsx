@@ -129,7 +129,7 @@ export default async function PostPage(props: {
 							</div>
 						)}
 						<PostNewsletterCta
-							className="flex lg:hidden"
+							className="flex pt-10 md:hidden"
 							trackProps={{
 								event: 'subscribed',
 								params: {
@@ -146,6 +146,7 @@ export default async function PostPage(props: {
 							/>
 						</div>
 						<PostNextUpFromListPagination
+							className="mt-10"
 							postId={post.id}
 							documentIdsToSkip={list?.resources.map(
 								(resource) => resource.resource.id,
@@ -242,7 +243,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						videoResource={videoResource}
 					/>
 					<PostNewsletterCta
-						className="hidden lg:flex"
+						className="hidden md:flex"
 						trackProps={{
 							event: 'subscribed',
 							params: {

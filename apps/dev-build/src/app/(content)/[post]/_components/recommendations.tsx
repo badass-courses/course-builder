@@ -45,32 +45,22 @@ export default function Recommendations({
 	return (
 		<nav
 			className={cn(
-				'bg-card flex w-full flex-col items-center border-y px-5 py-16 text-center',
+				'bg-card ring-border group relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg px-5 py-16 text-center shadow-md ring-1',
 				className,
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="mb-3 text-xl font-semibold sm:text-3xl">Up Next</h2>
+			<h2 className="mb-3 text-xl sm:text-2xl">
+				Recommended next {post?.type}
+			</h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
 						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
 					) : post ? (
-						<Link
-							className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg text-orange-600 hover:underline lg:text-xl"
-							href={`/${post.slug}`}
-							onClick={async () => {
-								if (!isCompleted) {
-									addLessonProgress(postId)
-									await setProgressForResource({
-										resourceId: postId,
-										isCompleted: true,
-									})
-								}
-							}}
-						>
+						<span className="dark:text-primary flex w-full items-center justify-center gap-2 text-center text-lg font-medium text-orange-600 hover:underline lg:text-xl">
 							{post.title} <ArrowRight className="hidden w-4 sm:block" />
-						</Link>
+						</span>
 					) : null}
 					{!session?.user && (
 						<span className="text-muted-foreground mt-4">
@@ -86,6 +76,15 @@ export default function Recommendations({
 					)}
 				</li>
 			</ul>
+			{post && (
+				<>
+					<Link
+						href={`/${post.slug}`}
+						className="absolute inset-0 bottom-0 right-0"
+					/>
+					<div className="bg-primary absolute aspect-square h-full w-auto rounded-full opacity-0 blur-2xl transition-all duration-300 ease-in-out group-hover:opacity-10" />
+				</>
+			)}
 		</nav>
 	)
 }
