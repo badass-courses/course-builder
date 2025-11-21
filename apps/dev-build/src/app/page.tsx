@@ -3,6 +3,16 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import ResourceTeaser from '@/components/content/resource-teaser'
+import { LandingPage } from '@/components/landing-page'
+import {
+	FeatureCard,
+	FeatureGrid,
+	FeatureHeader,
+	FeatureSection,
+	SplitContent,
+	SplitSection,
+	SplitVisual,
+} from '@/components/landing/feature-section'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -11,7 +21,7 @@ import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
 import { compileMDX } from '@/utils/compile-mdx'
-import { ChevronRight } from 'lucide-react'
+import { Brain, ChevronRight, Layers, Terminal } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
 
@@ -59,6 +69,16 @@ const Home = async (props: Props) => {
 	const { content: bodyContent } = await compileMDX(page?.fields?.body || '', {
 		Instructor: () => <Instructor />,
 		PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
+		FeatureSection: (props) => <FeatureSection {...props} />,
+		FeatureHeader: (props) => <FeatureHeader {...props} />,
+		FeatureGrid: (props) => <FeatureGrid {...props} />,
+		FeatureCard: (props) => <FeatureCard {...props} />,
+		SplitSection: (props) => <SplitSection {...props} />,
+		SplitContent: (props) => <SplitContent {...props} />,
+		SplitVisual: (props) => <SplitVisual {...props} />,
+		Brain: Brain,
+		Terminal: Terminal,
+		Layers: Layers,
 	})
 
 	return (
@@ -91,6 +111,9 @@ const Home = async (props: Props) => {
 						<div className="prose dark:prose-invert prose-lg mx-auto w-full max-w-4xl">
 							{bodyContent}
 						</div>
+						{/* <div className="opacity-50">
+							<LandingPage />
+						</div> */}
 					</article>
 				</section>
 				{/* <section>

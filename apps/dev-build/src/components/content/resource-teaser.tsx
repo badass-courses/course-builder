@@ -7,6 +7,7 @@ import { Badge, Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { CldImage } from '../cld-image'
+import { Contributor } from '../contributor'
 
 const resourceTeaserVariants = cva('', {
 	variants: {
@@ -26,7 +27,7 @@ const thumbnailVariants = cva('relative overflow-hidden bg-zinc-900', {
 		variant: {
 			horizontal:
 				'aspect-video w-full max-w-[568px] shrink-0 rounded-xl lg:w-[568px]',
-			card: 'aspect-video w-full',
+			card: 'aspect-video [&_*]:transition-transform [&>*]:ease-in-out [&>*]:duration-300  group-hover:[&>*]:scale-102 w-full bg-border flex items-center justify-center transition-transform duration-300',
 		},
 	},
 	defaultVariants: {
@@ -126,20 +127,28 @@ const ResourceTeaser = ({
 					className={cn(resourceTeaserVariants({ variant }), className)}
 				>
 					{/* Thumbnail */}
-					{thumbnailUrl && (
+					{thumbnailUrl ? (
 						<div className={thumbnailVariants({ variant })}>
 							<Image
 								loading="lazy"
 								src={thumbnailUrl}
 								alt={title}
 								fill
-								className="object-cover"
+								className="object-cover transition-transform duration-300"
 							/>
 							{thumbnailBadge && (
 								<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
 									{thumbnailBadge}
 								</div>
 							)}
+						</div>
+					) : (
+						<div
+							className={cn(thumbnailVariants({ variant }), 'overflow-hidden')}
+						>
+							<span className="text-foreground whitespace-nowrap text-[100px] font-bold opacity-10">
+								{title.slice(0, 2)}...
+							</span>
 						</div>
 					)}
 
@@ -150,6 +159,7 @@ const ResourceTeaser = ({
 							<h2 className={titleVariants({ variant })}>
 								{titleSlot || title}
 							</h2>
+							<Contributor className="[&_img]:size-8" />
 							{metadata && (
 								<p className="text-muted-foreground text-sm capitalize leading-none">
 									{metadata}

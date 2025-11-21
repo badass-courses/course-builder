@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
-import { ThemeImage } from '@/components/cld-image'
+import Image from 'next/image'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
@@ -77,6 +78,8 @@ export async function compileMDX(
 					poster={poster}
 				/>
 			),
+			Image: (props) => <Image {...props} />,
+			CldImage: (props) => <CldImage {...props} />,
 			ThemeImage: ({
 				urls,
 				...props

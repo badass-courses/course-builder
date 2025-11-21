@@ -39,6 +39,7 @@ const Navigation = ({ className }: { className?: string }) => {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
+
 	const params = useParams()
 	const router = useRouter()
 	const { setIsFeedbackDialogOpen } = useFeedback()
@@ -96,7 +97,10 @@ const Navigation = ({ className }: { className?: string }) => {
 					</Link>
 					<Link
 						href="/browse"
-						className="hover:bg-muted ml-3 hidden h-8 items-center gap-1 rounded-lg px-3 py-4 text-sm font-medium transition ease-out md:flex"
+						className={cn(
+							'hover:bg-muted ml-3 hidden h-8 items-center gap-1 rounded-lg px-3 py-4 text-sm font-medium transition ease-out md:flex',
+							pathname === '/browse' ? 'bg-muted' : '',
+						)}
 					>
 						Browse
 						<ChevronRight className="size-3" />

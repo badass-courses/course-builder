@@ -17,7 +17,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				return 'tutorial'
 
 			case 'article':
-				return 'article'
+				return undefined
 
 			case 'nextUp':
 				return 'nextUp'
