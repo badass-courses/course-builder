@@ -385,6 +385,11 @@ export async function getNearestNeighbour(
 		return null
 	}
 
+	if (!document.embedding || !Array.isArray(document.embedding)) {
+		console.debug(`Document ${documentId} has no embedding in Typesense`)
+		return null
+	}
+
 	const completedFilter =
 		completedItemIds.length > 0
 			? ` && id:!=[${[...completedItemIds, ...(documentIdsToSkip ?? [])].join(',')}]`

@@ -42,7 +42,7 @@ export default async function Layout(props: {
 				<ModuleProgressProvider moduleProgressLoader={moduleProgressLoader}>
 					<ProgressProvider initialProgress={initialProgress}>
 						<ActiveHeadingProvider>
-							<LayoutClient withContainer>
+							<LayoutClient>
 								<div className="flex flex-1 items-start">
 									{list && (
 										<ModuleResourceList className="sticky top-0 hidden max-w-xs border-x border-b lg:block" />

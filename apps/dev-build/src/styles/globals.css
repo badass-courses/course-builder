@@ -78,13 +78,14 @@
 	);
 
 	--radius: 0.75rem;
-	--background: oklch(1 0 0);
+	--background: oklch(0.98 0 0);
 	--foreground: oklch(0.141 0.005 285.823);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.141 0.005 285.823);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.141 0.005 285.823);
 	--primary: oklch(0.8983 0.1856 100.36);
+	--primary-dark: oklch(0.65 0.8 100.36);
 	--primary-foreground: oklch(0 0 0);
 	--secondary: oklch(0.967 0.001 286.375);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
@@ -217,7 +218,7 @@
 		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-heading:
-		var(--font-stack-sans-headline), ui-sans-serif, system-ui, sans-serif,
+		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
@@ -295,9 +296,20 @@
 	--tw-prose-invert-td-borders: var(--color-border);
 }
 
+@layer utilities {
+	.text-primary {
+		@apply dark:text-primary-dark text-primary-dark;
+	}
+
+	.hover\:text-primary:hover {
+		@apply dark:text-primary-dark text-primary-dark;
+	}
+}
+
 @layer base {
-	[data-sr-button] {
-		@apply hover:cursor-pointer;
+	button:not(:disabled),
+	[role='button']:not(:disabled) {
+		cursor: pointer;
 	}
 
 	* {

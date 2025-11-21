@@ -68,11 +68,11 @@ export const PostNewsletterCta: React.FC<
 		<section
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-muted relative flex w-full flex-row items-center border-t',
+				'bg-background relative flex w-full flex-row items-center border-t',
 				className,
 			)}
 		>
-			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 lg:container md:h-20 md:flex-row md:pl-3 md:pr-0 lg:pr-0">
+			<div className="container relative mx-auto flex w-full flex-col items-center justify-between gap-5 md:h-20 md:flex-row">
 				<div
 					className="via-muted-foreground/20 bg-linear-to-r absolute -top-px left-0 z-10 h-px w-1/2 from-transparent to-transparent"
 					aria-hidden="true"

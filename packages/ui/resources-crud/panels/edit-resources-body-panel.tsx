@@ -116,7 +116,7 @@ export function EditResourcesBodyPanel({
 			{children}
 			<Textarea
 				{...form.register('fields.body')}
-				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] p-5 text-base"
+				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] rounded-none border-none p-5 text-base"
 			/>
 			{/* {hasMounted && (
 				<MarkdownEditor

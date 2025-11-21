@@ -14,7 +14,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			{isTerminalCode && (
 				<div
 					aria-hidden="true"
-					className="bg-background mt-8 flex w-full min-w-0 items-center gap-1 rounded-t-[0.5rem] border-x border-b border-t p-3"
+					className="bg-muted mt-8 flex w-full min-w-0 items-center gap-1 rounded-t-[0.5rem] p-3"
 				>
 					{new Array(3).fill({}).map((_, index) => (
 						<div
@@ -28,8 +28,7 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			<Pre
 				code={highlighted}
 				className={cn('bg-card! text-xs! sm:text-sm!', {
-					'mt-0! rounded-t-none! rounded-b border-x border-b border-t-0':
-						isTerminalCode,
+					'mt-0! rounded-t-none! rounded-b': isTerminalCode,
 				})}
 				style={{
 					...highlighted.style,

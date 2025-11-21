@@ -20,13 +20,18 @@ export default function Recommendations({
 	className?: string
 	documentIdsToSkip?: string[]
 }) {
-	const { data: post, status } = api.typesense.getNearestNeighbor.useQuery(
+	const {
+		data: post,
+		status,
+		error,
+	} = api.typesense.getNearestNeighbor.useQuery(
 		{
 			documentId: postId,
 			documentIdsToSkip,
 		},
 		{
 			refetchOnWindowFocus: false,
+			retry: false,
 		},
 	)
 	const { progress, addLessonProgress } = useProgress()
@@ -35,7 +40,7 @@ export default function Recommendations({
 		(lesson) => lesson.resourceId === postId,
 	)
 
-	if (!post && status !== 'pending') return null
+	if ((!post && status !== 'pending') || error) return null
 
 	return (
 		<nav

@@ -59,15 +59,15 @@ export default async function PostPage(props: {
 	)
 
 	return (
-		<div className="bg-card w-full dark:bg-transparent">
+		<div className="">
 			{hasVideo && <PlayerContainer post={post} />}
 			<div
 				className={cn('relative w-full', {
 					'pt-6 sm:pt-14': !hasVideo,
 				})}
 			>
-				<div className="relative z-10 mx-auto flex w-full items-center justify-between">
-					{/* {!list ? (
+				{/* <div className="relative z-10 mx-auto flex w-full items-center justify-between">
+					{!list ? (
 						<Link
 							href="/browse"
 							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
@@ -76,15 +76,15 @@ export default async function PostPage(props: {
 						</Link>
 					) : (
 						<div />
-					)} */}
-				</div>
-				<div className="relative z-10 xl:pl-12">
-					<article className="relative flex h-full flex-col">
+					)}
+				</div> */}
+				<div className="container relative z-10">
+					<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 						<div className="mx-auto flex w-full flex-col gap-5">
 							<PostTitle post={post} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
-									<Contributor className="flex [&_img]:size-10" />
+									<Contributor className="flex" />
 									{post.fields?.github && (
 										<Button
 											asChild
@@ -128,6 +128,16 @@ export default async function PostPage(props: {
 								/>
 							</div>
 						)}
+						<PostNewsletterCta
+							className="flex lg:hidden"
+							trackProps={{
+								event: 'subscribed',
+								params: {
+									location: 'post-below-body',
+									post: post.fields.slug,
+								},
+							}}
+						/>
 						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 pl-5">
 							<strong className="text-lg font-semibold">Share</strong>
 							<Share
@@ -187,7 +197,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="mb-4 text-2xl font-semibold sm:text-3xl lg:text-4xl dark:text-white">
+		<h1 className="mb-4 text-2xl font-bold sm:text-3xl lg:text-4xl dark:text-white">
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
@@ -222,7 +232,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="-mx-6 mb-6 flex flex-col items-center justify-center border-b bg-black sm:-mx-10 sm:mb-10"
+					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
 				>
 					<PostPlayer
 						title={post.fields?.title}
@@ -232,6 +242,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						videoResource={videoResource}
 					/>
 					<PostNewsletterCta
+						className="hidden lg:flex"
 						trackProps={{
 							event: 'subscribed',
 							params: {

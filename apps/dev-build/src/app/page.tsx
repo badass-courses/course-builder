@@ -67,13 +67,13 @@ const Home = async (props: Props) => {
 			isCommerceEnabled={isCommerceEnabled}
 		>
 			<div>
-				<section className="bg-primary dark:bg-primary-dark text-primary-foreground relative flex w-full flex-col items-center justify-center overflow-hidden py-10 lg:py-24">
+				<section className="bg-primary dark:bg-primary-dark text-primary-foreground lg:pb-26 relative flex w-full flex-col items-center justify-center overflow-hidden pb-20 pt-16 lg:pt-24">
 					<div className="container relative z-10 flex w-full">
 						<div className="flex flex-col items-center justify-center gap-4 text-center">
 							<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
 								Get Really Good at AI-Powered Development
 							</h1>
-							<h2 className="mt-2 text-lg font-normal sm:text-xl lg:text-2xl">
+							<h2 className="mt-2 text-base font-normal sm:text-xl lg:text-2xl">
 								Bite-sized video tutorials, step‑by‑step exercises, and a
 								community where we can keep refining techniques together.
 							</h2>

@@ -90,7 +90,7 @@ export const PrimaryNewsletterCta: React.FC<
 
 			<div className="not-prose relative flex w-full items-center justify-center">
 				{subscriber && (
-					<div className="absolute z-10 flex -translate-y-8 flex-col text-center">
+					<div className="absolute z-10 flex flex-col text-center">
 						<div className="text-lg font-semibold sm:text-xl lg:text-2xl">
 							You're subscribed, thanks!
 						</div>
@@ -105,7 +105,7 @@ export const PrimaryNewsletterCta: React.FC<
 						</p>
 					</div>
 				)}
-				<div className="bg-muted ring-border mt-5 w-full rounded-xl p-1 ring-1">
+				<div className="bg-muted ring-border w-full rounded-xl p-1 ring-1">
 					<div
 						className={cn(
 							'bg-card ring-border flex w-full flex-col gap-2 rounded-lg px-5 py-5 shadow-sm ring-1',
