@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { ChevronRight } from 'lucide-react'
@@ -127,7 +128,7 @@ const ResourceTeaser = ({
 					{/* Thumbnail */}
 					{thumbnailUrl && (
 						<div className={thumbnailVariants({ variant })}>
-							<CldImage
+							<Image
 								loading="lazy"
 								src={thumbnailUrl}
 								alt={title}

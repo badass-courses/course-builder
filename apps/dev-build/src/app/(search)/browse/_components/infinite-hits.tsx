@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import Spinner from '@/components/spinner'
 import type { TypesenseResource } from '@/lib/typesense'
+import { SearchIcon } from 'lucide-react'
 import {
 	useConfigure,
 	useInfiniteHits,
@@ -52,6 +53,12 @@ export function InfiniteHits() {
 		</div>
 	) : (
 		<div>
+			{items.length === 0 && (
+				<div className="flex items-center justify-center gap-2 p-10 text-center">
+					<SearchIcon className="text-muted-foreground size-5" />
+					<span className="text-muted-foreground">No results found</span>
+				</div>
+			)}
 			<ul className="grid grid-cols-2 gap-4">
 				{items.map((item) => (
 					<Hit key={item.objectID} hit={item} />

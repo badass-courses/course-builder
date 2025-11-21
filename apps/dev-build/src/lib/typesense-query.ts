@@ -16,6 +16,7 @@ import { getPostTags } from './posts-query'
 import { getProductForResource } from './products-query'
 import { getLessonForSolution } from './solutions-query'
 import { TypesenseResourceSchema } from './typesense'
+import { getVideoResource } from './video-resource-query'
 import { getWorkshopsForLesson } from './workshops-query'
 
 export async function upsertPostToTypeSense(
@@ -100,6 +101,29 @@ export async function upsertPostToTypeSense(
 
 		console.log('✅ Retrieved tags:', tags.length)
 
+		// Get video thumbnail if post has a video
+		let videoThumbnailUrl = ''
+		const videoResourceId =
+			post.resources?.find(
+				(resource) => resource.resource?.type === 'videoResource',
+			)?.resourceId || (post.fields as any)?.videoResourceId
+
+		if (videoResourceId) {
+			try {
+				const videoResource = await getVideoResource(videoResourceId)
+				if (videoResource?.muxPlaybackId) {
+					const thumbnailTime =
+						(post.fields as any)?.thumbnailTime ||
+						(videoResource as any)?.fields?.thumbnailTime ||
+						0
+					videoThumbnailUrl = `https://image.mux.com/${videoResource.muxPlaybackId}/thumbnail.png?time=${thumbnailTime}&width=880`
+					console.log('🎥 Found video thumbnail:', videoThumbnailUrl)
+				}
+			} catch (err) {
+				console.error('⚠️ Failed to fetch video resource for thumbnail:', err)
+			}
+		}
+
 		console.log('🔄 Validating resource schema')
 		const resource = TypesenseResourceSchema.safeParse({
 			id: post.id,
@@ -107,7 +131,11 @@ export async function upsertPostToTypeSense(
 			slug: post.fields?.slug,
 			description: post.fields?.body || '',
 			summary: post.fields?.description || '',
-			image: post.fields?.coverImage?.url || post.fields?.image || '',
+			image:
+				videoThumbnailUrl ||
+				post.fields?.coverImage?.url ||
+				post.fields?.image ||
+				'',
 			type:
 				post?.fields && 'postType' in post.fields
 					? post.fields.postType
@@ -342,7 +370,7 @@ export async function getNearestNeighbour(
 		console.error(
 			'⚠️ Missing TypeSense configuration, skipping retrieval operation',
 		)
-		return
+		return null
 	}
 	const typesenseWriteClient = new Typesense.Client({
 		nodes: [
@@ -435,7 +463,7 @@ export async function getNearestNeighbour(
 		const randomIndex = Math.floor(
 			Math.random() * (parsedResults[0]?.hits?.length ?? 0),
 		)
-		return parsedResults[0]?.hits[randomIndex]?.document
+		return parsedResults[0]?.hits[randomIndex]?.document ?? null
 	} catch (e) {
 		console.debug(e)
 		return null

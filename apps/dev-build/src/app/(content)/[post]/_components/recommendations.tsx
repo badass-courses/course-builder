@@ -50,9 +50,7 @@ export default function Recommendations({
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="mb-3 text-xl sm:text-2xl">
-				Recommended next {post?.type}
-			</h2>
+			<h2 className="mb-3 text-xl sm:text-2xl">Recommended next</h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
