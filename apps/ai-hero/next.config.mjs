@@ -47,6 +47,17 @@ const config = {
 	},
 	pageExtensions: ['mdx', 'ts', 'tsx'],
 	transpilePackages: ['@coursebuilder/ui', 'next-mdx-remote', 'shiki'],
+	async redirects() {
+		return [
+			{
+				source:
+					'/(cohorts/)?build-your-own-ai-personal-assistant-in-type-script(.*)',
+				destination:
+					'/cohorts/build-your-own-ai-personal-assistant-in-typescript',
+				permanent: true,
+			},
+		]
+	},
 }
 
 export default withAxiom(withMDX(config))

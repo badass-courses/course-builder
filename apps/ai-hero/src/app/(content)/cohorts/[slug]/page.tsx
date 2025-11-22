@@ -85,6 +85,12 @@ export default async function CohortPage(props: {
 	const { allowPurchase } = searchParams
 	const params = await props.params
 
+	const cohort = await getCachedCohort(params.slug)
+
+	if (!cohort) {
+		notFound()
+	}
+
 	const pageData = await loadCohortPageData(params.slug, searchParams)
 
 	const {
@@ -107,10 +113,6 @@ export default async function CohortPage(props: {
 		workshops,
 		workshopProgressMap,
 	} = pageData
-
-	if (!cohort) {
-		notFound()
-	}
 
 	const cohortProps: CohortPageProps = {
 		cohort,
