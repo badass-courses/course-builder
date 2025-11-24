@@ -94,7 +94,6 @@ export default async function CohortPage(props: {
 	const pageData = await loadCohortPageData(params.slug, searchParams)
 
 	const {
-		cohort,
 		session,
 		ability,
 		user,
