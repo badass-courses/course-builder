@@ -267,6 +267,99 @@ const Spoiler = ({ children }: { children: React.ReactNode }) => {
 	)
 }
 
+const Recommendation = ({
+	children,
+	exerciseId,
+}: {
+	children?: React.ReactNode
+	exerciseId: string
+}) => {
+	const [resetCopied, setResetCopied] = React.useState(false)
+	const [cherryPickCopied, setCherryPickCopied] = React.useState(false)
+
+	const resetCommand = `pnpm reset ${exerciseId}`
+	const cherryPickCommand = `pnpm cherry-pick ${exerciseId}`
+
+	const handleCopyReset = async () => {
+		await navigator.clipboard.writeText(resetCommand)
+		setResetCopied(true)
+		setTimeout(() => setResetCopied(false), 2000)
+	}
+
+	const handleCopyCherryPick = async () => {
+		await navigator.clipboard.writeText(cherryPickCommand)
+		setCherryPickCopied(true)
+		setTimeout(() => setCherryPickCopied(false), 2000)
+	}
+	return (
+		<div className="not-prose relative -mx-4 px-4 md:mx-0 md:px-0">
+			<div className="bg-muted mt-2 rounded-lg border p-4">
+				<div className="flex items-start gap-3">
+					<Lightbulb className="text-primary mt-0.5 h-5 w-5 shrink-0" />
+					<div className="flex-1">
+						<div className="mb-1 text-sm font-semibold">Recommendation:</div>
+						<p className="text-muted-foreground text-sm">{children}</p>
+					</div>
+				</div>
+			</div>
+			<TooltipProvider delayDuration={0}>
+				<div className="mt-2 grid w-full grid-cols-1 items-center gap-2 md:grid-cols-2">
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleCopyReset}
+								className="group relative h-9 gap-2 rounded-lg hover:cursor-pointer"
+							>
+								<RotateCcw className="h-4 w-4" />
+								<span className="font-mono text-sm">{resetCommand}</span>
+								{resetCopied && (
+									<span className="text-muted-foreground bg-background absolute inset-0 flex items-center justify-center gap-2 rounded-lg font-mono text-sm">
+										Copied!
+									</span>
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent
+							side="bottom"
+							className="max-w-xs rounded-lg text-center"
+						>
+							Copy to clipboard a command that resets your project to match a
+							specific commit (guided experience).
+						</TooltipContent>
+					</Tooltip>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={handleCopyCherryPick}
+								className="group relative h-9 gap-2 rounded-lg hover:cursor-pointer"
+							>
+								<GitBranch className="h-4 w-4" />
+								<span className="font-mono text-sm">{cherryPickCommand}</span>
+								{cherryPickCopied && (
+									<span className="text-muted-foreground bg-background absolute inset-0 flex items-center justify-center gap-2 rounded-lg font-mono text-sm">
+										Copied!
+									</span>
+								)}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent
+							side="bottom"
+							className="max-w-xs rounded-lg text-center"
+						>
+							Copy to clipboard a command that cherry-picks changes from a
+							specific commit (for custom builds).
+						</TooltipContent>
+					</Tooltip>
+				</div>
+			</TooltipProvider>
+		</div>
+	)
+}
+
 /**
  * Displays a video player with command buttons and recommendation section
  * Command buttons copy pnpm commands to clipboard for resetting or cherry-picking exercises
@@ -424,6 +517,17 @@ const data = {
 				'Displays a responsive and expandable table. Requires table content.',
 			props: {
 				children: 'Table Content',
+			},
+		},
+		{
+			name: 'Recommendation',
+			component: Recommendation,
+			description:
+				'Displays a recommendation section. Requires children content, exerciseId (e.g. 04.04.01).',
+			props: {
+				children:
+					'This is an essential commit. Implement it yourself, and use the guides below as a reference.',
+				exerciseId: '04.04.01',
 			},
 		},
 		{
@@ -892,6 +996,7 @@ const allMdxPageBuilderComponents = {
 	Spoiler,
 	TableWrapper,
 	ProjectVideo,
+	Recommendation,
 }
 
 export {
@@ -910,4 +1015,5 @@ export {
 	TableWrapper,
 	Spoiler,
 	ProjectVideo,
+	Recommendation,
 }

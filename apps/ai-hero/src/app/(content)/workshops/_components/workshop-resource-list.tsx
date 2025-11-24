@@ -274,11 +274,11 @@ export function WorkshopResourceList(props: Props) {
 																)}
 																{resource.fields?.title}
 															</h3>
-															{childResources.length > 0 && (
+															{/* {childResources.length > 0 && (
 																<span className="self-end text-sm font-normal opacity-50">
 																	({childResources.length})
 																</span>
-															)}
+															)} */}
 														</div>
 														<div>
 															{abilityStatus === 'success' && (

@@ -1,5 +1,8 @@
 import dynamic from 'next/dynamic'
-import { CheckList } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import {
+	CheckList,
+	Recommendation,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { CldImage, ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
@@ -143,6 +146,9 @@ export async function compileMDX(
 				<Testimonial authorName={authorName} authorAvatar={authorAvatar}>
 					{children}
 				</Testimonial>
+			),
+			Recommendation: ({ children, exerciseId }) => (
+				<Recommendation exerciseId={exerciseId}>{children}</Recommendation>
 			),
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
 			Spoiler: ({ children }) => <Spoiler>{children}</Spoiler>,
