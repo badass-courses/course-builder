@@ -7,15 +7,12 @@ import { Input, Textarea } from '@coursebuilder/ui'
 
 export function InvoiceCustomName({
 	defaultName,
-	chargeId,
+	id = 'invoice-name',
 }: {
 	defaultName: string
-	chargeId: string
+	id?: string
 }) {
-	const [invoiceName, setInvoiceName] = useLocalStorage(
-		`invoice-name`,
-		defaultName,
-	)
+	const [invoiceName, setInvoiceName] = useLocalStorage(id, defaultName)
 	return (
 		<>
 			<Textarea

@@ -203,12 +203,9 @@ const Invoice = async (props: {
 									<div>
 										<Suspense>
 											<InvoiceCustomName
-												defaultName={charge.billing_details.name || ''}
-												chargeId={params.merchantChargeId}
+												defaultName={`${charge.billing_details.name}\n${charge.billing_details.email}`}
 											/>
 										</Suspense>
-
-										{charge.billing_details.email}
 										{/* <br />
                   {charge.billing_details.address?.city}
                   <br />
