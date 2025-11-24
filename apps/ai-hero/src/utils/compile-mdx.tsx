@@ -44,6 +44,9 @@ const DynamicProjectVideo = dynamic(() =>
 		(mod) => mod.ProjectVideo,
 	),
 )
+const DynamicMDXCheckbox = dynamic(() =>
+	import('@/components/mdx-checkbox').then((mod) => mod.MDXCheckbox),
+)
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
@@ -52,17 +55,33 @@ const DynamicProjectVideo = dynamic(() =>
  * @param options - Options to compile the MDX content in
  * @param options.scope - Scope to compile the MDX content in
  * @param components - Components to use in the MDX content
+ * @param context - Optional context for components (e.g., lessonId for checkboxes)
  * @returns Compiled MDX content
  */
 export async function compileMDX(
 	source: string,
 	components: MDXRemoteProps['components'] = {},
 	options: MDXRemoteProps['options'] = {},
+	context?: { lessonId?: string },
 ) {
+	let checkboxIndex = 0
 	return await _compileMDX({
 		source: source,
 		components: {
 			...components,
+			input: (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+				if (props.type === 'checkbox' && context?.lessonId) {
+					const currentIndex = checkboxIndex++
+					return (
+						<DynamicMDXCheckbox
+							{...props}
+							lessonId={context.lessonId}
+							index={currentIndex}
+						/>
+					)
+				}
+				return <input {...props} />
+			},
 			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,

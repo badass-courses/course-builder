@@ -5,9 +5,9 @@ import { AuthedVideoPlayer } from '@/app/(content)/_components/authed-video-play
 import { LessonControls } from '@/app/(content)/_components/lesson-controls'
 import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay'
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
+import PostToC from '@/app/(content)/posts/_components/post-toc'
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
-import { MDXCheckbox } from '@/components/mdx-checkbox'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -51,19 +51,12 @@ export async function LessonPage({
 
 	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 
-	// Track checkbox index during MDX compilation for persistence
-	let checkboxIndex = 0
-	const mdxContentPromise = compileMDX(lesson?.fields?.body || '', {
-		input: (props) => {
-			if (props.type === 'checkbox') {
-				const currentIndex = checkboxIndex++
-				return (
-					<MDXCheckbox {...props} lessonId={lesson.id} index={currentIndex} />
-				)
-			}
-			return <input {...props} />
-		},
-	})
+	const mdxContentPromise = compileMDX(
+		lesson?.fields?.body || '',
+		{},
+		{},
+		{ lessonId: lesson.id },
+	)
 
 	const ability = await abilityLoader
 
@@ -72,49 +65,53 @@ export async function LessonPage({
 	}
 
 	return (
-		<ActiveHeadingProvider>
-			<main className="w-full">
-				<PlayerContainer
-					lesson={lesson}
-					searchParams={searchParams}
-					params={params}
-					lessonType={lessonType}
-					workshop={workshop}
-					ability={ability}
-				/>
-				<LessonControls
-					abilityLoader={abilityLoader}
-					lesson={lesson}
-					problem={problem}
-					moduleSlug={params.module}
-				/>
-				<div className="max-w-(--breakpoint-xl) container relative px-5 md:px-10 lg:px-14">
-					<div className="relative z-10">
-						<article className="">
-							<LessonTitle lesson={lesson} />
-
-							<Suspense
-								fallback={
-									<div className="flex flex-col gap-3">
-										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-12 w-full rounded" />
-										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-2/3 rounded" />
-										<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-1/2 rounded" />
-									</div>
-								}
-							>
-								<LessonBody
-									lesson={lesson}
-									abilityLoader={abilityLoader}
-									mdxContentPromise={mdxContentPromise}
-									workshop={workshop}
-								/>
-							</Suspense>
-							<TranscriptContainer
-								lessonId={lesson?.id}
-								abilityLoader={abilityLoader}
+		<main className="w-full">
+			<PlayerContainer
+				lesson={lesson}
+				searchParams={searchParams}
+				params={params}
+				lessonType={lessonType}
+				workshop={workshop}
+				ability={ability}
+			/>
+			<LessonControls
+				abilityLoader={abilityLoader}
+				lesson={lesson}
+				problem={problem}
+				moduleSlug={params.module}
+			/>
+			<div className="max-w-(--breakpoint-xl) container relative px-5 md:px-10 lg:px-14">
+				<div className="relative z-10">
+					<article className="">
+						<LessonTitle lesson={lesson} />
+						{lesson?.fields?.body && lesson?.fields?.body?.length > 300 && (
+							<PostToC
+								markdown={lesson?.fields?.body}
+								className="top-0 -mx-5 mb-5 md:-mx-10 lg:-mx-14"
 							/>
+						)}
+						<Suspense
+							fallback={
+								<div className="flex flex-col gap-3">
+									<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-12 w-full rounded" />
+									<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-2/3 rounded" />
+									<Skeleton className="dark:bg-foreground/10 bg-foreground/5 h-5 w-1/2 rounded" />
+								</div>
+							}
+						>
+							<LessonBody
+								lesson={lesson}
+								abilityLoader={abilityLoader}
+								mdxContentPromise={mdxContentPromise}
+								workshop={workshop}
+							/>
+						</Suspense>
+						<TranscriptContainer
+							lessonId={lesson?.id}
+							abilityLoader={abilityLoader}
+						/>
 
-							{/* <Accordion type="single" collapsible className="mt-4">
+						{/* <Accordion type="single" collapsible className="mt-4">
 								<AccordionItem value="contents">
 									<AccordionTrigger className="flex w-full items-center font-medium">
 										Workshop Contents
@@ -141,18 +138,17 @@ export async function LessonPage({
 									</AccordionContent>
 								</AccordionItem>
 							</Accordion> */}
-						</article>
-					</div>
+					</article>
 				</div>
-				<Suspense fallback={null}>
-					<UpNext
-						className="rounded-none border-x-0 border-b-0 border-t"
-						currentResourceId={lesson?.id}
-						abilityLoader={abilityLoader}
-					/>
-				</Suspense>
-			</main>
-		</ActiveHeadingProvider>
+			</div>
+			<Suspense fallback={null}>
+				<UpNext
+					className="rounded-none border-x-0 border-b-0 border-t"
+					currentResourceId={lesson?.id}
+					abilityLoader={abilityLoader}
+				/>
+			</Suspense>
+		</main>
 	)
 }
 

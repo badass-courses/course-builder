@@ -38,14 +38,27 @@ function removeComponentContent(
 	return markdown.replace(regex, '')
 }
 
+/**
+ * Removes code blocks from markdown to prevent extracting headings from within them
+ * @param markdown - The markdown content to process
+ * @returns Markdown with code blocks replaced by empty lines
+ */
+function removeCodeBlocks(markdown: string): string {
+	// Remove fenced code blocks (```...```)
+	return markdown.replace(/```[\s\S]*?```/g, '')
+}
+
 export const extractMarkdownHeadings = (
 	markdown: string,
 ): MarkdownHeading[] => {
 	// Remove content from all components that should be skipped
-	const processedMarkdown = SKIP_COMPONENTS.reduce(
+	let processedMarkdown = SKIP_COMPONENTS.reduce(
 		(content, component) => removeComponentContent(content, component),
 		markdown,
 	)
+
+	// Remove code blocks to prevent extracting headings from within them
+	processedMarkdown = removeCodeBlocks(processedMarkdown)
 
 	const headingRegex = /(^#{1,6}) (.+)/gm
 	let match
