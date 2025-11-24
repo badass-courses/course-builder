@@ -19,10 +19,11 @@ import { eq } from 'drizzle-orm'
 import { ChevronLeft, MailIcon } from 'lucide-react'
 import Stripe from 'stripe'
 
+import { InvoiceCustomName } from '@coursebuilder/commerce-next/invoices/invoice-custom-name'
 import { InvoiceCustomText } from '@coursebuilder/commerce-next/invoices/invoice-custom-text'
 import { InvoicePrintButton } from '@coursebuilder/commerce-next/invoices/invoice-print-button'
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
-import { Button, Input } from '@coursebuilder/ui'
+import { Button } from '@coursebuilder/ui'
 
 const stripe = new Stripe(env.STRIPE_SECRET_TOKEN!, {
 	apiVersion: '2024-06-20',
@@ -200,13 +201,11 @@ const Invoice = async (props: {
 										Invoice For
 									</h2>
 									<div>
-										{/* <Input
-										className="border-primary mb-1 h-8 border-2 p-2 text-base leading-none print:hidden"
-										defaultValue={customer.name as string}
-									/> */}
-										{charge.billing_details.name}
-										<br />
-										{charge.billing_details.email}
+										<Suspense>
+											<InvoiceCustomName
+												defaultName={`${charge.billing_details.name}\n${charge.billing_details.email}`}
+											/>
+										</Suspense>
 										{/* <br />
                   {charge.billing_details.address?.city}
                   <br />
