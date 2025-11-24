@@ -241,7 +241,7 @@ export default async function ModulePage(props: Props) {
 									{workshop.fields?.description}
 								</ReactMarkdown>
 							)}
-							<div className="mt-10 flex items-center gap-2">
+							<div className="mt-5 flex items-center gap-2 sm:mt-10">
 								<Contributor />
 							</div>
 						</div>
