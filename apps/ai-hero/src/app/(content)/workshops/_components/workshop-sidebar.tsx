@@ -69,7 +69,6 @@ export const WorkshopSidebar = ({
 					</ScrollArea>
 				</div>
 			</div>
-
 			<WorkshopSidebarMobile
 				className={cn({
 					'pointer-events-none opacity-0': isInView,

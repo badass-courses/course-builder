@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, TASA_Orbiter } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
@@ -27,6 +27,11 @@ import { Toaster } from '@coursebuilder/ui/primitives/toaster'
 const inter = Inter({
 	subsets: ['latin'],
 	variable: '--font-inter',
+})
+
+const tasaOrbiter = TASA_Orbiter({
+	subsets: ['latin'],
+	variable: '--font-tasa-orbiter',
 })
 
 export const metadata: Metadata = {
@@ -63,7 +68,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${inter.variable} ${tasaOrbiter.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

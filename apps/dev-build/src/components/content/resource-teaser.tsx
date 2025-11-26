@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { PlayIcon } from '@heroicons/react/24/solid'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { ChevronRight } from 'lucide-react'
 
@@ -52,7 +53,7 @@ const titleVariants = cva('', {
 		variant: {
 			horizontal:
 				'sm:text-3xl text-2xl font-medium leading-tight text-foreground',
-			card: 'text-lg font-semibold leading-7 text-foreground', // line-clamp-2
+			card: 'text-lg font-semibold leading-7 leading-tight tracking-tight text-foreground', // line-clamp-2
 		},
 	},
 	defaultVariants: {
@@ -118,7 +119,7 @@ const ResourceTeaser = ({
 	className,
 }: ResourceTeaserProps) => {
 	const isCard = variant === 'card'
-
+	const hasVideo = thumbnailUrl?.includes('mux.com')
 	return (
 		<>
 			{isCard ? (
@@ -139,6 +140,11 @@ const ResourceTeaser = ({
 							{thumbnailBadge && (
 								<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
 									{thumbnailBadge}
+								</div>
+							)}
+							{hasVideo && (
+								<div className="bg-foreground text-background absolute rounded-full p-2">
+									<PlayIcon className="relative size-5 translate-x-0.5" />
 								</div>
 							)}
 						</div>

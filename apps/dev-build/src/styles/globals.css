@@ -215,10 +215,10 @@
 @theme inline {
 	/* Font families */
 	--font-sans:
-		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
+		var(--font-tasa-orbiter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-heading:
-		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
+		var(--font-tasa-orbiter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
@@ -323,6 +323,7 @@
 	h2 {
 		font-family: var(--font-heading);
 		text-wrap: balance;
+		@apply tracking-tight;
 	}
 
 	html.dark .shiki,
@@ -336,6 +337,10 @@
 
 	.prose li {
 		list-style-type: square;
+	}
+
+	.prose {
+		@apply tracking-tight;
 	}
 
 	.cm-gutterElement {

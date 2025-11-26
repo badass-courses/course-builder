@@ -81,7 +81,7 @@ export default async function PostPage(props: {
 				<div className="container relative z-10">
 					<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 						<div className="mx-auto flex w-full flex-col gap-5">
-							<PostTitle post={post} />
+							<PostTitle post={post} hasVideo={hasVideo} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
 									<Contributor className="flex" />
@@ -198,7 +198,12 @@ async function PostBody({ post }: { post: Post | null }) {
 
 async function PostTitle({ post }: { post: Post | null }) {
 	return (
-		<h1 className="mb-4 text-2xl font-bold sm:text-3xl lg:text-4xl dark:text-white">
+		<h1
+			className={cn(
+				'mb-4 text-2xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
+				{},
+			)}
+		>
 			<ReactMarkdown
 				components={{
 					p: ({ children }) => children,
