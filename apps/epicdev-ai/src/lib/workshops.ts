@@ -28,7 +28,6 @@ export const NavigationLessonSchema = z.object({
 				}),
 			]),
 		)
-		.optional()
 		.default([]),
 })
 
@@ -53,7 +52,7 @@ const NavigationSectionContentSchema = z.union([
  * Navigation section schema with support for nested sections
  * Uses z.lazy() for recursive self-reference to allow sections within sections
  */
-export const NavigationSectionSchema: z.ZodType<{
+export type NavigationSection = {
 	id: string
 	slug: string
 	title: string
@@ -64,7 +63,9 @@ export const NavigationSectionSchema: z.ZodType<{
 		| z.infer<typeof NavigationPostSchema>
 		| NavigationSection
 	>
-}> = z.object({
+}
+
+export const NavigationSectionSchema: z.ZodType<NavigationSection> = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
@@ -77,7 +78,7 @@ export const NavigationSectionSchema: z.ZodType<{
 			z.lazy(() => NavigationSectionSchema),
 		]),
 	),
-})
+}) as z.ZodType<NavigationSection>
 
 export const NavigationResourceSchema = z.union([
 	NavigationSectionSchema,
@@ -184,7 +185,6 @@ export function getFirstLessonSlug(
 }
 
 export type NavigationLesson = z.infer<typeof NavigationLessonSchema>
-export type NavigationSection = z.infer<typeof NavigationSectionSchema>
 export type NavigationResource = z.infer<typeof NavigationResourceSchema>
 export type WorkshopNavigation = z.infer<typeof WorkshopNavigationSchema>
 
