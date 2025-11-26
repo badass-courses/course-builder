@@ -101,17 +101,37 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			JOIN cohorts ON cohorts.cohortId = crr.resourceOfId
 			WHERE cr.type IN ('workshop', 'tutorial')
 		),
-		sections AS (
-			-- Get all sections with their positions
+		top_level_sections AS (
+			-- Get top-level sections (directly under workshop)
 			SELECT
 				cr.id,
 				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as slug,
 				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as title,
-				crr.position
+				crr.position,
+				NULL as parentSectionId
 			FROM ${contentResource} as cr
 			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
 			JOIN workshop ON workshop.id = crr.resourceOfId
 			WHERE cr.type = 'section'
+		),
+		sub_sections AS (
+			-- Get sub-sections (sections within sections)
+			SELECT
+				cr.id,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.slug')) as slug,
+				JSON_UNQUOTE(JSON_EXTRACT(cr.fields, '$.title')) as title,
+				crr.position,
+				crr.resourceOfId as parentSectionId
+			FROM ${contentResource} as cr
+			JOIN ${contentResourceResource} as crr ON cr.id = crr.resourceId
+			JOIN top_level_sections ON top_level_sections.id = crr.resourceOfId
+			WHERE cr.type = 'section'
+		),
+		sections AS (
+			-- Combine all sections
+			SELECT * FROM top_level_sections
+			UNION ALL
+			SELECT * FROM sub_sections
 		),
 		resources AS (
 			-- Get top-level resources (not in sections)
@@ -167,38 +187,38 @@ async function getAllWorkshopLessonsWithSectionInfo(
 			WHERE cr.type = 'exercise'
 		)
 		-- Get all data in separate result sets without complex ordering
-		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+		SELECT 'workshop' as type, id, slug, title, coverImage, NULL as position, NULL as sectionId, NULL as parentSectionId, NULL as resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM workshop
 		UNION ALL
-		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, NULL as resourceId,
+		SELECT 'section' as type, id, slug, title, NULL as coverImage, position, NULL as sectionId, parentSectionId, NULL as resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM sections
 		UNION ALL
-		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as resourceId,
+		SELECT 'resource' as type, id, slug, title, NULL as coverImage, position, sectionId, NULL as parentSectionId, NULL as resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			type as resourceType, NULL as resourcePosition
 		FROM resources
 		UNION ALL
-		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
+		SELECT 'solution' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as parentSectionId, resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM solutions
 		UNION ALL
-		SELECT 'exercise' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, resourceId,
+		SELECT 'exercise' as type, id, slug, title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as parentSectionId, resourceId,
 			NULL as cohortId, NULL as cohortSlug, NULL as cohortTitle, NULL as startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM exercises
 		UNION ALL
-		SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as resourceId,
+		SELECT 'cohort' as type, NULL as id, NULL as slug, NULL as title, NULL as coverImage, NULL as position, NULL as sectionId, NULL as parentSectionId, NULL as resourceId,
 			cohortId, cohortSlug, cohortTitle, startsAt, endsAt, timezone, cohortTier, maxSeats,
 			NULL as resourceType, NULL as resourcePosition
 		FROM cohorts
 		UNION ALL
 		SELECT 'cohort_resource' as type, resourceId as id, resourceSlug as slug, resourceTitle as title, NULL as coverImage, resourcePosition as position,
-			NULL as sectionId, NULL as resourceId,
+			NULL as sectionId, NULL as parentSectionId, NULL as resourceId,
 			cohortId, NULL as cohortSlug, NULL as cohortTitle, startsAt, NULL as endsAt, NULL as timezone, NULL as cohortTier, NULL as maxSeats,
 			resourceType, resourcePosition
 		FROM cohort_resources
@@ -233,6 +253,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 				slug: row.slug,
 				title: row.title,
 				position: row.position,
+				parentSectionId: row.parentSectionId,
 			}),
 		)
 
@@ -332,6 +353,7 @@ async function getAllWorkshopLessonsWithSectionInfo(
 
 /**
  * Transforms raw database results into the workshop navigation structure
+ * Supports nested sections (sections within sections)
  */
 function transformToNavigationStructure(
 	workshop: WorkshopRaw,
@@ -369,11 +391,10 @@ function transformToNavigationStructure(
 		return acc
 	}, new Map<string, { id: string; slug: string; title: string; type: 'exercise' }[]>())
 
-	// Group resources by section first, without sorting
+	// Group resources by section
 	const topLevelResources: ResourceRaw[] = []
 	const resourcesBySectionId = new Map<string, ResourceRaw[]>()
 
-	// First group resources by their section
 	for (const resource of resources) {
 		if (resource.sectionId) {
 			if (!resourcesBySectionId.has(resource.sectionId)) {
@@ -393,8 +414,30 @@ function transformToNavigationStructure(
 		sectionResources.sort((a, b) => a.position - b.position)
 	})
 
-	// Transform top-level resources to NavigationResource objects
-	const navigationTopLevelResources = topLevelResources.map((resource) => {
+	// Group sections by parent section
+	const topLevelSections: SectionRaw[] = []
+	const subSectionsByParentId = new Map<string, SectionRaw[]>()
+
+	for (const section of sections) {
+		if (section.parentSectionId) {
+			if (!subSectionsByParentId.has(section.parentSectionId)) {
+				subSectionsByParentId.set(section.parentSectionId, [])
+			}
+			subSectionsByParentId.get(section.parentSectionId)!.push(section)
+		} else {
+			topLevelSections.push(section)
+		}
+	}
+
+	// Sort sub-sections by position within each parent
+	subSectionsByParentId.forEach((subSections) => {
+		subSections.sort((a, b) => a.position - b.position)
+	})
+
+	/**
+	 * Helper to transform a resource (lesson/post) to its navigation schema
+	 */
+	const transformResource = (resource: ResourceRaw) => {
 		if (resource.type === 'lesson') {
 			const resourceSolutions = solutionsByLessonId.get(resource.id) || []
 			const resourceExercises = exercisesByLessonId.get(resource.id) || []
@@ -417,37 +460,28 @@ function transformToNavigationStructure(
 				type: 'post',
 			})
 		}
-	})
+	}
 
-	// Map sections to navigation sections with their resources
-	const sectionResources = sections.map((section) => {
+	/**
+	 * Recursively build a section with its nested sub-sections and resources
+	 */
+	const buildSection = (
+		section: SectionRaw,
+	): z.infer<typeof NavigationSectionSchema> => {
 		const sectionRawResources = resourcesBySectionId.get(section.id) || []
+		const childSections = subSectionsByParentId.get(section.id) || []
 
-		// Transform each resource in the section to a NavigationResource
-		const sectionNavigationResources = sectionRawResources.map((resource) => {
-			if (resource.type === 'lesson') {
-				const resourceSolutions = solutionsByLessonId.get(resource.id) || []
-				const resourceExercises = exercisesByLessonId.get(resource.id) || []
-				const allResources = [...resourceExercises, ...resourceSolutions]
+		// Transform resources in this section
+		const transformedResources = sectionRawResources.map(transformResource)
 
-				return NavigationLessonSchema.parse({
-					id: resource.id,
-					slug: resource.slug,
-					title: resource.title,
-					position: resource.position,
-					type: 'lesson',
-					resources: allResources,
-				})
-			} else {
-				return NavigationPostSchema.parse({
-					id: resource.id,
-					slug: resource.slug,
-					title: resource.title,
-					position: resource.position,
-					type: 'post',
-				})
-			}
-		})
+		// Recursively build child sections
+		const transformedChildSections = childSections.map(buildSection)
+
+		// Combine resources and child sections, sorting by position
+		const allSectionContents = [
+			...transformedResources,
+			...transformedChildSections,
+		].sort((a, b) => a.position - b.position)
 
 		return NavigationSectionSchema.parse({
 			id: section.id,
@@ -455,12 +489,18 @@ function transformToNavigationStructure(
 			title: section.title,
 			position: section.position,
 			type: 'section',
-			resources: sectionNavigationResources,
+			resources: allSectionContents,
 		})
-	})
+	}
+
+	// Transform top-level resources
+	const navigationTopLevelResources = topLevelResources.map(transformResource)
+
+	// Build top-level sections (with nested sub-sections)
+	const navigationSections = topLevelSections.map(buildSection)
 
 	// Combine top-level resources and sections, sorted by position
-	const allResources = [...navigationTopLevelResources, ...sectionResources]
+	const allResources = [...navigationTopLevelResources, ...navigationSections]
 	allResources.sort((a, b) => a.position - b.position)
 
 	const workshopNavigation = {
@@ -746,9 +786,19 @@ export async function getWorkshop(moduleSlugOrId: string) {
 						// section or resource
 						with: {
 							resources: {
-								// lessons in section join
+								// lessons in section OR nested sections
 								with: {
-									resource: true, //lesson, no need for more (videos etc)
+									resource: {
+										// For nested sections, fetch their children too
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+												orderBy: asc(contentResourceResource.position),
+											},
+										},
+									},
 								},
 								orderBy: asc(contentResourceResource.position),
 							},
@@ -804,8 +854,19 @@ export async function getAllWorkshops() {
 					resource: {
 						with: {
 							resources: {
+								// lessons in section OR nested sections
 								with: {
-									resource: true,
+									resource: {
+										// For nested sections, fetch their children too
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+												orderBy: asc(contentResourceResource.position),
+											},
+										},
+									},
 								},
 								orderBy: asc(contentResourceResource.position),
 							},

@@ -8,7 +8,11 @@ import { useModuleProgress } from '@/app/(content)/_components/module-progress-p
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import { CldImage } from '@/components/cld-image'
 import { useScrollToActive } from '@/hooks/use-scroll-to-active'
-import { findSectionIdForLessonSlug, NavigationResource } from '@/lib/workshops'
+import {
+	findSectionIdForLessonSlug,
+	NavigationResource,
+	NavigationSection,
+} from '@/lib/workshops'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { subject } from '@casl/ability'
@@ -190,7 +194,7 @@ export function WorkshopResourceList(props: Props) {
 					<ScrollArea
 						className={cn('h-full')}
 						style={{
-							maxHeight: props.maxHeight
+							height: props.maxHeight
 								? 'auto'
 								: `calc(100vh - ${headerHeight}px - var(--nav-height))`,
 						}}
@@ -204,71 +208,21 @@ export function WorkshopResourceList(props: Props) {
 						>
 							<ol className="divide-border dark:divide-foreground/5 divide-y">
 								{resources.map((resource: NavigationResource, i: number) => {
-									const isActiveGroup =
-										(resource.type === 'section' ||
-											resource.type === 'lesson') &&
-										resource.resources.some(
-											(item) => props.currentLessonSlug === item.slug,
-										)
-									const isSectionCompleted =
-										resource.type === 'section' &&
-										resource.resources?.every((item) =>
-											moduleProgress?.completedLessons?.some(
-												(progress) =>
-													progress.resourceId === item.id &&
-													progress.completedAt,
-											),
-										)
-
 									return resource.type === 'section' ? (
-										// sections
-										<li key={`${resource.id}-accordion`}>
-											<AccordionItem value={resource.id} className="border-0">
-												<AccordionTrigger
-													className={cn(
-														'bg-card dark:hover:bg-foreground/10 dark:data-[state=open]:bg-card hover:text-primary hover:bg-muted/50 data-[state=open]:bg-muted/50 relative flex w-full items-center rounded-none px-5 py-3 text-left text-base font-semibold leading-tight hover:no-underline',
-														{
-															'dark:bg-foreground/10 bg-muted/50 text-primary':
-																isActiveGroup,
-														},
-													)}
-												>
-													<h3 className="flex items-center gap-1.5">
-														{isSectionCompleted && (
-															<Check className="-ml-1.5 w-4 shrink-0 text-teal-500" />
-														)}
-														{resource.title}{' '}
-														<span className="text-sm opacity-50">
-															({resource.resources.length})
-														</span>
-													</h3>
-												</AccordionTrigger>
-												{resource.resources.length > 0 && (
-													// section lessons
-													<AccordionContent className="pb-0">
-														<ol className="divide-border bg-background divide-y">
-															{resource.resources.map((item, index: number) => {
-																return (
-																	<LessonResource
-																		lesson={item}
-																		moduleId={workshopNavigation.id}
-																		index={index}
-																		moduleProgress={moduleProgress}
-																		ability={ability}
-																		abilityStatus={abilityStatus}
-																		key={item.id}
-																	/>
-																)
-															})}
-														</ol>
-													</AccordionContent>
-												)}
-											</AccordionItem>
-										</li>
+										<SectionResource
+											key={resource.id}
+											section={resource}
+											moduleId={workshopNavigation.id}
+											moduleProgress={moduleProgress}
+											ability={ability}
+											abilityStatus={abilityStatus}
+											currentLessonSlug={props.currentLessonSlug}
+											depth={0}
+											index={i}
+										/>
 									) : (
 										// top-level lessons
 										<LessonResource
-											className={cn('')}
 											lesson={resource}
 											index={i}
 											moduleProgress={moduleProgress}
@@ -276,6 +230,7 @@ export function WorkshopResourceList(props: Props) {
 											ability={ability}
 											abilityStatus={abilityStatus}
 											key={resource.id}
+											depth={0}
 										/>
 									)
 								})}
@@ -313,7 +268,208 @@ export function WorkshopResourceList(props: Props) {
 	)
 }
 
-const LessonResource = ({
+/**
+ * Helper to check if any lesson within a section (including nested sections) matches the current slug
+ */
+function containsActiveLesson(
+	section: NavigationSection,
+	currentLessonSlug?: string,
+): boolean {
+	if (!currentLessonSlug) return false
+	return section.resources.some((item) => {
+		if (item.type === 'section') {
+			return containsActiveLesson(item, currentLessonSlug)
+		}
+		return item.slug === currentLessonSlug
+	})
+}
+
+/**
+ * Helper to count total lessons in a section (including nested sections)
+ */
+function countLessons(section: NavigationSection): number {
+	return section.resources.reduce((count, item) => {
+		if (item.type === 'section') {
+			return count + countLessons(item)
+		}
+		return count + 1
+	}, 0)
+}
+
+/**
+ * Helper to check if a section is completed (all lessons completed, including nested)
+ */
+function isSectionFullyCompleted(
+	section: NavigationSection,
+	moduleProgress?: ModuleProgress | null,
+): boolean {
+	return section.resources.every((item) => {
+		if (item.type === 'section') {
+			return isSectionFullyCompleted(item, moduleProgress)
+		}
+		return moduleProgress?.completedLessons?.some(
+			(progress) => progress.resourceId === item.id && progress.completedAt,
+		)
+	})
+}
+
+/**
+ * Finds the ID of the sub-section containing the active lesson
+ */
+function findActiveSectionId(
+	resources: NavigationResource[],
+	currentLessonSlug?: string,
+): string | undefined {
+	if (!currentLessonSlug) return undefined
+	for (const item of resources) {
+		if (
+			item.type === 'section' &&
+			containsActiveLesson(item, currentLessonSlug)
+		) {
+			return item.id
+		}
+	}
+	return undefined
+}
+
+/**
+ * Renders a section with support for nested sub-sections
+ */
+function SectionResource({
+	section,
+	moduleId,
+	moduleProgress,
+	ability,
+	abilityStatus,
+	currentLessonSlug,
+	depth,
+	index,
+	numberPrefix = '',
+}: {
+	section: NavigationSection
+	moduleId: string
+	moduleProgress?: ModuleProgress | null
+	ability: AppAbility
+	abilityStatus: 'error' | 'success' | 'pending'
+	currentLessonSlug?: string
+	depth: number
+	index?: number
+	numberPrefix?: string
+}) {
+	const isActiveGroup = containsActiveLesson(section, currentLessonSlug)
+	const isSectionCompleted = isSectionFullyCompleted(section, moduleProgress)
+	const lessonCount = countLessons(section)
+
+	// Check if this section has nested sub-sections
+	const hasNestedSections = section.resources.some(
+		(item) => item.type === 'section',
+	)
+
+	// Build the current number (e.g., "1" or "1.2" or "1.2.3")
+	const currentNumber = numberPrefix
+		? `${numberPrefix}.${(index ?? 0) + 1}`
+		: `${(index ?? 0) + 1}`
+
+	return (
+		<li key={`${section.id}-accordion`} className="bg-card">
+			<AccordionItem value={section.id} className="border-0">
+				<AccordionTrigger
+					className={cn(
+						'relative flex w-full items-center rounded-none py-3 pr-3.5 font-sans text-sm font-semibold transition ease-out hover:no-underline',
+						'hover:bg-muted/50 dark:hover:bg-foreground/10 hover:text-primary',
+						{
+							'pl-3': depth === 0,
+							'pl-7': depth === 1,
+							'pl-11': depth >= 2,
+							'bg-card-muted dark:bg-foreground/10 text-primary': isActiveGroup,
+						},
+					)}
+				>
+					<div className="flex items-baseline">
+						{isSectionCompleted ? (
+							<div className="flex w-8 shrink-0 items-center justify-center pr-1">
+								<Check className="h-4 w-4 text-teal-500 dark:text-teal-300" />
+							</div>
+						) : (
+							<span className="w-8 shrink-0 pr-1 text-left text-[10px] font-light text-gray-400">
+								{currentNumber}
+							</span>
+						)}
+						<span>{section.title}</span>
+					</div>
+				</AccordionTrigger>
+				{section.resources.length > 0 && (
+					<AccordionContent className="border-t pb-0">
+						{hasNestedSections ? (
+							// Wrap in Accordion when there are nested sections
+							<Accordion
+								type="single"
+								collapsible
+								defaultValue={findActiveSectionId(
+									section.resources,
+									currentLessonSlug,
+								)}
+							>
+								<ol className="divide-border divide-y">
+									{section.resources.map((item, index: number) => {
+										if (item.type === 'section') {
+											return (
+												<SectionResource
+													key={item.id}
+													section={item}
+													moduleId={moduleId}
+													moduleProgress={moduleProgress}
+													ability={ability}
+													abilityStatus={abilityStatus}
+													currentLessonSlug={currentLessonSlug}
+													depth={depth + 1}
+													index={index}
+													numberPrefix={currentNumber}
+												/>
+											)
+										}
+										return (
+											<LessonResource
+												lesson={item}
+												moduleId={moduleId}
+												index={index}
+												moduleProgress={moduleProgress}
+												ability={ability}
+												abilityStatus={abilityStatus}
+												key={item.id}
+												depth={depth + 1}
+												numberPrefix={currentNumber}
+											/>
+										)
+									})}
+								</ol>
+							</Accordion>
+						) : (
+							// No nested sections, render directly
+							<ol className="divide-border divide-y">
+								{section.resources.map((item, index: number) => (
+									<LessonResource
+										lesson={item}
+										moduleId={moduleId}
+										index={index}
+										moduleProgress={moduleProgress}
+										ability={ability}
+										abilityStatus={abilityStatus}
+										key={item.id}
+										depth={depth + 1}
+										numberPrefix={currentNumber}
+									/>
+								))}
+							</ol>
+						)}
+					</AccordionContent>
+				)}
+			</AccordionItem>
+		</li>
+	)
+}
+
+function LessonResource({
 	lesson,
 	moduleProgress,
 	index,
@@ -321,6 +477,8 @@ const LessonResource = ({
 	abilityStatus,
 	className,
 	moduleId,
+	depth = 0,
+	numberPrefix = '',
 }: {
 	lesson: NavigationResource
 	moduleProgress?: ModuleProgress | null
@@ -329,7 +487,13 @@ const LessonResource = ({
 	abilityStatus: 'error' | 'success' | 'pending'
 	className?: string
 	moduleId: string
-}) => {
+	depth?: number
+	numberPrefix?: string
+}) {
+	// Build the current number (e.g., "1" or "1.2" or "1.2.3")
+	const currentNumber = numberPrefix
+		? `${numberPrefix}.${index + 1}`
+		: `${index + 1}`
 	const params = useParams()
 	const pathname = usePathname()
 	const isOnSolution = pathname.includes('/solution')
@@ -372,7 +536,7 @@ const LessonResource = ({
 		<li
 			key={lesson.id}
 			className={cn(
-				'',
+				'bg-card',
 				{
 					'bg-card-muted dark:bg-foreground/10': isActiveGroup,
 				},
@@ -385,10 +549,13 @@ const LessonResource = ({
 					{(() => {
 						// Base styles shared by both link and non-link variants
 						const baseStyles = cn(
-							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium transition ease-out',
+							'relative flex w-full items-baseline py-3 pr-10 font-semibold transition ease-out',
 							{
+								'pl-3': depth === 0,
+								'pl-7': depth === 1,
+								'pl-11': depth >= 2,
 								// Active state
-								'bg-card-muted dark:bg-foreground/10 text-primary border-gray-200':
+								'bg-card-muted dark:bg-foreground/10 text-primary':
 									isActiveLesson && !isActiveGroup,
 								// Only add hover styles when the row is actually clickable
 								'hover:bg-muted/50 dark:hover:bg-foreground/10 hover:text-primary':
@@ -404,7 +571,7 @@ const LessonResource = ({
 								{isCompleted ? (
 									<div
 										aria-label="Completed"
-										className="flex w-6 shrink-0 items-center justify-center pr-1"
+										className="flex w-8 shrink-0 items-center justify-center pr-1"
 									>
 										<Check
 											aria-hidden="true"
@@ -413,10 +580,10 @@ const LessonResource = ({
 									</div>
 								) : (
 									<span
-										className="relative w-6 shrink-0 -translate-y-0.5 pr-1 text-center text-[10px] font-light text-gray-400"
+										className="relative w-8 shrink-0 -translate-y-0.5 pr-1 text-left text-[10px] font-light text-gray-400"
 										aria-hidden="true"
 									>
-										{index + 1}
+										{currentNumber}
 									</span>
 								)}
 								<span className="w-full font-semibold">{lesson.title}</span>
@@ -461,9 +628,11 @@ const LessonResource = ({
 					<li data-active={isActiveLesson ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'relative flex w-full items-baseline py-3 pl-3 pr-10 pt-2 font-medium',
+								'relative flex w-full items-baseline py-3 pr-10 pt-2 font-medium',
 								{
-									'pl-9': true,
+									'pl-11': depth === 0,
+									'pl-[3.75rem]': depth === 1,
+									'pl-[4.75rem]': depth >= 2,
 									'text-primary border-gray-200': isActiveLesson,
 									'hover:text-primary': !isActiveLesson,
 								},
@@ -478,9 +647,11 @@ const LessonResource = ({
 						<li data-active={isActiveExercise ? 'true' : 'false'}>
 							<Link
 								className={cn(
-									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
+									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
 									{
-										'pl-9': true,
+										'pl-11': depth === 0,
+										'pl-[3.75rem]': depth === 1,
+										'pl-[4.75rem]': depth >= 2,
 										'text-primary border-gray-200': isActiveExercise,
 										'hover:text-primary': !isActiveExercise,
 									},
@@ -496,9 +667,11 @@ const LessonResource = ({
 						<li data-active={isActiveSolution ? 'true' : 'false'}>
 							<Link
 								className={cn(
-									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-2 pb-4 pl-3 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
+									'dark:after:bg-muted after:bg-muted relative flex w-full items-baseline py-2 pb-4 pr-10 font-medium after:absolute after:top-0 after:h-px after:w-full after:brightness-95 dark:after:brightness-150',
 									{
-										'pl-9': true,
+										'pl-11': depth === 0,
+										'pl-[3.75rem]': depth === 1,
+										'pl-[4.75rem]': depth >= 2,
 										'text-primary border-gray-200': isActiveSolution,
 										'hover:text-primary': !isActiveSolution,
 									},
