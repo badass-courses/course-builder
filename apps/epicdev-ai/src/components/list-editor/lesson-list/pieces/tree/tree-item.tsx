@@ -51,6 +51,7 @@ import {
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { DraggableItemRenderer } from '../../../draggable-item-renderer'
+import { EditSectionDialog } from '../../../edit-section-dialog'
 import { useSelection } from '../../../selection-context'
 import { TreeItem as TreeItemType } from '../../data/tree'
 import { TierSelect } from '../tier-select'
@@ -163,6 +164,7 @@ const TreeItem = memo(function TreeItem({
 	const [state, setState] = useState<TreeItemState>('idle')
 	const [instruction, setInstruction] = useState<Instruction | null>(null)
 	const cancelExpandRef = useRef<(() => void) | null>(null)
+	const [isEditSectionDialogOpen, setIsEditSectionDialogOpen] = useState(false)
 
 	const {
 		dispatch,
@@ -283,17 +285,15 @@ const TreeItem = memo(function TreeItem({
 				getData: ({ input, element, source }) => {
 					const data = { id: item.id }
 
+					// Allow dropping into sections (including nested sections)
+					// Block make-child only if target is NOT a section
 					return attachInstruction(data, {
 						input,
 						element,
 						indentPerLevel,
 						currentLevel: level,
 						mode,
-						block:
-							(source.data.item as any).type === 'section' ||
-							item.type !== 'section'
-								? ['make-child']
-								: [],
+						block: item.type !== 'section' ? ['make-child'] : [],
 					})
 				},
 				canDrop: (allData) => {
@@ -588,6 +588,11 @@ const TreeItem = memo(function TreeItem({
 								</ContextMenuItem>
 							</>
 						)}
+						{item.type === 'section' && (
+							<ContextMenuItem onClick={() => setIsEditSectionDialogOpen(true)}>
+								Edit Section
+							</ContextMenuItem>
+						)}
 						{onResourceUpdate && (
 							<ContextMenuItem onClick={() => setState('editing')}>
 								Rename
@@ -657,6 +662,28 @@ const TreeItem = memo(function TreeItem({
 					})}
 				</div>
 			) : null}
+			{item.type === 'section' && (
+				<EditSectionDialog
+					open={isEditSectionDialogOpen}
+					onOpenChange={setIsEditSectionDialogOpen}
+					sectionId={item.id}
+					initialValues={{
+						title: item.itemData?.resource?.fields?.title,
+						slug: item.itemData?.resource?.fields?.slug,
+						description: item.itemData?.resource?.fields?.description,
+						github: item.itemData?.resource?.fields?.github,
+						gitpod: item.itemData?.resource?.fields?.gitpod,
+					}}
+					onSuccess={(updatedFields) => {
+						dispatch({
+							type: 'update-item',
+							itemId: item.id,
+							fields: { title: updatedFields.title },
+						})
+						refresh()
+					}}
+				/>
+			)}
 		</div>
 	)
 })

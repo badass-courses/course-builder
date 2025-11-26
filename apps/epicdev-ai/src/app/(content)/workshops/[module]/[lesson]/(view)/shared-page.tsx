@@ -8,6 +8,7 @@ import VideoPlayerOverlay from '@/app/(content)/_components/video-player-overlay
 import { Transcript } from '@/app/(content)/_components/video-transcript-renderer'
 import UpNext from '@/app/(content)/workshops/_components/up-next'
 import { WorkshopPricing } from '@/app/(content)/workshops/_components/workshop-pricing-server'
+import { Icon } from '@/components/brand/icons'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
@@ -17,6 +18,7 @@ import {
 	getLessonMuxPlaybackId,
 	getLessonVideoTranscript,
 } from '@/lib/lessons-query'
+import { getParentSectionForLesson } from '@/lib/sections-query'
 import { MinimalWorkshop } from '@/lib/workshops'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
@@ -62,6 +64,11 @@ export async function LessonPage({
 		redirect(`/workshops/${params.module}`)
 	}
 
+	// Get section github URL as fallback if workshop doesn't have one
+	const parentSection = await getParentSectionForLesson(lesson.id)
+	const githubUrl =
+		workshop?.fields?.github || parentSection?.fields?.github || null
+
 	return (
 		<ActiveHeadingProvider>
 			<main className="w-full">
@@ -80,28 +87,30 @@ export async function LessonPage({
 								not meant for passive consumption.
 							</p>
 
-							{workshop?.fields?.workshopApp?.externalUrl &&
-							exercise?.fields?.workshopApp?.path ? (
+							{exercise?.fields?.workshopApp?.path ? (
 								<div className="mt-5 flex w-full max-w-xs flex-col items-center gap-2 text-center">
-									{workshop.fields.github && (
+									<Button
+										asChild
+										className="w-full"
+										size="lg"
+										variant="outline"
+									>
+										<Link target="_blank" href="/get-started">
+											Get Started
+										</Link>
+									</Button>
+
+									<div className="flex w-full flex-col gap-2">
 										<Button
 											asChild
-											className="w-full"
+											className="from-primary relative rounded-lg bg-gradient-to-b to-indigo-800 text-base font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 											size="lg"
-											variant="outline"
 										>
-											<Link target="_blank" href="/get-started">
-												Get Started
-											</Link>
-										</Button>
-									)}
-									<div className="flex w-full flex-col gap-2">
-										<Button asChild className="w-full" size="lg">
 											<Link
 												target="_blank"
 												rel="noopener noreferrer"
 												href={joinUrlPath(
-													`http://localhost:${workshop.fields.workshopApp?.port || '5639'}`,
+													`http://localhost:${workshop?.fields?.workshopApp?.port || '5639'}`,
 													exercise.fields.workshopApp.path,
 												)}
 											>
@@ -110,7 +119,7 @@ export async function LessonPage({
 										</Button>
 										<p className="text-foreground/80 text-xs">
 											Must be running on localhost:
-											{workshop.fields.workshopApp?.port || '5639'}
+											{workshop?.fields?.workshopApp?.port || '5639'}
 										</p>
 									</div>
 								</div>
@@ -141,7 +150,7 @@ export async function LessonPage({
 					<div className="relative z-10">
 						<article className="">
 							<LessonTitle lesson={lesson} />
-							{workshop?.fields?.github && (
+							{githubUrl && (
 								<div className="bg-card rounded-lg border p-4 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
 									<h2 className="mb-2 text-xl font-semibold">
 										Run in Workshop App
@@ -152,14 +161,25 @@ export async function LessonPage({
 										allows you to authenticate and work through the material as
 										intended at your own pace.
 									</p>
-									<Button
-										asChild
-										className="from-primary relative mt-4 h-10 rounded-lg bg-gradient-to-b to-indigo-800 text-base font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
-									>
-										<Link target="_blank" href="/get-started">
-											Get Started
-										</Link>
-									</Button>
+									<div className="mt-4 flex items-center gap-2">
+										<Button
+											asChild
+											className="from-primary relative h-10 rounded-lg bg-gradient-to-b to-indigo-800 text-base font-medium text-white shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+										>
+											<Link target="_blank" href="/get-started">
+												Get Started
+											</Link>
+										</Button>
+										<Button
+											asChild
+											variant="outline"
+											className="font-mediu relative h-10 rounded-lg text-base"
+										>
+											<Link target="_blank" href={githubUrl}>
+												<Icon name="Github" className="size-4" /> GitHub
+											</Link>
+										</Button>
+									</div>
 								</div>
 							)}
 							<Suspense

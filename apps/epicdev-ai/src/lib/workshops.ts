@@ -28,7 +28,6 @@ export const NavigationLessonSchema = z.object({
 				}),
 			]),
 		)
-		.optional()
 		.default([]),
 })
 
@@ -40,16 +39,48 @@ export const NavigationPostSchema = z.object({
 	type: z.literal('post'),
 })
 
-export const NavigationSectionSchema = z.object({
+/**
+ * Base schema for section resources (lessons and posts)
+ * Used to define what can be inside a section before adding recursive sections
+ */
+const NavigationSectionContentSchema = z.union([
+	NavigationLessonSchema,
+	NavigationPostSchema,
+])
+
+/**
+ * Navigation section schema with support for nested sections
+ * Uses z.lazy() for recursive self-reference to allow sections within sections
+ */
+export type NavigationSection = {
+	id: string
+	slug: string
+	title: string
+	position: number
+	type: 'section'
+	resources: Array<
+		| z.infer<typeof NavigationLessonSchema>
+		| z.infer<typeof NavigationPostSchema>
+		| NavigationSection
+	>
+}
+
+export const NavigationSectionSchema: z.ZodType<NavigationSection> = z.object({
 	id: z.string(),
 	slug: z.string(),
 	title: z.string(),
 	position: z.number(),
 	type: z.literal('section'),
-	resources: z.array(z.union([NavigationLessonSchema, NavigationPostSchema])),
-})
+	resources: z.array(
+		z.union([
+			NavigationLessonSchema,
+			NavigationPostSchema,
+			z.lazy(() => NavigationSectionSchema),
+		]),
+	),
+}) as z.ZodType<NavigationSection>
 
-export const NavigationResourceSchema = z.discriminatedUnion('type', [
+export const NavigationResourceSchema = z.union([
 	NavigationSectionSchema,
 	NavigationLessonSchema,
 	NavigationPostSchema,
@@ -85,16 +116,32 @@ export const WorkshopNavigationSchema = z.object({
 	cohorts: z.array(CohortInfoSchema).optional().default([]),
 })
 
+/**
+ * Finds the section ID containing a lesson slug
+ * Supports nested sections - returns the top-level section ID even if the lesson
+ * is inside a nested sub-section
+ */
 export function findSectionIdForLessonSlug(
 	navigation: WorkshopNavigation | null,
 	lessonSlug?: string | null,
 ): string | null {
+	if (!lessonSlug) return navigation?.resources[0]?.id || null
+
+	/**
+	 * Recursively checks if a section (or its sub-sections) contains the lesson
+	 */
+	function sectionContainsLesson(section: NavigationSection): boolean {
+		return section.resources.some((item) => {
+			if (item.type === 'section') {
+				return sectionContainsLesson(item)
+			}
+			return item.slug === lessonSlug
+		})
+	}
+
 	for (const resource of navigation?.resources || []) {
 		if (resource.type === 'section') {
-			const lesson = resource.resources.find(
-				(item) => 'slug' in item && item.slug === lessonSlug,
-			)
-			if (lesson) {
+			if (sectionContainsLesson(resource)) {
 				return resource.id
 			}
 		} else if (resource.slug === lessonSlug) {
@@ -105,21 +152,39 @@ export function findSectionIdForLessonSlug(
 	return navigation?.resources[0]?.id || null // Lesson not found
 }
 
-export function getFirstLessonSlug(navigation: WorkshopNavigation | null) {
+/**
+ * Gets the first lesson slug from the navigation structure
+ * Supports nested sections - will find the first lesson even in deeply nested structures
+ */
+export function getFirstLessonSlug(
+	navigation: WorkshopNavigation | null,
+): string | null {
 	if (!navigation) return null
-	return navigation?.resources.flatMap((resource) => {
+
+	/**
+	 * Recursively gets lesson slugs from a section (including nested sections)
+	 */
+	function getLessonSlugsFromSection(section: NavigationSection): string[] {
+		return section.resources.flatMap((item) => {
+			if (item.type === 'section') {
+				return getLessonSlugsFromSection(item)
+			}
+			return item.slug ? [item.slug] : []
+		})
+	}
+
+	const slugs = navigation.resources.flatMap((resource) => {
 		if (resource.type === 'section') {
-			return resource.resources
-				.map((item) => ('slug' in item ? item.slug : null))
-				.filter(Boolean)
+			return getLessonSlugsFromSection(resource)
 		} else {
-			return resource.slug
+			return resource.slug ? [resource.slug] : []
 		}
-	})[0]
+	})
+
+	return slugs[0] || null
 }
 
 export type NavigationLesson = z.infer<typeof NavigationLessonSchema>
-export type NavigationSection = z.infer<typeof NavigationSectionSchema>
 export type NavigationResource = z.infer<typeof NavigationResourceSchema>
 export type WorkshopNavigation = z.infer<typeof WorkshopNavigationSchema>
 
@@ -137,6 +202,7 @@ export type SectionRaw = {
 	slug: string
 	title: string
 	position: number
+	parentSectionId: string | null
 }
 
 export type ResourceRaw = {
@@ -175,6 +241,7 @@ export const SectionRawSchema = z.object({
 	slug: z.string(),
 	title: z.string(),
 	position: z.number(),
+	parentSectionId: z.string().nullable(),
 })
 
 export const ResourceRawSchema = z.object({
@@ -211,6 +278,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			...WorkshopRawSchema.shape,
 			position: z.null(),
 			sectionId: z.null(),
+			parentSectionId: z.null(),
 			resourceId: z.null(),
 			cohortId: z.null(),
 			cohortSlug: z.null(),
@@ -257,6 +325,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			position: z.number(),
 			coverImage: z.null(), // Resources don't have coverImage
 			sectionId: z.string().nullable(),
+			parentSectionId: z.null(),
 			resourceId: z.null(),
 			cohortId: z.null(),
 			cohortSlug: z.null(),
@@ -279,6 +348,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(), // Solutions don't have coverImage
 			position: z.null(),
 			sectionId: z.null(),
+			parentSectionId: z.null(),
 			cohortId: z.null(),
 			cohortSlug: z.null(),
 			cohortTitle: z.null(),
@@ -300,6 +370,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(), // Exercises don't have coverImage
 			position: z.null(),
 			sectionId: z.null(),
+			parentSectionId: z.null(),
 			cohortId: z.null(),
 			cohortSlug: z.null(),
 			cohortTitle: z.null(),
@@ -323,6 +394,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(),
 			position: z.null(),
 			sectionId: z.null(),
+			parentSectionId: z.null(),
 			resourceId: z.null(),
 			cohortId: z.string(),
 			cohortSlug: z.string(),
@@ -347,6 +419,7 @@ export const QueryResultRowSchema = z.discriminatedUnion('type', [
 			coverImage: z.null(),
 			position: z.number(),
 			sectionId: z.null(),
+			parentSectionId: z.null(),
 			resourceId: z.null(),
 			cohortId: z.string(),
 			cohortSlug: z.null(),
