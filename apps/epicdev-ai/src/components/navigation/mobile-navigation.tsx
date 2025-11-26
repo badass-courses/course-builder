@@ -2,19 +2,17 @@
 
 import * as React from 'react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { Subscriber } from '@/schemas/subscriber'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
-import { Menu, Newspaper, X } from 'lucide-react'
+import { LogIn, Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
-import { Logo } from '../brand/logo'
 import { NavLinkItem } from './nav-link-item'
 import { ThemeToggle } from './theme-toggle'
 import { useNavLinks } from './use-nav-links'
@@ -33,7 +31,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	setIsMobileMenuOpen,
 	subscriber,
 }) => {
-	const links = useNavLinks()
+	const navData = useNavLinks()
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { setIsFeedbackDialogOpen } = useFeedback()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
@@ -48,99 +46,158 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<Image
 			src={sessionData.user.image}
 			alt={sessionData.user.name || ''}
-			width={80}
-			height={80}
+			width={48}
+			height={48}
 			className="rounded-full"
 		/>
 	) : (
 		<Gravatar
-			className="h-20 w-20 rounded-full"
+			className="h-[48px] w-[48px] rounded-full"
 			email={sessionData?.user?.email || ''}
 			default="mp"
 		/>
 	)
 
-	const isEditRoute = usePathname().includes('/edit')
-
 	return (
-		<div
-			className={cn('flex items-stretch lg:hidden', {
-				'fixed right-6 top-2': !isEditRoute,
-				'absolute -top-5 right-0': isEditRoute,
-			})}
-		>
+		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				data-mobile-nav-trigger=""
-				className="ring-gray-800/7.5 bg-card/80 text-foreground flex h-12 w-12 items-center justify-center rounded-lg p-0 shadow-sm ring-1 backdrop-blur-md"
+				className="h-16 w-16 items-center justify-center border-l"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
-				{!isMobileMenuOpen ? (
-					<Menu className="h-5 w-5" />
-				) : (
-					<X className="h-5 w-5" />
-				)}
+				<Menu className="size-5" />
 			</Button>
-			<Sheet onOpenChange={setIsMobileMenuOpen} open={isMobileMenuOpen}>
+			<Sheet
+				modal={false}
+				onOpenChange={setIsMobileMenuOpen}
+				open={isMobileMenuOpen}
+			>
 				<SheetContent
 					side="right"
-					className="bg-card px-0 py-5 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
+					className="bg-card overflow-y-auto px-0 py-5 [&>button>svg]:h-7 [&>button>svg]:w-7 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center"
 				>
 					<nav
 						aria-label="Primary Mobile Navigation"
 						className="flex h-full flex-col items-start justify-between gap-2"
 					>
 						<div className="flex w-full flex-col">
-							<Logo className="mb-10 origin-top-left scale-[1.2] pl-5 pt-1" />
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-col items-center gap-1 border-b px-5 py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b px-5 py-5">
 									{userAvatar}
-									<span className="text-xl font-semibold">
-										{sessionData.user.name?.split(' ')[0] || ''}
+									<span className="text-xl font-bold">
+										{sessionData.user.name
+											? `Hey there, ${sessionData.user.name?.split(' ')[0]}`
+											: 'Hey there'}
 									</span>
 								</div>
 							)}
-							<ul className="flex flex-col gap-1 px-5">
-								{links.map((link) => (
-									<NavLinkItem
-										className="[&_span]:flex [&_span]:items-center"
-										key={link.href || link.label}
-										{...link}
-									/>
-								))}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem
-										className=""
-										label="Send Feedback"
-										onClick={() => setIsFeedbackDialogOpen(true)}
-									/>
+							{sessionStatus === 'unauthenticated' && (
+								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b py-3">
+									{/* <div className="bg-muted flex h-16 w-16 rounded-full" /> */}
+									<span className="text-xl font-bold">
+										<NavLinkItem
+											className=""
+											label="Log in"
+											icon={<LogIn className="size-4" />}
+											href="/login"
+										/>
+									</span>
+								</div>
+							)}
+							{sessionStatus === 'unauthenticated' && !subscriber && (
+								<NavLinkItem
+									href="/newsletter"
+									className="mb-5 [&_span]:flex [&_span]:items-center"
+									label={
+										<>
+											<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
+											Newsletter
+										</>
+									}
+								/>
+							)}
+							<div className="flex w-full flex-col gap-3">
+								{navData.courses.length > 0 && (
+									<div className="flex flex-col">
+										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+											Courses
+										</div>
+										<ul className="flex flex-col gap-1">
+											{navData.courses.map((course) => (
+												<NavLinkItem
+													className=""
+													key={course.href}
+													href={course.href}
+													label={course.title}
+												/>
+											))}
+										</ul>
+									</div>
+								)}
+								{navData.cohorts.length > 0 && (
+									<div className="flex flex-col">
+										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+											Cohorts
+										</div>
+										<ul className="flex flex-col gap-1">
+											{navData.cohorts.map((cohort) => (
+												<NavLinkItem
+													className=""
+													key={cohort.href}
+													href={cohort.href}
+													label={cohort.title}
+												/>
+											))}
+										</ul>
+									</div>
 								)}
 
-								{canViewTeam && !isAdmin && (
-									<NavLinkItem className="" label="Invite Team" href="/team" />
-								)}
-								{canViewInvoice && (
-									<NavLinkItem className="" href="/invoices" label="Invoices" />
-								)}
-								{sessionStatus === 'authenticated' && (
-									<NavLinkItem className="" href="/profile" label="Profile" />
-								)}
-								{canCreateContent && (
+								<ul className="border-foreground/20 flex flex-col gap-1 border-t pt-2">
 									<NavLinkItem
 										className=""
-										href="/admin/coupons"
-										label="Admin"
+										href={navData.browseAll.href}
+										label={navData.browseAll.label}
 									/>
-								)}
-								{sessionStatus === 'unauthenticated' && (
-									<NavLinkItem label="Sign in" href="/login" />
-								)}
-							</ul>
+									{sessionStatus === 'authenticated' && (
+										<NavLinkItem
+											className=""
+											label="Send Feedback"
+											onClick={() => setIsFeedbackDialogOpen(true)}
+										/>
+									)}
+
+									{canViewTeam && !isAdmin && (
+										<NavLinkItem
+											className=""
+											label="Invite Team"
+											href="/team"
+										/>
+									)}
+									{canViewInvoice && (
+										<NavLinkItem
+											className=""
+											href="/invoices"
+											label="Invoices"
+										/>
+									)}
+									{sessionStatus === 'authenticated' && (
+										<NavLinkItem className="" href="/profile" label="Profile" />
+									)}
+									{canCreateContent && (
+										<NavLinkItem
+											className=""
+											href="/admin/pages"
+											label="Admin"
+										/>
+									)}
+								</ul>
+							</div>
 						</div>
-						{sessionStatus === 'authenticated' && (
-							<>
-								<div className="flex w-full flex-col items-start justify-start border-t px-5 pt-3">
+
+						<div className="flex w-full flex-col items-start justify-start border-t pt-3">
+							{sessionStatus === 'authenticated' && (
+								<>
 									<NavLinkItem
 										className="pl-4"
 										href="#"
@@ -150,10 +207,10 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 											<ArrowRightEndOnRectangleIcon className="mr-2 h-5 w-5" />
 										}
 									/>
-									{/* <ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" /> */}
-								</div>
-							</>
-						)}
+								</>
+							)}
+							<ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" />
+						</div>
 					</nav>
 				</SheetContent>
 			</Sheet>

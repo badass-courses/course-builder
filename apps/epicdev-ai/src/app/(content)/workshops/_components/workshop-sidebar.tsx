@@ -9,7 +9,7 @@ import type { MinimalWorkshop } from '@/lib/workshops'
 import { useInView } from 'framer-motion'
 import { useMeasure } from 'react-use'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, ScrollArea } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 export const WorkshopSidebar = ({
@@ -44,18 +44,28 @@ export const WorkshopSidebar = ({
 
 	return (
 		<>
-			<div ref={buySectionRef} id="buy" className={cn('relative h-full')}>
+			<div
+				ref={buySectionRef}
+				id="buy"
+				className={cn('scroll-mt-15 relative flex h-full flex-col')}
+			>
 				<div
 					ref={sidebarRef}
 					className={cn(
-						'bg-card ring-foreground/10 rounded-xl ring-1',
+						'bg-card ring-foreground/10 overflow-hidden rounded-xl ring-1',
 						{
-							'md:sticky md:top-5': sticky && windowHeight - 20 > height,
+							'md:sticky md:top-5': true,
 						},
 						className,
 					)}
 				>
-					{children}
+					<ScrollArea className="[&_[data-slot='scroll-area-thumb']]:bg-foreground/20 relative h-full md:max-h-[calc(100vh-40px)] [&_[data-slot='scroll-area-scrollbar']]:opacity-100">
+						{children}
+
+						{!Boolean(windowHeight - 40 > height) && (
+							<div className="from-card pointer-events-none absolute bottom-0 left-0 z-50 hidden h-20 w-full bg-gradient-to-t to-transparent md:block" />
+						)}
+					</ScrollArea>
 				</div>
 			</div>
 			{productType === 'self-paced' && (

@@ -212,10 +212,10 @@ export default async function ModulePage(props: Props) {
 								<Contributor />
 							</div> */}
 						</header>
-						<article className="prose sm:prose-lg lg:prose-base prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
-							<h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75">
+						<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
+							{/* <h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75">
 								Description
-							</h2>
+							</h2> */}
 							{body ? body : <p>No description found.</p>}
 						</article>
 						{product?.type === 'self-paced' && (
@@ -235,19 +235,19 @@ export default async function ModulePage(props: Props) {
 						)}
 					</div>
 
-					<div className="relative col-span-3 pt-2">
+					<div className="relative col-span-3 flex h-full flex-col pt-2">
 						{/* <h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
-								Contents
-							</h2>
-							<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
-								<WorkshopResourceList
-									isCollapsible={false}
-									className="border-r-0! w-full max-w-none"
-									withHeader={false}
-									maxHeight="h-auto"
-									wrapperClassName="overflow-hidden pb-0"
-								/>
-							</div> */}
+							Contents
+						</h2>
+						<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+							<WorkshopResourceList
+								isCollapsible={false}
+								className="border-r-0! w-full max-w-none"
+								withHeader={false}
+								maxHeight="h-auto"
+								wrapperClassName="overflow-hidden pb-0"
+							/>
+						</div> */}
 						<Suspense fallback={null}>
 							<EditWorkshopButton
 								className="absolute right-2 top-4 z-10"
