@@ -92,6 +92,7 @@ export const determineCouponToApply = async (
 	const defaultCouponToApply =
 		candidateMerchantCoupon &&
 		candidateMerchantCoupon.type !== SPECIAL_TYPE &&
+		candidateMerchantCoupon.type !== PPP_TYPE &&
 		((candidateMerchantCoupon.percentageDiscount ?? 0) > 0 ||
 			(candidateMerchantCoupon.amountDiscount ?? 0) > 0)
 			? candidateMerchantCoupon
@@ -128,6 +129,9 @@ export const determineCouponToApply = async (
 		couponToApply = bulkCouponToBeApplied
 	} else {
 		couponToApply = specialMerchantCouponToApply || defaultCouponToApply
+		if (couponToApply?.type === PPP_TYPE && quantity > 1) {
+			couponToApply = null
+		}
 	}
 
 	// It is only every PPP that ends up in the Available Coupons
