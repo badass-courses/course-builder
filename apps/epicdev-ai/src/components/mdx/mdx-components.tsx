@@ -11,6 +11,7 @@ import { slugifyHeading } from '@/utils/extract-markdown-headings'
 import { useInView } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import type { MDXComponents } from 'mdx/types'
+import Countdown from 'react-countdown'
 
 import {
 	Accordion,
@@ -135,5 +136,73 @@ export const AISummary = ({
 				</Accordion>
 			</div>
 		</AISummaryContext.Provider>
+	)
+}
+
+/**
+ * Countdown timer for discount expiration in MDX content
+ * Displays time remaining until a discount expires
+ */
+export const DiscountCountdown = ({ date }: { date: Date }) => {
+	return (
+		<Countdown
+			date={date}
+			renderer={({ days, hours, minutes, seconds, completed }) => {
+				if (completed) {
+					return 'Offer has ended'
+				}
+				return (
+					<>
+						{days > 1 ? (
+							<>
+								{days} {days === 1 ? 'day' : 'days'}
+							</>
+						) : hours > 1 ? (
+							<>
+								{days > 0 && (
+									<>
+										{days} {days === 1 ? 'day' : 'days'},{' '}
+									</>
+								)}
+								{hours} {hours === 1 ? 'hour' : 'hours'}
+							</>
+						) : minutes > 1 ? (
+							<>
+								{days > 0 && (
+									<>
+										{days} {days === 1 ? 'day' : 'days'},{' '}
+									</>
+								)}
+								{hours > 0 && (
+									<>
+										{hours} {hours === 1 ? 'hour' : 'hours'},{' '}
+									</>
+								)}
+								{minutes} {minutes === 1 ? 'minute' : 'minutes'}
+							</>
+						) : (
+							<>
+								{days > 0 && (
+									<>
+										{days} {days === 1 ? 'day' : 'days'},{' '}
+									</>
+								)}
+								{hours > 0 && (
+									<>
+										{hours} {hours === 1 ? 'hour' : 'hours'},{' '}
+									</>
+								)}
+								{minutes > 0 && (
+									<>
+										{minutes} {minutes === 1 ? 'minute' : 'minutes'}, and{' '}
+									</>
+								)}
+								{seconds} {seconds === 1 ? 'second' : 'seconds'}
+							</>
+						)}
+					</>
+				)
+			}}
+		/>
 	)
 }

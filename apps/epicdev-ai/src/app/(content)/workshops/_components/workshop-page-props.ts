@@ -1,3 +1,5 @@
+import type { courseBuilderAdapter } from '@/db'
+import type { getSaleBannerData, SaleBannerData } from '@/lib/sale-banner'
 import { MDXRemoteSerializeResult } from 'next-mdx-remote'
 
 import { Product, Purchase } from '@coursebuilder/core/schemas'
@@ -14,4 +16,11 @@ export type WorkshopPageProps = {
 	purchasedProductIds?: string[]
 	userId?: string
 	pricingDataLoader: Promise<PricingData>
+	defaultCoupon?:
+		| Extract<
+				Awaited<ReturnType<typeof courseBuilderAdapter.getDefaultCoupon>>,
+				{ defaultCoupon: unknown }
+		  >['defaultCoupon']
+		| null
+	saleData?: SaleBannerData | null
 } & CommerceProps

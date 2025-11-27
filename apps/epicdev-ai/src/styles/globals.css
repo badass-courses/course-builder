@@ -202,7 +202,7 @@
 		text-decoration: var(--shiki-dark-text-decoration) !important;
 	}
 
-	/* 
+	/*
   Hide the second #primary-newsletter-cta only if there are exactly two on the page.
   This is a temporary workaround for duplicate IDs rendered by the framework.
   Ideally, IDs should be unique—consider refactoring to use class names or unique IDs.
@@ -220,6 +220,13 @@
 	@apply pl-0! list-outside;
 	li {
 		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE0IDMuMTVMMTMuMyAxLjc1QzcuMjYyIDMuNSA0LjIgNy4zNSA0LjIgNy4zNUwxLjQgNS4yNUwwIDYuNjVMNC4yIDEyLjI1QzcuNDM3IDYuMjEzIDE0IDMuMTUgMTQgMy4xNVoiIGZpbGw9IiM3QzNCRUQiLz4KPC9zdmc+Cg==');
+	}
+}
+
+[data-crosslist] {
+	@apply pl-0! list-outside;
+	li {
+		list-style-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDEzIDEzIj4KICA8cGF0aCBmaWxsPSIjQ0EyNDU5IiBkPSJtMS40MTQgMCAxMS4zMTQgMTEuMzE0LTEuNDE1IDEuNDE0TDAgMS40MTR6Ii8+CiAgPHBhdGggZmlsbD0iI0NBMjQ1OSIgZD0iTTExLjQxNCAwIC4xIDExLjMxNGwxLjQxNSAxLjQxNEwxMi44MjggMS40MTR6Ii8+Cjwvc3ZnPgo=');
 	}
 }
 
