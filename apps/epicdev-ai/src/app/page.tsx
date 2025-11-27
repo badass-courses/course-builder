@@ -80,12 +80,13 @@ const Home = async (props: Props) => {
 	const isCommerceEnabled = await commerceEnabled()
 	const page = await getPage(isCommerceEnabled ? 'root-selling-live' : 'root')
 
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-		type: page.resources[0]?.resource?.type,
-		postType: page.resources[0]?.resource?.fields?.postType,
-	}
+	const firstPageResource = page?.resources?.[0] &&
+		page?.resources?.[0].resource?.type !== 'videoResource' && {
+			path: page.resources[0]?.resource?.fields?.slug,
+			title: page.resources[0]?.resource?.fields?.title,
+			type: page.resources[0]?.resource?.type,
+			postType: page.resources[0]?.resource?.fields?.postType,
+		}
 
 	const pageVideoResource = page?.resources?.find(
 		(resource) => resource.resource.type === 'videoResource',
