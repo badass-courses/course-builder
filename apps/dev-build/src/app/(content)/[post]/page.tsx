@@ -53,9 +53,11 @@ export default async function PostPage(props: {
 		list = await getCachedListForPost(params.post)
 	}
 
-	const hasVideo = post?.resources?.find(
-		({ resource }: ContentResourceResource) =>
-			resource.type === 'videoResource',
+	const hasVideo = Boolean(
+		post?.resources?.find(
+			({ resource }: ContentResourceResource) =>
+				resource.type === 'videoResource',
+		),
 	)
 
 	return (
@@ -196,7 +198,13 @@ async function PostBody({ post }: { post: Post | null }) {
 	)
 }
 
-async function PostTitle({ post }: { post: Post | null }) {
+async function PostTitle({
+	post,
+	hasVideo,
+}: {
+	post: Post | null
+	hasVideo: boolean
+}) {
 	return (
 		<h1
 			className={cn(

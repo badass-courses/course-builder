@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import {
 	getCachedWorkshopProduct,
 	getWorkshopProduct,
@@ -29,31 +30,63 @@ export async function WorkshopPricing({
 	const workshopProduct = await getCachedWorkshopProduct(moduleSlug)
 	const product = await getProduct(workshopProduct?.id)
 
-	let workshopProps
+	let workshopProps: WorkshopPageProps
+	let defaultCoupon: WorkshopPageProps['defaultCoupon'] = null
+	let saleData: WorkshopPageProps['saleData'] = null
 
 	if (product) {
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
-
 		const countryCode =
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					// allowPurchase: 'true',
-					...searchParams,
-				},
-				userId: user?.id,
-				products: [product],
-				countryCode,
-			},
-			courseBuilderAdapter,
-		)
 
-		const baseProps = {
+		const [commerceProps, couponResult] = await Promise.all([
+			propsForCommerce(
+				{
+					query: {
+						// allowPurchase: 'true',
+						...searchParams,
+					},
+					userId: user?.id,
+					products: [product],
+					countryCode,
+				},
+				courseBuilderAdapter,
+			),
+			courseBuilderAdapter.getDefaultCoupon([product.id]),
+		])
+
+		const defaultCouponFromAdapter = couponResult?.defaultCoupon ?? null
+
+		// Determine the active merchant coupon for pricing data
+		let merchantCouponId: string | undefined
+		let usedCouponId: string | undefined
+
+		if (defaultCouponFromAdapter?.merchantCouponId) {
+			merchantCouponId = defaultCouponFromAdapter.merchantCouponId
+			usedCouponId = defaultCouponFromAdapter.id
+		} else if (commerceProps.couponIdFromCoupon) {
+			// If there's a coupon from commerce props, get its merchant coupon
+			const coupon = await courseBuilderAdapter.couponForIdOrCode({
+				couponId: commerceProps.couponIdFromCoupon,
+			})
+			if (coupon?.merchantCoupon?.id) {
+				merchantCouponId = coupon.merchantCoupon.id
+				usedCouponId = coupon.id
+			}
+		} else if (commerceProps.couponFromCode?.merchantCoupon?.id) {
+			merchantCouponId = commerceProps.couponFromCode.merchantCoupon.id
+			usedCouponId = commerceProps.couponFromCode.id
+		}
+
+		// Create pricing data loader with coupon information
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+			merchantCouponId,
+			usedCouponId,
+		})
+
+		const baseProps: WorkshopPageProps = {
 			availableBonuses: [],
 			product,
 			pricingDataLoader,
@@ -61,8 +94,13 @@ export async function WorkshopPricing({
 			...commerceProps,
 		}
 
+		if (defaultCouponFromAdapter) {
+			defaultCoupon = defaultCouponFromAdapter
+			saleData = await getSaleBannerData(defaultCouponFromAdapter)
+		}
+
 		if (!user) {
-			workshopProps = baseProps
+			workshopProps = { ...baseProps, defaultCoupon, saleData }
 		} else {
 			const purchaseForProduct = commerceProps.purchases?.find(
 				(purchase: Purchase) => {
@@ -71,7 +109,7 @@ export async function WorkshopPricing({
 			)
 
 			if (!purchaseForProduct) {
-				workshopProps = baseProps
+				workshopProps = { ...baseProps, defaultCoupon, saleData }
 			} else {
 				const { purchase, existingPurchase } =
 					await courseBuilderAdapter.getPurchaseDetails(
@@ -89,6 +127,8 @@ export async function WorkshopPricing({
 					existingPurchase,
 					quantityAvailable: product.quantityAvailable,
 					purchasedProductIds,
+					defaultCoupon,
+					saleData,
 				}
 			}
 		}
@@ -101,6 +141,8 @@ export async function WorkshopPricing({
 				purchaseToUpgrade: null,
 				quantityAvailable: -1,
 			}),
+			defaultCoupon: null,
+			saleData: null,
 		}
 	}
 

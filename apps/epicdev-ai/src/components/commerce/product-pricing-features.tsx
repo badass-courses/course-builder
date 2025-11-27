@@ -68,10 +68,12 @@ export const ProductPricingFeatures = ({
 				Includes {/* Features */}
 			</strong>
 			<ul className="flex w-full flex-col gap-2">
-				<li className="flex items-center gap-2">
-					<ListVideo className="h-4 w-4" />
-					{workshops.length} {pluralize('Workshop', workshops.length)}
-				</li>
+				{workshops.length > 1 && (
+					<li className="flex items-center gap-2">
+						<ListVideo className="h-4 w-4" />
+						{workshops.length} {pluralize('Workshop', workshops.length)}
+					</li>
+				)}
 				{productType === 'cohort' && (
 					<li className="flex items-center gap-2">
 						<Speaker className="h-4 w-4" />

@@ -157,13 +157,17 @@ const CheckList = ({ children }: { children: React.ReactNode }) => {
 	return <ul data-checklist="">{children}</ul>
 }
 
+const CrossList = ({ children }: { children: React.ReactNode }) => {
+	return <ul data-crosslist="">{children}</ul>
+}
+
 const testimonialVariants = cva('', {
 	variants: {
 		variant: {
 			default:
-				'not-prose font-heading relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start border-l-4 dark:border-gray-800 border-gray-200 mt-5 py-2 pl-5 italic gap-2',
+				'not-prose relative mx-auto flex font-medium w-full max-w-3xl flex-col items-start rounded-xl border bg-card dark:border-gray-800 border-gray-200 mt-5 p-5 italic gap-2',
 			centered:
-				'flex text-center font-heading text-balance flex-col items-center justify-center border-none dark:text-white',
+				'flex text-center text-balance flex-col items-center justify-center border-none dark:text-white',
 		},
 	},
 	defaultVariants: {
@@ -186,7 +190,7 @@ const Testimonial = ({
 		<blockquote className={cn(testimonialVariants({ variant }))}>
 			{children}
 			{authorName && (
-				<div className="text-muted-foreground flex items-center gap-2 text-[80%] font-normal not-italic">
+				<div className="flex items-center gap-2 font-normal not-italic">
 					{authorAvatar && authorAvatar.includes('res.cloudinary') && (
 						<CldImage
 							alt={authorName}
@@ -196,7 +200,7 @@ const Testimonial = ({
 							src={authorAvatar}
 						/>
 					)}
-					<span className="font-sans text-sm">{authorName}</span>
+					<span className="font-sans text-sm opacity-80">{authorName}</span>
 				</div>
 			)}
 		</blockquote>
@@ -536,6 +540,7 @@ const allMdxPageBuilderComponents = {
 	Testimonial,
 	Callout,
 	YouTubeVideo,
+	CrossList,
 }
 
 export {
@@ -551,4 +556,5 @@ export {
 	Callout,
 	YouTubeVideo,
 	FAQ,
+	CrossList,
 }
