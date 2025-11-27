@@ -67,15 +67,19 @@ export const determineCouponToApply = async (
 		getEntitlementTypeByName,
 	} = prismaCtx
 
+	// Get merchant coupon from either merchantCouponId parameter or from usedCoupon (when coupon comes from params)
+	const merchantCouponIdToUse =
+		merchantCouponId || usedCoupon?.merchantCouponId || null
+
 	// if usedCoupon is restricted to a different product, we shouldn't apply it
 	const couponRestrictedToDifferentProduct =
-		usedCoupon?.merchantCouponId === merchantCouponId &&
+		usedCoupon?.merchantCouponId &&
 		usedCoupon?.restrictedToProductId &&
 		usedCoupon?.restrictedToProductId !== productId
 
 	const candidateMerchantCoupon =
-		!couponRestrictedToDifferentProduct && merchantCouponId
-			? await getMerchantCoupon(merchantCouponId)
+		!couponRestrictedToDifferentProduct && merchantCouponIdToUse
+			? await getMerchantCoupon(merchantCouponIdToUse)
 			: null
 
 	const specialMerchantCouponToApply =
@@ -123,7 +127,7 @@ export const determineCouponToApply = async (
 	} else if (bulkCouponToBeApplied) {
 		couponToApply = bulkCouponToBeApplied
 	} else {
-		couponToApply = specialMerchantCouponToApply
+		couponToApply = specialMerchantCouponToApply || defaultCouponToApply
 	}
 
 	// It is only every PPP that ends up in the Available Coupons
@@ -293,61 +297,22 @@ export const determineCouponToApply = async (
 			)
 		}
 
-		// Add the user-entered or default special coupon if it's stackable
-		if (specialMerchantCouponToApply) {
-			let usedCouponRecord: Coupon | null = null
+		// Add the special coupon from URL params if it should stack with entitlements
+		// This must happen AFTER entitlements are added so we know if stacking should be enabled
+		if (specialMerchantCouponToApply && usedCouponId) {
+			const usedCouponRecord = await getCoupon(usedCouponId)
 
-			if (usedCouponId) {
-				usedCouponRecord = await getCoupon(usedCouponId)
-			}
-
-			// Determine if coupon is stackable based on type:
-			// - Default coupons (default === true): stackable when entitlements exist (shouldEnableStacking)
-			// - param coupons (usedCouponId exists): also stackable when entitlements exist, unless explicitly disabled
-			// - Entitlement-based coupons (default === false): require explicit stackable: true flag
-
-			const determineIsStackable = (): boolean => {
-				// Default coupons: stackable when entitlements exist
-				if (usedCouponRecord?.default === true) {
-					return shouldEnableStacking
-				}
-
-				if (usedCouponId) {
-					const stackableField = usedCouponRecord?.fields?.stackable
-					if (stackableField === false) {
-						return false
-					}
-					return shouldEnableStacking
-				}
-
-				if (usedCouponRecord?.default === false) {
-					return usedCouponRecord?.fields?.stackable === true
-				}
-
-				const stackableField = usedCouponRecord?.fields?.stackable
-				if (stackableField === false) {
-					return false
-				}
-				return shouldEnableStacking
-			}
-
-			const isStackable = determineIsStackable()
+			// If entitlements exist (shouldEnableStacking), special coupons from URL params are stackable
+			// unless explicitly disabled. This allows them to stack with entitlement credits.
+			const isStackable =
+				shouldEnableStacking && usedCouponRecord?.fields?.stackable !== false
 
 			if (isStackable) {
-				// Determine source:
-				// - If coupon record has default === true, it's a default/site-wide coupon → 'default'
-				// - If usedCouponId exists and coupon is NOT default, it came from URL params → 'user'
-				// - Otherwise, it's a default/site-wide coupon → 'default'
-				const source =
-					usedCouponRecord?.default === true
-						? 'default'
-						: usedCouponId
-							? 'user'
-							: 'default'
+				const source = usedCouponRecord?.default === true ? 'default' : 'user'
 				addStackableDiscount(
 					specialMerchantCouponToApply,
 					source,
-					usedCouponRecord?.id || usedCouponId || '',
+					usedCouponRecord?.id || usedCouponId,
 				)
 			}
 		}
@@ -487,24 +452,31 @@ export const determineCouponToApply = async (
 				}
 				// Add credit discounts
 				stackableDiscounts.push(...creditDiscounts)
+				// Add user (URL params) discounts if they exist
+				stackableDiscounts.push(
+					...nonCreditDiscounts.filter(
+						(discount) => discount.source === 'user',
+					),
+				)
 				// Ensure PPP is set as the coupon to apply so it gets applied along with credits
 				couponToApply = pppDetails.pppCouponToBeApplied
 			} else {
 				// User prefers stacking, so use default + credits, ignore PPP
 				stackingPath = 'stack'
-				// Keep only credit and default discounts
+				// Keep credit, default, and user (URL params) discounts
 				stackableDiscounts.length = 0
 				stackableDiscounts.push(...creditDiscounts)
 				stackableDiscounts.push(
 					...nonCreditDiscounts.filter(
-						(discount) => discount.source === 'default',
+						(discount) =>
+							discount.source === 'default' || discount.source === 'user',
 					),
 				)
 			}
 		} else if (hasPPP) {
 			// Only PPP available - stack credits with PPP
 			stackingPath = 'stack'
-			// Clear and rebuild stackableDiscounts to include both PPP and credits
+			// Clear and rebuild stackableDiscounts to include PPP, credits, and user (URL params) discounts
 			stackableDiscounts.length = 0
 			// Add PPP to stackableDiscounts when stacking with credits
 			if (pppDetails.pppCouponToBeApplied) {
@@ -516,24 +488,33 @@ export const determineCouponToApply = async (
 			}
 			// Add credit discounts
 			stackableDiscounts.push(...creditDiscounts)
+			// Add user (URL params) discounts if they exist
+			stackableDiscounts.push(
+				...nonCreditDiscounts.filter((discount) => discount.source === 'user'),
+			)
 			// Ensure PPP is set as the coupon to apply so it gets applied along with credits
 			couponToApply = pppDetails.pppCouponToBeApplied
 		} else if (hasDefaultCoupon) {
 			// Only default available - stack credits with default
 			stackingPath = 'stack'
-			// Keep credit and default discounts
+			// Keep credit, default, and user (URL params) discounts
 			stackableDiscounts.length = 0
 			stackableDiscounts.push(...creditDiscounts)
 			stackableDiscounts.push(
 				...nonCreditDiscounts.filter(
-					(discount) => discount.source === 'default',
+					(discount) =>
+						discount.source === 'default' || discount.source === 'user',
 				),
 			)
 		} else if (creditDiscounts.length > 0) {
-			// Only credits available - stack them
+			// Only credits available - stack them with any user (URL params) discounts
 			stackingPath = 'stack'
 			stackableDiscounts.length = 0
 			stackableDiscounts.push(...creditDiscounts)
+			// Also include user (URL params) discounts if they exist
+			stackableDiscounts.push(
+				...nonCreditDiscounts.filter((discount) => discount.source === 'user'),
+			)
 		}
 	} else {
 		// No credit coupons detected in stackableDiscounts
@@ -574,20 +555,21 @@ export const determineCouponToApply = async (
 		} else if (hasDefaultCoupon && shouldEnableStacking) {
 			// Only default available and stacking enabled
 			stackingPath = 'stack'
-			// Keep only default discounts
+			// Keep default and user (URL params) discounts
 			stackableDiscounts.length = 0
 			stackableDiscounts.push(
 				...nonCreditDiscounts.filter(
-					(discount) => discount.source === 'default',
+					(discount) =>
+						discount.source === 'default' || discount.source === 'user',
 				),
 			)
 		} else if (stackableDiscounts.length > 0 && shouldEnableStacking) {
-			// Other stackable discounts available
+			// Other stackable discounts available (including user discounts from URL params)
 			stackingPath = 'stack'
 		}
 	}
 
-	return {
+	const result = {
 		appliedMerchantCoupon: couponToApply || undefined,
 		appliedCouponType,
 		appliedDiscountType,
@@ -596,6 +578,8 @@ export const determineCouponToApply = async (
 		stackableDiscounts,
 		stackingPath,
 	}
+
+	return result
 }
 
 type UserPurchases = Awaited<
