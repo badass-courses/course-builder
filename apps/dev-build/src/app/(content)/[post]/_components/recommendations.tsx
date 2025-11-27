@@ -45,7 +45,7 @@ export default function Recommendations({
 	return (
 		<nav
 			className={cn(
-				'bg-card ring-border group relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg px-5 py-16 text-center shadow-md ring-1',
+				'group relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="Recommendations"

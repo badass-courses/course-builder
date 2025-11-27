@@ -1,14 +1,20 @@
 'use server'
 
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, contentResourceTag } from '@/db/schema'
 import { log } from '@/server/logger'
-import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, sql } from 'drizzle-orm'
 import z from 'zod'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 
-export async function getFeed() {
+const FeedItemSchema = ContentResourceSchema.extend({
+	tags: z.any(),
+})
+
+export type FeedItem = z.infer<typeof FeedItemSchema>
+
+export async function getFeed(): Promise<FeedItem[]> {
 	const contentResources = await db.query.contentResource.findMany({
 		where: and(
 			eq(
@@ -18,6 +24,12 @@ export async function getFeed() {
 			eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, 'published'),
 		),
 		with: {
+			tags: {
+				with: {
+					tag: true,
+				},
+				orderBy: asc(contentResourceTag.position),
+			},
 			resources: {
 				with: {
 					resource: {
@@ -33,11 +45,11 @@ export async function getFeed() {
 			},
 		},
 		orderBy: desc(contentResource.createdAt),
-		limit: 10,
+		limit: 9,
 	})
 
 	const parsedContentResources = z
-		.array(ContentResourceSchema)
+		.array(FeedItemSchema)
 		.safeParse(contentResources)
 
 	if (!parsedContentResources.success) {
