@@ -134,7 +134,9 @@ const Home = async (props: Props) => {
 						<span className="font-bold">Save {saleBannerData.percentOff}%</span>{' '}
 						on {saleBannerData.productName}.{' '}
 						<div className="bg-linear-to-b font-heading from-primary ml-1 rounded-sm to-indigo-800 px-2 py-0.5 text-sm font-semibold text-white transition ease-out group-hover:underline">
-							Get Your Ticket
+							{saleBannerData.productType === 'self-paced'
+								? 'Enroll Now'
+								: 'Get Your Ticket'}
 						</div>
 					</Link>
 				) : (
