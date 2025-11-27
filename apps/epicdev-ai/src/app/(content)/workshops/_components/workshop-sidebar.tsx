@@ -101,23 +101,23 @@ export const WorkshopSidebarMobile = ({
 	return (
 		<div
 			className={cn(
-				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between border-t px-5 py-3 transition-opacity duration-300 md:hidden',
+				'bg-background/90 backdrop-blur-xs fixed bottom-0 left-0 z-20 flex w-full items-center justify-between gap-5 border-t px-4 py-2 transition-opacity duration-300 md:hidden',
 				className,
 			)}
 		>
 			<div className="flex flex-col gap-0.5">
-				<h3 className="font-heading text-base font-semibold">
+				<h3 className="font-heading w-auto truncate text-sm font-semibold">
 					{fields?.title}
 				</h3>
-				<Contributor className="gap-1 text-sm [&_img]:w-5" />
+				<Contributor className="gap-1 [&_img]:w-5 [&_span]:text-xs" />
 				{/* <p className="text-sm opacity-75">{config.author}</p> */}
 			</div>
 			<Button
 				asChild
-				className="dark:bg-primary dark:hover:bg-primary bg-blue-600 hover:bg-blue-500"
+				className="dark:bg-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
 			>
 				<Link href="#buy" onClick={handleScrollToBuy}>
-					Start Learning
+					Enroll
 				</Link>
 			</Button>
 		</div>

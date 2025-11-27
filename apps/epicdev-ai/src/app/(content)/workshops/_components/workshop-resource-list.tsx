@@ -172,12 +172,18 @@ export function WorkshopResourceList(props: Props) {
 								)} */}
 								<div className="flex flex-col leading-tight">
 									<div className="flex items-center gap-0.5">
-										<Link
-											href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
-											className="max-w-[260px] truncate overflow-ellipsis text-sm font-normal hover:underline"
-										>
-											{cohort ? cohort.title : 'Workshops'}
-										</Link>
+										{cohort ? (
+											<Link
+												href={cohort ? `/cohorts/${cohort.slug}` : '/workshops'}
+												className="max-w-[260px] truncate overflow-ellipsis text-sm font-normal hover:underline"
+											>
+												{cohort.title}
+											</Link>
+										) : (
+											<span className="max-w-[260px] truncate overflow-ellipsis text-sm font-normal">
+												Workshops
+											</span>
+										)}
 										<span className="px-1 font-mono opacity-50">/</span>
 									</div>
 									<Link
