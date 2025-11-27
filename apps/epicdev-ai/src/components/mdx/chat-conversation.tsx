@@ -100,14 +100,14 @@ interface ChatSetupProps {
  */
 export function ChatSetup({ children, className }: ChatSetupProps) {
 	return (
-		<p
+		<div
 			className={cn(
-				'text-muted-foreground mb-5 mt-10 text-center text-lg font-medium',
+				'text-muted-foreground mb-5 mt-10 text-center text-lg font-medium [&_p]:m-0',
 				className,
 			)}
 		>
 			{children}
-		</p>
+		</div>
 	)
 }
 
@@ -122,13 +122,13 @@ interface ChatPunchlineProps {
  */
 export function ChatPunchline({ children, className }: ChatPunchlineProps) {
 	return (
-		<p
+		<div
 			className={cn(
-				'text-foreground mt-6 text-balance text-center text-xl font-semibold',
+				'text-foreground mt-6 text-balance text-center text-xl font-semibold [&_p]:m-0',
 				className,
 			)}
 		>
 			{children}
-		</p>
+		</div>
 	)
 }
