@@ -45,7 +45,45 @@ export async function WorkshopBodyWithPricing({
 	const allProducts = await db.query.products.findMany({
 		where: eq(products.status, 1),
 	})
-	const productMap = new Map(allProducts.map((p) => [p.fields?.slug, p.id]))
+	const productMap = new Map<string, string>(
+		allProducts
+			.filter((p): p is typeof p & { fields: { slug: string } } =>
+				Boolean(p.fields?.slug),
+			)
+			.map((p) => [p.fields.slug, p.id]),
+	)
+
+	// Compute discount values from defaultCoupon if saleData is not available
+	const discountScope = saleData
+		? { ...saleData }
+		: defaultCoupon
+			? {
+					percentOff: defaultCoupon.percentageDiscount
+						? parseFloat(
+								(Number(defaultCoupon.percentageDiscount) * 100).toFixed(1),
+							)
+						: 0,
+					discountFormatted: defaultCoupon.percentageDiscount
+						? `${parseFloat((Number(defaultCoupon.percentageDiscount) * 100).toFixed(1))}%`
+						: defaultCoupon.amountDiscount
+							? `$${(defaultCoupon.amountDiscount / 100).toFixed(2)}`
+							: '0%',
+					discountType:
+						(defaultCoupon.amountDiscount ?? 0) > 0 ? 'fixed' : 'percentage',
+					discountValue: defaultCoupon.percentageDiscount
+						? parseFloat(
+								(Number(defaultCoupon.percentageDiscount) * 100).toFixed(1),
+							)
+						: defaultCoupon.amountDiscount
+							? defaultCoupon.amountDiscount / 100
+							: 0,
+				}
+			: {
+					percentOff: 0,
+					discountFormatted: '0%',
+					discountType: 'percentage',
+					discountValue: 0,
+				}
 
 	const { content } = await compileMDX(
 		rawBody,
@@ -125,16 +163,7 @@ export async function WorkshopBodyWithPricing({
 			),
 		},
 		{
-			scope: {
-				...(saleData
-					? { ...saleData }
-					: {
-							percentOff: 0,
-							discountFormatted: '0%',
-							discountType: 'percentage',
-							discountValue: 0,
-						}),
-			},
+			scope: discountScope,
 		},
 	)
 
