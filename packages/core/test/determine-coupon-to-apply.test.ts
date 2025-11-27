@@ -925,6 +925,122 @@ describe('determineCouponToApply', () => {
 	})
 
 	describe('URL Coupon Stacking Logic', () => {
+		it('should stack URL coupon from usedCoupon (not merchantCouponId) with special credits when entitlements exist', async () => {
+			// This test covers the bug fix: coupon from URL params via usedCoupon should stack with entitlements
+			const entitlementType =
+				await createMockAdapter().getEntitlementTypeByName(
+					'apply_special_credit',
+				)
+			const entitlementTypeId = entitlementType?.id || 'et_test_123'
+
+			const mockAdapter = createMockAdapter({
+				getPurchasesForUser: vi.fn(async () => [testPurchases.validBasic]),
+				getEntitlementsForUser: vi.fn(async () => [
+					{
+						id: 'entitlement_1',
+						entitlementType: entitlementTypeId,
+						userId: 'user_1',
+						sourceType: 'COUPON',
+						sourceId: 'coupon_credit_149',
+						metadata: {},
+					},
+				]),
+				getCoupon: vi.fn(async (id: string) => {
+					if (id === 'coupon_url_40') {
+						return {
+							id: 'coupon_url_40',
+							code: 'URL40',
+							merchantCouponId: 'merchant_coupon_url_40',
+							status: 0,
+							fields: {}, // Not explicitly disabled, so should stack
+							maxUses: -1,
+							default: false,
+							usedCount: 0,
+							createdAt: new Date(),
+							percentageDiscount: 0,
+							expires: null,
+							bulkPurchases: [],
+							redeemedBulkCouponPurchases: [],
+						} as Coupon
+					}
+					return {
+						id: 'coupon_credit_149',
+						code: 'CREDIT149',
+						merchantCouponId: 'merchant_coupon_credit_149',
+						status: 0,
+						fields: { stackable: true },
+						maxUses: -1,
+						default: false,
+						usedCount: 0,
+						createdAt: new Date(),
+						percentageDiscount: 0,
+						expires: null,
+						bulkPurchases: [],
+						redeemedBulkCouponPurchases: [],
+					} as Coupon
+				}),
+				getMerchantCoupon: vi.fn(async (id: string) => {
+					if (id === 'merchant_coupon_url_40') {
+						return {
+							id: 'merchant_coupon_url_40',
+							identifier: 'stripe_coupon_url_40',
+							percentageDiscount: 0.4, // 40% off
+							type: 'special',
+							status: 1,
+							merchantAccountId: 'merchant_1',
+						} as MerchantCoupon
+					}
+					return {
+						id: 'merchant_coupon_credit_149',
+						identifier: 'stripe_coupon_credit_149',
+						amountDiscount: 14900, // $149 credit
+						type: 'special credit',
+						status: 1,
+						merchantAccountId: 'merchant_1',
+					} as MerchantCoupon
+				}),
+			})
+
+			const result = await determineCouponToApply({
+				prismaCtx: mockAdapter,
+				// No merchantCouponId - coupon comes from URL params via usedCoupon
+				merchantCouponId: undefined,
+				usedCouponId: 'coupon_url_40', // URL param coupon
+				usedCoupon: {
+					merchantCouponId: 'merchant_coupon_url_40', // Coupon ID is in usedCoupon
+					restrictedToProductId: null,
+				},
+				country: 'US',
+				quantity: 1,
+				userId: 'user_1',
+				productId: 'prod_basic',
+				purchaseToBeUpgraded: null,
+				autoApplyPPP: true,
+				preferStacking: false, // Should be enabled by entitlements
+				unitPrice: 795, // $795 base price
+			})
+
+			// Should enable stacking because entitlements exist
+			expect(result.stackingPath).toBe('stack')
+			expect(result.stackableDiscounts.length).toBe(2) // Both coupon and credit
+
+			// Credit should be in stackableDiscounts
+			const creditDiscount = result.stackableDiscounts.find(
+				(d) => d.source === 'entitlement',
+			)
+			expect(creditDiscount).toBeDefined()
+			expect(creditDiscount?.discountType).toBe('fixed')
+			expect(creditDiscount?.amount).toBe(14900) // $149
+
+			// URL coupon should be in stackableDiscounts with source 'user'
+			const urlCouponInStack = result.stackableDiscounts.find(
+				(d) => d.source === 'user' && d.couponId === 'coupon_url_40',
+			)
+			expect(urlCouponInStack).toBeDefined()
+			expect(urlCouponInStack?.discountType).toBe('percentage')
+			expect(urlCouponInStack?.amount).toBe(0.4) // 40%
+		})
+
 		it('should stack URL coupon (type special) with special credits when entitlements exist', async () => {
 			const entitlementType =
 				await createMockAdapter().getEntitlementTypeByName(
@@ -1015,25 +1131,23 @@ describe('determineCouponToApply', () => {
 			})
 
 			expect(result.stackingPath).toBe('stack')
-			expect(result.stackableDiscounts.length).toBeGreaterThanOrEqual(1)
+			expect(result.stackableDiscounts.length).toBe(2) // Both credit and URL coupon
 
+			// Credit should be in stackableDiscounts
 			const specialCreditInStack = result.stackableDiscounts.find(
 				(d) => d.couponId === 'coupon_credit_150',
 			)
 			expect(specialCreditInStack).toBeDefined()
 			expect(specialCreditInStack?.source).toBe('entitlement')
 
+			// URL coupon should ALWAYS be in stackableDiscounts when entitlements exist
 			const urlCouponInStack = result.stackableDiscounts.find(
 				(d) => d.couponId === 'coupon_url_40',
 			)
-			if (urlCouponInStack) {
-				expect(urlCouponInStack?.source).toBe('user')
-				expect(urlCouponInStack?.discountType).toBe('percentage')
-				expect(urlCouponInStack?.amount).toBe(0.4)
-			} else {
-				// If not in stackableDiscounts, it should be the applied coupon
-				expect(result.appliedMerchantCoupon?.id).toBe('merchant_coupon_url_40')
-			}
+			expect(urlCouponInStack).toBeDefined()
+			expect(urlCouponInStack?.source).toBe('user')
+			expect(urlCouponInStack?.discountType).toBe('percentage')
+			expect(urlCouponInStack?.amount).toBe(0.4)
 		})
 
 		it('should NOT stack URL coupon when stackable field is explicitly false', async () => {
