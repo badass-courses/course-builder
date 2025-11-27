@@ -13,24 +13,18 @@ import Footer from './navigation/footer'
 export default function LayoutClient({
 	children,
 	withContainer = false,
-	highlightedResource,
 	className,
 	navigationClassName,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
 	className?: string
-	highlightedResource?: {
-		path: string
-		title: string
-	}
 	navigationClassName?: string
 }) {
 	return (
 		<div className="flex min-h-screen flex-col">
 			<Navigation
 				className={navigationClassName}
-				highlightedResource={highlightedResource}
 				withContainer={withContainer}
 			/>
 			<div

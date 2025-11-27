@@ -32,11 +32,9 @@ import { UserMenu } from './user-menu'
 
 const Navigation = ({
 	withContainer,
-	highlightedResource,
 	className,
 }: {
 	withContainer?: boolean
-	highlightedResource?: { path: string; title: string }
 	className?: string
 }) => {
 	const links = useNavLinks()

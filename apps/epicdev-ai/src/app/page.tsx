@@ -120,11 +120,7 @@ const Home = async (props: Props) => {
 	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
 	return (
-		<LayoutClient
-			className="static"
-			highlightedResource={firstPageResource}
-			withContainer
-		>
+		<LayoutClient className="static" withContainer>
 			<main className="flex w-full flex-col items-center justify-center">
 				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
 					<Link
