@@ -83,7 +83,9 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	COHORT_ENTITLEMENT_SYNC_USER_EVENT,
 	COHORT_UPDATED_EVENT,
+	CohortEntitlementSyncUserPayload,
 	CohortUpdatedPayload,
 } from './events/cohort-management'
 import {
@@ -137,6 +139,9 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[COHORT_ENTITLEMENT_SYNC_USER_EVENT]: {
+		data: CohortEntitlementSyncUserPayload
+	}
 	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
 	[GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT]: GrantCouponEntitlementsForPurchase
 	[CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT]: CreatePPPCreditCouponsForPurchasersEvent
