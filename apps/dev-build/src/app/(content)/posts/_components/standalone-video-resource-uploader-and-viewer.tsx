@@ -2,6 +2,7 @@ import * as React from 'react'
 import { PostUploader } from '@/app/(content)/posts/_components/post-uploader'
 import { useResource } from '@/components/resource-form/resource-context'
 import { env } from '@/env.mjs'
+import { useConfirm } from '@/hooks/use-confirm'
 import { api } from '@/trpc/react'
 import MuxPlayer from '@mux/mux-player-react'
 import { Loader2, MoreVertical, Play } from 'lucide-react'
@@ -16,7 +17,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-	ScrollArea,
 	Skeleton,
 	useToast,
 } from '@coursebuilder/ui'
@@ -83,6 +83,27 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 	const { mutate: attachVideoResourceToPost } =
 		api.videoResources.attachToPost.useMutation()
 
+	const { mutateAsync: deleteVideoResource } =
+		api.videoResources.delete.useMutation({
+			onSuccess: () => {
+				refetch()
+				toast({
+					title: 'Video deleted',
+					description: 'The video resource has been removed',
+				})
+			},
+			onError: (error) => {
+				toast({
+					title: 'Failed to delete video',
+					description: error.message,
+					variant: 'destructive',
+				})
+			},
+		})
+
+	const [ConfirmDialog, confirm] = useConfirm()
+	const [deletingId, setDeletingId] = React.useState<string | null>(null)
+
 	// Update state to use the new type
 	const [videoPreviewModal, setVideoPreviewModal] =
 		React.useState<VideoPreviewModalState>({
@@ -93,7 +114,7 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 	const { toast } = useToast()
 
 	return (
-		<ScrollArea className="h-(--pane-layout-height)">
+		<div className="h-(--pane-layout-height) overflow-y-auto">
 			<div className="mb-3 px-3">
 				<PostUploader
 					parentResourceId={undefined}
@@ -139,13 +160,14 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 										`<Video resourceId="${videoResource.id}" />`,
 									)
 								}}
-								draggable
-								className="flex items-center justify-between gap-2 px-3 py-1 leading-tight group-even/item:bg-gray-100 dark:group-even/item:bg-gray-950"
+								draggable={deletingId !== videoResource.id}
+								className={`flex items-center justify-between gap-2 px-3 py-1 leading-tight group-even/item:bg-gray-100 dark:group-even/item:bg-gray-950 ${deletingId === videoResource.id ? 'pointer-events-none opacity-50' : ''}`}
 							>
 								<div className="flex min-w-0 flex-1 items-center gap-3">
 									<button
 										className="group relative flex shrink-0 items-center justify-center"
 										type="button"
+										disabled={deletingId === videoResource.id}
 										onClick={() => {
 											setVideoPreviewModal({
 												isOpen: true,
@@ -153,14 +175,18 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 											})
 										}}
 									>
-										<Play
-											fill="currentColor"
-											strokeWidth={0}
-											className="absolute z-10 h-4 w-4 text-white opacity-0 transition group-hover:opacity-100"
-										/>
+										{deletingId === videoResource.id ? (
+											<Loader2 className="absolute z-10 h-4 w-4 animate-spin text-white" />
+										) : (
+											<Play
+												fill="currentColor"
+												strokeWidth={0}
+												className="absolute z-10 h-4 w-4 text-white opacity-0 transition group-hover:opacity-100"
+											/>
+										)}
 										<img
 											src={`https://image.mux.com/${videoResource.fields?.muxPlaybackId}/thumbnail.png`}
-											className="aspect-video h-7 rounded-sm transition group-hover:bg-black/50 group-hover:opacity-75"
+											className={`aspect-video h-7 rounded-sm transition ${deletingId === videoResource.id ? 'opacity-50' : 'group-hover:bg-black/50 group-hover:opacity-75'}`}
 										/>
 									</button>
 									<div className="flex min-w-0 flex-1 flex-col">
@@ -218,6 +244,27 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 										>
 											Preview
 										</DropdownMenuItem>
+										<DropdownMenuItem
+											className="text-destructive focus:text-destructive"
+											onClick={async () => {
+												const confirmed = await confirm({
+													title: 'Delete Video',
+													description:
+														'Are you sure you want to delete this video? This action cannot be undone.',
+													confirmText: 'Delete',
+													cancelText: 'Cancel',
+													variant: 'destructive',
+												})
+												if (confirmed) {
+													setDeletingId(videoResource.id)
+													await deleteVideoResource({
+														videoResourceId: videoResource.id,
+													}).finally(() => setDeletingId(null))
+												}
+											}}
+										>
+											Remove
+										</DropdownMenuItem>
 									</DropdownMenuContent>
 								</DropdownMenu>
 							</div>
@@ -268,7 +315,8 @@ export default function StandaloneVideoResourceUploaderAndViewer() {
 					}))
 				}
 			/>
-		</ScrollArea>
+			<ConfirmDialog />
+		</div>
 	)
 }
 

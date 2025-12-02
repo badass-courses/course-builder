@@ -342,3 +342,45 @@ export async function detachVideoResourceFromPost(
 		return false
 	}
 }
+
+/**
+ * Deletes a video resource and all its associations
+ * @param videoResourceId - The ID of the video resource to delete
+ * @returns True if successful, false otherwise
+ */
+export async function deleteVideoResource(videoResourceId: string) {
+	try {
+		// First, delete any associations where this video is attached to other resources
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceId, videoResourceId))
+
+		// Also delete any child resources associated with this video (like transcripts)
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceOfId, videoResourceId))
+
+		// Finally, delete the video resource itself
+		await db
+			.delete(contentResource)
+			.where(
+				and(
+					eq(contentResource.id, videoResourceId),
+					eq(contentResource.type, 'videoResource'),
+				),
+			)
+
+		await log.info('video-resource.deleted', {
+			videoResourceId,
+		})
+
+		return true
+	} catch (error) {
+		await log.error('video-resource.delete.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+			videoResourceId,
+		})
+		return false
+	}
+}

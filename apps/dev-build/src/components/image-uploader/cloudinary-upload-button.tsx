@@ -4,6 +4,7 @@ import React from 'react'
 import Script from 'next/script'
 import { env } from '@/env.mjs'
 import { createImageResource } from '@/lib/image-resource-query'
+import { UploadCloud } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 
 import { Button } from '@coursebuilder/ui'
@@ -56,7 +57,7 @@ export const CloudinaryUploadButton: React.FC<{ dir: string; id: string }> = ({
 						widgetRef.current.open()
 					}}
 				>
-					Upload images
+					<UploadCloud className="size-4" /> Upload images
 				</Button>
 			</div>
 			<div ref={containerRef} id="cloudinary-upload-widget-container" />

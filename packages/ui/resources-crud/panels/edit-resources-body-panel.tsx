@@ -57,15 +57,10 @@ export function EditResourcesBodyPanel({
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
 
-	const partyKitProvider = useYProvider({
-		host: partykitUrl,
-		room: resource.id,
-	})
-
-	const [hasMounted, setHasMounted] = React.useState(false)
-	React.useEffect(() => {
-		setHasMounted(true)
-	}, [])
+	// const partyKitProvider = useYProvider({
+	// 	host: partykitUrl,
+	// 	room: resource.id,
+	// })
 
 	const previewMdxButton: ICommand = {
 		name: 'mdx-preview',
@@ -107,15 +102,16 @@ export function EditResourcesBodyPanel({
 		'codeBlock',
 	] as ICommand[]
 
-	const ytext =
-		partyKitProvider.doc.getText('codemirror') ||
-		new Y.Doc().getText('codemirror')
+	// const ytext =
+	// 	partyKitProvider.doc.getText('codemirror') ||
+	// 	new Y.Doc().getText('codemirror')
 
 	return (
 		<>
 			{children}
 			<Textarea
 				{...form.register('fields.body')}
+				defaultValue={form.getValues('fields.body') ?? ''}
 				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] rounded-none border-none p-5 text-base"
 			/>
 			{/* {hasMounted && (

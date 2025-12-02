@@ -291,10 +291,10 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											/>
 										)}
 									</div>
-									<div className="flex items-center gap-1 overflow-x-auto px-4 py-2 md:overflow-x-visible">
+									<div className="flex flex-wrap items-center gap-1 px-4 py-2">
 										<Button
 											variant="outline"
-											size={'sm'}
+											size="sm"
 											type="button"
 											onClick={() => setReplacingVideo(true)}
 										>
@@ -304,7 +304,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 										{!transcript && !isTranscriptProcessing && (
 											<Button
 												variant="outline"
-												size={'sm'}
+												size="sm"
 												type="button"
 												onClick={() => {
 													setIsTranscriptProcessing(true)
@@ -339,7 +339,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 																}
 															}}
 															variant="outline"
-															size={'sm'}
+															size="sm"
 														>
 															<span>Set Thumbnail</span>
 														</Button>
@@ -348,7 +348,7 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 														type="button"
 														className="border-secondary rounded-l-none border bg-transparent px-2"
 														variant="secondary"
-														size={'sm'}
+														size="sm"
 														onClick={() => {
 															if (playerRef.current?.seekable) {
 																const seekableEnd =
