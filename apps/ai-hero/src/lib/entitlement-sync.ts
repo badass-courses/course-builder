@@ -210,13 +210,35 @@ async function applyEntitlementChanges(
 
 	const organizationId: string = userMembership.organizationId
 
-	// Get the purchase for this user's cohort access
-	const purchase = await db.query.purchases.findFirst({
-		where: and(eq(purchases.userId, userId), eq(purchases.status, 'Valid')),
-	})
+	// Get the purchase that grants access to this specific cohort
+	// Must join with contentResourceProduct to ensure the purchase's product is linked to this cohort
+	const purchaseResult = await db
+		.select({
+			id: purchases.id,
+			userId: purchases.userId,
+			productId: purchases.productId,
+			status: purchases.status,
+		})
+		.from(purchases)
+		.innerJoin(
+			contentResourceProduct,
+			eq(contentResourceProduct.productId, purchases.productId),
+		)
+		.where(
+			and(
+				eq(purchases.userId, userId),
+				eq(purchases.status, 'Valid'),
+				eq(contentResourceProduct.resourceId, cohortId),
+			),
+		)
+		.limit(1)
+
+	const purchase = purchaseResult[0]
 
 	if (!purchase) {
-		throw new Error(`No valid purchase found for user ${userId}`)
+		throw new Error(
+			`No valid purchase found for user ${userId} that grants access to cohort ${cohortId}`,
+		)
 	}
 
 	await db.transaction(async (tx) => {
