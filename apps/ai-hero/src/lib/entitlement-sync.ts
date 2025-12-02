@@ -1,15 +1,14 @@
-import { courseBuilderAdapter, db } from '@/db'
+import { db } from '@/db'
 import {
+	contentResourceProduct,
 	entitlements,
 	entitlementTypes,
 	organizationMemberships,
-	products,
 	purchases,
+	users,
 } from '@/db/schema'
 import { log } from '@/server/logger'
-import { and, eq, isNull, or, sql } from 'drizzle-orm'
-
-import { guid } from '@coursebuilder/adapter-drizzle/mysql'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import { getCohort } from './cohorts-query'
 import {
@@ -17,6 +16,10 @@ import {
 	EntitlementSourceType,
 } from './entitlements'
 
+/**
+ * Find all users who have entitlements for a specific cohort.
+ * Uses a single JOIN query instead of N+1 loops for performance.
+ */
 export async function findUsersWithCohortEntitlements(cohortId: string) {
 	const cohortContentAccessEntitlementType =
 		await db.query.entitlementTypes.findFirst({
@@ -27,69 +30,43 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 		throw new Error('cohort_content_access entitlement type not found')
 	}
 
-	const cohortEntitlements = await db.query.entitlements.findMany({
-		where: and(
-			eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
-			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
-			isNull(entitlements.deletedAt),
-		),
-		with: {
-			user: {
-				columns: {
-					id: true,
-					name: true,
-					email: true,
-				},
-			},
-		},
-	})
-
-	// Filter entitlements that belong to this cohort via the relationship chain
-	const cohortEntitlementsForCohort = []
-	for (const entitlement of cohortEntitlements) {
-		// Get the purchase for this entitlement
-		const purchase = await db.query.purchases.findFirst({
-			where: eq(purchases.id, entitlement.sourceId),
+	// Single JOIN query: entitlements -> purchases -> contentResourceProduct
+	// This replaces the N+1 loop that was causing timeouts
+	const results = await db
+		.selectDistinct({
+			userId: users.id,
+			userName: users.name,
+			userEmail: users.email,
 		})
-
-		// Skip if purchase not found
-		if (!purchase) {
-			continue
-		}
-
-		// Get the product for this purchase
-		const product = await courseBuilderAdapter.getProduct(purchase.productId)
-
-		if (!product) {
-			continue
-		}
-
-		// Check if this product has the cohort as a resource
-		const hasCohortResource = product.resources?.some(
-			(resource: any) => resource.resource?.id === cohortId,
+		.from(entitlements)
+		.innerJoin(users, eq(users.id, entitlements.userId))
+		.innerJoin(purchases, eq(purchases.id, entitlements.sourceId))
+		.innerJoin(
+			contentResourceProduct,
+			eq(contentResourceProduct.productId, purchases.productId),
+		)
+		.where(
+			and(
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+				eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
+				isNull(entitlements.deletedAt),
+				eq(contentResourceProduct.resourceId, cohortId),
+			),
 		)
 
-		if (hasCohortResource) {
-			cohortEntitlementsForCohort.push(entitlement)
-		}
-	}
-
-	const uniqueUsers = new Map()
-	cohortEntitlementsForCohort.forEach((entitlement) => {
-		if (entitlement.user && entitlement.userId) {
-			uniqueUsers.set(entitlement.userId, {
-				user: {
-					id: entitlement.user.id,
-					name: entitlement.user.name,
-					email: entitlement.user.email,
-				},
-			})
-		}
-	})
-
-	return Array.from(uniqueUsers.values())
+	return results.map((row) => ({
+		user: {
+			id: row.userId,
+			name: row.userName,
+			email: row.userEmail,
+		},
+	}))
 }
 
+/**
+ * Get all entitlements for a specific user and cohort.
+ * Uses a single JOIN query instead of N+1 loops for performance.
+ */
 export async function getCurrentCohortEntitlements(
 	userId: string,
 	cohortId: string,
@@ -103,51 +80,45 @@ export async function getCurrentCohortEntitlements(
 		return []
 	}
 
-	const userEntitlements = await db.query.entitlements.findMany({
-		where: and(
-			eq(entitlements.userId, userId),
-			eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
-			eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
-			isNull(entitlements.deletedAt),
-		),
-	})
-
-	// Filter entitlements that belong to this cohort
-	const cohortEntitlementsForUser = []
-	for (const entitlement of userEntitlements) {
-		// Get the purchase for this entitlement
-		const purchase = await db.query.purchases.findFirst({
-			where: eq(purchases.id, entitlement.sourceId),
+	// Single JOIN query: entitlements -> purchases -> contentResourceProduct
+	// Filters for specific user and cohort in one query
+	const results = await db
+		.select({
+			id: entitlements.id,
+			userId: entitlements.userId,
+			sourceId: entitlements.sourceId,
+			sourceType: entitlements.sourceType,
+			entitlementType: entitlements.entitlementType,
+			metadata: entitlements.metadata,
+			expiresAt: entitlements.expiresAt,
+			createdAt: entitlements.createdAt,
+			deletedAt: entitlements.deletedAt,
 		})
-
-		// Skip if purchase not found
-		if (!purchase) {
-			continue
-		}
-
-		// Get the product for this purchase
-		const product = await courseBuilderAdapter.getProduct(purchase.productId)
-
-		if (!product) {
-			continue
-		}
-
-		// Check if this product has the cohort as a resource
-		const hasCohortResource = product.resources?.some(
-			(resource: any) => resource.resource?.id === cohortId,
+		.from(entitlements)
+		.innerJoin(purchases, eq(purchases.id, entitlements.sourceId))
+		.innerJoin(
+			contentResourceProduct,
+			eq(contentResourceProduct.productId, purchases.productId),
+		)
+		.where(
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+				eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
+				isNull(entitlements.deletedAt),
+				eq(contentResourceProduct.resourceId, cohortId),
+			),
 		)
 
-		if (hasCohortResource) {
-			cohortEntitlementsForUser.push(entitlement)
-		}
-	}
-
-	return cohortEntitlementsForUser
+	return results
 }
 
-export function calculateEntitlementChanges(
-	currentEntitlements: any[],
-	updatedCohort: any,
+/**
+ * Calculate what entitlements need to be added/removed based on current state and target resource IDs.
+ */
+export function calculateEntitlementChangesFromIds(
+	currentEntitlements: Array<{ metadata: { contentIds?: string[] } | null }>,
+	targetResourceIds: string[],
 ) {
 	// Extract all current content IDs from all entitlements
 	const currentResourceIds = new Set<string>()
@@ -159,9 +130,7 @@ export function calculateEntitlementChanges(
 	})
 
 	const updatedResourceIds = new Set<string>(
-		(updatedCohort.resources?.map((r: any) => r.resource.id) || []).filter(
-			(id: any): id is string => Boolean(id),
-		),
+		targetResourceIds.filter((id): id is string => Boolean(id)),
 	)
 
 	const toAdd: string[] = []
@@ -182,6 +151,164 @@ export function calculateEntitlementChanges(
 	return { toAdd, toRemove }
 }
 
+/**
+ * @deprecated Use calculateEntitlementChangesFromIds instead for better performance
+ */
+export function calculateEntitlementChanges(
+	currentEntitlements: any[],
+	updatedCohort: any,
+) {
+	const targetResourceIds = (
+		updatedCohort.resources?.map((r: any) => r.resource.id) || []
+	).filter((id: any): id is string => Boolean(id))
+	return calculateEntitlementChangesFromIds(
+		currentEntitlements,
+		targetResourceIds,
+	)
+}
+
+/**
+ * Apply calculated entitlement changes for a user.
+ * This is the core logic extracted for reuse.
+ */
+async function applyEntitlementChanges(
+	userId: string,
+	cohortId: string,
+	changes: { toAdd: string[]; toRemove: string[] },
+	startTime: number,
+) {
+	// If no changes, return early
+	if (changes.toAdd.length === 0 && changes.toRemove.length === 0) {
+		await log.info('entitlement_sync.no_changes', {
+			userId,
+			cohortId,
+			duration: Date.now() - startTime,
+		})
+		return { toAdd: [], toRemove: [], updated: 0 }
+	}
+
+	const cohortContentAccessEntitlementType =
+		await db.query.entitlementTypes.findFirst({
+			where: eq(entitlementTypes.name, 'cohort_content_access'),
+		})
+
+	if (!cohortContentAccessEntitlementType) {
+		throw new Error('cohort_content_access entitlement type not found')
+	}
+
+	const userMembership = await db.query.organizationMemberships.findFirst({
+		where: eq(organizationMemberships.userId, userId),
+	})
+
+	if (!userMembership) {
+		throw new Error(`No organization membership found for user ${userId}`)
+	}
+
+	if (!userMembership.organizationId) {
+		throw new Error(`No organization ID found for user ${userId}`)
+	}
+
+	const organizationId: string = userMembership.organizationId
+
+	// Get the purchase for this user's cohort access
+	const purchase = await db.query.purchases.findFirst({
+		where: and(eq(purchases.userId, userId), eq(purchases.status, 'Valid')),
+	})
+
+	if (!purchase) {
+		throw new Error(`No valid purchase found for user ${userId}`)
+	}
+
+	await db.transaction(async (tx) => {
+		// Remove entitlements for deleted content
+		for (const contentId of changes.toRemove) {
+			await tx
+				.delete(entitlements)
+				.where(
+					and(
+						eq(entitlements.userId, userId),
+						eq(
+							entitlements.entitlementType,
+							cohortContentAccessEntitlementType.id,
+						),
+						eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
+						eq(entitlements.sourceId, purchase.id),
+						sql`JSON_CONTAINS(${entitlements.metadata}, ${JSON.stringify(contentId)}, '$.contentIds')`,
+					),
+				)
+		}
+
+		// Add entitlements for new content
+		for (const contentId of changes.toAdd) {
+			await createCohortEntitlementInTransaction(tx, {
+				userId,
+				resourceId: contentId,
+				sourceId: purchase.id,
+				organizationId: organizationId,
+				organizationMembershipId: userMembership.id,
+				entitlementType: cohortContentAccessEntitlementType.id,
+				sourceType: EntitlementSourceType.PURCHASE,
+				metadata: {
+					contentIds: [contentId],
+				},
+			})
+		}
+	})
+
+	await log.info('entitlement_sync.completed', {
+		userId,
+		cohortId,
+		duration: Date.now() - startTime,
+		entitlementsAdded: changes.toAdd.length,
+		entitlementsRemoved: changes.toRemove.length,
+	})
+
+	return {
+		toAdd: changes.toAdd,
+		toRemove: changes.toRemove,
+		updated: changes.toAdd.length + changes.toRemove.length,
+	}
+}
+
+/**
+ * Sync entitlements for a single user using pre-fetched cohort resource IDs.
+ * This is the optimized version used by the fan-out child function.
+ */
+export async function syncUserCohortEntitlementsWithIds(
+	userId: string,
+	cohortId: string,
+	cohortResourceIds: string[],
+) {
+	const startTime = Date.now()
+
+	try {
+		const currentEntitlements = await getCurrentCohortEntitlements(
+			userId,
+			cohortId,
+		)
+
+		// Calculate changes using pre-fetched resource IDs
+		const changes = calculateEntitlementChangesFromIds(
+			currentEntitlements,
+			cohortResourceIds,
+		)
+
+		return await applyEntitlementChanges(userId, cohortId, changes, startTime)
+	} catch (error) {
+		await log.error('entitlement_sync.failed', {
+			userId,
+			cohortId,
+			error: error instanceof Error ? error.message : String(error),
+			duration: Date.now() - startTime,
+		})
+		throw error
+	}
+}
+
+/**
+ * Sync entitlements for a single user by fetching the cohort.
+ * @deprecated Use syncUserCohortEntitlementsWithIds for fan-out pattern
+ */
 export async function syncUserCohortEntitlements(
 	userId: string,
 	cohortId: string,
@@ -205,97 +332,7 @@ export async function syncUserCohortEntitlements(
 			updatedCohort,
 		)
 
-		// If no changes, return early
-		if (changes.toAdd.length === 0 && changes.toRemove.length === 0) {
-			await log.info('entitlement_sync.no_changes', {
-				userId,
-				cohortId,
-				duration: Date.now() - startTime,
-			})
-			return { toAdd: [], toRemove: [], updated: 0 }
-		}
-
-		const cohortContentAccessEntitlementType =
-			await db.query.entitlementTypes.findFirst({
-				where: eq(entitlementTypes.name, 'cohort_content_access'),
-			})
-
-		if (!cohortContentAccessEntitlementType) {
-			throw new Error('cohort_content_access entitlement type not found')
-		}
-
-		const userMembership = await db.query.organizationMemberships.findFirst({
-			where: eq(organizationMemberships.userId, userId),
-		})
-
-		if (!userMembership) {
-			throw new Error(`No organization membership found for user ${userId}`)
-		}
-
-		if (!userMembership.organizationId) {
-			throw new Error(`No organization ID found for user ${userId}`)
-		}
-
-		const organizationId: string = userMembership.organizationId
-
-		// Get the purchase for this user's cohort access
-		const purchase = await db.query.purchases.findFirst({
-			where: and(eq(purchases.userId, userId), eq(purchases.status, 'Valid')),
-		})
-
-		if (!purchase) {
-			throw new Error(`No valid purchase found for user ${userId}`)
-		}
-
-		await db.transaction(async (tx) => {
-			// Remove entitlements for deleted content
-			for (const contentId of changes.toRemove) {
-				await tx
-					.delete(entitlements)
-					.where(
-						and(
-							eq(entitlements.userId, userId),
-							eq(
-								entitlements.entitlementType,
-								cohortContentAccessEntitlementType.id,
-							),
-							eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
-							eq(entitlements.sourceId, purchase.id),
-							sql`JSON_CONTAINS(${entitlements.metadata}, ${JSON.stringify(contentId)}, '$.contentIds')`,
-						),
-					)
-			}
-
-			// Add entitlements for new content
-			for (const contentId of changes.toAdd) {
-				await createCohortEntitlementInTransaction(tx, {
-					userId,
-					resourceId: contentId,
-					sourceId: purchase.id,
-					organizationId: organizationId,
-					organizationMembershipId: userMembership.id,
-					entitlementType: cohortContentAccessEntitlementType.id,
-					sourceType: EntitlementSourceType.PURCHASE,
-					metadata: {
-						contentIds: [contentId],
-					},
-				})
-			}
-		})
-
-		await log.info('entitlement_sync.completed', {
-			userId,
-			cohortId,
-			duration: Date.now() - startTime,
-			entitlementsAdded: changes.toAdd.length,
-			entitlementsRemoved: changes.toRemove.length,
-		})
-
-		return {
-			toAdd: changes.toAdd,
-			toRemove: changes.toRemove,
-			updated: changes.toAdd.length + changes.toRemove.length,
-		}
+		return await applyEntitlementChanges(userId, cohortId, changes, startTime)
 	} catch (error) {
 		await log.error('entitlement_sync.failed', {
 			userId,
