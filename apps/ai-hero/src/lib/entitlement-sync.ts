@@ -8,7 +8,7 @@ import {
 	users,
 } from '@/db/schema'
 import { log } from '@/server/logger'
-import { and, eq, isNull, sql } from 'drizzle-orm'
+import { and, eq, isNull, ne, sql } from 'drizzle-orm'
 
 import { getCohort } from './cohorts-query'
 import {
@@ -32,7 +32,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 
 	// Single JOIN query: entitlements -> purchases -> contentResourceProduct
 	// This replaces the N+1 loop that was causing timeouts
-	// Only include users with Valid purchases to avoid processing refunded users
+	// Exclude refunded purchases (Valid and Restricted are both valid for entitlements)
 	const results = await db
 		.selectDistinct({
 			userId: users.id,
@@ -52,7 +52,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 				eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 				isNull(entitlements.deletedAt),
 				eq(contentResourceProduct.resourceId, cohortId),
-				eq(purchases.status, 'Valid'),
+				ne(purchases.status, 'Refunded'),
 			),
 		)
 
@@ -214,6 +214,7 @@ async function applyEntitlementChanges(
 
 	// Get the purchase that grants access to this specific cohort
 	// Must join with contentResourceProduct to ensure the purchase's product is linked to this cohort
+	// Both Valid and Restricted purchases grant access (only Refunded is excluded)
 	const purchaseResult = await db
 		.select({
 			id: purchases.id,
@@ -229,7 +230,7 @@ async function applyEntitlementChanges(
 		.where(
 			and(
 				eq(purchases.userId, userId),
-				eq(purchases.status, 'Valid'),
+				ne(purchases.status, 'Refunded'),
 				eq(contentResourceProduct.resourceId, cohortId),
 			),
 		)
