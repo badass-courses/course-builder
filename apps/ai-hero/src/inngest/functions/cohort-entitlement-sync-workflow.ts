@@ -89,20 +89,28 @@ export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 			}
 		}
 
-		// Step 3: Fan-out events for each user
-		// Each event triggers a separate child function invocation
-		await step.sendEvent(
-			'fan-out-user-sync-events',
-			usersWithEntitlements.map(({ user }) => ({
-				name: COHORT_ENTITLEMENT_SYNC_USER_EVENT,
-				data: {
-					cohortId,
-					userId: user.id,
-					userEmail: user.email,
-					cohortResourceIds: cohortInfo.resourceIds,
-				},
-			})),
-		)
+		// Step 3: Fan-out events for each user in batches
+		// Inngest has payload size limits, so we batch to avoid hitting them
+		const BATCH_SIZE = 100
+		const batches = []
+		for (let i = 0; i < usersWithEntitlements.length; i += BATCH_SIZE) {
+			batches.push(usersWithEntitlements.slice(i, i + BATCH_SIZE))
+		}
+
+		for (const [batchIndex, batch] of batches.entries()) {
+			await step.sendEvent(
+				`fan-out-user-sync-events-batch-${batchIndex}`,
+				batch.map(({ user }) => ({
+					name: COHORT_ENTITLEMENT_SYNC_USER_EVENT,
+					data: {
+						cohortId,
+						userId: user.id,
+						userEmail: user.email,
+						cohortResourceIds: cohortInfo.resourceIds,
+					},
+				})),
+			)
+		}
 
 		await log.info('cohort_entitlement_sync.fanout_completed', {
 			cohortId,
