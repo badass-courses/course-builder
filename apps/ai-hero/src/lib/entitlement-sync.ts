@@ -32,6 +32,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 
 	// Single JOIN query: entitlements -> purchases -> contentResourceProduct
 	// This replaces the N+1 loop that was causing timeouts
+	// Only include users with Valid purchases to avoid processing refunded users
 	const results = await db
 		.selectDistinct({
 			userId: users.id,
@@ -51,6 +52,7 @@ export async function findUsersWithCohortEntitlements(cohortId: string) {
 				eq(entitlements.entitlementType, cohortContentAccessEntitlementType.id),
 				isNull(entitlements.deletedAt),
 				eq(contentResourceProduct.resourceId, cohortId),
+				eq(purchases.status, 'Valid'),
 			),
 		)
 

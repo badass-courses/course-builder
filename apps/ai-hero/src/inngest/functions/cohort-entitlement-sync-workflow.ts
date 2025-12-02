@@ -29,8 +29,28 @@ export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 		event: COHORT_UPDATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const { cohortId } = event.data
+		const { cohortId, changes } = event.data
 		const startTime = Date.now()
+
+		// Early exit if no actual resource changes
+		const hasResourceChanges =
+			(changes?.resourcesAdded?.length ?? 0) > 0 ||
+			(changes?.resourcesRemoved?.length ?? 0) > 0
+
+		if (!hasResourceChanges) {
+			await log.info('cohort_entitlement_sync.no_resource_changes', {
+				cohortId,
+				reason: 'No resources added or removed - skipping sync',
+				duration: Date.now() - startTime,
+			})
+
+			return {
+				cohortId,
+				cohortTitle: 'Unknown',
+				usersProcessed: 0,
+				message: 'No resource changes detected - sync skipped',
+			}
+		}
 
 		// Step 1: Validate cohort and extract resource IDs
 		const cohortInfo = await step.run('validate-cohort', async () => {
