@@ -1,6 +1,12 @@
 name: 'Setup and install'
 description: 'Common setup steps for Actions'
 
+inputs:
+  motion-plus-token:
+    description: 'Motion Plus registry token'
+    required: false
+    default: ''
+
 runs:
   using: composite
   steps:
@@ -17,6 +23,8 @@ runs:
 
     - shell: bash
       run: pnpm install
+      env:
+        MOTION_PLUS_TOKEN: ${{ inputs.motion-plus-token }}
 
     - name: Copy .env.example files
       shell: bash

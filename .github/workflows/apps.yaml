@@ -33,6 +33,8 @@ jobs:
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
+        with:
+          motion-plus-token: ${{ secrets.MOTION_PLUS_TOKEN }}
 
       - name: Build Course Builder packages
         run: pnpm build --filter "@coursebuilder/*"

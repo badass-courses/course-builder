@@ -16,6 +16,7 @@ import {
 import HomeFeed from '@/components/landing/home-feed'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import SplitText from '@/components/split-text'
 import config from '@/config'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { commerceEnabled } from '@/flags'
@@ -91,56 +92,71 @@ const Home = async (props: Props) => {
 			saleBannerData={saleBannerData}
 			isCommerceEnabled={isCommerceEnabled}
 		>
-			<div>
-				<section className="relative flex w-full flex-col items-center justify-center overflow-hidden py-20 sm:py-24 lg:py-32">
-					{/* Dot grid background pattern inspired by motion.dev */}
-					<div
-						className="pointer-events-none absolute inset-0"
-						aria-hidden="true"
-						style={{
-							backgroundImage: `
+			<div className="flex flex-col">
+				<section className="">
+					<div className="container relative flex w-full flex-col items-center justify-center overflow-hidden py-20 sm:py-24 lg:py-32">
+						{/* Dot grid background pattern inspired by motion.dev */}
+						<div
+							className="pointer-events-none absolute inset-0"
+							aria-hidden="true"
+							style={{
+								backgroundImage: `
 							radial-gradient(ellipse 50% 40% at 50% 40%, oklch(0.8983 0.1856 100.36 / 0.08) 0%, transparent 70%),
 							radial-gradient(circle, var(--foreground) 1px, transparent 1px)
 						`,
-							backgroundSize: '100% 100%, 10px 10px',
-							backgroundPosition: 'center center',
-							maskImage:
-								'radial-gradient(ellipse 100% 100% at 50% 45%, black 10%, transparent 55%)',
-							WebkitMaskImage:
-								'radial-gradient(ellipse 100% 100% at 50% 45%, black 10%, transparent 55%)',
-							opacity: 0.15,
-						}}
-					/>
-					<div className="relative z-10 flex w-full items-center justify-center">
-						<div className="flex flex-col items-center justify-center gap-4 text-center">
-							<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+								backgroundSize: '100% 100%, 10px 10px',
+								backgroundPosition: 'center center',
+								maskImage:
+									'radial-gradient(ellipse 100% 100% at 50% 45%, black 10%, transparent 55%)',
+								WebkitMaskImage:
+									'radial-gradient(ellipse 100% 100% at 50% 45%, black 10%, transparent 55%)',
+								opacity: 0.15,
+							}}
+						/>
+						<div className="relative z-10 flex w-full items-center justify-center">
+							<div className="flex flex-col items-center justify-center gap-4 text-center">
+								<SplitText
+									as="h1"
+									className="max-w-[700px] text-center text-4xl font-bold sm:text-5xl lg:text-6xl"
+								>
+									Get Really Good at AI–Powered Development
+								</SplitText>
+								{/* <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
 								Get Really Good
 								<br /> at AI–Powered Development
-							</h1>
-							<h2 className="text-muted-foreground mt-2 max-w-2xl text-base font-normal sm:text-lg lg:text-xl">
-								Bite-sized{' '}
-								<span className="text-foreground font-medium">
-									video tutorials
-								</span>
-								,{' '}
-								<span className="text-foreground font-medium">
-									step‑by‑step exercises
-								</span>
-								, and a{' '}
-								<span className="text-foreground font-medium">community</span>{' '}
-								where we can keep refining techniques together.
-							</h2>
-							{/* TODO: Re-enable when there's some content */}
-							{/* <Button asChild variant="secondary" size="lg" className="mt-4">
+							</h1> */}
+								<SplitText
+									as="h2"
+									className="text-muted-foreground mt-2 max-w-2xl text-base font-normal sm:text-lg lg:text-xl"
+								>
+									Bite-sized{' '}
+									<span className="text-foreground font-medium">
+										video tutorials
+									</span>
+									,{' '}
+									<span className="text-foreground font-medium">
+										step‑by‑step exercises
+									</span>
+									, and a{' '}
+									<span className="text-foreground font-medium">community</span>{' '}
+									where we can keep refining techniques together.
+								</SplitText>
+								{/* TODO: Re-enable when there's some content */}
+								{/* <Button asChild variant="secondary" size="lg" className="mt-4">
 							<Link href="/browse">
 								Browse courses <ChevronRight className="size-4" />
 							</Link>
 						</Button> */}
+							</div>
 						</div>
 					</div>
 				</section>
-				<section className="relative z-10">
-					<HomeFeed feedLoader={feedLoader} />
+				<section>
+					<div className="container">
+						<HomeFeed feedLoader={feedLoader} />
+					</div>
+				</section>
+				<section>
 					<article className="container">
 						<div className="prose dark:prose-invert prose-lg mx-auto w-full max-w-4xl">
 							{bodyContent}

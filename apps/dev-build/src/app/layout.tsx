@@ -32,6 +32,7 @@ const inter = Inter({
 const tasaOrbiter = TASA_Orbiter({
 	subsets: ['latin'],
 	variable: '--font-tasa-orbiter',
+	adjustFontFallback: false,
 })
 
 export const metadata: Metadata = {
