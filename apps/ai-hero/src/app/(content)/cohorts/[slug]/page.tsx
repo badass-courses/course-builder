@@ -425,14 +425,14 @@ export default async function CohortPage(props: {
 															</div>
 															{workshop.resources &&
 																workshop.resources.length > 0 && (
-																	<AccordionContent className="bg-background border-t dark:bg-transparent">
+																	<AccordionContent className="bg-background border-t pb-0 dark:bg-transparent">
 																		{/* Display formatted workshop date/time */}
 																		<div className="text-muted-foreground text-sm">
 																			{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
 																		</div>
-																		<ol className="list-inside list-none">
+																		<ol className="list-inside list-none divide-y">
 																			<WorkshopListRowRenderer
 																				workshopIndex={index + 1}
 																				className=""
