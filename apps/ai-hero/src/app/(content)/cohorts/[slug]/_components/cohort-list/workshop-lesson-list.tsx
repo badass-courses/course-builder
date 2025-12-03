@@ -5,7 +5,8 @@ import { useModuleProgress } from '@/app/(content)/_components/module-progress-p
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
 import type { Workshop } from '@/lib/workshops'
 import { api } from '@/trpc/react'
-import { Check } from 'lucide-react'
+import { subject } from '@casl/ability'
+import { Check, Lock } from 'lucide-react'
 
 import {
 	Accordion,
@@ -70,28 +71,55 @@ export function WorkshopLessonList({
 							),
 						)
 
+					// Check if all lessons in section are locked
+					const isSectionLocked =
+						abilityStatus === 'success' &&
+						childResources.length > 0 &&
+						childResources.every(
+							(item) =>
+								!ability.can('read', subject('Content', { id: item.id })),
+						)
+
 					return (
 						<li key={resource.id} className="relative w-full list-none">
 							<Accordion type="multiple">
 								<AccordionItem value={resource.id} className="border-0">
-									<AccordionTrigger
-										className={cn(
-											'text-foreground/90 hover:dark:text-primary hover:bg-card hover:dark:bg-foreground/2 relative inline-flex min-h-12 w-full items-center py-2.5 pl-[52px] pr-5 text-base font-semibold leading-tight transition ease-out hover:text-blue-600 hover:no-underline sm:min-h-11',
-											className,
-										)}
-									>
-										{isSectionCompleted ? (
-											<Check
-												className="text-primary absolute left-4 size-3"
-												aria-hidden="true"
+									<div className="relative">
+										<AccordionTrigger
+											className={cn(
+												'relative inline-flex min-h-12 w-full items-center py-2.5 pl-[52px] pr-5 text-base font-semibold leading-tight transition ease-out hover:no-underline sm:min-h-11',
+												isSectionLocked
+													? 'text-foreground/50 hover:bg-card/50'
+													: 'text-foreground/90 hover:dark:text-primary hover:bg-card hover:dark:bg-foreground/2 hover:text-blue-600',
+												className,
+											)}
+										>
+											{isSectionCompleted ? (
+												<Check
+													className="text-primary absolute left-4 size-3"
+													aria-hidden="true"
+												/>
+											) : (
+												<span
+													className={cn(
+														'absolute left-3 pl-1 text-[10px] font-normal tabular-nums opacity-75',
+														{
+															'text-muted-foreground': !isSectionLocked,
+														},
+													)}
+												>
+													{sectionIndex}
+												</span>
+											)}
+											{resource.fields?.title}
+										</AccordionTrigger>
+										{isSectionLocked && (
+											<Lock
+												className="pointer-events-none absolute right-12 top-1/2 size-3 -translate-y-1/2 text-gray-500"
+												aria-label="locked"
 											/>
-										) : (
-											<span className="text-muted-foreground absolute left-3 pl-1 text-[10px] opacity-75">
-												{sectionIndex}
-											</span>
 										)}
-										{resource.fields?.title}
-									</AccordionTrigger>
+									</div>
 									{childResources.length > 0 && (
 										<AccordionContent className="pb-0">
 											<ol className="divide-border divide-y border-t">

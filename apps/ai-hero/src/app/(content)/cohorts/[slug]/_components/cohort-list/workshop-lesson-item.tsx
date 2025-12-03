@@ -71,7 +71,7 @@ export function WorkshopLessonItem({
 					) : (
 						<span
 							data-state=""
-							className="text-muted-foreground absolute left-3 pl-1 text-[10px] opacity-75"
+							className="text-muted-foreground absolute left-3 pl-1 text-[10px] tabular-nums opacity-75"
 						>
 							{index}
 						</span>
@@ -88,7 +88,7 @@ export function WorkshopLessonItem({
 					{isLessonCompleted ? (
 						<Check className="text-primary absolute left-3 size-4" />
 					) : (
-						<span className="absolute left-3 pl-1 text-xs tabular-nums opacity-75">
+						<span className="absolute left-3 pl-1 text-[10px] tabular-nums opacity-75">
 							{index}
 						</span>
 					)}
