@@ -137,7 +137,9 @@ export function WorkshopResourceList(props: Props) {
 					{withHeader && (
 						<div
 							ref={ref as any}
-							className={cn('bg-stripes relative z-10 w-full border-b pl-2')}
+							className={cn(
+								'dark:bg-stripes bg-stripes-muted relative z-10 w-full border-b pl-2',
+							)}
 						>
 							{isCollapsible && (
 								<Tooltip delayDuration={0}>
@@ -257,15 +259,15 @@ export function WorkshopResourceList(props: Props) {
 												<AccordionItem value={resource.id} className="border-0">
 													<AccordionTrigger
 														className={cn(
-															'hover:bg-muted bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-5 text-left text-base font-semibold leading-tight hover:no-underline',
+															'hover:bg-card bg-background relative flex min-h-[65px] w-full items-center rounded-none border-b px-5 py-3 text-left text-base leading-tight tracking-tight hover:cursor-pointer hover:no-underline',
 															{
-																'bg-muted dark:text-primary text-blue-600':
+																'bg-card dark:text-primary text-blue-600':
 																	isActiveGroup,
 															},
 														)}
 													>
 														<div className="flex w-full items-center">
-															<h3 className="flex items-center gap-1 pr-2">
+															<h3 className="font-medium! flex items-center gap-1 pr-2">
 																{isSectionCompleted && (
 																	<Check
 																		className="-ml-1.5 w-4 shrink-0"
@@ -297,8 +299,12 @@ export function WorkshopResourceList(props: Props) {
 													</AccordionTrigger>
 													{childResources.length > 0 && (
 														// section lessons
-														<AccordionContent className="pb-0">
-															<ol className="divide-border bg-background divide-y border-b">
+														<AccordionContent
+															className={cn('pb-0', {
+																'': isActiveGroup,
+															})}
+														>
+															<ol className="divide-border divide-y border-b">
 																{childResources.map((item, index: number) => {
 																	return (
 																		<LessonResource
@@ -415,7 +421,7 @@ const LessonResource = ({
 			className={cn(
 				'',
 				{
-					'bg-muted': isActiveGroup,
+					'': isActiveGroup,
 				},
 				className,
 			)}
@@ -426,15 +432,15 @@ const LessonResource = ({
 					{(() => {
 						// Base styles shared by both link and non-link variants
 						const baseStyles = cn(
-							'relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+							'relative flex w-full transition ease-out transition ease-out items-baseline py-3 pl-3  pr-10 font-medium',
 							{
 								// Active state
-								'bg-muted dark:text-primary text-blue-600 border-gray-200':
-									isActiveLesson && !isActiveGroup,
+								'bg-card dark:bg-muted dark:hover:bg-muted dark:text-primary hover:bg-card text-blue-600 border-gray-200':
+									isActiveLesson,
 								// Only add hover styles when the row is actually clickable
-								'hover:bg-muted dark:hover:text-primary hover:text-blue-600':
+								'hover:bg-card dark:hover:bg-muted dark:hover:text-primary hover:text-blue-600':
 									canViewLesson && !isActiveLesson && !isActiveGroup,
-								'hover:bg-foreground/5 dark:hover:text-primary hover:text-blue-600':
+								'dark:hover:text-primary hover:text-blue-600':
 									canViewLesson && isActiveGroup,
 							},
 						)
@@ -461,7 +467,9 @@ const LessonResource = ({
 									</span>
 								)}
 
-								<span className="w-full text-base">{lesson.fields?.title}</span>
+								<span className="w-full text-base font-medium leading-tight tracking-tight">
+									{lesson.fields?.title}
+								</span>
 								{abilityStatus === 'success' && !canViewLesson && (
 									<Lock
 										className="absolute right-5 w-3 text-gray-500"
@@ -473,7 +481,7 @@ const LessonResource = ({
 
 						return canViewLesson ? (
 							<Link
-								className={cn('hover:bg-muted', baseStyles)}
+								className={cn('', baseStyles)}
 								href={`/workshops/${params.module}/${lesson.fields?.slug}`}
 								prefetch
 							>
@@ -501,14 +509,14 @@ const LessonResource = ({
 				</div>
 			</div>
 			{solution && isActiveGroup && (
-				<ul>
+				<ul className="pb-2">
 					<li data-active={isActiveLesson ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'hover:bg-foreground/10 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								'hover:bg-card dark:hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 text-sm font-medium tracking-tight transition ease-out',
 								{
 									'pl-9': true,
-									'bg-foreground/5 dark:text-primary border-gray-200 text-blue-600':
+									'bg-card dark:bg-muted dark:text-primary text-blue-600':
 										isActiveLesson,
 									'dark:hover:text-primary hover:text-blue-600':
 										!isActiveLesson,
@@ -523,10 +531,10 @@ const LessonResource = ({
 					<li data-active={isActiveSolution ? 'true' : 'false'}>
 						<Link
 							className={cn(
-								'hover:bg-foreground/10 relative flex w-full items-baseline py-3 pl-3 pr-10 font-medium',
+								'hover:bg-card dark:hover:bg-muted relative flex w-full items-baseline py-3 pl-3 pr-10 text-sm font-medium tracking-tight transition ease-out',
 								{
 									'pl-9': true,
-									'bg-foreground/5 dark:text-primary border-gray-200 text-blue-600':
+									'bg-card dark:bg-muted dark:text-primary text-blue-600':
 										isActiveSolution,
 									'dark:hover:text-primary hover:text-blue-600':
 										!isActiveSolution,
