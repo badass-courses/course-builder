@@ -149,6 +149,8 @@
 		"lucide-react": "^0.288.0",
 		"memoize-one": "^6.0.0",
 		"mjml": "^4.15.3",
+		"motion": "^12.23.25",
+		"motion-utils": "^12.23.6",
 		"nanoid": "^5.0.2",
 		"next": "16.0.0",
 		"next-auth": "5.0.0-beta.25",

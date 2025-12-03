@@ -8,6 +8,7 @@ import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
+import SplitText from '@/components/split-text'
 import { courseBuilderAdapter } from '@/db'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
@@ -206,7 +207,8 @@ async function PostTitle({
 	hasVideo: boolean
 }) {
 	return (
-		<h1
+		<SplitText
+			as="h1"
 			className={cn(
 				'mb-4 text-2xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
 				{},
@@ -224,7 +226,7 @@ async function PostTitle({
 			>
 				{post?.fields?.title}
 			</ReactMarkdown>
-		</h1>
+		</SplitText>
 	)
 }
 

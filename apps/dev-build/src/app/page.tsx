@@ -16,6 +16,7 @@ import {
 import HomeFeed from '@/components/landing/home-feed'
 import LayoutClient from '@/components/layout-client'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
+import SplitText from '@/components/split-text'
 import config from '@/config'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { commerceEnabled } from '@/flags'
@@ -113,11 +114,16 @@ const Home = async (props: Props) => {
 					/>
 					<div className="relative z-10 flex w-full items-center justify-center">
 						<div className="flex flex-col items-center justify-center gap-4 text-center">
-							<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-								Get Really Good
-								<br /> at AI–Powered Development
-							</h1>
-							<h2 className="text-muted-foreground mt-2 max-w-2xl text-base font-normal sm:text-lg lg:text-xl">
+							<SplitText
+								as="h1"
+								className="text-3xl font-bold sm:text-4xl lg:text-5xl"
+							>
+								Get Really Good at AI–Powered Development
+							</SplitText>
+							<SplitText
+								as="h2"
+								className="text-muted-foreground mt-2 max-w-2xl text-base font-normal sm:text-lg lg:text-xl"
+							>
 								Bite-sized{' '}
 								<span className="text-foreground font-medium">
 									video tutorials
@@ -129,7 +135,7 @@ const Home = async (props: Props) => {
 								, and a{' '}
 								<span className="text-foreground font-medium">community</span>{' '}
 								where we can keep refining techniques together.
-							</h2>
+							</SplitText>
 							{/* TODO: Re-enable when there's some content */}
 							{/* <Button asChild variant="secondary" size="lg" className="mt-4">
 							<Link href="/browse">

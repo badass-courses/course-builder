@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import ResourceTeaser from '../content/resource-teaser'
+import SplitText from '../split-text'
 
 export default function HomeFeed({
 	feedLoader,
@@ -17,9 +18,12 @@ export default function HomeFeed({
 
 	return (
 		<section className="container pb-16">
-			<h2 className="mb-4 text-center text-2xl font-bold sm:text-left sm:text-3xl">
+			<SplitText
+				as="h3"
+				className="mb-4 text-center text-2xl font-bold sm:text-left sm:text-3xl"
+			>
 				The Feed
-			</h2>
+			</SplitText>
 			<ul className="flex flex-col gap-10">
 				{feed.map((resource) => {
 					const videoResource = resource.resources?.find(

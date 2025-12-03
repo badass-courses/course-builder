@@ -8,11 +8,16 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 const FREE_TYPES = ['tutorial', 'post', 'list', 'article']
 
+interface BrowseByProps {
+	/** Optional callback fired when a filter is selected (useful for closing mobile sheets) */
+	onSelect?: () => void
+}
+
 /**
  * BrowseBy navigation component for filtering content by type.
  * Provides preset filters for content categories: Newest, Cohort-based, Self-paced, and Free.
  */
-export default function BrowseBy() {
+export default function BrowseBy({ onSelect }: BrowseByProps) {
 	const { items, refine } = useRefinementList({
 		attribute: 'type',
 		operator: 'or',
@@ -51,6 +56,7 @@ export default function BrowseBy() {
 				refine(item.value)
 			}
 		})
+		onSelect?.()
 	}
 
 	const handleCohortClick = () => {
@@ -62,6 +68,7 @@ export default function BrowseBy() {
 		})
 		// Then refine cohort
 		refine('cohort')
+		onSelect?.()
 	}
 
 	const handleWorkshopClick = () => {
@@ -73,6 +80,7 @@ export default function BrowseBy() {
 		})
 		// Then refine workshop
 		refine('workshop')
+		onSelect?.()
 	}
 
 	const handleFreeClick = () => {
@@ -84,6 +92,7 @@ export default function BrowseBy() {
 		})
 		// Then refine all free types
 		FREE_TYPES.forEach((type) => refine(type))
+		onSelect?.()
 	}
 
 	return (
