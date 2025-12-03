@@ -86,6 +86,8 @@ jobs:
   check-changeset:
     runs-on: ubuntu-latest
     name: Check Changeset
+    env:
+      MOTION_PLUS_TOKEN: ${{ secrets.MOTION_PLUS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:

@@ -15,7 +15,8 @@ jobs:
       contains(github.event.pull_request.labels.*.name, '🚀 autorelease')
     name: Build & Publish a beta release to NPM
     runs-on: ubuntu-latest
-
+    env:
+      MOTION_PLUS_TOKEN: ${{ secrets.MOTION_PLUS_TOKEN }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: 'pnpm'
 
       - name: Install NPM Dependencies
         run: pnpm install
@@ -38,7 +39,9 @@ jobs:
         run: node .github/version-script-beta.js
 
       - name: Authenticate to NPM
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN }}" > cli/.npmrc
+        run:
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_ACCESS_TOKEN
+          }}" > cli/.npmrc
 
       - name: Publish Beta to NPM
         run: pnpm pub:beta
@@ -54,5 +57,7 @@ jobs:
       - name: Upload packaged artifact
         uses: actions/upload-artifact@v4
         with:
-          name: npm-package-create-course-app@${{ steps.package-version.outputs.current-version }}-pr-${{ github.event.number }} # encode the PR number into the artifact name
+          name: npm-package-create-course-app@${{
+            steps.package-version.outputs.current-version }}-pr-${{
+            github.event.number }} # encode the PR number into the artifact name
           path: cli/dist/index.js

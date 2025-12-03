@@ -10,7 +10,8 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'release canary')
     name: Build & Publish a canary release
     runs-on: ubuntu-latest
-
+    env:
+      MOTION_PLUS_TOKEN: ${{ secrets.MOTION_PLUS_TOKEN }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
