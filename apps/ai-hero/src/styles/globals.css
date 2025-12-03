@@ -377,3 +377,17 @@ li.task-list-item {
 	);
 	background-size: 5px 5px;
 }
+
+.bg-stripes-muted {
+	background-image: linear-gradient(
+		135deg,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 100%
+	);
+	background-size: 5px 5px;
+}
