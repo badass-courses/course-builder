@@ -64,11 +64,7 @@ export default async function PostPage(props: {
 	return (
 		<div className="">
 			{hasVideo && <PlayerContainer post={post} />}
-			<div
-				className={cn('relative w-full', {
-					'pt-6 sm:pt-14': !hasVideo,
-				})}
-			>
+			<div className={cn('relative w-full', {})}>
 				{/* <div className="relative z-10 mx-auto flex w-full items-center justify-between">
 					{!list ? (
 						<Link
@@ -81,13 +77,15 @@ export default async function PostPage(props: {
 						<div />
 					)}
 				</div> */}
-				<div className="container relative z-10">
+				<div
+					className={cn('container relative z-10 border-x py-6 sm:py-14', {})}
+				>
 					<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 						<div className="mx-auto flex w-full flex-col gap-5">
 							<PostTitle post={post} hasVideo={hasVideo} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-8">
-									<Contributor className="flex" />
+									<Contributor className="flex [&_img]:size-7 sm:[&_img]:size-auto" />
 									{post.fields?.github && (
 										<Button
 											asChild
@@ -141,21 +139,27 @@ export default async function PostPage(props: {
 								},
 							}}
 						/>
-						<div className="mx-auto mt-16 flex w-full flex-wrap items-center justify-center gap-5 pl-5">
-							<strong className="text-lg font-semibold">Share</strong>
-							<Share
-								className="inline-flex rounded-none border-y-0"
-								title={post?.fields.title}
-							/>
-						</div>
-						<PostNextUpFromListPagination
-							className="mt-10"
-							postId={post.id}
-							documentIdsToSkip={list?.resources.map(
-								(resource) => resource.resource.id,
-							)}
-						/>
 					</article>
+				</div>
+				<div className="border-t">
+					<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
+						<strong className="text-base font-medium tracking-tight sm:text-lg">
+							Share
+						</strong>
+						<Share
+							className="w-full border-t sm:w-auto sm:border-t-0"
+							title={post?.fields.title}
+						/>
+					</div>
+				</div>
+				<div className="bg-muted/30 border-t">
+					<PostNextUpFromListPagination
+						className="container mx-auto rounded-none border-x py-10 lg:py-16"
+						postId={post.id}
+						documentIdsToSkip={list?.resources.map(
+							(resource) => resource.resource.id,
+						)}
+					/>
 				</div>
 			</div>
 			{/* {ckSubscriber && product && allowPurchase && pricingDataLoader ? (
@@ -210,7 +214,7 @@ async function PostTitle({
 		<SplitText
 			as="h1"
 			className={cn(
-				'mb-4 text-2xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
+				'mb-4 text-3xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
 				{},
 			)}
 		>
@@ -248,12 +252,13 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="mb-6 flex flex-col items-center justify-center border-b bg-black sm:mb-10"
+					className="flex flex-col items-center justify-center border-b bg-black"
 				>
 					<PostPlayer
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
+						autoPlay={true}
 						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
 						videoResource={videoResource}
 					/>

@@ -34,8 +34,8 @@ export default function Footer() {
 	}
 
 	return (
-		<footer className="flex w-full flex-col items-center justify-center px-5 py-10 sm:py-24">
-			<div className="container flex w-full flex-col gap-12">
+		<footer className="flex w-full flex-col items-center justify-center border-t">
+			<div className="container flex w-full flex-col gap-12 border-x py-10 sm:py-24">
 				{/* Top section */}
 				<div className="flex w-full flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
 					<div className="flex w-full flex-col items-center gap-8 md:items-start lg:flex-row lg:items-center lg:gap-12">

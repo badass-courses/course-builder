@@ -32,8 +32,18 @@ export const Share = ({
 	}
 
 	return (
-		<div className={cn('flex items-center gap-1', className)}>
-			<Button asChild variant="outline" size="icon">
+		<div
+			className={cn(
+				'divide-border flex items-center justify-center gap-0 divide-x rounded-none',
+				className,
+			)}
+		>
+			<Button
+				asChild
+				variant="outline"
+				size="icon"
+				className="size-16 rounded-none border-y-0 border-l border-r bg-transparent shadow-none dark:bg-transparent"
+			>
 				<a
 					href={`https://x.com/intent/tweet?text=${encodeURIComponent(url + `${title ? `${title} ` : ''} by ${config.twitter.handle}`)}`}
 					target="_blank"
@@ -41,20 +51,29 @@ export const Share = ({
 					onClick={() => handleShare('x')}
 				>
 					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 16 16"
-						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
+						className="size-5"
+						fill="none"
+						viewBox="0 0 24 24"
 					>
 						<path
-							d="M9.52373 6.77569L15.4811 0H14.0699L8.89493 5.88203L4.7648 0H0L6.24693 8.89552L0 16H1.4112L6.87253 9.78704L11.2352 16H16M1.92053 1.04127H4.08853L14.0688 15.0099H11.9003"
 							fill="currentColor"
+							d="M2.357 2.781a.975.975 0 0 1 .868-.531H8.1c.313 0 .607.15.79.404l12.675 17.55a.975.975 0 0 1-.79 1.546H15.9a.975.975 0 0 1-.79-.404L2.435 3.796a.975.975 0 0 1-.078-1.015Z"
+							opacity=".4"
+						/>
+						<path
+							fill="currentColor"
+							d="m2.536 20.086 17.55-17.55a.975.975 0 1 1 1.378 1.378l-17.55 17.55a.975.975 0 1 1-1.378-1.378Z"
 						/>
 					</svg>
 				</a>
 			</Button>
-			<Button asChild variant="outline" size="icon">
+			<Button
+				asChild
+				variant="outline"
+				size="icon"
+				className="size-16 rounded-none border-y-0 border-l-0 border-r bg-transparent shadow-none dark:bg-transparent"
+			>
 				<a
 					href={`https://bsky.app/intent/compose?text=${encodeURIComponent(`${title ? `${title} ` : ''} by ${config.bluesky.handle}
 
@@ -64,21 +83,26 @@ export const Share = ({
 					onClick={() => handleShare('bluesky')}
 				>
 					<svg
-						width="20"
-						height="20"
-						viewBox="0 0 64 57"
-						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
+						className="size-5"
+						fill="none"
+						viewBox="0 0 24 24"
 					>
 						<path
 							fill="currentColor"
-							d="M13.873 3.805C21.21 9.332 29.103 20.537 32 26.55v15.882c0-.338-.13.044-.41.867-1.512 4.456-7.418 21.847-20.923 7.944-7.111-7.32-3.819-14.64 9.125-16.85-7.405 1.264-15.73-.825-18.014-9.015C1.12 23.022 0 8.51 0 6.55 0-3.268 8.579-.182 13.873 3.805ZM50.127 3.805C42.79 9.332 34.897 20.537 32 26.55v15.882c0-.338.13.044.41.867 1.512 4.456 7.418 21.847 20.923 7.944 7.111-7.32 3.819-14.64-9.125-16.85 7.405 1.264 15.73-.825 18.014-9.015C62.88 23.022 64 8.51 64 6.55c0-9.818-8.578-6.732-13.873-2.745Z"
+							d="M12 11.496C11.894 11.296 7.455 3 3.504 3c-2.168 0-1.5 5-1 7.5.203 1.01 1 4 5.499 3.5 0 0-3.999.5-3.999 3 0 1.5 2.5 4 4.499 4 1.958 0 3.436-4.314 3.497-4.494.06.18 1.54 4.494 3.497 4.494 2 0 4.499-2.5 4.499-4 0-2.5-3.999-3-3.999-3 4.499.5 5.297-2.49 5.499-3.5.5-2.5 1.168-7.5-1-7.5-3.95 0-8.39 8.296-8.496 8.496Z"
+							opacity=".4"
 						/>
 					</svg>
 				</a>
 			</Button>
 
-			<Button asChild variant="outline" size="icon">
+			<Button
+				asChild
+				variant="outline"
+				size="icon"
+				className="size-16 rounded-none border-y-0 border-l-0 border-r bg-transparent shadow-none dark:bg-transparent"
+			>
 				<a
 					href={`https://linkedin.com/shareArticle?mini=true&url=${url}?author=${config.author}`}
 					target="_blank"
@@ -86,22 +110,26 @@ export const Share = ({
 					onClick={() => handleShare('linkedin')}
 				>
 					<svg
-						width="20"
-						height="20"
-						viewBox="0 0 20 20"
-						fill="none"
 						xmlns="http://www.w3.org/2000/svg"
+						className="size-5"
+						fill="none"
+						viewBox="0 0 24 24"
 					>
 						<path
-							d="M1 2.99134C1 2.41413 1.20271 1.93794 1.60811 1.56277C2.01351 1.18758 2.54055 1 3.18919 1C3.82626 1 4.34169 1.18469 4.73552 1.55411C5.14092 1.93506 5.34363 2.43145 5.34363 3.04329C5.34363 3.5974 5.14672 4.05915 4.7529 4.42857C4.3475 4.80952 3.81467 5 3.15444 5H3.13707C2.49999 5 1.98456 4.80952 1.59073 4.42857C1.19691 4.04762 1 3.56854 1 2.99134ZM1.22587 18.1429V6.57576H5.08301V18.1429H1.22587ZM7.22008 18.1429H11.0772V11.684C11.0772 11.2799 11.1236 10.9682 11.2162 10.7489C11.3784 10.3564 11.6245 10.0245 11.9546 9.75324C12.2847 9.48195 12.6988 9.34632 13.1969 9.34632C14.4942 9.34632 15.1429 10.2179 15.1429 11.961V18.1429H19V11.5108C19 9.8023 18.5946 8.50649 17.7838 7.62337C16.973 6.74026 15.9015 6.2987 14.5695 6.2987C13.0753 6.2987 11.9112 6.93939 11.0772 8.22078V8.25541H11.0598L11.0772 8.22078V6.57576H7.22008C7.24324 6.94516 7.25483 8.09378 7.25483 10.0216C7.25483 11.9495 7.24324 14.6565 7.22008 18.1429Z"
 							fill="currentColor"
+							d="M5 9h-.5c-.943 0-1.414 0-1.707.293C2.5 9.586 2.5 10.057 2.5 11v8.5c0 .943 0 1.414.293 1.707.293.293.764.293 1.707.293H5c.943 0 1.414 0 1.707-.293C7 20.914 7 20.443 7 19.5V11c0-.943 0-1.414-.293-1.707C6.414 9 5.943 9 5 9Zm2-4.25a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+						/>
+						<path
+							fill="currentColor"
+							d="M11.826 9H11c-.943 0-1.414 0-1.707.293C9 9.586 9 10.057 9 11v8.5c0 .943 0 1.414.293 1.707.293.293.764.293 1.707.293h.5c.943 0 1.414 0 1.707-.293.293-.293.293-.764.293-1.707V16c0-1.657.528-3 2.088-3 .78 0 1.412.672 1.412 1.5V19c0 .943 0 1.414.293 1.707.293.293.764.293 1.707.293h.499c.942 0 1.414 0 1.707-.293.292-.293.293-.764.293-1.706l.001-5.5c0-2.486-2.364-4.5-4.703-4.5-1.332 0-2.52.652-3.297 1.673 0-.63 0-.945-.137-1.179a1 1 0 0 0-.358-.358C12.771 9 12.456 9 11.826 9Z"
+							opacity=".4"
 						/>
 					</svg>
 				</a>
 			</Button>
 			<Button
+				className="h-16 text-nowrap rounded-none border-y-0 border-l-0 border-r bg-transparent shadow-none dark:bg-transparent"
 				variant="outline"
-				className="text-nowrap"
 				onClick={async () => {
 					await navigator.clipboard.writeText(url)
 					await handleShare('copy')

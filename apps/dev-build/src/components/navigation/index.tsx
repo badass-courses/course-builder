@@ -86,11 +86,11 @@ const Navigation = ({ className }: { className?: string }) => {
 	return (
 		<header
 			className={cn(
-				'dark:border-border relative z-50 flex h-[var(--nav-height)] w-full items-stretch shadow-sm dark:shadow-[0_1px_0_0_var(--border)]',
+				'dark:border-border relative z-50 flex h-[var(--nav-height)] w-full items-stretch border-b',
 				className,
 			)}
 		>
-			<div className="container flex items-center justify-between">
+			<div className="container flex items-center justify-between border-x px-3 sm:px-8">
 				<div className="flex items-center">
 					<Link href="/" tabIndex={isRoot ? -1 : 0}>
 						<Logo />

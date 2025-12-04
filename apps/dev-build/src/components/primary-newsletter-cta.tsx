@@ -71,7 +71,7 @@ export const PrimaryNewsletterCta: React.FC<
 			id={id}
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-muted ring-border not-prose flex flex-col items-center justify-center rounded-xl p-5 ring-1 sm:p-10',
+				'not-prose flex flex-col items-center justify-center',
 				className,
 			)}
 		>
@@ -105,29 +105,28 @@ export const PrimaryNewsletterCta: React.FC<
 						</p>
 					</div>
 				)}
-				<div className="bg-muted ring-border w-full rounded-xl p-1 ring-1">
-					<div
-						className={cn(
-							'bg-card ring-border flex w-full flex-col gap-2 rounded-lg px-5 py-5 shadow-sm ring-1',
-							{
-								'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
-									subscriber,
-							},
-						)}
+
+				<div
+					className={cn(
+						'flex w-full flex-col items-center justify-center gap-10',
+						{
+							'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
+								subscriber,
+						},
+					)}
+				>
+					<SubscribeToConvertkitForm
+						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
+						actionLabel={actionLabel}
+						className="flex w-full flex-col items-start gap-2 text-left lg:max-w-2xl lg:flex-row lg:items-end [&_button]:h-16 [&_button]:w-full [&_button]:rounded-md lg:[&_button]:w-auto [&_input]:h-16 [&_input]:rounded-md"
+					/>
+					<p
+						data-nospam=""
+						className="text-muted-foreground inline-flex items-center text-sm"
 					>
-						<SubscribeToConvertkitForm
-							onSuccess={onSuccess ? onSuccess : handleOnSuccess}
-							actionLabel={actionLabel}
-							className="flex w-full max-w-sm flex-col items-start gap-3 text-left lg:max-w-full lg:flex-row lg:items-end"
-						/>
-						<p
-							data-nospam=""
-							className="text-muted-foreground inline-flex items-center text-xs sm:text-xs"
-						>
-							<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your
-							privacy. Unsubscribe at any time.
-						</p>
-					</div>
+						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
+						Unsubscribe at any time.
+					</p>
 				</div>
 			</div>
 		</section>

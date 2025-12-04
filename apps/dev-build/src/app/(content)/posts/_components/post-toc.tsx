@@ -130,7 +130,7 @@ export default function PostToC({ markdown }: { markdown: string }) {
 					</div>
 					<p
 						className={cn(
-							'relative max-w-[300px] truncate text-ellipsis text-nowrap opacity-80 transition ease-in-out sm:max-w-full',
+							'relative max-w-[180px] truncate overflow-ellipsis text-nowrap opacity-80 transition ease-in-out sm:max-w-full',
 							{
 								'translate-x-1 opacity-0': isOpen,
 							},

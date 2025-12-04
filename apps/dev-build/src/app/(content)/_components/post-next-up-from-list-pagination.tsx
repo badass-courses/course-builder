@@ -16,14 +16,21 @@ import { useList } from '../[post]/_components/list-provider'
 import { useProgress } from '../[post]/_components/progress-provider'
 import Recommendations from '../[post]/_components/recommendations'
 
+/**
+ * Displays navigation to the next resource in a list, or falls back to AI recommendations.
+ * Supports exposing the resolved next URL for auto-continue functionality.
+ */
 export default function PostNextUpFromListPagination({
 	postId,
 	className,
 	documentIdsToSkip,
+	onNextUrlResolved,
 }: {
 	postId: string
 	className?: string
 	documentIdsToSkip?: string[]
+	/** Called when the next URL is resolved (from list or recommendations) */
+	onNextUrlResolved?: (url: string | null) => void
 }) {
 	const router = useRouter()
 	const { list } = useList()
@@ -34,11 +41,21 @@ export default function PostNextUpFromListPagination({
 	)
 	const { data: session } = useSession()
 
+	const nextUrl = nextUp?.resource?.fields?.slug
+		? `/${nextUp.resource.fields.slug}`
+		: null
+
 	React.useEffect(() => {
 		if (nextUp) {
 			router.prefetch(`/${nextUp.resource.fields?.slug}`)
 		}
 	}, [nextUp, list, router])
+
+	React.useEffect(() => {
+		if (nextUrl) {
+			onNextUrlResolved?.(nextUrl)
+		}
+	}, [nextUrl, onNextUrlResolved])
 
 	if (!nextUp)
 		return (
@@ -46,6 +63,7 @@ export default function PostNextUpFromListPagination({
 				postId={postId}
 				className={className}
 				documentIdsToSkip={documentIdsToSkip}
+				onNextUrlResolved={onNextUrlResolved}
 			/>
 		)
 

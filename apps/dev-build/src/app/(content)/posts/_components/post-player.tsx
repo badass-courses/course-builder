@@ -21,6 +21,7 @@ import { type VideoResource } from '@coursebuilder/core/schemas/video-resource'
 import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
+import { AutoContinueCountdown } from '../../_components/auto-continue-countdown'
 import PostNextUpFromListPagination from '../../_components/post-next-up-from-list-pagination'
 import { useList } from '../../[post]/_components/list-provider'
 import { useProgress } from '../../[post]/_components/progress-provider'
@@ -32,6 +33,7 @@ export function PostPlayer({
 	postId,
 	thumbnailTime,
 	title,
+	autoPlay,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
@@ -39,6 +41,7 @@ export function PostPlayer({
 	postId: string
 	thumbnailTime?: number
 	title?: string
+	autoPlay?: boolean
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
@@ -60,6 +63,9 @@ export function PostPlayer({
 	const { list } = useList()
 	const nextUp = list && getNextUpResourceFromList(list, postId)
 	const router = useRouter()
+	const [autoContinueUrl, setAutoContinueUrl] = React.useState<string | null>(
+		null,
+	)
 
 	React.useEffect(() => {
 		setMuxPlayerRef(playerRef)
@@ -115,6 +121,7 @@ export function PostPlayer({
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 		},
+		autoPlay,
 	} as MuxPlayerProps
 
 	const playbackId =
@@ -147,10 +154,15 @@ export function PostPlayer({
 						className,
 					)}
 				>
+					<AutoContinueCountdown
+						nextUrl={autoContinueUrl}
+						className="mb-1 sm:mb-4"
+					/>
 					<PostNextUpFromListPagination
 						postId={postId}
 						className="text-white! mt-0 border-0 bg-transparent px-0 py-0 dark:bg-transparent"
 						documentIdsToSkip={list?.resources.map((resource) => resource.id)}
+						onNextUrlResolved={setAutoContinueUrl}
 					/>
 				</div>
 			)}
