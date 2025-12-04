@@ -20,7 +20,7 @@ export const cohortEntitlementSyncUser = inngest.createFunction(
 		name: 'Sync Entitlements for Single User',
 		// Limit concurrency to avoid overwhelming the database
 		concurrency: {
-			limit: 10,
+			limit: 5,
 		},
 		retries: 3,
 	},
