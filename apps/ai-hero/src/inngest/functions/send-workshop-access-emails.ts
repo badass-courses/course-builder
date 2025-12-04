@@ -20,7 +20,7 @@ export const sendWorkshopAccessEmails = inngest.createFunction(
 		id: 'send-workshop-access-emails',
 		name: 'Schedule Workshop Access Emails',
 	},
-	{ cron: '0 0 * * *' }, // Run at midnight UTC
+	{ cron: '30 0 * * *' }, // Run at 0:30 UTC
 	async ({ event, step }) => {
 		const startTime = Date.now()
 		let totalEmailsSent = 0
