@@ -78,7 +78,9 @@ type Props = {
 
 const Home = async (props: Props) => {
 	const isCommerceEnabled = await commerceEnabled()
-	const page = await getPage(isCommerceEnabled ? 'root-selling-live' : 'root')
+	const page = await getPage(
+		isCommerceEnabled ? 'root-selling-workshop' : 'root',
+	)
 
 	const firstPageResource = page?.resources?.[0] &&
 		page?.resources?.[0].resource?.type !== 'videoResource' && {
