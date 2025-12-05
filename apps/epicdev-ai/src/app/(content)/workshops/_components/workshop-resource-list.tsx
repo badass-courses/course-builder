@@ -58,6 +58,7 @@ export function WorkshopResourceList(props: Props) {
 
 	const workshopNavigation = useWorkshopNavigation()
 	const { moduleProgress } = useModuleProgress()
+	const params = useParams()
 
 	const { data: abilityRules, status: abilityStatus } =
 		api.ability.getCurrentAbilityRules.useQuery(
@@ -206,42 +207,109 @@ export function WorkshopResourceList(props: Props) {
 						}}
 						ref={scrollAreaRef}
 					>
-						<Accordion
-							type="single"
-							collapsible
-							className={cn('flex flex-col', wrapperClassName)}
-							defaultValue={sectionId || resources[0]?.id}
-						>
-							<ol className="divide-border dark:divide-foreground/5 divide-y">
-								{resources.map((resource: NavigationResource, i: number) => {
-									return resource.type === 'section' ? (
-										<SectionResource
-											key={resource.id}
-											section={resource}
-											moduleId={workshopNavigation.id}
-											moduleProgress={moduleProgress}
-											ability={ability}
-											abilityStatus={abilityStatus}
-											currentLessonSlug={props.currentLessonSlug}
-											depth={0}
-											index={i}
-										/>
-									) : (
-										// top-level lessons
-										<LessonResource
-											lesson={resource}
-											index={i}
-											moduleProgress={moduleProgress}
-											moduleId={workshopNavigation.id}
-											ability={ability}
-											abilityStatus={abilityStatus}
-											key={resource.id}
-											depth={0}
-										/>
+						<div className={cn('flex flex-col', wrapperClassName)}>
+							{resources.map((resource: NavigationResource, i: number) => {
+								const isWorkshopSection =
+									resource.type === 'section' &&
+									resource.id.startsWith('workshop-section-')
+
+								if (isWorkshopSection) {
+									// Get the workshop slug from the stored property
+									const workshopSlug =
+										(resource as any)._workshopSlug ||
+										(resource as any).slug?.replace('workshop-', '') ||
+										(params.module as string)
+
+									return (
+										<div key={resource.id} className={cn('mt-8 first:mt-0')}>
+											{/* Workshop title as heading link */}
+											<Link
+												href={`/workshops/${workshopSlug}`}
+												className="hover:text-primary mb-4 block"
+											>
+												<h3 className="font-heading text-lg font-semibold">
+													{resource.title}
+												</h3>
+											</Link>
+
+											{/* Independent accordion for this workshop's content */}
+											<div className="[&_*]:border-x-0 [&_*]:border-l-0 [&_*]:border-r-0">
+												<Accordion
+													type="single"
+													collapsible
+													className="[&>*]:!border-x-0 [&>*]:!border-l-0 [&>*]:!border-r-0"
+												>
+													<ol className="divide-border dark:divide-foreground/5 divide-y [&>li]:!border-x-0 [&>li]:!border-b-0 [&>li]:!border-l-0 [&>li]:!border-r-0 [&>li]:!border-t-0">
+														{resource.resources.map(
+															(item, itemIndex: number) => {
+																if (item.type === 'section') {
+																	return (
+																		<SectionResource
+																			key={item.id}
+																			section={item}
+																			moduleId={workshopNavigation.id}
+																			moduleProgress={moduleProgress}
+																			ability={ability}
+																			abilityStatus={abilityStatus}
+																			currentLessonSlug={
+																				props.currentLessonSlug
+																			}
+																			depth={0}
+																			index={itemIndex}
+																		/>
+																	)
+																}
+																return (
+																	<LessonResource
+																		key={item.id}
+																		lesson={item}
+																		index={itemIndex}
+																		moduleProgress={moduleProgress}
+																		moduleId={workshopNavigation.id}
+																		ability={ability}
+																		abilityStatus={abilityStatus}
+																		depth={0}
+																	/>
+																)
+															},
+														)}
+													</ol>
+												</Accordion>
+											</div>
+										</div>
 									)
-								})}
-							</ol>
-						</Accordion>
+								}
+
+								// Regular sections and lessons (non-workshop)
+								return (
+									<div key={resource.id}>
+										{resource.type === 'section' ? (
+											<SectionResource
+												section={resource}
+												moduleId={workshopNavigation.id}
+												moduleProgress={moduleProgress}
+												ability={ability}
+												abilityStatus={abilityStatus}
+												currentLessonSlug={props.currentLessonSlug}
+												depth={0}
+												index={i}
+											/>
+										) : (
+											// top-level lessons
+											<LessonResource
+												lesson={resource}
+												index={i}
+												moduleProgress={moduleProgress}
+												moduleId={workshopNavigation.id}
+												ability={ability}
+												abilityStatus={abilityStatus}
+												depth={0}
+											/>
+										)}
+									</div>
+								)
+							})}
+						</div>
 					</ScrollArea>
 				</div>
 				{/* {isCollapsible && isSidebarCollapsed && (
@@ -376,14 +444,38 @@ function SectionResource({
 		? `${numberPrefix}.${(index ?? 0) + 1}`
 		: `${(index ?? 0) + 1}`
 
+	// Check if this is a workshop-level section (created by multi-workshop logic)
+	const isWorkshopSection = section.id.startsWith('workshop-section-')
+
+	// Use div for workshop sections (since they're wrapped in divs), li for regular sections
+	const WrapperTag = isWorkshopSection ? 'div' : 'li'
+
 	return (
-		<li key={`${section.id}-accordion`} className="bg-card">
-			<AccordionItem value={section.id} className="border-0">
+		<WrapperTag
+			key={`${section.id}-accordion`}
+			className={cn('bg-card', {
+				'mt-8 first:mt-0': isWorkshopSection,
+			})}
+		>
+			{isWorkshopSection && (
+				<div className="border-border dark:border-foreground/5 border-t pt-6">
+					<h4 className="text-muted-foreground mb-3 px-3 text-xs font-semibold uppercase tracking-wider">
+						Workshop
+					</h4>
+				</div>
+			)}
+			<AccordionItem
+				value={section.id}
+				className="border-0 border-x-0 border-l-0 border-r-0"
+			>
 				<AccordionTrigger
 					className={cn(
-						'relative flex w-full items-center rounded-none py-3 pr-3.5 font-sans text-sm font-semibold transition ease-out hover:no-underline',
+						'relative flex w-full items-center rounded-none pr-3.5 font-sans transition ease-out hover:no-underline',
 						'hover:bg-muted/50 dark:hover:bg-foreground/10 hover:text-primary',
 						{
+							// Workshop sections get larger, bolder styling
+							'py-4 text-base font-bold': isWorkshopSection,
+							'py-3 text-sm font-semibold': !isWorkshopSection,
 							'pl-3': depth === 0,
 							'pl-7': depth === 1,
 							'pl-11': depth >= 2,
@@ -392,7 +484,10 @@ function SectionResource({
 					)}
 				>
 					<div className="flex items-baseline">
-						{isSectionCompleted ? (
+						{isWorkshopSection ? (
+							// Don't show numbers for workshop sections
+							<span className="w-0" />
+						) : isSectionCompleted ? (
 							<div className="flex w-8 shrink-0 items-center justify-center pr-1">
 								<Check className="h-4 w-4 text-teal-500 dark:text-teal-300" />
 							</div>
@@ -405,7 +500,12 @@ function SectionResource({
 					</div>
 				</AccordionTrigger>
 				{section.resources.length > 0 && (
-					<AccordionContent className="border-t pb-0">
+					<AccordionContent
+						className={cn('pb-0', {
+							'border-t': !isWorkshopSection,
+							'border-t-0': isWorkshopSection,
+						})}
+					>
 						{hasNestedSections ? (
 							// Wrap in Accordion when there are nested sections
 							<Accordion
@@ -471,7 +571,7 @@ function SectionResource({
 					</AccordionContent>
 				)}
 			</AccordionItem>
-		</li>
+		</WrapperTag>
 	)
 }
 
@@ -602,10 +702,14 @@ function LessonResource({
 							</>
 						)
 
+						// Use the workshop slug if available (for multi-workshop products),
+						// otherwise use the current module
+						const workshopSlug = (lesson as any)._workshopSlug || params.module
+
 						return canViewLesson ? (
 							<Link
 								className={cn('hover:text-primary', baseStyles)}
-								href={`/workshops/${params.module}/${lesson.slug}`}
+								href={`/workshops/${workshopSlug}/${lesson.slug}`}
 								prefetch
 							>
 								{rowContent}
@@ -644,7 +748,9 @@ function LessonResource({
 								},
 							)}
 							prefetch={true}
-							href={`/workshops/${params.module}/${lesson.slug}`}
+							href={`/workshops/${
+								(lesson as any)._workshopSlug || params.module
+							}/${lesson.slug}`}
 						>
 							Problem
 						</Link>
@@ -663,7 +769,9 @@ function LessonResource({
 									},
 								)}
 								prefetch={true}
-								href={`/workshops/${params.module}/${lesson.slug}/exercise`}
+								href={`/workshops/${
+									(lesson as any)._workshopSlug || params.module
+								}/${lesson.slug}/exercise`}
 							>
 								Exercise
 							</Link>
@@ -683,7 +791,9 @@ function LessonResource({
 									},
 								)}
 								prefetch={true}
-								href={`/workshops/${params.module}/${lesson.slug}/solution`}
+								href={`/workshops/${
+									(lesson as any)._workshopSlug || params.module
+								}/${lesson.slug}/solution`}
 							>
 								Solution
 							</Link>

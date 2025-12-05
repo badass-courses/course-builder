@@ -5,6 +5,7 @@ import {
 	type ProductType,
 } from '@/inngest/config/product-types'
 import { EntitlementSourceType } from '@/lib/entitlements'
+import { getAllWorkshopsInProduct } from '@/lib/workshops-query'
 import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 /**
@@ -91,26 +92,58 @@ export async function createResourceEntitlements(
 			})
 		}
 	} else {
-		// Single workshop resource
-		const entitlementId = await config.createEntitlement({
-			userId: user.id,
-			resourceId: resource.id,
-			sourceId: purchase.id,
-			organizationId,
-			organizationMembershipId: orgMembership.id,
-			entitlementType: contentAccessEntitlementType.id,
-			sourceType: EntitlementSourceType.PURCHASE,
-			metadata: {
-				contentIds: [resource.id],
-			},
-		})
+		// Check if this is a multi-workshop product (special case for epic-mcp-from-scratch-to-production)
+		const workshopSlug = resource.fields?.slug || resource.id
+		const isMultiWorkshopProduct =
+			workshopSlug === 'epic-mcp-from-scratch-to-production'
 
-		createdEntitlements.push({
-			entitlementId,
-			resourceId: resource.id,
-			resourceType: resource.type,
-			resourceTitle: resource.fields?.title,
-		})
+		if (isMultiWorkshopProduct) {
+			// Get all workshops in the product and create entitlements for all of them
+			const allWorkshops = await getAllWorkshopsInProduct(workshopSlug)
+
+			for (const workshop of allWorkshops) {
+				const entitlementId = await config.createEntitlement({
+					userId: user.id,
+					resourceId: workshop.id,
+					sourceId: purchase.id,
+					organizationId,
+					organizationMembershipId: orgMembership.id,
+					entitlementType: contentAccessEntitlementType.id,
+					sourceType: EntitlementSourceType.PURCHASE,
+					metadata: {
+						contentIds: [workshop.id],
+					},
+				})
+
+				createdEntitlements.push({
+					entitlementId,
+					resourceId: workshop.id,
+					resourceType: workshop.type,
+					resourceTitle: workshop.fields?.title,
+				})
+			}
+		} else {
+			// Single workshop resource
+			const entitlementId = await config.createEntitlement({
+				userId: user.id,
+				resourceId: resource.id,
+				sourceId: purchase.id,
+				organizationId,
+				organizationMembershipId: orgMembership.id,
+				entitlementType: contentAccessEntitlementType.id,
+				sourceType: EntitlementSourceType.PURCHASE,
+				metadata: {
+					contentIds: [resource.id],
+				},
+			})
+
+			createdEntitlements.push({
+				entitlementId,
+				resourceId: resource.id,
+				resourceType: resource.type,
+				resourceTitle: resource.fields?.title,
+			})
+		}
 	}
 
 	return createdEntitlements
