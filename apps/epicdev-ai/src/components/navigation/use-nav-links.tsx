@@ -55,17 +55,17 @@ export type NavigationMenuData = {
  */
 export function useNavLinks(): NavigationMenuData {
 	const courses: CourseItem[] = [
-		// {
-		// 	href: '/workshops/epic-mcp-from-scratch-to-production',
-		// 	image: {
-		// 		src: 'https://res.cloudinary.com/epic-web/image/upload/v1764149033/workshops/workshop-bmisp/epic-mcp-thumbnail_2x.jpg',
-		// 		alt: 'Epic MCP: Go from Scratch to Production',
-		// 		width: 960 / 6,
-		// 		height: 540 / 6,
-		// 	},
-		// 	title: 'Epic MCP: Go from Scratch to Production',
-		// 	description: 'The future of AI integration is here.',
-		// },
+		{
+			href: '/workshops/epic-mcp-from-scratch-to-production',
+			image: {
+				src: 'https://res.cloudinary.com/epic-web/image/upload/v1764149033/workshops/workshop-bmisp/epic-mcp-thumbnail_2x.jpg',
+				alt: 'Epic MCP: Go from Scratch to Production',
+				width: 960 / 6,
+				height: 540 / 6,
+			},
+			title: 'Epic MCP: Go from Scratch to Production',
+			description: 'The future of AI integration is here.',
+		},
 	]
 
 	const cohorts: CohortItem[] = []

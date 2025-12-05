@@ -236,7 +236,7 @@ const Home = async (props: Props) => {
 										{...props}
 									/>
 								),
-								Pricing: (props) => (
+								Pricing: ({ productId = 'product-zir2q', ...props }) => (
 									<React.Suspense
 										fallback={
 											<div className="flex h-full w-full items-center justify-center px-5 py-10 text-center">
@@ -250,11 +250,7 @@ const Home = async (props: Props) => {
 												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
 											>
 												<PricingWidgetServer
-													productId={
-														process.env.NODE_ENV === 'development'
-															? 'product-zir2q' // 'product-30fvh'
-															: 'product-zir2q'
-													}
+													productId={productId}
 													searchParams={searchParams}
 													{...props}
 												/>
