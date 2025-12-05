@@ -210,10 +210,25 @@ export default async function ModulePage(props: Props) {
 									<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
 										{workshop.fields?.coverImage?.url && (
 											<div className="mb-5 flex md:hidden">
-												<WorkshopImage
+												{/* <WorkshopImage
 													imageUrl={workshop.fields.coverImage.url}
 													abilityLoader={abilityLoader}
-												/>
+												/> */}
+												{product.type === 'self-paced' &&
+												!pricingProps.hasPurchasedCurrentProduct ? (
+													<MDXVideo
+														poster={workshop.fields?.coverImage?.url}
+														resourceId="introducingepicmcp-m6nYgLXNm.mp4"
+														className="mb-0 border-none"
+													/>
+												) : (
+													workshop.fields?.coverImage?.url && (
+														<WorkshopImage
+															imageUrl={workshop.fields.coverImage.url}
+															abilityLoader={abilityLoader}
+														/>
+													)
+												)}
 											</div>
 										)}
 										<WorkshopBreadcrumb />
