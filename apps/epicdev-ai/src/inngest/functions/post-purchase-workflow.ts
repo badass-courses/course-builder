@@ -427,6 +427,7 @@ export const postPurchaseWorkflow = inngest.createFunction(
 									organizationId,
 									orgMembership,
 									contentAccessEntitlementType,
+									product,
 								},
 							)
 

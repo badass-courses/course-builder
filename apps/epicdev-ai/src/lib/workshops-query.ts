@@ -517,20 +517,190 @@ function transformToNavigationStructure(
 
 export const getCachedWorkshopNavigation = unstable_cache(
 	async (slug: string) => getWorkshopNavigation(slug),
-	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
+	['workshop-navigation'],
+	{ revalidate: 60, tags: ['workshop', 'workshop-navigation'] },
 )
 
 export async function getWorkshopNavigation(
 	moduleSlugOrId: string,
 	moduleType: 'tutorial' | 'workshop' = 'workshop',
 ): Promise<WorkshopNavigation | null> {
+	// Special case: For "epic-mcp-from-scratch-to-production", we need to show content from all workshops in the product
+	if (moduleSlugOrId === 'epic-mcp-from-scratch-to-production') {
+		const multiNav = await getMultiWorkshopNavigation(
+			moduleSlugOrId,
+			moduleType,
+		)
+		// If multi-workshop navigation fails or returns empty, fall back to single workshop
+		if (multiNav && multiNav.resources && multiNav.resources.length > 0) {
+			return multiNav
+		}
+		await log.warn(
+			'getWorkshopNavigation: multi-workshop navigation returned empty, falling back to single workshop',
+			{ moduleSlugOrId },
+		)
+	}
+
 	const workshopNavigation = await getAllWorkshopLessonsWithSectionInfo(
 		moduleSlugOrId,
 		moduleType,
 	)
 
 	return workshopNavigation
+}
+
+/**
+ * Get navigation data combining all workshops in a product
+ * Used for multi-workshop products like "epic-mcp-from-scratch-to-production"
+ */
+async function getMultiWorkshopNavigation(
+	moduleSlugOrId: string,
+	moduleType: 'tutorial' | 'workshop' = 'workshop',
+): Promise<WorkshopNavigation | null> {
+	const allWorkshops = await getAllWorkshopsInProduct(moduleSlugOrId)
+
+	await log.info('getMultiWorkshopNavigation', {
+		moduleSlugOrId,
+		workshopsFound: allWorkshops.length,
+		workshopIds: allWorkshops.map((w) => w.id),
+		workshopSlugs: allWorkshops.map((w) => w.fields?.slug || w.id),
+	})
+
+	if (allWorkshops.length === 0) {
+		// Fallback to single workshop if no product found
+		await log.info(
+			'getMultiWorkshopNavigation: no workshops in product, falling back to single workshop',
+			{ moduleSlugOrId },
+		)
+		return await getAllWorkshopLessonsWithSectionInfo(
+			moduleSlugOrId,
+			moduleType,
+		)
+	}
+
+	// Get navigation for each workshop
+	const navigationPromises = allWorkshops.map((workshop) =>
+		getAllWorkshopLessonsWithSectionInfo(
+			workshop.fields?.slug || workshop.id,
+			moduleType,
+		),
+	)
+
+	const navigations = await Promise.all(navigationPromises)
+	const validNavigations = navigations.filter(
+		(nav): nav is WorkshopNavigation => nav !== null,
+	)
+
+	await log.info('getMultiWorkshopNavigation: navigations', {
+		totalNavigations: navigations.length,
+		validNavigations: validNavigations.length,
+		resourcesCounts: validNavigations.map((nav) => nav.resources?.length || 0),
+	})
+
+	if (validNavigations.length === 0) {
+		await log.error('getMultiWorkshopNavigation: no valid navigations found', {
+			moduleSlugOrId,
+			totalNavigations: navigations.length,
+		})
+		return null
+	}
+
+	// Use the first workshop as the base (the one being viewed)
+	const baseNavigation = validNavigations[0]
+	if (!baseNavigation) {
+		await log.error('getMultiWorkshopNavigation: baseNavigation is null', {
+			moduleSlugOrId,
+		})
+		return null
+	}
+
+	// Group resources by workshop - create a section for each workshop
+	const workshopSections: any[] = []
+	const seenResourceIds = new Set<string>()
+
+	for (let i = 0; i < validNavigations.length; i++) {
+		const nav = validNavigations[i]
+		const workshop = allWorkshops[i]
+
+		if (!nav || !workshop) continue
+
+		const workshopTitle = workshop.fields?.title || nav.title || 'Workshop'
+		const workshopSlug = workshop.fields?.slug || workshop.id
+
+		// Get all resources from this workshop
+		const workshopResources: any[] = []
+		if (nav.resources && nav.resources.length > 0) {
+			for (const resource of nav.resources) {
+				if (!seenResourceIds.has(resource.id)) {
+					// Update lesson slugs to point to the correct workshop
+					const updatedResource = updateResourceWorkshopSlug(
+						resource,
+						workshopSlug,
+					)
+					workshopResources.push(updatedResource)
+					seenResourceIds.add(resource.id)
+				}
+			}
+		}
+
+		if (workshopResources.length > 0) {
+			// Create a section for this workshop
+			const workshopSection: any = {
+				id: `workshop-section-${workshop.id}`,
+				slug: `workshop-${workshopSlug}`,
+				title: workshopTitle,
+				position: i,
+				type: 'section' as const,
+				resources: workshopResources,
+				// Store the actual workshop slug for linking
+				_workshopSlug: workshopSlug,
+			}
+
+			workshopSections.push(workshopSection)
+		}
+	}
+
+	await log.info('getMultiWorkshopNavigation: combined resources', {
+		totalWorkshopSections: workshopSections.length,
+		resourcesPerSection: workshopSections.map((s) => s.resources.length),
+	})
+
+	// Return combined navigation with workshop sections
+	const result = {
+		...baseNavigation,
+		resources: workshopSections,
+	}
+
+	await log.info('getMultiWorkshopNavigation: returning result', {
+		resultResourcesCount: result.resources.length,
+	})
+
+	return result
+}
+
+/**
+ * Recursively update resource slugs to point to the correct workshop
+ * This ensures links work correctly when content is from a different workshop
+ */
+function updateResourceWorkshopSlug(resource: any, workshopSlug: string): any {
+	if (resource.type === 'section') {
+		// Recursively update nested resources in sections
+		return {
+			...resource,
+			resources: resource.resources.map((r: any) =>
+				updateResourceWorkshopSlug(r, workshopSlug),
+			),
+		}
+	} else if (resource.type === 'lesson' || resource.type === 'post') {
+		// For lessons and posts, we keep the original slug but store the workshop slug
+		// The WorkshopResourceList component will use params.module for the URL
+		return {
+			...resource,
+			// Store the original workshop slug for reference
+			_workshopSlug: workshopSlug,
+		}
+	}
+	return resource
 }
 
 export const getCachedWorkshopProduct = unstable_cache(
@@ -594,6 +764,36 @@ LIMIT 1;`
 	}
 
 	return parsedProduct.data
+}
+
+/**
+ * Get all workshops/resources in a product for a given workshop
+ * This is used for multi-workshop products where we need to show content from all workshops
+ */
+export async function getAllWorkshopsInProduct(
+	workshopIdOrSlug: string,
+): Promise<ContentResource[]> {
+	const product = await getWorkshopProduct(workshopIdOrSlug)
+
+	if (!product) {
+		return []
+	}
+
+	// Get all resources associated with this product
+	const productResources = await db.query.contentResourceProduct.findMany({
+		where: eq(contentResourceProduct.productId, product.id),
+		with: {
+			resource: true,
+		},
+		orderBy: asc(contentResourceProduct.position),
+	})
+
+	// Filter to only workshops and return them
+	const workshops = productResources
+		.map((pr) => pr.resource)
+		.filter((resource) => resource.type === 'workshop')
+
+	return workshops as ContentResource[]
 }
 
 export async function getWorkshopCohort(workshopIdOrSlug: string) {
