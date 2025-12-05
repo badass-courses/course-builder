@@ -141,7 +141,6 @@ const addEntitlementsToTarget = async (
 				organizationId: targetOrganization.id,
 				orgMembership: targetMembership,
 				contentAccessEntitlementType,
-				product,
 			},
 		)
 

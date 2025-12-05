@@ -23,7 +23,6 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import {
-	getAllWorkshopsInProduct,
 	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
 } from '@/lib/workshops-query'
@@ -48,7 +47,6 @@ import {
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { ConnectToDiscord } from '../_components/connect-to-discord'
-import { MultiWorkshopContent } from '../_components/multi-workshop-content'
 import { WorkshopBodyWithPricing } from '../_components/workshop-body-with-pricing'
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
@@ -176,13 +174,6 @@ export default async function ModulePage(props: Props) {
 	}
 
 	const product = await getCachedWorkshopProduct(params.module)
-	// Check if this is a multi-workshop product
-	const isMultiWorkshopProduct =
-		params.module === 'epic-mcp-from-scratch-to-production'
-	const allWorkshopsInProduct = isMultiWorkshopProduct
-		? await getAllWorkshopsInProduct(params.module)
-		: []
-
 	// For self-paced products, body is compiled inside WorkshopPricing with pricing-aware components
 	// For other products, compile body here without pricing context
 	const { content: body } =
@@ -262,20 +253,13 @@ export default async function ModulePage(props: Props) {
 										<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
 											Content
 										</h3>
-										{isMultiWorkshopProduct &&
-										allWorkshopsInProduct.length > 1 ? (
-											<div className="border-border overflow-hidden rounded-lg border pb-0">
-												<MultiWorkshopContent />
-											</div>
-										) : (
-											<WorkshopResourceList
-												isCollapsible={false}
-												className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
-												withHeader={false}
-												maxHeight="h-auto"
-												wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
-											/>
-										)}
+										<WorkshopResourceList
+											isCollapsible={false}
+											className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
+											withHeader={false}
+											maxHeight="h-auto"
+											wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
+										/>
 									</div>
 								</div>
 
@@ -319,20 +303,13 @@ export default async function ModulePage(props: Props) {
 												/>
 											) : (
 												<>
-													{isMultiWorkshopProduct &&
-													allWorkshopsInProduct.length > 1 ? (
-														<div className="hidden overflow-hidden pb-0 md:block">
-															<MultiWorkshopContent />
-														</div>
-													) : (
-														<WorkshopResourceList
-															isCollapsible={false}
-															className="border-r-0! w-full max-w-none"
-															withHeader={false}
-															maxHeight="h-auto"
-															wrapperClassName="overflow-hidden pb-0 hidden md:block"
-														/>
-													)}
+													<WorkshopResourceList
+														isCollapsible={false}
+														className="border-r-0! w-full max-w-none"
+														withHeader={false}
+														maxHeight="h-auto"
+														wrapperClassName="overflow-hidden pb-0 hidden md:block"
+													/>
 													{pricingProps.hasPurchasedCurrentProduct && (
 														<div className="p-3">
 															<Certificate resourceSlugOrId={params.module} />
@@ -415,18 +392,13 @@ export default async function ModulePage(props: Props) {
 									Contents
 								</h2>
 								<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
-									{isMultiWorkshopProduct &&
-									allWorkshopsInProduct.length > 1 ? (
-										<MultiWorkshopContent />
-									) : (
-										<WorkshopResourceList
-											isCollapsible={false}
-											className="border-r-0! w-full max-w-none"
-											withHeader={false}
-											maxHeight="h-auto"
-											wrapperClassName="overflow-hidden pb-0"
-										/>
-									)}
+									<WorkshopResourceList
+										isCollapsible={false}
+										className="border-r-0! w-full max-w-none"
+										withHeader={false}
+										maxHeight="h-auto"
+										wrapperClassName="overflow-hidden pb-0"
+									/>
 								</div>
 							</WorkshopSidebar>
 						</div>
