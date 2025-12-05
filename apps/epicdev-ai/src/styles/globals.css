@@ -231,7 +231,7 @@
 }
 
 mux-player::part(center play button) {
-	@apply sm:scale-50 xl:bg-black/50;
+	@apply sm:scale-50;
 }
 
 #home-page-video {

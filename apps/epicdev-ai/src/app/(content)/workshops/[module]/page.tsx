@@ -13,6 +13,7 @@ import {
 	WorkshopGitHubRepoLink,
 } from '@/app/(content)/workshops/_components/workshop-user-actions'
 import { CldImage } from '@/components/cld-image'
+import MDXVideo from '@/components/content/mdx-video'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
@@ -261,13 +262,22 @@ export default async function ModulePage(props: Props) {
 											productType={product?.type}
 											workshop={workshop}
 										>
-											{workshop.fields?.coverImage?.url && (
-												<WorkshopImage
-													className="rounded-b-none"
-													imageUrl={workshop.fields.coverImage.url}
-													abilityLoader={abilityLoader}
+											{pricingProps.product.type === 'self-paced' ? (
+												<MDXVideo
+													poster={workshop.fields?.coverImage?.url}
+													resourceId="introducingepicmcp-m6nYgLXNm.mp4"
+													className="mb-0 rounded-b-none border-none"
 												/>
+											) : (
+												workshop.fields?.coverImage?.url && (
+													<WorkshopImage
+														className="rounded-b-none"
+														imageUrl={workshop.fields.coverImage.url}
+														abilityLoader={abilityLoader}
+													/>
+												)
 											)}
+
 											{pricingProps.allowPurchase &&
 											!pricingProps.hasPurchasedCurrentProduct ? (
 												<WorkshopPricingClient
