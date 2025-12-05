@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { FAQ } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import { DiscountCountdown } from '@/components/mdx/mdx-components'
 import {
 	DiscountDeadline,
@@ -8,6 +9,7 @@ import {
 import { EnrollButton } from '@/components/pricing/enroll-button'
 import { db } from '@/db'
 import { products } from '@/db/schema'
+import { getPage } from '@/lib/pages-query'
 import { compileMDX } from '@/utils/compile-mdx'
 import { eq } from 'drizzle-orm'
 
@@ -126,6 +128,11 @@ export async function WorkshopBodyWithPricing({
 					format={format}
 					expires={defaultCoupon?.expires ?? null}
 				/>
+			),
+			FAQ: () => (
+				<React.Suspense fallback={null}>
+					<FAQ faqPageLoader={getPage('faq-workshop')} />
+				</React.Suspense>
 			),
 			Tooltip: ({
 				children,
