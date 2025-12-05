@@ -75,6 +75,10 @@ import {
 	BulkCalendarInviteSent,
 } from './events/bulk-calendar-invites'
 import {
+	COHORT_ENTITLEMENT_MIGRATION_EVENT,
+	CohortEntitlementMigration,
+} from './events/cohort-entitlement-migration'
+import {
 	COHORT_UPDATED_EVENT,
 	CohortUpdatedPayload,
 } from './events/cohort-management'
@@ -137,6 +141,7 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[COHORT_ENTITLEMENT_MIGRATION_EVENT]: CohortEntitlementMigration
 	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
 }
 

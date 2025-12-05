@@ -27,6 +27,7 @@ import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
 import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
+import { migrateCohortEntitlements } from './functions/migrate-cohort-entitlements'
 import { postEventPurchase } from './functions/post-event-purchase'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
@@ -60,6 +61,7 @@ export const inngestConfig = {
 		productTransferWorkflow,
 		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
+		migrateCohortEntitlements,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
