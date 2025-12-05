@@ -262,7 +262,8 @@ export default async function ModulePage(props: Props) {
 											productType={product?.type}
 											workshop={workshop}
 										>
-											{pricingProps.product.type === 'self-paced' ? (
+											{pricingProps.product.type === 'self-paced' &&
+											!pricingProps.hasPurchasedCurrentProduct ? (
 												<MDXVideo
 													poster={workshop.fields?.coverImage?.url}
 													resourceId="introducingepicmcp-m6nYgLXNm.mp4"
