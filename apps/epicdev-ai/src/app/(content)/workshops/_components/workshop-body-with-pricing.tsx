@@ -131,7 +131,10 @@ export async function WorkshopBodyWithPricing({
 			),
 			FAQ: () => (
 				<React.Suspense fallback={null}>
-					<FAQ faqPageLoader={getPage('faq-workshop')} />
+					<FAQ
+						faqPageLoader={getPage('faq-workshop')}
+						className="[&_h2]:px-0! [&_button]:text-base! [&_button]:px-0! [&_div]:px-0! [&_div]:text-base! [&_button]:font-sans! [&_h2]:mt-5!"
+					/>
 				</React.Suspense>
 			),
 			Tooltip: ({
