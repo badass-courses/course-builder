@@ -78,6 +78,42 @@ export async function getSaleBannerData(
 
 		const discountFormatted = formatDiscount(coupon)
 
+		// Special case: For multi-workshop products, link to the main product page
+		// instead of the individual workshop
+		// Check if this product contains the main multi-workshop product page
+		const allProductResources = await db
+			.select({
+				resource: contentResource,
+			})
+			.from(contentResourceProduct)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceProduct.resourceId),
+			)
+			.where(eq(contentResourceProduct.productId, coupon.restrictedToProductId))
+
+		// Check if any resource in the product is the main product page
+		const mainProductResource = allProductResources.find(
+			(r) => r.resource.fields?.slug === 'epic-mcp-from-scratch-to-production',
+		)
+
+		let productPath: string
+		if (mainProductResource) {
+			// Use the main product page for multi-workshop products
+			productPath = getResourcePath(
+				'workshop',
+				'epic-mcp-from-scratch-to-production',
+				'view',
+			)
+		} else {
+			// Normal case: use the resource path
+			productPath = getResourcePath(
+				result.resource.type,
+				result.resource.fields.slug,
+				'view',
+			)
+		}
+
 		return {
 			discountType,
 			discountValue,
@@ -85,11 +121,7 @@ export async function getSaleBannerData(
 			percentOff, // for backward compatibility
 			productName: result.product.name,
 			productType: result.product.type,
-			productPath: getResourcePath(
-				result.resource.type,
-				result.resource.fields.slug,
-				'view',
-			),
+			productPath,
 			expires: coupon.expires ? new Date(coupon.expires).toISOString() : null,
 		}
 	} catch (error) {
