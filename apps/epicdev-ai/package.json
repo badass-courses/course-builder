@@ -79,7 +79,7 @@
 		"@headlessui/react": "^1.6.1",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
-		"@internationalized/date": "3.7.0",
+		"@internationalized/date": "3.10.0",
 		"@lezer/highlight": "^1.2.1",
 		"@mdx-js/loader": "^3.1.0",
 		"@mdx-js/mdx": "^3.1.0",
