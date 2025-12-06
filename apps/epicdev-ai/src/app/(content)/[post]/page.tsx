@@ -12,7 +12,7 @@ import { commerceEnabled } from '@/flags'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getCachedPostOrList } from '@/lib/posts-query'
-import { getSaleBannerData } from '@/lib/sale-banner'
+import { getSaleBannerVisibility } from '@/lib/sale-banner-helpers'
 import { getCachedVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -84,11 +84,12 @@ export default async function PostPage(props: {
 		}
 	}
 
-	const saleBannerData = await getSaleBannerData(defaultCoupon)
+	const { shouldShowSaleBanner, saleBannerData } =
+		await getSaleBannerVisibility(defaultCoupon, isCommerceEnabled)
 
 	return (
 		<main className="w-full">
-			{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+			{shouldShowSaleBanner && saleBannerData ? (
 				<Link
 					className="text-primary dark:border-foreground/5 mx-auto mb-2 flex max-w-full items-center justify-between gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-2 text-xs font-medium shadow-md shadow-violet-600/10 sm:justify-center sm:pr-1 sm:text-sm dark:bg-violet-500/20 dark:shadow-none"
 					href={saleBannerData.productPath}
@@ -356,7 +357,7 @@ export async function generateMetadata(
 	}
 }
 async function PostActionBar({ post }: { post: Post | null }) {
-	const { session, ability } = await getServerAuthSession()
+	const { ability } = await getServerAuthSession()
 
 	return (
 		<>
