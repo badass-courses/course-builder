@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/mdx-mermaid",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"type": "module",
 	"exports": {
 		".": {
@@ -29,14 +29,14 @@
 		"unist-util-visit": "^5.0.0"
 	},
 	"peerDependencies": {
-		"react": "19.2.0",
-		"react-dom": "19.2.0"
+		"react": "19.2.1",
+		"react-dom": "19.2.1"
 	},
 	"devDependencies": {
 		"@types/react": "19.2.2",
 		"@types/react-dom": "19.2.1",
-		"react": "19.2.0",
-		"react-dom": "19.2.0",
+		"react": "19.2.1",
+		"react-dom": "19.2.1",
 		"tsup": "8.0.2",
 		"typescript": "5.4.5"
 	}
