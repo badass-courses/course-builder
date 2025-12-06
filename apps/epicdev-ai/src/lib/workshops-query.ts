@@ -654,6 +654,8 @@ async function getMultiWorkshopNavigation(
 				resources: workshopResources,
 				// Store the actual workshop slug for linking
 				_workshopSlug: workshopSlug,
+				// Store the workshop's module ID for ability checks
+				_workshopModuleId: workshop.id,
 			}
 
 			workshopSections.push(workshopSection)

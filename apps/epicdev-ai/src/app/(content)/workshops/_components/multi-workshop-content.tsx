@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 import { createAppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
@@ -30,85 +29,124 @@ import {
 export function MultiWorkshopContent() {
 	const workshopNavigation = useWorkshopNavigation()
 	const { moduleProgress } = useModuleProgress()
-	const params = useParams()
-
-	const { data: abilityRules, status: abilityStatus } =
-		api.ability.getCurrentAbilityRules.useQuery(
-			{
-				moduleId: workshopNavigation?.id,
-			},
-			{
-				enabled: !!workshopNavigation?.id,
-			},
-		)
-
-	const ability = createAppAbility(abilityRules || [])
 
 	if (!workshopNavigation || !workshopNavigation.resources) {
 		return null
 	}
 
 	// Filter to only sections that represent workshops (they have _workshopSlug)
-	// The getMultiWorkshopNavigation function adds _workshopSlug to sections
+	// The getMultiWorkshopNavigation function adds _workshopSlug and optionally _workshopModuleId to sections
 	const workshopSections = workshopNavigation.resources.filter(
 		(resource) =>
 			resource.type === 'section' &&
 			'_workshopSlug' in resource &&
 			(resource as any)._workshopSlug !== undefined,
-	) as Array<NavigationSection & { _workshopSlug: string }>
+	) as Array<
+		NavigationSection & {
+			_workshopSlug: string
+			_workshopModuleId?: string
+		}
+	>
 
 	if (workshopSections.length === 0) {
 		// Fallback to regular display if no workshop sections found
 		return null
 	}
 
+	// Fallback: if no _workshopModuleId is present, use parent module ID for ability checks
+	const parentModuleId = workshopNavigation.id
+
 	return (
 		<ol className="flex flex-col">
-			{workshopSections.map((section, index) => {
+			{workshopSections.map((section) => {
 				const workshopSlug = section._workshopSlug
+				// Use workshop's module ID if available, otherwise fall back to parent module ID
+				const workshopModuleId = section._workshopModuleId || parentModuleId
 				return (
-					<li key={section.id} className="bg-card">
-						<Accordion type="multiple">
-							<AccordionItem value={section.id} className="border-0">
-								<div className="relative flex items-center justify-between">
-									<Link
-										className="text-foreground hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold transition ease-in-out"
-										href={`/workshops/${workshopSlug}`}
-									>
-										{section.title}
-									</Link>
-									{section.resources && section.resources.length > 0 && (
-										<AccordionTrigger
-											aria-label="Toggle lessons"
-											className="bg-secondary hover:bg-foreground/20 [&_svg]:translate-y-0.3 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
-										/>
-									)}
-								</div>
-								{section.resources && section.resources.length > 0 && (
-									<AccordionContent>
-										<ol className="divide-border list-inside list-none divide-y border-b">
-											{section.resources.map((resource, resourceIndex) => {
-												return (
-													<WorkshopLessonItem
-														key={resource.id}
-														resource={resource}
-														workshopSlug={workshopSlug}
-														index={resourceIndex}
-														moduleProgress={moduleProgress}
-														ability={ability}
-														abilityStatus={abilityStatus}
-													/>
-												)
-											})}
-										</ol>
-									</AccordionContent>
-								)}
-							</AccordionItem>
-						</Accordion>
-					</li>
+					<WorkshopSection
+						key={section.id}
+						section={section}
+						workshopSlug={workshopSlug}
+						workshopModuleId={workshopModuleId}
+						moduleProgress={moduleProgress}
+					/>
 				)
 			})}
 		</ol>
+	)
+}
+
+/**
+ * Renders a workshop section with its own ability rules
+ * Each workshop needs its own ability check since lessons belong to different workshops
+ */
+function WorkshopSection({
+	section,
+	workshopSlug,
+	workshopModuleId,
+	moduleProgress,
+}: {
+	section: NavigationSection & {
+		_workshopSlug: string
+		_workshopModuleId?: string
+	}
+	workshopSlug: string
+	workshopModuleId: string
+	moduleProgress?: ModuleProgress | null
+}) {
+	// Fetch ability rules for this specific workshop
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery(
+			{
+				moduleId: workshopModuleId,
+			},
+			{
+				enabled: !!workshopModuleId,
+			},
+		)
+
+	const ability = createAppAbility(abilityRules || [])
+
+	return (
+		<li className="bg-card">
+			<Accordion type="multiple">
+				<AccordionItem value={section.id} className="border-0">
+					<div className="relative flex items-center justify-between">
+						<Link
+							className="text-foreground hover:text-primary hover:bg-muted/50 flex w-full items-center justify-between py-2.5 pl-3 pr-10 text-base font-semibold transition ease-in-out"
+							href={`/workshops/${workshopSlug}`}
+						>
+							{section.title}
+						</Link>
+						{section.resources && section.resources.length > 0 && (
+							<AccordionTrigger
+								aria-label="Toggle lessons"
+								className="bg-secondary hover:bg-foreground/20 [&_svg]:translate-y-0.3 absolute right-1 top-2 z-10 flex size-6 items-center justify-center rounded py-0"
+							/>
+						)}
+					</div>
+					{section.resources && section.resources.length > 0 && (
+						<AccordionContent>
+							<ol className="divide-border list-inside list-none divide-y border-b">
+								{section.resources.map((resource, resourceIndex) => {
+									return (
+										<WorkshopLessonItem
+											key={resource.id}
+											resource={resource}
+											workshopSlug={workshopSlug}
+											index={resourceIndex}
+											moduleProgress={moduleProgress}
+											ability={ability}
+											abilityStatus={abilityStatus}
+										/>
+									)
+								})}
+							</ol>
+						</AccordionContent>
+					)}
+				</AccordionItem>
+			</Accordion>
+		</li>
 	)
 }
 
