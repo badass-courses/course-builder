@@ -42,8 +42,9 @@ export async function getSaleBannerVisibility(
 				)
 			: false
 
-	const shouldShowSaleBanner =
-		defaultCoupon && saleBannerData && isCommerceEnabled && !userHasPurchased
+	const shouldShowSaleBanner = Boolean(
+		defaultCoupon && saleBannerData && isCommerceEnabled && !userHasPurchased,
+	)
 
 	return { shouldShowSaleBanner, saleBannerData }
 }
