@@ -257,6 +257,16 @@ export default async function ModulePage(props: Props) {
 											pricingProps={pricingProps}
 										/>
 									</article>
+									{pricingProps.allowPurchase &&
+										!pricingProps.hasPurchasedCurrentProduct && (
+											<div className="md:hidden">
+												<WorkshopPricingClient
+													className="relative z-10"
+													searchParams={props.searchParams}
+													{...pricingProps}
+												/>
+											</div>
+										)}
 									<div className="">
 										<hr className="border-border mb-6 mt-8 w-full border-dashed" />
 										<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
@@ -312,11 +322,13 @@ export default async function ModulePage(props: Props) {
 
 											{pricingProps.allowPurchase &&
 											!pricingProps.hasPurchasedCurrentProduct ? (
-												<WorkshopPricingClient
-													className="relative z-10 border-b-0 pt-0"
-													searchParams={props.searchParams}
-													{...pricingProps}
-												/>
+												<div className="hidden md:block">
+													<WorkshopPricingClient
+														className="relative z-10 border-b-0 pt-0"
+														searchParams={props.searchParams}
+														{...pricingProps}
+													/>
+												</div>
 											) : (
 												<>
 													{isMultiWorkshopProduct &&
