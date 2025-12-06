@@ -24,7 +24,6 @@ import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/pu
 import * as InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { checkForPaymentSuccessWithoutPurchase } from '@coursebuilder/core'
-import type { PurchaseInfo } from '@coursebuilder/core/schemas/purchase-info'
 import {
 	EXISTING_BULK_COUPON,
 	INDIVIDUAL_TO_BULK_UPGRADE,
@@ -85,17 +84,6 @@ const getServerSideProps = async (session_id: string) => {
 			logger.debug('purchase', { purchase })
 
 			if (!purchase || !email) {
-				const errorCheck = await checkForPaymentSuccessWithoutPurchase(
-					session_id,
-					courseBuilderAdapter,
-				)
-
-				if (errorCheck.shouldShowError) {
-					return {
-						paymentSucceededButProcessingFailed: true,
-					}
-				}
-
 				throw new Error('Purchase or email not found')
 			}
 
@@ -117,14 +105,39 @@ const getServerSideProps = async (session_id: string) => {
 			}
 		} catch (error) {
 			retries++
-			console.log(
-				`Error getting purchase info: ${error} ${retries}/${maxRetries}`,
-			)
+			logger.debug('thanks purchase poll retry', {
+				sessionId: session_id,
+				retries,
+				maxRetries,
+				error: error instanceof Error ? error.message : String(error),
+			})
 			await new Promise((resolve) => setTimeout(resolve, delay))
 			delay = Math.min(delay * 2, maxDelay)
 		}
 	}
 
+	const errorCheck = await checkForPaymentSuccessWithoutPurchase(
+		session_id,
+		courseBuilderAdapter,
+	)
+
+	if (errorCheck.shouldShowError) {
+		logger.debug('thanks purchase poll success-no-purchase fallback', {
+			sessionId: session_id,
+			stripeEventId: errorCheck.stripeEventId,
+		})
+		return {
+			paymentSucceededButProcessingFailed: true,
+		}
+	}
+
+	logger.error(
+		new Error('purchase missing after polling and no Stripe fallback', {
+			cause: {
+				sessionId: session_id,
+			},
+		}),
+	)
 	notFound()
 }
 
@@ -146,6 +159,12 @@ const LoginLinkComp: React.FC<{ email: string }> = ({ email }) => {
 	)
 }
 
+/**
+ * Server component that validates a Stripe checkout session and renders the
+ * thank-you experience or redirects once the purchase is created.
+ *
+ * @param props - Route props containing purchase session identifiers
+ */
 export default async function ThanksPurchasePage(props: {
 	searchParams: Promise<{ session_id: string; provider: string }>
 }) {
