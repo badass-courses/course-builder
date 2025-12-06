@@ -19,7 +19,6 @@ import { log } from '@/server/logger'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { and, eq } from 'drizzle-orm'
 import { ChevronLeft, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -71,10 +70,8 @@ export default async function PostPage(props: {
 
 	const videoDetails = await getCachedVideoResource(primaryVideoId)
 	const isCommerceEnabled = await commerceEnabled()
-	const allCohortProducts = await db.query.products.findMany({
-		where: and(eq(products.status, 1), eq(products.type, 'cohort')),
-	})
-	const productIds = allCohortProducts.map((p) => p.id)
+	const allProducts = await db.query.products.findMany()
+	const productIds = allProducts.map((p) => p.id)
 
 	let defaultCoupon = null
 	if (productIds.length > 0) {
