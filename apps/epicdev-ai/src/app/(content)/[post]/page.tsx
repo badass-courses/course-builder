@@ -12,8 +12,7 @@ import { commerceEnabled } from '@/flags'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getCachedPostOrList } from '@/lib/posts-query'
-import { getSaleBannerData } from '@/lib/sale-banner'
-import { hasPurchasedProduct } from '@/lib/user-has-product'
+import { getSaleBannerVisibility } from '@/lib/sale-banner-helpers'
 import { getCachedVideoResource } from '@/lib/video-resource-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
@@ -72,7 +71,6 @@ export default async function PostPage(props: {
 
 	const videoDetails = await getCachedVideoResource(primaryVideoId)
 	const isCommerceEnabled = await commerceEnabled()
-	const { session } = await getServerAuthSession()
 	const allCohortProducts = await db.query.products.findMany({
 		where: and(eq(products.status, 1), eq(products.type, 'cohort')),
 	})
@@ -86,22 +84,12 @@ export default async function PostPage(props: {
 		}
 	}
 
-	const saleBannerData = await getSaleBannerData(defaultCoupon)
-
-	const userHasPurchased =
-		defaultCoupon?.restrictedToProductId && session?.user?.id
-			? await hasPurchasedProduct(
-					defaultCoupon.restrictedToProductId,
-					session.user.id,
-				)
-			: false
-
-	const shouldShowSaleBanner =
-		defaultCoupon && saleBannerData && isCommerceEnabled && !userHasPurchased
+	const { shouldShowSaleBanner, saleBannerData } =
+		await getSaleBannerVisibility(defaultCoupon, isCommerceEnabled)
 
 	return (
 		<main className="w-full">
-			{shouldShowSaleBanner ? (
+			{shouldShowSaleBanner && saleBannerData ? (
 				<Link
 					className="text-primary dark:border-foreground/5 mx-auto mb-2 flex max-w-full items-center justify-between gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-2 text-xs font-medium shadow-md shadow-violet-600/10 sm:justify-center sm:pr-1 sm:text-sm dark:bg-violet-500/20 dark:shadow-none"
 					href={saleBannerData.productPath}
