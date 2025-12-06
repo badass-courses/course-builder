@@ -17,6 +17,8 @@ import { products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getSaleBannerData } from '@/lib/sale-banner'
+import { hasPurchasedProduct } from '@/lib/user-has-product'
+import { getServerAuthSession } from '@/server/auth'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -121,10 +123,22 @@ const Home = async (props: Props) => {
 
 	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
+	const { session } = await getServerAuthSession()
+	const userHasPurchased =
+		defaultCoupon?.restrictedToProductId && session?.user?.id
+			? await hasPurchasedProduct(
+					defaultCoupon.restrictedToProductId,
+					session.user.id,
+				)
+			: false
+
+	const shouldShowSaleBanner =
+		defaultCoupon && saleBannerData && isCommerceEnabled && !userHasPurchased
+
 	return (
 		<LayoutClient className="static" withContainer>
 			<main className="flex w-full flex-col items-center justify-center">
-				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+				{shouldShowSaleBanner ? (
 					<Link
 						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
 						href={saleBannerData.productPath}

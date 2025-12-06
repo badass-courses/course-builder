@@ -7,6 +7,8 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getSaleBannerData } from '@/lib/sale-banner'
+import { hasPurchasedProduct } from '@/lib/user-has-product'
+import { getServerAuthSession } from '@/server/auth'
 import { and, eq } from 'drizzle-orm'
 
 export const metadata: Metadata = {
@@ -32,9 +34,21 @@ export default async function NewsletterPage() {
 
 	const saleBannerData = await getSaleBannerData(defaultCoupon)
 
+	const { session } = await getServerAuthSession()
+	const userHasPurchased =
+		defaultCoupon?.restrictedToProductId && session?.user?.id
+			? await hasPurchasedProduct(
+					defaultCoupon.restrictedToProductId,
+					session.user.id,
+				)
+			: false
+
+	const shouldShowSaleBanner =
+		defaultCoupon && saleBannerData && isCommerceEnabled && !userHasPurchased
+
 	return (
 		<LayoutClient withContainer>
-			{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+			{shouldShowSaleBanner ? (
 				<Link
 					className="text-primary dark:border-foreground/5 mx-auto mb-2 flex max-w-full items-center justify-between gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-2 text-xs font-medium shadow-md shadow-violet-600/10 sm:justify-center sm:pr-1 sm:text-sm dark:bg-violet-500/20 dark:shadow-none"
 					href={saleBannerData.productPath}
