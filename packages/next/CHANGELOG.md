@@ -1,5 +1,37 @@
 # @coursebuilder/next
 
+## 0.0.30
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [#589](https://github.com/badass-courses/course-builder/pull/589)
+  [`f8dffc9`](https://github.com/badass-courses/course-builder/commit/f8dffc989c2636c25395701cfa949dfcb3ffd27b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next from beta to
+  stable
+
+- [#628](https://github.com/badass-courses/course-builder/pull/628)
+  [`372bdf6`](https://github.com/badass-courses/course-builder/commit/372bdf694945bbe14b3bc2d6d4a8a08ad66dc0e6)
+  Thanks [@zacjones93](https://github.com/zacjones93)! - fix: upgrade next peer
+  dependency to 16.0.7 to resolve type incompatibilities
+
+- Updated dependencies
+  [[`fff302b`](https://github.com/badass-courses/course-builder/commit/fff302b9a483f8d9b6209bf5ec3fa57830c3e8e9),
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`1b92a3a`](https://github.com/badass-courses/course-builder/commit/1b92a3ac602291f219370fb264d8e0099f54963c),
+  [`f11c60f`](https://github.com/badass-courses/course-builder/commit/f11c60f9b08d7955ea840af15cc0d14d7c44f633),
+  [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3),
+  [`18d2d04`](https://github.com/badass-courses/course-builder/commit/18d2d048e0e1083d66f5c929ffedf5452b9f93ef),
+  [`79764de`](https://github.com/badass-courses/course-builder/commit/79764deb0346fca813e01d2e2409712990990d8e),
+  [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147),
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9),
+  [`8267b98`](https://github.com/badass-courses/course-builder/commit/8267b984c6167c12bef8315900764943d0d86087)]:
+  - @coursebuilder/core@1.2.0
+
 ## 0.0.29
 
 ### Patch Changes
