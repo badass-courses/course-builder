@@ -251,6 +251,12 @@ export default async function ModulePage(props: Props) {
 										)}
 										<Links className="mt-5" />
 									</header>
+									<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
+										<WorkshopBodyWithPricing
+											rawBody={workshop.fields?.body || ''}
+											pricingProps={pricingProps}
+										/>
+									</article>
 									{pricingProps.allowPurchase &&
 										!pricingProps.hasPurchasedCurrentProduct && (
 											<div className="md:hidden">
@@ -261,12 +267,6 @@ export default async function ModulePage(props: Props) {
 												/>
 											</div>
 										)}
-									<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
-										<WorkshopBodyWithPricing
-											rawBody={workshop.fields?.body || ''}
-											pricingProps={pricingProps}
-										/>
-									</article>
 									<div className="">
 										<hr className="border-border mb-6 mt-8 w-full border-dashed" />
 										<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
@@ -305,22 +305,18 @@ export default async function ModulePage(props: Props) {
 										>
 											{pricingProps.product.type === 'self-paced' &&
 											!pricingProps.hasPurchasedCurrentProduct ? (
-												<div className="hidden md:block">
-													<MDXVideo
-														poster={workshop.fields?.coverImage?.url}
-														resourceId="introducingepicmcp-m6nYgLXNm.mp4"
-														className="mb-0 rounded-b-none border-none"
-													/>
-												</div>
+												<MDXVideo
+													poster={workshop.fields?.coverImage?.url}
+													resourceId="introducingepicmcp-m6nYgLXNm.mp4"
+													className="mb-0 rounded-b-none border-none"
+												/>
 											) : (
 												workshop.fields?.coverImage?.url && (
-													<div className="hidden md:block">
-														<WorkshopImage
-															className="rounded-b-none"
-															imageUrl={workshop.fields.coverImage.url}
-															abilityLoader={abilityLoader}
-														/>
-													</div>
+													<WorkshopImage
+														className="rounded-b-none"
+														imageUrl={workshop.fields.coverImage.url}
+														abilityLoader={abilityLoader}
+													/>
 												)
 											)}
 
