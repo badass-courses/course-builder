@@ -247,10 +247,10 @@ const Home = async (props: Props) => {
 											</div>
 										}
 									>
-										<div className="bg-linear-to-bl from-primary relative mb-10 mt-24 flex w-full flex-col items-center justify-center rounded-lg to-indigo-800 py-10 shadow-lg shadow-indigo-800/5 sm:flex-row">
+										<div className="bg-linear-to-bl from-primary relative mb-10 mt-24 flex w-full flex-col items-center justify-center rounded-lg to-indigo-800 py-10 shadow-lg shadow-indigo-800/5 has-[div[data-pricing-state=purchased]]:mb-6 has-[div[data-pricing-state=purchased]]:mt-16 has-[div[data-pricing-state=purchased]]:justify-center has-[div[data-pricing-state=purchased]]:py-6 sm:flex-row">
 											<div
 												id="buy"
-												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] has-[div[data-pricing-state=purchased]]:-mt-2 has-[div[data-pricing-state=purchased]]:w-full has-[div[data-pricing-state=purchased]]:max-w-3xl has-[div[data-pricing-state=purchased]]:border-none has-[div[data-pricing-state=purchased]]:bg-transparent has-[div[data-pricing-state=purchased]]:px-0 has-[div[data-pricing-state=purchased]]:pt-0 has-[div[data-pricing-state=purchased]]:shadow-none"
 											>
 												<PricingWidgetServer
 													productId={productId}

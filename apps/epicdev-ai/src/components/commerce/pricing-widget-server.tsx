@@ -21,6 +21,13 @@ import { Purchase } from '@coursebuilder/core/schemas'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
+/**
+ * Server-side entry for the pricing widget that resolves commerce context and
+ * renders either the purchasable widget or a purchased callout.
+ *
+ * @param productId - The product to render pricing for.
+ * @param searchParams - Query parameters forwarded for pricing context.
+ */
 export async function PricingWidgetServer({
 	productId,
 	searchParams,
@@ -138,76 +145,87 @@ export async function PricingWidgetServer({
 
 	const loyaltyCoupon = user?.id ? await getLoyaltyCouponForUser(user.id) : null
 
-	return productProps.hasPurchasedCurrentProduct ? (
-		<div className="flex w-full flex-col items-center justify-center gap-2 px-10 pt-3 text-center text-lg sm:flex-row">
-			<CheckCircle className="size-4 shrink-0 text-emerald-600 dark:text-emerald-300" />{' '}
-			<span>
-				You have already purchased{' '}
-				{product?.type === 'cohort'
-					? 'a ticket to this cohort.'
-					: 'this workshop.'}
-			</span>{' '}
-			<Link
-				className="text-primary underline"
-				href={getResourcePath(resource.type, resource.fields.slug, 'view')}
+	if (productProps.hasPurchasedCurrentProduct) {
+		return (
+			<div
+				data-pricing-state="purchased"
+				className="border-border/70 bg-card/90 flex w-full flex-col items-center justify-between gap-3 rounded-xl border px-6 py-5 text-left text-base shadow-sm sm:flex-row sm:items-center sm:gap-4 sm:text-lg"
 			>
-				View →
-			</Link>
+				<div className="flex flex-1 items-center justify-center gap-3 sm:justify-start">
+					<CheckCircle className="size-5 shrink-0 text-emerald-600 dark:text-emerald-300" />
+					<span className="leading-tight">
+						You have already purchased{' '}
+						{product?.type === 'cohort'
+							? 'a ticket to this cohort.'
+							: 'this workshop.'}
+					</span>
+				</div>
+				<Link
+					className="text-primary underline underline-offset-4"
+					href={getResourcePath(resource.type, resource.fields.slug, 'view')}
+				>
+					View →
+				</Link>
+			</div>
+		)
+	}
+
+	return (
+		<div data-pricing-state="available" className="w-full">
+			<PriceCheckProvider
+				purchasedProductIds={purchasedProductIds}
+				organizationId={organizationId}
+			>
+				{product?.type === 'cohort' && (
+					<CohortPricingWidgetContainer
+						className="**:aria-[live='polite']:text-5xl w-full border-b-0 pt-5"
+						{...productProps}
+						{...productProps.commerceProps}
+						couponFromCode={
+							loyaltyCoupon
+								? loyaltyCoupon
+								: productProps.commerceProps.couponFromCode
+						}
+						couponIdFromCoupon={
+							loyaltyCoupon
+								? loyaltyCoupon.id
+								: productProps.commerceProps.couponIdFromCoupon
+						}
+						workshops={cohortWorkshops}
+						cohort={resource}
+						pricingWidgetOptions={{
+							withTitle: false,
+							withImage: true,
+						}}
+					/>
+				)}
+				{product?.type === 'self-paced' && (
+					<PricingWidget
+						className={cn('px-5')}
+						workshops={[
+							{
+								title: resource.fields.title,
+								slug: resource.fields.slug,
+							},
+						]}
+						commerceProps={{ ...commerceProps, products: [product] }}
+						hasPurchasedCurrentProduct={productProps.hasPurchasedCurrentProduct}
+						product={product}
+						quantityAvailable={quantityAvailable}
+						pricingDataLoader={pricingDataLoader}
+						pricingWidgetOptions={{
+							withImage: false,
+							withGuaranteeBadge: true,
+							isLiveEvent: false,
+							isCohort: false,
+							withTitle: true,
+							isPPPEnabled: true,
+							cancelUrl: env.NEXT_PUBLIC_URL,
+						}}
+						{...commerceProps}
+					/>
+				)}
+			</PriceCheckProvider>
 		</div>
-	) : (
-		<PriceCheckProvider
-			purchasedProductIds={purchasedProductIds}
-			organizationId={organizationId}
-		>
-			{product?.type === 'cohort' && (
-				<CohortPricingWidgetContainer
-					className="**:aria-[live='polite']:text-5xl w-full border-b-0 pt-5"
-					{...productProps}
-					{...productProps.commerceProps}
-					couponFromCode={
-						loyaltyCoupon
-							? loyaltyCoupon
-							: productProps.commerceProps.couponFromCode
-					}
-					couponIdFromCoupon={
-						loyaltyCoupon
-							? loyaltyCoupon.id
-							: productProps.commerceProps.couponIdFromCoupon
-					}
-					workshops={cohortWorkshops}
-					cohort={resource}
-					pricingWidgetOptions={{
-						withTitle: false,
-						withImage: true,
-					}}
-				/>
-			)}
-			{product?.type === 'self-paced' && (
-				<PricingWidget
-					className={cn('px-5')}
-					workshops={[
-						{
-							title: resource.fields.title,
-							slug: resource.fields.slug,
-						},
-					]}
-					commerceProps={{ ...commerceProps, products: [product] }}
-					hasPurchasedCurrentProduct={productProps.hasPurchasedCurrentProduct}
-					product={product}
-					quantityAvailable={quantityAvailable}
-					pricingDataLoader={pricingDataLoader}
-					pricingWidgetOptions={{
-						withImage: false,
-						withGuaranteeBadge: true,
-						isLiveEvent: false,
-						isCohort: false,
-						withTitle: true,
-						isPPPEnabled: true,
-						cancelUrl: env.NEXT_PUBLIC_URL,
-					}}
-					{...commerceProps}
-				/>
-			)}
-		</PriceCheckProvider>
 	)
 }
