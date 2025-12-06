@@ -36,7 +36,7 @@
 		"@types/react": "19.2.2",
 		"date-fns": "^2.30.0",
 		"date-fns-tz": "^2.0.1",
-		"react": "19.2.0",
+		"react": "19.2.1",
 		"react-email": "2.1.1",
 		"tsup": "8.0.2"
 	}
