@@ -218,7 +218,7 @@ export default async function ModulePage(props: Props) {
 								<div className="col-span-5">
 									<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
 										{workshop.fields?.coverImage?.url && (
-											<div className="mb-5 w-full md:hidden">
+											<div className="mb-5 flex w-full md:hidden">
 												{/* <WorkshopImage
 												imageUrl={workshop.fields.coverImage.url}
 												abilityLoader={abilityLoader}
@@ -367,7 +367,7 @@ export default async function ModulePage(props: Props) {
 						<div className="col-span-5">
 							<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
 								{workshop.fields?.coverImage?.url && (
-									<div className="mb-5 flex md:hidden">
+									<div className="mb-5 flex w-full md:hidden">
 										<WorkshopImage
 											imageUrl={workshop.fields.coverImage.url}
 											abilityLoader={abilityLoader}
