@@ -75,8 +75,10 @@ import {
 	BulkCalendarInviteSent,
 } from './events/bulk-calendar-invites'
 import {
+	COHORT_ENTITLEMENT_MIGRATION_CLEANUP_EVENT,
 	COHORT_ENTITLEMENT_MIGRATION_EVENT,
 	CohortEntitlementMigration,
+	CohortEntitlementMigrationCleanup,
 } from './events/cohort-entitlement-migration'
 import {
 	COHORT_UPDATED_EVENT,
@@ -91,6 +93,10 @@ import {
 	type RequestConceptSelection,
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
+import {
+	PRODUCT_SYNC_WORKSHOP_ENTITLEMENTS_EVENT,
+	ProductSyncWorkshopEntitlements,
+} from './events/product-sync-workshop-entitlements'
 import {
 	RESOURCE_CREATED_EVENT,
 	RESOURCE_UPDATED_EVENT,
@@ -142,6 +148,8 @@ export type Events = {
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[COHORT_ENTITLEMENT_MIGRATION_EVENT]: CohortEntitlementMigration
+	[COHORT_ENTITLEMENT_MIGRATION_CLEANUP_EVENT]: CohortEntitlementMigrationCleanup
+	[PRODUCT_SYNC_WORKSHOP_ENTITLEMENTS_EVENT]: ProductSyncWorkshopEntitlements
 	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
 }
 

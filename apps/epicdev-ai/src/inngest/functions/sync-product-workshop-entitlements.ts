@@ -1,12 +1,6 @@
 import { courseBuilderAdapter, db } from '@/db'
-import {
-	contentResource,
-	contentResourceProduct,
-	entitlements,
-	entitlementTypes,
-	purchases,
-	users,
-} from '@/db/schema'
+import { entitlements, entitlementTypes, purchases, users } from '@/db/schema'
+import { PRODUCT_SYNC_WORKSHOP_ENTITLEMENTS_EVENT } from '@/inngest/events/product-sync-workshop-entitlements'
 import { inngest } from '@/inngest/inngest.server'
 import {
 	createWorkshopEntitlement,
@@ -14,25 +8,10 @@ import {
 } from '@/lib/entitlements'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
 import { log } from '@/server/logger'
-import {
-	and,
-	count,
-	eq,
-	inArray,
-	isNotNull,
-	isNull,
-	ne,
-	or,
-	sql,
-} from 'drizzle-orm'
-
-import {
-	COHORT_ENTITLEMENT_MIGRATION_EVENT,
-	type CohortEntitlementMigration,
-} from '../events/cohort-entitlement-migration'
+import { and, eq, isNull, or, sql } from 'drizzle-orm'
 
 /**
- * Workshop IDs to create entitlements for
+ * Workshop IDs that everyone with this product should have
  */
 const WORKSHOP_IDS = [
 	'workshop-ddk2h',
@@ -63,37 +42,68 @@ async function hasExistingWorkshopEntitlement(
 }
 
 /**
- * Inngest function to migrate entitlements from one cohort to multiple workshop entitlements.
+ * Get all workshop entitlements a user currently has
+ */
+async function getUserWorkshopEntitlements(
+	userId: string,
+	entitlementTypeId: string,
+): Promise<string[]> {
+	const userEntitlements = await db.query.entitlements.findMany({
+		where: and(
+			eq(entitlements.userId, userId),
+			eq(entitlements.entitlementType, entitlementTypeId),
+			isNull(entitlements.deletedAt),
+		),
+	})
+
+	const workshopIds: string[] = []
+	for (const entitlement of userEntitlements) {
+		const metadata = entitlement.metadata as any
+		if (metadata?.contentIds && Array.isArray(metadata.contentIds)) {
+			for (const contentId of metadata.contentIds) {
+				if (WORKSHOP_IDS.includes(contentId)) {
+					workshopIds.push(contentId)
+				}
+			}
+		}
+	}
+
+	return [...new Set(workshopIds)] // Remove duplicates
+}
+
+/**
+ * Inngest function to sync workshop entitlements for all purchases of a specific product.
  *
  * This function:
- * 1. Finds all purchases for products linked to the source cohort ID
- * 2. Gets all purchase details (userId, organizationId, etc.)
- * 3. Creates new workshop entitlements for each person (one for each workshop)
- * 4. Skips creating entitlements if they already exist
+ * 1. Finds all purchases for the given productId
+ * 2. For each person, checks what workshop entitlements they currently have
+ * 3. Compares with the required 5 workshop entitlements
+ * 4. Creates only the missing entitlements
+ * 5. Skips people who already have all required entitlements
  *
- * Triggered by: COHORT_ENTITLEMENT_MIGRATION_EVENT
+ * Triggered by: 'product/sync-workshop-entitlements'
  */
-export const migrateCohortEntitlements = inngest.createFunction(
+export const syncProductWorkshopEntitlements = inngest.createFunction(
 	{
-		id: 'migrate-cohort-entitlements',
-		name: 'Migrate Entitlements from One Cohort to Another',
+		id: 'sync-product-workshop-entitlements',
+		name: 'Sync Workshop Entitlements for Product Purchases',
 	},
 	{
-		event: COHORT_ENTITLEMENT_MIGRATION_EVENT,
+		event: PRODUCT_SYNC_WORKSHOP_ENTITLEMENTS_EVENT,
 	},
 	async ({ event, step }) => {
-		const { sourceCohortId } = event.data
+		const { productId } = event.data
 
 		await step.run('validate-inputs', async () => {
-			if (!sourceCohortId) {
-				throw new Error('sourceCohortId is required')
+			if (!productId) {
+				throw new Error('productId is required')
 			}
 
-			await log.info('cohort_entitlement_migration.started', {
-				sourceCohortId,
+			await log.info('product_workshop_entitlements_sync.started', {
+				productId,
 			})
 
-			return { sourceCohortId }
+			return { productId }
 		})
 
 		// Get the entitlement type for workshop content access
@@ -110,55 +120,14 @@ export const migrateCohortEntitlements = inngest.createFunction(
 			return workshopContentAccessEntitlementType
 		})
 
-		// Query all purchases where productId = sourceCohortId
+		// Find all purchases for this product
 		const purchasesWithUsers = await step.run(
-			'find-purchases-for-source-cohort',
+			'find-purchases-for-product',
 			async () => {
-				console.log('🔍 [MIGRATION] Starting purchase query', {
-					sourceCohortId,
-					query: 'productId = sourceCohortId',
-				})
-				await log.info('cohort_entitlement_migration.step_started', {
-					sourceCohortId,
-					step: 'find-purchases-for-source-cohort',
+				await log.info('product_workshop_entitlements_sync.finding_purchases', {
+					productId,
 				})
 
-				// Direct query: purchases where productId = sourceCohortId
-				console.log('🔍 [MIGRATION] Querying purchases directly', {
-					sourceCohortId,
-					query: 'SELECT * FROM purchases WHERE productId = ?',
-				})
-
-				// First check raw purchases (no user join)
-				const rawPurchases = await db
-					.select({
-						id: purchases.id,
-						productId: purchases.productId,
-						status: purchases.status,
-						userId: purchases.userId,
-					})
-					.from(purchases)
-					.where(eq(purchases.productId, sourceCohortId))
-
-				console.log(
-					'🔍 [MIGRATION] Raw purchases found (productId = sourceCohortId)',
-					{
-						sourceCohortId,
-						totalPurchasesFound: rawPurchases.length,
-						purchasesByStatus: Object.entries(
-							rawPurchases.reduce(
-								(acc, p) => {
-									acc[p.status] = (acc[p.status] || 0) + 1
-									return acc
-								},
-								{} as Record<string, number>,
-							),
-						).map(([status, count]) => ({ status, count })),
-						samplePurchases: rawPurchases.slice(0, 10),
-					},
-				)
-
-				// Now get purchases with user info
 				// TODO: Remove .limit(5) after testing - this is a temporary test limit
 				const allResults = await db
 					.select({
@@ -175,46 +144,12 @@ export const migrateCohortEntitlements = inngest.createFunction(
 					})
 					.from(purchases)
 					.innerJoin(users, eq(users.id, purchases.userId))
-					.where(eq(purchases.productId, sourceCohortId))
+					.where(eq(purchases.productId, productId))
 
-				console.log('🔍 [MIGRATION] Final results (AFTER user join)', {
-					sourceCohortId,
+				await log.info('product_workshop_entitlements_sync.purchases_found', {
+					productId,
 					count: allResults.length,
-					rawPurchasesCount: rawPurchases.length,
-					joinedPurchasesCount: allResults.length,
-					difference: rawPurchases.length - allResults.length,
-					samplePurchaseIds: allResults.slice(0, 5).map((r) => r.purchaseId),
 				})
-				await log.info('cohort_entitlement_migration.purchases_found', {
-					sourceCohortId,
-					count: allResults.length,
-					rawPurchasesCount: rawPurchases.length,
-					joinedPurchasesCount: allResults.length,
-					samplePurchaseIds: allResults.slice(0, 5).map((r) => r.purchaseId),
-				})
-
-				if (rawPurchases.length > 0 && allResults.length === 0) {
-					console.error('❌ [MIGRATION] Purchases exist but no users found!', {
-						sourceCohortId,
-						rawPurchasesCount: rawPurchases.length,
-						purchasesWithoutUsers: rawPurchases.filter((p) => !p.userId).length,
-						samplePurchasesWithoutUsers: rawPurchases
-							.filter((p) => !p.userId)
-							.slice(0, 5),
-					})
-					await log.error(
-						'cohort_entitlement_migration.purchases_exist_but_no_users',
-						{
-							sourceCohortId,
-							rawPurchasesCount: rawPurchases.length,
-							purchasesWithoutUsers: rawPurchases.filter((p) => !p.userId)
-								.length,
-							samplePurchasesWithoutUsers: rawPurchases
-								.filter((p) => !p.userId)
-								.slice(0, 5),
-						},
-					)
-				}
 
 				return allResults
 			},
@@ -222,17 +157,14 @@ export const migrateCohortEntitlements = inngest.createFunction(
 
 		if (purchasesWithUsers.length === 0) {
 			await step.run('no-purchases-found', async () => {
-				console.log('❌ [MIGRATION] No purchases found', {
-					sourceCohortId,
-				})
-				await log.info('cohort_entitlement_migration.no_purchases', {
-					sourceCohortId,
+				await log.info('product_workshop_entitlements_sync.no_purchases', {
+					productId,
 				})
 			})
 
 			return {
-				sourceCohortId,
-				message: 'No purchases found for source cohort',
+				productId,
+				message: 'No purchases found for product',
 				totalPurchasesFound: 0,
 				successCount: 0,
 				errorCount: 0,
@@ -240,17 +172,19 @@ export const migrateCohortEntitlements = inngest.createFunction(
 		}
 
 		// Process each purchase/person in their own individual step
-		// This ensures that if one person fails, others can still succeed
 		const personResults = await Promise.allSettled(
 			purchasesWithUsers.map((purchaseData, index) =>
 				step.run(
-					`process-person-${index}-${purchaseData.purchaseId}`,
+					`sync-person-${index}-${purchaseData.purchaseId}`,
 					async () => {
 						try {
 							if (!purchaseData.userId) {
-								await log.warn('cohort_entitlement_migration.skipped_no_user', {
-									purchaseId: purchaseData.purchaseId,
-								})
+								await log.warn(
+									'product_workshop_entitlements_sync.skipped_no_user',
+									{
+										purchaseId: purchaseData.purchaseId,
+									},
+								)
 								return {
 									purchaseId: purchaseData.purchaseId,
 									success: false,
@@ -272,10 +206,13 @@ export const migrateCohortEntitlements = inngest.createFunction(
 							})
 
 							if (!user) {
-								await log.warn('cohort_entitlement_migration.user_not_found', {
-									userId: purchaseData.userId,
-									purchaseId: purchaseData.purchaseId,
-								})
+								await log.warn(
+									'product_workshop_entitlements_sync.user_not_found',
+									{
+										userId: purchaseData.userId,
+										purchaseId: purchaseData.purchaseId,
+									},
+								)
 								return {
 									purchaseId: purchaseData.purchaseId,
 									success: false,
@@ -292,20 +229,55 @@ export const migrateCohortEntitlements = inngest.createFunction(
 								}
 							}
 
+							// Get user's current workshop entitlements
+							const currentWorkshopIds = await getUserWorkshopEntitlements(
+								user.id,
+								entitlementType.id,
+							)
+
+							// Find which workshops are missing
+							const missingWorkshopIds = WORKSHOP_IDS.filter(
+								(workshopId) => !currentWorkshopIds.includes(workshopId),
+							)
+
+							if (missingWorkshopIds.length === 0) {
+								await log.info(
+									'product_workshop_entitlements_sync.user_has_all_entitlements',
+									{
+										userId: user.id,
+										userEmail: user.email,
+										purchaseId: purchaseData.purchaseId,
+										currentWorkshopIds,
+									},
+								)
+								return {
+									purchaseId: purchaseData.purchaseId,
+									success: true,
+									successResults: [],
+									errorResults: [],
+									skippedResults: [
+										{
+											purchaseId: purchaseData.purchaseId,
+											userId: user.id,
+											userEmail: user.email,
+											reason: 'User already has all required entitlements',
+											workshopIds: WORKSHOP_IDS,
+										},
+									],
+								}
+							}
+
 							// Determine organization and membership
 							let organizationId: string
 							let organizationMembershipId: string
 
 							if (purchaseData.organizationId) {
-								// Purchase has an organization - get or create membership
 								organizationId = purchaseData.organizationId
 
 								if (purchaseData.organizationMembershipId) {
-									// Use existing membership
 									organizationMembershipId =
 										purchaseData.organizationMembershipId
 								} else {
-									// Get or create membership
 									const membership =
 										await courseBuilderAdapter.addMemberToOrganization({
 											organizationId: purchaseData.organizationId,
@@ -321,7 +293,6 @@ export const migrateCohortEntitlements = inngest.createFunction(
 
 									organizationMembershipId = membership.id
 
-									// Ensure learner role
 									await courseBuilderAdapter.addRoleForMember({
 										organizationId: purchaseData.organizationId,
 										memberId: membership.id,
@@ -329,7 +300,6 @@ export const migrateCohortEntitlements = inngest.createFunction(
 									})
 								}
 							} else {
-								// No organization on purchase - ensure personal organization
 								const personalOrgResult =
 									await ensurePersonalOrganizationWithLearnerRole(
 										user,
@@ -361,10 +331,10 @@ export const migrateCohortEntitlements = inngest.createFunction(
 								reason: string
 							}> = []
 
-							// Create entitlements for each workshop
-							for (const workshopId of WORKSHOP_IDS) {
+							// Create entitlements only for missing workshops
+							for (const workshopId of missingWorkshopIds) {
 								try {
-									// Check if user already has this entitlement
+									// Double-check (in case it was created between checks)
 									const alreadyHasEntitlement =
 										await hasExistingWorkshopEntitlement(
 											user.id,
@@ -374,9 +344,9 @@ export const migrateCohortEntitlements = inngest.createFunction(
 
 									if (alreadyHasEntitlement) {
 										await log.info(
-											'cohort_entitlement_migration.entitlement_already_exists',
+											'product_workshop_entitlements_sync.entitlement_already_exists',
 											{
-												sourceCohortId,
+												productId,
 												userId: user.id,
 												userEmail: user.email,
 												purchaseId: purchaseData.purchaseId,
@@ -408,16 +378,14 @@ export const migrateCohortEntitlements = inngest.createFunction(
 									})
 
 									await log.info(
-										'cohort_entitlement_migration.workshop_entitlement_created',
+										'product_workshop_entitlements_sync.entitlement_created',
 										{
-											sourceCohortId,
+											productId,
 											userId: user.id,
 											userEmail: user.email,
 											purchaseId: purchaseData.purchaseId,
 											workshopId,
 											entitlementId,
-											organizationId,
-											organizationMembershipId,
 										},
 									)
 
@@ -430,9 +398,9 @@ export const migrateCohortEntitlements = inngest.createFunction(
 									})
 								} catch (error) {
 									await log.error(
-										'cohort_entitlement_migration.workshop_entitlement_creation_error',
+										'product_workshop_entitlements_sync.entitlement_creation_error',
 										{
-											sourceCohortId,
+											productId,
 											purchaseId: purchaseData.purchaseId,
 											userId: user.id,
 											userEmail: user.email,
@@ -462,9 +430,9 @@ export const migrateCohortEntitlements = inngest.createFunction(
 							}
 						} catch (error) {
 							await log.error(
-								'cohort_entitlement_migration.purchase_processing_error',
+								'product_workshop_entitlements_sync.purchase_processing_error',
 								{
-									sourceCohortId,
+									productId,
 									purchaseId: purchaseData.purchaseId,
 									userId: purchaseData.userId,
 									userEmail: purchaseData.userEmail,
@@ -514,44 +482,57 @@ export const migrateCohortEntitlements = inngest.createFunction(
 				purchaseId: string
 				userId: string
 				userEmail: string | null
-				workshopId: string
+				workshopId?: string
 				reason: string
 			}> = []
 
 			for (const result of personResults) {
-				if (result.status === 'fulfilled') {
-					if (result.value) {
-						// Filter out any null values from arrays before spreading
-						const validSuccessResults = result.value.successResults.filter(
-							(item): item is NonNullable<typeof item> => item !== null,
-						)
-						const validErrorResults = result.value.errorResults.filter(
-							(item): item is NonNullable<typeof item> => item !== null,
-						)
-						const validSkippedResults = result.value.skippedResults.filter(
-							(item): item is NonNullable<typeof item> => item !== null,
-						)
+				if (result.status === 'fulfilled' && result.value) {
+					// Filter out null values from all arrays
+					const validSuccessResults = (
+						result.value.successResults || []
+					).filter((item): item is NonNullable<typeof item> => item !== null)
+					const validErrorResults = (result.value.errorResults || []).filter(
+						(item): item is NonNullable<typeof item> => item !== null,
+					)
+					const validSkippedResults = (result.value.skippedResults || [])
+						.filter((item): item is NonNullable<typeof item> => item !== null)
+						.flatMap((item) => {
+							// Handle case where user has all entitlements (workshopIds array)
+							if ('workshopIds' in item && Array.isArray(item.workshopIds)) {
+								// Convert to individual entries for each workshop
+								return item.workshopIds.map((workshopId) => ({
+									purchaseId: item.purchaseId,
+									userId: item.userId,
+									userEmail: item.userEmail,
+									workshopId,
+									reason: item.reason,
+								}))
+							}
+							// Already in the correct format
+							return {
+								purchaseId: item.purchaseId,
+								userId: item.userId,
+								userEmail: item.userEmail,
+								workshopId: 'workshopId' in item ? item.workshopId : undefined,
+								reason: item.reason,
+							}
+						})
 
-						successResults.push(...validSuccessResults)
-						errorResults.push(...validErrorResults)
-						skippedResults.push(...validSkippedResults)
-					} else {
-						// Step returned null (shouldn't happen, but handle it)
-						await log.error('cohort_entitlement_migration.step_returned_null', {
-							sourceCohortId,
-						})
-						errorResults.push({
-							purchaseId: 'unknown',
-							error: 'Step returned null result',
-						})
-					}
+					successResults.push(...validSuccessResults)
+					errorResults.push(...validErrorResults)
+					skippedResults.push(...validSkippedResults)
+				} else if (result.status === 'fulfilled' && !result.value) {
+					errorResults.push({
+						purchaseId: 'unknown',
+						error: 'Step returned null result',
+					})
 				} else if (result.status === 'rejected') {
-					// Step itself failed (rejected promise)
 					const reason = result.reason
 					await log.error(
-						'cohort_entitlement_migration.step_execution_failed',
+						'product_workshop_entitlements_sync.step_execution_failed',
 						{
-							sourceCohortId,
+							productId,
 							error: reason instanceof Error ? reason.message : String(reason),
 						},
 					)
@@ -570,19 +551,19 @@ export const migrateCohortEntitlements = inngest.createFunction(
 		})
 
 		await step.run('log-completion', async () => {
-			await log.info('cohort_entitlement_migration.completed', {
-				sourceCohortId,
+			await log.info('product_workshop_entitlements_sync.completed', {
+				productId,
 				totalPurchases: purchasesWithUsers.length,
 				successCount: results.successResults.length,
 				errorCount: results.errorResults.length,
 				skippedCount: results.skippedResults.length,
-				totalWorkshopEntitlementsCreated: results.successResults.length,
 			})
+			return { logged: true }
 		})
 
 		return {
-			sourceCohortId,
-			message: `Migration completed: ${results.successResults.length} workshop entitlements created across ${purchasesWithUsers.length} purchases`,
+			productId,
+			message: `Sync completed: ${results.successResults.length} entitlements created, ${results.skippedResults.length} skipped across ${purchasesWithUsers.length} purchases`,
 			totalPurchasesFound: purchasesWithUsers.length,
 			successCount: results.successResults.length,
 			errorCount: results.errorResults.length,

@@ -22,6 +22,7 @@ import {
 	calendarSync,
 	handleRefundAndRemoveFromCalendar,
 } from './functions/calendar-sync'
+import { cleanupMigrationMetadata } from './functions/cleanup-migration-metadata'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
@@ -36,6 +37,7 @@ import {
 } from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { syncProductWorkshopEntitlements } from './functions/sync-product-workshop-entitlements'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
@@ -62,6 +64,8 @@ export const inngestConfig = {
 		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
 		migrateCohortEntitlements,
+		cleanupMigrationMetadata,
+		syncProductWorkshopEntitlements,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
