@@ -9,6 +9,7 @@ import {
 	setPreferredTextTrack,
 	useMuxPlayerPrefs,
 } from '@/hooks/use-mux-player-prefs'
+import type { List } from '@/lib/lists'
 import { setProgressForResource } from '@/lib/progress'
 import { track } from '@/utils/analytics'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
@@ -22,6 +23,7 @@ import { useVideoPlayerOverlay } from '@coursebuilder/ui/hooks/use-video-player-
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { AutoContinueCountdown } from '../../_components/auto-continue-countdown'
+import ModuleResourceList from '../../_components/navigation/module-resource-list'
 import PostNextUpFromListPagination from '../../_components/post-next-up-from-list-pagination'
 import { useList } from '../../[post]/_components/list-provider'
 import { useProgress } from '../../[post]/_components/progress-provider'
@@ -34,6 +36,7 @@ export function PostPlayer({
 	thumbnailTime,
 	title,
 	autoPlay,
+	postSlug,
 }: {
 	muxPlaybackId?: string
 	videoResource: VideoResource
@@ -42,6 +45,7 @@ export function PostPlayer({
 	thumbnailTime?: number
 	title?: string
 	autoPlay?: boolean
+	postSlug: string
 }) {
 	// const ability = abilityLoader ? use(abilityLoader) : null
 	// const canView = ability?.canView
@@ -71,11 +75,13 @@ export function PostPlayer({
 		setMuxPlayerRef(playerRef)
 	}, [playerRef])
 
+	const finalAutoplay = time ? true : autoplay
+
 	const playerProps = {
 		playsInline: true,
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: autoplay ? 0 : thumbnailTime || 0,
+		thumbnailTime: finalAutoplay ? 0 : thumbnailTime || 0,
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
@@ -98,12 +104,12 @@ export function PostPlayer({
 			handleTextTrackChange(playerRef, setPlayerPrefs)
 			setPreferredTextTrack(playerRef)
 
-			if (autoplay) {
+			if (finalAutoplay) {
 				playerRef.current?.play().catch(console.warn)
 			}
 		},
 		onEnded: async () => {
-			if (autoplay && nextUp) {
+			if (finalAutoplay && nextUp) {
 				router.push(`/${nextUp?.resource.fields?.slug}`)
 			} else {
 				dispatchVideoPlayerOverlay({ type: 'COMPLETED', playerRef })
@@ -121,7 +127,7 @@ export function PostPlayer({
 		onPlay: () => {
 			dispatchVideoPlayerOverlay({ type: 'HIDDEN' })
 		},
-		autoPlay,
+		autoPlay: finalAutoplay,
 	} as MuxPlayerProps
 
 	const playbackId =
@@ -130,41 +136,52 @@ export function PostPlayer({
 			: null
 
 	return (
-		<div className={cn('relative h-full w-full', className)}>
-			{playbackId ? (
-				<MuxPlayer
-					metadata={{
-						video_id: videoResource?.id,
-						video_title: title || videoResource?.id,
-					}}
-					playbackId={playbackId}
-					className={cn(className)}
-					ref={playerRef}
-					{...playerProps}
+		<div className={cn('container flex h-full px-0', className)}>
+			<div className="relative aspect-video h-full max-h-[75vh] w-full">
+				{playbackId ? (
+					<MuxPlayer
+						title={title}
+						metadata={{
+							video_id: videoResource?.id,
+							video_title: title || videoResource?.id,
+						}}
+						playbackId={playbackId}
+						className={cn('aspect-video h-full w-full shrink-0', className)}
+						ref={playerRef}
+						{...playerProps}
+					/>
+				) : (
+					<div className="flex aspect-video h-full w-full items-center justify-center">
+						<Spinner className="" />
+					</div>
+				)}
+
+				{state.action?.type === 'COMPLETED' && (
+					<div
+						className={cn(
+							'bg-background/85 dark absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
+							className,
+						)}
+					>
+						<AutoContinueCountdown
+							nextUrl={autoContinueUrl}
+							className="mb-1 sm:mb-4"
+						/>
+						<PostNextUpFromListPagination
+							postId={postId}
+							className="text-white! mt-0 border-0 bg-transparent px-0 py-0 dark:bg-transparent"
+							documentIdsToSkip={list?.resources.map((resource) => resource.id)}
+							onNextUrlResolved={setAutoContinueUrl}
+						/>
+					</div>
+				)}
+			</div>
+			{list && (
+				<ModuleResourceList
+					className="dark max-w-xs"
+					currentLessonSlug={postSlug}
+					options={{ stretchToFullViewportHeight: false }}
 				/>
-			) : (
-				<div className="flex h-full w-full items-center justify-center bg-gray-300">
-					<Spinner />
-				</div>
-			)}
-			{state.action?.type === 'COMPLETED' && (
-				<div
-					className={cn(
-						'bg-background/85 dark absolute left-0 top-0 flex h-full w-full flex-col items-center justify-center pb-6 backdrop-blur-md sm:pb-16',
-						className,
-					)}
-				>
-					<AutoContinueCountdown
-						nextUrl={autoContinueUrl}
-						className="mb-1 sm:mb-4"
-					/>
-					<PostNextUpFromListPagination
-						postId={postId}
-						className="text-white! mt-0 border-0 bg-transparent px-0 py-0 dark:bg-transparent"
-						documentIdsToSkip={list?.resources.map((resource) => resource.id)}
-						onNextUrlResolved={setAutoContinueUrl}
-					/>
-				</div>
 			)}
 		</div>
 	)

@@ -34,7 +34,7 @@ export type PlayerPrefs = {
 export const defaultPlayerPreferences: PlayerPrefs = {
 	volume: 1,
 	playbackRate: 1,
-	autoplay: false,
+	autoplay: true,
 	videoQuality: {
 		bitrate: null,
 		height: null,

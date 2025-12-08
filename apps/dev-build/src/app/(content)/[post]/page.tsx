@@ -11,6 +11,7 @@ import { Share } from '@/components/share'
 import SplitText from '@/components/split-text'
 import TickerScroll from '@/components/ticker-scroll'
 import { courseBuilderAdapter } from '@/db'
+import type { List } from '@/lib/lists'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
 import { getAllPosts, getCachedPostOrList } from '@/lib/posts-query'
@@ -25,6 +26,7 @@ import { ContentResourceResource } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
+import ModuleResourceList from '../_components/navigation/module-resource-list'
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
@@ -65,6 +67,7 @@ export default async function PostPage(props: {
 	return (
 		<div className="">
 			{hasVideo && <PlayerContainer post={post} />}
+
 			<div className={cn('relative w-full', {})}>
 				{/* <div className="relative z-10 mx-auto flex w-full items-center justify-between">
 					{!list ? (
@@ -255,20 +258,19 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 	return videoResource ? (
 		<VideoPlayerOverlayProvider>
 			<Suspense
-				fallback={
-					<PlayerContainerSkeleton className="aspect-video h-full max-h-[75vh] w-full bg-black" />
-				}
+				fallback={<PlayerContainerSkeleton className="w-full bg-black" />}
 			>
 				<section
 					aria-label="video"
 					className="flex flex-col items-center justify-center border-b bg-black"
 				>
 					<PostPlayer
+						postSlug={post.fields?.slug}
 						title={post.fields?.title}
 						thumbnailTime={post.fields?.thumbnailTime || 0}
 						postId={post.id}
 						autoPlay={true}
-						className="aspect-video h-full max-h-[75vh] w-full overflow-hidden"
+						className=""
 						videoResource={videoResource}
 					/>
 					<PostNewsletterCta

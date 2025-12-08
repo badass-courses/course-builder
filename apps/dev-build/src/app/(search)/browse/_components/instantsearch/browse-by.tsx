@@ -3,7 +3,7 @@
 import { useQueryState } from 'nuqs'
 import { useRefinementList } from 'react-instantsearch'
 
-import { Separator } from '@coursebuilder/ui'
+import { Button, Separator } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 const FREE_TYPES = ['tutorial', 'post', 'list', 'article']
@@ -96,55 +96,60 @@ export default function BrowseBy({ onSelect }: BrowseByProps) {
 	}
 
 	return (
-		<ul className="flex flex-col gap-5">
-			<li>
-				<p className="pb-5">Browse by</p>
-				<Separator />
-			</li>
-			<li>
-				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isNewestActive,
-					})}
-					onClick={handleNewestClick}
-					aria-pressed={isNewestActive}
-				>
-					Newest
-				</button>
-			</li>
-			<li>
-				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isCohortActive,
-					})}
-					onClick={handleCohortClick}
-					aria-pressed={isCohortActive}
-				>
-					Cohort-based
-				</button>
-			</li>
-			<li>
-				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isWorkshopActive,
-					})}
-					onClick={handleWorkshopClick}
-					aria-pressed={isWorkshopActive}
-				>
-					Self-paced
-				</button>
-			</li>
-			<li>
-				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isFreeActive,
-					})}
-					onClick={handleFreeClick}
-					aria-pressed={isFreeActive}
-				>
-					Free
-				</button>
-			</li>
-		</ul>
+		<div className="flex flex-col gap-5">
+			<div>
+				<p className="px-8 font-medium">Browse by</p>
+				{/* <Separator /> */}
+			</div>
+			<ul className="mt-2 flex flex-col gap-3 px-5">
+				<li>
+					<Button
+						className={cn('cursor-pointer rounded-full', {
+							'text-primary': isNewestActive,
+						})}
+						variant={isNewestActive ? 'outline' : 'ghost'}
+						onClick={handleNewestClick}
+						aria-pressed={isNewestActive}
+					>
+						Newest
+					</Button>
+				</li>
+				<li>
+					<Button
+						className={cn('cursor-pointer rounded-full', {
+							'text-primary': isCohortActive,
+						})}
+						variant={isCohortActive ? 'outline' : 'ghost'}
+						onClick={handleCohortClick}
+						aria-pressed={isCohortActive}
+					>
+						Cohort-based
+					</Button>
+				</li>
+				<li>
+					<Button
+						className={cn('cursor-pointer rounded-full', {
+							'text-primary': isWorkshopActive,
+						})}
+						variant={isWorkshopActive ? 'outline' : 'ghost'}
+						onClick={handleWorkshopClick}
+						aria-pressed={isWorkshopActive}
+					>
+						Self-paced
+					</Button>
+				</li>
+				<li>
+					<Button
+						className={cn('cursor-pointer rounded-full', {
+							'text-primary': isFreeActive,
+						})}
+						variant={isFreeActive ? 'outline' : 'ghost'}
+						aria-pressed={isFreeActive}
+					>
+						Free
+					</Button>
+				</li>
+			</ul>
+		</div>
 	)
 }

@@ -44,9 +44,9 @@ export default async function Layout(props: {
 						<ActiveHeadingProvider>
 							<LayoutClient>
 								<div className="flex flex-1 items-start">
-									{list && (
+									{/* {list && (
 										<ModuleResourceList className="sticky top-0 hidden max-w-xs border-x border-b lg:block" />
-									)}
+									)} */}
 									{/* <MobileListResourceNavigation /> */}
 									<div className="w-full min-w-0">{props.children}</div>
 								</div>

@@ -27,13 +27,7 @@ export default function LayoutClient({
 	isCommerceEnabled?: boolean
 }) {
 	return (
-		<div
-			className={cn(
-				'',
-
-				className,
-			)}
-		>
+		<div className={cn('')}>
 			<Navigation />
 			{saleBannerData && (
 				<SaleBanner
@@ -42,7 +36,7 @@ export default function LayoutClient({
 				/>
 			)}
 			<main
-				className={cn('', {
+				className={cn('', className, {
 					'container border-x': withContainer,
 				})}
 			>

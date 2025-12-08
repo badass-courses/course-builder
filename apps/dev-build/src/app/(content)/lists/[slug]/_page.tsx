@@ -119,9 +119,9 @@ export default async function ListPage(props: {
 	const fields = list.fields
 
 	return (
-		<div className="relative min-h-[calc(100svh-var(--nav-height))] pt-10">
-			<div className="flex grid-cols-12 flex-col lg:grid lg:gap-16">
-				<div className="col-span-8">
+		<div className="relative min-h-[calc(100svh-var(--nav-height))]">
+			<div className="container flex grid-cols-12 flex-col divide-x border-x px-0 lg:grid">
+				<div className="col-span-8 px-5 pt-10 sm:px-8">
 					<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 						{fields?.image && (
 							<CldImage
@@ -148,7 +148,7 @@ export default async function ListPage(props: {
 								<span className="text-muted-foreground text-sm uppercase">
 									Created by
 								</span>
-								<div className="border-border rounded-lg border px-5 pl-2">
+								<div className="border-border rounded-lg border px-5 py-3 pl-2">
 									<Contributor
 										imageSize={66}
 										className="[&_div]:text-left"
@@ -167,6 +167,7 @@ export default async function ListPage(props: {
 				</div>
 				<div className="col-span-4">
 					<ModuleResourceList
+						className="bg-background"
 						options={{ isCollapsible: false, withHeader: false }}
 					/>
 				</div>

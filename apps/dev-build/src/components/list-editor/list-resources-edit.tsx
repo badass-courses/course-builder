@@ -236,6 +236,7 @@ export default function ListResourcesEdit({
 								Create New
 							</Button>
 							<Dialog
+								// modal={false}
 								open={isSearchModalOpen}
 								onOpenChange={setIsSearchModalOpen}
 							>
@@ -244,7 +245,7 @@ export default function ListResourcesEdit({
 										<Search className="text-primary w-4" /> Add to list
 									</Button>
 								</DialogTrigger>
-								<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
+								<DialogContent className="w-full overflow-y-auto py-5 sm:max-h-[80vh]">
 									<DialogTitle className="sr-only">Add Resources</DialogTitle>
 									<ResourcesInfiniteHits
 										updateTreeState={updateState}

@@ -82,7 +82,7 @@ export function ResourcesInfiniteHits({
 
 	return (
 		<div>
-			<div className="bg-background sticky top-0 flex min-h-[57px] items-center justify-between px-5 py-2">
+			<div className="bg-background top-0 flex min-h-[57px] items-center justify-between px-5 py-2">
 				{selectedResources.length > 0 ? (
 					<>
 						<span>{selectedResources.length} selected</span>
@@ -106,7 +106,7 @@ export function ResourcesInfiniteHits({
 			<div className="border-b px-5 pb-4">
 				<SearchBox className="mb-0 mt-1" />
 			</div>
-			<ul className="divide-y">
+			<ul className="flex flex-col divide-y">
 				{items.map((item) => (
 					<Hit
 						key={item.id}

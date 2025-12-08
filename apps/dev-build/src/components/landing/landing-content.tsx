@@ -261,7 +261,7 @@ function InstructorSection() {
 				<h3 className="font-heading mb-4 text-3xl font-semibold tracking-tight lg:text-4xl">
 					John Lindquist
 				</h3>
-				<div className="text-muted-foreground space-y-4 text-base leading-relaxed">
+				<div className="text-muted-foreground space-y-4 text-balance text-base leading-relaxed">
 					<p>
 						John Lindquist is a co‑founder of egghead.io and a pioneer in
 						developer education. With a history of teaching through bite-sized,

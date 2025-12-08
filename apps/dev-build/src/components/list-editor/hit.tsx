@@ -30,14 +30,14 @@ export default function Hit({
 			/>
 			<Label
 				htmlFor={hit.id}
-				className="group flex w-full flex-row items-baseline justify-between gap-2 py-2 sm:py-2.5"
+				className="group flex w-full flex-row items-start justify-between gap-2 py-2 sm:py-2.5"
 			>
-				<div className="flex items-center gap-2">
-					<span className="py-1 pr-5 font-medium sm:truncate">{hit.title}</span>
-				</div>
-				<div className="text-muted-foreground fon-normal flex shrink-0 items-center gap-3 pl-7 text-xs capitalize opacity-60 sm:pl-0">
-					<span>{hit.type}</span>
-				</div>
+				<span className="line-clamp-2 py-1 font-medium leading-relaxed">
+					{hit.title}
+				</span>
+				<span className="text-muted-foreground shrink-0 pt-1 text-xs capitalize opacity-60">
+					{hit.type}
+				</span>
 			</Label>
 		</li>
 	)

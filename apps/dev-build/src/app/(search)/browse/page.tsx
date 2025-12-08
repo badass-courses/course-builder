@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function BrowsePage() {
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient className="container border-x px-0">
 			<Search />
 		</LayoutClient>
 	)

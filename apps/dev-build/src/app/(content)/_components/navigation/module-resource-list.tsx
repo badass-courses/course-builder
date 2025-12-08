@@ -109,7 +109,7 @@ export default function ModuleResourceList({
 			aria-controls="workshop-navigation"
 			aria-label="Module navigation"
 			className={cn(
-				'bg-sidebar text-sidebar-foreground relative h-auto w-full shrink-0 overflow-hidden',
+				'bg-sidebar text-sidebar-foreground relative w-full shrink-0 overflow-hidden',
 				className,
 				{
 					'hover:bg-sidebar-accent w-8 cursor-pointer transition [&_div]:hidden':

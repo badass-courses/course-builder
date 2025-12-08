@@ -66,15 +66,19 @@ function SearchContent() {
 				filters={'visibility:public && state:published'}
 				hitsPerPage={40}
 			/>
-			<div className="min-h-[calc(100svh-77px)] py-6 md:py-10">
+			<div className="min-h-[calc(100svh-77px)]">
 				{/* Desktop layout */}
-				<div className="hidden gap-10 md:grid md:grid-cols-12">
-					<aside className="col-span-3">
+				<div className="hidden divide-x md:grid md:grid-cols-12">
+					<aside className="col-span-3 py-6">
 						<BrowseBy />
 					</aside>
 					<div className="col-span-9 flex flex-col gap-4">
-						<SearchBox />
-						<InfiniteHits />
+						<div className="bg-muted border-b px-5 py-4">
+							<SearchBox />
+						</div>
+						<div className="px-5">
+							<InfiniteHits />
+						</div>
 					</div>
 				</div>
 
