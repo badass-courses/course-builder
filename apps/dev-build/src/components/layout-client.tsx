@@ -43,7 +43,7 @@ export default function LayoutClient({
 			)}
 			<main
 				className={cn('', {
-					container: withContainer,
+					'container border-x': withContainer,
 				})}
 			>
 				{children}

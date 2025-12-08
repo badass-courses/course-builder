@@ -9,6 +9,7 @@ import queryString from 'query-string'
 import { z } from 'zod'
 
 import { Button, Input, Label } from '@coursebuilder/ui'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 export type SubscribeFormProps = {
 	actionLabel?: string
@@ -106,21 +107,25 @@ export const SubscribeToConvertkitForm: React.FC<
 		<form
 			data-sr-convertkit-subscribe-form={status}
 			onSubmit={handleSubmit}
-			className={className}
+			className={cn(
+				'grid w-full grid-rows-3 items-center divide-y md:grid-cols-3 md:grid-rows-1 md:divide-x md:divide-y-0 md:border-b',
+				className,
+			)}
 			{...rest}
 		>
-			<div data-sr-fieldset="" className="w-full">
-				<Label
+			<div data-sr-fieldset="" className="relative w-full">
+				{/* <Label
+					className="absolute left-2 top-2"
 					data-sr-input-label=""
 					htmlFor={id ? `first_name_${id}` : 'first_name'}
 				>
 					First Name
-				</Label>
+				</Label> */}
 				<Input
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
-					className="h-auto"
+					className="focus-visible:ring-foreground relative flex h-24 w-full rounded-none border-0 px-8 text-lg font-medium focus-visible:z-50 focus-visible:ring-1 focus-visible:ring-offset-0"
 					id={id ? `first_name_${id}` : 'first_name'}
 					placeholder="Name"
 					type="text"
@@ -131,12 +136,12 @@ export const SubscribeToConvertkitForm: React.FC<
 				)}
 			</div>
 			<div data-sr-fieldset="" className="w-full">
-				<Label data-sr-input-label="" htmlFor={id ? `email_${id}` : 'email'}>
+				{/* <Label data-sr-input-label="" htmlFor={id ? `email_${id}` : 'email'}>
 					Email*
-				</Label>
+				</Label> */}
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto"
+					className="focus-visible:ring-foreground relative flex h-24 w-full rounded-none border-0 px-8 text-lg font-medium focus-visible:z-50 focus-visible:ring-1 focus-visible:ring-offset-0"
 					id={id ? `email_${id}` : 'email'}
 					placeholder={emailPlaceholder}
 					type="email"
@@ -159,6 +164,7 @@ export const SubscribeToConvertkitForm: React.FC<
 				})
 			) : (
 				<Button
+					className="h-24 w-full rounded-none border-0 text-lg font-medium"
 					data-sr-button="default"
 					variant="default"
 					size="lg"

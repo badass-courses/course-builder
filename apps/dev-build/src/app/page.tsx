@@ -4,7 +4,7 @@ import HomeFeed from '@/components/landing/home-feed'
 import LandingContent from '@/components/landing/landing-content'
 import LayoutClient from '@/components/layout-client'
 import SplitText from '@/components/split-text'
-import TickerDraggable from '@/components/ticker-scroll'
+import TickerScroll from '@/components/ticker-scroll'
 import config from '@/config'
 import { commerceEnabled } from '@/flags'
 import { getFeed } from '@/lib/feed-query'
@@ -98,11 +98,7 @@ const Home = async (props: Props) => {
 						<HomeFeed feedLoader={feedLoader} />
 					</div>
 				</section>
-				<section>
-					<div className="px-0! container flex border-x">
-						<TickerDraggable />
-					</div>
-				</section>
+
 				<LandingContent />
 			</div>
 		</LayoutClient>

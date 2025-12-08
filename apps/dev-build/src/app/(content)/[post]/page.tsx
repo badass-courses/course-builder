@@ -152,7 +152,7 @@ export default async function PostPage(props: {
 						/>
 					</div>
 				</div>
-				<div className="bg-muted/30 border-t">
+				<div className="border-t" data-theme="yellow">
 					<PostNextUpFromListPagination
 						className="container mx-auto rounded-none border-x py-10 lg:py-16"
 						postId={post.id}
@@ -196,7 +196,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="">
-			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-orange-600 sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
+			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-primary-dark sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
 				{content}
 			</article>
 		</div>

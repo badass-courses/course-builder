@@ -64,7 +64,7 @@ export default function Recommendations({
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="mb-2 text-lg font-semibold tracking-tight sm:text-2xl">
+			<h2 className="mb-4 text-lg font-semibold tracking-tight sm:text-2xl">
 				Recommended next
 			</h2>
 			<ul className="w-full">
@@ -74,7 +74,7 @@ export default function Recommendations({
 					) : post ? (
 						<Link
 							href={`/${post.slug}`}
-							className="dark:text-primary flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-medium text-orange-600 hover:underline lg:text-xl"
+							className="dark:text-primary text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-medium underline underline-offset-2 hover:underline lg:text-xl"
 						>
 							{post.title} <ArrowRight className="hidden w-4 sm:block" />
 						</Link>

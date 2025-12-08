@@ -18,7 +18,7 @@ import { motion, useInView, useScroll, useTransform } from 'motion/react'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { CldImage } from '../cld-image'
-import TickerDraggable from '../ticker-scroll'
+import TickerScroll from '../ticker-scroll'
 
 /**
  * Animated section wrapper with scroll-triggered reveal
@@ -27,6 +27,7 @@ function AnimatedSection({
 	children,
 	className,
 	delay = 0,
+	...props
 }: {
 	children: React.ReactNode
 	className?: string
@@ -42,6 +43,7 @@ function AnimatedSection({
 			animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
 			transition={{ duration: 0.8, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
 			className={className}
+			{...props}
 		>
 			{children}
 		</motion.section>
@@ -236,6 +238,10 @@ function InstructorSection() {
 		>
 			<div className="relative shrink-0">
 				<div className="relative overflow-hidden">
+					<div
+						data-theme="purple"
+						className="absolute inset-0 opacity-20 mix-blend-color"
+					/>
 					<CldImage
 						src="https://res.cloudinary.com/johnlindquist/image/upload/c_limit,w_1200/f_auto/q_auto/v1745836451/john-lindquist-pro-cursor-ai-avatar_xodtsm?_a=BAVAZGE70"
 						alt="John Lindquist"
@@ -246,7 +252,10 @@ function InstructorSection() {
 				</div>
 			</div>
 			<div className="flex flex-col items-start justify-center px-5 py-10 pr-5 lg:pr-16">
-				<span className="bg-primary text-primary-foreground mb-4 inline-flex items-center justify-center px-2 py-1 font-mono text-sm font-medium uppercase tracking-widest">
+				<span
+					className="bg-background text-foreground mb-4 inline-flex items-center justify-center px-2 py-1 font-mono text-sm font-medium uppercase tracking-widest"
+					data-theme="purple"
+				>
 					Your Instructor
 				</span>
 				<h3 className="font-heading mb-4 text-3xl font-semibold tracking-tight lg:text-4xl">
@@ -295,7 +304,12 @@ export function LandingContent() {
 	return (
 		<div ref={containerRef} className="divide-y">
 			{/* The Vision Section */}
-			<AnimatedSection className="relative overflow-hidden">
+			<AnimatedSection className="relative overflow-hidden" data-theme="yellow">
+				<section data-theme="yellow" className="border-b">
+					<div className="px-0! container flex border-x">
+						<TickerScroll className="h-20" reverse />
+					</div>
+				</section>
 				<div className="container border-x py-24 sm:py-32">
 					<SectionHeader
 						label="The Vision"
@@ -319,9 +333,9 @@ export function LandingContent() {
 					</div>
 				</div>
 			</AnimatedSection>
-			<div className="">
+			<div className="" data-theme="yellow">
 				<div className="px-0! container border-x">
-					<TickerDraggable className="h-10 w-full" />
+					<TickerScroll className="h-20 w-full" />
 				</div>
 			</div>
 			{/* Exploration Section */}
@@ -436,7 +450,7 @@ export function LandingContent() {
 					</div>
 					<div className="px-0! border-t">
 						<div className="px-0! container border-x">
-							<TickerDraggable className="h-10 w-full" />
+							<TickerScroll className="h-10 w-full" />
 						</div>
 					</div>
 				</div>
@@ -446,7 +460,7 @@ export function LandingContent() {
 			<AnimatedSection className="relative">
 				<div className="md:pl-0! container border-x pb-10 md:pb-0">
 					<div className="grid items-center gap-10 md:grid-cols-2 lg:gap-16">
-						<div className="relative -mx-8 aspect-square overflow-hidden md:mx-0">
+						<div className="relative aspect-square overflow-hidden">
 							<Image
 								fill
 								className="object-cover"
@@ -480,7 +494,7 @@ export function LandingContent() {
 			</AnimatedSection>
 
 			{/* Self-Improving Workspace Section */}
-			<AnimatedSection className="relative">
+			<AnimatedSection className="relative" data-theme="blue">
 				<div className="container flex flex-col items-center border-x py-24 sm:py-32">
 					<SectionHeader
 						label="Compound Growth"
@@ -601,7 +615,7 @@ export function LandingContent() {
 			</AnimatedSection>
 			<div className="px-0! border-b">
 				<div className="px-0! container border-x">
-					<TickerDraggable className="h-24 w-full" />
+					<TickerScroll className="h-24 w-full" />
 				</div>
 			</div>
 			{/* Why dev.build Section */}
@@ -743,7 +757,7 @@ export function LandingContent() {
 						</ul> */}
 			</div>
 			{/* What You'll Get Section */}
-			<AnimatedSection className="relative">
+			<AnimatedSection className="relative" data-theme="invert">
 				<div className="container border-x py-24 sm:py-32">
 					<SectionHeader title="What You'll Get" />
 				</div>
@@ -967,9 +981,13 @@ export function LandingContent() {
 					</div>
 				</div>
 			</AnimatedSection>
-
 			{/* Learning Outcomes */}
-			<AnimatedSection className="bg-muted/30 relative">
+			<AnimatedSection className="relative" data-theme="purple">
+				<section className="border-b">
+					<div className="px-0! container border-x">
+						<TickerScroll className="h-16 w-full" reverse />
+					</div>
+				</section>
 				<div className="container border-x py-24 sm:py-32">
 					<SectionHeader title="Learning Outcomes" />
 				</div>
@@ -1004,16 +1022,15 @@ export function LandingContent() {
 						))}
 					</div>
 				</div>
+				<div className="border-t">
+					<div className="px-0! container border-x">
+						<TickerScroll className="h-24 w-full" />
+					</div>
+				</div>
 			</AnimatedSection>
 
-			<div className="">
-				<div className="px-0! container border-x">
-					<TickerDraggable className="h-24 w-full" />
-				</div>
-			</div>
-
 			{/* Instructor */}
-			<AnimatedSection className="relative">
+			<AnimatedSection className="relative" data-theme="purple">
 				<div className="container border-x px-0">
 					<InstructorSection />
 				</div>
@@ -1098,7 +1115,7 @@ export function LandingContent() {
 			</AnimatedSection>
 
 			{/* CTA Section */}
-			<AnimatedSection className="relative overflow-hidden">
+			<AnimatedSection className="relative overflow-hidden" data-theme="yellow">
 				<div className="container border-x pb-10 pt-16 sm:pb-10 sm:pt-24">
 					<div className="relative">
 						<div className="mb-12 text-center">
@@ -1112,11 +1129,16 @@ export function LandingContent() {
 						</div>
 					</div>
 				</div>
-				<div className="bg-muted/40 border-t">
-					<div className="container border-x py-10">
+				<div className="border-t">
+					<div className="items container border-x px-0">
 						<PrimaryNewsletterCta actionLabel="Join Now" className="">
 							<div />
 						</PrimaryNewsletterCta>
+					</div>
+				</div>
+				<div className="hidden md:block" data-theme="yellow">
+					<div className="px-0! container border-x">
+						<TickerScroll className="h-8 w-full md:h-24" />
 					</div>
 				</div>
 			</AnimatedSection>

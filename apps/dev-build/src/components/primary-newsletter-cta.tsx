@@ -107,26 +107,22 @@ export const PrimaryNewsletterCta: React.FC<
 				)}
 
 				<div
-					className={cn(
-						'flex w-full flex-col items-center justify-center gap-10',
-						{
-							'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
-								subscriber,
-						},
-					)}
+					className={cn('flex w-full flex-col items-center', {
+						'blur-xs pointer-events-none select-none opacity-75 transition ease-in-out':
+							subscriber,
+					})}
 				>
 					<SubscribeToConvertkitForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
-						className="flex w-full flex-col items-start gap-2 text-left lg:max-w-2xl lg:flex-row lg:items-end [&_button]:h-16 [&_button]:w-full [&_button]:rounded-md lg:[&_button]:w-auto [&_input]:h-16 [&_input]:rounded-md"
 					/>
-					<p
+					{/* <p
 						data-nospam=""
-						className="text-muted-foreground inline-flex items-center text-sm"
+						className="text-muted-foreground inline-flex items-center py-5 text-sm"
 					>
 						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 						Unsubscribe at any time.
-					</p>
+					</p> */}
 				</div>
 			</div>
 		</section>

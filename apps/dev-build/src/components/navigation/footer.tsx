@@ -11,6 +11,7 @@ import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 import { Logo } from '../brand/logo'
+import TickerScroll from '../ticker-scroll'
 
 /**
  * Footer component with navigation, newsletter subscription, and theme toggle
@@ -35,9 +36,14 @@ export default function Footer() {
 
 	return (
 		<footer className="flex w-full flex-col items-center justify-center border-t">
-			<div className="container flex w-full flex-col gap-12 border-x py-10 sm:py-24">
+			<div className="w-full border-b">
+				<div className="px-0! container border-x">
+					<TickerScroll className="h-8 w-full" reverse />
+				</div>
+			</div>
+			<div className="container flex w-full flex-col gap-12 border-x px-0 pt-10 sm:pt-24">
 				{/* Top section */}
-				<div className="flex w-full flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+				<div className="flex w-full flex-col items-start justify-between gap-8 px-5 sm:px-10 lg:flex-row lg:items-center">
 					<div className="flex w-full flex-col items-center gap-8 md:items-start lg:flex-row lg:items-center lg:gap-12">
 						<Link href="/" tabIndex={isRoot ? -1 : 0}>
 							<Logo />
@@ -72,28 +78,29 @@ export default function Footer() {
 					</div>
 
 					{/* Right: Newsletter subscription */}
-					{status === 'pending' ? (
-						<div className="w-full" />
-					) : subscriber ? (
-						<Link
-							className="hover:text-foreground text-muted-foreground shrink-0 transition"
-							href="/login"
-						>
-							Log in
-						</Link>
-					) : (
-						<SubscribeToConvertkitForm
-							emailPlaceholder="Your email"
-							className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
-						/>
-					)}
+					{
+						status === 'pending' ? (
+							<div className="w-full" />
+						) : subscriber ? (
+							<Link
+								className="hover:text-foreground text-muted-foreground shrink-0 transition"
+								href="/login"
+							>
+								Log in
+							</Link>
+						) : null
+						// <SubscribeToConvertkitForm
+						// 	emailPlaceholder="Your email"
+						// 	className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
+						// />
+					}
 				</div>
 
 				{/* Separator */}
 				<div className="border-border h-px w-full border-t" />
 
 				{/* Bottom section */}
-				<div className="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
+				<div className="flex flex-col items-center justify-between gap-4 px-5 pb-10 sm:px-10 lg:flex-row lg:items-center">
 					{/* Copyright */}
 					<p className="text-muted-foreground text-sm">
 						{new Date().getFullYear()} © dev.build

@@ -1,25 +1,37 @@
 'use client'
 
-import { useState } from 'react'
 import { Ticker } from '@/components/ticker'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { useScroll, useTransform } from 'motion/react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-export default function TickerDraggable({ className }: { className?: string }) {
-	const { scrollY } = useScroll()
-	const [currentItem, setCurrentItem] = useState('Mario Kart 64')
+interface TickerScrollProps {
+	className?: string
+	/** Speed multiplier - values > 1 = faster, < 1 = slower, negative = reverse */
+	speed?: number
+	/** Reverse the scroll direction */
+	reverse?: boolean
+}
 
-	const reverseOffset = useTransform(() => scrollY.get() * -1)
+export default function TickerScroll({
+	className,
+	speed = 0.2,
+	reverse = false,
+	...props
+}: TickerScrollProps) {
+	const { scrollY } = useScroll()
+
+	const scaledOffset = useTransform(
+		() => scrollY.get() * speed * (reverse ? -1 : 1),
+	)
 
 	return (
-		<>
-			<Ticker
-				gap={10}
-				className={cn('h-16 w-full', className)}
-				items={[<span className="bg-border h-full w-px" key={currentItem} />]}
-				offset={scrollY}
-			/>
-		</>
+		<Ticker
+			gap={10}
+			className={cn('h-16 w-full', className)}
+			items={[<span className="bg-border h-full w-px" key="ticker-scroll" />]}
+			offset={scaledOffset}
+			{...props}
+		/>
 	)
 }

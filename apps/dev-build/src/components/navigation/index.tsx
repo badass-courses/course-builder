@@ -92,7 +92,7 @@ const Navigation = ({ className }: { className?: string }) => {
 		>
 			<div className="container flex items-center justify-between border-x px-3 sm:px-8">
 				<div className="flex items-center">
-					<Link href="/" tabIndex={isRoot ? -1 : 0}>
+					<Link href="/" tabIndex={isRoot ? -1 : 0} className="mr-3">
 						<Logo />
 					</Link>
 					<Link
