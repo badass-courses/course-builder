@@ -210,6 +210,7 @@ async function PlayerContainer({ event }: { event: Event | null }) {
 				className="mb-5 flex w-full flex-col items-center justify-center rounded-md bg-black shadow-md sm:mb-10"
 			>
 				<PostPlayer
+					postSlug={event.fields?.slug}
 					title={event.fields?.title}
 					thumbnailTime={event.fields?.thumbnailTime || 0}
 					postId={event.id}

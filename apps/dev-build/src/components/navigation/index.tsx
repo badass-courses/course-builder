@@ -90,7 +90,11 @@ const Navigation = ({ className }: { className?: string }) => {
 				className,
 			)}
 		>
-			<div className="container flex items-center justify-between border-x px-3 sm:px-8">
+			<div
+				className={cn('flex w-full items-center justify-between px-3 sm:px-8', {
+					'container border-x': !isEditRoute,
+				})}
+			>
 				<div className="flex items-center">
 					<Link href="/" tabIndex={isRoot ? -1 : 0} className="mr-3">
 						<Logo />
