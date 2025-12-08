@@ -92,6 +92,16 @@ export async function createResourceEntitlements(
 	if (productType === 'cohort') {
 		// Loop through cohort resources
 		for (const resourceItem of resource.resources || []) {
+			// Skip items where resource is null
+			if (!resourceItem.resource) {
+				await log.warn('entitlement.resource_item_skipped', {
+					userId: user.id,
+					purchaseId: purchase.id,
+					reason: 'Resource item has null resource',
+				})
+				continue
+			}
+
 			const resourceId = resourceItem.resource.id
 
 			// Check for existing entitlement before creating
