@@ -24,11 +24,9 @@ import {
 
 // Import shared configuration
 import {
-	gatherResourceContexts,
 	getResourceData,
 	PRODUCT_TYPE_CONFIG,
 	ProductType,
-	type ResourceContext,
 } from '../config/product-types'
 
 /**
@@ -401,47 +399,73 @@ async function handleProductTransfer({
 		throw new Error('Source and target users cannot be the same')
 	}
 
-	// Gather all resource contexts from the product
-	const resourceContexts = await step.run(
-		`gather all resource contexts`,
+	// Get the primary resource
+	const primaryResource = await step.run(
+		`get ${config.resourceType} resource`,
 		async () => {
-			return gatherResourceContexts(product, productType)
+			return getProductResource(product, productType)
 		},
 	)
 
-	if (resourceContexts.length === 0) {
-		throw new Error(`No resources found for product`)
+	if (!primaryResource) {
+		throw new Error(`${config.resourceType} resource not found`)
 	}
 
-	log.info('Resource contexts gathered', {
-		resourceContextsCount: resourceContexts.length,
-		resourceContexts: resourceContexts.map((ctx: ResourceContext) => ({
-			resourceId: ctx.resourceId,
-			resourceType: ctx.resourceType,
-			productType: ctx.productType,
-		})),
+	log.info(`${config.logPrefix} resource details`, {
+		id: primaryResource.id,
+		title: primaryResource.fields?.title,
+		organizationId: primaryResource.organizationId,
+		resourceCount: primaryResource.resources?.length,
 		transferSource,
 	})
-
-	// Load full resource data for each context
-	const resourceDataMap = await step.run(
-		`load resource data for all contexts`,
-		async () => {
-			const dataMap: Record<string, any> = {}
-			for (const context of resourceContexts) {
-				const resourceData = await getResourceData(
-					context.resourceId,
-					context.productType,
-				)
-				dataMap[context.resourceId] = resourceData
-			}
-			return dataMap
-		},
-	)
 
 	const isTeamPurchase = Boolean(purchase.bulkCouponId)
 
 	if (!isTeamPurchase && ['Valid', 'Restricted'].includes(purchase.status)) {
+		// Get entitlement types
+		const contentAccessEntitlementType = await step.run(
+			`get ${config.logPrefix} content access entitlement type`,
+			async () => {
+				return await db.query.entitlementTypes.findFirst({
+					where: eq(entitlementTypes.name, config.contentAccess),
+				})
+			},
+		)
+
+		if (!contentAccessEntitlementType) {
+			throw new Error(`Entitlement type not found: ${config.contentAccess}`)
+		}
+
+		const discordRoleEntitlementType = await step.run(
+			`get ${config.logPrefix} discord role entitlement type`,
+			async () => {
+				return await db.query.entitlementTypes.findFirst({
+					where: eq(entitlementTypes.name, config.discordRole),
+				})
+			},
+		)
+
+		// Remove entitlements from source user
+		await removeEntitlementsFromSource(
+			step,
+			config,
+			sourceUser,
+			purchase,
+			contentAccessEntitlementType,
+			discordRoleEntitlementType,
+		)
+
+		// Remove Discord role from source user and add to target user
+		await transferDiscordRole(
+			step,
+			productType,
+			config,
+			product,
+			sourceUser,
+			targetUser,
+			primaryResource,
+		)
+
 		// Get target user's personal organization
 		const targetUserOrganization = await step.run(
 			`get target user personal organization`,
@@ -518,140 +542,17 @@ async function handleProductTransfer({
 			},
 		)
 
-		const primaryResourceContext = resourceContexts.find(
-			(ctx: ResourceContext) => ctx.productType === productType,
-		)
-		const primaryResourceData = primaryResourceContext
-			? resourceDataMap[primaryResourceContext.resourceId]
-			: null
-
-		if (primaryResourceContext && primaryResourceData) {
-			const contentAccessEntitlementType = await step.run(
-				`get ${config.logPrefix} content access entitlement type`,
-				async () => {
-					return await db.query.entitlementTypes.findFirst({
-						where: eq(entitlementTypes.name, config.contentAccess),
-					})
-				},
-			)
-
-			if (!contentAccessEntitlementType) {
-				throw new Error(`Entitlement type not found: ${config.contentAccess}`)
-			}
-
-			const discordRoleEntitlementType = await step.run(
-				`get ${config.logPrefix} discord role entitlement type`,
-				async () => {
-					return await db.query.entitlementTypes.findFirst({
-						where: eq(entitlementTypes.name, config.discordRole),
-					})
-				},
-			)
-
-			await removeEntitlementsFromSource(
-				step,
-				config,
-				sourceUser,
-				purchase,
-				contentAccessEntitlementType,
-				discordRoleEntitlementType,
-			)
-
-			await transferDiscordRole(
-				step,
-				productType,
-				config,
-				product,
-				sourceUser,
-				targetUser,
-				primaryResourceData,
-			)
-
-			// Add entitlements to target user
-			await addEntitlementsToTarget(step, productType, config, {
-				targetUser,
-				purchase,
-				resource: primaryResourceData,
-				targetOrganization: targetUserOrganization,
-				targetMembership: targetUserOrgMembership,
-				contentAccessEntitlementType,
-				discordRoleEntitlementType,
-				product,
-			})
-		}
-
-		for (const context of resourceContexts) {
-			// Skip primary resource - already handled above with Discord role transfer
-			if (context.productType === productType) continue
-
-			const resourceData = resourceDataMap[context.resourceId]
-			if (!resourceData) continue
-
-			const resourceConfig =
-				PRODUCT_TYPE_CONFIG[
-					context.productType as keyof typeof PRODUCT_TYPE_CONFIG
-				]
-			if (!resourceConfig) continue
-
-			// Get entitlement types for this resource's product type
-			const contentAccessEntitlementType = await step.run(
-				`get ${resourceConfig.logPrefix} content access entitlement type for ${context.resourceId}`,
-				async () => {
-					return await db.query.entitlementTypes.findFirst({
-						where: eq(entitlementTypes.name, resourceConfig.contentAccess),
-					})
-				},
-			)
-
-			if (!contentAccessEntitlementType) {
-				log.warn('Entitlement type not found, skipping resource', {
-					resourceId: context.resourceId,
-					entitlementTypeName: resourceConfig.contentAccess,
-					transferSource,
-				})
-				continue
-			}
-
-			// Remove content access entitlements from source user for this resource
-			await step.run(
-				`remove ${resourceConfig.logPrefix} entitlements from source user for ${context.resourceId}`,
-				async () => {
-					await db
-						.update(entitlements)
-						.set({ deletedAt: new Date() })
-						.where(
-							and(
-								eq(entitlements.userId, sourceUser.id),
-								eq(
-									entitlements.entitlementType,
-									contentAccessEntitlementType.id,
-								),
-								eq(entitlements.sourceType, EntitlementSourceType.PURCHASE),
-								eq(entitlements.sourceId, purchase.id),
-							),
-						)
-
-					log.info('Removed entitlements from source user', {
-						sourceUserId: sourceUser.id,
-						purchaseId: purchase.id,
-						productType: resourceConfig.logPrefix,
-						resourceId: context.resourceId,
-					})
-				},
-			)
-
-			// Add entitlements to target user for this resource
-			await addEntitlementsToTarget(step, context.productType, resourceConfig, {
-				targetUser,
-				purchase,
-				resource: resourceData,
-				targetOrganization: targetUserOrganization,
-				targetMembership: targetUserOrgMembership,
-				contentAccessEntitlementType,
-				discordRoleEntitlementType: null, // Discord roles handled separately for primary resource only
-				product: context.productForResource || product,
-			})
-		}
+		// Add entitlements to target user
+		await addEntitlementsToTarget(step, productType, config, {
+			targetUser,
+			purchase,
+			resource: primaryResource,
+			targetOrganization: targetUserOrganization,
+			targetMembership: targetUserOrgMembership,
+			contentAccessEntitlementType,
+			discordRoleEntitlementType,
+			product,
+		})
 
 		// Transfer coupon entitlements from source to target user
 		// Uses eligibilityProductId in metadata to match entitlements to this purchase
@@ -671,7 +572,7 @@ async function handleProductTransfer({
 			purchaseId: purchase.id,
 			sourceUserId: sourceUser.id,
 			targetUserId: targetUser.id,
-			resourceContextsCount: resourceContexts.length,
+			[`${config.logPrefix}Id`]: primaryResource?.id,
 			productId: product.id,
 			transferSource,
 		})
@@ -682,7 +583,7 @@ async function handleProductTransfer({
 		product,
 		sourceUser,
 		targetUser,
-		resourceContexts,
+		primaryResource,
 		isTeamPurchase,
 		transferSource,
 	}
