@@ -70,11 +70,11 @@ export default function Recommendations({
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
-						<Skeleton className="mx-auto mt-2 flex h-8 w-full max-w-sm" />
+						<Skeleton className="mx-auto flex h-7 w-full max-w-sm" />
 					) : post ? (
 						<Link
 							href={`/${post.slug}`}
-							className="dark:text-primary text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-medium underline underline-offset-2 hover:underline lg:text-xl"
+							className="text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-medium underline underline-offset-2 hover:underline lg:text-xl"
 						>
 							{post.title} <ArrowRight className="hidden w-4 sm:block" />
 						</Link>

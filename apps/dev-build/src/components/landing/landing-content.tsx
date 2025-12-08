@@ -253,7 +253,7 @@ function InstructorSection() {
 			</div>
 			<div className="flex flex-col items-start justify-center px-5 py-10 pr-5 lg:pr-16">
 				<span
-					className="bg-background text-foreground mb-4 inline-flex items-center justify-center px-2 py-1 font-mono text-sm font-medium uppercase tracking-widest"
+					className="bg-foreground text-background mb-4 inline-flex items-center justify-center px-2 py-1 font-mono text-sm font-medium uppercase tracking-widest"
 					data-theme="purple"
 				>
 					Your Instructor
@@ -302,7 +302,7 @@ export function LandingContent() {
 	const containerRef = React.useRef(null)
 
 	return (
-		<div ref={containerRef} className="divide-y">
+		<div ref={containerRef} className="-mt-px divide-y">
 			{/* The Vision Section */}
 			<AnimatedSection className="relative overflow-hidden" data-theme="yellow">
 				<section data-theme="yellow" className="border-b">
@@ -1152,10 +1152,7 @@ export function LandingContent() {
 						</h2>
 						<p className="text-muted-foreground mt-4 text-lg">
 							Have a specific workflow challenge or team training need?{' '}
-							<Link
-								href="mailto:john@dev.build"
-								className="text-primary hover:underline"
-							>
+							<Link href="/contact" className="text-primary hover:underline">
 								Contact me
 							</Link>{' '}
 							to discuss how we can help.

@@ -84,7 +84,8 @@
 	--card-foreground: oklch(0.141 0.005 285.823);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.141 0.005 285.823);
-	--primary: oklch(0.8983 0.1856 100.36);
+	--primary: oklch(0.8666 0.1344 93.33);
+	/* --primary: oklch(0.8983 0.1856 100.36); */
 	--primary-dark: #4a88a9;
 	--primary-foreground: oklch(0 0 0);
 	--secondary: oklch(0.967 0.001 286.375);
@@ -154,8 +155,9 @@
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.21 0.006 285.885);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.8983 0.1856 100.36);
-	--primary-dark: oklch(0.8983 0.1856 100.36);
+	--primary: oklch(0.8666 0.1344 93.33);
+	/* --primary: oklch(0.8983 0.1856 100.36); */
+	--primary-dark: oklch(0.8666 0.1344 93.33);
 	--primary-foreground: oklch(0 0 0);
 	--secondary: oklch(0.28 0.006 285.885);
 	--secondary-foreground: oklch(0.985 0 0);
@@ -402,7 +404,8 @@
 		--border: #e1c256 !important;
 		--primary: #fff !important;
 		--primary-foreground: #000 !important;
-		--primary-dark: #000;
+		--primary-dark: #000 !important;
+		--muted: #e1c256 !important;
 	}
 
 	button:not(:disabled),

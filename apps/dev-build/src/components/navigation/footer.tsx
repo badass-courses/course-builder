@@ -53,6 +53,9 @@ export default function Footer() {
 							<Link href="/" className="hover:text-foreground transition">
 								Home
 							</Link>
+							<Link href="/browse" className="hover:text-foreground transition">
+								Browse
+							</Link>
 							{/* <Link
 								href="/browse?type=cohort"
 								className="hover:text-foreground transition"

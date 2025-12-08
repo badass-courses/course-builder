@@ -9,6 +9,7 @@ import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import SplitText from '@/components/split-text'
+import TickerScroll from '@/components/ticker-scroll'
 import { courseBuilderAdapter } from '@/db'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
@@ -114,22 +115,8 @@ export default async function PostPage(props: {
 										postId={post.id}
 									/>
 								)} */}
-						{!hasVideo && (
-							<div className="">
-								<PrimaryNewsletterCta
-									isHiddenForSubscribers
-									className="mt-5"
-									trackProps={{
-										event: 'subscribed',
-										params: {
-											post: post.fields.slug,
-											location: 'post',
-										},
-									}}
-								/>
-							</div>
-						)}
-						<PostNewsletterCta
+
+						{/* <PostNewsletterCta
 							className="flex pt-10 md:hidden"
 							trackProps={{
 								event: 'subscribed',
@@ -138,9 +125,31 @@ export default async function PostPage(props: {
 									post: post.fields.slug,
 								},
 							}}
-						/>
+						/> */}
 					</article>
 				</div>
+				{!hasVideo && (
+					<div className="w-full border-t">
+						<PrimaryNewsletterCta
+							isHiddenForSubscribers
+							className="container border-x px-0"
+							trackProps={{
+								event: 'subscribed',
+								params: {
+									post: post.fields.slug,
+									location: 'post',
+								},
+							}}
+						>
+							<div />
+						</PrimaryNewsletterCta>
+						<section className="">
+							<div className="px-0! container flex border-x">
+								<TickerScroll className="h-16" />
+							</div>
+						</section>
+					</div>
+				)}
 				<div className="border-t">
 					<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
 						<strong className="text-base font-medium tracking-tight sm:text-lg">

@@ -134,7 +134,7 @@ export const Share = ({
 					await navigator.clipboard.writeText(url)
 					await handleShare('copy')
 					toast({
-						title: 'Copied URL',
+						title: 'URL Copied',
 					})
 				}}
 			>

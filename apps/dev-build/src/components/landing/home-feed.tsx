@@ -16,6 +16,7 @@ import {
 	type VideoThumbnailPreviewHandle,
 } from '../content/video-thumbnail-preview'
 import { Contributor } from '../contributor'
+import TickerScroll from '../ticker-scroll'
 
 /**
  * Single feed card with hover-to-preview video support.
@@ -157,50 +158,52 @@ export default function HomeFeed({
 	)
 
 	return (
-		<section>
-			<ul className="bg-border grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
-				{feed.map((resource) => (
-					<FeedCard key={resource.id} resource={resource} />
-				))}
-				<motion.li
-					whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-					initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
-					exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
-					transition={{ duration: 0.5 }}
-					className={placeholder1Classes}
-				>
-					<svg className="absolute inset-0 h-full w-full">
-						<line
-							x1="0"
-							y1="0"
-							x2="100%"
-							y2="100%"
-							stroke="currentColor"
-							strokeWidth="1"
-							className="text-border"
-						/>
-					</svg>
-				</motion.li>
-				<motion.li
-					whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-					initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
-					exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
-					transition={{ duration: 0.5 }}
-					className={placeholder2Classes}
-				>
-					<svg className="absolute inset-0 h-full w-full">
-						<line
-							x1="0"
-							y1="0"
-							x2="100%"
-							y2="100%"
-							stroke="currentColor"
-							strokeWidth="1"
-							className="text-border"
-						/>
-					</svg>
-				</motion.li>
-			</ul>
-		</section>
+		<>
+			<section>
+				<ul className="bg-border grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
+					{feed.map((resource) => (
+						<FeedCard key={resource.id} resource={resource} />
+					))}
+					<motion.li
+						whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+						initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+						exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+						transition={{ duration: 0.5 }}
+						className={placeholder1Classes}
+					>
+						<svg className="absolute inset-0 h-full w-full">
+							<line
+								x1="0"
+								y1="0"
+								x2="100%"
+								y2="100%"
+								stroke="currentColor"
+								strokeWidth="1"
+								className="text-border"
+							/>
+						</svg>
+					</motion.li>
+					<motion.li
+						whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+						initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+						exit={{ opacity: 0, y: 10, filter: 'blur(10px)' }}
+						transition={{ duration: 0.5 }}
+						className={placeholder2Classes}
+					>
+						<svg className="absolute inset-0 h-full w-full">
+							<line
+								x1="0"
+								y1="0"
+								x2="100%"
+								y2="100%"
+								stroke="currentColor"
+								strokeWidth="1"
+								className="text-border"
+							/>
+						</svg>
+					</motion.li>
+				</ul>
+			</section>
+		</>
 	)
 }
