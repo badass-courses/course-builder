@@ -84,7 +84,7 @@ function SearchContent() {
 
 				{/* Mobile layout */}
 				<div className="flex flex-col gap-4 md:hidden">
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-3 px-3 pt-3">
 						<div className="flex-1">
 							<SearchBox />
 						</div>

@@ -159,7 +159,7 @@ export function MobileListResourceNavigation() {
 
 	return (
 		<>
-			<div className="bg-card fixed left-1 top-1.5 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow-sm sm:left-3 xl:sr-only xl:hidden">
+			<div className="bg-card fixed bottom-1.5 left-1 z-50 flex scale-90 items-center gap-4 rounded-lg border py-1 pl-1 pr-6 shadow-sm sm:left-3 md:sr-only md:hidden">
 				<Button
 					className="rounded"
 					onClick={() => {

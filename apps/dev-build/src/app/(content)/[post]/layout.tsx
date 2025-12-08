@@ -47,7 +47,7 @@ export default async function Layout(props: {
 									{/* {list && (
 										<ModuleResourceList className="sticky top-0 hidden max-w-xs border-x border-b lg:block" />
 									)} */}
-									{/* <MobileListResourceNavigation /> */}
+									<MobileListResourceNavigation />
 									<div className="w-full min-w-0">{props.children}</div>
 								</div>
 							</LayoutClient>

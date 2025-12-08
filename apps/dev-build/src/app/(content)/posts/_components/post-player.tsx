@@ -178,7 +178,7 @@ export function PostPlayer({
 			</div>
 			{list && (
 				<ModuleResourceList
-					className="dark max-w-xs"
+					className="dark hidden max-w-xs md:block"
 					currentLessonSlug={postSlug}
 					options={{ stretchToFullViewportHeight: false }}
 				/>

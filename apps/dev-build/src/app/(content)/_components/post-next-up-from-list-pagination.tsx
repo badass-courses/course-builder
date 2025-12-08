@@ -80,7 +80,7 @@ export default function PostNextUpFromListPagination({
 				<li className="flex flex-col">
 					<Link
 						href={`/${nextUp.resource.fields?.slug}`}
-						className="dark:text-primary text-primary-dark flex w-full items-center gap-2 text-balance text-lg underline hover:underline lg:text-xl"
+						className="text-primary-dark flex w-full items-center gap-2 text-balance text-lg underline hover:underline lg:text-xl"
 						onClick={async () => {
 							if (!isCompleted) {
 								addLessonProgress(postId)
