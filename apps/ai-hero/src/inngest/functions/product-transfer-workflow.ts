@@ -518,14 +518,49 @@ async function handleProductTransfer({
 			},
 		)
 
+		// Find the primary resource context - this is REQUIRED for the transfer
 		const primaryResourceContext = resourceContexts.find(
 			(ctx: ResourceContext) => ctx.productType === productType,
 		)
-		const primaryResourceData = primaryResourceContext
-			? resourceDataMap[primaryResourceContext.resourceId]
-			: null
 
-		if (primaryResourceContext && primaryResourceData) {
+		// Validate that primary resource exists - critical for transfer to work
+		if (!primaryResourceContext) {
+			log.error('Primary resource context not found in product resources', {
+				purchaseId: purchase.id,
+				productId: product.id,
+				productType,
+				resourceContextsCount: resourceContexts.length,
+				resourceContexts: resourceContexts.map((ctx: ResourceContext) => ({
+					resourceId: ctx.resourceId,
+					resourceType: ctx.resourceType,
+					productType: ctx.productType,
+				})),
+				transferSource,
+			})
+			throw new Error(
+				`Primary resource (${productType}) not found in product resources. Product may be misconfigured.`,
+			)
+		}
+
+		const primaryResourceData =
+			resourceDataMap[primaryResourceContext.resourceId]
+
+		// Validate that primary resource data was loaded successfully
+		if (!primaryResourceData) {
+			log.error('Primary resource data not loaded', {
+				purchaseId: purchase.id,
+				productId: product.id,
+				productType,
+				primaryResourceContextId: primaryResourceContext.resourceId,
+				transferSource,
+			})
+			throw new Error(
+				`Primary resource data not found for resource ID: ${primaryResourceContext.resourceId}`,
+			)
+		}
+
+		// Process primary resource (cohort) - includes Discord role transfer
+		{
 			const contentAccessEntitlementType = await step.run(
 				`get ${config.logPrefix} content access entitlement type`,
 				async () => {
