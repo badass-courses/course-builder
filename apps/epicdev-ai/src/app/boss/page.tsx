@@ -65,10 +65,10 @@ export default async function BossPage() {
 						target="_blank"
 						rel="noopener noreferrer"
 						download
-						href="https://res.cloudinary.com/epic-web/image/upload/v1757321381/master-mcp.pdf"
+						href="https://res.cloudinary.com/epic-web/image/upload/v1765394033/master-mcp.pdf"
 					>
 						<CldImage
-							src="https://res.cloudinary.com/epic-web/image/upload/v1757322539/master-mcp-thumbnail.jpg"
+							src="https://res.cloudinary.com/epic-web/image/upload/v1765394033/master-mcp.pdf"
 							width={244}
 							height={189}
 							alt="MCP for Teams: Executive Overview"
@@ -92,7 +92,7 @@ export default async function BossPage() {
 								target="_blank"
 								rel="noopener noreferrer"
 								download
-								href="https://res.cloudinary.com/epic-web/image/upload/v1757321381/master-mcp.pdf"
+								href="https://res.cloudinary.com/epic-web/image/upload/v1765394033/master-mcp.pdf"
 							>
 								Download the 1-Pager and share it with your boss
 							</Link>
