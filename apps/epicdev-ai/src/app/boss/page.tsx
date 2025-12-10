@@ -68,7 +68,7 @@ export default async function BossPage() {
 						href="https://res.cloudinary.com/epic-web/image/upload/v1765394033/master-mcp.pdf"
 					>
 						<CldImage
-							src="https://res.cloudinary.com/epic-web/image/upload/v1765394033/master-mcp.pdf"
+							src="https://res.cloudinary.com/epic-web/image/upload/v1765394480/master-mcp-self-paced-thumbnail.jpg"
 							width={244}
 							height={189}
 							alt="MCP for Teams: Executive Overview"
