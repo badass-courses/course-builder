@@ -1,6 +1,7 @@
 import { courseBuilderAdapter } from '@/db'
 import {
 	attachVideoResourceToPost,
+	deleteVideoResource,
 	detachVideoResourceFromPost,
 	getAllVideoResources,
 	getPaginatedVideoResources,
@@ -57,5 +58,14 @@ export const videoResourceRouter = createTRPCRouter({
 		)
 		.mutation(async ({ input }) => {
 			return detachVideoResourceFromPost(input.postId, input.videoResourceId)
+		}),
+	delete: protectedProcedure
+		.input(
+			z.object({
+				videoResourceId: z.string(),
+			}),
+		)
+		.mutation(async ({ input }) => {
+			return deleteVideoResource(input.videoResourceId)
 		}),
 })

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { use } from 'react'
-import Image from 'next/image'
 import { FaqItem } from '@/app/faq/_components/faq-item'
 import { CldImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
@@ -12,6 +11,7 @@ import { formatFaq } from '@/utils/format-faq'
 import MuxPlayer from '@mux/mux-player-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
+import type { CldImageProps } from 'next-cloudinary'
 
 import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
@@ -239,6 +239,18 @@ const Callout = ({
 }
 
 const data = {
+	images: [
+		{
+			name: 'Image',
+			component: CldImage,
+			props: {
+				src: 'https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg',
+				alt: 'Kent C. Dodds',
+				width: 1280,
+				height: 854,
+			},
+		},
+	],
 	ctas: [
 		{
 			name: 'PrimaryNewsletterCta',
@@ -381,6 +393,22 @@ const BlockItem = ({
 const PageBlocks = () => {
 	return (
 		<div className="flex flex-col gap-4">
+			{data?.images && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">Images</strong>
+					{data?.images?.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData('text/plain', `<${item.name} />`)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
 			{data?.ctas && (
 				<div className="flex flex-wrap items-center gap-1">
 					<strong className="mb-1">CTAs</strong>

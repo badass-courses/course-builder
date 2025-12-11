@@ -49,6 +49,8 @@ export function EditResourcesBodyPanel({
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
 }) {
+	const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+
 	const onChange = React.useCallback((value: string, yDoc?: any) => {
 		if (yDoc) {
 			form.setValue('fields.yDoc', yDoc)
@@ -56,6 +58,49 @@ export function EditResourcesBodyPanel({
 		form.setValue('fields.body', value)
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
+
+	const handleDrop = React.useCallback(
+		(e: React.DragEvent<HTMLTextAreaElement>) => {
+			e.preventDefault()
+			const droppedText = e.dataTransfer.getData('text/plain')
+			if (!droppedText) return
+
+			const textarea = textareaRef.current
+			if (!textarea) return
+
+			// Get the current value from the textarea itself, not the form
+			const currentValue = textarea.value || ''
+			const cursorPosition = textarea.selectionStart
+			const newValue =
+				currentValue.slice(0, cursorPosition) +
+				'\n' +
+				droppedText +
+				'\n' +
+				currentValue.slice(cursorPosition)
+
+			// Update the textarea directly
+			textarea.value = newValue
+
+			// Update the form state
+			form.setValue('fields.body', newValue)
+			onResourceBodyChange?.(newValue)
+
+			// Set cursor position after the inserted text
+			setTimeout(() => {
+				textarea.focus()
+				const newCursorPosition = cursorPosition + droppedText.length + 2
+				textarea.setSelectionRange(newCursorPosition, newCursorPosition)
+			}, 0)
+		},
+		[form, onResourceBodyChange],
+	)
+
+	const handleDragOver = React.useCallback(
+		(e: React.DragEvent<HTMLTextAreaElement>) => {
+			e.preventDefault()
+		},
+		[],
+	)
 
 	// const partyKitProvider = useYProvider({
 	// 	host: partykitUrl,
@@ -111,7 +156,10 @@ export function EditResourcesBodyPanel({
 			{children}
 			<Textarea
 				{...form.register('fields.body')}
+				ref={textareaRef}
 				defaultValue={form.getValues('fields.body') ?? ''}
+				onDrop={handleDrop}
+				onDragOver={handleDragOver}
 				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] rounded-none border-none p-5 text-base"
 			/>
 			{/* {hasMounted && (

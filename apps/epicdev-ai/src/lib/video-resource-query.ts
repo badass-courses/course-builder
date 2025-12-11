@@ -9,7 +9,17 @@ import {
 } from '@/inngest/events/video-attachment'
 import { inngest } from '@/inngest/inngest.server'
 import { log } from '@/server/logger'
-import { and, desc, eq, inArray, lt, sql } from 'drizzle-orm'
+import {
+	and,
+	desc,
+	eq,
+	inArray,
+	lt,
+	notExists,
+	notInArray,
+	or,
+	sql,
+} from 'drizzle-orm'
 import { z } from 'zod'
 
 import { type VideoResource } from '@coursebuilder/core/schemas'
@@ -88,34 +98,8 @@ export async function getPaginatedVideoResources(
 			conditions.push(lt(contentResource.createdAt, cursorDate))
 		}
 
-		// Step 1: Get paginated IDs with minimal data (fast sort on lightweight records)
-		const paginatedIds = await db.query.contentResource.findMany({
-			where: and(...conditions),
-			orderBy: [desc(contentResource.createdAt)],
-			limit: limit + 1, // Fetch one extra to check if there's a next page
-			columns: {
-				id: true,
-				createdAt: true,
-			},
-		})
-
-		const hasNextPage = paginatedIds.length > limit
-		const idsToFetch = hasNextPage ? paginatedIds.slice(0, limit) : paginatedIds
-		const lastItem = idsToFetch[idsToFetch.length - 1]
-		const nextCursor =
-			hasNextPage && idsToFetch.length > 0 && lastItem?.createdAt
-				? lastItem.createdAt.toISOString()
-				: null
-
-		// Step 2: Get full records with relations for the specific IDs (no sorting needed)
 		const videoResources = await db.query.contentResource.findMany({
-			where: and(
-				eq(contentResource.type, 'videoResource'),
-				inArray(
-					contentResource.id,
-					idsToFetch.map((item) => item.id),
-				),
-			),
+			where: and(...conditions),
 			with: {
 				resources: {
 					with: {
@@ -123,14 +107,17 @@ export async function getPaginatedVideoResources(
 					},
 				},
 			},
+			orderBy: [desc(contentResource.createdAt)],
+			limit: limit + 1, // Fetch one extra to check if there's a next page
 		})
 
-		// Sort the full records to match the original pagination order
-		const items = idsToFetch
-			.map((idItem) =>
-				videoResources.find((resource) => resource.id === idItem.id),
-			)
-			.filter(Boolean) // Remove any null/undefined entries
+		const hasNextPage = videoResources.length > limit
+		const items = hasNextPage ? videoResources.slice(0, limit) : videoResources
+		const lastItem = items[items.length - 1]
+		const nextCursor =
+			hasNextPage && items.length > 0 && lastItem?.createdAt
+				? lastItem.createdAt.toISOString()
+				: null
 
 		await log.info('video-resources.paginated.fetch.success', {
 			count: items.length,
@@ -371,6 +358,48 @@ export async function detachVideoResourceFromPost(
 			error: error instanceof Error ? error.message : String(error),
 			stack: error instanceof Error ? error.stack : undefined,
 			postId,
+			videoResourceId,
+		})
+		return false
+	}
+}
+
+/**
+ * Deletes a video resource and all its associations
+ * @param videoResourceId - The ID of the video resource to delete
+ * @returns True if successful, false otherwise
+ */
+export async function deleteVideoResource(videoResourceId: string) {
+	try {
+		// First, delete any associations where this video is attached to other resources
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceId, videoResourceId))
+
+		// Also delete any child resources associated with this video (like transcripts)
+		await db
+			.delete(contentResourceResource)
+			.where(eq(contentResourceResource.resourceOfId, videoResourceId))
+
+		// Finally, delete the video resource itself
+		await db
+			.delete(contentResource)
+			.where(
+				and(
+					eq(contentResource.id, videoResourceId),
+					eq(contentResource.type, 'videoResource'),
+				),
+			)
+
+		await log.info('video-resource.deleted', {
+			videoResourceId,
+		})
+
+		return true
+	} catch (error) {
+		await log.error('video-resource.delete.failed', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
 			videoResourceId,
 		})
 		return false

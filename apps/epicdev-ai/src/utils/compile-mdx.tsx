@@ -3,6 +3,7 @@ import {
 	CheckList,
 	CrossList,
 } from '@/app/admin/pages/_components/page-builder-mdx-components'
+import { CldImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
@@ -142,6 +143,8 @@ export async function compileMDX(
 			YouTubeVideo: ({ videoId }: { videoId: string }) => (
 				<DynamicYouTubeVideo videoId={videoId} />
 			),
+			Image: (props) => <CldImage {...props} />,
+			CldImage: (props) => <CldImage {...props} />,
 			ThemeImage: ({
 				urls,
 				...props
