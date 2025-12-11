@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation'
 import LayoutClient from '@/components/layout-client'
-import { db } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getPage } from '@/lib/pages-query'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
-import { and, desc, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 
 import AppTourVideo from './_components/app-tour-video'
 import GetStartedClient from './_components/get-started-client'
@@ -69,9 +69,27 @@ export default async function GetStartedPage() {
 
 	const workshops = await getWorkshopsWithGroups()
 
+	// Get user's purchased products
+	const { session } = await getServerAuthSession()
+	const userProductIds = new Set<string>()
+
+	if (session?.user?.id) {
+		const purchases = await courseBuilderAdapter.getPurchasesForUser(
+			session.user.id,
+		)
+		purchases
+			.filter((p) => ['Valid', 'Restricted'].includes(p.status))
+			.forEach((p) => userProductIds.add(p.productId))
+	}
+
 	const { content } = await compileMDX(page.fields.body || '', {
 		AppTourVideo,
-		Workshops: () => <WorkshopsComponent workshops={workshops as any} />,
+		Workshops: () => (
+			<WorkshopsComponent
+				workshops={workshops as any}
+				userProductIds={userProductIds}
+			/>
+		),
 		Image: ThemeAwareImage,
 	})
 

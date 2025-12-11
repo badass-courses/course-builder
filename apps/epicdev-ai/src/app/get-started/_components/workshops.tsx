@@ -34,7 +34,10 @@ const groupWorkshops = (workshops: any[]) => {
 	}))
 }
 
-const Workshops: React.FC<{ workshops: any[] }> = ({ workshops }) => {
+const Workshops: React.FC<{
+	workshops: any[]
+	userProductIds?: Set<string>
+}> = ({ workshops, userProductIds = new Set() }) => {
 	const published = workshops.filter((w) => w.fields.state === 'published')
 	const grouped = groupWorkshops(published)
 
@@ -44,9 +47,18 @@ const Workshops: React.FC<{ workshops: any[] }> = ({ workshops }) => {
 				<div key={group.key} className="w-full">
 					<h3 className="mb-2 mt-4 text-xl font-bold">{group.title}</h3>
 					<ul className="w-full divide-y pb-5">
-						{group.workshops.map((workshop) => (
-							<ModuleWorkshopAppItem key={workshop.id} module={workshop} />
-						))}
+						{group.workshops.map((workshop) => {
+							const hasAccess = workshop.resourceProducts?.some((rp: any) =>
+								userProductIds.has(rp.product?.id),
+							)
+							return (
+								<ModuleWorkshopAppItem
+									key={workshop.id}
+									module={workshop}
+									hasAccess={hasAccess}
+								/>
+							)
+						})}
 					</ul>
 				</div>
 			))}
@@ -55,7 +67,13 @@ const Workshops: React.FC<{ workshops: any[] }> = ({ workshops }) => {
 }
 export default Workshops
 
-const ModuleWorkshopAppItem = ({ module }: { module: any }) => {
+const ModuleWorkshopAppItem = ({
+	module,
+	hasAccess = false,
+}: {
+	module: any
+	hasAccess?: boolean
+}) => {
 	if (!module?.fields.github) return null
 
 	const deployedUrl = module?.fields.workshopApp?.externalUrl
@@ -75,17 +93,24 @@ const ModuleWorkshopAppItem = ({ module }: { module: any }) => {
 						aria-hidden
 					/>
 				) : null}
-				<Link
-					href={module.fields.github}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="group leading-tight hover:underline"
-				>
-					{module.fields.title}{' '}
-					<span className="opacity-50 transition group-hover:opacity-100">
-						↗︎
-					</span>
-				</Link>
+				<div className="flex items-center gap-2">
+					<Link
+						href={module.fields.github}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="group leading-tight hover:underline"
+					>
+						{module.fields.title}{' '}
+						<span className="opacity-50 transition group-hover:opacity-100">
+							↗︎
+						</span>
+					</Link>
+					{hasAccess && (
+						<span className="rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/30 dark:text-green-300">
+							Enrolled
+						</span>
+					)}
+				</div>
 			</div>
 			<div className="flex flex-shrink-0 items-center gap-5 pr-5 pt-1 text-sm font-medium sm:justify-end sm:pt-0">
 				{deployedUrl && (
