@@ -443,7 +443,7 @@ export const LessonMetadataFormFields: React.FC<{
 						<FormDescription>
 							Direct link to the GitHub file associated with the lesson.
 						</FormDescription>
-						<Input {...field} />
+						<Input {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}
@@ -457,7 +457,7 @@ export const LessonMetadataFormFields: React.FC<{
 						<FormDescription>
 							Gitpod link to start a new workspace with the lesson.
 						</FormDescription>
-						<Input {...field} />
+						<Input {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}
