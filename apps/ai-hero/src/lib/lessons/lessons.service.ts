@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -359,6 +359,10 @@ export async function updateLesson({
 			console.log('🔍 Revalidating path:', lessonPath)
 			revalidatePath(lessonPath)
 		}
+
+		// Revalidate workshop navigation tag
+		console.log('🔄 Revalidating tag: workshop-navigation')
+		revalidateTag('workshop-navigation', 'max')
 
 		return result
 	} catch (error: any) {

@@ -4,6 +4,7 @@ import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResourceProduct,
+	contentResourceResource,
 	merchantPrice,
 	merchantProduct,
 	prices,
@@ -11,7 +12,7 @@ import {
 } from '@/db/schema'
 import { NewProduct } from '@/lib/products'
 import { getServerAuthSession } from '@/server/auth'
-import { and, eq } from 'drizzle-orm'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -124,4 +125,136 @@ export async function createProduct(input: NewProduct) {
 	}
 
 	return courseBuilderAdapter.createProduct(input)
+}
+
+/**
+ * Retrieves a product with its full nested content structure
+ * Product → Cohort/Workshop → Sections → Lessons → Solutions
+ * @param productSlugOrId - The product ID or slug to look up
+ * @returns The product with full nested structure, or null if not found
+ */
+export async function getProductWithFullStructure(productSlugOrId: string) {
+	const productData = await db.query.products.findFirst({
+		where: or(
+			eq(products.id, productSlugOrId),
+			eq(sql`JSON_EXTRACT(${products.fields}, "$.slug")`, productSlugOrId),
+		),
+		with: {
+			price: true,
+			resources: {
+				with: {
+					resource: {
+						// cohort or workshop level
+						with: {
+							resources: {
+								// workshops (if cohort) or sections (if workshop)
+								with: {
+									resource: {
+										with: {
+											resources: {
+												// sections (if workshop under cohort) or lessons
+												with: {
+													resource: {
+														with: {
+															resources: {
+																// lessons or solutions
+																with: {
+																	resource: true,
+																},
+																orderBy: [
+																	asc(contentResourceResource.position),
+																],
+															},
+														},
+													},
+												},
+												orderBy: [asc(contentResourceResource.position)],
+											},
+										},
+									},
+								},
+								orderBy: [asc(contentResourceResource.position)],
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if (!productData) {
+		return null
+	}
+
+	const parsedProduct = productSchema.safeParse(productData)
+	if (!parsedProduct.success) {
+		console.error('Error parsing product:', {
+			errors: parsedProduct.error.errors,
+			productId: productSlugOrId,
+		})
+		return null
+	}
+
+	return parsedProduct.data
+}
+
+/**
+ * Retrieves all products with their full nested content structure
+ * @returns Array of products with full nested structure
+ */
+export async function getProductsWithFullStructure() {
+	const productsData = await db.query.products.findMany({
+		where: eq(products.status, 1),
+		with: {
+			price: true,
+			resources: {
+				with: {
+					resource: {
+						// cohort or workshop level
+						with: {
+							resources: {
+								// workshops (if cohort) or sections (if workshop)
+								with: {
+									resource: {
+										with: {
+											resources: {
+												// sections (if workshop under cohort) or lessons
+												with: {
+													resource: {
+														with: {
+															resources: {
+																// lessons or solutions
+																with: {
+																	resource: true,
+																},
+																orderBy: [
+																	asc(contentResourceResource.position),
+																],
+															},
+														},
+													},
+												},
+												orderBy: [asc(contentResourceResource.position)],
+											},
+										},
+									},
+								},
+								orderBy: [asc(contentResourceResource.position)],
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+
+	const parsedProducts = z.array(productSchema).safeParse(productsData)
+	if (!parsedProducts.success) {
+		console.error('Error parsing products:', {
+			errors: parsedProducts.error.errors,
+		})
+		return []
+	}
+
+	return parsedProducts.data
 }
