@@ -2,7 +2,7 @@
 
 import React, { use } from 'react'
 import { FaqItem } from '@/app/faq/_components/faq-item'
-import { CldImage } from '@/components/cld-image'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import MDXVideo from '@/components/content/mdx-video'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import config from '@/config'
@@ -13,7 +13,13 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { GripVertical } from 'lucide-react'
 import type { CldImageProps } from 'next-cloudinary'
 
-import { Accordion } from '@coursebuilder/ui'
+import {
+	Accordion,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 const YouTubeVideo = ({ videoId }: { videoId: string }) => {
@@ -243,11 +249,29 @@ const data = {
 		{
 			name: 'Image',
 			component: CldImage,
+			description:
+				'Displays a Cloudinary image. Requires src, alt, width, and height. Also supports additional Cloudinary image props.',
 			props: {
 				src: 'https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg',
 				alt: 'Kent C. Dodds',
 				width: 1280,
 				height: 854,
+			},
+		},
+		{
+			name: 'ThemeImage',
+			component: ThemeImage,
+			description:
+				'Displays an image based on the current theme (light or dark). Requires width, height, and urls object with light and dark image src. Also supports additional Cloudinary image props.',
+			props: {
+				width: 1280,
+				height: 854,
+				alt: '',
+				urls: {
+					dark: 'https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg',
+					light:
+						'https://res.cloudinary.com/epic-web/image/upload/v1744211741/epicdev.ai/kent-speaking-all-things-open.jpg',
+				},
 			},
 		},
 	],
@@ -317,11 +341,17 @@ const data = {
 	video: [
 		{
 			name: 'Video',
+			description:
+				'Displays an inline video player. Requires resourceId (content resource ID) and optional thumbnailTime. You can also use the Videos tab to drag and drop a video resource into the editor.',
 			component: MDXVideo,
-			props: {},
+			props: {
+				resourceId: '123',
+			},
 		},
 		{
 			name: 'YouTubeVideo',
+			description:
+				'Displays a YouTube video player. Requires videoId (YouTube video ID).',
 			component: YouTubeVideo,
 			props: {
 				videoId: 'YOUTUBE_VIDEO_ID',
@@ -331,6 +361,8 @@ const data = {
 	callouts: [
 		{
 			name: 'Callout',
+			description:
+				'Displays a callout with a default variant. Requires variant (default, success, warning, error, info). Also supports additional callout props.',
 			component: Callout,
 			props: {
 				variant: 'default',
@@ -375,10 +407,11 @@ const BlockItem = ({
 		name: string
 		component: React.FC<any>
 		props: any
+		description?: string
 	}
 	onDragStart: (e: any) => void
 }) => {
-	return (
+	const content = (
 		<div
 			draggable
 			onDragStart={onDragStart}
@@ -388,6 +421,21 @@ const BlockItem = ({
 			<GripVertical className="h-4 w-4 opacity-50" />
 		</div>
 	)
+
+	if (item.description) {
+		return (
+			<TooltipProvider delayDuration={0}>
+				<Tooltip>
+					<TooltipTrigger asChild>{content}</TooltipTrigger>
+					<TooltipContent side="left" className="max-w-xs">
+						{item.description}
+					</TooltipContent>
+				</Tooltip>
+			</TooltipProvider>
+		)
+	}
+
+	return content
 }
 
 const PageBlocks = () => {
@@ -402,26 +450,18 @@ const PageBlocks = () => {
 								key={item.name}
 								item={item}
 								onDragStart={(e) =>
-									e.dataTransfer.setData('text/plain', `<${item.name} />`)
-								}
-							/>
-						)
-					})}
-				</div>
-			)}
-			{data?.ctas && (
-				<div className="flex flex-wrap items-center gap-1">
-					<strong className="mb-1">CTAs</strong>
-					{data?.ctas?.map((item, index) => {
-						return (
-							<BlockItem
-								key={item.name}
-								item={item}
-								onDragStart={(e) =>
 									e.dataTransfer.setData(
 										'text/plain',
 										`<${item.name} ${Object.entries(item.props)
-											.map(([key, value]) => `${key}="${value}"`)
+											.map(([key, value]) => {
+												if (typeof value === 'object' && value !== null) {
+													const objectString = Object.entries(value)
+														.map(([k, v]) => `${k}: "${v}"`)
+														.join(', ')
+													return `${key}={{${objectString}}}`
+												}
+												return `${key}="${String(value)}"`
+											})
 											.join(' ')} />`,
 									)
 								}
@@ -451,7 +491,27 @@ const PageBlocks = () => {
 					})}
 				</div>
 			)}
-
+			{data?.ctas && (
+				<div className="flex flex-wrap items-center gap-1">
+					<strong className="mb-1">CTAs</strong>
+					{data?.ctas?.map((item, index) => {
+						return (
+							<BlockItem
+								key={item.name}
+								item={item}
+								onDragStart={(e) =>
+									e.dataTransfer.setData(
+										'text/plain',
+										`<${item.name} ${Object.entries(item.props)
+											.map(([key, value]) => `${key}="${value}"`)
+											.join(' ')} />`,
+									)
+								}
+							/>
+						)
+					})}
+				</div>
+			)}
 			{data?.instructor && (
 				<div className="flex flex-wrap items-center gap-1">
 					<strong className="mb-1">Instructor</strong>
