@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation'
+import { createAppAbility, defineRulesForPurchases } from '@/ability'
 import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getPage } from '@/lib/pages-query'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
+import { subject } from '@casl/ability'
 import { and, eq, inArray, sql } from 'drizzle-orm'
 
 import AppTourVideo from './_components/app-tour-video'
@@ -69,17 +71,28 @@ export default async function GetStartedPage() {
 
 	const workshops = await getWorkshopsWithGroups()
 
-	// Get user's purchased products
+	// Check workshop access using ability
 	const { session } = await getServerAuthSession()
-	const userProductIds = new Set<string>()
+	const userWorkshopIds = new Set<string>()
 
 	if (session?.user?.id) {
-		const purchases = await courseBuilderAdapter.getPurchasesForUser(
-			session.user.id,
-		)
-		purchases
-			.filter((p) => ['Valid', 'Restricted'].includes(p.status))
-			.forEach((p) => userProductIds.add(p.productId))
+		const user = session.user
+		const purchases = await courseBuilderAdapter.getPurchasesForUser(user.id)
+
+		// Check each workshop for access
+		for (const workshop of workshops) {
+			const abilityRules = defineRulesForPurchases({
+				user: user as any,
+				purchases,
+				module: workshop as any,
+			})
+
+			const ability = createAppAbility(abilityRules || [])
+
+			if (ability.can('read', subject('Content', { id: workshop.id }))) {
+				userWorkshopIds.add(workshop.id)
+			}
+		}
 	}
 
 	const { content } = await compileMDX(page.fields.body || '', {
@@ -87,7 +100,7 @@ export default async function GetStartedPage() {
 		Workshops: () => (
 			<WorkshopsComponent
 				workshops={workshops as any}
-				userProductIds={userProductIds}
+				userWorkshopIds={userWorkshopIds}
 			/>
 		),
 		Image: ThemeAwareImage,
