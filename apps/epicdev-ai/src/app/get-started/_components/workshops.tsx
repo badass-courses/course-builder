@@ -36,8 +36,8 @@ const groupWorkshops = (workshops: any[]) => {
 
 const Workshops: React.FC<{
 	workshops: any[]
-	userProductIds?: Set<string>
-}> = ({ workshops, userProductIds = new Set() }) => {
+	userWorkshopIds?: Set<string>
+}> = ({ workshops, userWorkshopIds = new Set() }) => {
 	const published = workshops.filter((w) => w.fields.state === 'published')
 	const grouped = groupWorkshops(published)
 
@@ -48,9 +48,7 @@ const Workshops: React.FC<{
 					<h3 className="mb-2 mt-4 text-xl font-bold">{group.title}</h3>
 					<ul className="w-full divide-y pb-5">
 						{group.workshops.map((workshop) => {
-							const hasAccess = workshop.resourceProducts?.some((rp: any) =>
-								userProductIds.has(rp.product?.id),
-							)
+							const hasAccess = userWorkshopIds.has(workshop.id)
 							return (
 								<ModuleWorkshopAppItem
 									key={workshop.id}
