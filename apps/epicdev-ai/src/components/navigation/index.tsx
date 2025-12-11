@@ -153,7 +153,7 @@ const Navigation = ({
 										</NavigationMenuContent>
 									</NavigationMenuItem>
 								)}
-								{(navData.cohorts.length > 0 ||
+								{/* {(navData.cohorts.length > 0 ||
 									navData.pastCohorts.length > 0) && (
 									<NavigationMenuItem className="items-stretch">
 										<NavigationMenuTrigger className="dark:hover:bg-foreground/5 data-[state='open']:bg-white! dark:data-[state='open']:bg-foreground/5! relative flex h-full items-center rounded-none bg-transparent font-normal hover:bg-white">
@@ -241,7 +241,7 @@ const Navigation = ({
 												)}
 										</NavigationMenuContent>
 									</NavigationMenuItem>
-								)}
+								)} */}
 								<NavigationMenuItem className="flex items-center justify-center border-r">
 									<NavigationMenuLink
 										className="dark:hover:bg-foreground/5 rounded-none! relative flex h-full items-center justify-center bg-transparent px-4 font-normal hover:bg-white"
