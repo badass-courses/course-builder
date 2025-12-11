@@ -1,4 +1,24 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"cSpell.words": ["coursebuilder"]
+	"cSpell.words": ["coursebuilder"],
+	"workbench.colorCustomizations": {
+		"activityBar.background": "#472501",
+		"activityBar.activeBackground": "#472501",
+		"activityBar.activeBorder": "#012447",
+		"activityBar.foreground": "#FFFBF6",
+		"activityBar.inactiveForeground": "#FFFBF699",
+		"activityBarBadge.background": "#012447",
+		"activityBarBadge.foreground": "#FFFBF6",
+		"titleBar.activeBackground": "#643402",
+		"titleBar.activeForeground": "#FFFBF6",
+		"titleBar.inactiveBackground": "#64340299",
+		"titleBar.inactiveForeground": "#FFFBF699",
+		"sash.hoverBorder": "#472501",
+		"commandCenter.border": "#FFFBF699",
+		"statusBar.background": "#643402",
+		"statusBar.foreground": "#FFFBF6",
+		"statusBarItem.hoverBackground": "#5A2E01",
+		"statusBarItem.remoteBackground": "#643402",
+		"statusBarItem.remoteForeground": "#FFFBF6"
+	}
 }

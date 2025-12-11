@@ -61,16 +61,16 @@
 	"devDependencies": {
 		"@types/pluralize": "^0.0.33",
 		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.1",
+		"@types/react-dom": "19.2.2",
 		"@types/uuid": "9.0.8",
 		"bunchee": "^5.1.2",
 		"esbuild-react18-useclient": "^1.0.7",
 		"next": "16.0.7",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	},
 	"peerDependencies": {
 		"next": "16.0.7",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
