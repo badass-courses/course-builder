@@ -369,16 +369,9 @@ export async function autoUpdateLesson(input: LessonUpdate) {
 	return await updateLesson(input, false)
 }
 
-export async function getAllLessonsForUser(userId?: string): Promise<Lesson[]> {
-	if (!userId) {
-		return []
-	}
-
+export async function getAllLessons(): Promise<Lesson[]> {
 	const lessons = await db.query.contentResource.findMany({
-		where: and(
-			eq(contentResource.type, 'lesson'),
-			eq(contentResource.createdById, userId),
-		),
+		where: and(eq(contentResource.type, 'lesson')),
 		with: {
 			tags: {
 				with: {
@@ -393,6 +386,7 @@ export async function getAllLessonsForUser(userId?: string): Promise<Lesson[]> {
 				orderBy: asc(contentResourceResource.position),
 			},
 		},
+
 		orderBy: desc(contentResource.createdAt),
 	})
 

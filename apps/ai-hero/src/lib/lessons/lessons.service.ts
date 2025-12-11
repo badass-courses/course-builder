@@ -19,7 +19,7 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import {
 	deleteLessonFromDatabase,
-	getAllLessonsForUser,
+	getAllLessons,
 	writeLessonUpdateToDatabase,
 	writeNewLessonToDatabase,
 } from '../lessons-query'
@@ -214,7 +214,7 @@ export async function getLessons({
 		throw new LessonError('Unauthorized', 401)
 	}
 
-	return getAllLessonsForUser(userId)
+	return getAllLessons()
 }
 
 export async function updateLesson({
