@@ -3,40 +3,59 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Icon } from '@/components/brand/icons'
-import { Workshop } from '@/lib/workshops'
 import { GlobeIcon } from 'lucide-react'
 
-const Workshops: React.FC<{ workshops: Workshop[] }> = ({ workshops }) => {
-	const publishedWorkshops = workshops.filter(
-		(workshop) => workshop.fields.state === 'published',
-	)
+/**
+ * Groups workshops by product or cohort
+ */
+const groupWorkshops = (workshops: any[]) => {
+	const groups: Record<string, { title: string; workshops: any[] }> = {}
+
+	workshops.forEach((workshop: any) => {
+		const product = workshop.resourceProducts?.[0]?.product
+		const cohort = workshop.resourceOf?.find(
+			(r: any) => r.resourceOf?.type === 'cohort',
+		)?.resourceOf
+
+		const groupKey = product?.id || cohort?.id || 'other'
+		const groupTitle =
+			product?.name || cohort?.fields?.title || 'Other Workshops'
+
+		if (!groups[groupKey]) {
+			groups[groupKey] = { title: groupTitle, workshops: [] }
+		}
+
+		groups[groupKey]?.workshops.push(workshop)
+	})
+
+	return Object.entries(groups).map(([key, value]) => ({
+		key,
+		...value,
+	}))
+}
+
+const Workshops: React.FC<{ workshops: any[] }> = ({ workshops }) => {
+	const published = workshops.filter((w) => w.fields.state === 'published')
+	const grouped = groupWorkshops(published)
 
 	return (
 		<div className="not-prose my-8 flex flex-col items-center justify-center text-lg sm:gap-4 md:text-lg">
-			<strong className="flex w-full">Workshops</strong>
-			<ul className="w-full divide-y pb-5">
-				{publishedWorkshops.map((workshop) => {
-					return <ModuleWorkshopAppItem key={workshop.id} module={workshop} />
-				})}
-			</ul>
-			{/* {tutorials.length > 0 && (
-        <>
-          <strong className="flex w-full">Tutorials</strong>
-          <ul className="w-full divide-y">
-            {tutorials.map((tutorial) => {
-              return (
-                <ModuleWorkshopAppItem key={tutorial.id} module={tutorial} />
-              )
-            })}
-          </ul>
-        </>
-      )} */}
+			{grouped.map((group) => (
+				<div key={group.key} className="w-full">
+					<h3 className="mb-2 mt-4 text-xl font-bold">{group.title}</h3>
+					<ul className="w-full divide-y pb-5">
+						{group.workshops.map((workshop) => (
+							<ModuleWorkshopAppItem key={workshop.id} module={workshop} />
+						))}
+					</ul>
+				</div>
+			))}
 		</div>
 	)
 }
 export default Workshops
 
-const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
+const ModuleWorkshopAppItem = ({ module }: { module: any }) => {
 	if (!module?.fields.github) return null
 
 	const deployedUrl = module?.fields.workshopApp?.externalUrl
@@ -68,7 +87,7 @@ const ModuleWorkshopAppItem = ({ module }: { module: Workshop }) => {
 					</span>
 				</Link>
 			</div>
-			<div className="flex flex-shrink-0 items-center justify-end gap-5 pr-5 text-sm font-medium">
+			<div className="flex flex-shrink-0 items-center gap-5 pr-5 pt-1 text-sm font-medium sm:justify-end sm:pt-0">
 				{deployedUrl && (
 					<Link
 						target="_blank"
