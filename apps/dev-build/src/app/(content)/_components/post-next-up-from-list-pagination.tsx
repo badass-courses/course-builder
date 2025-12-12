@@ -2,15 +2,13 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { type List } from '@/lib/lists'
+import { useRouter } from 'next/navigation'
 import { setProgressForResource } from '@/lib/progress'
 import { cn } from '@/utils/cn'
 import { getNextUpResourceFromList } from '@/utils/get-nextup-resource-from-list'
-import { ArrowRight, ChevronRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
-
-import { Button } from '@coursebuilder/ui'
 
 import { useList } from '../[post]/_components/list-provider'
 import { useProgress } from '../[post]/_components/progress-provider'
@@ -70,41 +68,81 @@ export default function PostNextUpFromListPagination({
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
 			className={cn(
-				'bg-background ring-border flex w-full flex-col items-center rounded-lg px-5 py-16 text-center',
+				'group relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg px-8 py-16 text-center',
 				className,
 			)}
 			aria-label="List navigation"
 		>
-			<h2 className="mb-3 text-xl font-semibold sm:text-3xl">Continue</h2>
-			<ul>
-				<li className="flex flex-col">
-					<Link
-						href={`/${nextUp.resource.fields?.slug}`}
-						className="text-primary-dark flex w-full items-center gap-2 text-balance text-lg underline hover:underline lg:text-xl"
-						onClick={async () => {
-							if (!isCompleted) {
-								addLessonProgress(postId)
-								await setProgressForResource({
-									resourceId: postId,
-									isCompleted: true,
-								})
-							}
+			<motion.h2
+				whileInView={{
+					opacity: [0, 1],
+					y: [10, 0],
+					filter: ['blur(4px)', 'blur(0px)'],
+				}}
+				transition={{
+					duration: 0.6,
+					ease: [0.21, 0.47, 0.32, 0.98],
+				}}
+				className="tracking-relaxed mb-6 font-mono text-sm font-semibold uppercase opacity-90 sm:text-base"
+			>
+				Continue
+			</motion.h2>
+			<ul className="w-full">
+				<li className="flex w-full flex-col">
+					<motion.div
+						whileInView={{
+							opacity: [0, 1],
+							y: [10, 0],
+							filter: ['blur(4px)', 'blur(0px)'],
+						}}
+						transition={{
+							duration: 0.6,
+							delay: 0.2,
+							ease: [0.21, 0.47, 0.32, 0.98],
 						}}
 					>
-						{nextUp.resource.fields?.title}{' '}
-						<ArrowRight className="hidden w-4 sm:block" />
-					</Link>
-					{!session?.user && (
-						<span className="text-muted-foreground mt-4">
+						<Link
+							href={`/${nextUp.resource.fields?.slug}`}
+							className="text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-semibold underline-offset-2 hover:underline lg:text-xl"
+							onClick={async () => {
+								if (!isCompleted) {
+									addLessonProgress(postId)
+									await setProgressForResource({
+										resourceId: postId,
+										isCompleted: true,
+									})
+								}
+							}}
+						>
+							{nextUp.resource.fields?.title}{' '}
+							<ArrowRight strokeWidth={3} className="hidden size-5 sm:block" />
+						</Link>
+					</motion.div>
+					{!session?.user ? (
+						<motion.span
+							className="text-muted-foreground mt-6 text-base opacity-90"
+							whileInView={{
+								opacity: [0, 1],
+								y: [10, 0],
+								filter: ['blur(4px)', 'blur(0px)'],
+							}}
+							transition={{
+								duration: 0.6,
+								delay: 0.4,
+								ease: [0.21, 0.47, 0.32, 0.98],
+							}}
+						>
 							<Link
 								href="/login"
 								target="_blank"
 								className="hover:text-foreground text-center underline"
 							>
-								Log in
+								Login
 							</Link>{' '}
-							to save progress
-						</span>
+							to save progress.
+						</motion.span>
+					) : (
+						<div className="mt-6 block h-6" />
 					)}
 				</li>
 			</ul>

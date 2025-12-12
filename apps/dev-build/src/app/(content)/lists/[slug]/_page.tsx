@@ -120,7 +120,7 @@ export default async function ListPage(props: {
 
 	return (
 		<div className="relative min-h-[calc(100svh-var(--nav-height))]">
-			<div className="container flex grid-cols-12 flex-col divide-x border-x px-0 lg:grid">
+			<div className="container relative flex grid-cols-12 flex-col divide-x border-x px-0 lg:grid">
 				<div className="col-span-8 px-5 pt-10 sm:px-8">
 					<header className="flex w-full flex-col items-center justify-between md:gap-10 lg:flex-row">
 						{fields?.image && (
@@ -145,7 +145,7 @@ export default async function ListPage(props: {
 								</h2>
 							)}
 							<div className="mt-8 flex flex-col gap-2">
-								<span className="text-muted-foreground text-sm uppercase">
+								<span className="text-muted-foreground block text-sm font-medium">
 									Created by
 								</span>
 								<div className="border-border rounded-lg border px-5 py-3 pl-2">
@@ -158,20 +158,37 @@ export default async function ListPage(props: {
 							</div>
 						</div>
 						<Suspense fallback={null}>
-							<ListActionBar className="absolute right-0 top-5" list={list} />
+							<ListActionBar
+								className="absolute right-0 top-5 z-10"
+								list={list}
+							/>
 						</Suspense>
 					</header>
 					<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg max-w-none py-10">
 						{body || 'No tutorial body found.'}
 					</article>
 				</div>
-				<div className="col-span-4">
+				<div className="bg-muted/50 col-span-4">
+					<h2 className="px-5 py-3 text-base font-medium tracking-tight sm:text-lg">
+						Contents
+					</h2>
 					<ModuleResourceList
 						className="bg-background"
 						options={{ isCollapsible: false, withHeader: false }}
 					/>
 				</div>
 				{/* <ListResources list={list} /> */}
+			</div>
+			<div className="border-t">
+				<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
+					<strong className="text-base font-medium tracking-tight sm:text-lg">
+						Share
+					</strong>
+					<Share
+						className="w-full border-t sm:w-auto sm:border-t-0"
+						title={list?.fields.title}
+					/>
+				</div>
 			</div>
 		</div>
 	)

@@ -6,6 +6,7 @@ import { setProgressForResource } from '@/lib/progress'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRight } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useSession } from 'next-auth/react'
 
 import { Button, Skeleton } from '@coursebuilder/ui'
@@ -64,32 +65,75 @@ export default function Recommendations({
 			)}
 			aria-label="Recommendations"
 		>
-			<h2 className="mb-4 text-lg font-semibold tracking-tight sm:text-2xl">
+			<motion.h2
+				whileInView={{
+					opacity: [0, 1],
+					y: [10, 0],
+					filter: ['blur(4px)', 'blur(0px)'],
+				}}
+				transition={{
+					duration: 0.6,
+
+					ease: [0.21, 0.47, 0.32, 0.98],
+				}}
+				className="tracking-relaxed mb-6 font-mono text-sm font-semibold uppercase opacity-90 sm:text-base"
+			>
 				Recommended next
-			</h2>
+			</motion.h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
 						<Skeleton className="mx-auto flex h-7 w-full max-w-sm" />
 					) : post ? (
-						<Link
-							href={`/${post.slug}`}
-							className="text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-medium underline underline-offset-2 hover:underline lg:text-xl"
+						<motion.div
+							whileInView={{
+								opacity: [0, 1],
+								y: [10, 0],
+								filter: ['blur(4px)', 'blur(0px)'],
+							}}
+							transition={{
+								duration: 0.6,
+								delay: 0.2,
+								ease: [0.21, 0.47, 0.32, 0.98],
+							}}
 						>
-							{post.title} <ArrowRight className="hidden w-4 sm:block" />
-						</Link>
+							<Link
+								href={`/${post.slug}`}
+								className="text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-semibold underline-offset-2 hover:underline lg:text-xl"
+							>
+								{post.title}{' '}
+								<ArrowRight
+									strokeWidth={3}
+									className="hidden size-5 sm:block"
+								/>
+							</Link>
+						</motion.div>
 					) : null}
-					{!session?.user && (
-						<span className="text-muted-foreground mt-4">
+					{!session?.user ? (
+						<motion.span
+							className="text-muted-foreground mt-6 text-base opacity-90"
+							whileInView={{
+								opacity: [0, 1],
+								y: [10, 0],
+								filter: ['blur(4px)', 'blur(0px)'],
+							}}
+							transition={{
+								duration: 0.6,
+								delay: 0.4,
+								ease: [0.21, 0.47, 0.32, 0.98],
+							}}
+						>
 							<Link
 								href="/login"
 								target="_blank"
 								className="hover:text-foreground text-center underline"
 							>
-								Log in
+								Login
 							</Link>{' '}
-							to save progress
-						</span>
+							to save progress.
+						</motion.span>
+					) : (
+						<div className="mt-6 block h-6" />
 					)}
 				</li>
 			</ul>
