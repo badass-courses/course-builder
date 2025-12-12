@@ -126,11 +126,11 @@ export function LoginPrompt({
 	return (
 		<div className="relative z-10 flex min-h-64 items-center justify-center p-8">
 			<div className="w-full max-w-md p-8 text-center shadow-lg">
-				<div className="mb-6">
-					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-indigo-200/20 bg-indigo-200/10">
-						<LockClosedIcon className="h-7 w-7 text-indigo-300" />
+				<div className="mb-4">
+					<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full border border-indigo-200/20 bg-indigo-200/10">
+						<LockClosedIcon className="h-5 w-5 text-indigo-300" />
 					</div>
-					<h2 className="mb-2 text-xl font-semibold text-white">
+					<h2 className="mb-1 text-xl font-semibold text-white">
 						{workshopNotStarted ? 'Workshop Not Opened Yet' : 'Access Required'}
 					</h2>
 					<p className="text-sm text-white/80">
@@ -150,7 +150,7 @@ export function LoginPrompt({
 					)}
 				</div>
 
-				<div className="space-y-3">
+				<div className="space-y-2">
 					{workshopNotStarted ? (
 						<>
 							<a
@@ -164,7 +164,7 @@ export function LoginPrompt({
 										context: 'embed',
 									})
 								}}
-								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-2 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
 							>
 								<span className="drop-shadow-sm">Go to Workshop</span>
 							</a>
@@ -185,7 +185,7 @@ export function LoginPrompt({
 										},
 									)
 								}}
-								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-2 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
 							>
 								<span className="drop-shadow-sm">View Upcoming Cohorts</span>
 							</a>
@@ -200,7 +200,7 @@ export function LoginPrompt({
 										context: 'embed',
 									})
 								}}
-								className="block w-full rounded-lg border border-white/50 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
+								className="block w-full rounded-lg border border-white/50 px-4 py-2 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
 							>
 								<span className="drop-shadow-sm">
 									Log In to Restore Purchase
@@ -220,7 +220,7 @@ export function LoginPrompt({
 										context: 'embed',
 									})
 								}}
-								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
+								className="from-primary block w-full rounded-lg bg-gradient-to-b to-indigo-600 px-4 py-2 font-medium text-white transition-colors duration-150 ease-out hover:brightness-95"
 							>
 								<span className="drop-shadow-sm">Enroll Now</span>
 							</a>
@@ -235,7 +235,7 @@ export function LoginPrompt({
 										context: 'embed',
 									})
 								}}
-								className="block w-full rounded-lg border border-white/50 px-4 py-3 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
+								className="block w-full rounded-lg border border-white/50 px-4 py-2 font-medium text-white transition-colors duration-150 ease-out hover:bg-white/10"
 							>
 								<span className="drop-shadow-sm">
 									Log In to Restore Purchase
