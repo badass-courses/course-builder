@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/commerce-next",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Commerce Functionality for Course Builder with Next.js",
 	"scripts": {
 		"clean": "rm -rf ./dist",
@@ -61,23 +61,23 @@
 	"devDependencies": {
 		"@types/pluralize": "^0.0.33",
 		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.1",
+		"@types/react-dom": "19.2.2",
 		"@types/uuid": "9.0.8",
 		"bunchee": "^5.1.2",
 		"esbuild-react18-useclient": "^1.0.7",
 		"next": "16.0.7",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	},
 	"peerDependencies": {
 		"next": "16.0.7",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
-		"@coursebuilder/core": "^1.1.0",
-		"@coursebuilder/email-templates": "^1.0.7",
+		"@coursebuilder/core": "^1.2.0",
+		"@coursebuilder/email-templates": "^1.0.8",
 		"@coursebuilder/nodash": "workspace:*",
-		"@coursebuilder/ui": "^2.0.8",
+		"@coursebuilder/ui": "^2.0.9",
 		"@heroicons/react": "^2.0.18",
 		"@hookform/resolvers": "^3.3.2",
 		"@mux/mux-player-react": "^3.8.0",

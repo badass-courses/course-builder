@@ -1,6 +1,6 @@
 {
 	"name": "create-course-app",
-	"version": "8.1.6",
+	"version": "8.1.7",
 	"description": "Create web application with the Course Builder stack",
 	"license": "MIT",
 	"repository": {
@@ -81,8 +81,8 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"prisma": "^5.6.0",
-		"react": "19.2.1",
-		"react-dom": "19.2.1",
+		"react": "19.2.2",
+		"react-dom": "19.2.2",
 		"superjson": "^2.2.1",
 		"tailwindcss": "^4.1.11",
 		"tsup": "8.0.2",

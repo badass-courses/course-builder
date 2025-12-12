@@ -1,6 +1,6 @@
 {
 	"name": "@coursebuilder/next",
-	"version": "0.0.29",
+	"version": "0.0.30",
 	"description": "Next for Course Builder.",
 	"scripts": {
 		"clean": "rm -rf *.js *.d.ts* lib providers",
@@ -34,18 +34,18 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@coursebuilder/core": "1.1.0",
+		"@coursebuilder/core": "1.2.0",
 		"inngest": "3.35.0"
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",
 		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	},
 	"peerDependencies": {
 		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
-		"react": "19.2.1"
+		"react": "19.2.2"
 	}
 }
