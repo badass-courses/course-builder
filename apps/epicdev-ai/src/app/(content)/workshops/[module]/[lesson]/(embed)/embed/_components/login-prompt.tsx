@@ -125,7 +125,7 @@ export function LoginPrompt({
 
 	return (
 		<div className="relative z-10 flex min-h-64 items-center justify-center p-8">
-			<div className="w-full max-w-md p-8 text-center shadow-lg">
+			<div className="w-full max-w-md p-8 text-center">
 				<div className="mb-4">
 					<div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full border border-indigo-200/20 bg-indigo-200/10">
 						<LockClosedIcon className="h-5 w-5 text-indigo-300" />
