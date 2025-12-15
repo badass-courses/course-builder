@@ -4,30 +4,22 @@ import HomeFeed from '@/components/landing/home-feed'
 import LandingContent from '@/components/landing/landing-content'
 import LayoutClient from '@/components/layout-client'
 import SplitText from '@/components/split-text'
-import TickerScroll from '@/components/ticker-scroll'
 import config from '@/config'
 import { commerceEnabled } from '@/flags'
 import { getFeed } from '@/lib/feed-query'
-import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
+import { getSaleBannerDataFromSearchParams } from '@/lib/sale-banner'
 
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
-	const searchParams = await props.searchParams
-	const activeCoupon = await getActiveCoupon(searchParams)
-
-	const ogImageUrl = activeCoupon
-		? 'https://res.cloudinary.com/total-typescript/image/upload/v1730364326/aihero-golden-ticket_2x_qghsfq.png'
-		: config.openGraph.images[0]!.url
-
 	return {
 		title: {
 			template: '%s | Tech Build',
 			default: `Build something great! - Tech Build`,
 		},
 		openGraph: {
-			images: ogImageUrl ? [{ url: ogImageUrl }] : [],
+			images: [{ url: config.openGraph.images[0]!.url }],
 		},
 	}
 }
@@ -39,8 +31,7 @@ type Props = {
 const Home = async (props: Props) => {
 	const isCommerceEnabled = await commerceEnabled()
 	const searchParams = await props.searchParams
-	const activeCoupon = await getActiveCoupon(searchParams)
-	const saleBannerData = await getSaleBannerData(activeCoupon)
+	const saleBannerData = await getSaleBannerDataFromSearchParams(searchParams)
 	const feedLoader = getFeed()
 
 	return (
