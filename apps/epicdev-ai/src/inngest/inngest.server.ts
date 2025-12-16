@@ -138,6 +138,21 @@ export type Events = {
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
+	['backfill/discord-role-entitlements']: {
+		data: {
+			productType?: 'cohort' | 'self-paced'
+			limit?: number
+			offset?: number
+		}
+	}
+	['sync/discord-roles-for-entitlements']: {
+		data: {
+			productId?: string
+			productType?: 'cohort' | 'self-paced'
+			limit?: number
+			offset?: number
+		}
+	}
 }
 
 const callbackBase =

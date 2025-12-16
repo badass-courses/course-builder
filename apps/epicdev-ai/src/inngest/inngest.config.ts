@@ -17,6 +17,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { backfillDiscordRoleEntitlements } from './functions/backfill-discord-role-entitlements'
 import { processBulkCalendarInvites } from './functions/bulk-calendar-invites'
 import {
 	calendarSync,
@@ -35,6 +36,7 @@ import {
 } from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { syncDiscordRolesForEntitlements } from './functions/sync-discord-roles-for-entitlements'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
@@ -77,5 +79,7 @@ export const inngestConfig = {
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 		processBulkCalendarInvites,
+		backfillDiscordRoleEntitlements,
+		syncDiscordRolesForEntitlements,
 	],
 }
