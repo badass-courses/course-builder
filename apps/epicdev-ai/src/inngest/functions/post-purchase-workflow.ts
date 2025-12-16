@@ -1,6 +1,6 @@
 import config from '@/config'
 import { db } from '@/db'
-import { entitlementTypes } from '@/db/schema'
+import { entitlements, entitlementTypes } from '@/db/schema'
 // import LiveOfficeHoursInvitation, {
 // 	generateICSAttachments,
 // } from '@/emails/live-office-hours-invitation'
@@ -301,9 +301,30 @@ export const postPurchaseWorkflow = inngest.createFunction(
 				const discordRoleEntitlementType = await step.run(
 					`get ${entitlementConfig.logPrefix} discord role entitlement type`,
 					async () => {
-						return await db.query.entitlementTypes.findFirst({
-							where: eq(entitlementTypes.name, entitlementConfig.discordRole),
+						const expectedName = entitlementConfig.discordRole
+						const found = await db.query.entitlementTypes.findFirst({
+							where: eq(entitlementTypes.name, expectedName),
 						})
+
+						if (!found) {
+							await log.error('discord_role_entitlement_type_not_found', {
+								expectedName,
+								productType,
+							})
+
+							return {
+								error: `Entitlement type '${expectedName}' not found in database`,
+								expectedName,
+								productType,
+							}
+						}
+
+						return {
+							id: found.id,
+							name: found.name,
+							expectedName,
+							productType,
+						}
 					},
 				)
 
@@ -354,67 +375,172 @@ export const postPurchaseWorkflow = inngest.createFunction(
 					},
 				)
 
-				if (contentAccessEntitlementType && primaryResource) {
-					// Send Discord role event
+				// Create Discord role entitlement INDEPENDENTLY - should always be created if conditions are met
+				if (
+					discordRoleEntitlementType &&
+					!('error' in discordRoleEntitlementType) &&
+					primaryResource
+				) {
 					const discordRoleId = getDiscordRoleId(productType, product)
+					const entitlementTypeId = discordRoleEntitlementType.id
 
-					if (productType === 'cohort') {
-						await step.sendEvent('send-discord-role-event', {
-							name: USER_ADDED_TO_COHORT_EVENT,
-							data: {
-								cohortId: primaryResource.id,
-								userId: user.id,
-								discordRoleId,
-							},
-						})
-					} else {
-						await step.sendEvent('send-discord-role-event', {
-							name: USER_ADDED_TO_WORKSHOP_EVENT,
-							data: {
-								workshopId: primaryResource.id,
-								userId: user.id,
-								discordRoleId,
-							},
-						})
-					}
-
-					// Create Discord role entitlement
-					await step.run(
-						`add ${entitlementConfig.logPrefix} discord entitlement`,
-						async () => {
-							if (!discordRoleEntitlementType) {
-								return `no ${entitlementConfig.logPrefix} discord role entitlement type found`
-							}
-
-							if (!discordRoleId) {
-								return `no discord ${entitlementConfig.logPrefix} role id found`
-							}
-
-							if (!primaryResource.id) {
-								return `no ${entitlementConfig.logPrefix} resource id found`
-							}
-
-							const entitlementId = `${primaryResource.id}-discord-${guid()}`
-							await entitlementConfig.createEntitlement({
-								id: entitlementId,
-								userId: user.id,
-								organizationId,
-								organizationMembershipId: orgMembership.id,
-								entitlementType: discordRoleEntitlementType.id,
-								sourceType: EntitlementSourceType.PURCHASE,
-								sourceId: purchase.id,
-								metadata: {
+					if (discordRoleId && entitlementTypeId) {
+						if (productType === 'cohort') {
+							await step.sendEvent('send-discord-role-event', {
+								name: USER_ADDED_TO_COHORT_EVENT,
+								data: {
+									cohortId: primaryResource.id,
+									userId: user.id,
 									discordRoleId,
 								},
 							})
+						} else {
+							await step.sendEvent('send-discord-role-event', {
+								name: USER_ADDED_TO_WORKSHOP_EVENT,
+								data: {
+									workshopId: primaryResource.id,
+									userId: user.id,
+									discordRoleId,
+								},
+							})
+						}
+					}
 
-							return {
-								entitlementId,
+					// Create Discord role entitlement
+					// It's independent of content access entitlements - creates the entitlement record
+					// even if user doesn't have Discord connected yet
+					await step.run(
+						`add ${entitlementConfig.logPrefix} discord entitlement`,
+						async () => {
+							if (
+								!discordRoleEntitlementType ||
+								'error' in discordRoleEntitlementType
+							) {
+								const errorMsg =
+									discordRoleEntitlementType?.error ||
+									`no ${entitlementConfig.logPrefix} discord role entitlement type found`
+								await log.error('discord_role_entitlement_creation_failed', {
+									userId: user.id,
+									productType,
+									reason: errorMsg,
+									purchaseId: purchase.id,
+								})
+								return {
+									success: false,
+									error: errorMsg,
+									entitlementTypeCheck: discordRoleEntitlementType,
+								}
+							}
+
+							const entitlementTypeId = discordRoleEntitlementType.id
+
+							if (!discordRoleId) {
+								const errorMsg = `no discord ${entitlementConfig.logPrefix} role id found`
+								await log.error('discord_role_entitlement_creation_failed', {
+									userId: user.id,
+									productType,
+									reason: errorMsg,
+									purchaseId: purchase.id,
+									productFields: product?.fields,
+								})
+								return {
+									success: false,
+									error: errorMsg,
+									productFields: product?.fields,
+									envFallback:
+										productType === 'cohort'
+											? env.DISCORD_COHORT_001_ROLE_ID
+											: env.DISCORD_PURCHASER_ROLE_ID,
+								}
+							}
+
+							if (!primaryResource.id) {
+								const errorMsg = `no ${entitlementConfig.logPrefix} resource id found`
+								await log.error('discord_role_entitlement_creation_failed', {
+									userId: user.id,
+									productType,
+									reason: errorMsg,
+									purchaseId: purchase.id,
+								})
+								return {
+									success: false,
+									error: errorMsg,
+								}
+							}
+
+							const entitlementId = `${primaryResource.id}-discord-${guid()}`
+
+							try {
+								const createdEntitlementId =
+									await entitlementConfig.createEntitlement({
+										id: entitlementId,
+										userId: user.id,
+										organizationId,
+										organizationMembershipId: orgMembership.id,
+										entitlementType: entitlementTypeId,
+										sourceType: EntitlementSourceType.PURCHASE,
+										sourceId: purchase.id,
+										metadata: {
+											discordRoleId,
+										},
+									})
+
+								// Verify the entitlement was created by querying it back
+								const verifyEntitlement = await db.query.entitlements.findFirst(
+									{
+										where: eq(entitlements.id, createdEntitlementId),
+									},
+								)
+
+								if (!verifyEntitlement) {
+									throw new Error(
+										`Entitlement ${createdEntitlementId} was not found after creation`,
+									)
+								}
+
+								const entitlementTypeName = discordRoleEntitlementType.name
+
+								return {
+									success: true,
+									entitlementId: createdEntitlementId,
+									entitlementType: {
+										id: entitlementTypeId,
+										name: entitlementTypeName,
+									},
+									discordRoleId,
+									metadata: verifyEntitlement.metadata,
+									verified: true,
+									userId: user.id,
+									primaryResourceId: primaryResource.id,
+									purchaseId: purchase.id,
+								}
+							} catch (error) {
+								const errorMessage =
+									error instanceof Error ? error.message : String(error)
+								await log.error('discord_role_entitlement_creation_failed', {
+									userId: user.id,
+									entitlementId,
+									productType,
+									discordRoleId,
+									primaryResourceId: primaryResource.id,
+									purchaseId: purchase.id,
+									error: errorMessage,
+									errorStack: error instanceof Error ? error.stack : undefined,
+								})
+								return {
+									success: false,
+									error: errorMessage,
+									entitlementId,
+									discordRoleId,
+									primaryResourceId: primaryResource.id,
+								}
 							}
 						},
 					)
+				}
 
-					// Create content access entitlements
+				// Create content access entitlements (separate from Discord entitlements)
+				if (contentAccessEntitlementType && primaryResource) {
 					await step.run(
 						`add user to ${entitlementConfig.logPrefix} via entitlement`,
 						async () => {
