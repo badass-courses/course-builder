@@ -50,6 +50,16 @@ export function EditResourcesBodyPanel({
 	isShowingMdxPreview?: boolean
 }) {
 	const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+	const { ref: formRef, ...registerProps } = form.register('fields.body')
+
+	// Merge refs so both react-hook-form and our local ref work
+	const mergedRef = React.useCallback(
+		(node: HTMLTextAreaElement | null) => {
+			textareaRef.current = node
+			formRef(node)
+		},
+		[formRef],
+	)
 
 	const onChange = React.useCallback((value: string, yDoc?: any) => {
 		if (yDoc) {
@@ -155,9 +165,8 @@ export function EditResourcesBodyPanel({
 		<>
 			{children}
 			<Textarea
-				{...form.register('fields.body')}
-				ref={textareaRef}
-				defaultValue={form.getValues('fields.body') ?? ''}
+				{...registerProps}
+				ref={mergedRef}
 				onDrop={handleDrop}
 				onDragOver={handleDragOver}
 				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] rounded-none border-none p-5 text-base"

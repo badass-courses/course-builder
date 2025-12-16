@@ -16,7 +16,7 @@ export default function LayoutClient({
 	withContainer = false,
 	className,
 	saleBannerData,
-	isCommerceEnabled = false,
+	isCommerceEnabled = true,
 	withFooter = true,
 }: {
 	children: React.ReactNode
@@ -28,13 +28,13 @@ export default function LayoutClient({
 }) {
 	return (
 		<div className={cn('')}>
-			<Navigation />
 			{saleBannerData && (
 				<SaleBanner
 					saleBannerData={saleBannerData}
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
+			<Navigation />
 			<main
 				className={cn('', className, {
 					'container border-x': withContainer,

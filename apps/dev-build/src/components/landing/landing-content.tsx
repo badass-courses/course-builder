@@ -39,9 +39,9 @@ function AnimatedSection({
 	return (
 		<motion.section
 			ref={ref}
-			initial={{ opacity: 0, y: 40 }}
-			animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-			transition={{ duration: 0.8, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+			// initial={{ opacity: 0, y: 40 }}
+			// animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+			// transition={{ duration: 0.8, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
 			className={className}
 			{...props}
 		>
@@ -136,59 +136,38 @@ function GridCard({
 }
 
 /**
- * Numbered bullet item with animated reveal
- */
-function BulletItem({
-	title,
-	description,
-	index,
-}: {
-	title: string
-	description: string
-	index: number
-}) {
-	const ref = React.useRef(null)
-	const isInView = useInView(ref, { once: true, margin: '-50px' })
-
-	return (
-		<motion.li
-			ref={ref}
-			initial={{ opacity: 0, x: -20 }}
-			animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-			transition={{
-				duration: 0.5,
-				delay: index * 0.1,
-				ease: [0.21, 0.47, 0.32, 0.98],
-			}}
-			className="flex gap-6"
-		>
-			<span className="text-primary font-mono text-lg font-bold">
-				{String(index + 1).padStart(2, '0')}
-			</span>
-			<div>
-				<strong className="font-semibold">{title}</strong>
-				<span className="text-muted-foreground"> – {description}</span>
-			</div>
-		</motion.li>
-	)
-}
-
-/**
  * Expandable details/accordion section
  */
 function ExpandableSection({
 	title,
 	children,
 	defaultOpen = false,
+	delay = 0,
 }: {
 	title: string
 	children: React.ReactNode
 	defaultOpen?: boolean
+	delay?: number
 }) {
 	const [isOpen, setIsOpen] = React.useState(defaultOpen)
-
+	const ref = React.useRef(null)
+	const isInView = useInView(ref, { once: true, margin: '-50px' })
 	return (
-		<div className="">
+		<motion.div
+			ref={ref}
+			initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+			animate={
+				isInView
+					? { opacity: 1, y: 0, filter: 'blur(0px)' }
+					: { opacity: 0, y: 20, filter: 'blur(8px)' }
+			}
+			transition={{
+				duration: 0.5,
+				delay,
+				ease: [0.21, 0.47, 0.32, 0.98],
+			}}
+			viewport={{ once: true }}
+		>
 			<button
 				onClick={() => setIsOpen(!isOpen)}
 				className={cn(
@@ -217,7 +196,7 @@ function ExpandableSection({
 			>
 				<div className="space-y-35 pb-6 pl-4">{children}</div>
 			</motion.div>
-		</div>
+		</motion.div>
 	)
 }
 

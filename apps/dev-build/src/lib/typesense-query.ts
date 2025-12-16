@@ -460,10 +460,7 @@ export async function getNearestNeighbour(
 			.array()
 			.parse(results)
 
-		const randomIndex = Math.floor(
-			Math.random() * (parsedResults[0]?.hits?.length ?? 0),
-		)
-		return parsedResults[0]?.hits[randomIndex]?.document ?? null
+		return parsedResults[0]?.hits[0]?.document ?? null
 	} catch (e) {
 		console.debug(e)
 		return null

@@ -68,7 +68,7 @@ function SearchContent() {
 			/>
 			<div className="min-h-[calc(100svh-77px)]">
 				{/* Desktop layout */}
-				<div className="hidden divide-x md:grid md:grid-cols-12">
+				<div className="hidden min-h-[calc(100svh-77px)] divide-x md:grid md:grid-cols-12">
 					<aside className="col-span-3 py-6">
 						<BrowseBy />
 					</aside>
@@ -76,7 +76,7 @@ function SearchContent() {
 						<div className="bg-muted border-b px-5 py-4">
 							<SearchBox />
 						</div>
-						<div className="px-5">
+						<div className="px-5 pb-5">
 							<InfiniteHits />
 						</div>
 					</div>

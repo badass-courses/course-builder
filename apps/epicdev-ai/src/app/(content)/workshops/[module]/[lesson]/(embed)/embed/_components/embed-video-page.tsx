@@ -168,7 +168,7 @@ export async function EmbedVideoPage({
 	}
 
 	// Check permissions for actual content access
-	if (!user || !abilityForResource.canViewLesson) {
+	if (!abilityForResource.canViewLesson) {
 		await log.info('embed_video_unauthorized_access', {
 			lessonSlug,
 			moduleSlug,
@@ -208,7 +208,7 @@ export async function EmbedVideoPage({
 			lessonSlug,
 			moduleSlug,
 			resourceType,
-			userId: user.id,
+			userId: user?.id,
 		})
 		return (
 			<EmbedContainer
@@ -228,7 +228,7 @@ export async function EmbedVideoPage({
 			resourceId: mainResource.id,
 			lessonSlug,
 			resourceType,
-			userId: user.id,
+			userId: user?.id,
 		})
 
 		return (
@@ -249,7 +249,7 @@ export async function EmbedVideoPage({
 		lessonSlug,
 		moduleSlug,
 		resourceType,
-		userId: user.id,
+		userId: user?.id,
 	})
 
 	const moduleProgressLoader = getModuleProgressForUser(moduleSlug)

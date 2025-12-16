@@ -1,11 +1,13 @@
 import { courseBuilderAdapter, db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
 import { formatDiscount } from '@/utils/discount-formatter'
-import { eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 import { getCouponForCode } from '@coursebuilder/core/lib/pricing/props-for-commerce'
 import type { Coupon } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
+
+const DEBUG_MODE = false
 
 export type SaleBannerData = {
 	discountType: 'percentage' | 'fixed'
@@ -25,6 +27,16 @@ export type SaleBannerData = {
 export async function getSaleBannerData(
 	coupon: Coupon | null,
 ): Promise<SaleBannerData | null> {
+	if (DEBUG_MODE) {
+		return {
+			discountType: 'percentage',
+			discountValue: 10,
+			discountFormatted: '10% off',
+			productName: 'Node.js Mastery',
+			productType: 'self-paced',
+			productPath: '/node-js-mastery',
+		}
+	}
 	if (!coupon?.restrictedToProductId) {
 		return null
 	}
@@ -44,7 +56,13 @@ export async function getSaleBannerData(
 				contentResource,
 				eq(contentResource.id, contentResourceProduct.resourceId),
 			)
-			.where(eq(products.id, coupon.restrictedToProductId))
+			.where(
+				and(
+					eq(products.id, coupon.restrictedToProductId),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.visibility")`, 'public'),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.state")`, 'published'),
+				),
+			)
 			.limit(1)
 
 		const result = rows[0]
@@ -101,7 +119,7 @@ export async function getActiveCoupon(searchParams?: {
 	coupon?: string
 }): Promise<Coupon | null> {
 	const couponCodeOrId = searchParams?.code || searchParams?.coupon
-
+	console.log('couponCodeOrId', couponCodeOrId)
 	// Check for URL-based coupon first
 	if (couponCodeOrId) {
 		const coupon = await getCouponForCode(
@@ -124,4 +142,12 @@ export async function getActiveCoupon(searchParams?: {
 
 	const coupons = await courseBuilderAdapter.getDefaultCoupon(productIds)
 	return coupons?.defaultCoupon || null
+}
+
+export async function getSaleBannerDataFromSearchParams(searchParams?: {
+	code?: string
+	coupon?: string
+}): Promise<SaleBannerData | null> {
+	const coupon = await getActiveCoupon(searchParams)
+	return await getSaleBannerData(coupon)
 }
