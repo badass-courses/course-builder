@@ -11,11 +11,7 @@
 import { z } from 'zod'
 
 import type { Product, Purchase } from '@coursebuilder/core/schemas'
-import type {
-	CommerceProps,
-	FormattedPrice,
-	PricingOptions,
-} from '@coursebuilder/core/types'
+import type { CommerceProps, FormattedPrice } from '@coursebuilder/core/types'
 
 /**
  * Data returned from pricing data loaders.
@@ -43,9 +39,9 @@ export const pricingWidgetOptionsSchema = z.object({
 
 /**
  * Options for configuring pricing widget behavior and display.
+ * Mirrors @coursebuilder/core PricingOptions but with all fields optional.
  */
-export type PricingWidgetOptions = z.infer<typeof pricingWidgetOptionsSchema> &
-	Partial<PricingOptions>
+export type PricingWidgetOptions = z.infer<typeof pricingWidgetOptionsSchema>
 
 /**
  * Base props shared by all pricing components.

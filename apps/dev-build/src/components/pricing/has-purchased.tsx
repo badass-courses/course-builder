@@ -27,7 +27,7 @@ export function HasPurchased({
 	}
 
 	// Check if user has a valid paid purchase for the specified product
-	// Note: Excludes 'Restricted' (PPP) purchases since they already got a discount
+	// Note: Includes both 'Valid' and 'Restricted' (PPP) purchases with positive amount
 	const hasPurchased = targetProductId
 		? purchases.some(
 				(purchase) =>

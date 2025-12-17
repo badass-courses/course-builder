@@ -57,8 +57,8 @@ export default async function PostPage(props: {
 		return (
 			<ListPage
 				list={post}
-				params={{ slug: params.post } as any}
-				searchParams={searchParams as any}
+				params={Promise.resolve({ slug: params.post })}
+				searchParams={Promise.resolve(searchParams)}
 			/>
 		)
 	}
