@@ -1,8 +1,8 @@
 import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
 import Link from 'next/link'
+import { PricingWidget } from '@/app/(content)/_components/resource-landing'
 import { CohortPricingWidgetContainer } from '@/app/(content)/cohorts/[slug]/_components/cohort-pricing-widget-container'
-import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
@@ -159,7 +159,7 @@ export async function PricingWidgetServer({
 					workshops={cohortWorkshops}
 					cohort={resource}
 					searchParams={searchParams}
-					pricingWidgetOptions={{
+					options={{
 						withTitle: true,
 						withImage: true,
 					}}
@@ -179,7 +179,7 @@ export async function PricingWidgetServer({
 					product={product}
 					quantityAvailable={quantityAvailable}
 					pricingDataLoader={pricingDataLoader}
-					pricingWidgetOptions={{
+					options={{
 						withImage: false,
 						withGuaranteeBadge: true,
 						isLiveEvent: false,

@@ -34,21 +34,12 @@ export const CohortPurchasedMessage = ({
 		? new Date(cohort.fields.startsAt) <= nowInPT
 		: false
 
-	// Use client-side timezone detection after hydration to avoid mismatch
-	const [isClient, setIsClient] = React.useState(false)
-	React.useEffect(() => {
-		setIsClient(true)
-	}, [])
-
+	// Always use cohort's timezone for consistent server/client rendering
 	const {
 		dateString: eventDateString,
 		timeString: eventTimeString,
 		startsAt,
-	} = formatCohortDateRange(
-		cohort.fields.startsAt,
-		cohort.fields.endsAt,
-		isClient ? undefined : tz,
-	)
+	} = formatCohortDateRange(cohort.fields.startsAt, cohort.fields.endsAt, tz)
 
 	return hasPurchasedCurrentProduct ? (
 		<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">

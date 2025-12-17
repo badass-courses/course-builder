@@ -2,6 +2,18 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import {
+	createEventMdxComponents,
+	ResourceActions,
+	ResourceAdminActions,
+	ResourceBody,
+	ResourceHeader,
+	ResourceLayout,
+	ResourcePricingWidget,
+	ResourceShareFooter,
+	ResourceSidebar,
+	ResourceVisibilityBanner,
+} from '@/app/(content)/_components/resource-landing'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
@@ -10,6 +22,12 @@ import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { EventSchema, type Event } from '@/lib/events'
 import { getEventOrEventSeries } from '@/lib/events-query'
+import { getProductSlugToIdMap } from '@/lib/product-map'
+import {
+	getActiveCoupon,
+	getSaleBannerData,
+	getSaleBannerDataFromSearchParams,
+} from '@/lib/sale-banner'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -30,14 +48,8 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { PostPlayer } from '../../posts/_components/post-player'
 import { AttendeeInstructions } from './_components/event-attendee-insructions'
-import { EventDetails } from './_components/event-details'
-import { EventPricingWidgetClient } from './_components/event-pricing-widget-client'
+import { EventDetails, EventDetailsMobile } from './_components/event-details'
 import { PurchasedTicketInfo } from './_components/event-purchased-ticket-info'
-import { EventSidebar } from './_components/event-sidebar'
-import {
-	EventPricing,
-	EventPricingButton,
-} from './_components/inline-event-pricing'
 import { createPurchaseDataLoader } from './_components/purchase-data-provider'
 
 export async function generateMetadata(
@@ -109,13 +121,6 @@ export default async function EventPage(props: {
 			resource.type === 'videoResource',
 	)
 
-	const { content: eventBody } = await compileMDX(body || '', {
-		EventPricing: (props) => <EventPricing post={event} {...props} />,
-		BuyTicketButton: (props) => (
-			<EventPricingButton post={event} {...props} className="hidden lg:flex" />
-		),
-	})
-
 	const IS_SERIES = Boolean(
 		event.resources?.length && event.resources?.length > 1,
 	)
@@ -125,51 +130,30 @@ export default async function EventPage(props: {
 		.safeParse(event.resources?.map(({ resource }) => resource)).data
 
 	const purchaseDataPromise = createPurchaseDataLoader(event, searchParams)
+	const saleBannerData = await getSaleBannerDataFromSearchParams(searchParams)
+	const purchaseData = await purchaseDataPromise
+	const productMap = await getProductSlugToIdMap()
+	const defaultCoupon = await getActiveCoupon(searchParams)
+	const saleData = await getSaleBannerData(defaultCoupon)
+
+	const mdxComponents = createEventMdxComponents({
+		product,
+		hasPurchasedCurrentProduct: purchaseData.hasPurchasedCurrentProduct,
+		pricingDataLoader: purchaseData.pricingDataLoader,
+		commerceProps: purchaseData,
+		allowPurchase: purchaseData.allowPurchase,
+		defaultCoupon,
+		saleData,
+		productMap,
+	})
+
+	const { content: eventBody } = await compileMDX(body || '', mdxComponents)
 
 	return (
-		<LayoutClient withContainer>
-			<EventMetadata event={event} />
-			<header className="relative mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-				<React.Suspense fallback={null}>
-					<AdminActions
-						event={event}
-						product={product}
-						IS_SERIES={Boolean(IS_SERIES)}
-					/>
-				</React.Suspense>
-				<Link
-					href="/events"
-					className="bg-primary/20 text-primary mb-2 inline-flex items-center gap-1 rounded-full px-3 py-0.5 text-sm font-semibold"
-				>
-					<span>{IS_SERIES ? 'Event Series' : 'Event'}</span>
-				</Link>
-				<div className="flex flex-col items-center gap-2 pb-8 lg:items-start">
-					<h1 className="font-heading sm:fluid-3xl fluid-2xl text-balance font-bold">
-						{title}
-					</h1>
-					{description && (
-						<h2 className="mt-5 text-balance text-lg font-normal text-purple-950 lg:text-xl dark:text-purple-200">
-							{description}
-						</h2>
-					)}
-				</div>
-			</header>
-			<main className="flex w-full grid-cols-12 flex-col pb-16 lg:grid lg:gap-12">
-				<div className="col-span-8 flex w-full flex-col">
-					{/* Attendee instructions with purchase data promise */}
-					<React.Suspense fallback={null}>
-						<AttendeeInstructions
-							attendeeInstructions={attendeeInstructions}
-							purchaseDataPromise={purchaseDataPromise}
-						/>
-					</React.Suspense>
-					{hasVideo && <PlayerContainer event={event} />}
-					<Contributor className="justify-center sm:justify-start" />
-					<article className="prose sm:prose-lg prose-headings:text-balance w-full max-w-none py-8">
-						{eventBody}
-					</article>
-				</div>
-				<EventSidebar>
+		<ResourceLayout
+			saleBannerData={saleBannerData}
+			sidebar={
+				<ResourceSidebar>
 					<EventDetails events={IS_SERIES ? events || [event] : [event]} />
 					<React.Suspense
 						fallback={
@@ -184,13 +168,56 @@ export default async function EventPage(props: {
 							IS_SERIES={IS_SERIES}
 							purchaseDataPromise={purchaseDataPromise}
 						/>
-						<EventPricingWidgetClient
-							purchaseDataPromise={purchaseDataPromise}
+						<ResourcePricingWidget
+							resourceType="event"
+							resourceSlug={event.fields?.slug || ''}
+							pricingDataLoader={purchaseDataPromise}
+							enrollment={{
+								startsAt: sharedFields.startsAt,
+								endsAt: sharedFields.endsAt,
+								timezone: sharedFields.timezone,
+							}}
+							mobileCta={<EventDetailsMobile event={event} />}
 						/>
 					</React.Suspense>
-				</EventSidebar>
-			</main>
-		</LayoutClient>
+				</ResourceSidebar>
+			}
+		>
+			<EventMetadata event={event} />
+			<ResourceVisibilityBanner
+				visibility={event.fields?.visibility}
+				resourceType={IS_SERIES ? 'event series' : 'event'}
+			/>
+			<ResourceHeader
+				badge={{
+					label: IS_SERIES ? 'Event Series' : 'Event',
+				}}
+				title={title}
+				description={description}
+				contributor={{ withBio: true, label: 'Hosted by' }}
+				adminActions={
+					<ResourceAdminActions
+						resourceType="event"
+						resourceSlugOrId={event.fields?.slug || event.id}
+						product={product}
+						resourceLabel={IS_SERIES ? 'Event Series' : 'Event'}
+					/>
+				}
+			>
+				<ResourceActions title={title} />
+			</ResourceHeader>
+			<ResourceBody>
+				<React.Suspense fallback={null}>
+					<AttendeeInstructions
+						attendeeInstructions={attendeeInstructions}
+						purchaseDataPromise={purchaseDataPromise}
+					/>
+				</React.Suspense>
+				{hasVideo && <PlayerContainer event={event} />}
+				{eventBody}
+			</ResourceBody>
+			<ResourceShareFooter title={title} />
+		</ResourceLayout>
 	)
 }
 
@@ -268,40 +295,6 @@ const EventMetadata: React.FC<{ event: Event; quantityAvailable?: number }> = ({
 					__html: JSON.stringify(ticketJsonLd),
 				}}
 			/>
-		</>
-	)
-}
-
-async function AdminActions({
-	event,
-	product,
-	IS_SERIES,
-}: {
-	event: Event
-	product: Product | null
-	IS_SERIES: boolean
-}) {
-	const { session, ability } = await getServerAuthSession()
-	return (
-		<>
-			{event && ability.can('update', 'Content') && (
-				<div className="top-30 right-0 z-40 flex items-center gap-2 lg:absolute">
-					{product && (
-						<Button asChild size="sm" variant="outline">
-							<Link
-								href={`/products/${product?.fields?.slug || product?.id}/edit`}
-							>
-								Edit Product
-							</Link>
-						</Button>
-					)}
-					<Button asChild size="sm" variant="secondary">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit {IS_SERIES ? 'Event Series' : 'Event'}
-						</Link>
-					</Button>
-				</div>
-			)}
 		</>
 	)
 }

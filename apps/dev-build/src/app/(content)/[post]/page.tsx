@@ -54,12 +54,18 @@ export default async function PostPage(props: {
 	}
 
 	if (post.type === 'list') {
-		return <ListPage list={post} params={{ slug: params.post } as any} />
+		return (
+			<ListPage
+				list={post}
+				params={{ slug: params.post } as any}
+				searchParams={searchParams as any}
+			/>
+		)
 	}
 
 	let list = null
 	if (post && post.type === 'post') {
-		list = await getCachedListForPost(params.post)
+		list = await getCachedListForPost(post)
 	}
 
 	const hasVideo = Boolean(

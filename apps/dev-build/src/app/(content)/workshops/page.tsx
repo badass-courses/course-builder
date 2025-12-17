@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { PricingWidget } from '@/components/commerce/home-pricing-widget'
+import { PricingWidget } from '@/app/(content)/_components/resource-landing'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import config from '@/config'

@@ -6,8 +6,8 @@ import uuid from 'shortid'
 import Stripe from 'stripe'
 
 const config = {
-	stripeAccountId: 'acct_1He3UBAclagrtXef',
-	merchantAccountId: 'ma_clv1pegll000008jvbm0udeat',
+	stripeAccountId: 'acct_1RIXGiIeNjG9eoyI',
+	merchantAccountId: 'cpai_clv1pegll15008jvbm0udeda7',
 	uuidPrefix: 'cpai_',
 	products: [],
 	coupons: [
