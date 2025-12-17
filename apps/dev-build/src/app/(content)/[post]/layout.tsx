@@ -23,7 +23,7 @@ export default async function Layout(props: {
 	let list = null
 
 	if (post && post.type === 'post') {
-		list = await getCachedListForPost(params.post)
+		list = await getCachedListForPost(post)
 	}
 	const initialProgress = await getModuleProgressForUser(
 		list ? list.id : params.post,
