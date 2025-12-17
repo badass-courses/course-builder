@@ -3,7 +3,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import {
-	createCohortMdxComponents,
+	createPricingMdxComponents,
 	ResourceActions,
 	ResourceAdminActions,
 	ResourceBody,
@@ -123,7 +123,7 @@ export default async function CohortPage(props: {
 	const defaultCoupon = await getActiveCoupon(searchParams)
 	const saleData = await getSaleBannerData(defaultCoupon)
 
-	const mdxComponents = createCohortMdxComponents({
+	const mdxComponents = createPricingMdxComponents({
 		product: cohortPricingData.product,
 		hasPurchasedCurrentProduct: cohortPricingData.hasPurchasedCurrentProduct,
 		pricingDataLoader: cohortPricingData.pricingDataLoader,

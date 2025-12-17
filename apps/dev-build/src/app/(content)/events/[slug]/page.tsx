@@ -3,7 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
-	createEventMdxComponents,
+	createPricingMdxComponents,
 	ResourceActions,
 	ResourceAdminActions,
 	ResourceBody,
@@ -136,7 +136,7 @@ export default async function EventPage(props: {
 	const defaultCoupon = await getActiveCoupon(searchParams)
 	const saleData = await getSaleBannerData(defaultCoupon)
 
-	const mdxComponents = createEventMdxComponents({
+	const mdxComponents = createPricingMdxComponents({
 		product,
 		hasPurchasedCurrentProduct: purchaseData.hasPurchasedCurrentProduct,
 		pricingDataLoader: purchaseData.pricingDataLoader,

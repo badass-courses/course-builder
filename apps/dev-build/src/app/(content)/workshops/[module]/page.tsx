@@ -2,6 +2,7 @@ import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import {
+	createPricingMdxComponents,
 	ResourceActions,
 	ResourceAdminActions,
 	ResourceBody,
@@ -12,16 +13,21 @@ import {
 	ResourceVisibilityBanner,
 } from '@/app/(content)/_components/resource-landing'
 import { Contributor } from '@/components/contributor'
-import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { getSaleBannerDataFromSearchParams } from '@/lib/sale-banner'
+import { getProductSlugToIdMap } from '@/lib/product-map'
+import {
+	getActiveCoupon,
+	getSaleBannerData,
+	getSaleBannerDataFromSearchParams,
+} from '@/lib/sale-banner'
 import {
 	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
 } from '@/lib/workshops-query'
+import { compileMDX } from '@/utils/compile-mdx'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
@@ -31,6 +37,7 @@ import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import { Skeleton } from '@coursebuilder/ui'
 
+import { createWorkshopPurchaseDataLoader } from '../_components/purchase-data-provider'
 import { WorkshopPricing } from '../_components/workshop-pricing-server'
 import { Certificate } from '../../_components/module-certificate-container'
 import ModuleResourceList from '../../_components/navigation/module-resource-list'
@@ -92,6 +99,31 @@ export default async function ModulePage(props: Props) {
 
 	const product = await getCachedWorkshopProduct(params.module)
 	const saleBannerData = await getSaleBannerDataFromSearchParams(searchParams)
+
+	// Load purchase data for MDX components
+	const purchaseData = await createWorkshopPurchaseDataLoader(
+		params.module,
+		searchParams,
+	)
+	const productMap = await getProductSlugToIdMap()
+	const defaultCoupon = await getActiveCoupon(searchParams)
+	const saleData = await getSaleBannerData(defaultCoupon)
+
+	const mdxComponents = createPricingMdxComponents({
+		product: purchaseData.product,
+		hasPurchasedCurrentProduct: purchaseData.hasPurchasedCurrentProduct,
+		pricingDataLoader: purchaseData.pricingDataLoader,
+		commerceProps: purchaseData,
+		allowPurchase: purchaseData.allowPurchase,
+		defaultCoupon,
+		saleData,
+		productMap,
+	})
+
+	const { content } = await compileMDX(
+		workshop.fields?.body || '',
+		mdxComponents,
+	)
 
 	return (
 		<ResourceLayout
@@ -246,9 +278,9 @@ export default async function ModulePage(props: Props) {
 				/>
 			</ResourceHeader>
 			<ResourceBody>
-				{workshop.fields?.body ? (
+				{content ? (
 					<div className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none">
-						{workshop.fields.body}
+						{content}
 					</div>
 				) : (
 					<p>No description found.</p>

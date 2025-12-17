@@ -39,8 +39,4 @@ export type { ResourceScheduleDetailsProps } from './resource-schedule-details'
 export * from './pricing'
 
 // Re-export MDX component factories
-export {
-	createEventMdxComponents,
-	createWorkshopMdxComponents,
-	createCohortMdxComponents,
-} from './mdx-components'
+export { createPricingMdxComponents } from './mdx-components'

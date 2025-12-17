@@ -8,7 +8,7 @@ import {
 	ClockIcon,
 	MapPinIcon,
 } from '@heroicons/react/24/outline'
-import { addDays, format } from 'date-fns'
+import { addDays } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 import { Button } from '@coursebuilder/ui'
@@ -69,8 +69,9 @@ export function ResourceScheduleDetails({
 
 	// Handle temporary timezone offset if needed
 	const originalStartDate = new Date(startsAt)
-	const startDateOneDayLater = format(
+	const startDateOneDayLater = formatInTimeZone(
 		addDays(originalStartDate, 1),
+		tz,
 		'MMMM do, yyyy',
 	)
 
