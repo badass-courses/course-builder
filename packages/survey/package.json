@@ -42,10 +42,10 @@
 	"devDependencies": {
 		"@types/date-fns": "^2.6.3",
 		"@types/lodash": "^4.14.200",
-		"@types/react": "19.2.2",
-		"@types/react-dom": "19.2.1",
-		"react": "19.2.1",
-		"react-dom": "19.2.1",
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
+		"react": "19.2.3",
+		"react-dom": "19.2.3",
 		"tsup": "8.0.2",
 		"typescript": "5.4.5",
 		"vitest": "1.6.0"
