@@ -36,8 +36,8 @@
 		"zod": "^3.22.4"
 	},
 	"peerDependencies": {
-		"react": "19.2.1",
-		"react-dom": "19.2.1"
+		"react": "19.2.3",
+		"react-dom": "19.2.3"
 	},
 	"devDependencies": {
 		"@types/date-fns": "^2.6.3",
