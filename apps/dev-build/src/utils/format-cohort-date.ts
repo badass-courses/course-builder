@@ -1,4 +1,3 @@
-import { isSameDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 
 interface CohortDateRange {
@@ -34,11 +33,27 @@ function getTimezoneDisplay(date: Date, timezone: string): string {
 }
 
 /**
+ * Checks if two dates are on the same calendar day in a specific timezone.
+ * This is critical for correct display - we must compare dates in the DISPLAY timezone,
+ * not the system timezone, to avoid off-by-one-day errors.
+ */
+function isSameDayInTimezone(
+	date1: Date,
+	date2: Date,
+	timezone: string,
+): boolean {
+	const day1 = formatInTimeZone(date1, timezone, 'yyyy-MM-dd')
+	const day2 = formatInTimeZone(date2, timezone, 'yyyy-MM-dd')
+	return day1 === day2
+}
+
+/**
  * Formats cohort start and end dates into user-friendly strings.
  *
  * @param startsAt - The start date/time string (ISO 8601 or compatible).
  * @param endsAt - The end date/time string (ISO 8601 or compatible).
- * @param timezone - The IANA timezone string (e.g., 'America/Los_Angeles'). Defaults to user's browser timezone if available, otherwise 'America/Los_Angeles'.
+ * @param timezone - The IANA timezone string (e.g., 'America/Los_Angeles'). Defaults to 'America/Los_Angeles'.
+ *                   IMPORTANT: Always pass an explicit timezone to avoid hydration mismatches.
  * @returns An object containing formatted dateString and timeString.
  */
 export function formatCohortDateRange(
@@ -47,12 +62,9 @@ export function formatCohortDateRange(
 	timezone?: string | null | undefined,
 	short: boolean = false,
 ): CohortDateRange {
-	// Use user's browser timezone if available (client-side), otherwise fall back to provided timezone or PT
-	const tz =
-		timezone ||
-		(typeof window !== 'undefined'
-			? Intl.DateTimeFormat().resolvedOptions().timeZone
-			: 'America/Los_Angeles')
+	// Always use explicit timezone to avoid server/client hydration mismatches.
+	// Default to PT if not provided - callers should always pass the cohort's timezone.
+	const tz = timezone || 'America/Los_Angeles'
 	let dateString: string | null = null
 	let timeString: string | null = null
 	let formattedStartsAt: string | null = null
@@ -64,7 +76,8 @@ export function formatCohortDateRange(
 
 		if (endsAt) {
 			const endDate = new Date(endsAt)
-			if (isSameDay(startDate, endDate)) {
+			// CRITICAL: Compare dates in the display timezone, not system timezone
+			if (isSameDayInTimezone(startDate, endDate, tz)) {
 				// Same day event: "Month Day, Year" | "Start Time - End Time (Timezone)"
 				dateString = formatInTimeZone(startDate, tz, short ? 'MMM d' : 'MMMM d')
 				const tzDisplay = getTimezoneDisplay(startDate, tz)

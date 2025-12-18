@@ -112,7 +112,7 @@ export const ModuleResourceListLesson = React.memo(
 		)
 
 		const baseStyles = cn(
-			'relative flex w-full text-sm items-center leading-tight py-1 min-h-12 pl-3 pr-10 font-medium before:content-[""] before:w-[2px] before:absolute before:left-0 before:top-0 before:h-full',
+			'relative flex w-full text-sm items-center leading-tight py-2 min-h-16 pl-3 pr-10 font-medium before:content-[""] before:w-[2px] before:absolute before:left-0 before:top-0 before:h-full',
 			className,
 			{
 				'bg-card text-primary before:bg-primary':

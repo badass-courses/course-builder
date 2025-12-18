@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
 import Link from 'next/link'
-import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
+import { PricingWidget } from '@/app/(content)/_components/resource-landing'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
@@ -217,7 +217,7 @@ async function ProductCommerce({
 					pricingDataLoader={pricingDataLoader}
 					hasPurchasedCurrentProduct={productProps.hasPurchasedCurrentProduct}
 					workshops={[]} // No workshops for regular product pages
-					pricingWidgetOptions={{
+					options={{
 						withImage: product.type !== 'live',
 						withGuaranteeBadge: product.type !== 'live',
 						isLiveEvent: product.type === 'live',

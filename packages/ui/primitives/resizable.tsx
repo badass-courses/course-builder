@@ -11,14 +11,16 @@ const ResizablePanelGroup: React.FC<
 		direction: 'vertical' | 'horizontal'
 		className?: string
 		autoSaveId?: string
+		id?: string
 	}>
-> = ({ className, autoSaveId, ...props }) => (
+> = ({ className, autoSaveId, id, ...props }) => (
 	<ResizablePrimitive.PanelGroup
 		className={cn(
 			'flex h-full w-full data-[panel-group-direction=vertical]:flex-col',
 			className,
 		)}
 		autoSaveId={autoSaveId}
+		id={id}
 		{...props}
 	/>
 )

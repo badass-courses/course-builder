@@ -18,7 +18,7 @@ import Hit from './instantsearch/hit'
 function SkeletonItem() {
 	return (
 		<div className="flex animate-pulse flex-col gap-4">
-			<div className="aspect-video w-full shrink-0 rounded-md bg-black/10 dark:bg-white/10" />
+			<div className="bg-muted aspect-video w-full shrink-0 rounded-md" />
 			{/* <div className="flex-1 space-y-3">
 				<div className="h-4 w-1/3 rounded bg-black/10 dark:bg-white/10" />
 				<div className="h-3 w-full rounded bg-black/10 dark:bg-white/10" />

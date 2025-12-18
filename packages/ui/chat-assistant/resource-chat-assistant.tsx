@@ -125,7 +125,7 @@ export function ResourceChatAssistant({
 					/>
 				) : null}
 			</div>
-			<ResizablePanelGroup direction="vertical">
+			<ResizablePanelGroup direction="vertical" id="resource-chat-panel-group">
 				<ResizablePanel defaultSize={85} className="none">
 					<ResourceChatResponse
 						requestId={resource.id}

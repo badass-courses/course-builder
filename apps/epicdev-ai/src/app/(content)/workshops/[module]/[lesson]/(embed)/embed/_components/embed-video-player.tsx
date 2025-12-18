@@ -16,7 +16,7 @@ interface EmbedVideoPlayerProps {
 	resource: ContentResource
 	muxPlaybackId: string
 	moduleSlug: string
-	user: User
+	user?: User | null
 	className?: string
 	thumbnailUrl?: string
 }
@@ -59,7 +59,7 @@ export function EmbedVideoPlayer({
 					resourceSlug: resource.fields?.slug,
 					resourceType: resource.type,
 					moduleSlug,
-					userId: user.id,
+					userId: user?.id,
 					context: 'embed',
 				})
 			}
@@ -70,7 +70,7 @@ export function EmbedVideoPlayer({
 				resourceSlug: resource.fields?.slug,
 				resourceType: resource.type,
 				moduleSlug,
-				userId: user.id,
+				userId: user?.id,
 				context: 'embed',
 			})
 			handleSetLessonComplete({
@@ -114,7 +114,7 @@ export function EmbedVideoPlayer({
 				metadata={{
 					video_id: resource.id,
 					video_title: resource.fields?.title || 'Lesson Video',
-					viewer_user_id: user.id,
+					viewer_user_id: user?.id,
 				}}
 				playbackId={muxPlaybackId}
 				className="h-full w-full"

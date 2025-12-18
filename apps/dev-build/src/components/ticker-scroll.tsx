@@ -27,7 +27,7 @@ export default function TickerScroll({
 
 	return (
 		<Ticker
-			gap={10}
+			gap={6}
 			className={cn('h-16 w-full', className)}
 			items={[<span className="bg-border h-full w-px" key="ticker-scroll" />]}
 			offset={scaledOffset}

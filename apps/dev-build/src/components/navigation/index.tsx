@@ -49,7 +49,7 @@ const Navigation = ({ className }: { className?: string }) => {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
 	// useLiveEventToastNotifier()
-	useSaleToastNotifier()
+	// useSaleToastNotifier()
 
 	React.useEffect(() => {
 		setIsMobileMenuOpen(false)

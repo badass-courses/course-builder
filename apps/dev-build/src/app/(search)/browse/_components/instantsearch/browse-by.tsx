@@ -144,6 +144,7 @@ export default function BrowseBy({ onSelect }: BrowseByProps) {
 							'text-primary': isFreeActive,
 						})}
 						variant={isFreeActive ? 'outline' : 'ghost'}
+						onClick={handleFreeClick}
 						aria-pressed={isFreeActive}
 					>
 						Free
