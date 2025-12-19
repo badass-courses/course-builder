@@ -25,7 +25,6 @@ export const LessonSchema = ContentResourceSchema.merge(
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 			github: z.string().optional(),
-			gitpod: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
