@@ -31,15 +31,6 @@ export function ResourcesInfiniteHits({
 		excludedIds,
 	} = useSelection()
 
-	// Log search results when they change
-	const prevItemsLengthRef = React.useRef(items.length)
-	const prevStatusRef = React.useRef(status)
-
-	React.useEffect(() => {
-		const itemsChanged = prevItemsLengthRef.current !== items.length
-		const statusChanged = prevStatusRef.current !== status
-	}, [items.length, status, isLastPage])
-
 	const handleBulkAdd = async () => {
 		// update the tree state right away
 		setExcludedIds((prev) => [...prev, ...selectedResources.map((r) => r.id)])
