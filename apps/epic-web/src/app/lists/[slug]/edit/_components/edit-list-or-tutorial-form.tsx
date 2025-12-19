@@ -90,7 +90,6 @@ export function EditListOrTutorialForm({
 						slug: tutorial?.fields?.slug ?? '',
 						body: tutorial?.fields?.body ?? null,
 						github: tutorial?.fields?.github ?? null,
-						gitpod: tutorial?.fields?.gitpod ?? null,
 						state: tutorial?.fields?.state ?? 'draft',
 						visibility: tutorial?.fields?.visibility ?? 'unlisted',
 						coverImage: tutorial?.fields?.coverImage ?? null,
