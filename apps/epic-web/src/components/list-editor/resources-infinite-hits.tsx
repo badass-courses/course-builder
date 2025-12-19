@@ -20,7 +20,7 @@ export function ResourcesInfiniteHits({
 	updateTreeState: React.ActionDispatch<[action: TreeAction]>
 }) {
 	const { items, showMore, isLastPage } = useInfiniteHits<TypesenseResource>({})
-	const { refresh } = useInstantSearch()
+	const { refresh, status } = useInstantSearch()
 
 	const {
 		selectedResources,
@@ -28,7 +28,17 @@ export function ResourcesInfiniteHits({
 		setIsLoading,
 		isLoading,
 		setExcludedIds,
+		excludedIds,
 	} = useSelection()
+
+	// Log search results when they change
+	const prevItemsLengthRef = React.useRef(items.length)
+	const prevStatusRef = React.useRef(status)
+
+	React.useEffect(() => {
+		const itemsChanged = prevItemsLengthRef.current !== items.length
+		const statusChanged = prevStatusRef.current !== status
+	}, [items.length, status, isLastPage])
 
 	const handleBulkAdd = async () => {
 		// update the tree state right away
@@ -106,25 +116,51 @@ export function ResourcesInfiniteHits({
 			<div className="border-b px-5 pb-4">
 				<SearchBox className="mb-0 mt-1" />
 			</div>
-			<ul className="divide-y">
-				{items.map((item) => (
-					<Hit
-						key={item.id}
-						updateTreeState={updateTreeState}
-						listId={list.id}
-						hit={item}
-					/>
-				))}
-			</ul>
-			{!isLastPage && (
-				<Button
-					variant="ghost"
-					onClick={showMore}
-					disabled={isLastPage}
-					className="font-semibold"
-				>
-					Show More
-				</Button>
+			{status === 'loading' ? (
+				<div className="flex items-center justify-center py-8">
+					<Spinner className="h-6 w-6" />
+					<span className="text-muted-foreground ml-2 text-sm">Loading...</span>
+				</div>
+			) : status === 'error' ? (
+				<div className="px-5 py-8 text-center">
+					<p className="text-destructive text-sm font-semibold">Search Error</p>
+					<p className="text-muted-foreground mt-2 text-sm">
+						Unable to connect to search service. Please check your Typesense
+						configuration.
+					</p>
+					<p className="text-muted-foreground mt-1 text-xs">
+						Check console for details.
+					</p>
+				</div>
+			) : items.length === 0 ? (
+				<div className="px-5 py-8 text-center">
+					<p className="text-muted-foreground text-sm">
+						No resources found. Try adjusting your search or filters.
+					</p>
+				</div>
+			) : (
+				<>
+					<ul className="divide-y">
+						{items.map((item) => (
+							<Hit
+								key={item.id}
+								updateTreeState={updateTreeState}
+								listId={list.id}
+								hit={item}
+							/>
+						))}
+					</ul>
+					{!isLastPage && (
+						<Button
+							variant="ghost"
+							onClick={showMore}
+							disabled={isLastPage}
+							className="font-semibold"
+						>
+							Show More
+						</Button>
+					)}
+				</>
 			)}
 		</div>
 	)

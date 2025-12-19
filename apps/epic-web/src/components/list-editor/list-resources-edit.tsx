@@ -3,13 +3,7 @@ import { useReducer } from 'react'
 import { CreatePostModal } from '@/app/posts/_components/create-post-modal'
 import { addPostToList } from '@/lib/lists-query'
 import { track } from '@/utils/analytics'
-import {
-	TYPESENSE_COLLECTION_NAME,
-	typesenseInstantsearchAdapter,
-} from '@/utils/typesense-instantsearch-adapter'
 import { Plus, Search } from 'lucide-react'
-import { useInstantSearch } from 'react-instantsearch'
-import { InstantSearchNext } from 'react-instantsearch-nextjs'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
 import {
@@ -28,8 +22,7 @@ import {
 	createListEditorConfig,
 	type ListEditorConfig,
 } from './list-editor-config'
-import { ResourcesInfiniteHits } from './resources-infinite-hits'
-import SearchConfig from './search-config'
+import { ResourcesDatabaseSearch } from './resources-database-search'
 import { SelectionProvider } from './selection-context'
 
 /**
@@ -92,38 +85,60 @@ export default function ListResourcesEdit({
 	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
 	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
 		React.useState(false)
-	const initialData = [
-		...(list.resources
-			? list.resources.map((resourceItem) => {
-					if (!resourceItem.resource) {
-						throw new Error('resourceItem.resource is required')
-					}
-					const resources = resourceItem.resource.resources ?? []
-					// Check if the resource is a section type to properly handle expansion
-					const isSection = resourceItem.resource.type === 'section'
-					return {
-						id: resourceItem.resource.id,
-						label: resourceItem.resource.fields?.title,
-						type: resourceItem.resource.type,
-						// For section types, we want to make sure they're initially expanded
-						isOpen: isSection && resources.length > 0 ? true : false,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
-						itemData: resourceItem as any,
-					}
-				})
-			: []),
-	]
+
+	// Safely build initial data from list resources
+	const initialData = React.useMemo(() => {
+		if (!list?.resources || !Array.isArray(list.resources)) {
+			return []
+		}
+
+		const items = list.resources
+			.map((resourceItem) => {
+				if (!resourceItem?.resource) {
+					console.warn('Resource item missing resource property:', resourceItem)
+					return null
+				}
+
+				const resources = resourceItem.resource.resources ?? []
+				// Check if the resource is a section type to properly handle expansion
+				const isSection = resourceItem.resource.type === 'section'
+
+				const children = resources
+					.filter((childItem: any) => childItem?.resource)
+					.map((childItem: any) => {
+						if (!childItem.resource) {
+							console.warn(
+								'Child resource item missing resource property:',
+								childItem,
+							)
+							return null
+						}
+						return {
+							id: childItem.resource.id,
+							label: childItem.resource.fields?.title,
+							type: childItem.resource.type,
+							children: [],
+							itemData: childItem as any,
+						}
+					})
+					.filter(
+						(item: any): item is NonNullable<typeof item> => item !== null,
+					)
+
+				return {
+					id: resourceItem.resource.id,
+					label: resourceItem.resource.fields?.title,
+					type: resourceItem.resource.type,
+					// For section types, we want to make sure they're initially expanded
+					isOpen: isSection && resources.length > 0 ? true : false,
+					children,
+					itemData: resourceItem as any,
+				}
+			})
+			.filter((item): item is NonNullable<typeof item> => item !== null)
+
+		return items
+	}, [list?.resources])
 	const [state, updateState] = useReducer(
 		treeStateReducer,
 		initialData,
@@ -131,14 +146,13 @@ export default function ListResourcesEdit({
 	)
 
 	function TreeWithSearch() {
-		const { refresh } = useInstantSearch()
 		return (
 			<Tree
 				state={state}
 				updateState={updateState}
 				rootResourceId={list.id}
 				rootResource={list}
-				onRefresh={() => refresh()}
+				onRefresh={() => {}}
 				showTierSelector={config.selection.showTierSelector}
 				onResourceUpdate={config.onResourceUpdate}
 			/>
@@ -182,7 +196,7 @@ export default function ListResourcesEdit({
 				itemData: {
 					resourceId: resource.id,
 					resourceOfId: list.id,
-					position: result.position,
+					position: result?.position ?? 0,
 					metadata: {
 						tier: 'standard',
 					},
@@ -197,69 +211,50 @@ export default function ListResourcesEdit({
 
 	return (
 		<SelectionProvider list={list}>
-			<InstantSearchNext
-				searchClient={typesenseInstantsearchAdapter.searchClient}
-				indexName={TYPESENSE_COLLECTION_NAME}
-				routing={false}
-				onStateChange={({ uiState, setUiState }) => {
-					setUiState(uiState)
-				}}
-				initialUiState={{
-					[TYPESENSE_COLLECTION_NAME as string]: {
-						query: '',
-						refinementList: {
-							type: ['post', 'lesson', 'section', 'article'],
-						},
-						configure: {},
-					},
-				}}
-				future={{ preserveSharedStateOnUnmount: true }}
-			>
-				{config.selection.searchConfig || <SearchConfig />}
-				<div className="border-b pr-2 text-sm font-medium">
-					<div className="flex items-center justify-between border-b py-3 pl-5 pr-2">
-						{config.title || <DynamicTitle />}
-						<div className="flex items-center gap-2">
-							<Button
-								className="gap-1"
-								variant="outline"
-								onClick={() => {
-									track('create_post_button_clicked', {
-										source: 'search_modal',
-										listId: list.id,
-									})
-									setIsSearchModalOpen(false)
-									setIsCreatePostModalOpen(true)
-								}}
-							>
-								<Plus className="text-primary w-4" />
-								Create New
-							</Button>
-							<Dialog
-								open={isSearchModalOpen}
-								onOpenChange={setIsSearchModalOpen}
-							>
-								<DialogTrigger asChild>
-									<Button variant="outline" className="gap-2">
-										<Search className="text-primary w-4" /> Add to list
-									</Button>
-								</DialogTrigger>
-								<DialogContent className="w-full max-w-3xl overflow-y-auto py-5 sm:max-h-[80vh]">
-									<DialogTitle className="sr-only">Add Resources</DialogTitle>
-									<ResourcesInfiniteHits
-										updateTreeState={updateState}
-										list={list}
-									/>
-								</DialogContent>
-							</Dialog>
-						</div>
-					</div>
-					<TreeWithSearch />
-					<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
-						Body
+			<div className="border-b pr-2 text-sm font-medium">
+				<div className="flex items-center justify-between border-b py-3 pl-5 pr-2">
+					{config.title || <DynamicTitle />}
+					<div className="flex items-center gap-2">
+						<Button
+							className="gap-1"
+							variant="outline"
+							onClick={() => {
+								track('create_post_button_clicked', {
+									source: 'search_modal',
+									listId: list.id,
+								})
+								setIsSearchModalOpen(false)
+								setIsCreatePostModalOpen(true)
+							}}
+						>
+							<Plus className="text-primary w-4" />
+							Create New
+						</Button>
+						<Dialog
+							open={isSearchModalOpen}
+							onOpenChange={setIsSearchModalOpen}
+						>
+							<DialogTrigger asChild>
+								<Button variant="outline" className="gap-2">
+									<Search className="text-primary w-4" /> Add to list
+								</Button>
+							</DialogTrigger>
+							<DialogContent className="w-full max-w-5xl overflow-y-auto py-5 sm:max-h-[80vh]">
+								<DialogTitle className="sr-only">Add Resources</DialogTitle>
+								<ResourcesDatabaseSearch
+									updateTreeState={updateState}
+									list={list}
+									availableTypes={config.selection.availableResourceTypes}
+								/>
+							</DialogContent>
+						</Dialog>
 					</div>
 				</div>
-			</InstantSearchNext>
+				<TreeWithSearch />
+				<div className="mb-3 mt-5 flex border-t px-5 pt-3 text-lg font-bold">
+					Body
+				</div>
+			</div>
 			<CreatePostModal
 				title={config.selection.createResourceTitle}
 				open={isCreatePostModalOpen}

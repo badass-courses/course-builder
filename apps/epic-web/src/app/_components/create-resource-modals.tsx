@@ -8,7 +8,7 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 import { CreatePostModal } from '../posts/_components/create-post-modal'
 
 /**
- * Client component wrapper for creating tips and articles with proper redirect handling.
+ * Client component wrapper for creating tips, articles, and tutorials with proper redirect handling.
  * Navigates to the edit page after resource creation completes.
  */
 export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
@@ -54,6 +54,16 @@ export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
 				availableResourceTypes={['article']}
 				defaultResourceType="article"
 				topLevelResourceTypes={['post']}
+				onResourceCreated={handleResourceCreated}
+			/>
+			<CreatePostModal
+				contributorSelectable={isAdmin}
+				triggerLabel="New Tutorial"
+				title="New Tutorial"
+				availableResourceTypes={['tutorial']}
+				defaultResourceType="tutorial"
+				topLevelResourceTypes={['tutorial']}
+				uploadEnabled={false}
 				onResourceCreated={handleResourceCreated}
 			/>
 		</>
