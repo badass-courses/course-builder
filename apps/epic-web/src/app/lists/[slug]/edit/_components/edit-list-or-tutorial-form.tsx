@@ -72,30 +72,177 @@ export function EditListOrTutorialForm({
 }) {
 	const router = useRouter()
 
-	if (resourceType === 'tutorial') {
-		const TutorialForm = withResourceForm<
-			ContentResourceWithFields,
-			typeof ModuleSchema
-		>(BaseTutorialForm, {
-			resourceType: 'tutorial',
-			schema: ModuleSchema,
-			defaultValues: (resource) => {
-				const tutorial = resource as unknown as Module
-				return {
-					id: tutorial?.id ?? '',
-					type: 'tutorial',
-					fields: {
-						title: tutorial?.fields?.title ?? '',
-						description: tutorial?.fields?.description ?? '',
-						slug: tutorial?.fields?.slug ?? '',
-						body: tutorial?.fields?.body ?? null,
-						github: tutorial?.fields?.github ?? null,
-						state: tutorial?.fields?.state ?? 'draft',
-						visibility: tutorial?.fields?.visibility ?? 'unlisted',
-						coverImage: tutorial?.fields?.coverImage ?? null,
+	const TutorialForm = React.useMemo(() => {
+		if (resourceType !== 'tutorial') return null
+		return withResourceForm<ContentResourceWithFields, typeof ModuleSchema>(
+			BaseTutorialForm,
+			{
+				resourceType: 'tutorial',
+				schema: ModuleSchema,
+				defaultValues: (resource) => {
+					const tutorial = resource as unknown as Module
+					return {
+						id: tutorial?.id ?? '',
+						type: 'tutorial',
+						fields: {
+							title: tutorial?.fields?.title ?? '',
+							description: tutorial?.fields?.description ?? '',
+							slug: tutorial?.fields?.slug ?? '',
+							body: tutorial?.fields?.body ?? null,
+							github: tutorial?.fields?.github ?? null,
+							state: tutorial?.fields?.state ?? 'draft',
+							visibility: tutorial?.fields?.visibility ?? 'unlisted',
+							coverImage: tutorial?.fields?.coverImage ?? null,
+						},
+						resources: tutorial?.resources ?? [],
+						resourceProducts: tutorial?.resourceProducts ?? null,
+					}
+				},
+				getResourcePath: (slug) => `/${slug}`,
+				updateResource: async (resource) => {
+					if (!resource.id || !resource.fields) {
+						throw new Error('Invalid resource data')
+					}
+
+					const result = await updateTutorial({
+						id: resource.id,
+						type: 'tutorial',
+						fields: {
+							title: resource.fields.title ?? '',
+							description: resource.fields.description ?? null,
+							slug: resource.fields.slug ?? '',
+							body: resource.fields.body ?? null,
+							github: resource.fields.github ?? null,
+							state: resource.fields.state ?? 'draft',
+							visibility: resource.fields.visibility ?? 'unlisted',
+							coverImage: resource.fields.coverImage ?? null,
+						},
+						resources: resource.resources ?? [],
+					} as Module)
+
+					if (!result) {
+						throw new Error('Failed to update tutorial')
+					}
+
+					return {
+						...resource,
+						...result,
+						type: 'tutorial',
+						fields: {
+							...resource.fields,
+							...(result.fields || {}),
+						},
+					} as ContentResourceWithFields
+				},
+				onSave: async (resource, hasNewSlug) => {
+					if (hasNewSlug) {
+						router.push(`/lists/${resource.fields?.slug}/edit`)
+					}
+				},
+				bodyPanelConfig: {
+					showListResources: true,
+					listEditorConfig: {
+						title: (
+							<div>
+								<span className="flex text-lg font-bold">Lessons</span>
+								<span className="text-muted-foreground mt-2 font-normal">
+									Add and organize lessons in this tutorial.
+								</span>
+							</div>
+						),
+						showTierSelector: false,
+						onResourceUpdate: async (itemId, data) => {
+							await updateListItemFields(itemId, data)
+						},
 					},
-					resources: tutorial?.resources ?? [],
-					resourceProducts: tutorial?.resourceProducts ?? null,
+				},
+				customTools: [
+					{
+						id: 'images',
+						icon: () => (
+							<ImagePlusIcon
+								strokeWidth={1.5}
+								size={24}
+								width={18}
+								height={18}
+							/>
+						),
+						toolComponent: (
+							<ImageResourceUploader
+								key={'image-uploader'}
+								belongsToResourceId={resource.id}
+								uploadDirectory={`tutorials`}
+							/>
+						),
+					},
+				],
+				createResourceConfig: {
+					title: 'Add Content',
+					availableTypes: [
+						{ type: 'lesson' },
+						{ type: 'section' },
+						{ type: 'post', postTypes: ['article'] },
+						{ type: 'post', postTypes: ['tip'] },
+					],
+					defaultType: { type: 'lesson' },
+				},
+			},
+		)
+	}, [resource.id, resourceType])
+
+	const ListForm = React.useMemo(() => {
+		if (resourceType !== 'list') return null
+		return withResourceForm<List, typeof ListSchema>(BaseListForm, {
+			resourceType: 'list',
+			schema: ListSchema,
+			customTools: [
+				{
+					id: 'images',
+					icon: () => (
+						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<ImageResourceUploader
+							key={'image-uploader'}
+							belongsToResourceId={resource.id}
+							uploadDirectory={`lists`}
+						/>
+					),
+				},
+				{
+					id: 'videos',
+					icon: () => (
+						<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+				},
+			],
+			defaultValues: (resource) => {
+				const list = resource as List
+				return {
+					id: list?.id ?? '',
+					type: 'list',
+					organizationId: list?.organizationId ?? null,
+					createdAt: list?.createdAt ?? null,
+					updatedAt: list?.updatedAt ?? null,
+					deletedAt: list?.deletedAt ?? null,
+					createdById: list?.createdById ?? '',
+					createdByOrganizationMembershipId:
+						list?.createdByOrganizationMembershipId ?? null,
+					fields: {
+						title: list?.fields?.title ?? '',
+						description: list?.fields?.description ?? '',
+						slug: list?.fields?.slug ?? '',
+						type: list?.fields?.type ?? 'nextUp',
+						visibility: list?.fields?.visibility ?? 'public',
+						state: list?.fields?.state ?? 'draft',
+						body: list?.fields?.body ?? null,
+						summary: list?.fields?.summary ?? null,
+						image: list?.fields?.image ?? null,
+						github: list?.fields?.github ?? null,
+					},
+					resources: list?.resources ?? [],
+					tags: list?.tags ?? [],
 				}
 			},
 			getResourcePath: (slug) => `/${slug}`,
@@ -104,35 +251,35 @@ export function EditListOrTutorialForm({
 					throw new Error('Invalid resource data')
 				}
 
-				const result = await updateTutorial({
-					id: resource.id,
-					type: 'tutorial',
-					fields: {
-						title: resource.fields.title ?? '',
-						description: resource.fields.description ?? null,
-						slug: resource.fields.slug ?? '',
-						body: resource.fields.body ?? null,
-						github: resource.fields.github ?? null,
-						state: resource.fields.state ?? 'draft',
-						visibility: resource.fields.visibility ?? 'unlisted',
-						coverImage: resource.fields.coverImage ?? null,
+				const result = await updateList(
+					{
+						id: resource.id,
+						fields: {
+							title: resource.fields.title ?? '',
+							body: resource.fields.body ?? null,
+							slug: resource.fields.slug ?? '',
+							type: resource.fields.type ?? 'nextUp',
+							description: resource.fields.description ?? '',
+							state: resource.fields.state ?? 'draft',
+							visibility: resource.fields.visibility ?? 'unlisted',
+							image: resource.fields.image ?? null,
+							github: resource.fields.github ?? null,
+						},
+						resources: resource.resources ?? [],
+						tags: resource.tags ?? [],
 					},
-					resources: resource.resources ?? [],
-				} as Module)
+					'save',
+				)
 
 				if (!result) {
-					throw new Error('Failed to update tutorial')
+					throw new Error('Failed to update list')
 				}
 
 				return {
 					...resource,
 					...result,
-					type: 'tutorial',
-					fields: {
-						...resource.fields,
-						...(result.fields || {}),
-					},
-				} as ContentResourceWithFields
+					type: 'list',
+				} as List
 			},
 			onSave: async (resource, hasNewSlug) => {
 				if (hasNewSlug) {
@@ -144,9 +291,9 @@ export function EditListOrTutorialForm({
 				listEditorConfig: {
 					title: (
 						<div>
-							<span className="flex text-lg font-bold">Lessons</span>
+							<span className="flex text-lg font-bold">Resources</span>
 							<span className="text-muted-foreground mt-2 font-normal">
-								Add and organize lessons in this tutorial.
+								Add and organize resources in this list.
 							</span>
 						</div>
 					),
@@ -156,33 +303,20 @@ export function EditListOrTutorialForm({
 					},
 				},
 			},
-			customTools: [
-				{
-					id: 'images',
-					icon: () => (
-						<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-					),
-					toolComponent: (
-						<ImageResourceUploader
-							key={'image-uploader'}
-							belongsToResourceId={resource.id}
-							uploadDirectory={`tutorials`}
-						/>
-					),
-				},
-			],
 			createResourceConfig: {
 				title: 'Add Content',
 				availableTypes: [
+					{ type: 'post', postTypes: ['article'] },
 					{ type: 'lesson' },
 					{ type: 'section' },
-					{ type: 'post', postTypes: ['article'] },
-					{ type: 'post', postTypes: ['tip'] },
 				],
-				defaultType: { type: 'lesson' },
+				defaultType: { type: 'post', postType: 'article' },
 			},
 		})
+	}, [resource.id, resourceType])
 
+	if (resourceType === 'tutorial') {
+		if (!TutorialForm) return null
 		return (
 			<TutorialForm
 				resource={resource as unknown as ContentResourceWithFields}
@@ -190,128 +324,10 @@ export function EditListOrTutorialForm({
 		)
 	}
 
-	// Handle list - matches AI Hero's implementation
-	const ListForm = withResourceForm<List, typeof ListSchema>(BaseListForm, {
-		resourceType: 'list',
-		schema: ListSchema,
-		customTools: [
-			{
-				id: 'images',
-				icon: () => (
-					<ImagePlusIcon strokeWidth={1.5} size={24} width={18} height={18} />
-				),
-				toolComponent: (
-					<ImageResourceUploader
-						key={'image-uploader'}
-						belongsToResourceId={resource.id}
-						uploadDirectory={`lists`}
-					/>
-				),
-			},
-			{
-				id: 'videos',
-				icon: () => (
-					<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
-				),
-				toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
-			},
-		],
-		defaultValues: (resource) => {
-			const list = resource as List
-			return {
-				id: list?.id ?? '',
-				type: 'list',
-				organizationId: list?.organizationId ?? null,
-				createdAt: list?.createdAt ?? null,
-				updatedAt: list?.updatedAt ?? null,
-				deletedAt: list?.deletedAt ?? null,
-				createdById: list?.createdById ?? '',
-				createdByOrganizationMembershipId:
-					list?.createdByOrganizationMembershipId ?? null,
-				fields: {
-					title: list?.fields?.title ?? '',
-					description: list?.fields?.description ?? '',
-					slug: list?.fields?.slug ?? '',
-					type: list?.fields?.type ?? 'nextUp',
-					visibility: list?.fields?.visibility ?? 'public',
-					state: list?.fields?.state ?? 'draft',
-					body: list?.fields?.body ?? null,
-					summary: list?.fields?.summary ?? null,
-					image: list?.fields?.image ?? null,
-					github: list?.fields?.github ?? null,
-				},
-				resources: list?.resources ?? [],
-				tags: list?.tags ?? [],
-			}
-		},
-		getResourcePath: (slug) => `/${slug}`,
-		updateResource: async (resource) => {
-			if (!resource.id || !resource.fields) {
-				throw new Error('Invalid resource data')
-			}
+	if (resourceType === 'list') {
+		if (!ListForm) return null
+		return <ListForm resource={resource as List} />
+	}
 
-			const result = await updateList(
-				{
-					id: resource.id,
-					fields: {
-						title: resource.fields.title ?? '',
-						body: resource.fields.body ?? null,
-						slug: resource.fields.slug ?? '',
-						type: resource.fields.type ?? 'nextUp',
-						description: resource.fields.description ?? '',
-						state: resource.fields.state ?? 'draft',
-						visibility: resource.fields.visibility ?? 'unlisted',
-						image: resource.fields.image ?? null,
-						github: resource.fields.github ?? null,
-					},
-					resources: resource.resources ?? [],
-					tags: resource.tags ?? [],
-				},
-				'save',
-			)
-
-			if (!result) {
-				throw new Error('Failed to update list')
-			}
-
-			return {
-				...resource,
-				...result,
-				type: 'list',
-			} as List
-		},
-		onSave: async (resource, hasNewSlug) => {
-			if (hasNewSlug) {
-				router.push(`/lists/${resource.fields?.slug}/edit`)
-			}
-		},
-		bodyPanelConfig: {
-			showListResources: true,
-			listEditorConfig: {
-				title: (
-					<div>
-						<span className="flex text-lg font-bold">Resources</span>
-						<span className="text-muted-foreground mt-2 font-normal">
-							Add and organize resources in this list.
-						</span>
-					</div>
-				),
-				showTierSelector: false,
-				onResourceUpdate: async (itemId, data) => {
-					await updateListItemFields(itemId, data)
-				},
-			},
-		},
-		createResourceConfig: {
-			title: 'Add Content',
-			availableTypes: [
-				{ type: 'post', postTypes: ['article'] },
-				{ type: 'lesson' },
-				{ type: 'section' },
-			],
-			defaultType: { type: 'post', postType: 'article' },
-		},
-	})
-
-	return <ListForm resource={resource as List} />
+	return null
 }
