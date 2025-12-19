@@ -277,20 +277,6 @@ export const PostMetadataFormFields: React.FC<{
 					</FormItem>
 				)}
 			/>
-			<FormField
-				control={form.control}
-				name="fields.gitpod"
-				render={({ field }) => (
-					<FormItem className="px-5">
-						<FormLabel className="text-lg font-bold">Gitpod</FormLabel>
-						<FormDescription>
-							Gitpod link to start a new workspace with the post.
-						</FormDescription>
-						<Input {...field} value={field.value ?? ''} />
-						<FormMessage />
-					</FormItem>
-				)}
-			/>
 		</>
 	)
 }

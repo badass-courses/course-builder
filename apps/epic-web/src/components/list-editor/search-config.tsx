@@ -13,14 +13,10 @@ import { useSelection } from './selection-context'
  */
 export default function SearchConfig() {
 	const { excludedIds } = useSelection()
-	return (
-		<Configure
-			hitsPerPage={20}
-			filters={
-				excludedIds.length
-					? `(type:post || type:article || type:lesson || type:section || type:list || type:workshop || type:tutorial) && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
-					: '(type:post || type:article || type:lesson || type:section || type:list || type:workshop || type:tutorial)'
-			}
-		/>
-	)
+
+	const filters = excludedIds.length
+		? `(type:post || type:article || type:tip || type:lesson || type:section || type:list || type:workshop || type:videoResource) && ${excludedIds.map((id) => `id:!=${id}`).join(' && ')}`
+		: '(type:post || type:article || type:tip || type:lesson || type:section || type:list || type:workshop || type:videoResource)'
+
+	return <Configure hitsPerPage={20} filters={filters} />
 }
