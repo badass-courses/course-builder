@@ -10,6 +10,7 @@ import { getCohort } from '@/lib/cohorts-query'
 import { getLoyaltyCouponForUser } from '@/lib/coupons-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
+import { userHasEntitlementForProduct } from '@/lib/user-has-entitlement-for-product'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { count, eq } from 'drizzle-orm'
@@ -128,6 +129,17 @@ export async function PricingWidgetServer({
 						existingPurchase: existingPurchase,
 					}
 				: {}),
+		}
+	} else if (user && !purchaseForProduct) {
+		// Check if user has entitlements for this product
+		// If they do, treat them as if they have a purchase
+		const hasEntitlement = await userHasEntitlementForProduct(user.id, product)
+
+		if (hasEntitlement) {
+			productProps = {
+				...baseProps,
+				hasPurchasedCurrentProduct: true,
+			}
 		}
 	}
 
