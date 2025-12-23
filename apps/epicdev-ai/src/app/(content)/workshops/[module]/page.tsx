@@ -118,6 +118,10 @@ export default async function ModulePage(props: Props) {
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
+	const product = await getCachedWorkshopProduct(params.module)
+	// Check if this is a multi-workshop product
+	const isMultiWorkshopProduct =
+		params.module === 'epic-mcp-from-scratch-to-production'
 	const Links = ({
 		children,
 		className,
@@ -135,12 +139,14 @@ export default async function ModulePage(props: Props) {
 				<div className="flex h-full w-full flex-wrap items-center justify-center gap-2 md:justify-start">
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
-						<StartLearningWorkshopButton
-							productType={product?.type}
-							abilityLoader={abilityLoader}
-							moduleSlug={params.module}
-							workshop={workshop}
-						/>
+						{!isMultiWorkshopProduct && (
+							<StartLearningWorkshopButton
+								productType={product?.type}
+								abilityLoader={abilityLoader}
+								moduleSlug={params.module}
+								workshop={workshop}
+							/>
+						)}
 						<WorkshopGitHubRepoLink
 							abilityLoader={abilityLoader}
 							githubUrl={workshop.fields?.github}
@@ -174,11 +180,6 @@ export default async function ModulePage(props: Props) {
 			</div>
 		)
 	}
-
-	const product = await getCachedWorkshopProduct(params.module)
-	// Check if this is a multi-workshop product
-	const isMultiWorkshopProduct =
-		params.module === 'epic-mcp-from-scratch-to-production'
 	const allWorkshopsInProduct = isMultiWorkshopProduct
 		? await getAllWorkshopsInProduct(params.module)
 		: []
