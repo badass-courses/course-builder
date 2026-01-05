@@ -1,9 +1,16 @@
 /**
- * Logger interface for search indexing
+ * Logger interface for search indexing.
+ * Flexible to work with various logger implementations.
  */
 export interface SearchLogger {
-	error: (event: string, data?: Record<string, unknown>) => Promise<void> | void
-	info: (event: string, data?: Record<string, unknown>) => Promise<void> | void
+	error: (
+		event: string,
+		data?: Record<string, unknown> | Record<string, any>,
+	) => Promise<void> | void
+	info: (
+		event: string,
+		data?: Record<string, unknown> | Record<string, any>,
+	) => Promise<void> | void
 }
 
 /**

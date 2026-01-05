@@ -1,18 +1,26 @@
 'use server'
 
 /**
- * Logger interface for authorization logging
+ * Logger interface for authorization logging.
+ * Flexible to work with various logger implementations.
  */
 export interface AuthLogger {
-	error: (event: string, data?: Record<string, unknown>) => Promise<void> | void
-	info: (event: string, data?: Record<string, unknown>) => Promise<void> | void
+	error: (
+		event: string,
+		data?: Record<string, unknown> | Record<string, any>,
+	) => Promise<void> | void
+	info: (
+		event: string,
+		data?: Record<string, unknown> | Record<string, any>,
+	) => Promise<void> | void
 }
 
 /**
- * Ability interface (compatible with CASL)
+ * Ability interface (compatible with CASL).
+ * Uses generic types to match various CASL implementations.
  */
 export interface Ability {
-	can: (action: string, subject: string | object) => boolean
+	can: (action: string, subject: unknown, field?: string) => boolean
 }
 
 /**
