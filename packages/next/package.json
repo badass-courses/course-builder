@@ -21,12 +21,17 @@
 		"*.js",
 		"lib",
 		"providers",
+		"server",
 		"src"
 	],
 	"exports": {
 		".": {
 			"types": "./index.d.ts",
 			"import": "./index.js"
+		},
+		"./server": {
+			"types": "./server/index.d.ts",
+			"import": "./server/index.js"
 		}
 	},
 	"private": false,
@@ -34,7 +39,9 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"@axiomhq/js": "^1.0.0",
 		"@coursebuilder/core": "1.1.0",
+		"@upstash/redis": "^1.34.4",
 		"inngest": "3.35.0"
 	},
 	"devDependencies": {

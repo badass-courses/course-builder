@@ -1,3 +1,3 @@
-import { Redis } from '@upstash/redis'
+import { createRedisClient } from '@coursebuilder/next/server'
 
-export const redis = Redis.fromEnv()
+export const redis = createRedisClient()
