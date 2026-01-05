@@ -13,6 +13,7 @@ import {
 	type SearchLogger,
 } from '@coursebuilder/next/query'
 
+import type { Lesson } from './lessons'
 import type { Post } from './posts'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -61,4 +62,22 @@ export const postSearchConfig = createSearchConfig<Post>({
 	},
 	logger: searchLogger,
 	eventPrefix: 'post',
+})
+
+/**
+ * Search indexing configuration for lessons.
+ * Uses the same TypeSense functions as posts (lessons are indexed in the same collection).
+ */
+export const lessonSearchConfig = createSearchConfig<Lesson>({
+	upsert: async (lesson: Lesson, action: SearchAction) => {
+		// TypeSense upsert doesn't handle 'delete' action
+		if (action !== 'delete') {
+			await upsertPostToTypeSense(lesson, action)
+		}
+	},
+	delete: async (lessonId: string) => {
+		await deletePostInTypeSense(lessonId)
+	},
+	logger: searchLogger,
+	eventPrefix: 'lesson',
 })

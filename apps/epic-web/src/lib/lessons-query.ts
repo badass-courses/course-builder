@@ -13,7 +13,6 @@ import {
 	type LessonUpdate,
 	type NewLessonInput,
 } from '@/lib/lessons'
-import { upsertPostToTypeSense } from '@/lib/typesense-query'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
@@ -29,6 +28,7 @@ import {
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import {
 	createCachedQuery,
+	indexDocument,
 	parseArrayWithSchema,
 	parseWithSchema,
 	revalidateTag,
@@ -36,6 +36,7 @@ import {
 import { last } from '@coursebuilder/nodash'
 
 import { Lesson } from './lessons'
+import { lessonSearchConfig } from './query-config'
 
 const redis = Redis.fromEnv()
 
@@ -342,13 +343,11 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 		fields: updatedLesson.fields,
 	})
 
-	// Index the lesson in Typesense using the existing post indexing function
-	try {
-		await upsertPostToTypeSense(updatedLesson, 'save')
-		console.log('🔍 Lesson updated in Typesense')
-	} catch (error) {
-		console.log('❌ Error updating lesson in Typesense', error)
-	}
+	// Index the lesson in Typesense
+	await indexDocument(lessonSearchConfig, updatedLesson, {
+		action: 'save',
+		eventName: 'lesson.update',
+	})
 
 	if (revalidate) {
 		revalidateTag('lesson', 'max')
@@ -447,18 +446,10 @@ export async function writeNewLessonToDatabase(
 			})
 
 			// Step 4: Index the lesson in Typesense (outside transaction since it's a separate system)
-			try {
-				console.log('🔍 Indexing lesson in Typesense')
-				await upsertPostToTypeSense(lesson, 'save')
-				console.log('✅ Lesson indexed in Typesense')
-			} catch (error) {
-				console.error('⚠️ Failed to index lesson in Typesense:', {
-					error,
-					lessonId: lesson.id,
-					stack: (error as Error).stack,
-				})
-				// Continue even if TypeSense indexing fails
-			}
+			await indexDocument(lessonSearchConfig, lesson, {
+				action: 'save',
+				eventName: 'lesson.create',
+			})
 
 			return lesson
 		} catch (error) {
@@ -658,25 +649,10 @@ export async function writeLessonUpdateToDatabase(input: {
 	}
 
 	// Index the lesson in Typesense
-	try {
-		console.log('🔍 Upserting lesson to Typesense:', {
-			lessonId: updatedLesson.id,
-			action,
-		})
-		await upsertPostToTypeSense(updatedLesson, action)
-		console.log('✅ Successfully upserted lesson to TypeSense')
-	} catch (error) {
-		console.error(
-			'⚠️ TypeSense indexing failed but continuing with lesson update:',
-			{
-				error,
-				lessonId: updatedLesson.id,
-				action,
-				stack: (error as Error).stack,
-			},
-		)
-		// Don't rethrow - let the lesson update succeed even if TypeSense fails
-	}
+	await indexDocument(lessonSearchConfig, updatedLesson, {
+		action,
+		eventName: `lesson.${action}`,
+	})
 
 	return updatedLesson
 }
