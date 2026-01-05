@@ -33,6 +33,9 @@ import { z } from 'zod'
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 import {
 	createCachedQuery,
+	createSlugOrIdWhere,
+	getContentAccessFilters,
+	indexDocument,
 	parseArrayWithSchema,
 	parseWithSchema,
 	revalidateTag,
@@ -42,6 +45,7 @@ import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
 import { PostOrListSchema, type PostOrList } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
+import { postSearchConfig } from './query-config'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -152,24 +156,18 @@ export async function getPostLists(postId: string): Promise<List[]> {
 
 export async function getPosts(): Promise<Post[]> {
 	const { ability } = await getServerAuthSession()
+	const canEdit = ability.can('update', 'Content')
+	const { visibility, states } = getContentAccessFilters(canEdit)
 
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
-	)
-		? ['public', 'private', 'unlisted']
-		: ['public']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
+	// For listing, non-editors only see public (not unlisted)
+	const listVisibility = canEdit ? visibility : (['public'] as const)
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'post'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`, [
+				...listVisibility,
+			]),
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		orderBy: desc(contentResource.createdAt),
@@ -247,19 +245,10 @@ export async function createPost(input: NewPostInput): Promise<Post> {
 			}
 		}
 
-		try {
-			await upsertPostToTypeSense(post, 'save')
-			await log.info('post.typesense.indexed', {
-				postId: post.id,
-				action: 'save',
-			})
-		} catch (error) {
-			await log.error('post.typesense.index.failed', {
-				error: getErrorMessage(error),
-				stack: getErrorStack(error),
-				postId: post.id,
-			})
-		}
+		await indexDocument(postSearchConfig, post, {
+			action: 'save',
+			eventName: 'post.create',
+		})
 
 		revalidateTag('posts', 'max')
 		return post
@@ -399,24 +388,17 @@ export const getCachedPost = createCachedQuery(getPost, {
 
 export async function getPost(slugOrId: string): Promise<Post | null> {
 	const { ability } = await getServerAuthSession()
-
-	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
-		'update',
-		'Content',
+	const { visibility, states } = getContentAccessFilters(
+		ability.can('update', 'Content'),
 	)
-		? ['public', 'private', 'unlisted']
-		: ['public', 'unlisted']
-	const states: ('draft' | 'published')[] = ability.can('update', 'Content')
-		? ['draft', 'published']
-		: ['published']
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
-			or(
-				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
-				eq(contentResource.id, slugOrId),
-				eq(contentResource.id, `post_${slugOrId.split('~')[1]}`),
-			),
+			createSlugOrIdWhere({
+				slugOrId,
+				table: contentResource,
+				resourceType: 'post',
+			}),
 			eq(contentResource.type, 'post'),
 			inArray(
 				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
