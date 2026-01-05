@@ -4,6 +4,7 @@ import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getSaleBannerData } from '@/lib/sale-banner'
+import { userHasEntitlementForProduct } from '@/lib/user-has-entitlement-for-product'
 import {
 	getCachedWorkshopProduct,
 	getWorkshopProduct,
@@ -109,7 +110,28 @@ export async function WorkshopPricing({
 			)
 
 			if (!purchaseForProduct) {
-				workshopProps = { ...baseProps, defaultCoupon, saleData }
+				// Check if user has entitlements for this product
+				// If they do, treat them as if they have a purchase
+				const hasEntitlement = await userHasEntitlementForProduct(
+					user.id,
+					product,
+				)
+
+				if (hasEntitlement) {
+					const purchasedProductIds =
+						commerceProps?.purchases?.map((purchase) => purchase.productId) ||
+						[]
+					workshopProps = {
+						...baseProps,
+						hasPurchasedCurrentProduct: true,
+						quantityAvailable: product.quantityAvailable,
+						purchasedProductIds,
+						defaultCoupon,
+						saleData,
+					}
+				} else {
+					workshopProps = { ...baseProps, defaultCoupon, saleData }
+				}
 			} else {
 				const { purchase, existingPurchase } =
 					await courseBuilderAdapter.getPurchaseDetails(

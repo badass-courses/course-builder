@@ -17,6 +17,7 @@ import { getCohort } from '@/lib/cohorts-query'
 import { getLoyaltyCouponForUser } from '@/lib/coupons-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getModuleProgressForUser } from '@/lib/progress'
+import { userHasEntitlementForProduct } from '@/lib/user-has-entitlement-for-product'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getProviders, getServerAuthSession } from '@/server/auth'
@@ -188,7 +189,21 @@ export default async function CohortPage(props: {
 			)
 
 			if (!purchaseForProduct) {
-				cohortProps = baseProps
+				// Check if user has entitlements for this product
+				// If they do, treat them as if they have a purchase
+				const hasEntitlement = await userHasEntitlementForProduct(
+					user.id,
+					product,
+				)
+
+				if (hasEntitlement) {
+					cohortProps = {
+						...baseProps,
+						hasPurchasedCurrentProduct: true,
+					}
+				} else {
+					cohortProps = baseProps
+				}
 			} else {
 				const { purchase, existingPurchase } =
 					await courseBuilderAdapter.getPurchaseDetails(
