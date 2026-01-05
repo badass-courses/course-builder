@@ -8198,19 +8198,34 @@ importers:
       '@coursebuilder/core':
         specifier: 1.1.0
         version: link:../core
+      '@coursebuilder/utils-browser':
+        specifier: workspace:*
+        version: link:../utils-browser
       '@upstash/redis':
         specifier: ^1.34.4
         version: 1.34.6
       inngest:
         specifier: 3.35.0
         version: 3.35.0(next@16.0.7)(typescript@5.4.5)
+      next-themes:
+        specifier: ^0.3
+        version: 0.3.0(react-dom@18.3.1)(react@19.2.3)
     devDependencies:
+      '@amplitude/analytics-browser':
+        specifier: ^2.6.1
+        version: 2.13.0
       '@auth/core':
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.10.0)
+      '@mux/mux-player-react':
+        specifier: ^3.8.0
+        version: 3.8.0(@types/react@19.2.7)(react-dom@18.3.1)(react@19.2.3)
+      '@types/react':
+        specifier: 19.2.7
+        version: 19.2.7
       next:
         specifier: 16.0.7
-        version: 16.0.7(@babel/core@7.28.5)(@opentelemetry/api@1.9.0)(@playwright/test@1.51.1)(react-dom@19.2.3)(react@19.2.3)
+        version: 16.0.7(@babel/core@7.28.5)(react-dom@18.3.1)(react@19.2.3)
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@16.0.7)(nodemailer@6.10.0)(react@19.2.3)
@@ -8996,7 +9011,6 @@ packages:
       '@amplitude/plugin-autocapture-browser': 1.1.3
       '@amplitude/plugin-page-view-tracking-browser': 2.3.13
       tslib: 2.8.1
-    dev: false
 
   /@amplitude/analytics-client-common@2.3.12:
     resolution: {integrity: sha512-IXzzkQ+8JE9kioY8tmaKmzhLd5y6/podwdmGmFRkquPqWez5ODYAF2vY/3YhbGLlZZ/Dm4dtawaFx3x9Duu32w==}
@@ -9005,11 +9019,9 @@ packages:
       '@amplitude/analytics-core': 2.7.0
       '@amplitude/analytics-types': 2.9.1
       tslib: 2.8.1
-    dev: false
 
   /@amplitude/analytics-connector@1.6.4:
     resolution: {integrity: sha512-SpIv0IQMNIq6SH3UqFGiaZyGSc7PBZwRdq7lvP0pBxW8i4Ny+8zwI0pV+VMfMHQwWY3wdIbWw5WQphNjpdq1/Q==}
-    dev: false
 
   /@amplitude/analytics-core@1.2.7:
     resolution: {integrity: sha512-SM9jdQ+l2q+hy+DdCQm5vtfOTiI+53c+alSSc7fwiuFnTExllXHf9RUK6kKhw3ky+N2o6yqbo+0OGoepLhNf6w==}
@@ -9022,7 +9034,6 @@ packages:
     resolution: {integrity: sha512-h+JUV08mO4GXqm5ofnO5xvKfwMu4I4At2HcEu+Xv/i82pmMJDuqJyqrgJOVMw13RI+x8K6Jq2ZspFCJfKQn3KQ==}
     dependencies:
       tslib: 2.8.1
-    dev: false
 
   /@amplitude/analytics-node@1.3.8:
     resolution: {integrity: sha512-Dwrh7bl5PTcHmnV8PtvHZTOlIfSfJDe+mf7l/XMiBdQR2kpdpsPAjo1so08Kze+aixWPwMAIDeFCub/QHBGhgA==}
@@ -9039,7 +9050,6 @@ packages:
       '@amplitude/analytics-core': 2.7.0
       '@amplitude/analytics-types': 2.9.1
       tslib: 2.8.1
-    dev: false
 
   /@amplitude/analytics-types@1.3.5:
     resolution: {integrity: sha512-IpncCNTZZ6VoGe4fNwTTZtpi+ZNm3mtsocdbCHtIwmKg2wmOF2E09CAwvyF7mK5aRlMIrSAKQyR3GwraATghSw==}
@@ -9047,7 +9057,6 @@ packages:
 
   /@amplitude/analytics-types@2.9.1:
     resolution: {integrity: sha512-Hw0pgUQCDV6AgvZD8ymBF3mzyBnPrIvXiPxfTNTg/bAkg1h+GVNdJIL6VAXd53kYuO7Lx/vjdhZS54i+RYtgMA==}
-    dev: false
 
   /@amplitude/plugin-autocapture-browser@1.1.3:
     resolution: {integrity: sha512-hsFT/MxsA/Vy0zZCc7gJNNZnT/YHLx884V/OrhKKQafJty+g+zc2nmfLXJ3LG80bEyyGQM2rs5axA9lH4J1SHw==}
@@ -9055,7 +9064,6 @@ packages:
       '@amplitude/analytics-core': 2.7.0
       rxjs: 7.8.2
       tslib: 2.8.1
-    dev: false
 
   /@amplitude/plugin-page-view-tracking-browser@2.3.13:
     resolution: {integrity: sha512-MuXJBHcCFds3pwKSZXR1NiRF4Nf7Z7AaMxx6cLr1Zklu45l8Zg38hYdkmXH66w760/QJT9E7W1efPUmoSRJjXg==}
@@ -9063,7 +9071,6 @@ packages:
       '@amplitude/analytics-client-common': 2.3.12
       '@amplitude/analytics-types': 2.9.1
       tslib: 2.8.1
-    dev: false
 
   /@ampproject/remapping@2.3.0:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -15200,7 +15207,6 @@ packages:
     resolution: {integrity: sha512-0ZEkHdcZ6bS8QtcjFcoJeZxJTpX7qRIledf4q1trMWPznugvtajCjCM2kieK/pzkZj1JM6liDRFs1PJSfVUs2A==}
     dependencies:
       mux-embed: 5.9.0
-    dev: false
 
   /@mux/mux-node@12.8.0(encoding@0.1.13):
     resolution: {integrity: sha512-J7Qe1JGlOWle+5huN27hBcAKujx0xgC8d3qQ1s9emyEETR+ubxlRf/9UOlN+GoPtoMPIDa5fWDRf2LDWzsiBOA==}
@@ -15239,6 +15245,27 @@ packages:
       react-dom: 19.2.3(react@19.2.3)
     dev: false
 
+  /@mux/mux-player-react@3.8.0(@types/react@19.2.7)(react-dom@18.3.1)(react@19.2.3):
+    resolution: {integrity: sha512-c9TKtK9nsSpXOuC1LVLmmHA+Zlpcx4mzgGaA7ZlukrGMfoXWvA90ROSVAAjXRA+UKSHdLIbvNofgG3P6rEE/4Q==}
+    peerDependencies:
+      '@types/react': ^17.0.0 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
+      '@types/react-dom': '*'
+      react: ^17.0.2 || ^17.0.0-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
+      react-dom: ^17.0.2 || ^17.0.2-0 || ^18 || ^18.0.0-0 || ^19 || ^19.0.0-0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@mux/mux-player': 3.8.0(react@19.2.3)
+      '@mux/playback-core': 0.31.2
+      '@types/react': 19.2.7
+      prop-types: 15.8.1
+      react: 19.2.3
+      react-dom: 18.3.1(react@19.2.3)
+    dev: true
+
   /@mux/mux-player@3.8.0(react@19.2.3):
     resolution: {integrity: sha512-2KcJdW4BBX8JDcXpclFKaNBsqpebtaEfTzwm5lPP1Lf6y5OMILvf2tqVCOczurREVFyaEoVD71vL0I5Vvqb1dA==}
     dependencies:
@@ -15248,7 +15275,6 @@ packages:
       player.style: 0.3.0(react@19.2.3)
     transitivePeerDependencies:
       - react
-    dev: false
 
   /@mux/mux-video@0.27.2:
     resolution: {integrity: sha512-VAqSw/3kS/qBzjyFSX3wClIX5Kdk6eXXlhxIJRWlClYvUKGm9ruhd7HzkwZVOJguvUh5QbGoiGWBEW2xkNIXzw==}
@@ -15258,14 +15284,12 @@ packages:
       castable-video: 1.1.11
       custom-media-element: 1.4.5
       media-tracks: 0.3.3
-    dev: false
 
   /@mux/playback-core@0.31.2:
     resolution: {integrity: sha512-bhOVTGAuKCQuDzNOc3XvDq7vsgqy2DAacLP0WdJciUKjfZhs3oA11NbKG7qAN6akPnZVfgn0Jn/sJN8TRjE30A==}
     dependencies:
       hls.js: 1.6.13
       mux-embed: 5.13.0
-    dev: false
 
   /@napi-rs/wasm-runtime@0.2.12:
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -26144,7 +26168,6 @@ packages:
     resolution: {integrity: sha512-LCRTK6oe7SB1SiUQFzZCo6D6gcEzijqBTVIuj3smKpQdesXM18QTbCVqWgh9MfOeQgTx/i9ji5jGcdqNPeWg2g==}
     dependencies:
       custom-media-element: 1.4.5
-    dev: false
 
   /ccount@2.0.1:
     resolution: {integrity: sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==}
@@ -26155,7 +26178,6 @@ packages:
       react: '>=17.0.0'
     dependencies:
       react: 19.2.3
-    dev: false
 
   /chai@4.5.0:
     resolution: {integrity: sha512-RITGBfijLkBddZvnn8jdqoTypxvqbOLYQkGGxXzeFjVHvudaPw0HNFD9x928/eUwYWd2dPCugVqspGALTZZQKw==}
@@ -26954,7 +26976,6 @@ packages:
 
   /custom-media-element@1.4.5:
     resolution: {integrity: sha512-cjrsQufETwxjvwZbYbKBCJNvmQ2++G9AvT45zDi7NXL9k2PdVcs2h0jQz96J6G4TMKRCcEsoJ+QTgQD00Igtjw==}
-    dev: false
 
   /cytoscape-cose-bilkent@4.1.0(cytoscape@3.31.2):
     resolution: {integrity: sha512-wgQlVIUJF13Quxiv5e1gstZ08rnZj2XaLHGoFMYXz7SkNfCDOOteKBE6SYRfA9WxxI/iBc3ajfDoc6hb/MRAHQ==}
@@ -31169,7 +31190,6 @@ packages:
 
   /hls.js@1.6.13:
     resolution: {integrity: sha512-hNEzjZNHf5bFrUNvdS4/1RjIanuJ6szpWNfTaX5I6WfGynWXGT7K/YQLYtemSvFExzeMdgdE4SsyVLJbd5PcZA==}
-    dev: false
 
   /hogan.js@3.0.2:
     resolution: {integrity: sha512-RqGs4wavGYJWE07t35JQccByczmNUXQT0E12ZYV1VKYu5UiAU9lsos/yBAcf840+zrUQQxgVduCR5/B8nNtibg==}
@@ -33657,7 +33677,6 @@ packages:
       ce-la-react: 0.3.1(react@19.2.3)
     transitivePeerDependencies:
       - react
-    dev: false
 
   /media-chrome@4.15.1(react@19.2.3):
     resolution: {integrity: sha512-Hxqr0qQ67ewmRaLJBqe5ayu53txFX+DODb9xBSHgTbw7j+gITGZ4llbPPEmqMlDnatw7IsF+AUh9rJYbpnn4ZQ==}
@@ -33665,11 +33684,9 @@ packages:
       ce-la-react: 0.3.1(react@19.2.3)
     transitivePeerDependencies:
       - react
-    dev: false
 
   /media-tracks@0.3.3:
     resolution: {integrity: sha512-9P2FuUHnZZ3iji+2RQk7Zkh5AmZTnOG5fODACnjhCVveX1McY3jmCRHofIEI+yTBqplz7LXy48c7fQ3Uigp88w==}
-    dev: false
 
   /media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
@@ -34664,11 +34681,9 @@ packages:
 
   /mux-embed@5.13.0:
     resolution: {integrity: sha512-voN+WCsA8S0lRTeu14v7WaWnQMr4f1D6rKzT7Bq1ZtETjnOaIG9EreG7p/SJrHLHHd1WTt0RYtTr4ZqJICcL6Q==}
-    dev: false
 
   /mux-embed@5.9.0:
     resolution: {integrity: sha512-wmunL3uoPhma/tWy8PrDPZkvJpXvSFBwbD3KkC4PG8Ztjfb1X3hRJwGUAQyRz7z99b/ovLm2UTTitrkvStjH4w==}
-    dev: false
 
   /mysql2@3.14.0:
     resolution: {integrity: sha512-8eMhmG6gt/hRkU1G+8KlGOdQi2w+CgtNoD1ksXZq9gQfkfDsX4LHaBwTe1SY0Imx//t2iZA03DFnyYKPinxSRw==}
@@ -34851,6 +34866,16 @@ packages:
       - supports-color
     dev: false
 
+  /next-themes@0.3.0(react-dom@18.3.1)(react@19.2.3):
+    resolution: {integrity: sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18
+      react-dom: ^16.8 || ^17 || ^18
+    dependencies:
+      react: 19.2.3
+      react-dom: 18.3.1(react@19.2.3)
+    dev: false
+
   /next-themes@0.3.0(react-dom@19.2.3)(react@19.2.3):
     resolution: {integrity: sha512-/QHIrsYpd6Kfk7xakK4svpDI5mmXP0gfvCoJdGpZQ2TOrQZmsW0QxjaiLn8wbIKjtm4BTSqLoix4lxYYOnLJ/w==}
     peerDependencies:
@@ -34987,6 +35012,49 @@ packages:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  /next@16.0.7(@babel/core@7.28.5)(react-dom@18.3.1)(react@19.2.3):
+    resolution: {integrity: sha512-3mBRJyPxT4LOxAJI6IsXeFtKfiJUbjCLgvXO02fV8Wy/lIhPvP94Fe7dGhUgHXcQy4sSuYwQNcOLhIfOm0rL0A==}
+    engines: {node: '>=20.9.0'}
+    hasBin: true
+    peerDependencies:
+      '@opentelemetry/api': ^1.1.0
+      '@playwright/test': ^1.51.1
+      babel-plugin-react-compiler: '*'
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      react-dom: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+      sass: ^1.3.0
+    peerDependenciesMeta:
+      '@opentelemetry/api':
+        optional: true
+      '@playwright/test':
+        optional: true
+      babel-plugin-react-compiler:
+        optional: true
+      sass:
+        optional: true
+    dependencies:
+      '@next/env': 16.0.7
+      '@swc/helpers': 0.5.15
+      caniuse-lite: 1.0.30001760
+      postcss: 8.4.31
+      react: 19.2.3
+      react-dom: 18.3.1(react@19.2.3)
+      styled-jsx: 5.1.6(@babel/core@7.28.5)(react@19.2.3)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 16.0.7
+      '@next/swc-darwin-x64': 16.0.7
+      '@next/swc-linux-arm64-gnu': 16.0.7
+      '@next/swc-linux-arm64-musl': 16.0.7
+      '@next/swc-linux-x64-gnu': 16.0.7
+      '@next/swc-linux-x64-musl': 16.0.7
+      '@next/swc-win32-arm64-msvc': 16.0.7
+      '@next/swc-win32-x64-msvc': 16.0.7
+      sharp: 0.34.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+    dev: true
 
   /nlcst-to-string@4.0.0:
     resolution: {integrity: sha512-YKLBCcUYKAg0FNlOBT6aI91qFmSiFKiluk655WzPF+DDMA02qIyy8uiRqI8QXtcFpEvll12LpL5MXqEmAZ+dcA==}
@@ -36057,7 +36125,6 @@ packages:
       media-chrome: 4.14.0(react@19.2.3)
     transitivePeerDependencies:
       - react
-    dev: false
 
   /playwright-core@1.51.1:
     resolution: {integrity: sha512-/crRMj8+j/Nq5s8QcvegseuyeZPxpQCZb6HNk3Sos3BlZyAknRjoyJPFWkpNn8v0+P3WiwqFF8P+zQo4eqiNuw==}
@@ -36789,6 +36856,15 @@ packages:
       react: 18.3.1
       scheduler: 0.23.2
     dev: false
+
+  /react-dom@18.3.1(react@19.2.3):
+    resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
+    peerDependencies:
+      react: ^18.3.1
+    dependencies:
+      loose-envify: 1.4.0
+      react: 19.2.3
+      scheduler: 0.23.2
 
   /react-dom@19.2.3(react@19.2.3):
     resolution: {integrity: sha512-yELu4WmLPw5Mr/lmeEpox5rw3RETacE++JgHqQzd2dg+YbJuat3jH4ingc+WPZhxaoFzdv9y33G+F7Nl5O0GBg==}
@@ -38179,7 +38255,6 @@ packages:
     resolution: {integrity: sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}

@@ -1,77 +1,13 @@
 'use client'
-
-import React, { createContext, useContext } from 'react'
-import {
+export {
+	MuxPlayerProvider,
+	useMuxPlayer,
 	defaultPlayerPreferences,
+	defaultSubtitlePreference,
 	getPlayerPrefs,
 	savePlayerPrefs,
+	MUX_PLAYER_PREFS_KEY,
+	type MuxPlayerProviderProps,
 	type PlayerPrefs,
-} from '@/lib/mux-player-prefs'
-import type { MuxPlayerRefAttributes } from '@mux/mux-player-react'
-
-type MuxPlayerContextType = {
-	setMuxPlayerRef: React.Dispatch<
-		React.SetStateAction<React.RefObject<MuxPlayerRefAttributes | null> | null>
-	>
-	muxPlayerRef: React.RefObject<MuxPlayerRefAttributes | null> | null
-	playerPrefs: PlayerPrefs
-	setPlayerPrefs: (options: Partial<PlayerPrefs>) => void
-}
-
-/**
- * Provider component that manages Mux Player state and preferences
- */
-export const MuxPlayerProvider: React.FC<React.PropsWithChildren> = ({
-	children,
-}) => {
-	const [muxPlayerRef, setMuxPlayerRef] =
-		React.useState<React.RefObject<MuxPlayerRefAttributes | null> | null>(null)
-
-	// Start with default preferences for SSR
-	const [playerPrefs, setPlayerPrefsState] = React.useState<PlayerPrefs>(
-		defaultPlayerPreferences,
-	)
-
-	// Load preferences from cookies once on mount
-	React.useEffect(() => {
-		const prefs = getPlayerPrefs()
-		setPlayerPrefsState(prefs)
-	}, [])
-
-	const setPlayerPrefs = React.useCallback((options: Partial<PlayerPrefs>) => {
-		const newPrefs = savePlayerPrefs(options)
-		setPlayerPrefsState(newPrefs)
-	}, [])
-
-	const value = React.useMemo(
-		() => ({
-			muxPlayerRef,
-			setMuxPlayerRef,
-			playerPrefs,
-			setPlayerPrefs,
-		}),
-		[muxPlayerRef, playerPrefs, setPlayerPrefs],
-	)
-
-	return (
-		<MuxPlayerContext.Provider value={value}>
-			{children}
-		</MuxPlayerContext.Provider>
-	)
-}
-
-const MuxPlayerContext = createContext<MuxPlayerContextType | undefined>(
-	undefined,
-)
-
-/**
- * Hook to access Mux Player state and preferences
- * Must be used within a MuxPlayerProvider
- */
-export const useMuxPlayer = () => {
-	const context = useContext(MuxPlayerContext)
-	if (!context) {
-		throw new Error('useMuxPlayer must be used within a MuxPlayerProvider')
-	}
-	return context
-}
+	type Subtitle,
+} from '@coursebuilder/next/providers'
