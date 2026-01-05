@@ -1,7 +1,7 @@
 'use server'
 
 import crypto from 'node:crypto'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, unstable_cache } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
@@ -40,12 +40,19 @@ import { z } from 'zod'
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
+import {
+	createSlugOrIdWhere,
+	getContentAccessFilters,
+	indexDocument,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
 import { PostOrListSchema } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { getPricingData } from './pricing-query'
+import { postSearchConfig } from './query-config'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
@@ -155,13 +162,9 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const visibility: ('public' | 'private' | 'unlisted')[] = [
-		'public',
-		'private',
-		'unlisted',
-	]
-
-	const states: ('draft' | 'published')[] = ['draft', 'published']
+	const { session, ability } = await getServerAuthSession()
+	const canEdit = ability.can('update', 'Content')
+	const { visibility, states } = getContentAccessFilters(canEdit)
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
@@ -249,19 +252,10 @@ export async function createPost(input: NewPostInput) {
 			}
 		}
 
-		try {
-			await upsertPostToTypeSense(post, 'save')
-			await log.info('post.typesense.indexed', {
-				postId: post.id,
-				action: 'save',
-			})
-		} catch (error) {
-			await log.error('post.typesense.index.failed', {
-				error: getErrorMessage(error),
-				stack: getErrorStack(error),
-				postId: post.id,
-			})
-		}
+		await indexDocument(postSearchConfig, post, {
+			action: 'save',
+			eventName: 'post.create',
+		})
 
 		revalidateTag('posts', 'max')
 		return post
@@ -406,21 +400,18 @@ export const getCachedPost = unstable_cache(
 )
 
 export async function getPost(slugOrId: string) {
-	const visibility: ('public' | 'private' | 'unlisted')[] = [
-		'public',
-		'private',
-		'unlisted',
-	]
-
-	const states: ('draft' | 'published')[] = ['draft', 'published']
+	const { session, ability } = await getServerAuthSession()
+	const { visibility, states } = getContentAccessFilters(
+		ability.can('update', 'Content'),
+	)
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
-			or(
-				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
-				eq(contentResource.id, slugOrId),
-				eq(contentResource.id, `post_${slugOrId.split('~')[1]}`),
-			),
+			createSlugOrIdWhere({
+				slugOrId,
+				table: contentResource,
+				resourceType: 'post',
+			}),
 			eq(contentResource.type, 'post'),
 			inArray(
 				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,

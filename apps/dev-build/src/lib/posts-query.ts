@@ -42,6 +42,9 @@ import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-comm
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
 import {
 	createCachedQuery,
+	createSlugOrIdWhere,
+	getContentAccessFilters,
+	indexDocument,
 	parseArrayWithSchema,
 	parseWithSchema,
 	revalidateTag,
@@ -49,13 +52,14 @@ import {
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
-import { PostOrListSchema } from './post-or-list'
+import { PostOrListSchema, type PostOrList } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { getPricingData } from './pricing-query'
+import { postSearchConfig } from './query-config'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedAllPosts = createCachedQuery(async () => getAllPosts(), {
+export const getCachedAllPosts = createCachedQuery(getAllPosts, {
 	keyPrefix: 'posts',
 	tags: ['posts'],
 })
@@ -76,8 +80,15 @@ export async function getAllPosts(): Promise<Post[]> {
 		})
 
 		const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
-			errorMessage: 'Error parsing posts',
+			errorMessage: 'posts.parse.failed',
 		})
+
+		if (postsParsed.length === 0 && posts.length > 0) {
+			await log.error('posts.parse.failed', {
+				error: 'Failed to parse posts',
+			})
+			return []
+		}
 
 		await log.info('posts.fetch.success', {
 			count: postsParsed.length,
@@ -154,21 +165,19 @@ export async function getPostLists(postId: string): Promise<List[]> {
 }
 
 export async function getPosts(): Promise<Post[]> {
-	const visibility: ('public' | 'private' | 'unlisted')[] = [
-		'public',
-		'private',
-		'unlisted',
-	]
+	const { ability } = await getServerAuthSession()
+	const canEdit = ability.can('update', 'Content')
+	const { visibility, states } = getContentAccessFilters(canEdit)
 
-	const states: ('draft' | 'published')[] = ['draft', 'published']
+	// For listing, non-editors only see public (not unlisted)
+	const listVisibility = canEdit ? visibility : (['public'] as const)
 
 	const posts = await db.query.contentResource.findMany({
 		where: and(
 			eq(contentResource.type, 'post'),
-			inArray(
-				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
-				visibility,
-			),
+			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`, [
+				...listVisibility,
+			]),
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		orderBy: desc(contentResource.createdAt),
@@ -181,7 +190,7 @@ export async function getPosts(): Promise<Post[]> {
 	return postsParsed
 }
 
-export async function createPost(input: NewPostInput) {
+export async function createPost(input: NewPostInput): Promise<Post> {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -246,19 +255,10 @@ export async function createPost(input: NewPostInput) {
 			}
 		}
 
-		try {
-			await upsertPostToTypeSense(post, 'save')
-			await log.info('post.typesense.indexed', {
-				postId: post.id,
-				action: 'save',
-			})
-		} catch (error) {
-			await log.error('post.typesense.index.failed', {
-				error: getErrorMessage(error),
-				stack: getErrorStack(error),
-				postId: post.id,
-			})
-		}
+		await indexDocument(postSearchConfig, post, {
+			action: 'save',
+			eventName: 'post.create',
+		})
 
 		revalidateTag('posts', 'max')
 		return post
@@ -396,27 +396,24 @@ export async function updatePost(
 	}
 }
 
-export const getCachedPost = createCachedQuery(
-	async (slug: string) => getPost(slug),
-	{ keyPrefix: 'posts', tags: ['posts'] },
-)
+export const getCachedPost = createCachedQuery(getPost, {
+	keyPrefix: 'posts',
+	tags: ['posts'],
+})
 
-export async function getPost(slugOrId: string) {
-	const visibility: ('public' | 'private' | 'unlisted')[] = [
-		'public',
-		'private',
-		'unlisted',
-	]
-
-	const states: ('draft' | 'published')[] = ['draft', 'published']
+export async function getPost(slugOrId: string): Promise<Post | null> {
+	const { ability } = await getServerAuthSession()
+	const { visibility, states } = getContentAccessFilters(
+		ability.can('update', 'Content'),
+	)
 
 	const post = await db.query.contentResource.findFirst({
 		where: and(
-			or(
-				eq(sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`, slugOrId),
-				eq(contentResource.id, slugOrId),
-				eq(contentResource.id, `post_${slugOrId.split('~')[1]}`),
-			),
+			createSlugOrIdWhere({
+				slugOrId,
+				table: contentResource,
+				resourceType: 'post',
+			}),
 			eq(contentResource.type, 'post'),
 			inArray(
 				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
@@ -442,6 +439,7 @@ export async function getPost(slugOrId: string) {
 
 	const postParsed = parseWithSchema<Post>(post, PostSchema, {
 		errorMessage: 'Error parsing post',
+		logError: false,
 	})
 
 	return postParsed
@@ -1025,12 +1023,14 @@ function getErrorStack(error: unknown) {
 	return undefined
 }
 
-export const getCachedPostOrList = createCachedQuery(
-	async (slugOrId: string) => getPostOrList(slugOrId),
-	{ keyPrefix: 'posts-lists', tags: ['posts', 'lists'] },
-)
+export const getCachedPostOrList = createCachedQuery(getPostOrList, {
+	keyPrefix: 'posts-lists',
+	tags: ['posts', 'lists'],
+})
 
-export async function getPostOrList(slugOrId: string) {
+export async function getPostOrList(
+	slugOrId: string,
+): Promise<PostOrList | null> {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
 		'public',
 		'unlisted',
@@ -1072,17 +1072,18 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	const parsed = PostOrListSchema.safeParse(postOrList)
-	if (!parsed.success) {
+	const parsed = parseWithSchema<PostOrList>(postOrList, PostOrListSchema, {
+		errorMessage: `content.parse.failed for ${slugOrId} (type: ${postOrList.type})`,
+	})
+
+	if (!parsed) {
 		await log.error('content.parse.failed', {
-			error: parsed.error.format(),
 			slugOrId,
 			type: postOrList.type,
 		})
-		return null
 	}
 
-	return parsed.data
+	return parsed
 }
 
 export async function getProductForPost(
