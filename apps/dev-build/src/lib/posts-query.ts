@@ -1,7 +1,7 @@
 'use server'
 
 import crypto from 'node:crypto'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, unstable_cache } from 'next/cache'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
@@ -40,6 +40,12 @@ import { z } from 'zod'
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
 import { propsForCommerce } from '@coursebuilder/core/lib/pricing/props-for-commerce'
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	parseWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
@@ -49,11 +55,10 @@ import { getPricingData } from './pricing-query'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedAllPosts = unstable_cache(
-	async () => getAllPosts(),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
+export const getCachedAllPosts = createCachedQuery(async () => getAllPosts(), {
+	keyPrefix: 'posts',
+	tags: ['posts'],
+})
 
 export async function getAllPosts(): Promise<Post[]> {
 	try {
@@ -70,19 +75,15 @@ export async function getAllPosts(): Promise<Post[]> {
 			},
 		})
 
-		const postsParsed = z.array(PostSchema).safeParse(posts)
-		if (!postsParsed.success) {
-			await log.error('posts.parse.failed', {
-				error: postsParsed.error.format(),
-			})
-			return []
-		}
-
-		await log.info('posts.fetch.success', {
-			count: postsParsed.data.length,
+		const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+			errorMessage: 'Error parsing posts',
 		})
 
-		return postsParsed.data
+		await log.info('posts.fetch.success', {
+			count: postsParsed.length,
+		})
+
+		return postsParsed
 	} catch (error) {
 		await log.error('posts.fetch.failed', {
 			error: getErrorMessage(error),
@@ -119,13 +120,11 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+		errorMessage: 'Error parsing posts for user',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
 export async function getPostTags(postId: string): Promise<Tag[]> {
@@ -175,13 +174,11 @@ export async function getPosts(): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+		errorMessage: 'Error parsing posts',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
 export async function createPost(input: NewPostInput) {
@@ -399,10 +396,9 @@ export async function updatePost(
 	}
 }
 
-export const getCachedPost = unstable_cache(
+export const getCachedPost = createCachedQuery(
 	async (slug: string) => getPost(slug),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
+	{ keyPrefix: 'posts', tags: ['posts'] },
 )
 
 export async function getPost(slugOrId: string) {
@@ -444,13 +440,11 @@ export async function getPost(slugOrId: string) {
 		},
 	})
 
-	const postParsed = PostSchema.safeParse(post)
-	if (!postParsed.success) {
-		console.debug('Error parsing post', postParsed.error)
-		return null
-	}
+	const postParsed = parseWithSchema<Post>(post, PostSchema, {
+		errorMessage: 'Error parsing post',
+	})
 
-	return postParsed.data
+	return postParsed
 }
 
 export async function deletePost(id: string) {
@@ -1031,10 +1025,9 @@ function getErrorStack(error: unknown) {
 	return undefined
 }
 
-export const getCachedPostOrList = unstable_cache(
+export const getCachedPostOrList = createCachedQuery(
 	async (slugOrId: string) => getPostOrList(slugOrId),
-	['posts', 'lists'],
-	{ revalidate: 3600, tags: ['posts', 'lists'] },
+	{ keyPrefix: 'posts-lists', tags: ['posts', 'lists'] },
 )
 
 export async function getPostOrList(slugOrId: string) {

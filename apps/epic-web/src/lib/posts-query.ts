@@ -1,7 +1,7 @@
 'use server'
 
 import crypto from 'node:crypto'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath, unstable_cache } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { AppAbility } from '@/ability'
 import { courseBuilderAdapter, db } from '@/db'
@@ -32,10 +32,16 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	parseWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
-import { PostOrListSchema } from './post-or-list'
+import { PostOrListSchema, type PostOrList } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
@@ -87,19 +93,15 @@ export async function getAllPosts(): Promise<Post[]> {
 			},
 		})
 
-		const postsParsed = z.array(PostSchema).safeParse(posts)
-		if (!postsParsed.success) {
-			await log.error('posts.parse.failed', {
-				error: postsParsed.error.format(),
-			})
-			return []
-		}
-
-		await log.info('posts.fetch.success', {
-			count: postsParsed.data.length,
+		const postsParsed: Post[] = parseArrayWithSchema(posts, PostSchema, {
+			errorMessage: 'Error parsing posts in getAllPosts',
 		})
 
-		return postsParsed.data
+		await log.info('posts.fetch.success', {
+			count: postsParsed.length,
+		})
+
+		return postsParsed
 	} catch (error) {
 		await log.error('posts.fetch.failed', {
 			error: getErrorMessage(error),
@@ -131,19 +133,15 @@ export async function getAllTips(): Promise<Post[]> {
 			},
 		})
 
-		const postsParsed = z.array(PostSchema).safeParse(posts)
-		if (!postsParsed.success) {
-			await log.error('tips.parse.failed', {
-				error: postsParsed.error.format(),
-			})
-			return []
-		}
-
-		await log.info('tips.fetch.success', {
-			count: postsParsed.data.length,
+		const postsParsed: Post[] = parseArrayWithSchema(posts, PostSchema, {
+			errorMessage: 'Error parsing tips in getAllTips',
 		})
 
-		return postsParsed.data
+		await log.info('tips.fetch.success', {
+			count: postsParsed.length,
+		})
+
+		return postsParsed
 	} catch (error) {
 		await log.error('tips.fetch.failed', {
 			error: getErrorMessage(error),
@@ -180,13 +178,11 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed: Post[] = parseArrayWithSchema(posts, PostSchema, {
+		errorMessage: 'Error parsing posts in getAllPostsForUser',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
 export async function getAllTipsForUser(userId?: string): Promise<Post[]> {
@@ -212,21 +208,16 @@ export async function getAllTipsForUser(userId?: string): Promise<Post[]> {
 			orderBy: desc(contentResource.createdAt),
 		})
 
-		const postsParsed = z.array(PostSchema).safeParse(posts)
-		if (!postsParsed.success) {
-			await log.error('user.tips.parse.failed', {
-				error: postsParsed.error.format(),
-				userId,
-			})
-			return []
-		}
+		const postsParsed: Post[] = parseArrayWithSchema(posts, PostSchema, {
+			errorMessage: 'Error parsing tips in getAllTipsForUser',
+		})
 
 		await log.info('user.tips.fetch.success', {
-			count: postsParsed.data.length,
+			count: postsParsed.length,
 			userId,
 		})
 
-		return postsParsed.data
+		return postsParsed
 	} catch (error) {
 		await log.error('user.tips.fetch.failed', {
 			error: getErrorMessage(error),
@@ -288,13 +279,11 @@ export async function getPosts(): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed: Post[] = parseArrayWithSchema(posts, PostSchema, {
+		errorMessage: 'Error parsing posts in getPosts',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
 export async function createPost(input: NewPostInput) {
@@ -514,10 +503,9 @@ export async function updatePost(
 }
 
 // Cached version for public access only (no ability checks)
-const getCachedPostPublic = unstable_cache(
+const getCachedPostPublic = createCachedQuery(
 	async (slugOrId: string) => getPost(slugOrId),
-	['posts', 'public'],
-	{ revalidate: 3600, tags: ['posts'] },
+	{ keyPrefix: 'posts-public', tags: ['posts'], revalidate: 3600 },
 )
 
 /**
@@ -574,25 +562,19 @@ export async function getPost(slugOrId: string, ability?: AppAbility) {
 		},
 	})
 
-	const postParsed = PostSchema.safeParse(post)
-	if (!postParsed.success) {
-		console.debug('Error parsing post', postParsed.error)
-		console.debug(
-			'Post data that failed to parse:',
-			JSON.stringify(post, null, 2),
-		)
+	const postParsed: Post | null = parseWithSchema(post, PostSchema, {
+		errorMessage: 'Error parsing post in getPost',
+	})
+	if (!postParsed) {
 		return null
 	}
 
-	if (ability && !ability.can('read', subject('Content', postParsed.data))) {
-		console.debug(
-			'User does not have permission to read post:',
-			postParsed.data.id,
-		)
+	if (ability && !ability.can('read', subject('Content', postParsed))) {
+		console.debug('User does not have permission to read post:', postParsed.id)
 		return null
 	}
 
-	return postParsed.data
+	return postParsed
 }
 
 export async function deletePost(id: string) {
@@ -1196,10 +1178,13 @@ function getErrorStack(error: unknown) {
  * This function only returns public and unlisted content that is published.
  * For content that requires ability checks, use getPostOrList() directly.
  */
-export const getCachedPostOrList = unstable_cache(
+export const getCachedPostOrList = createCachedQuery(
 	async (slugOrId: string) => getPostOrList(slugOrId),
-	['posts', 'lists', 'public'],
-	{ revalidate: 3600, tags: ['posts', 'lists'] },
+	{
+		keyPrefix: 'posts-lists-public',
+		tags: ['posts', 'lists'],
+		revalidate: 3600,
+	},
 )
 
 export async function getPostOrList(slugOrId: string) {
@@ -1244,15 +1229,13 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	const parsed = PostOrListSchema.safeParse(postOrList)
-	if (!parsed.success) {
-		await log.error('content.parse.failed', {
-			error: parsed.error.format(),
-			slugOrId,
-			type: postOrList.type,
-		})
-		return null
-	}
+	const parsed: PostOrList | null = parseWithSchema(
+		postOrList,
+		PostOrListSchema,
+		{
+			errorMessage: `Error parsing content (${postOrList.type}) in getPostOrList`,
+		},
+	)
 
-	return parsed.data
+	return parsed
 }

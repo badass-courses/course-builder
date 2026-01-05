@@ -1,11 +1,16 @@
 'use server'
 
-import { revalidateTag, unstable_cache } from 'next/cache'
 import { db } from '@/db'
 import { eggheadPgQuery } from '@/db/eggheadPostgres'
 import { tag as tagTable } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 
 import {
 	EggheadApiTagSchema,
@@ -43,13 +48,14 @@ CREATE TABLE "public"."tags" (
 
 export async function getTags(): Promise<Tag[]> {
 	const tags = await db.query.tag.findMany()
-	return z.array(EggheadTagSchema).parse(tags)
+	return parseArrayWithSchema<Tag>(tags, EggheadTagSchema, {
+		errorMessage: 'Error parsing tags',
+	})
 }
 
-export const getAllEggheadTagsCached = unstable_cache(
+export const getAllEggheadTagsCached = createCachedQuery(
 	async () => getAllEggheadTags(),
-	['tags'],
-	{ revalidate: 60, tags: ['tags'] },
+	{ keyPrefix: 'tags', tags: ['tags'], revalidate: 60 },
 )
 
 export async function getAllEggheadTags(): Promise<EggheadTag[]> {

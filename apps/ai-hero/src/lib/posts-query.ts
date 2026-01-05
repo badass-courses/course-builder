@@ -1,7 +1,7 @@
 'use server'
 
 import crypto from 'node:crypto'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { courseBuilderAdapter, db } from '@/db'
 import {
@@ -31,19 +31,24 @@ import { v4 } from 'uuid'
 import { z } from 'zod'
 
 import { getMuxAsset } from '@coursebuilder/core/lib/mux'
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	parseWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 
 import { ListSchema, type List } from './lists'
 import { DatabaseError, PostCreationError } from './post-errors'
-import { PostOrListSchema } from './post-or-list'
+import { PostOrListSchema, type PostOrList } from './post-or-list'
 import { generateContentHash, updatePostSlug } from './post-utils'
 import { TagSchema, type Tag } from './tags'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedAllPosts = unstable_cache(
-	async () => getAllPosts(),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
+export const getCachedAllPosts = createCachedQuery(getAllPosts, {
+	keyPrefix: 'posts',
+	tags: ['posts'],
+})
 
 export async function getAllPosts(): Promise<Post[]> {
 	try {
@@ -60,19 +65,22 @@ export async function getAllPosts(): Promise<Post[]> {
 			},
 		})
 
-		const postsParsed = z.array(PostSchema).safeParse(posts)
-		if (!postsParsed.success) {
+		const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+			errorMessage: 'posts.parse.failed',
+		})
+
+		if (postsParsed.length === 0 && posts.length > 0) {
 			await log.error('posts.parse.failed', {
-				error: postsParsed.error.format(),
+				error: 'Failed to parse posts',
 			})
 			return []
 		}
 
 		await log.info('posts.fetch.success', {
-			count: postsParsed.data.length,
+			count: postsParsed.length,
 		})
 
-		return postsParsed.data
+		return postsParsed
 	} catch (error) {
 		await log.error('posts.fetch.failed', {
 			error: getErrorMessage(error),
@@ -109,13 +117,11 @@ export async function getAllPostsForUser(userId?: string): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+		errorMessage: 'Error parsing posts for user',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
 export async function getPostTags(postId: string): Promise<Tag[]> {
@@ -169,16 +175,14 @@ export async function getPosts(): Promise<Post[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const postsParsed = z.array(PostSchema).safeParse(posts)
-	if (!postsParsed.success) {
-		console.error('Error parsing posts', postsParsed.error)
-		return []
-	}
+	const postsParsed = parseArrayWithSchema<Post>(posts, PostSchema, {
+		errorMessage: 'Error parsing posts',
+	})
 
-	return postsParsed.data
+	return postsParsed
 }
 
-export async function createPost(input: NewPostInput) {
+export async function createPost(input: NewPostInput): Promise<Post> {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
 	if (!user || !ability.can('create', 'Content')) {
@@ -388,13 +392,12 @@ export async function updatePost(
 	}
 }
 
-export const getCachedPost = unstable_cache(
-	async (slug: string) => getPost(slug),
-	['posts'],
-	{ revalidate: 3600, tags: ['posts'] },
-)
+export const getCachedPost = createCachedQuery(getPost, {
+	keyPrefix: 'posts',
+	tags: ['posts'],
+})
 
-export async function getPost(slugOrId: string) {
+export async function getPost(slugOrId: string): Promise<Post | null> {
 	const { ability } = await getServerAuthSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -437,13 +440,12 @@ export async function getPost(slugOrId: string) {
 		},
 	})
 
-	const postParsed = PostSchema.safeParse(post)
-	if (!postParsed.success) {
-		console.debug('Error parsing post', postParsed.error)
-		return null
-	}
+	const postParsed = parseWithSchema<Post>(post, PostSchema, {
+		errorMessage: 'Error parsing post',
+		logError: false,
+	})
 
-	return postParsed.data
+	return postParsed
 }
 
 export async function deletePost(id: string) {
@@ -1024,13 +1026,14 @@ function getErrorStack(error: unknown) {
 	return undefined
 }
 
-export const getCachedPostOrList = unstable_cache(
-	async (slugOrId: string) => getPostOrList(slugOrId),
-	['posts', 'lists'],
-	{ revalidate: 3600, tags: ['posts', 'lists'] },
-)
+export const getCachedPostOrList = createCachedQuery(getPostOrList, {
+	keyPrefix: 'posts-lists',
+	tags: ['posts', 'lists'],
+})
 
-export async function getPostOrList(slugOrId: string) {
+export async function getPostOrList(
+	slugOrId: string,
+): Promise<PostOrList | null> {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
 		'public',
 		'unlisted',
@@ -1072,15 +1075,16 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	const parsed = PostOrListSchema.safeParse(postOrList)
-	if (!parsed.success) {
+	const parsed = parseWithSchema<PostOrList>(postOrList, PostOrListSchema, {
+		errorMessage: `content.parse.failed for ${slugOrId} (type: ${postOrList.type})`,
+	})
+
+	if (!parsed) {
 		await log.error('content.parse.failed', {
-			error: parsed.error.format(),
 			slugOrId,
 			type: postOrList.type,
 		})
-		return null
 	}
 
-	return parsed.data
+	return parsed
 }

@@ -13,13 +13,13 @@ import { NewProduct } from '@/lib/products'
 import { getServerAuthSession } from '@/server/auth'
 import { and, desc, eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
-import { z } from 'zod'
 
 import {
 	ContentResource,
 	Product,
 	productSchema,
 } from '@coursebuilder/core/schemas'
+import { parseArrayWithSchema } from '@coursebuilder/next/query'
 
 export async function addResourceToProduct({
 	resource,
@@ -107,16 +107,9 @@ export async function getProducts() {
 		},
 	})
 
-	const parsedProducts = z.array(productSchema).safeParse(productsData)
-	if (!parsedProducts.success) {
-		console.error(
-			'Error parsing products',
-			JSON.stringify(parsedProducts.error),
-			JSON.stringify(productsData),
-		)
-		return []
-	}
-	return parsedProducts.data
+	return parseArrayWithSchema<Product>(productsData, productSchema, {
+		errorMessage: 'Error parsing products',
+	})
 }
 
 export async function createProduct(input: NewProduct) {

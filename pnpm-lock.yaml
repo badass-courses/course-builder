@@ -8210,6 +8210,9 @@ importers:
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@18.3.1)(react@19.2.3)
+      zod:
+        specifier: 3.24.2
+        version: 3.24.2
     devDependencies:
       '@amplitude/analytics-browser':
         specifier: ^2.6.1
@@ -8555,7 +8558,7 @@ importers:
     dependencies:
       openai:
         specifier: 4.91.1
-        version: 4.91.1(encoding@0.1.13)(zod@3.25.76)
+        version: 4.91.1(zod@3.24.2)
     devDependencies:
       '@types/node':
         specifier: ^20.12.5
@@ -11627,7 +11630,7 @@ packages:
       '@cloudinary-util/types': 1.5.10
       '@cloudinary-util/util': 3.3.2
       '@cloudinary/url-gen': 1.15.0
-      zod: 3.25.76
+      zod: 3.24.2
     dev: false
 
   /@cloudinary-util/util@3.3.2:
@@ -34116,7 +34119,7 @@ packages:
       workerd: 1.20240320.1
       ws: 8.18.1
       youch: 3.3.4
-      zod: 3.25.76
+      zod: 3.24.2
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -35532,6 +35535,30 @@ packages:
       formdata-node: 4.4.1
       node-fetch: 2.7.0(encoding@0.1.13)
       zod: 3.25.76
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
+  /openai@4.91.1(zod@3.24.2):
+    resolution: {integrity: sha512-DbjrR0hIMQFbxz8+3qBsfPJnh3+I/skPgoSlT7f9eiZuhGBUissPQULNgx6gHNkLoZ3uS0uYS6eXPUdtg4nHzw==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      '@types/node': 18.19.130
+      '@types/node-fetch': 2.6.12
+      abort-controller: 3.0.0
+      agentkeepalive: 4.6.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0(encoding@0.1.13)
+      zod: 3.24.2
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -41613,6 +41640,9 @@ packages:
   /zod@3.22.5:
     resolution: {integrity: sha512-HqnGsCdVZ2xc0qWPLdO25WnseXThh0kEYKIdV5F/hTHO75hNZFp8thxSeHhiPrHZKrFTo1SOgkAj9po5bexZlw==}
     dev: false
+
+  /zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
 
   /zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}

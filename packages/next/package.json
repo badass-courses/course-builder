@@ -3,7 +3,7 @@
 	"version": "0.0.29",
 	"description": "Next for Course Builder.",
 	"scripts": {
-		"clean": "rm -rf *.js *.d.ts* lib providers",
+		"clean": "rm -rf *.js *.d.ts* lib providers query",
 		"build": "pnpm clean && tsc",
 		"dev": "tsc --watch",
 		"test": "vitest run -c ../utils/vitest.config.ts"
@@ -21,6 +21,7 @@
 		"*.js",
 		"lib",
 		"providers",
+		"query",
 		"server",
 		"src"
 	],
@@ -36,6 +37,10 @@
 		"./providers": {
 			"types": "./providers/index.d.ts",
 			"import": "./providers/index.js"
+		},
+		"./query": {
+			"types": "./query/index.d.ts",
+			"import": "./query/index.js"
 		}
 	},
 	"private": false,
@@ -48,7 +53,8 @@
 		"@coursebuilder/utils-browser": "workspace:*",
 		"@upstash/redis": "^1.34.4",
 		"inngest": "3.35.0",
-		"next-themes": "^0.3"
+		"next-themes": "^0.3",
+		"zod": "3.24.2"
 	},
 	"devDependencies": {
 		"@amplitude/analytics-browser": "^2.6.1",

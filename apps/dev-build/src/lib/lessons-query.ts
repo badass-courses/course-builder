@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidateTag, unstable_cache } from 'next/cache'
+import { unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -28,10 +28,16 @@ import {
 	type ContentResourceResource,
 } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	parseWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 import { last } from '@coursebuilder/nodash'
 
 import { Lesson } from './lessons'
-import { SolutionSchema } from './solution'
+import { SolutionSchema, type Solution } from './solution'
 import { getCachedSolution, getSolution } from './solutions-query'
 
 const redis = Redis.fromEnv()
@@ -59,7 +65,7 @@ export const getLessonVideoTranscript = async (
 		return null
 	}
 
-	return parsedResult.data[0]?.transcript
+	return parsedResult.data[0]?.transcript ?? null
 }
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
@@ -104,7 +110,7 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 		return null
 	}
 
-	return parsedResult.data[0]?.muxPlaybackId
+	return parsedResult.data[0]?.muxPlaybackId ?? null
 }
 
 export const addVideoResourceToLesson = async ({
@@ -170,10 +176,9 @@ export const addVideoResourceToLesson = async ({
 	})
 }
 
-export const getCachedLesson = unstable_cache(
+export const getCachedLesson = createCachedQuery(
 	async (slug: string) => getLesson(slug),
-	['lesson'],
-	{ revalidate: 3600, tags: ['lesson'] },
+	{ keyPrefix: 'lesson', tags: ['lesson'] },
 )
 
 export async function getLesson(lessonSlugOrId: string) {
@@ -221,13 +226,11 @@ export async function getLesson(lessonSlugOrId: string) {
 				},
 			})
 
-	const parsedLesson = LessonSchema.safeParse(lesson)
-	if (!parsedLesson.success) {
-		console.error('Error parsing lesson', lesson, parsedLesson.error)
-		return null
-	}
+	const parsedLesson = parseWithSchema<Lesson>(lesson, LessonSchema, {
+		errorMessage: 'Error parsing lesson',
+	})
 
-	if (!cachedLesson) {
+	if (!cachedLesson && parsedLesson) {
 		await redis.set(
 			`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
 			lesson,
@@ -237,13 +240,12 @@ export async function getLesson(lessonSlugOrId: string) {
 
 	// console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
-	return parsedLesson.data
+	return parsedLesson
 }
 
-export const getCachedExerciseSolution = unstable_cache(
+export const getCachedExerciseSolution = createCachedQuery(
 	async (slug: string) => getExerciseSolution(slug),
-	['solution'],
-	{ revalidate: 3600, tags: ['solution'] },
+	{ keyPrefix: 'solution', tags: ['solution'] },
 )
 
 export async function getExerciseSolution(lessonSlugOrId: string) {
@@ -277,25 +279,27 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		},
 	})
 
-	const parsedLesson = LessonSchema.safeParse(lesson)
-	if (!parsedLesson.success) {
-		console.error('Error parsing lesson', lesson)
+	const parsedLesson = parseWithSchema<Lesson>(lesson, LessonSchema, {
+		errorMessage: 'Error parsing lesson',
+	})
+	if (!parsedLesson) {
 		return null
 	}
 
-	const partialSolution = parsedLesson.data?.resources?.find(
+	const partialSolution = parsedLesson.resources?.find(
 		(resource: ContentResourceResource) =>
 			resource.resource.type === 'solution',
 	)?.resource
 
 	const solution = await getCachedSolution(partialSolution.id)
 
-	const parsedSolution = SolutionSchema.safeParse(solution)
-	if (!parsedSolution.success) {
-		console.error('Error parsing solution', solution)
+	const parsedSolution = parseWithSchema<Solution>(solution, SolutionSchema, {
+		errorMessage: 'Error parsing solution',
+	})
+	if (!parsedSolution) {
 		return null
 	}
-	return { solution: parsedSolution.data, lesson: parsedLesson.data }
+	return { solution: parsedSolution, lesson: parsedLesson }
 }
 
 export async function updateLesson(input: LessonUpdate, revalidate = true) {
@@ -395,13 +399,11 @@ export async function getAllLessonsForUser(userId?: string): Promise<Lesson[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const lessonsParsed = z.array(LessonSchema).safeParse(lessons)
-	if (!lessonsParsed.success) {
-		console.error('Error parsing lessons', lessonsParsed.error)
-		return []
-	}
+	const lessonsParsed = parseArrayWithSchema<Lesson>(lessons, LessonSchema, {
+		errorMessage: 'Error parsing lessons',
+	})
 
-	return lessonsParsed.data
+	return lessonsParsed
 }
 
 export async function writeNewLessonToDatabase(

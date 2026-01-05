@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -28,6 +27,12 @@ import {
 	type ContentResourceResource,
 } from '@coursebuilder/core/schemas'
 import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
+import {
+	createCachedQuery,
+	parseArrayWithSchema,
+	parseWithSchema,
+	revalidateTag,
+} from '@coursebuilder/next/query'
 import { last } from '@coursebuilder/nodash'
 
 import { Lesson } from './lessons'
@@ -169,10 +174,9 @@ export const addVideoResourceToLesson = async ({
 	})
 }
 
-export const getCachedLesson = unstable_cache(
+export const getCachedLesson = createCachedQuery(
 	async (slug: string) => getLesson(slug),
-	['lesson'],
-	{ revalidate: 3600, tags: ['lesson'] },
+	{ keyPrefix: 'lesson', tags: ['lesson'], revalidate: 3600 },
 )
 
 export async function getLesson(lessonSlugOrId: string) {
@@ -211,9 +215,10 @@ export async function getLesson(lessonSlugOrId: string) {
 				},
 			})
 
-	const parsedLesson = LessonSchema.safeParse(lesson)
-	if (!parsedLesson.success) {
-		console.error('Error parsing lesson', lesson, parsedLesson.error)
+	const parsedLesson: Lesson | null = parseWithSchema(lesson, LessonSchema, {
+		errorMessage: 'Error parsing lesson in getLesson',
+	})
+	if (!parsedLesson) {
 		return null
 	}
 
@@ -227,7 +232,7 @@ export async function getLesson(lessonSlugOrId: string) {
 
 	console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
-	return parsedLesson.data
+	return parsedLesson
 }
 
 export async function getExerciseSolution(lessonSlugOrId: string) {
@@ -264,23 +269,26 @@ export async function getExerciseSolution(lessonSlugOrId: string) {
 		},
 	})
 
-	const parsedLesson = LessonSchema.safeParse(lesson)
-	if (!parsedLesson.success) {
-		console.error('Error parsing lesson', lesson)
+	const parsedLesson: Lesson | null = parseWithSchema(lesson, LessonSchema, {
+		errorMessage: 'Error parsing lesson in getExerciseSolution',
+	})
+	if (!parsedLesson) {
 		return null
 	}
 
-	const solution = parsedLesson.data?.resources?.find(
+	const solution = parsedLesson.resources?.find(
 		(resource: ContentResourceResource) =>
 			resource.resource.type === 'solution',
 	)?.resource
 
-	const parsedSolution = LessonSchema.safeParse(solution)
-	if (!parsedSolution.success) {
-		console.error('Error parsing solution', solution)
-		return null
-	}
-	return parsedSolution.data
+	const parsedSolution: Lesson | null = parseWithSchema(
+		solution,
+		LessonSchema,
+		{
+			errorMessage: 'Error parsing solution in getExerciseSolution',
+		},
+	)
+	return parsedSolution
 }
 
 export async function updateLesson(input: LessonUpdate, revalidate = true) {
@@ -380,13 +388,11 @@ export async function getAllLessonsForUser(userId?: string): Promise<Lesson[]> {
 		orderBy: desc(contentResource.createdAt),
 	})
 
-	const lessonsParsed = z.array(LessonSchema).safeParse(lessons)
-	if (!lessonsParsed.success) {
-		console.error('Error parsing lessons', lessonsParsed.error)
-		return []
-	}
+	const lessonsParsed: Lesson[] = parseArrayWithSchema(lessons, LessonSchema, {
+		errorMessage: 'Error parsing lessons in getAllLessonsForUser',
+	})
 
-	return lessonsParsed.data
+	return lessonsParsed
 }
 
 export async function writeNewLessonToDatabase(
@@ -536,13 +542,14 @@ async function createCoreLesson({
 			throw new Error('Lesson not found after creation')
 		}
 
-		const lessonParsed = LessonSchema.safeParse(lesson)
-		if (!lessonParsed.success) {
-			console.log('❌ Error parsing lesson:', lessonParsed.error)
+		const lessonParsed: Lesson | null = parseWithSchema(lesson, LessonSchema, {
+			errorMessage: 'Error parsing lesson in createCoreLesson',
+		})
+		if (!lessonParsed) {
 			throw new Error('Invalid lesson data')
 		}
 
-		return lessonParsed.data
+		return lessonParsed
 	} catch (error) {
 		console.log('❌ Error in createCoreLesson:', error)
 		throw new Error(
@@ -635,16 +642,15 @@ export async function writeLessonUpdateToDatabase(input: {
 	})
 
 	console.log('🔄 Validating updated lesson')
-	const updatedLesson = LessonSchema.safeParse(updatedLessonRaw)
+	const updatedLesson: Lesson | null = parseWithSchema(
+		updatedLessonRaw,
+		LessonSchema,
+		{
+			errorMessage: `Invalid lesson data after update for ${currentLesson.id}`,
+		},
+	)
 
-	if (!updatedLesson.success) {
-		console.error('❌ Failed to validate updated lesson:', {
-			error: updatedLesson.error.format(),
-		})
-		throw new Error(`Invalid lesson data after update for ${currentLesson.id}`)
-	}
-
-	if (!updatedLesson.data) {
+	if (!updatedLesson) {
 		console.error('❌ Updated lesson not found:', currentLesson.id)
 		throw new Error(
 			`Lesson with id ${currentLesson.id} not found after update.`,
@@ -654,17 +660,17 @@ export async function writeLessonUpdateToDatabase(input: {
 	// Index the lesson in Typesense
 	try {
 		console.log('🔍 Upserting lesson to Typesense:', {
-			lessonId: updatedLesson.data.id,
+			lessonId: updatedLesson.id,
 			action,
 		})
-		await upsertPostToTypeSense(updatedLesson.data, action)
+		await upsertPostToTypeSense(updatedLesson, action)
 		console.log('✅ Successfully upserted lesson to TypeSense')
 	} catch (error) {
 		console.error(
 			'⚠️ TypeSense indexing failed but continuing with lesson update:',
 			{
 				error,
-				lessonId: updatedLesson.data.id,
+				lessonId: updatedLesson.id,
 				action,
 				stack: (error as Error).stack,
 			},
@@ -672,7 +678,7 @@ export async function writeLessonUpdateToDatabase(input: {
 		// Don't rethrow - let the lesson update succeed even if TypeSense fails
 	}
 
-	return updatedLesson.data
+	return updatedLesson
 }
 
 export async function deleteLessonFromDatabase(id: string) {
@@ -699,19 +705,22 @@ export async function deleteLessonFromDatabase(id: string) {
 			},
 		})
 
-		const lesson = LessonSchema.nullish().safeParse(rawLesson)
+		const lesson: Lesson | null | undefined = parseWithSchema(
+			rawLesson,
+			LessonSchema.nullish(),
+			{
+				errorMessage: `Lesson with id ${id} not found or invalid`,
+			},
+		)
 
-		if (!lesson.success || !lesson.data) {
-			await log.error('lesson.delete.notfound', {
-				lessonId: id,
-				parseError: lesson.success ? undefined : lesson.error.format(),
-			})
+		if (!lesson) {
+			await log.error('lesson.delete.notfound', { lessonId: id })
 			throw new Error(`Lesson with id ${id} not found or invalid.`)
 		}
 
 		await log.info('lesson.delete.resources.started', {
 			lessonId: id,
-			resourceCount: lesson.data.resources?.length,
+			resourceCount: lesson.resources?.length,
 		})
 
 		// Delete lesson resources
