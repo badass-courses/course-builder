@@ -1,11 +1,16 @@
-# PR 1.1: Extract Server Utilities to @coursebuilder/next/server
+# Server Utilities Extraction to @coursebuilder/next/server
+
+## Scope
+
+**Active Apps Only**: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
+
+---
 
 ## Overview
 Extract `redis-client.ts`, `with-skill.ts`, and `logger.ts` to `@coursebuilder/next/server`.
 
-**Files touched**: 38+ files
+**Files touched**: ~20 files (5 active apps)
 **Risk**: LOW
-**Time estimate**: 3-4 hours
 
 ## Pre-flight Checks
 ```bash
@@ -156,13 +161,13 @@ pnpm build
 
 ## Step 4: Update apps with re-exports
 
-### apps/*/src/server/redis-client.ts (all 12 apps)
+### apps/*/src/server/redis-client.ts (5 active apps)
 ```typescript
 // Re-export from shared package
 export { redis } from '@coursebuilder/next/server'
 ```
 
-### apps/*/src/server/with-skill.ts (all 12 apps)
+### apps/*/src/server/with-skill.ts (5 active apps)
 ```typescript
 // Re-export from shared package
 export { withSkill, type SkillRequest } from '@coursebuilder/next/server'
@@ -195,20 +200,13 @@ For each app's `package.json`, ensure dependency exists:
 pnpm build:all
 ```
 
-## Apps to update
+## Apps to update (Active Only)
 
 1. `apps/ai-hero/src/server/`
 2. `apps/dev-build/src/server/`
-3. `apps/epic-web/src/server/`
-4. `apps/epicdev-ai/src/server/`
-5. `apps/just-react/src/server/`
-6. `apps/egghead/src/server/`
-7. `apps/epic-react/src/server/`
-8. `apps/code-with-antonio/src/server/`
-9. `apps/craft-of-ui/src/server/`
-10. `apps/go-local-first/src/server/`
-11. `apps/course-builder-web/src/server/`
-12. `apps/astro-party/src/server/`
+3. `apps/epicdev-ai/src/server/`
+4. `apps/just-react/src/server/`
+5. `apps/code-with-antonio/src/server/`
 
 ## Rollback Plan
 
@@ -219,8 +217,7 @@ If issues arise:
 
 ## Success Criteria
 
-- [ ] `packages/next` builds successfully
-- [ ] All 12 apps build successfully
-- [ ] All 12 apps start in dev mode
+- [ ] `packages/next` builds successfully with server export
+- [ ] All 5 active apps build successfully
 - [ ] Redis operations work (test cache)
 - [ ] Logger writes to Axiom (verify in dashboard)

@@ -1,6 +1,20 @@
 # Business Logic Extraction Plan (lib/ directory)
 
-## Scope
+## STATUS: SKIPPED
+
+> **Decision**: Skip lib/ query file extraction for now. Query functions will eventually be implemented in `@coursebuilder/adapter-drizzle` package directly, which is the proper abstraction layer for database queries.
+
+**Reason**: All query files have heavy `@/` dependencies:
+- `@/db` - Database connection (requires app-specific env vars)
+- `@/server/auth` - Auth session
+- `@/inngest/*` - Inngest client
+- `@/env.mjs` - App-specific environment
+
+Simple extraction won't work - would require factory pattern with dependency injection, which adds complexity without clear benefit. Better to wait for proper adapter-drizzle implementation.
+
+---
+
+## Reference Analysis (Preserved for Future)
 
 **Active Apps Only**: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 

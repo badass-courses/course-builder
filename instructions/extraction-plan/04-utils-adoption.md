@@ -1,15 +1,20 @@
-# PR 1.2-1.4 & PR 3.1-3.3: Utils Package Adoption
+# Utils Package Adoption
+
+## Scope
+
+**Active Apps Only**: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
+
+---
 
 ## Overview
 Adopt existing utils packages and create new ones for remaining utilities.
 
 ---
 
-## PR 1.2: Adopt cn from @coursebuilder/ui - QUICK WIN
+## Adopt cn from @coursebuilder/ui - QUICK WIN
 
 **Files touched**: 5 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 30 minutes
 
 ### Current State
 - `cn` already exists in `@coursebuilder/ui/utils/cn`
@@ -36,11 +41,10 @@ Active apps only: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ---
 
-## PR 1.3: Adopt utils-core (guid.ts) - QUICK WIN
+## Adopt utils-core (guid.ts) - QUICK WIN
 
-**Files touched**: 12 files
+**Files touched**: 5 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 30 minutes
 
 ### Steps
 
@@ -62,11 +66,10 @@ pnpm build:all
 
 ---
 
-## PR 1.4: Adopt utils-email (send-an-email.ts) - QUICK WIN
+## Adopt utils-email (send-an-email.ts) - QUICK WIN
 
-**Files touched**: 12 files
+**Files touched**: 5 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 30 minutes
 
 ### Steps
 
@@ -89,11 +92,10 @@ pnpm build:all
 
 ---
 
-## PR 3.1: Create utils-discord - NEW PACKAGE
+## Create utils-discord - NEW PACKAGE
 
-**Files touched**: 9 files (8 apps + new package)
+**Files touched**: 6 files (5 active apps + new package)
 **Risk**: LOW
-**Time estimate**: 2-3 hours
 
 ### Step 1: Create package with plop
 ```bash
@@ -250,17 +252,15 @@ export {
 } from '@coursebuilder/utils-discord/discord'
 ```
 
-### Apps to update
-- ai-hero, dev-build, epic-web, epicdev-ai
-- just-react, go-local-first, craft-of-ui, code-with-antonio
+### Apps to update (Active Only)
+- ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ---
 
-## PR 3.2: Expand utils-media (cloudinary.ts)
+## Expand utils-media (cloudinary.ts)
 
-**Files touched**: 7 files
+**Files touched**: 5 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 1-2 hours
 
 ### Step 1: Add to existing package
 
@@ -349,32 +349,31 @@ export {
 
 ---
 
-## PR 3.3: Adopt remaining utils packages
+## Adopt remaining utils packages
 
-**Files touched**: 25+ files
+**Files touched**: ~20 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 2-3 hours
 
 ### utils-string (chicagor-title.ts)
 ```typescript
 // apps/*/src/utils/chicagor-title.ts
 export { toChicagoTitleCase } from '@coursebuilder/utils-string/chicagor-title'
 ```
-7 apps: dev-build, go-local-first, epicdev-ai, just-react, ai-hero, epic-web, code-with-antonio
+Active apps: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ### utils-resource (filter-resources.ts)
 ```typescript
 // apps/*/src/utils/filter-resources.ts
 export { filterResources } from '@coursebuilder/utils-resource/filter-resources'
 ```
-6 apps: dev-build, go-local-first, epicdev-ai, just-react, ai-hero, epic-web
+Active apps: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ### utils-browser (cookies.ts)
 ```typescript
 // apps/*/src/utils/cookies.ts
 export { default as cookieUtil } from '@coursebuilder/utils-browser/cookies'
 ```
-5 apps: dev-build, go-local-first, epicdev-ai, just-react, ai-hero
+Active apps: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ### utils-search (typesense-instantsearch-adapter.ts)
 ```typescript
@@ -385,7 +384,7 @@ export {
 	getTypesenseCollectionName,
 } from '@coursebuilder/utils-search/typesense-adapter'
 ```
-8 apps: dev-build, go-local-first, epicdev-ai, just-react, ai-hero, egghead, epic-web, code-with-antonio
+Active apps: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
 
 ---
 

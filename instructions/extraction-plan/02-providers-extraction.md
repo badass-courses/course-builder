@@ -1,13 +1,44 @@
-# PR 2.1-2.3: Extract Providers to @coursebuilder/next/providers
+# Providers Extraction to @coursebuilder/next/providers
+
+## Scope
+
+**Active Apps Only**: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
+
+---
 
 ## Overview
 Extract `ThemeProvider`, `AmplitudeProvider`, and `MuxPlayerProvider` to shared package.
 
-## PR 2.1: ThemeProvider
+---
 
-**Files touched**: 13 files
+## Analysis Results (VERIFIED)
+
+| Provider | Status | MD5 Hash | Notes |
+|----------|--------|----------|-------|
+| `theme-provider.tsx` | ✅ 100% identical | fd461456d86914fc23038dca9dc7dd85 | All 5 apps (326 bytes each) |
+| `amplitude-provider.tsx` | 4/5 identical | 4c464528e4de593f7b461ecb62dba1f4 | epicdev-ai has correct `status` dep |
+| `providers.tsx` | ✅ 100% identical | 0a770e1983f2e3e184791fb58071c1ab | All 5 apps (986 bytes each) |
+
+### amplitude-provider.tsx Variant Analysis
+
+**4-app version (line 38)**:
+```typescript
+}, [userEmail])  // Missing status in deps
+```
+
+**epicdev-ai version (line 38)**:
+```typescript
+}, [userEmail, status])  // Correct dependency array
+```
+
+**Winner**: epicdev-ai - properly includes `status` in the useEffect dependency array for setUserId. The 4-app version has a React hooks exhaustive-deps bug.
+
+---
+
+## ThemeProvider
+
+**Files touched**: 5 files (active apps only)
 **Risk**: LOW
-**Time estimate**: 1-2 hours
 
 ### Step 1: Create provider in package
 
@@ -51,9 +82,9 @@ export { ThemeProvider } from './theme-provider'
 }
 ```
 
-### Step 4: Update all apps
+### Step 4: Update active apps
 
-Replace `apps/*/src/components/theme-provider.tsx` (12 apps):
+Replace `apps/*/src/components/theme-provider.tsx` (5 active apps):
 ```typescript
 // Re-export from shared package
 export { ThemeProvider } from '@coursebuilder/next/providers'
@@ -61,11 +92,10 @@ export { ThemeProvider } from '@coursebuilder/next/providers'
 
 ---
 
-## PR 2.2: AmplitudeProvider
+## AmplitudeProvider
 
-**Files touched**: 10 files
+**Files touched**: 5 files (active apps only)
 **Risk**: MEDIUM (config injection needed)
-**Time estimate**: 2-3 hours
 
 ### Step 1: Create provider with config injection
 
@@ -184,11 +214,10 @@ export { useAmplitude } from '@coursebuilder/next/providers'
 
 ---
 
-## PR 2.3: MuxPlayerProvider
+## MuxPlayerProvider
 
-**Files touched**: 10+ files
+**Files touched**: 5+ files (active apps only)
 **Risk**: MEDIUM (3 variants need unification)
-**Time estimate**: 3-4 hours
 
 ### Step 1: Create unified provider
 

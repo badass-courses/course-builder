@@ -1,5 +1,11 @@
 # TSX Component Extraction Plan
 
+## STATUS: DEFERRED
+
+> **Decision**: Component extraction is deferred until higher-priority items are complete. Components have more complex dependencies and require careful consideration of branding/UI variations.
+
+---
+
 ## Scope
 
 **Active Apps Only**: ai-hero, dev-build, epicdev-ai, just-react, code-with-antonio
@@ -175,6 +181,9 @@ Extract entire directory to `@coursebuilder/ui/team-inquiry`:
 ---
 
 ## TIER 8: Hooks (12 files)
+
+> **Note**: This section overlaps with [03-hooks-extraction.md](./03-hooks-extraction.md).
+> Refer to that document for the definitive hooks extraction plan.
 
 ### 100% Identical (5 files) - Extract to `@coursebuilder/next/hooks`
 
