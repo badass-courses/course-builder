@@ -30,7 +30,7 @@ export default function CreditsPage() {
 
 function Header() {
 	return (
-		<header className="flex w-full flex-col items-center px-3 py-16 text-center sm:px-10 sm:py-24">
+		<header className="flex w-full flex-col items-center px-3 py-16 text-center sm:px-10 sm:pb-16 sm:pt-24">
 			<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
 				Humans Behind EpicAI Pro
 			</h1>
@@ -71,7 +71,7 @@ function InstructorCard({ member }: { member: TeamMember }) {
 				<p className="text-muted-foreground mx-auto mt-4 max-w-lg text-balance leading-relaxed">
 					{member.description}
 				</p>
-				{member.link && <SocialLink link={member.link} className="mt-5" />}
+				<SocialLinks member={member} className="mt-5 justify-center" />
 			</div>
 		</article>
 	)
@@ -118,56 +118,47 @@ function TeamMemberCard({
 				<p className="text-muted-foreground mt-4 max-w-lg text-balance leading-relaxed">
 					{member.description}
 				</p>
-				{member.link && (
-					<SocialLink
-						link={member.link}
-						className="mt-5 justify-center md:justify-start"
-					/>
-				)}
+				<SocialLinks
+					member={member}
+					className="mt-5 justify-center md:justify-start"
+				/>
 			</div>
 		</article>
 	)
 }
 
-function SocialLink({
-	link,
+function SocialLinks({
+	member,
 	className = '',
 }: {
-	link: NonNullable<TeamMember['link']>
+	member: TeamMember
 	className?: string
 }) {
-	const getHref = () => {
-		if (link.label === 'X') {
-			const handle = link.url.replace('https://x.com/', '')
-			return `https://x.com/${handle}`
-		}
-		if (link.label === 'Bluesky') {
-			return link.url
-		}
-		return link.url
-	}
+	const hasLinks = member.xHandle || member.website
+
+	if (!hasLinks) return null
 
 	return (
 		<div className={`flex items-center gap-3 ${className}`}>
-			<a
-				href={getHref()}
-				target="_blank"
-				rel="noopener noreferrer"
-				className="border-border hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
-				aria-label={`${link.label} profile`}
-			>
-				{link.label === 'X' && <XIcon className="h-3 w-3" />}
-				{link.label === 'Bluesky' && <BlueskyIcon className="h-4 w-4" />}
-				{link.label === 'Website' && <WebsiteIcon className="h-4 w-4" />}
-			</a>
-			{link.label === 'Website' && (
+			{member.xHandle && (
 				<a
-					href={link.url}
+					href={`https://x.com/${member.xHandle}`}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="border-border hover:bg-muted flex h-8 w-8 items-center justify-center rounded-full border transition-colors"
+					aria-label={`${member.name} on X`}
+				>
+					<XIcon className="h-3 w-3" />
+				</a>
+			)}
+			{member.website && (
+				<a
+					href={member.website}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-primary font-mono text-xs hover:underline"
 				>
-					{extractDomain(link.url)}
+					{extractDomain(member.website)}
 				</a>
 			)}
 		</div>
@@ -194,39 +185,6 @@ function XIcon({ className }: { className?: string }) {
 				d="M9.52373 6.77569L15.4811 0H14.0699L8.89493 5.88203L4.7648 0H0L6.24693 8.89552L0 16H1.4112L6.87253 9.78704L11.2352 16H16M1.92053 1.04127H4.08853L14.0688 15.0099H11.9003"
 				fill="currentColor"
 			/>
-		</svg>
-	)
-}
-
-function BlueskyIcon({ className }: { className?: string }) {
-	return (
-		<svg
-			className={className}
-			viewBox="0 0 64 57"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				fill="currentColor"
-				d="M13.873 3.805C21.21 9.332 29.103 20.537 32 26.55v15.882c0-.338-.13.044-.41.867-1.512 4.456-7.418 21.847-20.923 7.944-7.111-7.32-3.819-14.64 9.125-16.85-7.405 1.264-15.73-.825-18.014-9.015C1.12 23.022 0 8.51 0 6.55 0-3.268 8.579-.182 13.873 3.805ZM50.127 3.805C42.79 9.332 34.897 20.537 32 26.55v15.882c0-.338.13.044.41.867 1.512 4.456 7.418 21.847 20.923 7.944 7.111-7.32 3.819-14.64-9.125-16.85 7.405 1.264 15.73-.825 18.014-9.015C62.88 23.022 64 8.51 64 6.55c0-9.818-8.578-6.732-13.873-2.745Z"
-			/>
-		</svg>
-	)
-}
-
-function WebsiteIcon({ className }: { className?: string }) {
-	return (
-		<svg
-			className={className}
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		>
-			<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-			<polyline points="9 22 9 12 15 12 15 22" />
 		</svg>
 	)
 }
