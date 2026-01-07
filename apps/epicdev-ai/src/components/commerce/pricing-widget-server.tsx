@@ -158,6 +158,24 @@ export async function PricingWidgetServer({
 	const loyaltyCoupon = user?.id ? await getLoyaltyCouponForUser(user.id) : null
 
 	if (productProps.hasPurchasedCurrentProduct) {
+		// For self-paced products, find the main course overview workshop
+		// (the one that contains all workshops) instead of the first child workshop
+		let viewPath = getResourcePath(resource.type, resource.fields.slug, 'view')
+		if (product?.type === 'self-paced' && product.resources) {
+			const mainWorkshop = product.resources.find(
+				(r: any) =>
+					r.resource?.type === 'workshop' &&
+					r.resource?.fields?.slug === 'epic-mcp-from-scratch-to-production',
+			)
+			if (mainWorkshop) {
+				viewPath = getResourcePath(
+					'workshop',
+					mainWorkshop.resource.fields.slug,
+					'view',
+				)
+			}
+		}
+
 		return (
 			<div
 				data-pricing-state="purchased"
@@ -169,12 +187,12 @@ export async function PricingWidgetServer({
 						You have already purchased{' '}
 						{product?.type === 'cohort'
 							? 'a ticket to this cohort.'
-							: 'this workshop.'}
+							: 'this course.'}
 					</span>
 				</div>
 				<Link
 					className="text-primary underline underline-offset-4"
-					href={getResourcePath(resource.type, resource.fields.slug, 'view')}
+					href={viewPath}
 				>
 					View →
 				</Link>
