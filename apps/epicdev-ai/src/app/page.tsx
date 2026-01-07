@@ -16,7 +16,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { products } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getSaleBannerData } from '@/lib/sale-banner'
+import { getSaleBannerVisibility } from '@/lib/sale-banner-helpers'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
 import MuxPlayer from '@mux/mux-player-react'
@@ -78,14 +78,17 @@ type Props = {
 
 const Home = async (props: Props) => {
 	const isCommerceEnabled = await commerceEnabled()
-	const page = await getPage(isCommerceEnabled ? 'root-selling-live' : 'root')
+	const page = await getPage(
+		isCommerceEnabled ? 'root-selling-workshop' : 'root',
+	)
 
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-		type: page.resources[0]?.resource?.type,
-		postType: page.resources[0]?.resource?.fields?.postType,
-	}
+	const firstPageResource = page?.resources?.[0] &&
+		page?.resources?.[0].resource?.type !== 'videoResource' && {
+			path: page.resources[0]?.resource?.fields?.slug,
+			title: page.resources[0]?.resource?.fields?.title,
+			type: page.resources[0]?.resource?.type,
+			postType: page.resources[0]?.resource?.fields?.postType,
+		}
 
 	const pageVideoResource = page?.resources?.find(
 		(resource) => resource.resource.type === 'videoResource',
@@ -116,16 +119,13 @@ const Home = async (props: Props) => {
 		}
 	}
 
-	const saleBannerData = await getSaleBannerData(defaultCoupon)
+	const { shouldShowSaleBanner, saleBannerData } =
+		await getSaleBannerVisibility(defaultCoupon, isCommerceEnabled)
 
 	return (
-		<LayoutClient
-			className="static"
-			highlightedResource={firstPageResource}
-			withContainer
-		>
+		<LayoutClient className="static" withContainer>
 			<main className="flex w-full flex-col items-center justify-center">
-				{defaultCoupon && saleBannerData && isCommerceEnabled ? (
+				{shouldShowSaleBanner && saleBannerData ? (
 					<Link
 						className="text-primary dark:border-foreground/5 mx-auto flex max-w-full items-center justify-center gap-1 rounded-lg border border-violet-500/20 bg-violet-100 px-3 py-1 pr-1 text-sm font-medium shadow-md shadow-violet-600/10 dark:bg-violet-500/20 dark:shadow-none"
 						href={saleBannerData.productPath}
@@ -134,7 +134,9 @@ const Home = async (props: Props) => {
 						<span className="font-bold">Save {saleBannerData.percentOff}%</span>{' '}
 						on {saleBannerData.productName}.{' '}
 						<div className="bg-linear-to-b font-heading from-primary ml-1 rounded-sm to-indigo-800 px-2 py-0.5 text-sm font-semibold text-white transition ease-out group-hover:underline">
-							Get Your Ticket
+							{saleBannerData.productType === 'self-paced'
+								? 'Enroll Now'
+								: 'Get Your Ticket'}
 						</div>
 					</Link>
 				) : (
@@ -237,7 +239,7 @@ const Home = async (props: Props) => {
 										{...props}
 									/>
 								),
-								Pricing: (props) => (
+								Pricing: ({ productId = 'product-zir2q', ...props }) => (
 									<React.Suspense
 										fallback={
 											<div className="flex h-full w-full items-center justify-center px-5 py-10 text-center">
@@ -245,17 +247,13 @@ const Home = async (props: Props) => {
 											</div>
 										}
 									>
-										<div className="bg-linear-to-bl from-primary relative mb-10 mt-24 flex w-full flex-col items-center justify-center rounded-lg to-indigo-800 py-10 shadow-lg shadow-indigo-800/5 sm:flex-row">
+										<div className="bg-linear-to-bl from-primary relative mb-10 mt-24 flex w-full flex-col items-center justify-center rounded-lg to-indigo-800 py-10 shadow-lg shadow-indigo-800/5 has-[div[data-pricing-state=purchased]]:mb-6 has-[div[data-pricing-state=purchased]]:mt-16 has-[div[data-pricing-state=purchased]]:justify-center has-[div[data-pricing-state=purchased]]:py-6 sm:flex-row">
 											<div
 												id="buy"
-												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]"
+												className="not-prose bg-card -mt-20 w-full max-w-sm rounded-lg border pt-3 shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)] has-[div[data-pricing-state=purchased]]:-mt-2 has-[div[data-pricing-state=purchased]]:w-full has-[div[data-pricing-state=purchased]]:max-w-3xl has-[div[data-pricing-state=purchased]]:border-none has-[div[data-pricing-state=purchased]]:bg-transparent has-[div[data-pricing-state=purchased]]:px-0 has-[div[data-pricing-state=purchased]]:pt-0 has-[div[data-pricing-state=purchased]]:shadow-none"
 											>
 												<PricingWidgetServer
-													productId={
-														process.env.NODE_ENV === 'development'
-															? 'product-zir2q' // 'product-30fvh'
-															: 'product-zir2q'
-													}
+													productId={productId}
 													searchParams={searchParams}
 													{...props}
 												/>

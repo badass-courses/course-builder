@@ -23,33 +23,29 @@ export default function WorkshopResourcesEdit({
 	const [isAddingLesson, setIsAddingLesson] = React.useState(false)
 	const [isAddingSection, setIsAddingSection] = React.useState(false)
 
+	/**
+	 * Recursively builds tree item from a resource relation
+	 * Supports nested sections (sections within sections)
+	 */
+	const buildTreeItem = (resourceItem: any): any => {
+		if (!resourceItem.resource) {
+			throw new Error('resourceItem.resource is required')
+		}
+		const resources = resourceItem.resource.resources ?? []
+		const isSection = resourceItem.resource.type === 'section'
+
+		return {
+			id: resourceItem.resource.id,
+			label: resourceItem.resource.fields?.title,
+			type: resourceItem.resource.type,
+			isOpen: isSection && resources.length > 0,
+			children: resources.map(buildTreeItem),
+			itemData: resourceItem as any,
+		}
+	}
+
 	const initialData = [
-		...(workshop.resources
-			? workshop.resources.map((resourceItem) => {
-					if (!resourceItem.resource) {
-						throw new Error('resourceItem.resource is required')
-					}
-					const resources = resourceItem.resource.resources ?? []
-					return {
-						id: resourceItem.resource.id,
-						label: resourceItem.resource.fields?.title,
-						type: resourceItem.resource.type,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
-						itemData: resourceItem as any,
-					}
-				})
-			: []),
+		...(workshop.resources ? workshop.resources.map(buildTreeItem) : []),
 	]
 	const [state, updateState] = useReducer(
 		treeStateReducer,

@@ -42,13 +42,16 @@ export const ThemeImage: React.FC<ThemeImageProps> = ({
 	if (!mounted || !url) {
 		return (
 			<Shimmer
-				className=""
+				className={cn('', props.className, {
+					'!opacity-0': props.style,
+				})}
 				style={{
 					aspectRatio: `${width} / ${height}`,
 					maxWidth: width,
 					maxHeight: height,
 					width: '100%',
 					height: 'auto',
+					...props.style,
 				}}
 			/>
 		)
@@ -75,7 +78,7 @@ const Shimmer: React.FC<{
 	return (
 		<div
 			className={cn(
-				'bg-linear-to-r bg-size-[200%_100%] my-8 animate-pulse rounded-xl from-gray-100 via-gray-200 to-gray-100 sm:my-10 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
+				'bg-linear-to-r bg-size-[200%_100%] my-8 animate-pulse rounded-xl from-gray-100 via-gray-200 to-gray-100 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
 				className,
 			)}
 			style={style}

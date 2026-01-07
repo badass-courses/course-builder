@@ -2,6 +2,7 @@ import { type Adapter } from '@auth/core/adapters'
 
 import {
 	ContentResourceResource,
+	Entitlement,
 	MerchantCharge,
 	NewProduct,
 	UpgradableProduct,
@@ -14,6 +15,7 @@ import { Coupon } from './schemas/coupon-schema'
 import { MerchantAccount } from './schemas/merchant-account-schema'
 import { MerchantCoupon } from './schemas/merchant-coupon-schema'
 import { MerchantCustomer } from './schemas/merchant-customer-schema'
+import { MerchantEvents } from './schemas/merchant-events-schema'
 import { MerchantPrice } from './schemas/merchant-price-schema'
 import { MerchantProduct } from './schemas/merchant-product-schema'
 import { MerchantSession } from './schemas/merchant-session'
@@ -311,6 +313,17 @@ export interface CourseBuilderAdapter<
 	getPurchasesForBulkCouponId(
 		bulkCouponId: string,
 	): Promise<(Purchase & { user: User })[]>
+	createMerchantEvent(options: {
+		merchantAccountId: string
+		identifier: string
+		payload: Record<string, any>
+	}): Promise<MerchantEvents>
+	getMerchantEventByIdentifier(
+		identifier: string,
+	): Promise<MerchantEvents | null>
+	getMerchantEventsByAccount(
+		merchantAccountId: string,
+	): Promise<MerchantEvents[]>
 }
 
 export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
@@ -411,6 +424,23 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	}): Promise<MerchantCustomer | null> {
 		return Promise.resolve(null)
 	},
+	createMerchantEvent(options: {
+		merchantAccountId: string
+		identifier: string
+		payload: Record<string, any>
+	}): Promise<MerchantEvents> {
+		throw new Error('Method not implemented.')
+	},
+	getMerchantEventByIdentifier(
+		identifier: string,
+	): Promise<MerchantEvents | null> {
+		return Promise.resolve(null)
+	},
+	getMerchantEventsByAccount(
+		merchantAccountId: string,
+	): Promise<MerchantEvents[]> {
+		return Promise.resolve([])
+	},
 	findOrCreateUser(
 		email: string,
 		name?: string | null,
@@ -479,6 +509,12 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	}): Promise<MerchantCoupon[]> {
 		return Promise.resolve([])
 	},
+	getMerchantCouponForTypeAndAmount(params: {
+		type: string
+		amountDiscount: number
+	}): Promise<MerchantCoupon | null> {
+		return Promise.resolve(null)
+	},
 	getMerchantCoupon(merchantCouponId: string): Promise<MerchantCoupon | null> {
 		return Promise.resolve(null)
 	},
@@ -542,6 +578,18 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	},
 	getPurchasesForUser(userId?: string): Promise<Purchase[]> {
 		return Promise.resolve([])
+	},
+	getEntitlementsForUser(params: {
+		userId: string
+		sourceType?: string
+		entitlementType?: string
+	}): Promise<Entitlement[]> {
+		return Promise.resolve([])
+	},
+	getEntitlementTypeByName(
+		name: string,
+	): Promise<{ id: string; name: string } | null> {
+		return Promise.resolve(null)
 	},
 	getUserById(userId: string): Promise<User | null> {
 		return Promise.resolve(null)
@@ -727,6 +775,14 @@ interface SkillProductsCommerceSdk {
 	getPurchase(purchaseId: string): Promise<Purchase | null>
 	getPurchaseCountForProduct(productId: string): Promise<number>
 	getPurchasesForUser(userId?: string): Promise<Purchase[]>
+	getEntitlementsForUser(params: {
+		userId: string
+		sourceType?: string
+		entitlementType?: string
+	}): Promise<Entitlement[]>
+	getEntitlementTypeByName(
+		name: string,
+	): Promise<{ id: string; name: string } | null>
 	getMerchantProduct(stripeProductId: string): Promise<MerchantProduct | null>
 	getMerchantProductForProductId(
 		productId: string,
@@ -776,6 +832,10 @@ interface SkillProductsCommerceSdk {
 		type: string
 		percentageDiscount: number
 	}): Promise<MerchantCoupon[]>
+	getMerchantCouponForTypeAndAmount(params: {
+		type: string
+		amountDiscount: number
+	}): Promise<MerchantCoupon | null>
 	getCoupon(couponIdOrCode: string): Promise<Coupon | null>
 	getDefaultCoupon(productIds?: string[]): Promise<{
 		defaultMerchantCoupon: MerchantCoupon

@@ -96,8 +96,32 @@ export async function createMuxAsset(
 		method: 'POST',
 		body: JSON.stringify(muxOptions.new_asset_settings),
 	})
-	const { data } = await res.json()
-	return MuxAssetSchema.parse(data)
+
+	if (!res.ok) {
+		const errorBody = await res.json().catch(() => ({}))
+		throw new Error(
+			`Failed to create Mux asset: ${res.status} ${res.statusText}. ${JSON.stringify(errorBody)}`,
+		)
+	}
+
+	const response = await res.json()
+	const data = response.data ?? response
+
+	if (!data) {
+		throw new Error(
+			`Invalid Mux API response: missing data. Response: ${JSON.stringify(response)}`,
+		)
+	}
+
+	const parsedData = MuxAssetSchema.safeParse(data)
+
+	if (!parsedData.success) {
+		throw new Error(
+			`Invalid Mux asset data: ${parsedData.error.message}. Data: ${JSON.stringify(data)}`,
+		)
+	}
+
+	return parsedData.data
 }
 
 export function getMuxOptions(options?: MuxApiOptions) {

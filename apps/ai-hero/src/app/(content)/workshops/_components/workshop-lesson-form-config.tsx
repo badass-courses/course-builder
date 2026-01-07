@@ -1,5 +1,6 @@
 import React from 'react'
 import { onLessonSave } from '@/app/(content)/tutorials/[module]/[lesson]/edit/actions'
+import { PageBlocks } from '@/app/admin/pages/_components/page-builder-mdx-components'
 import {
 	ResourceFormConfig,
 	type BaseTool,
@@ -7,7 +8,7 @@ import {
 import { Lesson, LessonSchema, type LessonUpdate } from '@/lib/lessons'
 import { autoUpdateLesson, updateLesson } from '@/lib/lessons-query'
 import { log } from '@/server/logger'
-import { ImagePlusIcon, VideoIcon } from 'lucide-react'
+import { ComponentIcon, ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import StandaloneVideoResourceUploaderAndViewer from '../../posts/_components/standalone-video-resource-uploader-and-viewer'
@@ -62,6 +63,18 @@ export const createWorkshopLessonFormConfig = (
 		tags: lesson?.tags || [],
 	}),
 	customTools: [
+		{
+			id: 'page-blocks',
+			icon: () => (
+				<ComponentIcon strokeWidth={1.5} size={24} width={18} height={18} />
+			),
+			toolComponent: (
+				<div className="mt-3 px-5">
+					<h3 className="mb-3 inline-flex text-xl font-bold">MDX Components</h3>
+					<PageBlocks />
+				</div>
+			),
+		},
 		mediaUploadTool,
 		{
 			id: 'videos',

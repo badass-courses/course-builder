@@ -8,14 +8,23 @@ import {
 	FormMessage,
 } from '../../primitives/form'
 import { Input } from '../../primitives/input'
+import { cn } from '../../utils/cn'
 
-export function MetadataFieldState({ form }: { form: UseFormReturn<any> }) {
+export function MetadataFieldState({
+	form,
+	name = 'fields.state',
+	className,
+}: {
+	form: UseFormReturn<any>
+	name?: string
+	className?: string
+}) {
 	return (
 		<FormField
 			control={form.control}
-			name="fields.state"
+			name={name}
 			render={({ field }) => (
-				<FormItem className="px-5">
+				<FormItem className={cn('px-5', className)}>
 					<FormLabel className="text-lg font-bold">State</FormLabel>
 					<Input {...field} readOnly disabled />
 					<FormMessage />

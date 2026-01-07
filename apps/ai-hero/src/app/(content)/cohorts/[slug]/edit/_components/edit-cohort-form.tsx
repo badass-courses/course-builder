@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import StandaloneVideoResourceUploaderAndViewer from '@/app/(content)/posts/_components/standalone-video-resource-uploader-and-viewer'
+import QuickWorkshopEditForm from '@/app/(content)/workshops/_components/quick-workshop-edit-form'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import {
 	ResourceFormProps,
@@ -14,6 +15,10 @@ import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -137,8 +142,23 @@ function CohortFormFields({
  * Enhanced cohort form with common resource form functionality
  */
 export const EditCohortForm = ({ resource }: { resource: Cohort }) => {
+	const [isQuickEditOpen, setIsQuickEditOpen] = React.useState(false)
+	const [selectedWorkshopId, setSelectedWorkshopId] = React.useState<
+		string | null
+	>(null)
+
 	const CohortForm = withResourceForm(CohortFormFields, {
 		...cohortFormConfig,
+		bodyPanelConfig: {
+			...cohortFormConfig.bodyPanelConfig,
+			listEditorConfig: {
+				...cohortFormConfig.bodyPanelConfig?.listEditorConfig,
+				onQuickEdit: async (itemId) => {
+					setSelectedWorkshopId(itemId)
+					setIsQuickEditOpen(true)
+				},
+			},
+		},
 		customTools: [
 			{
 				id: 'images',
@@ -163,5 +183,23 @@ export const EditCohortForm = ({ resource }: { resource: Cohort }) => {
 		],
 	})
 
-	return <CohortForm resource={resource} />
+	return (
+		<>
+			<CohortForm resource={resource} />
+			<Dialog
+				modal={false}
+				open={isQuickEditOpen}
+				onOpenChange={setIsQuickEditOpen}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Quick Edit Workshop</DialogTitle>
+					</DialogHeader>
+					{selectedWorkshopId && (
+						<QuickWorkshopEditForm workshopId={selectedWorkshopId} />
+					)}
+				</DialogContent>
+			</Dialog>
+		</>
+	)
 }

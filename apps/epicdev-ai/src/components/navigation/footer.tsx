@@ -23,7 +23,7 @@ export default function Footer() {
 					<Logo className="origin-left scale-110" withSubtitle />
 				</Link>
 				<nav>
-					<ul className="flex flex-col flex-wrap items-center gap-4 sm:flex-row sm:gap-8">
+					{/* <ul className="flex flex-col flex-wrap items-center gap-4 sm:flex-row sm:gap-8">
 						{links.map((link) => {
 							if (!link.href) {
 								return null
@@ -39,7 +39,7 @@ export default function Footer() {
 								</li>
 							)
 						})}
-					</ul>
+					</ul> */}
 				</nav>
 				<ThemeToggle className="" />
 			</div>

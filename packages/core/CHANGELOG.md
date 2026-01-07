@@ -1,5 +1,67 @@
 # @coursebuilder/core
 
+## 1.1.0
+
+### Minor Changes
+
+- [#578](https://github.com/badass-courses/course-builder/pull/578)
+  [`f11c60f`](https://github.com/badass-courses/course-builder/commit/f11c60f9b08d7955ea840af15cc0d14d7c44f633)
+  Thanks [@zacjones93](https://github.com/zacjones93)! - Add fixed amount
+  discount functionality for merchant coupons with proper dollar-based pricing
+  throughout the pricing system. This includes converting fixed discount amounts
+  from cents to dollars (breaking change), displaying fixed discount amounts in
+  pricing components, and adding shared pricing UI components for discount
+  visualization.
+
+### Patch Changes
+
+- [#587](https://github.com/badass-courses/course-builder/pull/587)
+  [`fff302b`](https://github.com/badass-courses/course-builder/commit/fff302b9a483f8d9b6209bf5ec3fa57830c3e8e9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - extract cohort and
+  workshop creation to adapter and add tests
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [`1b92a3a`](https://github.com/badass-courses/course-builder/commit/1b92a3ac602291f219370fb264d8e0099f54963c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add openEnrollment and
+  closeEnrollment fields to cohort creation
+
+- [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add optional retryCount
+  to VideoStatusCheckEvent schema and enhance error handling in
+  removeCompletedVideo function
+
+- [`18d2d04`](https://github.com/badass-courses/course-builder/commit/18d2d048e0e1083d66f5c929ffedf5452b9f93ef)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bring back non-dynamic
+  og image routes
+
+- [`79764de`](https://github.com/badass-courses/course-builder/commit/79764deb0346fca813e01d2e2409712990990d8e)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - dont require
+  verify-login redirect
+
+- [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - limit retries on
+  remove-completed-video inngest function
+
+- [#568](https://github.com/badass-courses/course-builder/pull/568)
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - ensure self-paced
+  workshop purchasers have org id by redirecting to /verify-login before
+  checkout
+
+- [`8267b98`](https://github.com/badass-courses/course-builder/commit/8267b984c6167c12bef8315900764943d0d86087)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - chore: make sure
+  availableCoupons is array
+
+- Updated dependencies
+  [[`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/email-templates@1.0.7
+  - @coursebuilder/nodash@0.0.2
+
 ## 1.0.6
 
 ### Patch Changes

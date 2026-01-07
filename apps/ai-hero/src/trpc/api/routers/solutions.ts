@@ -2,6 +2,7 @@ import { SolutionSchema } from '@/lib/solution'
 import {
 	createSolution as createSolutionAction,
 	deleteSolution as deleteSolutionAction,
+	getAllSolutionsForLesson,
 	getLessonForSolution,
 	getSolution,
 	getSolutionForLesson,
@@ -16,7 +17,7 @@ import { z } from 'zod'
  */
 export const solutionsRouter = createTRPCRouter({
 	/**
-	 * Get a solution for a specific lesson
+	 * Get a solution for a specific lesson (returns first one)
 	 */
 	getForLesson: protectedProcedure
 		.input(
@@ -27,6 +28,20 @@ export const solutionsRouter = createTRPCRouter({
 		.query(async ({ input }) => {
 			const { lessonId } = input
 			return getSolutionForLesson(lessonId)
+		}),
+
+	/**
+	 * Get ALL solutions for a specific lesson
+	 */
+	getAllForLesson: protectedProcedure
+		.input(
+			z.object({
+				lessonId: z.string(),
+			}),
+		)
+		.query(async ({ input }) => {
+			const { lessonId } = input
+			return getAllSolutionsForLesson(lessonId)
 		}),
 
 	/**

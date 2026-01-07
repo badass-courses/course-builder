@@ -1,4 +1,8 @@
-import { WorkshopNavigation, type NavigationResource } from '@/lib/workshops'
+import {
+	WorkshopNavigation,
+	type NavigationResource,
+	type NavigationSection,
+} from '@/lib/workshops'
 
 export type AdjacentResource = {
 	id: string
@@ -10,7 +14,7 @@ export type AdjacentResource = {
 } | null
 
 /**
- * Flattens all navigation resources, including nested solutions,
+ * Flattens all navigation resources, including nested solutions and nested sections,
  * and returns the next and previous resources relative to the current one.
  * Also determines if exercise or solution comes next based on current context.
  */
@@ -44,11 +48,16 @@ export function getAdjacentWorkshopResources(
 		parentSlug?: string
 	}> = []
 
-	// Helper function to process a resource and create virtual entries for exercises/solutions
-	const processResource = (
-		resource: NavigationResource,
-		isInSection = false,
-	) => {
+	/**
+	 * Helper function to process a lesson/post resource and its solutions
+	 */
+	const processResource = (resource: NavigationResource) => {
+		if (resource.type === 'section') {
+			// Recursively process section contents
+			processSection(resource)
+			return
+		}
+
 		// Add the resource itself (lesson/post)
 		flattenedNavResources.push({
 			id: resource.id,
@@ -79,16 +88,18 @@ export function getAdjacentWorkshopResources(
 		}
 	}
 
-	// Process all resources and flatten them
+	/**
+	 * Recursively processes a section, handling nested sub-sections
+	 */
+	const processSection = (section: NavigationSection) => {
+		section.resources.forEach((item) => {
+			processResource(item)
+		})
+	}
+
+	// Process all top-level resources and flatten them
 	navigation.resources.forEach((resource) => {
-		if (resource.type === 'section') {
-			// Process section's resources
-			resource.resources.forEach((sectionItem) => {
-				processResource(sectionItem, true)
-			})
-		} else {
-			processResource(resource)
-		}
+		processResource(resource)
 	})
 
 	// Find the index of the current resource
@@ -104,10 +115,26 @@ export function getAdjacentWorkshopResources(
 	let nextResource = flattenedNavResources[navIndex + 1] || null
 	const prevResource = flattenedNavResources[navIndex - 1] || null
 
-	// Simplified logic based on current context and lesson properties
-	const currentLesson = navigation.resources
-		.flatMap((r) => (r.type === 'section' ? r.resources : [r]))
-		.find((r) => r.id === currentResourceId && r.type === 'lesson')
+	/**
+	 * Recursively find a lesson by ID in the navigation structure
+	 */
+	const findLessonById = (
+		resources: NavigationResource[],
+		id: string,
+	): NavigationResource | undefined => {
+		for (const r of resources) {
+			if (r.type === 'section') {
+				const found = findLessonById(r.resources, id)
+				if (found) return found
+			} else if (r.id === id && r.type === 'lesson') {
+				return r
+			}
+		}
+		return undefined
+	}
+
+	// Find current lesson using recursive search
+	const currentLesson = findLessonById(navigation.resources, currentResourceId)
 
 	const hasExercise =
 		(currentLesson?.type === 'lesson' &&

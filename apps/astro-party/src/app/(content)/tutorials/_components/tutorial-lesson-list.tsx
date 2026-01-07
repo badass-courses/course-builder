@@ -117,7 +117,7 @@ export function TutorialLessonList(props: Props) {
 			)}
 		>
 			<div className="sticky top-0 h-auto">
-				<ScrollArea className={cn(maxHeight)} viewportRef={scrollAreaRef}>
+				<ScrollArea className={cn(maxHeight)} ref={scrollAreaRef}>
 					{withHeader && (
 						<div className="flex w-full flex-row items-center gap-2 p-5 pl-2">
 							{tutorial?.fields?.coverImage?.url && (

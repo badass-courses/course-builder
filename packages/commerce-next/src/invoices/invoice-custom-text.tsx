@@ -5,7 +5,9 @@ import { useLocalStorage } from 'react-use'
 
 import { Textarea } from '@coursebuilder/ui'
 
-export function InvoiceCustomText() {
+import { cn } from '../cn'
+
+export function InvoiceCustomText({ className }: { className?: string }) {
 	const [invoiceMetadata, setInvoiceMetadata] = useLocalStorage(
 		'invoice-metadata',
 		'',
@@ -14,12 +16,18 @@ export function InvoiceCustomText() {
 		<>
 			<Textarea
 				aria-label="Invoice notes"
-				className="border-primary mt-4 h-full w-full border-2 p-3 print:mt-0 print:border-none print:bg-transparent print:p-0 print:text-base"
+				className={cn(
+					'my-2 h-full w-full p-3 print:my-0 print:hidden print:border-none print:bg-transparent print:p-0 print:text-base',
+					{
+						'print:hidden': invoiceMetadata?.trim() === '',
+					},
+					className,
+				)}
 				value={invoiceMetadata}
 				onChange={(e) => setInvoiceMetadata(e.target.value)}
 				placeholder="Enter additional info here (optional)"
 			/>
-			{/* <div className="hidden print:block">{invoiceMetadata}</div> */}
+			<div className="hidden print:block">{invoiceMetadata}</div>
 		</>
 	)
 }

@@ -3,11 +3,9 @@ import { headers } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
-import {
-	getCachedWorkshopProduct,
-	getWorkshopProduct,
-} from '@/lib/workshops-query'
+import { getCachedAllWorkshopProducts } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
@@ -26,8 +24,20 @@ export async function WorkshopPricing({
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
 
-	const workshopProduct = await getCachedWorkshopProduct(moduleSlug)
-	const product = await getProduct(workshopProduct?.id)
+	// Get all products for this workshop (both standalone and cohort)
+	const allProducts = await getCachedAllWorkshopProducts(moduleSlug)
+
+	// Prioritize standalone products (not cohort) for the pricing widget
+	const standaloneProducts = allProducts.filter((p) => p.type !== 'cohort')
+	const cohortProducts = allProducts.filter((p) => p.type === 'cohort')
+
+	// Use standalone product if available, otherwise fall back to first product
+	const productForPricing = standaloneProducts[0] || allProducts[0] || null
+
+	// Get full product details for the pricing product
+	const product = productForPricing?.id
+		? await getProduct(productForPricing.id)
+		: null
 
 	let workshopProps
 
@@ -40,6 +50,8 @@ export async function WorkshopPricing({
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
+
+		// Pass all products to propsForCommerce so purchases are properly handled
 		const commerceProps = await propsForCommerce(
 			{
 				query: {
@@ -47,7 +59,7 @@ export async function WorkshopPricing({
 					...searchParams,
 				},
 				userId: user?.id,
-				products: [product],
+				products: allProducts,
 				countryCode,
 			},
 			courseBuilderAdapter,
@@ -64,29 +76,48 @@ export async function WorkshopPricing({
 		if (!user) {
 			workshopProps = baseProps
 		} else {
+			// Check if user has purchased any of the products
 			const purchaseForProduct = commerceProps.purchases?.find(
 				(purchase: Purchase) => {
-					return purchase.productId === productSchema.parse(product).id
+					return allProducts.some((p) => p.id === purchase.productId)
 				},
 			)
 
-			if (!purchaseForProduct) {
+			// Check entitlements via ability using existing utility
+			const abilityForResource = await getAbilityForResource(
+				undefined,
+				moduleSlug,
+			)
+			const hasPurchasedViaEntitlements = abilityForResource.canViewWorkshop
+
+			// hasPurchasedCurrentProduct should be true if:
+			// 1. User has a valid purchase for any of the products, OR
+			// 2. User has entitlements that grant access to the workshop
+			const hasPurchasedCurrentProduct =
+				hasPurchasedViaEntitlements ||
+				Boolean(
+					purchaseForProduct &&
+						(purchaseForProduct.status === 'Valid' ||
+							purchaseForProduct.status === 'Restricted'),
+				)
+
+			if (!purchaseForProduct && !hasPurchasedViaEntitlements) {
 				workshopProps = baseProps
 			} else {
-				const { purchase, existingPurchase } =
-					await courseBuilderAdapter.getPurchaseDetails(
-						purchaseForProduct.id,
-						user.id,
-					)
+				const existingPurchase = purchaseForProduct
+					? await courseBuilderAdapter.getPurchaseDetails(
+							purchaseForProduct.id,
+							user.id,
+						)
+					: null
+
 				const purchasedProductIds =
 					commerceProps?.purchases?.map((purchase) => purchase.productId) || []
+
 				workshopProps = {
 					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(
-						purchase &&
-							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
-					),
-					existingPurchase,
+					hasPurchasedCurrentProduct,
+					existingPurchase: existingPurchase?.existingPurchase || null,
 					quantityAvailable: product.quantityAvailable,
 					purchasedProductIds,
 				}

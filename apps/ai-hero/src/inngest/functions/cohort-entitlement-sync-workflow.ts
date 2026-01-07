@@ -1,13 +1,25 @@
 import { inngest } from '@/inngest/inngest.server'
 import { getCohort } from '@/lib/cohorts-query'
-import {
-	findUsersWithCohortEntitlements,
-	syncUserCohortEntitlements,
-} from '@/lib/entitlement-sync'
+import { findUsersWithCohortEntitlements } from '@/lib/entitlement-sync'
 import { log } from '@/server/logger'
 
-import { COHORT_UPDATED_EVENT } from '../events/cohort-management'
+import {
+	COHORT_ENTITLEMENT_SYNC_USER_EVENT,
+	COHORT_UPDATED_EVENT,
+} from '../events/cohort-management'
 
+/**
+ * Main orchestrator workflow that handles cohort updates.
+ * Uses fan-out pattern to process each user in parallel via separate child functions.
+ *
+ * Architecture:
+ * 1. Validate cohort and extract resource IDs (~1-2s)
+ * 2. Find all users with entitlements (single batched query, ~1-2s)
+ * 3. Fan-out one event per user (processed in parallel by child functions)
+ *
+ * This ensures the orchestrator completes quickly (~5s) regardless of user count,
+ * while each user is processed reliably with individual retries.
+ */
 export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 	{
 		id: 'cohort-entitlement-sync-workflow',
@@ -17,129 +29,101 @@ export const cohortEntitlementSyncWorkflow = inngest.createFunction(
 		event: COHORT_UPDATED_EVENT,
 	},
 	async ({ event, step }) => {
-		const { cohortId, changes } = event.data
+		const { cohortId } = event.data
 		const startTime = Date.now()
 
+		// Step 1: Validate cohort and extract resource IDs
 		const cohortInfo = await step.run('validate-cohort', async () => {
-			try {
-				const cohort = await getCohort(cohortId)
+			const cohort = await getCohort(cohortId)
 
-				if (!cohort) {
-					throw new Error(`Cohort ${cohortId} not found`)
-				}
+			if (!cohort) {
+				throw new Error(`Cohort ${cohortId} not found`)
+			}
 
-				await log.info('cohort_entitlement_sync.cohort_validated', {
-					cohortId,
-					cohortTitle: cohort.fields?.title || 'Unknown',
-					resourceCount: cohort.resources?.length || 0,
-				})
+			// Extract resource IDs to pass to child functions
+			const resourceIds = (cohort.resources || [])
+				.map((r) => r.resource?.id)
+				.filter((id): id is string => Boolean(id))
 
-				return {
-					cohortTitle: cohort.fields?.title || 'Unknown',
-					resourceCount: cohort.resources?.length || 0,
-					cohort,
-				}
-			} catch (error) {
-				await log.error('cohort_entitlement_sync.cohort_validation_failed', {
-					cohortId,
-					error: error instanceof Error ? error.message : String(error),
-				})
-				throw error
+			await log.info('cohort_entitlement_sync.cohort_validated', {
+				cohortId,
+				cohortTitle: cohort.fields?.title || 'Unknown',
+				resourceCount: resourceIds.length,
+			})
+
+			return {
+				cohortTitle: cohort.fields?.title || 'Unknown',
+				resourceIds,
 			}
 		})
 
+		// Step 2: Find all users with entitlements (optimized batched query)
 		const usersWithEntitlements = await step.run(
 			'find-users-with-entitlements',
 			async () => {
-				try {
-					const users = await findUsersWithCohortEntitlements(cohortId)
+				const users = await findUsersWithCohortEntitlements(cohortId)
 
-					await log.info('cohort_entitlement_sync.users_found', {
-						cohortId,
-						count: users.length,
-						users: users.map((u) => ({
-							name: u.user.name || 'Unknown',
-							email: u.user.email,
-						})),
-					})
+				await log.info('cohort_entitlement_sync.users_found', {
+					cohortId,
+					count: users.length,
+				})
 
-					return users
-				} catch (error) {
-					await log.error('cohort_entitlement_sync.find_users_failed', {
-						cohortId,
-						error: error instanceof Error ? error.message : String(error),
-					})
-					throw error
-				}
+				return users
 			},
 		)
 
+		// Early exit if no users
 		if (usersWithEntitlements.length === 0) {
-			await step.run('early-exit-no-users', async () => {
-				await log.info('cohort_entitlement_sync.early_exit_no_users', {
-					cohortId,
-					cohortTitle: cohortInfo.cohortTitle,
-					reason: 'No users with entitlements found for this cohort',
-					duration: Date.now() - startTime,
-				})
+			await log.info('cohort_entitlement_sync.early_exit_no_users', {
+				cohortId,
+				cohortTitle: cohortInfo.cohortTitle,
+				reason: 'No users with entitlements found for this cohort',
+				duration: Date.now() - startTime,
 			})
 
 			return {
 				cohortId,
 				cohortTitle: cohortInfo.cohortTitle,
+				usersProcessed: 0,
 				message: 'No users with entitlements found - sync skipped',
 			}
 		}
 
-		const syncResults = await step.run('sync-individual-users', async () => {
-			const results = []
-			const errors = []
+		// Step 3: Fan-out events for each user in batches
+		// Inngest has payload size limits, so we batch to avoid hitting them
+		const BATCH_SIZE = 100
+		const batches = []
+		for (let i = 0; i < usersWithEntitlements.length; i += BATCH_SIZE) {
+			batches.push(usersWithEntitlements.slice(i, i + BATCH_SIZE))
+		}
 
-			for (const [index, { user }] of usersWithEntitlements.entries()) {
-				try {
-					await log.info('cohort_entitlement_sync.user_sync_started', {
+		for (const [batchIndex, batch] of batches.entries()) {
+			await step.sendEvent(
+				`fan-out-user-sync-events-batch-${batchIndex}`,
+				batch.map(({ user }) => ({
+					name: COHORT_ENTITLEMENT_SYNC_USER_EVENT,
+					data: {
 						cohortId,
 						userId: user.id,
 						userEmail: user.email,
-						userIndex: index + 1,
-						totalUsers: usersWithEntitlements.length,
-					})
+						cohortResourceIds: cohortInfo.resourceIds,
+					},
+				})),
+			)
+		}
 
-					const result = await syncUserCohortEntitlements(user.id, cohortId)
-
-					await log.info('cohort_entitlement_sync.user_sync_completed', {
-						cohortId,
-						userId: user.id,
-						userEmail: user.email,
-						entitlementsAdded: result.toAdd.length,
-						entitlementsRemoved: result.toRemove.length,
-						changesApplied: result,
-					})
-
-					results.push({ userId: user.id, userEmail: user.email, ...result })
-				} catch (error) {
-					await log.error('cohort_entitlement_sync.user_sync_failed', {
-						cohortId,
-						userId: user.id,
-						userEmail: user.email,
-						error: error instanceof Error ? error.message : String(error),
-					})
-
-					errors.push({
-						userId: user.id,
-						userEmail: user.email,
-						error: error instanceof Error ? error.message : String(error),
-					})
-				}
-			}
-
-			return { results, errors }
+		await log.info('cohort_entitlement_sync.fanout_completed', {
+			cohortId,
+			cohortTitle: cohortInfo.cohortTitle,
+			usersQueued: usersWithEntitlements.length,
+			duration: Date.now() - startTime,
 		})
 
 		return {
 			cohortId,
 			cohortTitle: cohortInfo.cohortTitle,
-			message: `Entitlement sync completed for ${syncResults.results.length}/${usersWithEntitlements.length} users`,
+			usersProcessed: usersWithEntitlements.length,
+			message: `Queued ${usersWithEntitlements.length} user sync events`,
 		}
 	},
 )

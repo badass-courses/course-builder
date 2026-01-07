@@ -1,11 +1,13 @@
 'use client'
 
-import * as React from 'react'
-import { ProductPricingFeatures } from '@/components/commerce/product-pricing-features'
+import {
+	ProductPricingFeatures,
+	type ProductPricingFeature,
+} from '@/components/commerce/product-pricing-features'
 
 import { useCoupon } from '@coursebuilder/commerce-next/coupons/use-coupon'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
-import { Product, Purchase } from '@coursebuilder/core/schemas'
+import type { Product, Purchase } from '@coursebuilder/core/schemas'
 import type {
 	CommerceProps,
 	FormattedPrice,
@@ -19,7 +21,7 @@ export type PricingData = {
 	quantityAvailable: number
 }
 
-export const PricingWidget: React.FC<{
+export type PricingWidgetProps = {
 	product: Product
 	quantityAvailable: number
 	commerceProps: CommerceProps
@@ -31,15 +33,25 @@ export const PricingWidget: React.FC<{
 		slug: string
 	}[]
 	className?: string
-}> = ({
+	prependFeatures?: ProductPricingFeature[]
+}
+
+/**
+ * Pricing widget for product detail surfaces, handling dynamic pricing data,
+ * coupon flows, and optional feature overrides.
+ *
+ * @param props - Pricing configuration.
+ */
+export const PricingWidget = ({
 	product,
 	commerceProps,
 	pricingDataLoader,
 	pricingWidgetOptions,
-	quantityAvailable,
+	quantityAvailable: _quantityAvailable,
 	workshops,
 	className,
-}) => {
+	prependFeatures,
+}: PricingWidgetProps) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
 	const couponId =
@@ -48,7 +60,7 @@ export const PricingWidget: React.FC<{
 
 	return (
 		<Pricing.Root
-			className={cn('relative w-full border-b pb-5', className)}
+			className={cn('relative w-full pb-5', className)}
 			product={product}
 			couponId={couponId}
 			country={commerceProps.country}
@@ -60,12 +72,12 @@ export const PricingWidget: React.FC<{
 			<Pricing.Product className="w-full">
 				{/* <Pricing.ProductImage /> */}
 				<Pricing.Details className="px-0">
-					<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
+					<Pricing.Name className="text-foreground mb-0 font-semibold sm:text-xl" />
 					<Pricing.LiveQuantity />
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs cursor-pointer bg-blue-600 text-lg font-semibold hover:bg-blue-700">
+					<Pricing.BuyButton className="dark:bg-primary relative mt-3 h-16 max-w-xs cursor-pointer overflow-hidden rounded-xl bg-blue-600 text-lg font-semibold shadow-xl hover:bg-blue-700 dark:hover:brightness-110">
 						<span className="relative z-10">
 							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
 						</span>
@@ -85,6 +97,7 @@ export const PricingWidget: React.FC<{
 			<ProductPricingFeatures
 				workshops={workshops ?? []}
 				productType={product.type}
+				prependFeatures={prependFeatures}
 			/>
 		</Pricing.Root>
 	)

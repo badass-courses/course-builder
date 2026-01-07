@@ -12,6 +12,7 @@ export function EditResourcePanelGroup({
 			direction="horizontal"
 			className="border-t"
 			autoSaveId="edit-layout-panel-group"
+			id="edit-layout-panel-group"
 		>
 			{children}
 		</ResizablePanelGroup>

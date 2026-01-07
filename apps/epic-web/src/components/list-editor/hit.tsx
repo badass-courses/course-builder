@@ -11,7 +11,7 @@ import { useSelection } from './selection-context'
 export default function Hit({
 	hit,
 }: {
-	hit: TypesenseResource
+	hit: TypesenseResource | { id: string; title: string; type: string }
 	listId: string
 	updateTreeState: React.ActionDispatch<[action: TreeAction]>
 }) {
@@ -30,13 +30,13 @@ export default function Hit({
 			/>
 			<Label
 				htmlFor={hit.id}
-				className="group flex w-full flex-row items-baseline justify-between gap-2 py-2 sm:py-2.5"
+				className="group flex w-full flex-row items-center justify-between gap-4 py-2 sm:py-2.5"
 			>
-				<div className="flex items-center gap-2">
-					<span className="py-1 pr-5 font-medium sm:truncate">{hit.title}</span>
+				<div className="flex min-w-0 flex-1 items-center gap-2">
+					<span className="font-medium">{hit.title}</span>
 				</div>
-				<div className="text-muted-foreground fon-normal flex flex-shrink-0 items-center gap-3 pl-7 text-xs capitalize opacity-60 sm:pl-0">
-					<span>{hit.type}</span>
+				<div className="text-muted-foreground flex flex-shrink-0 items-center text-xs font-medium capitalize opacity-70">
+					<span className="whitespace-nowrap">{hit.type}</span>
 				</div>
 			</Label>
 		</li>

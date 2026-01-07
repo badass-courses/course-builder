@@ -18,6 +18,7 @@ import {
 	Gravatar,
 	Skeleton,
 } from '@coursebuilder/ui'
+import { useFeedback } from '@coursebuilder/ui/feedback-widget'
 
 import { NavLinkItem } from './nav-link-item'
 
@@ -33,6 +34,7 @@ export const UserMenu = () => {
 	const canCreateContent = ability.can('create', 'Content')
 	const canViewInvoice = ability.can('read', 'Invoice')
 	const isAdmin = ability.can('manage', 'all')
+	const { setIsFeedbackDialogOpen } = useFeedback()
 
 	if (sessionStatus === 'loading') {
 		return (
@@ -98,6 +100,7 @@ export const UserMenu = () => {
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
 							)}
 							<NavLinkItem variant="menu" href="/profile" label="Profile" />
+
 							{canCreateContent && (
 								<NavLinkItem
 									variant="menu"
@@ -106,6 +109,14 @@ export const UserMenu = () => {
 								/>
 							)}
 							<hr className="my-1" />
+							{sessionStatus === 'authenticated' && (
+								<NavLinkItem
+									variant="menu"
+									href="#"
+									label="Feedback"
+									onClick={() => setIsFeedbackDialogOpen(true)}
+								/>
+							)}
 							<NavLinkItem
 								variant="menu"
 								href="#"

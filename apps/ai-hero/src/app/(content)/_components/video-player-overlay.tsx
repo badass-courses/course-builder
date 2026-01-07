@@ -224,14 +224,23 @@ export const CompletedModuleOverlay: React.FC<{
 		})
 	}, []) // Empty deps array to only run once on mount
 
-	const cohort = moduleNavigation?.parents?.[0]
+	const cohortProduct = moduleNavigation?.parents?.find((parent) =>
+		parent?.resources?.some(({ resource }) => resource.type === 'cohort'),
+	)
+	const cohortResource = cohortProduct?.resources?.find(
+		({ resource }) => resource.type === 'cohort',
+	)?.resource
 
-	const currentWorkshopIndexInCohort =
-		cohort?.resources?.findIndex(
-			(workshop) => workshop.resource.id === moduleNavigation?.id,
-		) || 0
-	const nextWorkshop =
-		cohort?.resources?.[currentWorkshopIndexInCohort + 1]?.resource
+	const { data: nextWorkshop } =
+		api.contentResources.getNextWorkshopInCohort.useQuery(
+			{
+				cohortId: cohortResource?.id ?? '',
+				currentWorkshopId: moduleNavigation?.id ?? '',
+			},
+			{
+				enabled: Boolean(cohortResource?.id && moduleNavigation?.id),
+			},
+		)
 
 	return (
 		<div
@@ -260,10 +269,7 @@ export const CompletedModuleOverlay: React.FC<{
 				{nextWorkshop && (
 					<Button asChild variant="default">
 						<Link href={`/workshops/${nextWorkshop?.fields?.slug}`}>
-							Continue{' '}
-							<span className="hidden pl-1 sm:inline">
-								to {nextWorkshop?.fields?.title}
-							</span>
+							Continue to {nextWorkshop?.fields?.title}
 						</Link>
 					</Button>
 				)}

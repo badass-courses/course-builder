@@ -13,6 +13,7 @@ import {
 	WorkshopGitHubRepoLink,
 } from '@/app/(content)/workshops/_components/workshop-user-actions'
 import { CldImage } from '@/components/cld-image'
+import MDXVideo from '@/components/content/mdx-video'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import { Share } from '@/components/share'
@@ -22,6 +23,7 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import {
+	getAllWorkshopsInProduct,
 	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
 } from '@/lib/workshops-query'
@@ -41,11 +43,13 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
-	Skeleton,
+	TooltipProvider,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { ConnectToDiscord } from '../_components/connect-to-discord'
+import { MultiWorkshopContent } from '../_components/multi-workshop-content'
+import { WorkshopBodyWithPricing } from '../_components/workshop-body-with-pricing'
 import WorkshopBreadcrumb from '../_components/workshop-breadcrumb'
 import WorkshopImage from '../_components/workshop-image'
 import { WorkshopPricingClient } from '../_components/workshop-pricing'
@@ -86,11 +90,16 @@ export async function generateMetadata(
 		description: workshop.fields?.description,
 		openGraph: {
 			images: [
-				getOGImageUrlForResource(
-					workshop as unknown as ContentResource & {
-						fields?: { slug: string }
-					},
-				),
+				workshop.fields?.coverImage?.url
+					? {
+							url: workshop.fields?.coverImage?.url,
+							alt: workshop.fields?.title,
+						}
+					: getOGImageUrlForResource(
+							workshop as unknown as ContentResource & {
+								fields?: { slug: string }
+							},
+						),
 			],
 		},
 	}
@@ -109,6 +118,10 @@ export default async function ModulePage(props: Props) {
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
+	const product = await getCachedWorkshopProduct(params.module)
+	// Check if this is a multi-workshop product
+	const isMultiWorkshopProduct =
+		params.module === 'epic-mcp-from-scratch-to-production'
 	const Links = ({
 		children,
 		className,
@@ -126,12 +139,14 @@ export default async function ModulePage(props: Props) {
 				<div className="flex h-full w-full flex-wrap items-center justify-center gap-2 md:justify-start">
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
-						<StartLearningWorkshopButton
-							productType={product?.type}
-							abilityLoader={abilityLoader}
-							moduleSlug={params.module}
-							workshop={workshop}
-						/>
+						{!isMultiWorkshopProduct && (
+							<StartLearningWorkshopButton
+								productType={product?.type}
+								abilityLoader={abilityLoader}
+								moduleSlug={params.module}
+								workshop={workshop}
+							/>
+						)}
 						<WorkshopGitHubRepoLink
 							abilityLoader={abilityLoader}
 							githubUrl={workshop.fields?.github}
@@ -165,9 +180,16 @@ export default async function ModulePage(props: Props) {
 			</div>
 		)
 	}
+	const allWorkshopsInProduct = isMultiWorkshopProduct
+		? await getAllWorkshopsInProduct(params.module)
+		: []
 
-	const product = await getCachedWorkshopProduct(params.module)
-	const { content: body } = await compileMDX(workshop.fields?.body || '')
+	// For self-paced products, body is compiled inside WorkshopPricing with pricing-aware components
+	// For other products, compile body here without pricing context
+	const { content: body } =
+		product?.type !== 'self-paced'
+			? await compileMDX(workshop.fields?.body || '')
+			: { content: null }
 
 	return (
 		<LayoutClient withContainer>
@@ -187,175 +209,229 @@ export default async function ModulePage(props: Props) {
 					slug={params.module}
 				/>
 
-				<div className="mx-auto flex w-full grow grid-cols-8 flex-col gap-5 md:grid lg:gap-10">
-					<div className="col-span-5">
-						<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
-							{workshop.fields?.coverImage?.url && (
-								<div className="mb-5 flex md:hidden">
-									<WorkshopImage
-										imageUrl={workshop.fields.coverImage.url}
-										abilityLoader={abilityLoader}
-									/>
-								</div>
-							)}
-							<WorkshopBreadcrumb />
-							<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
-								{workshop.fields?.title}
-							</h1>
-							{workshop.fields?.description && (
-								<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-base lg:prose-lg mt-3">
-									<p>{workshop.fields?.description}</p>
-								</div>
-							)}
-							<Links className="mt-5" />
-							{/* <div className="mt-5 flex items-center gap-2">
-								<Contributor />
-							</div> */}
-						</header>
-						<article className="prose sm:prose-lg lg:prose-base prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
-							<h2 className="text-[80%]! mb-5 font-bold uppercase tracking-wide opacity-75">
-								Description
-							</h2>
-							{body ? body : <p>No description found.</p>}
-						</article>
-						{product?.type === 'self-paced' && (
-							<div className="">
-								<hr className="border-border mb-6 mt-8 w-full border-dashed" />
-								<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
-									Content
-								</h3>
-								<WorkshopResourceList
-									isCollapsible={false}
-									className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
-									withHeader={false}
-									maxHeight="h-auto"
-									wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
-								/>
-							</div>
-						)}
-					</div>
-
-					<div className="relative col-span-3 pt-2">
-						{/* <h2 className="font-heading flex h-12 items-center text-2xl font-semibold tracking-tight">
-								Contents
-							</h2>
-							<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
-								<WorkshopResourceList
-									isCollapsible={false}
-									className="border-r-0! w-full max-w-none"
-									withHeader={false}
-									maxHeight="h-auto"
-									wrapperClassName="overflow-hidden pb-0"
-								/>
-							</div> */}
-						<Suspense fallback={null}>
-							<EditWorkshopButton
-								className="absolute right-2 top-4 z-10"
-								moduleType="workshop"
-								moduleSlug={params.module}
-								product={product}
-							/>
-						</Suspense>
-
-						{product?.type === 'self-paced' ? (
-							<React.Suspense
-								fallback={
-									<div className="bg-background relative z-10 flex w-full flex-col gap-2 p-5 pb-16">
-										<Skeleton className="bg-accent h-10 w-full" />
-										<Skeleton className="bg-accent h-10 w-full" />
-										<Skeleton className="bg-accent h-10 w-full" />
-										<Skeleton className="bg-accent h-10 w-full" />
-									</div>
-								}
-							>
-								<WorkshopPricing
-									moduleSlug={params.module}
-									searchParams={searchParams}
-								>
-									{(pricingProps) => {
-										return pricingProps.product ? (
-											<>
-												<WorkshopSidebar
-													productType={product?.type}
-													workshop={workshop}
-												>
-													{workshop.fields?.coverImage?.url && (
+				{product?.type === 'self-paced' ? (
+					<WorkshopPricing
+						moduleSlug={params.module}
+						searchParams={searchParams}
+					>
+						{(pricingProps) => (
+							<div className="mx-auto flex w-full grow grid-cols-8 flex-col gap-5 md:grid lg:gap-10">
+								<div className="col-span-5">
+									<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
+										{workshop.fields?.coverImage?.url && (
+											<div className="mb-5 flex w-full md:hidden">
+												{/* <WorkshopImage
+												imageUrl={workshop.fields.coverImage.url}
+												abilityLoader={abilityLoader}
+											/> */}
+												{product.type === 'self-paced' &&
+												!pricingProps.hasPurchasedCurrentProduct ? (
+													<MDXVideo
+														poster={workshop.fields?.coverImage?.url}
+														resourceId="introducingepicmcp-m6nYgLXNm.mp4"
+														className="mb-0 border-none"
+													/>
+												) : (
+													workshop.fields?.coverImage?.url && (
 														<WorkshopImage
-															className={cn('', {
-																'rounded-b-none':
-																	product?.type === 'self-paced',
-															})}
 															imageUrl={workshop.fields.coverImage.url}
 															abilityLoader={abilityLoader}
 														/>
-													)}
-													{pricingProps.allowPurchase &&
-													!pricingProps.hasPurchasedCurrentProduct ? (
-														<>
-															<WorkshopPricingClient
-																className="relative z-10 border-b-0 pt-0"
-																searchParams={props.searchParams}
-																{...pricingProps}
-															/>
-														</>
-													) : (
-														<>
-															<WorkshopResourceList
-																isCollapsible={false}
-																className="border-r-0! w-full max-w-none"
-																withHeader={false}
-																maxHeight="h-auto"
-																wrapperClassName="overflow-hidden pb-0 hidden md:block"
-															/>
-															{pricingProps.hasPurchasedCurrentProduct && (
-																<div className="p-3">
-																	<Certificate
-																		resourceSlugOrId={params.module}
-																	/>
-																</div>
-															)}
-														</>
-													)}
-												</WorkshopSidebar>
-											</>
+													)
+												)}
+											</div>
+										)}
+										<WorkshopBreadcrumb />
+										<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+											{workshop.fields?.title}
+										</h1>
+										{workshop.fields?.description && (
+											<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-base lg:prose-lg mt-3">
+												<p>{workshop.fields?.description}</p>
+											</div>
+										)}
+										<Links className="mt-5" />
+									</header>
+									<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
+										<WorkshopBodyWithPricing
+											rawBody={workshop.fields?.body || ''}
+											pricingProps={pricingProps}
+										/>
+									</article>
+									{pricingProps.allowPurchase &&
+										!pricingProps.hasPurchasedCurrentProduct && (
+											<div className="md:hidden">
+												<WorkshopPricingClient
+													className="relative z-10"
+													searchParams={props.searchParams}
+													{...pricingProps}
+												/>
+											</div>
+										)}
+									<div className="">
+										<hr className="border-border mb-6 mt-8 w-full border-dashed" />
+										<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
+											Content
+										</h3>
+										{isMultiWorkshopProduct &&
+										allWorkshopsInProduct.length > 1 ? (
+											<div className="border-border overflow-hidden rounded-lg border pb-0">
+												<MultiWorkshopContent />
+											</div>
 										) : (
-											<>
-												{workshop.fields?.coverImage?.url && (
+											<WorkshopResourceList
+												isCollapsible={false}
+												className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
+												withHeader={false}
+												maxHeight="h-auto"
+												wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
+											/>
+										)}
+									</div>
+								</div>
+
+								<div className="relative col-span-3 flex h-full flex-col pt-2">
+									<Suspense fallback={null}>
+										<EditWorkshopButton
+											className="absolute right-2 top-4 z-10"
+											moduleType="workshop"
+											moduleSlug={params.module}
+											product={product}
+										/>
+									</Suspense>
+									{pricingProps.product ? (
+										<WorkshopSidebar
+											productType={product?.type}
+											workshop={workshop}
+										>
+											{pricingProps.product.type === 'self-paced' &&
+											!pricingProps.hasPurchasedCurrentProduct ? (
+												<MDXVideo
+													poster={workshop.fields?.coverImage?.url}
+													resourceId="introducingepicmcp-m6nYgLXNm.mp4"
+													className="mb-0 rounded-b-none border-none"
+												/>
+											) : (
+												workshop.fields?.coverImage?.url && (
 													<WorkshopImage
+														className="rounded-b-none"
 														imageUrl={workshop.fields.coverImage.url}
 														abilityLoader={abilityLoader}
 													/>
-												)}
-												<WorkshopResourceList
-													isCollapsible={false}
-													className="border-r-0! w-full max-w-none"
-													withHeader={false}
-													maxHeight="h-auto"
-													wrapperClassName="overflow-hidden pb-0"
+												)
+											)}
+
+											{pricingProps.allowPurchase &&
+											!pricingProps.hasPurchasedCurrentProduct ? (
+												<div className="hidden md:block">
+													<WorkshopPricingClient
+														className="relative z-10 border-b-0 pt-0"
+														searchParams={props.searchParams}
+														{...pricingProps}
+													/>
+												</div>
+											) : (
+												<>
+													{isMultiWorkshopProduct &&
+													allWorkshopsInProduct.length > 1 ? (
+														<div className="hidden overflow-hidden pb-0 md:block">
+															<MultiWorkshopContent />
+														</div>
+													) : (
+														<WorkshopResourceList
+															isCollapsible={false}
+															className="border-r-0! w-full max-w-none"
+															withHeader={false}
+															maxHeight="h-auto"
+															wrapperClassName="overflow-hidden pb-0 hidden md:block"
+														/>
+													)}
+													{pricingProps.hasPurchasedCurrentProduct && (
+														<div className="p-3">
+															<Certificate resourceSlugOrId={params.module} />
+														</div>
+													)}
+												</>
+											)}
+										</WorkshopSidebar>
+									) : (
+										<>
+											{workshop.fields?.coverImage?.url && (
+												<WorkshopImage
+													imageUrl={workshop.fields.coverImage.url}
+													abilityLoader={abilityLoader}
 												/>
-											</>
-										)
-									}}
-								</WorkshopPricing>
-							</React.Suspense>
-						) : (
-							<>
+											)}
+											<WorkshopResourceList
+												isCollapsible={false}
+												className="border-r-0! w-full max-w-none"
+												withHeader={false}
+												maxHeight="h-auto"
+												wrapperClassName="overflow-hidden pb-0"
+											/>
+										</>
+									)}
+								</div>
+							</div>
+						)}
+					</WorkshopPricing>
+				) : (
+					<div className="mx-auto flex w-full grow grid-cols-8 flex-col gap-5 md:grid lg:gap-10">
+						<div className="col-span-5">
+							<header className="flex shrink-0 flex-col items-center pb-10 pt-6 md:items-start">
 								{workshop.fields?.coverImage?.url && (
-									<div className="mb-3">
+									<div className="mb-5 flex w-full md:hidden">
 										<WorkshopImage
 											imageUrl={workshop.fields.coverImage.url}
 											abilityLoader={abilityLoader}
 										/>
 									</div>
 								)}
-								<WorkshopSidebar
-									productType={product?.type}
-									className="bg-transparent ring-0"
-								>
-									<h2 className="font-heading mb-2 flex h-12 items-center text-2xl font-semibold tracking-tight">
-										Contents
-									</h2>
-									<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+								<WorkshopBreadcrumb />
+								<h1 className="fluid-3xl w-full text-center font-bold tracking-tight md:text-left dark:text-white">
+									{workshop.fields?.title}
+								</h1>
+								{workshop.fields?.description && (
+									<div className="prose prose-p:text-balance md:prose-p:text-left prose-p:text-center prose-p:font-normal sm:prose-base lg:prose-lg mt-3">
+										<p>{workshop.fields?.description}</p>
+									</div>
+								)}
+								<Links className="mt-5" />
+							</header>
+							<article className="prose sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none pt-5">
+								{body ? body : <p>No description found.</p>}
+							</article>
+						</div>
+
+						<div className="relative col-span-3 flex h-full flex-col pt-2">
+							<Suspense fallback={null}>
+								<EditWorkshopButton
+									className="absolute right-2 top-4 z-10"
+									moduleType="workshop"
+									moduleSlug={params.module}
+									product={product}
+								/>
+							</Suspense>
+							{workshop.fields?.coverImage?.url && (
+								<div className="mb-3">
+									<WorkshopImage
+										imageUrl={workshop.fields.coverImage.url}
+										abilityLoader={abilityLoader}
+									/>
+								</div>
+							)}
+							<WorkshopSidebar
+								productType={product?.type}
+								className="bg-transparent ring-0"
+							>
+								<h2 className="font-heading mb-2 flex h-12 items-center text-2xl font-semibold tracking-tight">
+									Contents
+								</h2>
+								<div className="bg-card flex flex-col overflow-hidden rounded-lg border shadow-[0px_4px_38px_-14px_rgba(0,_0,_0,_0.1)]">
+									{isMultiWorkshopProduct &&
+									allWorkshopsInProduct.length > 1 ? (
+										<MultiWorkshopContent />
+									) : (
 										<WorkshopResourceList
 											isCollapsible={false}
 											className="border-r-0! w-full max-w-none"
@@ -363,12 +439,12 @@ export default async function ModulePage(props: Props) {
 											maxHeight="h-auto"
 											wrapperClassName="overflow-hidden pb-0"
 										/>
-									</div>
-								</WorkshopSidebar>
-							</>
-						)}
+									)}
+								</div>
+							</WorkshopSidebar>
+						</div>
 					</div>
-				</div>
+				)}
 				{/* {workshop?.fields?.body && <Links className="mb-20 mt-10" />} */}
 			</main>
 		</LayoutClient>

@@ -51,7 +51,7 @@ export function WorkshopPricingClient({
 				pricingDataLoader={pricingDataLoader}
 				pricingWidgetOptions={{
 					withImage: false,
-					withTitle: true,
+					withTitle: false,
 					withGuaranteeBadge: true,
 					isLiveEvent: false,
 					isCohort: product.type === 'cohort',

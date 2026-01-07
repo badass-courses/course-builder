@@ -140,6 +140,7 @@ export async function formatPricesForProduct(
 		upgradeFromPurchaseId,
 		userId,
 		autoApplyPPP = true,
+		preferStacking = false,
 		usedCouponId,
 	} = noContextOptions
 
@@ -174,6 +175,8 @@ export async function formatPricesForProduct(
 		appliedMerchantCoupon,
 		appliedCouponType,
 		appliedDiscountType,
+		stackableDiscounts = [],
+		stackingPath = 'none',
 		...result
 	} = await determineCouponToApply({
 		prismaCtx: ctx,
@@ -184,7 +187,9 @@ export async function formatPricesForProduct(
 		productId: product.id,
 		purchaseToBeUpgraded: upgradeFromPurchase,
 		autoApplyPPP,
+		preferStacking,
 		usedCoupon,
+		usedCouponId,
 		unitPrice: price.unitAmount,
 	})
 
@@ -209,33 +214,103 @@ export async function formatPricesForProduct(
 	const unitPrice: number = price.unitAmount
 	const fullPrice: number = unitPrice * quantity
 
-	const percentOfDiscount =
-		appliedMerchantCoupon?.percentageDiscount ?? undefined
-	const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
+	// Handle stackable discounts if stacking path is 'stack'
+	let calculatedPrice = fullPrice
+	let totalDiscountAmount = 0
 
-	// Discount stacking rules:
-	// - Upgrade credit + percentage coupon: STACK (apply both)
-	// - Upgrade credit + fixed amount coupon: CHOOSE BETTER (don't stack)
-	// Note: PPP vs other coupons is handled in determine-coupon-to-apply
-	let finalFixedDiscount = fixedDiscountForUpgrade
-	let finalPercentDiscount = percentOfDiscount
-	let finalAmountDiscount = amountDiscount
+	if (stackingPath === 'stack' && stackableDiscounts.length > 0) {
+		let currentPrice = fullPrice
 
-	if (fixedDiscountForUpgrade > 0 && amountDiscount > 0) {
-		// Both upgrade credit and fixed amount coupon exist
-		// Choose whichever gives the better discount
-		const upgradeDiscountAmount = fixedDiscountForUpgrade
-		const merchantDiscountAmount = (amountDiscount / 100) * quantity // Convert cents to dollars and apply per seat
+		const pppInStackable = stackableDiscounts.some(
+			(d) =>
+				d.coupon?.type === 'ppp' ||
+				d.source === 'ppp' ||
+				(d.source === 'default' &&
+					d.discountType === 'percentage' &&
+					appliedMerchantCoupon?.type === 'ppp' &&
+					d.couponId === appliedMerchantCoupon.id),
+		)
 
-		if (upgradeDiscountAmount >= merchantDiscountAmount) {
-			// Upgrade discount is better, don't apply merchant coupon
-			finalAmountDiscount = 0
-		} else {
-			// Merchant coupon is better, don't apply upgrade discount
-			finalFixedDiscount = 0
+		if (
+			!pppInStackable &&
+			appliedMerchantCoupon?.type === 'ppp' &&
+			appliedMerchantCoupon?.percentageDiscount
+		) {
+			const pppDiscountAmount =
+				currentPrice * appliedMerchantCoupon.percentageDiscount
+			currentPrice = Math.max(0, currentPrice - pppDiscountAmount)
+			totalDiscountAmount += pppDiscountAmount
 		}
+
+		for (const discount of stackableDiscounts) {
+			if (
+				discount.source === 'default' ||
+				discount.source === 'user' ||
+				discount.source === 'ppp'
+			) {
+				if (discount.discountType === 'percentage') {
+					const discountAmount = currentPrice * discount.amount
+					currentPrice = Math.max(0, currentPrice - discountAmount)
+					totalDiscountAmount += discountAmount
+				} else if (discount.discountType === 'fixed') {
+					const discountAmount = (discount.amount / 100) * quantity
+					currentPrice = Math.max(0, currentPrice - discountAmount)
+					totalDiscountAmount += discountAmount
+				}
+			}
+		}
+
+		// Apply entitlement credits AFTER the main coupon
+		// These are special credits based on entitlements
+		for (const discount of stackableDiscounts) {
+			if (discount.source === 'entitlement') {
+				const discountAmount = (discount.amount / 100) * quantity
+				currentPrice = Math.max(0, currentPrice - discountAmount)
+				totalDiscountAmount += discountAmount
+			}
+		}
+
+		// Apply upgrade discount last (if any)
+		currentPrice = Math.max(0, currentPrice - fixedDiscountForUpgrade)
+		if (fixedDiscountForUpgrade > 0) {
+			totalDiscountAmount += fixedDiscountForUpgrade
+		}
+
+		calculatedPrice = currentPrice
+	} else {
+		// Use existing logic for non-stacking scenarios
+		const percentOfDiscount =
+			appliedMerchantCoupon?.percentageDiscount ?? undefined
+		const amountDiscount = appliedMerchantCoupon?.amountDiscount || 0
+
+		// Discount stacking rules:
+		// - Upgrade credit + percentage coupon: STACK (apply both)
+		// Note: PPP vs other coupons is handled in determine-coupon-to-apply
+		let finalFixedDiscount = fixedDiscountForUpgrade
+		let finalPercentDiscount = percentOfDiscount
+		let finalAmountDiscount = amountDiscount
+
+		if (fixedDiscountForUpgrade > 0 && amountDiscount > 0) {
+			// Both upgrade credit and fixed amount coupon exist
+			// Choose whichever gives the better discount
+			const upgradeDiscountAmount = fixedDiscountForUpgrade
+			const merchantDiscountAmount = (amountDiscount / 100) * quantity
+
+			if (upgradeDiscountAmount >= merchantDiscountAmount) {
+				finalAmountDiscount = 0
+			} else {
+				finalFixedDiscount = 0
+			}
+		}
+
+		calculatedPrice = getCalculatedPrice({
+			unitPrice,
+			percentOfDiscount: finalPercentDiscount,
+			fixedDiscount: finalFixedDiscount,
+			amountDiscount: finalAmountDiscount,
+			quantity,
+		})
 	}
-	// If upgrade credit + percentage coupon, both are applied (no special handling needed)
 
 	// Calculate fullPrice as price after upgrade discount but before merchant coupon
 	const fullPriceWithUpgrade = fullPrice - fixedDiscountForUpgrade
@@ -249,24 +324,53 @@ export async function formatPricesForProduct(
 				}
 			: {}
 
+	// Format stackable discounts for return
+	const formattedStackableDiscounts =
+		stackingPath === 'stack' && stackableDiscounts.length > 0
+			? stackableDiscounts.map((discount) => {
+					// Determine the correct label based on the source
+					let label = 'Discount'
+					if (discount.source === 'entitlement') {
+						label = 'Special Credit'
+					} else if (discount.source === 'ppp') {
+						label = 'PPP Discount'
+					}
+
+					return {
+						couponId: discount.couponId,
+						source: discount.source,
+						discountType: discount.discountType,
+						amount:
+							discount.discountType === 'fixed'
+								? discount.amount / 100
+								: discount.amount,
+						label,
+					}
+				})
+			: undefined
+
 	return {
 		...product,
 		quantity,
 		unitPrice,
 		fullPrice: fixedDiscountForUpgrade > 0 ? fullPriceWithUpgrade : fullPrice,
 		fixedDiscountForUpgrade,
-		calculatedPrice: getCalculatedPrice({
-			unitPrice,
-			percentOfDiscount: finalPercentDiscount,
-			fixedDiscount: finalFixedDiscount,
-			amountDiscount: finalAmountDiscount,
-			quantity,
-		}),
-		availableCoupons: result.availableCoupons,
+		calculatedPrice,
+		availableCoupons: Array.isArray(result.availableCoupons)
+			? result.availableCoupons
+			: [],
 		appliedMerchantCoupon,
 		appliedDiscountType,
 		appliedFixedDiscount:
-			amountDiscount > 0 ? (amountDiscount / 100) * quantity : undefined,
+			stackingPath !== 'stack' && appliedMerchantCoupon?.amountDiscount
+				? (appliedMerchantCoupon.amountDiscount / 100) * quantity
+				: undefined,
+		stackableDiscounts: formattedStackableDiscounts,
+		totalDiscountAmount:
+			stackingPath === 'stack' && totalDiscountAmount > 0
+				? totalDiscountAmount
+				: undefined,
+		stackingPath,
 		...(usedCoupon?.merchantCouponId === appliedMerchantCoupon?.id && {
 			usedCouponId,
 		}),

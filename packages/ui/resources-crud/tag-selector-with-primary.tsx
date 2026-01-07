@@ -22,7 +22,7 @@ import { cn } from '../utils/cn'
 type Tag = {
 	id: string
 	fields: {
-		label: string
+		label: string | null
 		name: string
 	}
 }
@@ -71,8 +71,10 @@ export default function AdvancedTagSelectorWithPrimary({
 		setSelectedTags((prev) => prev.filter((tag) => tag.id !== tagId))
 	}
 
-	const filteredTags = availableTags.filter((tag) =>
-		tag.fields.label.toLowerCase().includes(inputValue.toLowerCase()),
+	const filteredTags = availableTags.filter(
+		(tag) =>
+			tag.fields.label?.toLowerCase().includes(inputValue.toLowerCase()) ??
+			false,
 	)
 
 	return (

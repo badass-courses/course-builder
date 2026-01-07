@@ -7,6 +7,7 @@ import LayoutClient from '@/components/layout-client'
 import Spinner from '@/components/spinner'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
+import { env } from '@/env.mjs'
 import {
 	cancelPurchaseTransfer,
 	getPurchaseTransferForPurchaseId,
@@ -17,10 +18,12 @@ import { FileText, Mail } from 'lucide-react'
 
 import * as InvoiceTeaser from '@coursebuilder/commerce-next/invoices/invoice-teaser'
 import * as LoginLink from '@coursebuilder/commerce-next/post-purchase/login-link'
+import { PaymentSuccessButProcessingFailed } from '@coursebuilder/commerce-next/post-purchase/payment-success-but-processing-failed'
 import * as PurchaseSummary from '@coursebuilder/commerce-next/post-purchase/purchase-summary'
 import * as PurchaseTransfer from '@coursebuilder/commerce-next/post-purchase/purchase-transfer'
 import * as InviteTeam from '@coursebuilder/commerce-next/team/invite-team'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
+import { checkForPaymentSuccessWithoutPurchase } from '@coursebuilder/core'
 import {
 	EXISTING_BULK_COUPON,
 	INDIVIDUAL_TO_BULK_UPGRADE,
@@ -55,6 +58,15 @@ const getServerSideProps = async (session_id: string) => {
 				session_id,
 				courseBuilderAdapter,
 			)
+
+			if (
+				'error' in purchaseInfo &&
+				purchaseInfo.error === 'paymentSucceededButProcessingFailed'
+			) {
+				return {
+					paymentSucceededButProcessingFailed: true,
+				}
+			}
 
 			const {
 				email,
@@ -93,14 +105,39 @@ const getServerSideProps = async (session_id: string) => {
 			}
 		} catch (error) {
 			retries++
-			console.log(
-				`Error getting purchase info: ${error} ${retries}/${maxRetries}`,
-			)
+			logger.debug('thanks purchase poll retry', {
+				sessionId: session_id,
+				retries,
+				maxRetries,
+				error: error instanceof Error ? error.message : String(error),
+			})
 			await new Promise((resolve) => setTimeout(resolve, delay))
 			delay = Math.min(delay * 2, maxDelay)
 		}
 	}
 
+	const errorCheck = await checkForPaymentSuccessWithoutPurchase(
+		session_id,
+		courseBuilderAdapter,
+	)
+
+	if (errorCheck.shouldShowError) {
+		logger.debug('thanks purchase poll success-no-purchase fallback', {
+			sessionId: session_id,
+			stripeEventId: errorCheck.stripeEventId,
+		})
+		return {
+			paymentSucceededButProcessingFailed: true,
+		}
+	}
+
+	logger.error(
+		new Error('purchase missing after polling and no Stripe fallback', {
+			cause: {
+				sessionId: session_id,
+			},
+		}),
+	)
 	notFound()
 }
 
@@ -122,6 +159,12 @@ const LoginLinkComp: React.FC<{ email: string }> = ({ email }) => {
 	)
 }
 
+/**
+ * Server component that validates a Stripe checkout session and renders the
+ * thank-you experience or redirects once the purchase is created.
+ *
+ * @param props - Route props containing purchase session identifiers
+ */
 export default async function ThanksPurchasePage(props: {
 	searchParams: Promise<{ session_id: string; provider: string }>
 }) {
@@ -161,6 +204,20 @@ async function PurchaseThanksPageLoaded({
 }) {
 	const token = await getServerAuthSession()
 
+	const result = await getServerSideProps(session_id)
+
+	if ('paymentSucceededButProcessingFailed' in result) {
+		return (
+			<LayoutClient withContainer>
+				<main className="container min-h-[calc(100vh-var(--nav-height))] border-x px-5 py-8 sm:py-16">
+					<PaymentSuccessButProcessingFailed
+						supportEmail={env.NEXT_PUBLIC_SUPPORT_EMAIL}
+					/>
+				</main>
+			</LayoutClient>
+		)
+	}
+
 	const {
 		purchase,
 		email,
@@ -170,7 +227,7 @@ async function PurchaseThanksPageLoaded({
 		product,
 		stripeProductName,
 		redemptionsLeft,
-	} = await getServerSideProps(session_id)
+	} = result
 
 	if (email === token?.session?.user?.email) {
 		return redirect('/welcome?purchaseId=' + purchase.id)

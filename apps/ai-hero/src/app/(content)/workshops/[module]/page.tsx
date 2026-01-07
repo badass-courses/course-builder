@@ -129,8 +129,7 @@ export default async function ModulePage(props: Props) {
 					className="via-foreground/10 to-muted bg-linear-to-r absolute -bottom-px right-0 h-px w-2/3 from-transparent"
 				/>
 				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat sm:w-8 lg:w-10 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]" />
-
+					<div className="bg-stripes border-border hidden h-14 border-r sm:w-8 md:block lg:w-10" />
 					<React.Suspense fallback={<StartLearningWorkshopButtonSkeleton />}>
 						<GetAccessButton abilityLoader={abilityLoader} />
 						<StartLearningWorkshopButton
@@ -185,19 +184,21 @@ export default async function ModulePage(props: Props) {
 	const { content: body } = await compileMDX(workshop.fields.body || '', {
 		EnrollNow: (props) => (
 			<WorkshopPricing moduleSlug={params.module} searchParams={searchParams}>
-				{(workshopProps) => (
-					<InlineBuyButton
-						resource={workshop}
-						pricingDataLoader={workshopProps.pricingDataLoader}
-						pricingProps={workshopProps as any}
-						centered={false}
-						resourceType="workshop"
-						pricingOptions={{
-							withTitle: false,
-							withImage: false,
-						}}
-					/>
-				)}
+				{(workshopProps) =>
+					!workshopProps.hasPurchasedCurrentProduct && (
+						<InlineBuyButton
+							resource={workshop}
+							pricingDataLoader={workshopProps.pricingDataLoader}
+							pricingProps={workshopProps as any}
+							centered={false}
+							resourceType="workshop"
+							pricingOptions={{
+								withTitle: false,
+								withImage: false,
+							}}
+						/>
+					)
+				}
 			</WorkshopPricing>
 		),
 	})
@@ -206,7 +207,7 @@ export default async function ModulePage(props: Props) {
 		<LayoutClient withContainer>
 			<main className="flex min-h-screen w-full flex-col">
 				{workshop.fields?.visibility !== 'public' && (
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] relative flex w-full items-center justify-center gap-2 border-b bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat p-3 text-center dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]">
+					<div className="bg-stripes relative flex w-full items-center justify-center gap-2 border-b p-3 text-center">
 						<Construction className="h-4 w-4" />{' '}
 						<p className="text-sm font-medium capitalize">
 							{workshop.fields?.visibility} {workshop.type}
@@ -240,7 +241,7 @@ export default async function ModulePage(props: Props) {
 									{workshop.fields?.description}
 								</ReactMarkdown>
 							)}
-							<div className="mt-10 flex items-center gap-2">
+							<div className="mt-5 flex items-center gap-2 sm:mt-10">
 								<Contributor />
 							</div>
 						</div>
@@ -254,12 +255,16 @@ export default async function ModulePage(props: Props) {
 						</div>
 					</div>
 					<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
-						<img
+						<div
+							className="bg-stripes opacity-8! h-[320px] w-full"
+							aria-hidden="true"
+						/>
+						{/* <img
 							src={squareGridPattern}
 							alt=""
 							aria-hidden="true"
 							className="object-top-right hidden h-[320px] w-full overflow-hidden object-cover opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
-						/>
+						/> */}
 						<div
 							className="to-background via-background bg-linear-to-bl absolute left-0 top-0 z-10 h-full w-full from-transparent"
 							aria-hidden="true"
@@ -280,27 +285,27 @@ export default async function ModulePage(props: Props) {
 						<ContentTitle />
 					</Links>
 					<div className="mx-auto flex w-full grow grid-cols-6 flex-col md:grid">
-						<div className="col-span-4 border-b px-5 pb-2 pt-10 sm:px-8 md:border-b-0 md:py-10 lg:px-10">
-							<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none">
+						<div className="col-span-4 border-b pt-10 md:border-b-0">
+							<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 sm:px-8 lg:px-10">
 								{workshop.fields?.body ? body : <p>No description found.</p>}
 							</article>
 							{product?.type === 'self-paced' && (
 								<div className="">
-									<hr className="border-border mb-6 mt-8 w-full border-dashed" />
-									<h3 className="mb-3 mt-5 text-xl font-bold sm:text-2xl">
+									<hr className="border-border mb-6 mt-8 w-full" />
+									<h3 className="mb-3 mt-5 px-5 text-xl font-bold sm:px-8 sm:text-2xl lg:px-10">
 										Content
 									</h3>
 									<WorkshopResourceList
 										isCollapsible={false}
-										className="border-r-0! [&_button]:rounded-none! w-full max-w-none [&_ol>li]:last-of-type:[&_button]:border-b-0"
+										className="border-r-0! [&_button]:rounded-none! [&_button]:bg-card! [&_button]:hover:text-primary [&_button]:hover:bg-foreground/5! w-full max-w-none [&_button]:cursor-pointer [&_ol>li]:last-of-type:[&_button]:border-b-0"
 										withHeader={false}
 										maxHeight="h-auto"
-										wrapperClassName="overflow-hidden pb-0 rounded-lg border border-border"
+										wrapperClassName="overflow-hidden pb-0 border-t border-border"
 									/>
 								</div>
 							)}
 						</div>
-						<div className="bg-muted/50 col-span-2 flex h-full flex-col md:border-l">
+						<div className="bg-card relative z-20 col-span-2 flex h-full flex-col md:border-l">
 							{product?.type === 'self-paced' ? (
 								<React.Suspense
 									fallback={
@@ -322,12 +327,17 @@ export default async function ModulePage(props: Props) {
 													<WorkshopSidebar
 														pricingProps={pricingProps}
 														workshop={workshop}
+														className={cn('bg-card', {
+															'md:-mt-14':
+																pricingProps.allowPurchase &&
+																!pricingProps.hasPurchasedCurrentProduct,
+														})}
 													>
 														{pricingProps.allowPurchase &&
 														!pricingProps.hasPurchasedCurrentProduct ? (
 															<>
 																<WorkshopPricingClient
-																	className="bg-background relative z-10 md:-mt-14"
+																	className="bg-card"
 																	searchParams={props.searchParams}
 																	{...pricingProps}
 																/>

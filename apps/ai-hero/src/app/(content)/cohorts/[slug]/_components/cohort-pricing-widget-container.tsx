@@ -4,17 +4,17 @@ import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import { PricingWidget } from '@/app/(content)/workshops/_components/pricing-widget'
 import { CldImage } from '@/components/cld-image'
+import type { ProductPricingFeature } from '@/components/commerce/product-pricing-features'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
+import type { CohortPageProps } from '@/lib/cohort'
 import { track } from '@/utils/analytics'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
 import { formatInTimeZone } from 'date-fns-tz'
 import { toSnakeCase } from 'drizzle-orm/casing'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, Sparkles } from 'lucide-react'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
-
-import type { CohortPageProps } from './cohort-page-props'
 
 export const CohortPricingWidgetContainer: React.FC<
 	CohortPageProps & { className?: string; searchParams?: ParsedUrlQuery }
@@ -62,6 +62,18 @@ export const CohortPricingWidgetContainer: React.FC<
 		title: resource.fields.title,
 		slug: resource.fields.slug,
 	}))
+	const cohortPrependFeatures = React.useMemo<
+		ProductPricingFeature[] | undefined
+	>(() => {
+		if (product?.type !== 'cohort') return undefined
+
+		return [
+			{
+				icon: <Sparkles className="h-4 w-4" />,
+				label: 'AI SDK v5 Crash Course',
+			},
+		]
+	}, [product?.type])
 	const waitlistCkFields = {
 		// example: waitlist_mcp_workshop_ticket: "2025-04-17"
 		[`waitlist_${toSnakeCase(product?.name || '')}`]: new Date()
@@ -163,7 +175,7 @@ export const CohortPricingWidgetContainer: React.FC<
 	return (
 		<>
 			{enrollmentState.type === 'open' || allowPurchase ? (
-				<div className={cn('border-b px-5 pb-5', className)}>
+				<div className={cn('px-5 pb-5', className)}>
 					{renderImage()}
 					<p className="opacit-50 -mb-7 flex w-full items-center justify-center pt-5 text-center text-base">
 						{eventDateString}
@@ -175,6 +187,7 @@ export const CohortPricingWidgetContainer: React.FC<
 						quantityAvailable={quantityAvailable}
 						commerceProps={commerceProps}
 						pricingDataLoader={pricingDataLoader}
+						prependFeatures={cohortPrependFeatures}
 						pricingWidgetOptions={{
 							cancelUrl: `${env.NEXT_PUBLIC_URL}/cohorts/${cohort.fields.slug}`,
 							isCohort: true,

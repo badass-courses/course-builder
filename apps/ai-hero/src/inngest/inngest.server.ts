@@ -12,6 +12,10 @@ import {
 	EnsurePersonalOrganization,
 } from '@/inngest/events/ensure-personal-organization'
 import {
+	GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT,
+	GrantCouponEntitlementsForPurchase,
+} from '@/inngest/events/grant-coupon-entitlements-for-purchase'
+import {
 	IMAGE_RESOURCE_CREATED_EVENT,
 	ImageResourceCreated,
 } from '@/inngest/events/image-resource-created'
@@ -38,6 +42,14 @@ import {
 	VideoAttached,
 	VideoDetached,
 } from '@/inngest/events/video-attachment'
+import {
+	CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT,
+	CreatePPPCreditCouponsForPurchasersEvent,
+} from '@/inngest/functions/coupon/create-ppp-credit-coupons-for-purchasers'
+import {
+	GRANT_COUPON_ENTITLEMENTS_EVENT,
+	GrantCouponEntitlementsEvent,
+} from '@/inngest/functions/coupon/grant-coupon-entitlements'
 import {
 	SYNC_PURCHASE_TAGS_EVENT,
 	SyncPurchaseTags,
@@ -71,7 +83,9 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	COHORT_ENTITLEMENT_SYNC_USER_EVENT,
 	COHORT_UPDATED_EVENT,
+	CohortEntitlementSyncUserPayload,
 	CohortUpdatedPayload,
 } from './events/cohort-management'
 import {
@@ -125,6 +139,12 @@ export type Events = {
 	[USER_ADDED_TO_COHORT_EVENT]: UserAddedToCohort
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
+	[COHORT_ENTITLEMENT_SYNC_USER_EVENT]: {
+		data: CohortEntitlementSyncUserPayload
+	}
+	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
+	[GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT]: GrantCouponEntitlementsForPurchase
+	[CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT]: CreatePPPCreditCouponsForPurchasersEvent
 }
 
 const callbackBase =

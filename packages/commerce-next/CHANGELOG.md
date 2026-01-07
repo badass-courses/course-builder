@@ -1,5 +1,100 @@
 # @coursebuilder/commerce-next
 
+## 0.1.0
+
+### Minor Changes
+
+- [#578](https://github.com/badass-courses/course-builder/pull/578)
+  [`f11c60f`](https://github.com/badass-courses/course-builder/commit/f11c60f9b08d7955ea840af15cc0d14d7c44f633)
+  Thanks [@zacjones93](https://github.com/zacjones93)! - Add fixed amount
+  discount functionality for merchant coupons with proper dollar-based pricing
+  throughout the pricing system. This includes converting fixed discount amounts
+  from cents to dollars (breaking change), displaying fixed discount amounts in
+  pricing components, and adding shared pricing UI components for discount
+  visualization.
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [#588](https://github.com/badass-courses/course-builder/pull/588)
+  [`43405a9`](https://github.com/badass-courses/course-builder/commit/43405a9d232d97234e671fe951472318c19632de)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump mux
+
+- [#620](https://github.com/badass-courses/course-builder/pull/620)
+  [`c0b1cdd`](https://github.com/badass-courses/course-builder/commit/c0b1cddd8a67ee67ce21732e92d4d0032c7b0ede)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - ability to modify
+  invoice name
+
+- [#600](https://github.com/badass-courses/course-builder/pull/600)
+  [`1660ec0`](https://github.com/badass-courses/course-builder/commit/1660ec01100dbc5206136812c3085e9de34ea9ed)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - use client in pricing
+  root
+
+- [`9a1d398`](https://github.com/badass-courses/course-builder/commit/9a1d398b6471b4a17764a5c8bbe6648926fd8014)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - style tweaks
+
+- [#595](https://github.com/badass-courses/course-builder/pull/595)
+  [`e58242e`](https://github.com/badass-courses/course-builder/commit/e58242e00dfec12119194d197f81b5573960227a)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump mux player
+
+- [#589](https://github.com/badass-courses/course-builder/pull/589)
+  [`f8dffc9`](https://github.com/badass-courses/course-builder/commit/f8dffc989c2636c25395701cfa949dfcb3ffd27b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next from beta to
+  stable
+
+- [#596](https://github.com/badass-courses/course-builder/pull/596)
+  [`896c68c`](https://github.com/badass-courses/course-builder/commit/896c68cf12b07e77c534e89cf0b1741776fa64ce)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add QuestionResponses
+  table
+
+- [`79764de`](https://github.com/badass-courses/course-builder/commit/79764deb0346fca813e01d2e2409712990990d8e)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - dont require
+  verify-login redirect
+
+- [`78595ef`](https://github.com/badass-courses/course-builder/commit/78595ef4363f034b765cf18b78e5583cb6161782)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump mux player
+
+- [`8267b98`](https://github.com/badass-courses/course-builder/commit/8267b984c6167c12bef8315900764943d0d86087)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - chore: make sure
+  availableCoupons is array
+
+- [#628](https://github.com/badass-courses/course-builder/pull/628)
+  [`f064fbc`](https://github.com/badass-courses/course-builder/commit/f064fbc4c6cb40d9746b8ad0670668869c990be4)
+  Thanks [@zacjones93](https://github.com/zacjones93)! - fix: upgrade next peer
+  dependency to 16.0.7 to resolve type incompatibilities
+
+- Updated dependencies
+  [[`fff302b`](https://github.com/badass-courses/course-builder/commit/fff302b9a483f8d9b6209bf5ec3fa57830c3e8e9),
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc),
+  [`1b92a3a`](https://github.com/badass-courses/course-builder/commit/1b92a3ac602291f219370fb264d8e0099f54963c),
+  [`f11c60f`](https://github.com/badass-courses/course-builder/commit/f11c60f9b08d7955ea840af15cc0d14d7c44f633),
+  [`43405a9`](https://github.com/badass-courses/course-builder/commit/43405a9d232d97234e671fe951472318c19632de),
+  [`4134b05`](https://github.com/badass-courses/course-builder/commit/4134b05115972b2d6edae4ae4ae8a7a2b10557f3),
+  [`18d2d04`](https://github.com/badass-courses/course-builder/commit/18d2d048e0e1083d66f5c929ffedf5452b9f93ef),
+  [`14a6804`](https://github.com/badass-courses/course-builder/commit/14a68045e0051ce54fb129ff5bce37a371788f3d),
+  [`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e),
+  [`f32a708`](https://github.com/badass-courses/course-builder/commit/f32a7080d405ca4ffc81d0e36d05d675dbc17844),
+  [`9a1d398`](https://github.com/badass-courses/course-builder/commit/9a1d398b6471b4a17764a5c8bbe6648926fd8014),
+  [`e58242e`](https://github.com/badass-courses/course-builder/commit/e58242e00dfec12119194d197f81b5573960227a),
+  [`9368a4c`](https://github.com/badass-courses/course-builder/commit/9368a4cf68b5ca069856b3e97012045af5954aef),
+  [`896c68c`](https://github.com/badass-courses/course-builder/commit/896c68cf12b07e77c534e89cf0b1741776fa64ce),
+  [`79764de`](https://github.com/badass-courses/course-builder/commit/79764deb0346fca813e01d2e2409712990990d8e),
+  [`22fe75f`](https://github.com/badass-courses/course-builder/commit/22fe75f78d801e1c053cd6b938a6f376f8eaa147),
+  [`78595ef`](https://github.com/badass-courses/course-builder/commit/78595ef4363f034b765cf18b78e5583cb6161782),
+  [`a2a97ca`](https://github.com/badass-courses/course-builder/commit/a2a97ca5a411be88db9468e01256fd59096155f9),
+  [`b2fd748`](https://github.com/badass-courses/course-builder/commit/b2fd7486d47dfc63dfc16e5af48b298bbbcc56a5),
+  [`8267b98`](https://github.com/badass-courses/course-builder/commit/8267b984c6167c12bef8315900764943d0d86087),
+  [`942042c`](https://github.com/badass-courses/course-builder/commit/942042c0ea02354d0d59db4bc9ceb073993f6f0c),
+  [`06a993f`](https://github.com/badass-courses/course-builder/commit/06a993f15df98235a8df9b816cb351aaab2dc202)]:
+  - @coursebuilder/core@1.1.0
+  - @coursebuilder/email-templates@1.0.7
+  - @coursebuilder/ui@2.0.8
+  - @coursebuilder/nodash@0.0.2
+
 ## 0.0.14
 
 ### Patch Changes

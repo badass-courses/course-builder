@@ -27,10 +27,13 @@ export async function Code({ codeblock }: { codeblock: RawCode }) {
 			<CopyButton text={highlighted.code} />
 			<Pre
 				code={highlighted}
-				className={cn('bg-card! text-xs! sm:text-sm! border-border border', {
-					'mt-0! rounded-t-none! rounded-b border-x border-b border-t-0':
-						isTerminalCode,
-				})}
+				className={cn(
+					'bg-card! text-xs! sm:text-sm! border-border overflow-x-auto border',
+					{
+						'mt-0! rounded-t-none! rounded-b border-x border-b border-t-0':
+							isTerminalCode,
+					},
+				)}
 				style={{
 					...highlighted.style,
 					padding: '1rem',

@@ -223,7 +223,7 @@ export function EditResourcesForm({
 					order={1}
 					minSize={5}
 					defaultSize={20}
-					maxSize={35}
+					// maxSize={35}
 					className=""
 				>
 					<EditResourcesMetadataPanel form={form} onSubmit={onSubmit}>

@@ -16,8 +16,12 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { cohortEntitlementSyncUser } from './functions/cohort-entitlement-sync-user'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
+import { createPPPCreditCouponsForPurchasers } from './functions/coupon/create-ppp-credit-coupons-for-purchasers'
+import { grantCouponEntitlements } from './functions/coupon/grant-coupon-entitlements'
+import { grantCouponEntitlementsForPurchase } from './functions/coupon/grant-coupon-entitlements-for-purchase'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
@@ -53,6 +57,7 @@ export const inngestConfig = {
 		productTransferWorkflow,
 		apiProductTransferWorkflow,
 		cohortEntitlementSyncWorkflow,
+		cohortEntitlementSyncUser,
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
@@ -63,5 +68,8 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		grantCouponEntitlements,
+		grantCouponEntitlementsForPurchase,
+		createPPPCreditCouponsForPurchasers,
 	],
 }

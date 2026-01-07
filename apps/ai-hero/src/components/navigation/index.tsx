@@ -94,9 +94,94 @@ const Navigation = () => {
 						className="hidden items-stretch md:flex"
 					>
 						<NavigationMenuList className="divide-border flex h-full items-stretch gap-0 divide-x">
+							{navData.cohorts.length > 0 && (
+								<NavigationMenuItem className="items-stretch">
+									<NavigationMenuTrigger className="dark:bg-background relative flex h-full items-center bg-white font-normal">
+										<span className="relative flex items-center">Cohorts</span>
+									</NavigationMenuTrigger>
+									<NavigationMenuContent className="w-full shrink-0">
+										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
+											{navData.cohorts.map((cohort) => (
+												<NavigationMenuLink key={cohort.href} asChild>
+													<Link
+														href={cohort.href}
+														onClick={() => {
+															track('navigation_menu_item_click', {
+																resource: cohort.title,
+																type: 'cohort',
+																category: 'navigation',
+															})
+														}}
+														className="relative flex flex-row items-center gap-5 pr-8"
+													>
+														<CldImage
+															src={cohort.image.src}
+															alt={cohort.image.alt}
+															width={cohort.image.width}
+															height={cohort.image.height}
+															className="rounded"
+														/>
+														<div className="flex flex-col gap-1">
+															<div className="text-lg font-semibold leading-tight">
+																{cohort.title}
+															</div>
+															<div className="text-muted-foreground">
+																{cohort.subtitle}
+															</div>
+														</div>
+														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+													</Link>
+												</NavigationMenuLink>
+											))}
+										</ul>
+										{navData?.pastCohorts && navData.pastCohorts.length > 0 && (
+											<>
+												<hr aria-hidden="true" className="mt-3 w-full" />
+												<span className="text-muted-foreground block px-3 pb-2 pt-3 text-sm font-medium uppercase">
+													Past Cohorts
+												</span>
+												<ul className="divide-border flex w-full flex-col divide-y">
+													{navData.pastCohorts.map((cohort) => (
+														<NavigationMenuLink key={cohort.href} asChild>
+															<Link
+																href={cohort.href}
+																onClick={() => {
+																	track('navigation_menu_item_click', {
+																		resource: cohort.title,
+																		type: 'cohort',
+																		category: 'navigation',
+																	})
+																}}
+																className="relative flex flex-row items-center gap-5 pr-8 opacity-75 transition hover:opacity-100"
+															>
+																<CldImage
+																	src={cohort.image.src}
+																	alt={cohort.image.alt}
+																	width={cohort.image.width / 1.5}
+																	height={cohort.image.height / 1.5}
+																	className="rounded"
+																/>
+																<div className="flex flex-col">
+																	<div className="text-base font-medium">
+																		{cohort.title}
+																	</div>
+																	<div className="text-muted-foreground text-sm">
+																		{cohort.subtitle}
+																	</div>
+																</div>
+																<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
+															</Link>
+														</NavigationMenuLink>
+													))}
+												</ul>
+											</>
+										)}
+									</NavigationMenuContent>
+								</NavigationMenuItem>
+							)}
 							{navData.courses.length > 0 && (
 								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
+									<NavigationMenuTrigger className="dark:bg-background relative flex h-full items-center bg-white font-normal">
 										Courses
 									</NavigationMenuTrigger>
 									<NavigationMenuContent>
@@ -127,49 +212,6 @@ const Navigation = () => {
 															</div>
 															<div className="text-muted-foreground text-sm">
 																{course.description}
-															</div>
-														</div>
-														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
-													</Link>
-												</NavigationMenuLink>
-											))}
-										</ul>
-									</NavigationMenuContent>
-								</NavigationMenuItem>
-							)}
-							{navData.cohorts.length > 0 && (
-								<NavigationMenuItem className="items-stretch">
-									<NavigationMenuTrigger className="dark:bg-background flex h-full items-center bg-white font-normal">
-										Cohorts
-									</NavigationMenuTrigger>
-									<NavigationMenuContent className="w-full shrink-0">
-										<ul className="w-[300px] md:w-[550px] lg:w-[550px]">
-											{navData.cohorts.map((cohort) => (
-												<NavigationMenuLink key={cohort.href} asChild>
-													<Link
-														href={cohort.href}
-														onClick={() => {
-															track('navigation_menu_item_click', {
-																resource: cohort.title,
-																type: 'cohort',
-																category: 'navigation',
-															})
-														}}
-														className="relative flex flex-row items-center gap-5 pr-8"
-													>
-														<CldImage
-															src={cohort.image.src}
-															alt={cohort.image.alt}
-															width={cohort.image.width}
-															height={cohort.image.height}
-															className="rounded"
-														/>
-														<div className="flex flex-col">
-															<div className="text-lg font-semibold">
-																{cohort.title}
-															</div>
-															<div className="text-muted-foreground">
-																{cohort.subtitle}
 															</div>
 														</div>
 														<ChevronRight className="text-foreground absolute right-3 top-1/2 -translate-y-1/2" />
@@ -298,6 +340,7 @@ const Navigation = () => {
 					<ul className="hidden items-stretch md:flex">
 						{sessionStatus === 'authenticated' && (
 							<NavLinkItem
+								className="hidden lg:flex"
 								label="Feedback"
 								onClick={() => {
 									setIsFeedbackDialogOpen(true)

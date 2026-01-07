@@ -98,7 +98,7 @@ export default async function ListPage(props: {
 					className="via-foreground/10 to-muted bg-linear-to-r absolute -bottom-px right-0 h-px w-2/3 from-transparent"
 				/>
 				<div className="divide-border col-span-4 flex flex-wrap items-center divide-y md:divide-y-0">
-					<div className="bg-size-[24px_32px] dark:bg-size-[24px_32px] h-14 bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-light-r_2x_y6fcsw.png)] bg-repeat sm:w-8 lg:w-10 dark:bg-[url(https://res.cloudinary.com/total-typescript/image/upload/v1740997576/aihero.dev/assets/side-pattern-dark-r_2x_wytllo.png)]" />
+					<div className="bg-stripes h-14 sm:w-8 lg:w-10" />
 					{firstResource?.fields?.slug && (
 						<Button
 							size="lg"

@@ -92,37 +92,29 @@ export default function ListResourcesEdit({
 	const [isSearchModalOpen, setIsSearchModalOpen] = React.useState(false)
 	const [isCreatePostModalOpen, setIsCreatePostModalOpen] =
 		React.useState(false)
+	/**
+	 * Recursively builds tree item from a resource relation
+	 * Supports nested sections (sections within sections)
+	 */
+	const buildTreeItem = (resourceItem: any): any => {
+		if (!resourceItem.resource) {
+			throw new Error('resourceItem.resource is required')
+		}
+		const resources = resourceItem.resource.resources ?? []
+		const isSection = resourceItem.resource.type === 'section'
+
+		return {
+			id: resourceItem.resource.id,
+			label: resourceItem.resource.fields?.title,
+			type: resourceItem.resource.type,
+			isOpen: isSection && resources.length > 0,
+			children: resources.map(buildTreeItem),
+			itemData: resourceItem as any,
+		}
+	}
+
 	const initialData = [
-		...(list.resources
-			? list.resources.map((resourceItem) => {
-					if (!resourceItem.resource) {
-						throw new Error('resourceItem.resource is required')
-					}
-					const resources = resourceItem.resource.resources ?? []
-					// Check if the resource is a section type to properly handle expansion
-					const isSection = resourceItem.resource.type === 'section'
-					return {
-						id: resourceItem.resource.id,
-						label: resourceItem.resource.fields?.title,
-						type: resourceItem.resource.type,
-						// For section types, we want to make sure they're initially expanded
-						isOpen: isSection && resources.length > 0 ? true : false,
-						children: resources.map((resourceItem: any) => {
-							if (!resourceItem.resource) {
-								throw new Error('resourceItem.resource is required')
-							}
-							return {
-								id: resourceItem.resource.id,
-								label: resourceItem.resource.fields?.title,
-								type: resourceItem.resource.type,
-								children: [],
-								itemData: resourceItem as any,
-							}
-						}),
-						itemData: resourceItem as any,
-					}
-				})
-			: []),
+		...(list.resources ? list.resources.map(buildTreeItem) : []),
 	]
 	const [state, updateState] = useReducer(
 		treeStateReducer,

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import type { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
 import LayoutClient from '@/components/layout-client'
 import { getLesson, getVideoResourceForLesson } from '@/lib/lessons-query'
@@ -6,6 +7,24 @@ import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 
 import { EditWorkshopLessonForm } from '../../../_components/edit-workshop-lesson-form'
+
+export async function generateMetadata(
+	props: {
+		params: Promise<{ lesson: string }>
+	},
+	parent: ResolvingMetadata,
+): Promise<Metadata> {
+	const params = await props.params
+	const lesson = await getLesson(params.lesson)
+
+	if (!lesson) {
+		return parent as Metadata
+	}
+
+	return {
+		title: `✏️ ${lesson.fields?.title}`,
+	}
+}
 
 /**
  * Page component for editing a workshop lesson

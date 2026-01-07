@@ -30,7 +30,7 @@ import { VideoResourceSchema } from '@coursebuilder/core/schemas/video-resource'
 import { deletePostInTypeSense, upsertPostToTypeSense } from './typesense-query'
 
 /**
- * Get a solution for a specific lesson
+ * Get a solution for a specific lesson (returns first one found)
  */
 export async function getSolutionForLesson(lessonId: string) {
 	log.info('solution.getForLesson', { lessonId })
@@ -94,6 +94,65 @@ export async function getSolutionForLesson(lessonId: string) {
 			lessonId,
 		})
 		return null
+	}
+}
+
+/**
+ * Get ALL solutions for a specific lesson
+ */
+export async function getAllSolutionsForLesson(lessonId: string) {
+	log.info('solution.getAllForLesson', { lessonId })
+
+	const query = sql`
+		SELECT s.*
+		FROM ${contentResource} AS s
+		JOIN ${contentResourceResource} AS crr ON s.id = crr.resourceId
+		WHERE crr.resourceOfId = ${lessonId}
+		  AND s.type = 'solution'
+		  AND s.deletedAt IS NULL
+		  AND crr.deletedAt IS NULL
+		ORDER BY crr.position ASC, s.createdAt ASC;
+	`
+
+	try {
+		const result = await db.execute(query)
+
+		if (!result.rows.length) {
+			return []
+		}
+
+		const solutions = []
+		for (const row of result.rows) {
+			const solutionId = (row as { id: string }).id
+
+			const solution = await db.query.contentResource.findFirst({
+				where: and(
+					eq(contentResource.id, solutionId),
+					isNull(contentResource.deletedAt),
+				),
+				with: {
+					resources: {
+						where: isNull(contentResourceResource.deletedAt),
+						with: {
+							resource: true,
+						},
+					},
+				},
+			})
+
+			const parsedSolution = SolutionSchema.safeParse(solution)
+			if (parsedSolution.success) {
+				solutions.push(parsedSolution.data)
+			}
+		}
+
+		return solutions
+	} catch (error) {
+		log.error('solution.getAllForLesson.error', {
+			error,
+			lessonId,
+		})
+		return []
 	}
 }
 
@@ -227,6 +286,7 @@ export async function createSolution({
 		}
 
 		revalidateTag('solution', 'max')
+		revalidateTag('workshop-navigation', 'max')
 		return solution
 	} catch (error) {
 		log.error('solution.create.error', {
@@ -314,6 +374,7 @@ export async function updateSolution(input: Partial<Solution>) {
 		})
 
 		revalidateTag('solution', 'max')
+		revalidateTag('workshop-navigation', 'max')
 		return updatedResource
 	} catch (error) {
 		log.error('solution.update.error', {
@@ -326,7 +387,7 @@ export async function updateSolution(input: Partial<Solution>) {
 }
 
 /**
- * Delete a solution
+ * Delete a solution (hard delete - removes entirely from database)
  */
 export async function deleteSolution(solutionId: string) {
 	const { session, ability } = await getServerAuthSession()
@@ -337,33 +398,20 @@ export async function deleteSolution(solutionId: string) {
 	}
 
 	try {
-		// Find the resource join first
+		// Find the resource join first to get the lesson ID for logging
 		const resourceJoin = await db.query.contentResourceResource.findFirst({
-			where: and(
-				eq(contentResourceResource.resourceId, solutionId),
-				isNull(contentResourceResource.deletedAt),
-			),
+			where: eq(contentResourceResource.resourceId, solutionId),
 		})
 
-		if (!resourceJoin) {
-			throw new Error('Solution not found or not linked to a lesson')
-		}
+		const lessonId = resourceJoin?.resourceOfId
 
-		// Soft delete the solution
+		// Hard delete the resource join
 		await db
-			.update(contentResource)
-			.set({
-				deletedAt: new Date(),
-			})
-			.where(eq(contentResource.id, solutionId))
-
-		// Soft delete the resource join
-		await db
-			.update(contentResourceResource)
-			.set({
-				deletedAt: new Date(),
-			})
+			.delete(contentResourceResource)
 			.where(eq(contentResourceResource.resourceId, solutionId))
+
+		// Hard delete the solution
+		await db.delete(contentResource).where(eq(contentResource.id, solutionId))
 
 		try {
 			await deletePostInTypeSense(solutionId)
@@ -378,11 +426,12 @@ export async function deleteSolution(solutionId: string) {
 
 		log.info('solution.deleted', {
 			solutionId,
-			lessonId: resourceJoin.resourceOfId,
+			lessonId,
 			userId: user.id,
 		})
 
 		revalidateTag('solution', 'max')
+		revalidateTag('workshop-navigation', 'max')
 		return { success: true }
 	} catch (error) {
 		log.error('solution.delete.error', {
@@ -660,6 +709,7 @@ export async function writeNewSolutionToDatabase(input: NewSolutionInput) {
 			}
 
 			revalidateTag('solution', 'max')
+			revalidateTag('workshop-navigation', 'max')
 			return solution
 		} catch (error) {
 			console.log('❌ Error in solution creation flow:', error)
@@ -696,6 +746,9 @@ export async function deleteSolutionFromDatabase(solutionId: string) {
 			})
 			// Continue with database deletion even if TypeSense fails
 		}
+
+		revalidateTag('solution', 'max')
+		revalidateTag('workshop-navigation', 'max')
 	} catch (error) {
 		console.error('❌ Failed to delete solution from database:', {
 			error,

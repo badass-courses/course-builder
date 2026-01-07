@@ -1,11 +1,17 @@
+import type { MDXRemoteSerializeResult } from 'next-mdx-remote'
 import { z } from 'zod'
 
-import { productSchema } from '@coursebuilder/core/schemas'
+import { Product, Purchase } from '@coursebuilder/core/schemas'
 import {
 	ContentResourceSchema,
 	ResourceStateSchema,
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
+import {
+	CommerceProps,
+	PricingData,
+	type PricingOptions,
+} from '@coursebuilder/core/types'
 
 import { WorkshopSchema } from './workshops'
 
@@ -111,3 +117,23 @@ export type CohortAccess = {
 	expiresAt: Date | null
 	discordRoleId?: string
 }
+
+/**
+ * Shared props for cohort pages and pricing components
+ */
+export type CohortPageProps = {
+	cohort: Cohort
+	quantityAvailable: number
+	totalQuantity: number
+	purchaseCount: number
+	product?: Product
+	mdx?: MDXRemoteSerializeResult
+	hasPurchasedCurrentProduct?: boolean
+	availableBonuses: any[]
+	existingPurchase?: (Purchase & { product?: Product | null }) | null
+	purchases?: Purchase[]
+	userId?: string
+	pricingDataLoader: Promise<PricingData>
+	pricingWidgetOptions?: Partial<PricingOptions>
+	organizationId?: string | null
+} & CommerceProps

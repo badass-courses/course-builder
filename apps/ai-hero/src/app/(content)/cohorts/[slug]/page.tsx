@@ -1,36 +1,33 @@
 import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
+import { DiscountCountdown } from '@/components/mdx/mdx-components'
+import { DiscountDeadline } from '@/components/pricing/discount-deadline'
+import { HasPurchased } from '@/components/pricing/has-purchased'
+import { PricingInline } from '@/components/pricing/pricing-inline'
 import config from '@/config'
-import { courseBuilderAdapter, db } from '@/db'
-import { products, purchases, users } from '@/db/schema'
+import { db } from '@/db'
+import { products, users } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { checkCohortCertificateEligibility } from '@/lib/certificates'
-import { Cohort } from '@/lib/cohort'
-import { getCohort } from '@/lib/cohorts-query'
-import { getPricingData } from '@/lib/pricing-query'
-import { getModuleProgressForUser } from '@/lib/progress'
+import { CohortPageProps, type Cohort } from '@/lib/cohort'
+import { getCachedCohort, loadCohortPageData } from '@/lib/cohorts-query'
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
-import { getProviders, getServerAuthSession } from '@/server/auth'
+import { getProviders } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatCohortDateRange } from '@/utils/format-cohort-date'
-import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { differenceInCalendarDays } from 'date-fns'
-import { count, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
 
-import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
-import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
-import { first } from '@coursebuilder/nodash'
+import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import {
 	Accordion,
 	AccordionContent,
@@ -42,10 +39,10 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { Certificate } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import { EditWorkshopButton } from '../../workshops/_components/edit-workshop-button'
 import { WorkshopNavigationProvider } from '../../workshops/_components/workshop-navigation-provider'
 import { WorkshopLessonList } from './_components/cohort-list/workshop-lesson-list'
 import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
-import { CohortPageProps } from './_components/cohort-page-props'
 import { CohortPricingWidgetContainer } from './_components/cohort-pricing-widget-container'
 import { CohortSidebar } from './_components/cohort-sidebar'
 import ConnectDiscordButton from './_components/connect-discord-button'
@@ -58,7 +55,7 @@ export async function generateMetadata(
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
 	const params = await props.params
-	const cohort = await getCohort(params.slug)
+	const cohort = await getCachedCohort(params.slug)
 
 	if (!cohort) {
 		return parent as Metadata
@@ -70,13 +67,11 @@ export async function generateMetadata(
 		openGraph: {
 			images: [
 				{
-					url: `${env.NEXT_PUBLIC_URL}/api/og/default?title=${encodeURIComponent(cohort.fields.title)}`,
+					url:
+						cohort?.fields?.image ||
+						`${env.NEXT_PUBLIC_URL}/api/og/default?title=${encodeURIComponent(cohort.fields.title)}`,
+					alt: cohort?.fields?.title,
 				},
-				// getOGImageUrlForResource({
-				// 	fields: { slug: cohort.fields.slug },
-				// 	id: cohort.id,
-				// 	updatedAt: cohort.updatedAt,
-				// }),
 			],
 		},
 	}
@@ -87,128 +82,49 @@ export default async function CohortPage(props: {
 	searchParams: Promise<ParsedUrlQuery>
 }) {
 	const searchParams = await props.searchParams
-	const { allowPurchase } = await props.searchParams
-
+	const { allowPurchase } = searchParams
 	const params = await props.params
-	const { session, ability } = await getServerAuthSession()
-	const user = session?.user
-	const currentOrganization = (await headers()).get('x-organization-id')
-	const cohort = await getCohort(params.slug)
+
+	const cohort = await getCachedCohort(params.slug)
 
 	if (!cohort) {
 		notFound()
 	}
 
-	const { hasCompletedCohort } = await checkCohortCertificateEligibility(
-		cohort.id,
-		user?.id,
-	)
+	const pageData = await loadCohortPageData(params.slug, searchParams)
 
-	const productParsed = productSchema.safeParse(
-		first(cohort.resourceProducts)?.product,
-	)
+	const {
+		session,
+		ability,
+		user,
+		currentOrganization,
+		hasCompletedCohort,
+		product,
+		pricingDataLoader,
+		commerceProps,
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity,
+		hasPurchasedCurrentProduct,
+		existingPurchase,
+		defaultCoupon,
+		saleData,
+		workshops,
+		workshopProgressMap,
+	} = pageData
 
-	let cohortProps: CohortPageProps
-	let product: Product | null = null
-
-	if (productParsed.success) {
-		product = productParsed.data
-
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
-
-		const countryCode =
-			(await headers()).get('x-vercel-ip-country') ||
-			process.env.DEFAULT_COUNTRY ||
-			'US'
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					...searchParams,
-				},
-				userId: user?.id,
-				products: [productParsed.data],
-				countryCode,
-			},
-			courseBuilderAdapter,
-		)
-
-		const { count: purchaseCount } = await db
-			.select({ count: count() })
-			.from(purchases)
-			.where(eq(purchases.productId, product.id))
-			.then((res) => res[0] ?? { count: 0 })
-
-		const productWithQuantityAvailable = await db
-			.select({ quantityAvailable: products.quantityAvailable })
-			.from(products)
-			.where(eq(products.id, product.id))
-			.then((res) => res[0])
-
-		let quantityAvailable = -1
-
-		if (productWithQuantityAvailable) {
-			quantityAvailable =
-				productWithQuantityAvailable.quantityAvailable - purchaseCount
-		}
-
-		if (quantityAvailable < 0) {
-			quantityAvailable = -1
-		}
-
-		const baseProps = {
-			cohort,
-			availableBonuses: [],
-			purchaseCount,
-			quantityAvailable,
-			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
-			product,
-			pricingDataLoader,
-			organizationId: currentOrganization,
-			...commerceProps,
-		}
-
-		if (!user) {
-			cohortProps = baseProps
-		} else {
-			const purchaseForProduct = commerceProps.purchases?.find(
-				(purchase: Purchase) => {
-					return purchase.productId === productSchema.parse(product).id
-				},
-			)
-
-			if (!purchaseForProduct) {
-				cohortProps = baseProps
-			} else {
-				const { purchase, existingPurchase } =
-					await courseBuilderAdapter.getPurchaseDetails(
-						purchaseForProduct.id,
-						user.id,
-					)
-				cohortProps = {
-					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(
-						purchase &&
-							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
-					),
-					existingPurchase,
-				}
-			}
-		}
-	} else {
-		cohortProps = {
-			cohort,
-			availableBonuses: [],
-			quantityAvailable: -1,
-			totalQuantity: -1,
-			purchaseCount: 0,
-			pricingDataLoader: Promise.resolve({
-				formattedPrice: null,
-				purchaseToUpgrade: null,
-				quantityAvailable: -1,
-			}),
-		}
+	const cohortProps: CohortPageProps = {
+		cohort,
+		availableBonuses: [],
+		purchaseCount,
+		quantityAvailable,
+		totalQuantity,
+		product: product ?? undefined,
+		pricingDataLoader,
+		hasPurchasedCurrentProduct,
+		existingPurchase,
+		...commerceProps,
+		organizationId: currentOrganization,
 	}
 
 	const { fields } = cohort
@@ -216,17 +132,12 @@ export default async function CohortPage(props: {
 	const { startsAt, endsAt } = fields
 	const PT = fields.timezone || 'America/Los_Angeles'
 
-	const workshops: Workshop[] =
-		cohort.resources?.map((resource) => resource.resource) ?? []
-
 	// Parse cohort start date once for day calculation
 	const cohortStartDate = startsAt ? new Date(startsAt) : null
 
 	const ALLOW_PURCHASE =
 		allowPurchase === 'true' ||
 		cohortProps?.product?.fields.state === 'published'
-
-	const hasPurchasedCurrentProduct = cohortProps.hasPurchasedCurrentProduct
 
 	const providers = getProviders()
 	const discordProvider = providers?.discord
@@ -239,7 +150,103 @@ export default async function CohortPage(props: {
 			})
 		: null
 
-	const { content } = await compileMDX(cohort.fields.body || '')
+	// Get product slug to ID map for HasPurchased component
+	const allProducts = await db.query.products.findMany({
+		where: eq(products.status, 1),
+	})
+	const productMap = new Map(allProducts.map((p) => [p.fields?.slug, p.id]))
+	const { content } = await compileMDX(
+		cohort.fields.body || '',
+		{
+			Enroll: ({ children = 'Enroll Now' }) =>
+				cohortProps.product && !hasPurchasedCurrentProduct ? (
+					<Pricing.Root
+						{...cohortProps}
+						product={cohortProps.product}
+						country={cohortProps.country}
+						options={{
+							withTitle: false,
+							withImage: false,
+						}}
+						userId={cohortProps?.userId}
+						pricingDataLoader={cohortProps.pricingDataLoader}
+						className="mt-5 items-start justify-start"
+					>
+						<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative h-auto w-full cursor-pointer rounded-lg bg-blue-600 px-8 font-semibold hover:bg-blue-700 sm:h-14 sm:w-auto md:px-16">
+							<span className="relative z-10">{children}</span>
+							<div
+								style={{
+									backgroundSize: '200% 100%',
+								}}
+								className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+							/>
+						</Pricing.BuyButton>
+					</Pricing.Root>
+				) : null,
+			HasDiscount: ({
+				children,
+				fallback,
+			}: {
+				children: React.ReactNode
+				fallback?: React.ReactNode
+			}) => {
+				// Only show discount if there's an active default coupon (site-wide sale)
+				const hasDefaultCoupon = saleData || defaultCoupon
+				return hasDefaultCoupon ? (
+					<>{children}</>
+				) : fallback ? (
+					<>{fallback}</>
+				) : null
+			},
+			DiscountCountdown: ({ children }) => {
+				return defaultCoupon?.expires ? (
+					<DiscountCountdown date={new Date(defaultCoupon?.expires)} />
+				) : null
+			},
+			PricingInline: ({ type }: { type: 'original' | 'discounted' }) => (
+				<PricingInline
+					type={type}
+					pricingDataLoader={cohortProps.pricingDataLoader}
+				/>
+			),
+			DiscountDeadline: ({ format }: { format?: 'short' | 'long' }) => (
+				<DiscountDeadline
+					format={format}
+					expires={defaultCoupon?.expires ?? null}
+				/>
+			),
+			HasPurchased: ({
+				productSlug,
+				productId,
+				children,
+			}: {
+				productSlug?: string
+				productId?: string
+				children: React.ReactNode
+			}) => (
+				<HasPurchased
+					productSlug={productSlug}
+					productId={productId}
+					purchases={cohortProps.purchases || []}
+					productMap={productMap}
+				>
+					{children}
+				</HasPurchased>
+			),
+		},
+		{
+			scope: {
+				...(saleData
+					? { ...saleData }
+					: {
+							percentOff: 0,
+							discountFormatted: '0%',
+							discountType: 'percentage',
+							discountValue: 0,
+						}),
+			},
+		},
+	)
 
 	return (
 		<LayoutClient withContainer>
@@ -248,34 +255,13 @@ export default async function CohortPage(props: {
 					cohort={cohort}
 					quantityAvailable={cohortProps.quantityAvailable}
 				/>
-				{cohort && ability.can('update', 'Content') && (
-					<div className="absolute right-3 top-3 z-10 flex items-center gap-2">
-						{product && (
-							<Button
-								asChild
-								size="sm"
-								variant="secondary"
-								className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
-							>
-								<Link
-									href={`/products/${product?.fields?.slug || product?.id}/edit`}
-								>
-									Edit Product
-								</Link>
-							</Button>
-						)}
-						<Button
-							asChild
-							size="sm"
-							variant="secondary"
-							className="bg-secondary/50 border-foreground/20 backdrop-blur-xs border"
-						>
-							<Link href={`/cohorts/${cohort.fields?.slug || cohort.id}/edit`}>
-								Edit Cohort
-							</Link>
-						</Button>
-					</div>
-				)}
+				<EditWorkshopButton
+					className=""
+					moduleType="cohort"
+					moduleSlug={cohort.fields?.slug || cohort.id}
+					product={product}
+				/>
+
 				{hasPurchasedCurrentProduct ? (
 					<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">
 						<div className="flex items-center">
@@ -293,7 +279,7 @@ export default async function CohortPage(props: {
 
 				<div className="flex flex-col lg:flex-row">
 					<div>
-						<header className="flex w-full flex-col items-center justify-between pl-5 md:gap-10 lg:flex-row lg:pl-10 lg:pt-8">
+						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b md:gap-10 lg:flex-row lg:pt-8">
 							{fields?.image && (
 								<CldImage
 									className="flex w-full lg:hidden"
@@ -303,7 +289,7 @@ export default async function CohortPage(props: {
 									alt={fields?.title}
 								/>
 							)}
-							<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
+							<div className="mt-5 flex w-full flex-col items-center px-5 text-center lg:mt-0 lg:items-start lg:pl-10 lg:text-left">
 								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
 									<span className="text-xs font-medium uppercase tracking-wider">
 										Cohort-based Course
@@ -317,13 +303,18 @@ export default async function CohortPage(props: {
 								</>
 							)} */}
 								</div>
-
 								<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
 									{fields.title}
 								</h1>
 								{fields.description && (
-									<h2 className="mt-5 text-balance text-lg font-light sm:text-xl">
-										{fields.description}
+									<h2 className="dark:text-primary mt-5 text-balance text-lg font-normal text-blue-700 sm:text-xl lg:text-2xl">
+										<ReactMarkdown
+											components={{
+												p: ({ children }) => <>{children}</>,
+											}}
+										>
+											{fields.description}
+										</ReactMarkdown>
 									</h2>
 								)}
 								<Contributor
@@ -337,96 +328,131 @@ export default async function CohortPage(props: {
 							{content}
 						</article>
 
-						<div className="mt-2 border-t px-5 py-8 sm:px-8 lg:px-10">
-							<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
-							<ul className="flex flex-col gap-3">
-								{workshops.map((workshop, index) => {
-									// Determine end date and timezone for the workshop
-									// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-									const workshopTimezone = workshop.fields.timezone || PT
+						<div className="mt-2 border-t py-8">
+							<div className="px-5 sm:px-8 lg:px-10">
+								<h2 className="mb-5 text-2xl font-semibold">Contents</h2>
+							</div>
+							<div className="flex w-full">
+								<ul className="divide-border flex w-full flex-col divide-y border-y">
+									{workshops.map((workshop, index) => {
+										// Determine end date and timezone for the workshop
+										// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
+										const workshopTimezone = workshop.fields.timezone || PT
 
-									// Format workshop date/time range (only start)
-									const {
-										dateString: workshopDateString,
-										timeString: workshopTimeString,
-									} = formatCohortDateRange(
-										workshop.fields.startsAt,
-										null, // Pass null for end date
-										workshopTimezone,
-									)
-
-									// Calculate Day number
-									let dayNumber: number | null = null
-									if (cohortStartDate && workshop.fields.startsAt) {
-										const workshopStartDate = new Date(workshop.fields.startsAt)
-										// Calculate difference, add 1, and ensure it's at least 1
-										dayNumber = Math.max(
-											1,
-											differenceInCalendarDays(
-												workshopStartDate,
-												cohortStartDate,
-											) + 1,
+										// Format workshop date/time range (only start)
+										const {
+											dateString: workshopDateString,
+											timeString: workshopTimeString,
+										} = formatCohortDateRange(
+											workshop.fields.startsAt,
+											null, // Pass null for end date
+											workshopTimezone,
 										)
-									}
-									const moduleProgressLoader = getModuleProgressForUser(
-										workshop.fields.slug,
-									)
-									return (
-										<li key={workshop.id}>
-											<ModuleProgressProvider
-												moduleProgressLoader={moduleProgressLoader}
-											>
-												<Accordion
-													type="multiple"
-													defaultValue={[`${workshop.id}-body`]}
+
+										// Calculate Day number
+										let dayNumber: number | null = null
+										if (cohortStartDate && workshop.fields.startsAt) {
+											const workshopStartDate = new Date(
+												workshop.fields.startsAt,
+											)
+											// Calculate difference, add 1, and ensure it's at least 1
+											dayNumber = Math.max(
+												1,
+												differenceInCalendarDays(
+													workshopStartDate,
+													cohortStartDate,
+												) + 1,
+											)
+										}
+										const moduleProgressLoader =
+											workshopProgressMap.get(workshop.fields.slug) ||
+											Promise.resolve(null)
+										return (
+											<li key={workshop.id}>
+												<ModuleProgressProvider
+													moduleProgressLoader={moduleProgressLoader}
 												>
-													<AccordionItem
-														value={`${workshop.id}-body`}
-														className="bg-card shadow-xs overflow-hidden rounded border"
+													<Accordion
+														type="multiple"
+														defaultValue={[`${workshop.id}-body`]}
 													>
-														<div className="relative flex items-stretch justify-between border-b">
-															<Link
-																className="text-foreground hover:text-primary flex flex-col py-2 pl-4 pt-3 text-lg font-semibold leading-tight transition ease-in-out"
-																href={getResourcePath(
-																	'workshop',
-																	workshop.fields.slug,
-																	'view',
-																)}
-															>
-																{workshop.fields.title}{' '}
-																<div className="mt-1 text-sm font-normal opacity-80">
-																	Available from {workshopDateString}
-																</div>
-															</Link>
-															<AccordionTrigger
-																aria-label="Toggle lessons"
-																className="hover:bg-muted [&_svg]:hover:text-primary flex aspect-square h-full w-full shrink-0 items-center justify-center rounded-none border-l bg-transparent"
-															/>
-														</div>
-														<AccordionContent className="pb-2">
-															{/* Display formatted workshop date/time */}
-															<div className="text-muted-foreground text-sm">
-																{/* {dayNumber !== null && (
+														<AccordionItem
+															value={`${workshop.id}-body`}
+															className="bg-card border-none"
+														>
+															<div className="relative flex items-stretch justify-between">
+																<Link
+																	className="text-foreground dark:bg-foreground/2 hover:dark:text-primary hover:bg-muted/50 flex w-full flex-col bg-white py-4 pl-4 text-lg font-semibold leading-tight transition ease-in-out hover:text-blue-600"
+																	href={getResourcePath(
+																		'workshop',
+																		workshop.fields.slug,
+																		'view',
+																	)}
+																>
+																	<span className="inline-flex items-center gap-3">
+																		<span className="text-muted-foreground text-[10px] font-normal opacity-75">
+																			{index + 1}
+																		</span>{' '}
+																		<span className="inline-flex items-center gap-2">
+																			<svg
+																				className="text-muted-foreground size-3"
+																				xmlns="http://www.w3.org/2000/svg"
+																				width="12"
+																				height="12"
+																				viewBox="0 0 12 12"
+																			>
+																				<title>video-player</title>
+																				<g fill="currentColor">
+																					<path
+																						d="M10.5,1h-9A1.5,1.5,0,0,0,0,2.5v7A1.5,1.5,0,0,0,1.5,11h9A1.5,1.5,0,0,0,12,9.5v-7A1.5,1.5,0,0,0,10.5,1ZM4,9V3L9,6Z"
+																						fill="currentColor"
+																					/>
+																				</g>
+																			</svg>
+																			{workshop.fields.title}
+																		</span>
+																	</span>
+																	{workshopDateString && (
+																		<div className="mt-1 pl-9 text-sm font-normal opacity-80">
+																			Available from {workshopDateString}
+																		</div>
+																	)}
+																</Link>
+																<AccordionTrigger
+																	aria-label="Toggle lessons"
+																	className="hover:bg-muted dark:hover:[&_svg]:text-primary flex aspect-square h-full w-10 shrink-0 items-center justify-center rounded-none border-l bg-transparent hover:[&_svg]:text-blue-600"
+																/>
+															</div>
+															{workshop.resources &&
+																workshop.resources.length > 0 && (
+																	<AccordionContent className="bg-background border-t pb-0 dark:bg-transparent">
+																		{/* Display formatted workshop date/time */}
+																		<div className="text-muted-foreground text-sm">
+																			{/* {dayNumber !== null && (
 												<span className="font-semibold">Day {dayNumber}: </span>
 											)} */}
-															</div>
-															<ol className="list-inside list-none">
-																<WorkshopListRowRenderer
-																	className="pl-10 [&_[data-state]]:left-5"
-																	workshop={workshop}
-																/>
-															</ol>
-														</AccordionContent>
-													</AccordionItem>
-												</Accordion>
-											</ModuleProgressProvider>
-										</li>
-									)
-								})}
-							</ul>
+																		</div>
+																		<ol className="list-inside list-none divide-y">
+																			<WorkshopListRowRenderer
+																				workshopIndex={index + 1}
+																				className=""
+																				workshop={workshop}
+																			/>
+																		</ol>
+																	</AccordionContent>
+																)}
+														</AccordionItem>
+													</Accordion>
+												</ModuleProgressProvider>
+											</li>
+										)
+									})}
+								</ul>
+								<div className="bg-stripes hidden min-h-0 w-4 shrink-0 border-y border-l sm:flex" />
+							</div>
 						</div>
 					</div>
-					<CohortSidebar cohort={cohort} sticky={!hasPurchasedCurrentProduct}>
+					<CohortSidebar cohort={cohort}>
 						{fields?.image && (
 							<CldImage
 								className="hidden lg:flex"
@@ -473,9 +499,9 @@ export default async function CohortPage(props: {
 												) + 1,
 											)
 										}
-										const moduleProgressLoader = getModuleProgressForUser(
-											workshop.fields.slug,
-										)
+										const moduleProgressLoader =
+											workshopProgressMap.get(workshop.fields.slug) ||
+											Promise.resolve(null)
 										return (
 											<li key={workshop.id}>
 												<ModuleProgressProvider
@@ -486,10 +512,14 @@ export default async function CohortPage(props: {
 															value={workshop.id}
 															className='data-[state="open"]:bg-muted/60 transition-colors ease-out'
 														>
-															<WorkshopSidebarItem workshop={workshop} />
+															<WorkshopSidebarItem
+																index={index + 1}
+																workshop={workshop}
+															/>
 															<AccordionContent>
 																<ol className="divide-border border-border list-inside list-none divide-y border-t">
 																	<WorkshopListRowRenderer
+																		workshopIndex={index + 1}
 																		workshop={workshop}
 																	/>
 																</ol>
@@ -507,7 +537,10 @@ export default async function CohortPage(props: {
 								/>
 							</div>
 						) : ALLOW_PURCHASE ? (
-							<CohortPricingWidgetContainer {...cohortProps} />
+							<CohortPricingWidgetContainer
+								{...cohortProps}
+								searchParams={searchParams}
+							/>
 						) : null}
 					</CohortSidebar>
 				</div>
@@ -520,9 +553,11 @@ export default async function CohortPage(props: {
 const WorkshopListRowRenderer = ({
 	workshop,
 	className,
+	workshopIndex,
 }: {
 	workshop: Workshop
 	className?: string
+	workshopIndex: number
 }) => {
 	const workshopNavDataLoader = getCachedWorkshopNavigation(
 		workshop.fields.slug,
@@ -530,7 +565,11 @@ const WorkshopListRowRenderer = ({
 
 	return (
 		<WorkshopNavigationProvider workshopNavDataLoader={workshopNavDataLoader}>
-			<WorkshopLessonList workshop={workshop} className={className} />
+			<WorkshopLessonList
+				workshop={workshop}
+				className={className}
+				workshopIndex={workshopIndex}
+			/>
 		</WorkshopNavigationProvider>
 	)
 }

@@ -2,6 +2,7 @@ import { ParsedUrlQuery } from 'querystring'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getCsrf } from '@/app/(user)/login/actions'
+import { Logo } from '@/components/brand/logo'
 import LayoutClient from '@/components/layout-client'
 import { Login } from '@/components/login'
 import { db } from '@/db'
@@ -38,11 +39,7 @@ export default async function VerifyLoginPage({
 
 	let callbackUrl = `${env.COURSEBUILDER_URL}/subscribe/logged-in`
 
-	console.log({ checkoutUrl, checkoutParams, product })
-
 	const parsedCheckoutParams = CheckoutParamsSchema.safeParse(checkoutParams)
-
-	console.dir({ parsedCheckoutParams }, { depth: null })
 
 	if (!parsedCheckoutParams.success) {
 		return redirect('/login')
@@ -90,12 +87,19 @@ export default async function VerifyLoginPage({
 	)
 
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient
+			withFooter={false}
+			withNavigation={false}
+			withContainer={false}
+		>
 			<Login
+				image={
+					<Logo className="text-muted-foreground mx-auto mb-5 flex w-full items-center justify-center opacity-90" />
+				}
 				title="Log in to join"
 				csrfToken={csrfToken}
 				providers={providers}
-				subtitle={`We'll create your account if you don't have one yet.`}
+				subtitle={`We’ll create an account for you if you don’t already have one.`}
 				callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
 			/>
 		</LayoutClient>

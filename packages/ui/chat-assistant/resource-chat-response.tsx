@@ -119,10 +119,7 @@ export function ResourceChatResponse({
 	})
 
 	return (
-		<ScrollArea
-			viewportRef={div}
-			className="h-full w-full scroll-smooth text-sm"
-		>
+		<ScrollArea ref={div} className="h-full w-full scroll-smooth text-sm">
 			{messages.length === 0 && user ? (
 				<div className="prose prose-sm dark:prose-invert p-5">
 					{user.name

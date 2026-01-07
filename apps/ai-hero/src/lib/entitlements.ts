@@ -1,6 +1,11 @@
 import { db } from '@/db'
-import { entitlements, organizationMemberships, purchases } from '@/db/schema'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import {
+	entitlements,
+	entitlementTypes,
+	organizationMemberships,
+	purchases,
+} from '@/db/schema'
+import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import { guid } from '@coursebuilder/adapter-drizzle/mysql'
 
@@ -10,17 +15,20 @@ export type EntitlementType =
 	| 'workshop_content_access'
 	| 'workshop_discord_role'
 	| 'subscription_tier'
+	| 'apply_special_credit'
 
 export enum EntitlementSourceType {
 	PURCHASE = 'PURCHASE',
 	SUBSCRIPTION = 'SUBSCRIPTION',
 	MANUAL = 'MANUAL',
+	COUPON = 'COUPON',
 }
 
 export type EntitlementSource =
 	| { type: EntitlementSourceType.PURCHASE; id: string }
 	| { type: EntitlementSourceType.SUBSCRIPTION; id: string }
 	| { type: EntitlementSourceType.MANUAL; id: string }
+	| { type: EntitlementSourceType.COUPON; id: string }
 
 /**
  * Soft delete all entitlements for a user when a refund occurs
@@ -427,6 +435,69 @@ export async function removeAllUserEntitlementsInOrganization(
 			and(
 				eq(entitlements.userId, userId),
 				eq(entitlements.organizationId, organizationId),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
+}
+
+/**
+ * Get credit entitlements that were granted by a source purchase
+ * (e.g., when user purchased crash course, they got a credit entitlement)
+ *
+ * IMPORTANT: This ONLY returns credits granted by the specific product being refunded.
+ * It filters by metadata.eligibilityProductId to ensure we only get credits
+ * attached to this product, not all credits the user has.
+ *
+ * @param productId - The product ID of the source purchase (used to filter credits)
+ * @param userId - The user ID who made the purchase
+ * @returns Array of credit entitlements (both used and unused) that were granted by THIS product only
+ */
+export async function getCreditEntitlementsForSourcePurchase(
+	productId: string,
+	userId: string,
+) {
+	const specialCreditEntitlementType =
+		await db.query.entitlementTypes.findFirst({
+			where: eq(entitlementTypes.name, 'apply_special_credit'),
+		})
+
+	if (!specialCreditEntitlementType) {
+		return []
+	}
+
+	const creditEntitlements = await db.query.entitlements.findMany({
+		where: (entitlements, { and, eq, sql }) =>
+			and(
+				eq(entitlements.userId, userId),
+				eq(entitlements.entitlementType, specialCreditEntitlementType.id),
+				eq(entitlements.sourceType, EntitlementSourceType.COUPON),
+				sql`JSON_EXTRACT(${entitlements.metadata}, '$.eligibilityProductId') = ${productId}`,
+			),
+	})
+
+	return creditEntitlements
+}
+
+/**
+ * Soft delete unused credit entitlements
+ * @param entitlementIds - Array of entitlement IDs to soft delete
+ * @returns Number of entitlements deleted
+ */
+export async function softDeleteCreditEntitlements(entitlementIds: string[]) {
+	if (entitlementIds.length === 0) {
+		return { rowsAffected: 0 }
+	}
+
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+		})
+		.where(
+			and(
+				inArray(entitlements.id, entitlementIds),
 				isNull(entitlements.deletedAt),
 			),
 		)

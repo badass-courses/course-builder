@@ -146,9 +146,10 @@ export const pricingMachine = setup({
 		},
 		isPPPAvailable: function ({ context, event }) {
 			return Boolean(
-				context.formattedPrice?.availableCoupons.some(
-					(coupon) => coupon?.type === 'ppp',
-				),
+				Array.isArray(context.formattedPrice?.availableCoupons) &&
+					context.formattedPrice.availableCoupons.some(
+						(coupon) => coupon?.type === 'ppp',
+					),
 			)
 		},
 		canUpdateQuantity: and([

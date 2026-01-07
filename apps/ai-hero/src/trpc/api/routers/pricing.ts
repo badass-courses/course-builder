@@ -1,8 +1,10 @@
 import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
+import { entitlementTypes } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
 import { isAfter } from 'date-fns'
+import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
@@ -225,6 +227,23 @@ const checkForAvailableCoupons = async ({
 				quantity,
 			})
 
+		// Always prefer the default coupon as the base coupon when one exists
+		// (stacking logic in formatPricesForProduct will add entitlement-based discounts on top)
+		if (defaultCoupon && defaultCoupon.merchantCouponId) {
+			const defaultMerchantCoupon =
+				await courseBuilderAdapter.getMerchantCoupon(
+					defaultCoupon.merchantCouponId,
+				)
+
+			if (defaultMerchantCoupon) {
+				return {
+					activeMerchantCoupon: defaultMerchantCoupon,
+					defaultCoupon,
+					usedCouponId: defaultCoupon.id,
+				}
+			}
+		}
+
 		return {
 			activeMerchantCoupon,
 			defaultCoupon,
@@ -335,6 +354,29 @@ export const pricingRouter = createTRPCRouter({
 					quantity,
 				})
 
+			// Only enable stacking if the user has an entitlement-based coupon
+			// Stacking should ONLY happen when there's an entitlement (special credit)
+			// NOT for regular users with PPP or site-wide coupons
+			let hasEntitlementCoupon = false
+			if (verifiedUserId) {
+				// Look up entitlement type by canonical name to avoid hard-coding IDs
+				const couponCreditEntitlementType =
+					await db.query.entitlementTypes.findFirst({
+						where: eq(entitlementTypes.name, 'apply_special_credit'),
+					})
+
+				if (couponCreditEntitlementType) {
+					const entitlements =
+						await courseBuilderAdapter.getEntitlementsForUser({
+							userId: verifiedUserId,
+							sourceType: 'COUPON',
+							entitlementType: couponCreditEntitlementType.id,
+						})
+
+					hasEntitlementCoupon = entitlements.length > 0
+				}
+			}
+
 			const productPrices = await formatPricesForProduct({
 				productId,
 				country,
@@ -343,6 +385,7 @@ export const pricingRouter = createTRPCRouter({
 				...(upgradeFromPurchaseId && { upgradeFromPurchaseId }),
 				userId: verifiedUserId,
 				autoApplyPPP,
+				preferStacking: hasEntitlementCoupon,
 				usedCouponId,
 				ctx: courseBuilderAdapter,
 			})

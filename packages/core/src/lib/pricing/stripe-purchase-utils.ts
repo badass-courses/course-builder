@@ -19,7 +19,7 @@ import { first, isEmpty, sortBy } from '@coursebuilder/nodash'
 export async function parsePurchaseInfoFromCheckoutSession(
 	checkoutSession: Stripe.Checkout.Session,
 	courseBuilderAdapter: CourseBuilderAdapter,
-) {
+): Promise<PurchaseInfo> {
 	const { customer, line_items, payment_intent, metadata } = checkoutSession
 	const { email, name, id: stripeCustomerId } = customer as Stripe.Customer
 	const lineItem = first(line_items?.data) as Stripe.LineItem

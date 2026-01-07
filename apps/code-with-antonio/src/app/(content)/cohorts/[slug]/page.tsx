@@ -41,6 +41,7 @@ import {
 	DefaultCertificateFallback,
 } from '../../_components/cohort-certificate-container'
 import { ModuleProgressProvider } from '../../_components/module-progress-provider'
+import ModuleResourceList from '../../_components/navigation/module-resource-list'
 import { CohortAdminActions } from './_components/cohort-admin-actions'
 import { WorkshopListRowRenderer } from './_components/cohort-list/workshop-list-row'
 import WorkshopSidebarItem from './_components/cohort-list/workshop-sidebar-item'
@@ -316,71 +317,13 @@ export default async function CohortPage(props: {
 									<div className="flex h-12 items-center border-b px-2.5 py-3 text-lg font-semibold">
 										Workshops
 									</div>
-									<ol className="divide-border flex flex-col divide-y">
-										{workshops.map((workshop, index) => {
-											// Determine end date and timezone for the workshop
-											// const workshopEndDate = workshop.fields.endsAt || endsAt // No longer needed for display
-											const workshopTimezone = workshop.fields.timezone || PT
-
-											// Format workshop date/time range (only start)
-											const {
-												dateString: workshopDateString,
-												timeString: workshopTimeString,
-											} = formatCohortDateRange(
-												workshop.fields.startsAt,
-												null, // Pass null for end date
-												workshopTimezone,
-											)
-
-											// Calculate Day number
-											let dayNumber: number | null = null
-											if (cohortStartDate && workshop.fields.startsAt) {
-												const workshopStartDate = new Date(
-													workshop.fields.startsAt,
-												)
-												// Calculate difference, add 1, and ensure it's at least 1
-												dayNumber = Math.max(
-													1,
-													differenceInCalendarDays(
-														workshopStartDate,
-														cohortStartDate,
-													) + 1,
-												)
-											}
-											const moduleProgressLoader = getModuleProgressForUser(
-												workshop.fields.slug,
-											)
-											const workshopNavDataLoader = getCachedWorkshopNavigation(
-												workshop.fields.slug,
-											)
-											return (
-												<li key={workshop.id}>
-													<ModuleProgressProvider
-														moduleProgressLoader={moduleProgressLoader}
-													>
-														<Accordion type="multiple">
-															<AccordionItem
-																value={workshop.id}
-																className='data-[state="open"]:bg-muted/60 transition-colors ease-out'
-															>
-																<WorkshopSidebarItem workshop={workshop} />
-																<AccordionContent>
-																	<ol className="divide-border border-border list-inside list-none divide-y border-t">
-																		<WorkshopListRowRenderer
-																			workshopNavDataLoader={
-																				workshopNavDataLoader
-																			}
-																			workshop={workshop}
-																		/>
-																	</ol>
-																</AccordionContent>
-															</AccordionItem>
-														</Accordion>
-													</ModuleProgressProvider>
-												</li>
-											)
-										})}
-									</ol>
+									<ModuleResourceList
+										options={{
+											stretchToFullViewportHeight: false,
+											isCollapsible: false,
+											withHeader: false,
+										}}
+									/>
 									<React.Suspense fallback={<DefaultCertificateFallback />}>
 										<Certificate
 											certificateLegibilityLoader={certificateLegibilityLoader}

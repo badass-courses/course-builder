@@ -1,9 +1,17 @@
 import dynamic from 'next/dynamic'
+import {
+	CheckList,
+	CrossList,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
+import { CldImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
-import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
+import {
+	compileMDX as _compileMDX,
+	type MDXRemoteProps,
+} from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
@@ -53,6 +61,53 @@ const DynamicTestimonial = dynamic(() =>
 	),
 )
 
+// Chat conversation components
+const DynamicChatConversation = dynamic(() =>
+	import('@/components/mdx/chat-conversation').then(
+		(mod) => mod.ChatConversation,
+	),
+)
+const DynamicConcern = dynamic(() =>
+	import('@/components/mdx/chat-conversation').then((mod) => mod.Concern),
+)
+const DynamicResponse = dynamic(() =>
+	import('@/components/mdx/chat-conversation').then((mod) => mod.Response),
+)
+const DynamicChatSetup = dynamic(() =>
+	import('@/components/mdx/chat-conversation').then((mod) => mod.ChatSetup),
+)
+const DynamicChatPunchline = dynamic(() =>
+	import('@/components/mdx/chat-conversation').then((mod) => mod.ChatPunchline),
+)
+
+// Reasons list components
+const DynamicReasonsList = dynamic(() =>
+	import('@/components/mdx/reasons-list').then((mod) => mod.ReasonsList),
+)
+const DynamicReason = dynamic(() =>
+	import('@/components/mdx/reasons-list').then((mod) => mod.Reason),
+)
+
+// Workshop modules components
+const DynamicWorkshopModules = dynamic(() =>
+	import('@/components/mdx/workshop-modules').then(
+		(mod) => mod.WorkshopModules,
+	),
+)
+const DynamicWorkshopModule = dynamic(() =>
+	import('@/components/mdx/workshop-modules').then((mod) => mod.WorkshopModule),
+)
+
+// Product contents components
+const DynamicProductContents = dynamic(() =>
+	import('@/components/mdx/product-contents').then(
+		(mod) => mod.ProductContents,
+	),
+)
+const DynamicWorkshop = dynamic(() =>
+	import('@/components/mdx/product-contents').then((mod) => mod.Workshop),
+)
+
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
  *
@@ -62,6 +117,7 @@ const DynamicTestimonial = dynamic(() =>
 export async function compileMDX(
 	source: string,
 	components?: Record<string, React.ComponentType<any>>,
+	options: MDXRemoteProps['options'] = {},
 ) {
 	return await _compileMDX({
 		source: source,
@@ -87,6 +143,8 @@ export async function compileMDX(
 			YouTubeVideo: ({ videoId }: { videoId: string }) => (
 				<DynamicYouTubeVideo videoId={videoId} />
 			),
+			Image: (props) => <CldImage {...props} />,
+			CldImage: (props) => <CldImage {...props} />,
 			ThemeImage: ({
 				urls,
 				...props
@@ -105,6 +163,8 @@ export async function compileMDX(
 			),
 			SubscribeForm: (props) => <DynamicSubscribeForm {...props} />,
 			Callout: (props) => <DynamicCallout {...props} />,
+			CheckList: ({ children }) => <CheckList>{children}</CheckList>,
+			CrossList: ({ children }) => <CrossList>{children}</CrossList>,
 			Testimonial: ({
 				children,
 				authorName,
@@ -117,6 +177,49 @@ export async function compileMDX(
 				<DynamicTestimonial authorName={authorName} authorAvatar={authorAvatar}>
 					{children}
 				</DynamicTestimonial>
+			),
+			// Chat conversation components
+			ChatConversation: (props: {
+				children: React.ReactNode
+				header?: string
+			}) => <DynamicChatConversation {...props} />,
+			Concern: (props: { children: React.ReactNode; emoji?: string }) => (
+				<DynamicConcern {...props} />
+			),
+			Response: (props: { children: React.ReactNode }) => (
+				<DynamicResponse {...props} />
+			),
+			ChatSetup: (props: { children: React.ReactNode }) => (
+				<DynamicChatSetup {...props} />
+			),
+			ChatPunchline: (props: { children: React.ReactNode }) => (
+				<DynamicChatPunchline {...props} />
+			),
+			// Reasons list components
+			ReasonsList: (props: { children: React.ReactNode; title?: string }) => (
+				<DynamicReasonsList {...props} />
+			),
+			Reason: (props: {
+				children: React.ReactNode
+				headline: string
+				subline?: string
+			}) => <DynamicReason {...props} />,
+			// Workshop modules components
+			WorkshopModules: (props: { children: React.ReactNode }) => (
+				<DynamicWorkshopModules {...props} />
+			),
+			WorkshopModule: (props: {
+				children: React.ReactNode
+				title: string
+				focus?: string
+			}) => <DynamicWorkshopModule {...props} />,
+			// Product contents components
+			ProductContents: (props: {
+				children: React.ReactNode
+				title: string
+			}) => <DynamicProductContents {...props} />,
+			Workshop: (props: { children: React.ReactNode }) => (
+				<DynamicWorkshop {...props} />
 			),
 		},
 		options: {
@@ -134,6 +237,7 @@ export async function compileMDX(
 				],
 				recmaPlugins: [[recmaCodeHike, { components: { code: 'Code' } }]],
 			},
+			...options,
 		},
 	})
 }

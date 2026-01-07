@@ -17,7 +17,7 @@ export const LessonSchema = ContentResourceSchema.merge(
 		updatedAt: z.coerce.date().nullable(),
 		deletedAt: z.coerce.date().nullable(),
 		fields: z.object({
-			title: z.string().min(2).max(90),
+			title: z.string().min(2),
 			body: z.string().optional(),
 			slug: z.string(),
 			description: z.string().optional(),
@@ -25,8 +25,8 @@ export const LessonSchema = ContentResourceSchema.merge(
 				.enum(['draft', 'published', 'archived', 'deleted'])
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
-			github: z.string().optional(),
-			gitpod: z.string().optional(),
+			github: z.string().nullish(),
+			gitpod: z.string().nullish(),
 			thumbnailTime: z.number().nullish(),
 			optional: z.boolean().nullish().default(false),
 			prompt: z.string().nullish(),

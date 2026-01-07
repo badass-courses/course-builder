@@ -107,8 +107,8 @@ export default function Tree({
 	rootResource,
 	onRefresh,
 	showTierSelector = false,
-
 	onResourceUpdate,
+	onQuickEdit,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
@@ -120,6 +120,7 @@ export default function Tree({
 		itemId: string,
 		fields: Record<string, any>,
 	) => Promise<void>
+	onQuickEdit?: (itemId: string) => Promise<void>
 }) {
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
@@ -404,6 +405,7 @@ export default function Tree({
 			rootResource,
 			onRefresh,
 			onResourceUpdate,
+			onQuickEdit,
 		}),
 		[
 			getChildrenOfItem,
@@ -414,6 +416,7 @@ export default function Tree({
 			rootResource,
 			onRefresh,
 			onResourceUpdate,
+			onQuickEdit,
 		],
 	)
 

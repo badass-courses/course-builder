@@ -1,7 +1,11 @@
-import { WorkshopNavigation, type NavigationResource } from '@/lib/workshops'
+import {
+	WorkshopNavigation,
+	type NavigationResource,
+	type NavigationSection,
+} from '@/lib/workshops'
 
 /**
- * Flattens all navigation resources, including nested solutions,
+ * Flattens all navigation resources, including nested solutions and nested sections,
  * and returns the next resource after the current one
  */
 export function getNextWorkshopResource(
@@ -29,11 +33,16 @@ export function getNextWorkshopResource(
 		parentSlug?: string
 	}> = []
 
-	// Helper function to process a resource and its solutions
-	const processResource = (
-		resource: NavigationResource,
-		isInSection = false,
-	) => {
+	/**
+	 * Helper function to process a lesson/post resource and its solutions
+	 */
+	const processResource = (resource: NavigationResource) => {
+		if (resource.type === 'section') {
+			// Recursively process section contents
+			processSection(resource)
+			return
+		}
+
 		// Add the resource itself (lesson/post)
 		flattenedNavResources.push({
 			id: resource.id,
@@ -64,16 +73,18 @@ export function getNextWorkshopResource(
 		}
 	}
 
-	// Process all resources and flatten them
+	/**
+	 * Recursively processes a section, handling nested sub-sections
+	 */
+	const processSection = (section: NavigationSection) => {
+		section.resources.forEach((item) => {
+			processResource(item)
+		})
+	}
+
+	// Process all top-level resources and flatten them
 	navigation.resources.forEach((resource) => {
-		if (resource.type === 'section') {
-			// Process section's resources
-			resource.resources.forEach((sectionItem) => {
-				processResource(sectionItem, true)
-			})
-		} else {
-			processResource(resource)
-		}
+		processResource(resource)
 	})
 
 	// Find the index of the current resource

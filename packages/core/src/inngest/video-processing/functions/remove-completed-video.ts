@@ -55,17 +55,27 @@ const removeCompletedVideoHandler: CoreInngestHandler = async ({
 	} else {
 		// Track retry count to prevent infinite loops when webhooks aren't configured
 		const retryCount = (event.data.retryCount || 0) as number
-		const maxRetries = 24 // 24 * 5min = 2 hours max wait time
+		const maxRetries = 30 // 30 days max wait time (checking once per day)
 
-		if (retryCount >= maxRetries) {
+		// Check if video has been stuck in processing for too long (30 days)
+		const videoAge = videoResource.createdAt
+			? Date.now() - new Date(videoResource.createdAt).getTime()
+			: 0
+		const maxAge = 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
+
+		if (retryCount >= maxRetries || videoAge > maxAge) {
+			// Fail if we've exceeded retries or video is too old
+			const ageDays =
+				videoAge > 0 ? Math.round(videoAge / (24 * 60 * 60 * 1000)) : 0
 			throw new NonRetriableError(
-				`Video processing timeout after ${maxRetries} retries (${maxRetries * 5} minutes). ` +
+				`Video processing timeout after ${retryCount} days${ageDays > 0 ? ` or ${ageDays} days old` : ''}. ` +
 					'This likely means Mux webhooks are not configured or video processing failed.',
 			)
 		}
 
-		await step.sleep('wait for video to be ready', '5m')
-		await step.sendEvent('check video status', {
+		// Check once per day instead of frequent retries
+		await step.sleep('wait 24 hours before checking again', '24h')
+		await step.sendEvent('check video status daily', {
 			name: VIDEO_STATUS_CHECK_EVENT,
 			data: {
 				...event.data,

@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	contentResource,
@@ -19,7 +19,7 @@ import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import {
 	deleteLessonFromDatabase,
-	getAllLessonsForUser,
+	getAllLessons,
 	writeLessonUpdateToDatabase,
 	writeNewLessonToDatabase,
 } from '../lessons-query'
@@ -214,7 +214,7 @@ export async function getLessons({
 		throw new LessonError('Unauthorized', 401)
 	}
 
-	return getAllLessonsForUser(userId)
+	return getAllLessons()
 }
 
 export async function updateLesson({
@@ -359,6 +359,10 @@ export async function updateLesson({
 			console.log('🔍 Revalidating path:', lessonPath)
 			revalidatePath(lessonPath)
 		}
+
+		// Revalidate workshop navigation tag
+		console.log('🔄 Revalidating tag: workshop-navigation')
+		revalidateTag('workshop-navigation', 'max')
 
 		return result
 	} catch (error: any) {

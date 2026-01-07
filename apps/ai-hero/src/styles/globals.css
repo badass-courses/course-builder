@@ -329,6 +329,7 @@
 }
 li.task-list-item {
 	@apply list-none;
+	padding-inline-start: 0;
 	p {
 		/* @apply inline-flex items-center gap-2 pb-0; */
 	}
@@ -361,4 +362,32 @@ li.task-list-item {
 
 [data-discord-button] {
 	background-color: #5a65ea;
+}
+
+.bg-stripes {
+	background-image: linear-gradient(
+		135deg,
+		color-mix(in oklch, var(--foreground) 10%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 10%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 10%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 10%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 10%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 10%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 10%, transparent) 100%
+	);
+	background-size: 5px 5px;
+}
+
+.bg-stripes-muted {
+	background-image: linear-gradient(
+		135deg,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 14.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 50%,
+		color-mix(in oklch, var(--foreground) 5%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 64.29%,
+		color-mix(in oklch, var(--background) 5%, transparent) 100%
+	);
+	background-size: 5px 5px;
 }

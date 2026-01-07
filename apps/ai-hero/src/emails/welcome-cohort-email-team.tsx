@@ -40,16 +40,21 @@ export default function WelcomeCohortEmailForTeam({
 		})
 	}
 
-	const everyTimeZoneLink = buildEtzLink(dayOneUnlockDate, '9:00 AM')
+	const isTBD = dayOneUnlockDate === 'TBD'
+	const everyTimeZoneLink = isTBD
+		? null
+		: buildEtzLink(dayOneUnlockDate, '9:00 AM')
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
 	const teamDashboardUrl = `${env.COURSEBUILDER_URL}/team`
-	const dayOneIsInFuture = isAfter(
-		zonedTimeToUtc(
-			parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
-			'America/Los_Angeles',
-		),
-		new Date(),
-	)
+	const dayOneIsInFuture = isTBD
+		? false
+		: isAfter(
+				zonedTimeToUtc(
+					parse(dayOneUnlockDate, 'MMMM do, yyyy', new Date()),
+					'America/Los_Angeles',
+				),
+				new Date(),
+			)
 
 	return (
 		<Html>

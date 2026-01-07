@@ -58,7 +58,7 @@ export function EditResourcesToolPanel({
 						}
 						minSize={15}
 						defaultSize={25}
-						maxSize={25}
+						// maxSize={25}
 					>
 						<EditResourcesToolPanelContents
 							resource={resource}

@@ -9,7 +9,7 @@ import type { MinimalWorkshop } from '@/lib/workshops'
 import { useInView } from 'framer-motion'
 import { useMeasure } from 'react-use'
 
-import { Button } from '@coursebuilder/ui'
+import { Button, ScrollArea } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import {
@@ -53,16 +53,20 @@ export const WorkshopSidebar = ({
 			<div
 				ref={buySectionRef}
 				id="buy"
-				className={cn('relative h-full', className)}
+				className={cn('scroll-mt-15 relative flex h-full flex-col', className)}
 			>
 				<div
 					ref={sidebarRef}
 					className={cn('', {
-						'md:top-(--nav-height) md:sticky':
-							sticky && windowHeight - 63 > height,
+						'md:top-(--nav-height) md:sticky': true, //sticky && windowHeight - 63 > height,
 					})}
 				>
-					{children}
+					<ScrollArea className="h-full lg:max-h-[calc(100vh-var(--nav-height))] [&_[data-slot='scroll-area-scrollbar']]:opacity-50">
+						{children}
+						{!Boolean(windowHeight - 63 > height) && (
+							<div className="from-card pointer-events-none absolute bottom-0 left-0 hidden h-20 w-full bg-gradient-to-t to-transparent lg:block" />
+						)}
+					</ScrollArea>
 				</div>
 			</div>
 			<WorkshopSidebarMobile

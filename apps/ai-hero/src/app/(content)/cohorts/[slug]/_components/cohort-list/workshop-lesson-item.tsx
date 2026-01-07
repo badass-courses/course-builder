@@ -3,15 +3,23 @@
 import Link from 'next/link'
 import { type AppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
-import { useWorkshopNavigation } from '@/app/(content)/workshops/_components/workshop-navigation-provider'
-import { api } from '@/trpc/react'
 import { subject } from '@casl/ability'
 import { Check, Lock } from 'lucide-react'
 
-import type { ContentResource } from '@coursebuilder/core/schemas'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
+/** Minimal resource shape needed for lesson item rendering */
+type LessonResource = {
+	id: string
+	type: string
+	fields?: { slug?: string; title?: string } | null
+}
+
+/**
+ * Renders a single lesson item in the workshop list.
+ * Displays completion status and handles access control.
+ */
 export function WorkshopLessonItem({
 	resource,
 	workshopSlug,
@@ -20,10 +28,10 @@ export function WorkshopLessonItem({
 	ability,
 	abilityStatus,
 }: {
-	resource: ContentResource
+	resource: LessonResource
 	workshopSlug: string
 	className?: string
-	index: number
+	index: string
 	ability: AppAbility
 	abilityStatus: 'error' | 'success' | 'pending'
 }) {
@@ -42,23 +50,28 @@ export function WorkshopLessonItem({
 			{canViewLesson ? (
 				<Link
 					className={cn(
-						'text-foreground/90 hover:text-primary hover:bg-muted/50 inline-flex w-full items-center py-2.5 pl-10 pr-10 text-sm font-normal transition ease-in-out',
+						'text-foreground/90 hover:dark:text-primary hover:bg-card hover:dark:bg-foreground/2 pl-13 inline-flex min-h-12 w-full items-center py-2.5 pr-5 text-base font-medium leading-tight transition ease-out hover:text-blue-600 sm:min-h-11',
 						className,
 					)}
-					href={getResourcePath(resource.type, resource.fields?.slug, 'view', {
-						parentSlug: workshopSlug,
-						parentType: 'workshop',
-					})}
+					href={getResourcePath(
+						resource.type,
+						resource.fields?.slug ?? '',
+						'view',
+						{
+							parentSlug: workshopSlug,
+							parentType: 'workshop',
+						},
+					)}
 				>
 					{isLessonCompleted ? (
 						<Check
 							data-state=""
-							className="text-primary absolute left-8 size-3"
+							className="text-primary absolute left-4 size-3"
 						/>
 					) : (
 						<span
 							data-state=""
-							className="absolute left-8 pl-1 text-xs tabular-nums opacity-75"
+							className="text-muted-foreground absolute left-3 pl-1 text-[10px] tabular-nums opacity-75"
 						>
 							{index}
 						</span>
@@ -68,14 +81,14 @@ export function WorkshopLessonItem({
 			) : (
 				<span
 					className={cn(
-						'text-foreground/50 inline-flex w-full cursor-not-allowed items-center py-2.5 pl-10 pr-10 text-base font-medium transition ease-in-out',
+						'text-foreground/50 pl-13 inline-flex w-full cursor-not-allowed items-center py-2.5 pr-5 text-base font-normal transition ease-in-out',
 						className,
 					)}
 				>
 					{isLessonCompleted ? (
 						<Check className="text-primary absolute left-3 size-4" />
 					) : (
-						<span className="absolute left-3 pl-1 text-xs tabular-nums opacity-75">
+						<span className="absolute left-3 pl-1 text-[10px] tabular-nums opacity-75">
 							{index}
 						</span>
 					)}

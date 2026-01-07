@@ -1,11 +1,17 @@
 import dynamic from 'next/dynamic'
-import { CheckList } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { ThemeImage } from '@/components/cld-image'
+import {
+	CheckList,
+	Recommendation,
+} from '@/app/admin/pages/_components/page-builder-mdx-components'
+import { CldImage, ThemeImage } from '@/components/cld-image'
 import { Heading } from '@/components/mdx/heading'
 import { AISummary, TrackLink } from '@/components/mdx/mdx-components'
 import { recmaCodeHike, remarkCodeHike } from 'codehike/mdx'
 import type { CldImageProps } from 'next-cloudinary'
-import { compileMDX as _compileMDX } from 'next-mdx-remote/rsc'
+import {
+	compileMDX as _compileMDX,
+	type MDXRemoteProps,
+} from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
 
 import { remarkMermaid } from '@coursebuilder/mdx-mermaid'
@@ -27,25 +33,58 @@ const TableWrapper = dynamic(() =>
 		(mod) => mod.TableWrapper,
 	),
 )
+const Spoiler = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.Spoiler,
+	),
+)
 const DynamicCode = dynamic(() =>
 	import('@/components/codehike/code').then((mod) => mod.Code),
 )
 const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
+const DynamicProjectVideo = dynamic(() =>
+	import('@/app/admin/pages/_components/page-builder-mdx-components').then(
+		(mod) => mod.ProjectVideo,
+	),
+)
+const DynamicMDXCheckbox = dynamic(() =>
+	import('@/components/mdx-checkbox').then((mod) => mod.MDXCheckbox),
+)
 
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
  *
  * @param source - MDX source content to compile
+ * @param options - Options to compile the MDX content in
+ * @param options.scope - Scope to compile the MDX content in
+ * @param components - Components to use in the MDX content
+ * @param context - Optional context for components (e.g., lessonId for checkboxes)
  * @returns Compiled MDX content
  */
 export async function compileMDX(
 	source: string,
-	components?: Record<string, React.ComponentType<any>>,
+	components: MDXRemoteProps['components'] = {},
+	options: MDXRemoteProps['options'] = {},
+	context?: { lessonId?: string },
 ) {
+	let checkboxIndex = 0
 	return await _compileMDX({
 		source: source,
 		components: {
 			...components,
+			input: (props: React.InputHTMLAttributes<HTMLInputElement>) => {
+				if (props.type === 'checkbox' && context?.lessonId) {
+					const currentIndex = checkboxIndex++
+					return (
+						<DynamicMDXCheckbox
+							{...props}
+							lessonId={context.lessonId}
+							index={currentIndex}
+						/>
+					)
+				}
+				return <input {...props} />
+			},
 			Code: (props) => <DynamicCode {...props} />,
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
@@ -108,7 +147,19 @@ export async function compileMDX(
 					{children}
 				</Testimonial>
 			),
+			Recommendation: ({ children, exerciseId }) => (
+				<Recommendation exerciseId={exerciseId}>{children}</Recommendation>
+			),
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
+			Spoiler: ({ children }) => <Spoiler>{children}</Spoiler>,
+			ProjectVideo: ({ resourceId, exerciseId, recommendation }) => (
+				<DynamicProjectVideo
+					resourceId={resourceId}
+					exerciseId={exerciseId}
+					recommendation={recommendation}
+				/>
+			),
+			CldImage: ({ ...props }) => <CldImage {...props} />,
 		},
 		options: {
 			mdxOptions: {
@@ -125,6 +176,7 @@ export async function compileMDX(
 				],
 				recmaPlugins: [[recmaCodeHike, { components: { code: 'Code' } }]],
 			},
+			...options,
 		},
 	})
 }

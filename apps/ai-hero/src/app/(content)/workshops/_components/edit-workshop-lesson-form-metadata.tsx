@@ -49,6 +49,7 @@ import { useSocket } from '@coursebuilder/ui/hooks/use-socket'
 import { MetadataFieldSocialImage } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-social-image'
 import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-state'
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
+import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { TagField } from '../../posts/_components/tag-field'
 import { LessonVideoResourceField } from './lesson-video-resource-field'
@@ -64,12 +65,12 @@ export const LessonMetadataFormFields: React.FC<{
 		lesson: string
 	}>()
 
-	// Fetch solution for this lesson if it exists
+	// Fetch ALL solutions for this lesson
 	const {
-		data: solutionResource,
+		data: allSolutions,
 		isLoading: solutionLoading,
-		refetch: refetchSolution,
-	} = api.solutions.getForLesson.useQuery(
+		refetch: refetchSolutions,
+	} = api.solutions.getAllForLesson.useQuery(
 		{
 			lessonId: lesson.id,
 		},
@@ -78,16 +79,20 @@ export const LessonMetadataFormFields: React.FC<{
 		},
 	)
 
+	// For backwards compatibility - get the first solution
+	const solutionResource = allSolutions?.[0] ?? null
+	const hasMultipleSolutions = (allSolutions?.length ?? 0) > 1
+
 	// Solution mutations
 	const createSolutionMutation = api.solutions.create.useMutation({
 		onSuccess: () => {
-			refetchSolution()
+			refetchSolutions()
 		},
 	})
 
 	const deleteSolutionMutation = api.solutions.delete.useMutation({
 		onSuccess: () => {
-			refetchSolution()
+			refetchSolutions()
 		},
 	})
 
@@ -264,7 +269,14 @@ export const LessonMetadataFormFields: React.FC<{
 			{/* Solution Section */}
 			<div className="px-5">
 				<div className="flex items-center justify-between gap-2">
-					<label className="text-lg font-bold">Solution</label>
+					<label className="text-lg font-bold">
+						Solution{hasMultipleSolutions ? 's' : ''}
+					</label>
+					{hasMultipleSolutions && (
+						<span className="rounded bg-yellow-500/20 px-2 py-0.5 text-xs font-medium text-yellow-600 dark:text-yellow-400">
+							{allSolutions?.length} attached - remove duplicates
+						</span>
+					)}
 				</div>
 
 				{solutionLoading ? (
@@ -283,56 +295,91 @@ export const LessonMetadataFormFields: React.FC<{
 							<div className="bg-muted-foreground/20 h-4 w-3/4 rounded"></div>
 						</div>
 					</div>
-				) : solutionResource ? (
-					<div className="">
-						<div className="flex flex-col items-start gap-2">
-							<Link
-								href={`/workshops/${module}/${lessonSlug}/solution/edit`}
-								className="font-medium underline"
+				) : allSolutions && allSolutions.length > 0 ? (
+					<div className="space-y-4">
+						{allSolutions.map((solution, index) => (
+							<div
+								key={solution.id}
+								className={`rounded-md border p-3 ${index === 0 ? 'border-primary/50 bg-primary/5' : 'border-destructive/50 bg-destructive/5'}`}
 							>
-								{solutionResource.fields.title}
-							</Link>
-							<div className="mb-2 flex items-center space-x-2">
-								<Button variant="secondary" size="sm" asChild>
-									<Link
-										href={`/workshops/${module}/${lessonSlug}/solution/edit`}
-									>
-										<PencilIcon className="mr-1 size-3" />
-										Edit Solution
-									</Link>
-								</Button>
-							</div>
-						</div>
-						<div className="bg-muted mb-2 rounded-md p-4">
-							<ScrollArea className="h-[300px]">
-								<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
-									{solutionResource.fields.body || 'No solution content yet.'}
-								</ReactMarkdown>
-							</ScrollArea>
-						</div>
+								<div className="flex items-start justify-between gap-2">
+									<div className="flex-1">
+										<div className="flex items-center gap-2">
+											{index === 0 ? (
+												<span className="text-primary text-xs font-medium">
+													Active
+												</span>
+											) : (
+												<span className="text-destructive text-xs font-medium">
+													Duplicate #{index + 1}
+												</span>
+											)}
+										</div>
+										<Link
+											href={`/workshops/${module}/${lessonSlug}/solution/edit`}
+											className="font-medium underline"
+										>
+											{solution.fields.title}
+										</Link>
+										<p className="text-muted-foreground mt-1 text-xs">
+											ID: {solution.id}
+										</p>
+									</div>
+									<div className="flex items-center gap-2">
+										{index === 0 && (
+											<Button variant="secondary" size="sm" asChild>
+												<Link
+													href={`/workshops/${module}/${lessonSlug}/solution/edit`}
+												>
+													<PencilIcon className="mr-1 size-3" />
+													Edit
+												</Link>
+											</Button>
+										)}
+										<Button
+											variant={index === 0 ? 'outline' : 'destructive'}
+											size="sm"
+											onClick={() => {
+												if (
+													confirm(
+														index === 0
+															? 'Are you sure you want to delete this solution?'
+															: 'Delete this duplicate solution?',
+													)
+												) {
+													deleteSolutionMutation.mutate({
+														solutionId: solution.id,
+													})
+												}
+											}}
+										>
+											<Trash className="mr-1 size-3" />
+											{index === 0 ? 'Remove' : 'Delete'}
+										</Button>
+									</div>
+								</div>
 
-						{solutionResource.fields.description && (
-							<div className="prose prose-sm dark:prose-invert text-muted-foreground mb-2 max-w-none">
-								<p className="text-xs font-medium uppercase">Explanation:</p>
-								<ReactMarkdown>
-									{solutionResource.fields.description}
-								</ReactMarkdown>
+								<div className="bg-muted mt-3 rounded-md p-4">
+									<ScrollArea
+										className={cn('', {
+											'h-[200px]': solution.fields.body,
+										})}
+									>
+										<ReactMarkdown className="prose prose-sm dark:prose-invert max-w-none">
+											{solution.fields.body || 'No solution content yet.'}
+										</ReactMarkdown>
+									</ScrollArea>
+								</div>
+								{solution.fields.description && (
+									<div className="prose prose-sm dark:prose-invert text-muted-foreground mt-2 max-w-none">
+										<p className="text-xs font-medium uppercase">
+											Explanation:
+										</p>
+										<ReactMarkdown>{solution.fields.description}</ReactMarkdown>
+									</div>
+								)}
 							</div>
-						)}
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => {
-								if (confirm('Are you sure you want to delete this solution?')) {
-									deleteSolutionMutation.mutate({
-										solutionId: solutionResource.id,
-									})
-								}
-							}}
-						>
-							<Trash className="mr-1 size-3" />
-							Remove
-						</Button>
+						))}
 					</div>
 				) : (
 					<div className="mt-1">
@@ -396,7 +443,7 @@ export const LessonMetadataFormFields: React.FC<{
 						<FormDescription>
 							Direct link to the GitHub file associated with the lesson.
 						</FormDescription>
-						<Input {...field} />
+						<Input {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}
@@ -410,7 +457,7 @@ export const LessonMetadataFormFields: React.FC<{
 						<FormDescription>
 							Gitpod link to start a new workspace with the lesson.
 						</FormDescription>
-						<Input {...field} />
+						<Input {...field} value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}

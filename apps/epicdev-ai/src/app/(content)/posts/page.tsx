@@ -201,7 +201,7 @@ export default async function PostsIndexPage() {
 			<LayoutClient
 				navigationClassName={
 					featuredContent.length > 0
-						? 'bg-transparent [&_ul]:divide-x-0 [&_[data-logo]]:border-r-0 dark [&_[data-nav-link]]:hover:bg-transparent! [&_[data-mobile-nav-trigger]]:bg-white/80 [&_[data-mobile-nav-trigger]]:text-black'
+						? 'bg-transparent [&_ul]:divide-x-0 [&_[data-logo]]:border-r-0 dark [&_[data-slot="navigation-menu-item"]]:text-white! [&_[data-nav-link]]:hover:bg-transparent! [&_[data-mobile-nav-trigger]]:bg-white/80 [&_[data-mobile-nav-trigger]]:text-black'
 						: ''
 				}
 				withContainer

@@ -15,6 +15,7 @@ import {
 } from '../../codemirror/editor'
 import { ResizableHandle, ResizablePanel } from '../../primitives/resizable'
 import { ScrollArea } from '../../primitives/scroll-area'
+import { Textarea } from '../../primitives/textarea'
 import { cn } from '../../utils/cn'
 
 export function EditResourcesBodyPanel({
@@ -48,6 +49,18 @@ export function EditResourcesBodyPanel({
 	toggleMdxPreview?: () => void
 	isShowingMdxPreview?: boolean
 }) {
+	const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+	const { ref: formRef, ...registerProps } = form.register('fields.body')
+
+	// Merge refs so both react-hook-form and our local ref work
+	const mergedRef = React.useCallback(
+		(node: HTMLTextAreaElement | null) => {
+			textareaRef.current = node
+			formRef(node)
+		},
+		[formRef],
+	)
+
 	const onChange = React.useCallback((value: string, yDoc?: any) => {
 		if (yDoc) {
 			form.setValue('fields.yDoc', yDoc)
@@ -56,15 +69,53 @@ export function EditResourcesBodyPanel({
 		onResourceBodyChange && onResourceBodyChange(value)
 	}, [])
 
-	const partyKitProvider = useYProvider({
-		host: partykitUrl,
-		room: resource.id,
-	})
+	const handleDrop = React.useCallback(
+		(e: React.DragEvent<HTMLTextAreaElement>) => {
+			e.preventDefault()
+			const droppedText = e.dataTransfer.getData('text/plain')
+			if (!droppedText) return
 
-	const [hasMounted, setHasMounted] = React.useState(false)
-	React.useEffect(() => {
-		setHasMounted(true)
-	}, [])
+			const textarea = textareaRef.current
+			if (!textarea) return
+
+			// Get the current value from the textarea itself, not the form
+			const currentValue = textarea.value || ''
+			const cursorPosition = textarea.selectionStart
+			const newValue =
+				currentValue.slice(0, cursorPosition) +
+				'\n' +
+				droppedText +
+				'\n' +
+				currentValue.slice(cursorPosition)
+
+			// Update the textarea directly
+			textarea.value = newValue
+
+			// Update the form state
+			form.setValue('fields.body', newValue)
+			onResourceBodyChange?.(newValue)
+
+			// Set cursor position after the inserted text
+			setTimeout(() => {
+				textarea.focus()
+				const newCursorPosition = cursorPosition + droppedText.length + 2
+				textarea.setSelectionRange(newCursorPosition, newCursorPosition)
+			}, 0)
+		},
+		[form, onResourceBodyChange],
+	)
+
+	const handleDragOver = React.useCallback(
+		(e: React.DragEvent<HTMLTextAreaElement>) => {
+			e.preventDefault()
+		},
+		[],
+	)
+
+	// const partyKitProvider = useYProvider({
+	// 	host: partykitUrl,
+	// 	room: resource.id,
+	// })
 
 	const previewMdxButton: ICommand = {
 		name: 'mdx-preview',
@@ -106,14 +157,21 @@ export function EditResourcesBodyPanel({
 		'codeBlock',
 	] as ICommand[]
 
-	const ytext =
-		partyKitProvider.doc.getText('codemirror') ||
-		new Y.Doc().getText('codemirror')
+	// const ytext =
+	// 	partyKitProvider.doc.getText('codemirror') ||
+	// 	new Y.Doc().getText('codemirror')
 
 	return (
 		<>
 			{children}
-			{hasMounted && (
+			<Textarea
+				{...registerProps}
+				ref={mergedRef}
+				onDrop={handleDrop}
+				onDragOver={handleDragOver}
+				className="h-[calc(100vh-var(--nav-height)-var(--command-bar-height))] rounded-none border-none p-5 text-base"
+			/>
+			{/* {hasMounted && (
 				<MarkdownEditor
 					previewProps={{
 						components: {
@@ -149,7 +207,7 @@ export function EditResourcesBodyPanel({
 							: [...defaultCommands]
 					}
 				/>
-			)}
+			)} */}
 		</>
 	)
 }

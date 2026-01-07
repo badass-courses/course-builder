@@ -45,7 +45,7 @@ export const Logo: React.FC<{ className?: string; withSubtitle?: boolean }> = ({
 
 			<span className="font-heading flex flex-col leading-tight text-[#251356] dark:text-[#DCDDF7]">
 				<div className="leading-tight">
-					Epic <span className="text-violet-500 dark:text-violet-400">AI</span>
+					Epic <span className="">AI</span>
 				</div>
 				{withSubtitle && (
 					<span className="text-muted-foreground -mt-0.5 text-xs font-normal leading-tight opacity-80">

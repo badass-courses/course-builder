@@ -1,14 +1,20 @@
 import { db } from '@/db'
 import { contentResource, contentResourceProduct, products } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { formatDiscount } from '@/utils/discount-formatter'
+import { and, eq, sql } from 'drizzle-orm'
 
 import type { Coupon } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export type SaleBannerData = {
-	percentOff: number
+	discountType: 'percentage' | 'fixed'
+	discountValue: number
+	discountFormatted: string
+	percentOff?: number // for backward compatibility with existing code
 	productName: string
+	productType: string | null
 	productPath: string
+	expires: string | null
 }
 
 /**
@@ -38,7 +44,13 @@ export async function getSaleBannerData(
 				contentResource,
 				eq(contentResource.id, contentResourceProduct.resourceId),
 			)
-			.where(eq(products.id, coupon.restrictedToProductId))
+			.where(
+				and(
+					eq(products.id, coupon.restrictedToProductId),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.visibility")`, 'public'),
+					eq(sql`JSON_EXTRACT (${products.fields}, "$.state")`, 'published'),
+				),
+			)
 			.limit(1)
 
 		const result = rows[0]
@@ -46,18 +58,71 @@ export async function getSaleBannerData(
 			return null
 		}
 
-		const percentOff = parseFloat(
-			(Number(coupon.percentageDiscount) * 100).toFixed(1),
+		// Determine discount type and format
+		const hasFixedDiscount = coupon.amountDiscount && coupon.amountDiscount > 0
+		const discountType = hasFixedDiscount ? 'fixed' : 'percentage'
+
+		let discountValue: number
+		let percentOff: number | undefined
+
+		if (hasFixedDiscount && coupon.amountDiscount) {
+			// Fixed amount discount (in cents, convert to dollars)
+			discountValue = coupon.amountDiscount / 100
+		} else {
+			// Percentage discount
+			percentOff = parseFloat(
+				(Number(coupon.percentageDiscount) * 100).toFixed(1),
+			)
+			discountValue = percentOff
+		}
+
+		const discountFormatted = formatDiscount(coupon)
+
+		// Special case: For multi-workshop products, link to the main product page
+		// instead of the individual workshop
+		// Check if this product contains the main multi-workshop product page
+		const allProductResources = await db
+			.select({
+				resource: contentResource,
+			})
+			.from(contentResourceProduct)
+			.innerJoin(
+				contentResource,
+				eq(contentResource.id, contentResourceProduct.resourceId),
+			)
+			.where(eq(contentResourceProduct.productId, coupon.restrictedToProductId))
+
+		// Check if any resource in the product is the main product page
+		const mainProductResource = allProductResources.find(
+			(r) => r.resource.fields?.slug === 'epic-mcp-from-scratch-to-production',
 		)
 
-		return {
-			percentOff,
-			productName: result.product.name,
-			productPath: getResourcePath(
+		let productPath: string
+		if (mainProductResource) {
+			// Use the main product page for multi-workshop products
+			productPath = getResourcePath(
+				'workshop',
+				'epic-mcp-from-scratch-to-production',
+				'view',
+			)
+		} else {
+			// Normal case: use the resource path
+			productPath = getResourcePath(
 				result.resource.type,
 				result.resource.fields.slug,
 				'view',
-			),
+			)
+		}
+
+		return {
+			discountType,
+			discountValue,
+			discountFormatted,
+			percentOff, // for backward compatibility
+			productName: result.product.name,
+			productType: result.product.type,
+			productPath,
+			expires: coupon.expires ? new Date(coupon.expires).toISOString() : null,
 		}
 	} catch (error) {
 		console.error('Failed to fetch sale banner data:', error)
