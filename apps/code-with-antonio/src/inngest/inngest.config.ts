@@ -16,10 +16,12 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { migrateBunnyToCoursebuilder } from './functions/bunny/migrate-to-coursebuilder'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { dropboxVideoImport } from './functions/dropbox/dropbox-video-import'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
 	apiProductTransferWorkflow,
@@ -63,5 +65,7 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		migrateBunnyToCoursebuilder,
+		dropboxVideoImport,
 	],
 }

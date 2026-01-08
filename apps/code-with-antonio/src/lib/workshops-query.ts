@@ -43,6 +43,9 @@ export const getCachedWorkshopNavigation = unstable_cache(
  * Uses the generic content navigation query
  */
 export async function getWorkshopNavigation(moduleSlugOrId: string) {
+	console.error(
+		`[getWorkshopNavigation] Fetching navigation for workshop: ${moduleSlugOrId}`,
+	)
 	return getContentNavigation(moduleSlugOrId)
 }
 

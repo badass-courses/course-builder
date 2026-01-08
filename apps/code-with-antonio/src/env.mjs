@@ -84,6 +84,13 @@ export const env = createEnv({
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
 		AXIOM_TOKEN: z.string().optional(),
+		BUNNY_NET_API_KEY: z.string().optional(),
+		BUNNY_NET_VIDEO_LIBRARY_ID: z.string().optional(),
+		BUNNY_NET_CDN_HOSTNAME: z.string().optional(),
+		DROPBOX_ACCESS_TOKEN: z.string().optional(),
+		DROPBOX_ROOT_FOLDER: z.string().optional(),
+		DROPBOX_TEAM_MEMBER_ID: z.string().optional(),
+		DROPBOX_TEAM_NAMESPACE_ID: z.string().optional(),
 	},
 
 	/**
@@ -175,6 +182,13 @@ export const env = createEnv({
 		PINECONE_API_KEY: process.env.PINECONE_API_KEY,
 		AXIOM_TOKEN: process.env.AXIOM_TOKEN,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
+		BUNNY_NET_API_KEY: process.env.BUNNY_NET_API_KEY,
+		BUNNY_NET_VIDEO_LIBRARY_ID: process.env.BUNNY_NET_VIDEO_LIBRARY_ID,
+		BUNNY_NET_CDN_HOSTNAME: process.env.BUNNY_NET_CDN_HOSTNAME,
+		DROPBOX_ACCESS_TOKEN: process.env.DROPBOX_ACCESS_TOKEN,
+		DROPBOX_ROOT_FOLDER: process.env.DROPBOX_ROOT_FOLDER,
+		DROPBOX_TEAM_MEMBER_ID: process.env.DROPBOX_TEAM_MEMBER_ID,
+		DROPBOX_TEAM_NAMESPACE_ID: process.env.DROPBOX_TEAM_NAMESPACE_ID,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

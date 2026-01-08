@@ -40,7 +40,16 @@ const config = {
 			},
 			{
 				protocol: 'https',
-				hostname: env.NEXT_PUBLIC_URL.replace('https://', ''),
+				hostname: env.NEXT_PUBLIC_URL.replace('https://', '').replace(
+					'http://',
+					'',
+				),
+				port: '',
+			},
+			// Allow ngrok domains for development
+			{
+				protocol: 'https',
+				hostname: 'nicoll-guarnizo.ngrok.app',
 				port: '',
 			},
 		],

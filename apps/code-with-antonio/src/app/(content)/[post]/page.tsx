@@ -37,8 +37,13 @@ export default async function PostPage(props: {
 	params: Promise<{ post: string }>
 }) {
 	const params = await props.params
+	console.error(`[PostPage] Rendering post: ${params.post}`)
 
+	const postStartTime = Date.now()
 	const post = await getCachedPostOrList(params.post)
+	console.error(
+		`[PostPage] ✅ Fetched post for ${params.post} in ${Date.now() - postStartTime}ms`,
+	)
 
 	if (!post) {
 		notFound()
@@ -247,16 +252,50 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 }
 
 export async function generateStaticParams() {
-	const posts = await getAllPosts()
-	const lists = await getAllLists()
+	console.error(
+		'[generateStaticParams] [post] Starting to generate static params for post pages',
+	)
 
-	const resources = [...posts, ...lists]
+	try {
+		console.error('[generateStaticParams] [post] Fetching all posts...')
+		const postsStartTime = Date.now()
+		const posts = await getAllPosts()
+		console.error(
+			`[generateStaticParams] [post] ✅ Fetched ${posts.length} posts in ${Date.now() - postsStartTime}ms`,
+		)
 
-	return resources
-		.filter((resource) => Boolean(resource.fields?.slug))
-		.map((resource) => ({
+		console.error('[generateStaticParams] [post] Fetching all lists...')
+		const listsStartTime = Date.now()
+		const lists = await getAllLists()
+		console.error(
+			`[generateStaticParams] [post] ✅ Fetched ${lists.length} lists in ${Date.now() - listsStartTime}ms`,
+		)
+
+		const resources = [...posts, ...lists]
+
+		const filtered = resources.filter((resource) =>
+			Boolean(resource.fields?.slug),
+		)
+		console.error(
+			`[generateStaticParams] [post] Filtered to ${filtered.length} resources with slugs (from ${resources.length} total)`,
+		)
+
+		const params = filtered.map((resource) => ({
 			post: resource.fields?.slug,
 		}))
+
+		console.error(
+			`[generateStaticParams] [post] ✅ Generated ${params.length} static params`,
+		)
+		return params
+	} catch (error) {
+		console.error('[generateStaticParams] [post] ❌ ERROR:', error)
+		console.error('[generateStaticParams] [post] Error details:', {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		throw error
+	}
 }
 
 export async function generateMetadata(

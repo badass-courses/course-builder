@@ -56,15 +56,43 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-	const workshops = await db.query.contentResource.findMany({
-		where: and(eq(contentResource.type, 'workshop')),
-	})
+	console.error(
+		'[generateStaticParams] [workshop] Starting to generate static params for workshop pages',
+	)
 
-	return workshops
-		.filter((workshop) => Boolean(workshop.fields?.slug))
-		.map((workshop) => ({
+	try {
+		const workshopsStartTime = Date.now()
+		const workshops = await db.query.contentResource.findMany({
+			where: and(eq(contentResource.type, 'workshop')),
+		})
+		console.error(
+			`[generateStaticParams] [workshop] ✅ Fetched ${workshops.length} workshops in ${Date.now() - workshopsStartTime}ms`,
+		)
+
+		const filtered = workshops.filter((workshop) =>
+			Boolean(workshop.fields?.slug),
+		)
+		console.error(
+			`[generateStaticParams] [workshop] Filtered to ${filtered.length} workshops with slugs`,
+		)
+
+		const params = filtered.map((workshop) => ({
 			module: workshop.fields?.slug,
 		}))
+
+		console.error(
+			`[generateStaticParams] [workshop] ✅ Generated ${params.length} static params`,
+		)
+		return params
+	} catch (error) {
+		console.error('[generateStaticParams] [workshop] ❌ ERROR:', error)
+		console.error('[generateStaticParams] [workshop] Error details:', {
+			message: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		// Return empty array to prevent build failure, pages will be generated on-demand
+		return []
+	}
 }
 
 export async function generateMetadata(
