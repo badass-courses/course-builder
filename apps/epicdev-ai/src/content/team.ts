@@ -55,6 +55,7 @@ const team: TeamMember[] = [
 		title: 'Associate Producer & Developer',
 		description: '',
 		xHandle: 'zacjones93',
+		website: 'https://zacjones.com',
 		avatar:
 			'https://res.cloudinary.com/epic-web/image/upload/v1767891003/team/zac-jones.jpg',
 	},
