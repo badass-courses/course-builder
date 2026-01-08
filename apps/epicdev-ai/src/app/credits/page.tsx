@@ -1,16 +1,11 @@
-import type { Metadata } from 'next'
+'use client'
+
+import * as React from 'react'
 import Image from 'next/image'
 import LayoutClient from '@/components/layout-client'
 import team, { type TeamMember } from '@/content/team'
-
-export const metadata: Metadata = {
-	title: 'Credits | Epic AI',
-	description: 'Meet the humans behind Epic AI',
-	openGraph: {
-		title: 'Credits | Epic AI',
-		description: 'Meet the humans behind Epic AI',
-	},
-}
+import { cn } from '@/utils/cn'
+import { useTheme } from 'next-themes'
 
 export default function CreditsPage() {
 	const [instructor, ...teamMembers] = team
@@ -47,6 +42,7 @@ function Header() {
 				. Kent created, designed and recorded all the content, while the rest of
 				the team provided planning, design, development, and delivery support.
 			</p>
+			<Badge className="mt-10" />
 		</header>
 	)
 }
@@ -186,5 +182,40 @@ function XIcon({ className }: { className?: string }) {
 				fill="currentColor"
 			/>
 		</svg>
+	)
+}
+
+/**
+ * Badge component that displays the Badass.dev badge with theme-aware styling.
+ * Handles hydration mismatch by only rendering after mount.
+ */
+const Badge: React.FC<{ className?: string }> = ({ className }) => {
+	const { resolvedTheme } = useTheme()
+	const [mounted, setMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	if (!mounted) return null
+
+	return (
+		<a
+			href="https://badass.dev"
+			target="_blank"
+			rel="noopener noreferrer"
+			className={cn('mt-5 inline-block', className)}
+		>
+			<Image
+				src={
+					resolvedTheme === 'light'
+						? '/credits/badass-badge-censored-light.svg'
+						: '/credits/badass-badge-censored-dark.svg'
+				}
+				alt="Powered by Badass.dev"
+				width={155}
+				height={47}
+			/>
+		</a>
 	)
 }
