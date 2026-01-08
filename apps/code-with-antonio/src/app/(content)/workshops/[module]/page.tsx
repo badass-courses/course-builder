@@ -67,6 +67,8 @@ export async function generateStaticParams() {
 		}))
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
