@@ -53,7 +53,8 @@ const team: TeamMember[] = [
 	{
 		name: 'Zac Jones',
 		title: 'Associate Producer & Developer',
-		description: '',
+		description:
+			'Zac did UX testing on the workshop modules — reviewing them for any quality control issues and ensuring the workflow of each makes sense for learners.',
 		xHandle: 'zacjones93',
 		website: 'https://zacjones.dev',
 		avatar:
