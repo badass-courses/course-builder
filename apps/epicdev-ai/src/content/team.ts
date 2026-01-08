@@ -16,7 +16,7 @@ const team: TeamMember[] = [
 		name: 'Kent C. Dodds',
 		title: 'Instructor and Creator',
 		description:
-			'Kent designed, created and recorded the learning material for Epic AI.',
+			'Kent designed, created and recorded the learning material for EpicAI. He’s rigorously tested the content in a series of live workshops and revised it based on feedback from learners. This resulted in a collection of professional, exercise-driven, self-paced workshops that offer a deep-dive into AI and MCP development, leveraging modern technologies to achieve first-class user experiences with a high level of collaborative maintainability and simplicity.',
 		xHandle: 'kentcdodds',
 		website: 'https://kentcdodds.com',
 		avatar:
@@ -34,8 +34,8 @@ const team: TeamMember[] = [
 	},
 	{
 		name: 'Nicoll Guarnizo',
-		title: 'Associate Producer',
-		description: '',
+		title: 'Associate Producer & Developer',
+		description: 'Nicoll lead backend development and QA reviews.',
 		xHandle: 'guarnizonicoll',
 		avatar:
 			'https://res.cloudinary.com/epic-web/image/upload/v1767808603/team/nicoll-guarnizo.jpg',
@@ -49,6 +49,14 @@ const team: TeamMember[] = [
 		website: 'https://vojta.io',
 		avatar:
 			'https://res.cloudinary.com/epic-web/image/upload/v1767808603/team/vojta-holik.jpg',
+	},
+	{
+		name: 'Zac Jones',
+		title: 'Associate Producer & Developer',
+		description: '',
+		xHandle: 'zacjones93',
+		avatar:
+			'https://res.cloudinary.com/epic-web/image/upload/v1767891003/team/zac-jones.jpg',
 	},
 ]
 

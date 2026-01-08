@@ -4,11 +4,11 @@ import LayoutClient from '@/components/layout-client'
 import team, { type TeamMember } from '@/content/team'
 
 export const metadata: Metadata = {
-	title: 'Credits | EpicAI Pro',
-	description: 'Meet the humans behind EpicAI Pro',
+	title: 'Credits | Epic AI',
+	description: 'Meet the humans behind Epic AI',
 	openGraph: {
-		title: 'Credits | EpicAI Pro',
-		description: 'Meet the humans behind EpicAI Pro',
+		title: 'Credits | Epic AI',
+		description: 'Meet the humans behind Epic AI',
 	},
 }
 
@@ -32,10 +32,10 @@ function Header() {
 	return (
 		<header className="flex w-full flex-col items-center px-3 py-16 text-center sm:px-10 sm:pb-16 sm:pt-24">
 			<h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-				Humans Behind EpicAI Pro
+				Humans Behind Epic AI
 			</h1>
 			<p className="text-muted-foreground mt-6 max-w-xl text-balance leading-relaxed">
-				EpicAI Pro is a collaboration between Kent C. Dodds and the team behind{' '}
+				Epic AI is a collaboration between Kent C. Dodds and the team behind{' '}
 				<a
 					href="https://badass.dev"
 					target="_blank"
