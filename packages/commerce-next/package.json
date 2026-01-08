@@ -1,114 +1,114 @@
 {
-	"name": "@coursebuilder/commerce-next",
-	"version": "0.1.0",
-	"description": "Commerce Functionality for Course Builder with Next.js",
-	"scripts": {
-		"clean": "rm -rf ./dist",
-		"build": "tsc",
-		"dev": "tsc --watch"
-	},
-	"keywords": [
-		"coursebuilder"
-	],
-	"author": "",
-	"license": "ISC",
-	"type": "module",
-	"files": [
-		"dist",
-		"src"
-	],
-	"exports": {
-		"./pricing/*": {
-			"types": "./dist/pricing/*.d.ts",
-			"import": "./dist/pricing/*.js",
-			"require": "./dist/pricing/*.cjs"
-		},
-		"./components/*": {
-			"types": "./dist/components/*.d.ts",
-			"import": "./dist/components/*.js",
-			"require": "./dist/components/*.cjs"
-		},
-		"./coupons/*": {
-			"types": "./dist/coupons/*.d.ts",
-			"import": "./dist/coupons/*.js",
-			"require": "./dist/coupons/*.cjs"
-		},
-		"./invoices/*": {
-			"types": "./dist/invoices/*.d.ts",
-			"import": "./dist/invoices/*.js",
-			"require": "./dist/invoices/*.cjs"
-		},
-		"./post-purchase/*": {
-			"types": "./dist/post-purchase/*.d.ts",
-			"import": "./dist/post-purchase/*.js",
-			"require": "./dist/post-purchase/*.cjs"
-		},
-		"./team/*": {
-			"types": "./dist/team/*.d.ts",
-			"import": "./dist/team/*.js",
-			"require": "./dist/team/*.cjs"
-		},
-		"./utils/*": {
-			"types": "./dist/utils/*.d.ts",
-			"import": "./dist/utils/*.js",
-			"require": "./dist/utils/*.cjs"
-		}
-	},
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"devDependencies": {
-		"@types/pluralize": "^0.0.33",
-		"@types/react": "19.2.7",
-		"@types/react-dom": "19.2.3",
-		"@types/uuid": "9.0.8",
-		"bunchee": "^5.1.2",
-		"esbuild-react18-useclient": "^1.0.7",
-		"next": "16.0.7",
-		"react": "19.2.3"
-	},
-	"peerDependencies": {
-		"next": "16.0.7",
-		"react": "19.2.3"
-	},
-	"dependencies": {
-		"@auth/core": "0.37.2",
-		"@coursebuilder/core": "^1.1.0",
-		"@coursebuilder/email-templates": "^1.0.7",
-		"@coursebuilder/nodash": "workspace:*",
-		"@coursebuilder/ui": "^2.0.8",
-		"@heroicons/react": "^2.0.18",
-		"@hookform/resolvers": "^3.3.2",
-		"@mux/mux-player-react": "^3.8.0",
-		"@radix-ui/react-alert-dialog": "^1.1.2",
-		"@radix-ui/react-slot": "^1.1.0",
-		"@radix-ui/react-switch": "^1.1.1",
-		"@react-email/components": "0.0.27",
-		"@react-email/render": "1.0.2",
-		"@tanstack/react-query": "5.54.1",
-		"@xstate/react": "^4.1.1",
-		"clsx": "^2.0.0",
-		"date-fns": "^2.30.0",
-		"date-fns-tz": "^2.0.1",
-		"formik": "2.2.9",
-		"framer-motion": "^12.0.0-alpha.1",
-		"lucide-react": "^0.288.0",
-		"next-auth": "5.0.0-beta.25",
-		"next-cloudinary": "^6.5.1",
-		"pluralize": "^8.0.0",
-		"query-string": "^9.0.0",
-		"react-countdown": "^2.3.5",
-		"react-hook-form": "^7.48.0",
-		"react-hot-toast": "^2.4.1",
-		"react-markdown": "9.0.3",
-		"react-use": "^17.5.0",
-		"react-wrap-balancer": "^0.2.4",
-		"tailwind-merge": "^3.3.1",
-		"tailwindcss": "^4.1.11",
-		"uuid": "^9.0.1",
-		"xstate": "^5.13.0",
-		"yup": "^0.32.11",
-		"zod": "^3.22.4"
-	}
+  "name": "@coursebuilder/commerce-next",
+  "version": "0.1.0",
+  "description": "Commerce Functionality for Course Builder with Next.js",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "coursebuilder"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "exports": {
+    "./pricing/*": {
+      "types": "./dist/pricing/*.d.ts",
+      "import": "./dist/pricing/*.js",
+      "require": "./dist/pricing/*.cjs"
+    },
+    "./components/*": {
+      "types": "./dist/components/*.d.ts",
+      "import": "./dist/components/*.js",
+      "require": "./dist/components/*.cjs"
+    },
+    "./coupons/*": {
+      "types": "./dist/coupons/*.d.ts",
+      "import": "./dist/coupons/*.js",
+      "require": "./dist/coupons/*.cjs"
+    },
+    "./invoices/*": {
+      "types": "./dist/invoices/*.d.ts",
+      "import": "./dist/invoices/*.js",
+      "require": "./dist/invoices/*.cjs"
+    },
+    "./post-purchase/*": {
+      "types": "./dist/post-purchase/*.d.ts",
+      "import": "./dist/post-purchase/*.js",
+      "require": "./dist/post-purchase/*.cjs"
+    },
+    "./team/*": {
+      "types": "./dist/team/*.d.ts",
+      "import": "./dist/team/*.js",
+      "require": "./dist/team/*.cjs"
+    },
+    "./utils/*": {
+      "types": "./dist/utils/*.d.ts",
+      "import": "./dist/utils/*.js",
+      "require": "./dist/utils/*.cjs"
+    }
+  },
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/pluralize": "^0.0.33",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@types/uuid": "9.0.8",
+    "bunchee": "^5.1.2",
+    "esbuild-react18-useclient": "^1.0.7",
+    "next": "16.0.10",
+    "react": "19.2.3"
+  },
+  "peerDependencies": {
+    "next": "16.0.7",
+    "react": "19.2.3"
+  },
+  "dependencies": {
+    "@auth/core": "0.37.2",
+    "@coursebuilder/core": "^1.1.0",
+    "@coursebuilder/email-templates": "^1.0.7",
+    "@coursebuilder/nodash": "workspace:*",
+    "@coursebuilder/ui": "^2.0.8",
+    "@heroicons/react": "^2.0.18",
+    "@hookform/resolvers": "^3.3.2",
+    "@mux/mux-player-react": "^3.8.0",
+    "@radix-ui/react-alert-dialog": "^1.1.2",
+    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-switch": "^1.1.1",
+    "@react-email/components": "0.0.27",
+    "@react-email/render": "1.0.2",
+    "@tanstack/react-query": "5.54.1",
+    "@xstate/react": "^4.1.1",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.1",
+    "formik": "2.2.9",
+    "framer-motion": "^12.0.0-alpha.1",
+    "lucide-react": "^0.288.0",
+    "next-auth": "5.0.0-beta.25",
+    "next-cloudinary": "^6.5.1",
+    "pluralize": "^8.0.0",
+    "query-string": "^9.0.0",
+    "react-countdown": "^2.3.5",
+    "react-hook-form": "^7.48.0",
+    "react-hot-toast": "^2.4.1",
+    "react-markdown": "9.0.3",
+    "react-use": "^17.5.0",
+    "react-wrap-balancer": "^0.2.4",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^4.1.11",
+    "uuid": "^9.0.1",
+    "xstate": "^5.13.0",
+    "yup": "^0.32.11",
+    "zod": "^3.22.4"
+  }
 }
