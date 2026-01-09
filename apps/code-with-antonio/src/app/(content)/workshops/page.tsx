@@ -26,11 +26,11 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: `AI Hero Workshops by ${config.author}`,
+	title: `Code with Antonio Workshops by ${config.author}`,
 	openGraph: {
 		images: [
 			{
-				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`AI Hero Workshops by ${config.author}`)}`,
+				url: `${env.NEXT_PUBLIC_URL}/api/og?title=${encodeURIComponent(`Code with Antonio Workshops by ${config.author}`)}`,
 			},
 		],
 	},
@@ -55,7 +55,7 @@ export default async function Workshops(props: {
 				<div className="max-w-(--breakpoint-lg) mx-auto flex h-full w-full flex-col items-center">
 					<div className="w-full px-5 pb-16 pt-24">
 						<h1 className="font-heading text-center text-xl font-medium sm:text-3xl">
-							Professional AI Workshops
+							Workshops
 						</h1>
 					</div>
 					<div className="relative w-full">

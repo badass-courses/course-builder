@@ -16,14 +16,21 @@ import { useList } from '../[post]/_components/list-provider'
 import { useProgress } from '../[post]/_components/progress-provider'
 import Recommendations from '../[post]/_components/recommendations'
 
+/**
+ * Displays navigation to the next resource in a list, or falls back to AI recommendations.
+ * Supports exposing the resolved next URL for auto-continue functionality.
+ */
 export default function PostNextUpFromListPagination({
 	postId,
 	className,
 	documentIdsToSkip,
+	onNextUrlResolved,
 }: {
 	postId: string
 	className?: string
 	documentIdsToSkip?: string[]
+	/** Called when the next URL is resolved (from list or recommendations) */
+	onNextUrlResolved?: (url: string | null) => void
 }) {
 	const router = useRouter()
 	const { list } = useList()
@@ -34,11 +41,21 @@ export default function PostNextUpFromListPagination({
 	)
 	const { data: session } = useSession()
 
+	const nextUrl = nextUp?.resource?.fields?.slug
+		? `/${nextUp.resource.fields.slug}`
+		: null
+
 	React.useEffect(() => {
 		if (nextUp) {
 			router.prefetch(`/${nextUp.resource.fields?.slug}`)
 		}
 	}, [nextUp, list, router])
+
+	React.useEffect(() => {
+		if (nextUrl) {
+			onNextUrlResolved?.(nextUrl)
+		}
+	}, [nextUrl, onNextUrlResolved])
 
 	if (!nextUp)
 		return (
@@ -46,13 +63,14 @@ export default function PostNextUpFromListPagination({
 				postId={postId}
 				className={className}
 				documentIdsToSkip={documentIdsToSkip}
+				onNextUrlResolved={onNextUrlResolved}
 			/>
 		)
 
 	return nextUp?.resource && nextUp?.resource?.fields?.state === 'published' ? (
 		<nav
 			className={cn(
-				'dark:bg-card bg-background flex w-full flex-col items-center border-t px-5 py-16 text-center',
+				'bg-background ring-border flex w-full flex-col items-center rounded-lg px-5 py-16 text-center',
 				className,
 			)}
 			aria-label="List navigation"
@@ -62,7 +80,7 @@ export default function PostNextUpFromListPagination({
 				<li className="flex flex-col">
 					<Link
 						href={`/${nextUp.resource.fields?.slug}`}
-						className="dark:text-primary flex w-full items-center gap-2 text-balance text-lg text-orange-600 hover:underline lg:text-xl"
+						className="text-primary-dark flex w-full items-center gap-2 text-balance text-lg underline hover:underline lg:text-xl"
 						onClick={async () => {
 							if (!isCompleted) {
 								addLessonProgress(postId)

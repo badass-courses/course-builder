@@ -91,12 +91,15 @@ const EventResourcesTitle = () => {
 
 const SearchConfig = () => {
 	const { excludedIds } = useSelection()
-	return (
-		<Configure
-			hitsPerPage={20}
-			filters={`type:event ${excludedIds.length ? `&& id:!=${excludedIds.join(',')}` : ''}`}
-		/>
-	)
+	// Typesense has a default limit of 100 filter operations.
+	// Limit to 80 IDs to leave headroom for other filter operations.
+	const MAX_EXCLUDED_IDS = 80
+	const limitedExcludedIds = excludedIds.slice(0, MAX_EXCLUDED_IDS)
+	const excludeFilter =
+		limitedExcludedIds.length > 0
+			? ` && id:!=[${limitedExcludedIds.join(',')}]`
+			: ''
+	return <Configure hitsPerPage={20} filters={`type:event${excludeFilter}`} />
 }
 
 // Wrapper function for updateResource to match HOC's Partial<T> input and return type

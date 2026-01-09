@@ -26,6 +26,7 @@ export function LessonPlayer({
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
+		accentColor: '#536AFF',
 	} as MuxPlayerProps
 
 	const playbackId = muxPlaybackId || videoResource?.muxPlaybackId

@@ -11,6 +11,7 @@ export type ModuleResourceListOptions = {
 	showLessonCount?: boolean
 	stretchToFullViewportHeight?: boolean
 	withHeader?: boolean
+	withImage?: boolean
 	isCollapsible?: boolean
 	getScrollAreaHeight?: (headerHeight: number) => string
 }

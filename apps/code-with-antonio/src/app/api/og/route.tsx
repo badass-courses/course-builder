@@ -98,7 +98,7 @@ export async function GET(request: Request) {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
 			} else {
-				title = 'From Zero to AI Hero'
+				title = 'Code with Antonio'
 			}
 		}
 

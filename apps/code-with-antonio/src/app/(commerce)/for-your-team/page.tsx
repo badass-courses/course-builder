@@ -8,10 +8,10 @@ export default function TeamPage() {
 				<div className="mx-auto max-w-4xl">
 					<div className="mb-16 text-center">
 						<h1 className="mb-4 text-4xl font-bold md:text-5xl">
-							AI Hero for Teams
+							Code with Antonio for Teams
 						</h1>
 						<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-							Empower your entire team with AI Hero. Get custom pricing,
+							Empower your entire team with Antonio. Get custom pricing,
 							dedicated support, and enterprise features tailored to your
 							organization's needs.
 						</p>

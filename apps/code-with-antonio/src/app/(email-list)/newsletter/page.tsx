@@ -6,9 +6,9 @@ import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 const newsletterThumbnail =
 	'https://res.cloudinary.com/total-typescript/image/upload/v1754898967/newsletter-thumbnail_2x.jpg'
 
-const newsletterTitle = 'AI Hero Newsletter by Matt Pocock'
+const newsletterTitle = 'Code with Antonio Newsletter by Matt Pocock'
 const newsletterDescription =
-	'Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.'
+	'Subscribe to be the first to learn about Code with Antonio releases, updates, and special discounts for AI Engineers.'
 
 export const metadata: Metadata = {
 	title: newsletterTitle,

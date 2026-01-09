@@ -22,7 +22,9 @@ import {
 	Input,
 } from '@coursebuilder/ui'
 
+import { Logo } from './brand/logo'
 import { HeroBackground, HeroIllustration } from './brand/svgs'
+import { LogoVideo } from './navigation/logo-video'
 
 export type LoginTemplateProps = {
 	csrfToken: string
@@ -204,12 +206,12 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							)}
 						</FieldGroup>
 					</div>
-					<div className="bg-primary relative hidden p-10 md:block">
+					<div className="bg-secondary relative hidden items-center justify-center p-10 md:flex">
 						{image ? (
 							<div className="absolute inset-0 h-full w-full">{image}</div>
 						) : (
 							<>
-								<HeroIllustration />
+								<Logo />
 							</>
 						)}
 					</div>

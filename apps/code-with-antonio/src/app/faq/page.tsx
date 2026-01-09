@@ -9,7 +9,7 @@ import { Accordion } from '@coursebuilder/ui'
 import { FaqItem } from './_components/faq-item'
 
 export const metadata: Metadata = {
-	title: 'FAQ | AI Hero',
+	title: 'FAQ | Code with Antonio',
 	description: 'Frequently Asked Questions',
 }
 

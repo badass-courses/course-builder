@@ -4,6 +4,7 @@ import * as React from 'react'
 import { createAppAbility } from '@/ability'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useContentNavigation } from '@/app/(content)/_components/navigation/provider'
+import { CldImage } from '@/components/cld-image'
 import { useScrollToActive } from '@/hooks/use-scroll-to-active'
 import { findSectionIdForResourceSlug } from '@/lib/content-navigation'
 import { api } from '@/trpc/react'
@@ -17,7 +18,7 @@ import {
 	TooltipTrigger,
 } from '@coursebuilder/ui'
 
-import { getCohortData } from './module-resource-helpers'
+import { getParentContext } from './module-resource-helpers'
 import { ModuleResourceListContent } from './module-resource-list-content'
 import { ModuleResourceListHeader } from './module-resource-list-header'
 import type { ModuleResourceListOptions } from './module-resource-list.types'
@@ -70,8 +71,8 @@ export default function ModuleResourceList({
 
 	const [headerHeight, setHeaderHeight] = React.useState(0)
 
-	const cohortData = React.useMemo(
-		() => getCohortData(moduleNavigation),
+	const parentContext = React.useMemo(
+		() => getParentContext(moduleNavigation),
 		[moduleNavigation],
 	)
 
@@ -108,14 +109,10 @@ export default function ModuleResourceList({
 			aria-expanded={!isSidebarCollapsed}
 			aria-controls="workshop-navigation"
 			aria-label="Module navigation"
-			className={cn(
-				'bg-sidebar text-sidebar-foreground relative h-auto w-full shrink-0 overflow-hidden',
-				className,
-				{
-					'hover:bg-sidebar-accent w-8 cursor-pointer transition [&_div]:hidden':
-						isSidebarCollapsed && isCollapsible,
-				},
-			)}
+			className={cn('relative w-full shrink-0 overflow-hidden', className, {
+				'hover:bg-sidebar-accent w-8 cursor-pointer transition [&_div]:hidden':
+					isSidebarCollapsed && isCollapsible,
+			})}
 		>
 			{isSidebarCollapsed && isCollapsible && (
 				<TooltipProvider>
@@ -130,11 +127,19 @@ export default function ModuleResourceList({
 				</TooltipProvider>
 			)}
 			<div className="flex flex-col">
+				{options?.withImage && moduleNavigation.fields?.coverImage?.url && (
+					<CldImage
+						src={moduleNavigation.fields?.coverImage?.url}
+						alt={moduleNavigation.fields?.title || ''}
+						width={403}
+						height={227}
+					/>
+				)}
 				{withHeader && (
 					<ModuleResourceListHeader
 						className="bg-card border-b p-5"
 						moduleNavigation={moduleNavigation}
-						cohortData={cohortData}
+						parentContext={parentContext}
 						isCollapsible={isCollapsible}
 						isSidebarCollapsed={isSidebarCollapsed}
 						setIsSidebarCollapsed={setIsSidebarCollapsed}

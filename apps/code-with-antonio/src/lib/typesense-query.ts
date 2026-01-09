@@ -385,10 +385,16 @@ export async function getNearestNeighbour(
 		return null
 	}
 
+	// Typesense has a default limit of 100 filter operations.
+	// Limit excluded IDs to 80 (most recent completions) to leave headroom for other filters.
+	const MAX_EXCLUDED_IDS = 80
+	const idsToExclude = [
+		...completedItemIds.slice(0, MAX_EXCLUDED_IDS),
+		...(documentIdsToSkip ?? []),
+	].slice(0, MAX_EXCLUDED_IDS)
+
 	const completedFilter =
-		completedItemIds.length > 0
-			? ` && id:!=[${[...completedItemIds, ...(documentIdsToSkip ?? [])].join(',')}]`
-			: ''
+		idsToExclude.length > 0 ? ` && id:!=[${idsToExclude.join(',')}]` : ''
 
 	const searchRequests: { searches: MultiSearchRequestSchema[] } = {
 		searches: [

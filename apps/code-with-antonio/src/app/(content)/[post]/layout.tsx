@@ -23,7 +23,7 @@ export default async function Layout(props: {
 	let list = null
 
 	if (post && post.type === 'post') {
-		list = await getCachedListForPost(params.post)
+		list = await getCachedListForPost(post)
 	}
 	const initialProgress = await getModuleProgressForUser(
 		list ? list.id : params.post,
@@ -41,17 +41,7 @@ export default async function Layout(props: {
 			<ListProvider initialList={list}>
 				<ModuleProgressProvider moduleProgressLoader={moduleProgressLoader}>
 					<ProgressProvider initialProgress={initialProgress}>
-						<ActiveHeadingProvider>
-							<LayoutClient withContainer>
-								<div className="flex flex-1 items-start">
-									{list && (
-										<ModuleResourceList className="sticky top-0 hidden max-w-xs border-x border-b lg:block" />
-									)}
-									{/* <MobileListResourceNavigation /> */}
-									<div className="w-full min-w-0">{props.children}</div>
-								</div>
-							</LayoutClient>
-						</ActiveHeadingProvider>
+						<ActiveHeadingProvider>{props.children}</ActiveHeadingProvider>
 					</ProgressProvider>
 				</ModuleProgressProvider>
 			</ListProvider>

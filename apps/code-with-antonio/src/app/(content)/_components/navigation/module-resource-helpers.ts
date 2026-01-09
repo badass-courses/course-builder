@@ -62,9 +62,10 @@ export function isLessonCompleted(
 }
 
 /**
- * Extract cohort data from module navigation
+ * Extract parent context from module navigation for breadcrumb display.
+ * Currently extracts cohort parent data when present.
  */
-export function getCohortData(moduleNavigation: ResourceNavigation | null) {
+export function getParentContext(moduleNavigation: ResourceNavigation | null) {
 	if (!moduleNavigation) return null
 
 	const cohortProduct =

@@ -8,8 +8,8 @@ import { getProviders } from '@/server/auth'
 import { DiscordConnectButton } from './discord-connect-button'
 
 export const metadata: Metadata = {
-	title: 'Join AI Hero Discord',
-	description: 'Join AI Hero Discord',
+	title: 'Join Code with Antonio Discord',
+	description: 'Join Code with Antonio Discord',
 	openGraph: {
 		images: [
 			{
@@ -32,7 +32,8 @@ export default async function Discord() {
 				<h1 className="mx-auto w-full max-w-xl text-balance text-center text-2xl sm:text-3xl">
 					Join <ContributorImage className="inline-block" />{' '}
 					{process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}{' '}
-					{process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}'s AI Hero Discord
+					{process.env.NEXT_PUBLIC_PARTNER_LAST_NAME}'s Code with Antonio
+					Discord
 				</h1>
 
 				<div>

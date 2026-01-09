@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import { CldImage } from '@/components/cld-image'
 import type { ResourceNavigation } from '@/lib/content-navigation'
 import { cn } from '@/utils/cn'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
@@ -21,7 +22,7 @@ import { MODULE_RESOURCE_LIST_DATA_ATTRS } from './module-resource-helpers'
 
 type ModuleResourceListHeaderProps = {
 	moduleNavigation: ResourceNavigation
-	cohortData: { slug: string | null; title: string | null } | null
+	parentContext: { slug: string | null; title: string | null } | null
 	isCollapsible: boolean
 	isSidebarCollapsed: boolean
 	setIsSidebarCollapsed?: (collapsed: boolean) => void
@@ -35,7 +36,7 @@ type ModuleResourceListHeaderProps = {
  */
 export function ModuleResourceListHeader({
 	moduleNavigation,
-	cohortData,
+	parentContext,
 	isCollapsible,
 	isSidebarCollapsed,
 	setIsSidebarCollapsed,
@@ -116,12 +117,12 @@ export function ModuleResourceListHeader({
 					<Link
 						className="hover:text-primary block w-full truncate capitalize"
 						href={
-							cohortData?.slug
-								? `/cohorts/${cohortData.slug}`
+							parentContext?.slug
+								? `/cohorts/${parentContext.slug}`
 								: `/${pluralize(moduleNavigation?.type || '')}`
 						}
 					>
-						{cohortData?.title ?? pluralize(moduleNavigation.type)} {'/'}
+						{parentContext?.title ?? pluralize(moduleNavigation.type)} {'/'}
 					</Link>
 				</div>
 			)}

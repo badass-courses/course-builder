@@ -1,9 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { Email, NewEmailSchema } from '@/lib/emails'
 import { api } from '@/trpc/react'
 import { Pencil, Plus } from 'lucide-react'
-import { z } from 'zod'
 
 import { Button, FormDescription, FormLabel, Skeleton } from '@coursebuilder/ui'
 
@@ -44,6 +42,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
 	label = 'Related Emails',
 	showEditButton = false,
 }) => {
+	const [newEmailTitle, setNewEmailTitle] = React.useState('')
 	const utils = api.useUtils()
 	const { data: emails, isLoading } = api.emails.getEmails.useQuery()
 
@@ -180,33 +179,29 @@ export const EmailField: React.FC<EmailFieldProps> = ({
 					{/* Create New Email */}
 					<div className="space-y-2">
 						<h4 className="text-sm font-medium">Create New Email</h4>
-						<form
-							onSubmit={(e) => {
-								e.preventDefault()
-								const formData = new FormData(e.currentTarget)
-								const title = formData.get('title') as string
-								if (title?.trim()) {
-									handleCreateEmail(title.trim())
-									e.currentTarget.reset()
-								}
-							}}
-							className="flex gap-2"
-						>
+						<div className="flex gap-2">
 							<input
-								name="title"
+								value={newEmailTitle}
+								onChange={(e) => setNewEmailTitle(e.target.value)}
 								placeholder="Email title..."
 								disabled={isCreating}
 								className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring focus-visible:outline-hidden flex-1 rounded-md border px-3 py-1 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
 							/>
 							<Button
-								type="submit"
+								type="button"
 								variant="secondary"
 								size="sm"
 								disabled={isCreating}
+								onClick={() => {
+									if (newEmailTitle.trim()) {
+										handleCreateEmail(newEmailTitle.trim())
+										setNewEmailTitle('')
+									}
+								}}
 							>
 								<Plus className="h-3 w-3" /> Create
 							</Button>
-						</form>
+						</div>
 					</div>
 
 					{emails?.length === 0 && (

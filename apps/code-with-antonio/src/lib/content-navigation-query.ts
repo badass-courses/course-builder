@@ -27,6 +27,7 @@ const NAVIGATION_FIELDS = [
 	'state',
 	'startsAt',
 	'timezone',
+	'coverImage',
 ] as const
 
 /**

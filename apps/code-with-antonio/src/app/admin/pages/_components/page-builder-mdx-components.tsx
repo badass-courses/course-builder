@@ -355,11 +355,7 @@ const PageBlocks = () => {
 									`
 <${item.name}>
 
-Before creating AI Hero, I created Total TypeScript - the industry standard course for learning TS.
-
-I was a member of the XState core team, and was a developer advocate at Vercel.
-
-I'm building AI Hero to make the secrets of the AI Engineer available to everyone.
+Antonio is a passionate coder and the creative mind behind codewithantonio.com.
 
 </${item.name}>
 `,

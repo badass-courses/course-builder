@@ -136,14 +136,15 @@ export function createWorkshopFormConfig(
 		getResourcePath: (slug?: string) => `/workshops/${slug || ''}`,
 
 		// Resource update function
-		// updateResource: updateWorkshop as unknown as (
-		// 	resource: Partial<WorkshopResourceType>,
-		// ) => Promise<WorkshopResourceType>,
+		// Only send id and fields to avoid exceeding body size limit.
+		// The server fetches resources from the database directly.
 		updateResource: async (resource: Partial<Workshop>) => {
 			if (!resource.id || !resource.fields) {
 				throw new Error('Invalid resource data')
 			}
-			await updateWorkshop(resource)
+			// Strip resources to avoid 1MB body limit - server fetches them from DB
+			const { resources, ...resourceWithoutResources } = resource
+			await updateWorkshop(resourceWithoutResources)
 			return resource as Workshop
 		},
 		// Custom tools

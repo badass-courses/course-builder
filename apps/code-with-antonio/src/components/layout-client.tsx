@@ -16,7 +16,7 @@ export default function LayoutClient({
 	withContainer = false,
 	className,
 	saleBannerData,
-	isCommerceEnabled = false,
+	isCommerceEnabled = true,
 	withFooter = true,
 }: {
 	children: React.ReactNode
@@ -27,22 +27,16 @@ export default function LayoutClient({
 	isCommerceEnabled?: boolean
 }) {
 	return (
-		<div
-			className={cn(
-				'',
-
-				className,
-			)}
-		>
-			<Navigation />
+		<div className={cn('')}>
 			{saleBannerData && (
 				<SaleBanner
 					saleBannerData={saleBannerData}
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
+			<Navigation />
 			<main
-				className={cn('', {
+				className={cn('', className, {
 					container: withContainer,
 				})}
 			>
