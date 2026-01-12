@@ -8,6 +8,7 @@ import { getFirstLessonSlug, MinimalWorkshop } from '@/lib/workshops'
 import { formatInTimeZone } from 'date-fns-tz'
 import { Github, LockIcon } from 'lucide-react'
 
+import type { ProductType } from '@coursebuilder/core/schemas'
 import { Button } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import type { AbilityForResource } from '@coursebuilder/utils-auth/current-ability-rules'
@@ -21,7 +22,7 @@ export function StartLearningWorkshopButton({
 	className,
 	workshop,
 }: {
-	productType?: 'self-paced' | 'live' | 'membership' | 'cohort'
+	productType?: ProductType
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean
