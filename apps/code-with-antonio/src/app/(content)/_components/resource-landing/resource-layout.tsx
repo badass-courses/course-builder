@@ -42,7 +42,10 @@ export function ResourceLayout({
 	return (
 		<LayoutClient withContainer saleBannerData={saleBannerData}>
 			<div
-				className={cn('relative flex grid-cols-12 flex-col lg:grid', className)}
+				className={cn(
+					'relative flex grid-cols-12 flex-col gap-10 lg:grid lg:gap-16',
+					className,
+				)}
 			>
 				<div className={cn('col-span-8', mainClassName)}>{children}</div>
 				<div className={cn('col-span-4', sidebarClassName)}>{sidebar}</div>

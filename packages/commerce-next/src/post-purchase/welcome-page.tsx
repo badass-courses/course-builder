@@ -20,7 +20,7 @@ import {
 	Purchase,
 	PurchaseUserTransfer,
 } from '@coursebuilder/core/schemas'
-import type { ContentResource } from '@coursebuilder/core/schemas'
+import type { ContentResource, ProductType } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
@@ -202,9 +202,7 @@ const Header = ({
 		(p: { id: string }) => p.id === 'discord',
 	)
 	const firstResource = first(productResources)
-	const getWelcomeMessageForProductType = (
-		productType?: 'live' | 'self-paced' | 'membership' | 'cohort',
-	) => {
+	const getWelcomeMessageForProductType = (productType?: ProductType) => {
 		if (productType === 'live') {
 			return ''
 		}

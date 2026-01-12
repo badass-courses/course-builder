@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import pluralize from 'pluralize'
 
-import { Product } from '@coursebuilder/core/schemas'
+import { Product, type ProductType } from '@coursebuilder/core/schemas'
 import { Accordion } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -27,7 +27,7 @@ export const ProductPricingFeatures = ({
 		slug: string
 	}[]
 	className?: string
-	productType: 'cohort' | 'live' | 'self-paced' | 'membership'
+	productType: ProductType
 }) => {
 	return (
 		<div

@@ -1,3 +1,4 @@
+import { ProductTypeSchema } from 'src/schemas'
 import { z } from 'zod'
 
 export const NEW_PURCHASE_CREATED_EVENT = 'commerce/new-purchase-created'
@@ -10,7 +11,7 @@ export type NewPurchaseCreated = {
 export const NewPurchaseCreatedEventSchema = z.object({
 	purchaseId: z.string(),
 	checkoutSessionId: z.string(),
-	productType: z.enum(['live', 'self-paced', 'membership', 'cohort']),
+	productType: ProductTypeSchema,
 })
 
 export type NewPurchaseCreatedEvent = z.infer<

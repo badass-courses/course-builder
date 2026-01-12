@@ -9,6 +9,7 @@ import type { MinimalWorkshop } from '@/lib/workshops'
 import { useInView } from 'framer-motion'
 import { useMeasure } from 'react-use'
 
+import type { ProductType } from '@coursebuilder/core/schemas'
 import { Button, ScrollArea } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
@@ -23,7 +24,7 @@ export const WorkshopSidebar = ({
 	sticky?: boolean
 	workshop?: MinimalWorkshop | null
 	className?: string
-	productType?: 'self-paced' | 'live' | 'membership' | 'cohort'
+	productType?: ProductType
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
 	const [windowHeight, setWindowHeight] = React.useState(0)

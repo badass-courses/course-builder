@@ -66,68 +66,120 @@ export function ModuleResourceListContent({
 		return sectionId || filteredResources[0]?.resource?.id || undefined
 	}, [sectionId, filteredResources])
 
+	const showFade = useScrollFade(scrollAreaRef)
+
 	return (
-		<ScrollArea
-			className={cn('')}
-			style={{
-				height: stretchToFullViewportHeight
-					? getScrollAreaHeight(headerHeight)
-					: 'auto',
-			}}
-			ref={scrollAreaRef}
-			scrollHideDelay={0}
-			data-module-resource-list={MODULE_RESOURCE_LIST_DATA_ATTRS.content}
-		>
-			<Accordion
-				type="single"
-				collapsible
-				className={cn('flex flex-col', wrapperClassName)}
-				defaultValue={defaultAccordionValue}
+		<div className="relative">
+			<ScrollArea
+				className={cn('')}
+				style={{
+					height:
+						options?.listHeight !== undefined
+							? options.listHeight
+							: stretchToFullViewportHeight
+								? getScrollAreaHeight(headerHeight)
+								: 'auto',
+				}}
+				ref={scrollAreaRef}
+				scrollHideDelay={0}
+				data-module-resource-list={MODULE_RESOURCE_LIST_DATA_ATTRS.content}
 			>
-				<ol className="divide-border divide-y">
-					{filteredResources.map(({ resource, metadata }, i: number) => {
-						const childResources =
-							resource.resources
-								?.map((wrapper) => wrapper.resource)
-								.filter(
-									(r): r is Level2ResourceWrapper['resource'] =>
-										r !== undefined,
-								) || []
+				<Accordion
+					type="single"
+					collapsible
+					className={cn('flex flex-col', wrapperClassName)}
+					defaultValue={defaultAccordionValue}
+				>
+					<ol className="divide-border divide-y">
+						{filteredResources.map(({ resource, metadata }, i: number) => {
+							const childResources =
+								resource.resources
+									?.map((wrapper) => wrapper.resource)
+									.filter(
+										(r): r is Level2ResourceWrapper['resource'] =>
+											r !== undefined,
+									) || []
 
-						const isCollapsibleResource =
-							['section', 'workshop'].includes(resource.type) &&
-							childResources.length > 0
+							const isCollapsibleResource =
+								['section', 'workshop'].includes(resource.type) &&
+								childResources.length > 0
 
-						return isCollapsibleResource ? (
-							<ModuleResourceListSection
-								index={i}
-								key={`${resource.id}-accordion`}
-								resource={resource}
-								metadata={metadata}
-								childResources={childResources}
-								currentLessonSlug={currentLessonSlug}
-								moduleProgress={moduleProgress}
-								ability={ability}
-								abilityStatus={abilityStatus}
-								moduleId={moduleId}
-								moduleNavigation={moduleNavigation}
-								options={options}
-							/>
-						) : (
-							<ModuleResourceListLesson
-								key={resource.id}
-								className={cn('')}
-								lesson={resource}
-								index={i}
-								moduleProgress={moduleProgress}
-								moduleId={moduleId}
-								ability={ability}
-								abilityStatus={abilityStatus}
-							/>
-						)
-					})}
-				</ol>
-			</Accordion>
-		</ScrollArea>
+							return isCollapsibleResource ? (
+								<ModuleResourceListSection
+									index={i}
+									key={`${resource.id}-accordion`}
+									resource={resource}
+									metadata={metadata}
+									childResources={childResources}
+									currentLessonSlug={currentLessonSlug}
+									moduleProgress={moduleProgress}
+									ability={ability}
+									abilityStatus={abilityStatus}
+									moduleId={moduleId}
+									moduleNavigation={moduleNavigation}
+									options={options}
+								/>
+							) : (
+								<ModuleResourceListLesson
+									key={resource.id}
+									className={cn('')}
+									lesson={resource}
+									index={i}
+									moduleProgress={moduleProgress}
+									moduleId={moduleId}
+									ability={ability}
+									abilityStatus={abilityStatus}
+								/>
+							)
+						})}
+					</ol>
+				</Accordion>
+			</ScrollArea>
+			{/* Fade overlay shown when content is scrollable and not at bottom */}
+			<div
+				aria-hidden="true"
+				className={cn(
+					'from-card pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t to-transparent transition-opacity duration-200',
+					showFade ? 'opacity-100' : 'opacity-0',
+				)}
+			/>
+		</div>
 	)
+}
+
+/**
+ * Hook to detect if a scroll container is scrollable and whether
+ * the user has scrolled near the bottom.
+ */
+function useScrollFade(scrollAreaRef: React.RefObject<HTMLDivElement | null>) {
+	const [showFade, setShowFade] = React.useState(false)
+
+	React.useEffect(() => {
+		const scrollArea = scrollAreaRef.current
+		if (!scrollArea) return
+
+		const viewport = scrollArea.querySelector(
+			'[data-radix-scroll-area-viewport]',
+		)
+		if (!viewport) return
+
+		const checkScroll = () => {
+			const { scrollTop, scrollHeight, clientHeight } = viewport
+			const isScrollable = scrollHeight > clientHeight
+			const isNearBottom = scrollTop + clientHeight >= scrollHeight - 20
+			setShowFade(isScrollable && !isNearBottom)
+		}
+
+		checkScroll()
+		viewport.addEventListener('scroll', checkScroll)
+		const resizeObserver = new ResizeObserver(checkScroll)
+		resizeObserver.observe(viewport)
+
+		return () => {
+			viewport.removeEventListener('scroll', checkScroll)
+			resizeObserver.disconnect()
+		}
+	}, [scrollAreaRef])
+
+	return showFade
 }

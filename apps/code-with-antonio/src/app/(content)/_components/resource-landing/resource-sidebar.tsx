@@ -80,7 +80,7 @@ export function ResourceSidebar({
 				ref={buySectionRef}
 				id="buy"
 				className={cn(
-					'relative col-span-4 flex w-full flex-col',
+					'relative col-span-4 flex h-full w-full flex-col',
 					containerClassName,
 				)}
 			>
@@ -89,7 +89,7 @@ export function ResourceSidebar({
 					className={cn(
 						'bg-card border-border overflow-hidden rounded-lg border shadow-sm',
 						{
-							'md:sticky md:top-5': sticky && windowHeight - 63 > height,
+							'md:sticky md:top-5': sticky,
 						},
 						className,
 					)}

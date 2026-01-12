@@ -222,7 +222,7 @@ async function ProductCommerce({
 						withGuaranteeBadge: product.type !== 'live',
 						isLiveEvent: product.type === 'live',
 						isCohort: product.type === 'cohort',
-						isPPPEnabled: !['live', 'cohort'].includes(product.type),
+						isPPPEnabled: !['live', 'cohort'].includes(product.type as string),
 						cancelUrl: `${process.env.NEXT_PUBLIC_URL || ''}/products/${product.fields?.slug || product.id}`,
 						allowTeamPurchase: product.type !== 'membership',
 						teamQuantityLimit:

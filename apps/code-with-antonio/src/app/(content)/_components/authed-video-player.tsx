@@ -101,7 +101,7 @@ export function AuthedVideoPlayer({
 	const playerProps = {
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
-		thumbnailTime: bingeMode ? 0 : resource.fields?.thumbnailTime || 0,
+		thumbnailTime: bingeMode ? 0 : resource.fields?.thumbnailTime || 1,
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',
