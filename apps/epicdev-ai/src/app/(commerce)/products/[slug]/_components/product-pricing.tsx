@@ -56,7 +56,7 @@ export function ProductPricing({
 					isLiveEvent: product.type === 'live',
 					teamQuantityLimit,
 					isCohort: product.type === 'cohort',
-					isPPPEnabled: !['live', 'cohort'].includes(product.type),
+					isPPPEnabled: !['live', 'cohort'].includes(product.type as string),
 					cancelUrl: cancelUrl,
 					allowTeamPurchase: product.type !== 'membership',
 				}}

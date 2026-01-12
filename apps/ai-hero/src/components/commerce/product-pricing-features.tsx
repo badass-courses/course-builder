@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import pluralize from 'pluralize'
 
+import type { ProductType } from '@coursebuilder/core/schemas'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { Icon } from '../brand/icons'
@@ -36,7 +37,7 @@ export const ProductPricingFeatures = ({
 		slug: string
 	}[]
 	className?: string
-	productType: 'cohort' | 'live' | 'self-paced' | 'membership'
+	productType: ProductType
 	prependFeatures?: ProductPricingFeature[]
 }) => {
 	const defaultFeatures: ProductPricingFeature[] = [
