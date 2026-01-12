@@ -112,13 +112,11 @@ export const ModuleResourceListLesson = React.memo(
 		)
 
 		const baseStyles = cn(
-			'relative flex w-full text-sm items-center leading-tight py-2 min-h-16 pl-3 pr-10 font-medium before:content-[""] before:w-[2px] before:absolute before:left-0 before:top-0 before:h-full',
+			'relative flex w-full text-sm items-center leading-tight py-2 min-h-16 pl-3 pr-10 font-medium',
 			className,
 			{
-				'bg-card text-primary before:bg-primary':
-					isActiveLesson || isActiveSolution,
-				'hover:bg-muted hover:text-primary':
-					canView && !isActiveLesson && !isActiveGroup,
+				'bg-muted text-primary': isActiveLesson || isActiveSolution,
+				'hover:bg-muted': canView && !isActiveLesson && !isActiveGroup,
 				'text-foreground': canView && isActiveGroup,
 			},
 		)
@@ -157,7 +155,7 @@ export const ModuleResourceListLesson = React.memo(
 				className={cn(
 					'relative before:absolute before:left-0 before:top-0 before:h-full before:w-[2px] before:bg-transparent before:content-[""]',
 					{
-						'bg-card before:bg-primary': isActiveGroup,
+						'bg-muted before:bg-primary': isActiveGroup,
 					},
 				)}
 				data-active={isActiveLesson ? 'true' : 'false'}

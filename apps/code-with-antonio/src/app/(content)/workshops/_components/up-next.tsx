@@ -187,12 +187,12 @@ export default function UpNext({
 			/>
 			<nav
 				className={cn(
-					'bg-card mt-8 flex w-full flex-col items-center rounded border px-5 py-10 text-center',
+					'mt-8 flex w-full flex-col items-center border-y px-5 py-10 text-center',
 					className,
 				)}
 				aria-label={upNextText}
 			>
-				<h2 className="mb-3 text-2xl font-semibold">{upNextText}:</h2>
+				<h2 className="mb-3 text-2xl font-semibold">{upNextText}</h2>
 				<ul className="w-full">
 					<li className="flex w-full flex-col">
 						<Link
