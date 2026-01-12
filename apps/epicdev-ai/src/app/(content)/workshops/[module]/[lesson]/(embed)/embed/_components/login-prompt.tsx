@@ -58,7 +58,7 @@ export function LoginPrompt({
 		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath(cohortResource.type, cohortResource.fields.slug, 'view')}`
 	} else if (workshopProduct) {
 		// For other products, use the product slug
-		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath(workshopProduct.type, workshopProduct.fields.slug, 'view')}`
+		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath(workshopProduct.type as string, workshopProduct.fields.slug, 'view')}`
 	} else {
 		// Fallback to workshop path
 		resourceUrl = `${env.NEXT_PUBLIC_URL}${getResourcePath('workshop', moduleSlug, 'view')}`
