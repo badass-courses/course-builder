@@ -35,7 +35,13 @@ import { ThemeToggle } from './theme-toggle'
 import { useNavLinks } from './use-nav-links'
 import { UserMenu } from './user-menu'
 
-const Navigation = ({ className }: { className?: string }) => {
+const Navigation = ({
+	className,
+	withContainer = true,
+}: {
+	className?: string
+	withContainer?: boolean
+}) => {
 	const navData = useNavLinks()
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
@@ -87,7 +93,11 @@ const Navigation = ({ className }: { className?: string }) => {
 				className,
 			)}
 		>
-			<div className="container flex items-center justify-between">
+			<div
+				className={cn('flex items-center justify-between', {
+					container: withContainer,
+				})}
+			>
 				<div className="flex items-center">
 					<LogoVideo isRoot={isRoot} />
 					<NavigationMenu

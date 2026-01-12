@@ -34,7 +34,7 @@ export default function LayoutClient({
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
-			<Navigation />
+			<Navigation withContainer={withContainer} />
 			<main
 				className={cn('', className, {
 					container: withContainer,
@@ -42,7 +42,7 @@ export default function LayoutClient({
 			>
 				{children}
 			</main>
-			{withFooter && <Footer />}
+			{withFooter && <Footer withContainer={withContainer} />}
 		</div>
 	)
 }

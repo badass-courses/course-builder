@@ -22,11 +22,11 @@ const LessonLayout = async (props: {
 
 	return (
 		<ActiveHeadingProvider>
-			<LayoutClient withContainer>
+			<LayoutClient>
 				<div className="flex min-w-0 items-start">
 					<ModuleResourceList
 						currentLessonSlug={params.lesson}
-						className="sticky top-0 hidden max-w-xs border-x border-b lg:block"
+						className="sticky top-0 hidden max-w-xs border-b border-r lg:block"
 					/>
 					<Sheet>
 						<SheetTrigger className="bg-card/90 border-foreground/10 fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded border px-3 py-2 shadow-lg backdrop-blur-md lg:hidden dark:bg-gray-800/80">

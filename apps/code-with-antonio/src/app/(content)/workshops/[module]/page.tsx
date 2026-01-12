@@ -199,20 +199,22 @@ export default async function ModulePage(props: Props) {
 													/>
 												</PriceCheckProvider>
 											)}
-										<ModuleResourceList
-											className="border-r-0! w-full max-w-none"
-											wrapperClassName="overflow-hidden pb-0 hidden md:block"
-											options={{
-												stretchToFullViewportHeight: false,
-												isCollapsible: false,
-												withHeader: false,
-												withImage: false,
-											}}
-										/>
 										{pricingProps.hasPurchasedCurrentProduct && (
-											<div className="p-3">
-												<Certificate resourceSlugOrId={params.module} />
-											</div>
+											<>
+												<ModuleResourceList
+													className="border-r-0! w-full max-w-none"
+													wrapperClassName="overflow-hidden pb-0 hidden md:block"
+													options={{
+														stretchToFullViewportHeight: false,
+														isCollapsible: false,
+														withHeader: false,
+														withImage: false,
+													}}
+												/>
+												<div className="p-3">
+													<Certificate resourceSlugOrId={params.module} />
+												</div>
+											</>
 										)}
 									</ResourceSidebar>
 								)
@@ -282,27 +284,44 @@ export default async function ModulePage(props: Props) {
 			</ResourceHeader>
 			<ResourceBody>
 				{content ? (
-					<div className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none">
-						{content}
-					</div>
+					<>
+						<span className="text-muted-foreground mb-4 text-sm uppercase">
+							Overview
+						</span>
+						<div className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none">
+							{content}
+						</div>
+					</>
 				) : (
 					<p>No description found.</p>
 				)}
-				{product?.type === 'self-paced' && (
-					<div className="mt-8">
-						<hr className="border-border mb-6 w-full border-dashed" />
-						<h3 className="mb-3 text-xl font-bold sm:text-2xl">Content</h3>
-						<ModuleResourceList
-							className="border-border rounded-lg border"
-							options={{
-								stretchToFullViewportHeight: false,
-								isCollapsible: false,
-								withHeader: false,
-								withImage: false,
-							}}
-						/>
-					</div>
-				)}
+				<WorkshopPricing moduleSlug={params.module} searchParams={searchParams}>
+					{(pricingProps) => {
+						if (!pricingProps.product) {
+							return null
+						}
+
+						if (!pricingProps.hasPurchasedCurrentProduct) {
+							return (
+								<div className="mt-8">
+									<h3 className="mb-3 text-xl font-bold sm:text-2xl">
+										Content
+									</h3>
+									<ModuleResourceList
+										className="border-border rounded-lg border"
+										options={{
+											stretchToFullViewportHeight: false,
+											isCollapsible: false,
+											withHeader: false,
+											withImage: false,
+											listHeight: 500,
+										}}
+									/>
+								</div>
+							)
+						}
+					}}
+				</WorkshopPricing>
 			</ResourceBody>
 			{/* <ResourceShareFooter title={workshop.fields?.title || ''} /> */}
 		</ResourceLayout>

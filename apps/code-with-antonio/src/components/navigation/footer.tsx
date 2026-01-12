@@ -14,7 +14,11 @@ import { LogoVideo } from './logo-video'
 /**
  * Footer component with navigation, newsletter subscription, and theme toggle
  */
-export default function Footer() {
+export default function Footer({
+	withContainer = true,
+}: {
+	withContainer?: boolean
+}) {
 	const pathname = usePathname()
 	const isRoot = pathname === '/'
 	const isEditRoute = pathname.includes('/edit')
@@ -34,7 +38,11 @@ export default function Footer() {
 
 	return (
 		<footer className="flex w-full flex-col items-center justify-center px-5 py-10 sm:py-24">
-			<div className="container flex w-full flex-col gap-12">
+			<div
+				className={cn('flex w-full flex-col gap-12', {
+					container: withContainer,
+				})}
+			>
 				{/* Top section */}
 				<div className="flex w-full flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
 					{/* Left: Logo + Nav */}
@@ -62,12 +70,6 @@ export default function Footer() {
 						<nav className="text-muted-foreground flex flex-col items-center gap-8 text-base md:flex-row">
 							<Link href="/" className="hover:text-foreground transition">
 								Home
-							</Link>
-							<Link
-								href="/browse?type=cohort"
-								className="hover:text-foreground transition"
-							>
-								Cohorts
 							</Link>
 							<Link
 								href="/contact"
