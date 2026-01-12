@@ -277,8 +277,10 @@ export default async function ModulePage(props: Props) {
 					moduleType="workshop"
 					moduleSlug={params.module}
 					hasAccess={ability.canViewWorkshop}
+					canDownloadSourceCode={ability.canDownloadSourceCode}
 					hasProduct={!!product}
 					githubUrl={workshop?.fields?.github ?? undefined}
+					privateGithubRepo={workshop?.fields?.privateGithubRepo ?? undefined}
 					title={workshop.fields?.title || ''}
 				/>
 			</ResourceHeader>

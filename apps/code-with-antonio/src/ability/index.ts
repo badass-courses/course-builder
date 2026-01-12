@@ -78,6 +78,7 @@ type Actions =
 	| 'unpublish'
 	| 'invite'
 	| 'transfer'
+	| 'download'
 
 type Subjects =
 	| 'RegionRestriction'
@@ -94,7 +95,7 @@ type Subjects =
 	| OrganizationBilling
 	| 'OrganizationBilling'
 	| 'Discord'
-	| 'Entitlement'
+	| 'SourceCode'
 
 export type AppAbility = MongoAbility<[Actions, Subjects]>
 
@@ -379,6 +380,8 @@ export function defineRulesForPurchases(
 					: []
 				if (contentIds.length) {
 					can('read', 'Content', { id: { $in: contentIds } })
+					// Grant source code download access (requires purchase, not free watchability)
+					can('download', 'SourceCode', { id: { $in: contentIds } })
 				}
 
 				// If user has access to this specific workshop, grant access to lessons

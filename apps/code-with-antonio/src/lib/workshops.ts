@@ -27,6 +27,8 @@ export const WorkshopFieldsSchema = z.object({
 		.optional(),
 	github: z.string().optional(),
 	githubUrl: z.string().optional(),
+	/** Private GitHub repository for source code access (format: owner/repo) */
+	privateGithubRepo: z.string().optional(),
 })
 
 /**

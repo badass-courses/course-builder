@@ -72,6 +72,8 @@ export async function LessonPage({
 					abilityLoader={abilityLoader}
 					lesson={lesson}
 					problem={problem}
+					moduleSlug={params.module}
+					privateGithubRepo={workshop?.fields?.privateGithubRepo}
 				/>
 				<div className="max-w-(--breakpoint-xl) container relative pb-16 sm:pb-24 md:px-10 lg:px-14">
 					<div className="relative z-10">
