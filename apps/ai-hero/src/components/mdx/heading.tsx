@@ -60,7 +60,7 @@ export function Heading({ level, children, ...props }: HeadingProps) {
 	const Component = motion[`h${level}`]
 
 	return (
-		<Component ref={ref} id={slug} className="scroll-mt-16">
+		<Component ref={ref} id={slug} className="scroll-mt-32">
 			<Link
 				href={`#${slug}`}
 				className="text-inherit! w-full font-semibold no-underline"
