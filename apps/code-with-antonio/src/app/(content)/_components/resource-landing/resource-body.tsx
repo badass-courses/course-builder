@@ -15,5 +15,5 @@ export type ResourceBodyProps = {
  * Provides the standard prose configuration used across resource pages.
  */
 export function ResourceBody({ children, className }: ResourceBodyProps) {
-	return <article className={cn('p-5 lg:p-8', className)}>{children}</article>
+	return <article className={cn('', className)}>{children}</article>
 }

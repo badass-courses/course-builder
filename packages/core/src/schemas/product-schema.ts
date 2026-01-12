@@ -6,14 +6,19 @@ import {
 } from './content-resource-schema'
 import { priceSchema } from './price-schema'
 
+export const ProductTypeSchema = z
+	.enum(['live', 'self-paced', 'membership', 'cohort', 'source-code-access'])
+	.default('self-paced')
+	.optional()
+
+export type ProductType = z.infer<typeof ProductTypeSchema>
+
 export const productSchema = z.object({
 	id: z.string().max(191),
 	organizationId: z.string().max(191).optional().nullable(),
 	name: z.string().max(191),
 	key: z.string().max(191).optional().nullable(),
-	type: z
-		.enum(['live', 'self-paced', 'membership', 'cohort'])
-		.default('self-paced'),
+	type: ProductTypeSchema,
 	fields: z.object({
 		body: z.string().nullable().optional(),
 		description: z.string().nullish(),
@@ -49,10 +54,7 @@ export const NewProductSchema = z.object({
 	name: z.string().min(2).max(90),
 	quantityAvailable: z.coerce.number().default(-1),
 	price: z.coerce.number().gte(0).default(0),
-	type: z
-		.enum(['live', 'self-paced', 'membership', 'cohort'])
-		.default('self-paced')
-		.optional(),
+	type: ProductTypeSchema,
 	state: z
 		.enum(['draft', 'published', 'archived', 'deleted'])
 		.default('draft')

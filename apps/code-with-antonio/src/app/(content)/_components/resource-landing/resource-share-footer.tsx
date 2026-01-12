@@ -18,15 +18,10 @@ export function ResourceShareFooter({
 }: ResourceShareFooterProps) {
 	return (
 		<div className={className}>
-			<div className="border-t">
-				<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
-					<strong className="text-base font-medium tracking-tight sm:text-lg">
-						Share
-					</strong>
-					<Share
-						className="w-full border-t sm:w-auto sm:border-t-0"
-						title={title}
-					/>
+			<div className="">
+				<div className="">
+					<strong className="">Share</strong>
+					<Share className="" title={title} />
 				</div>
 			</div>
 		</div>

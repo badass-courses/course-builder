@@ -436,6 +436,13 @@ export function defineRulesForPurchases(
 		}
 	}
 
+	// Grant free access to workshops without self-paced or cohort products
+	if (isWorkshopFreelyWatchable(viewerAbilityInput)) {
+		can('read', 'Content', {
+			id: { $in: [module?.id, ...(allModuleResourceIds || [])] },
+		})
+	}
+
 	// lesson check
 	// TODO: validate
 	const moduleResource = module?.resources?.find(
@@ -476,6 +483,31 @@ const canViewTip = ({ resource }: ViewerAbilityInput) => {
 
 const canViewTalk = ({ resource }: ViewerAbilityInput) => {
 	return resource?.type === 'talk'
+}
+
+/**
+ * Checks if a workshop has no paid product restrictions (no self-paced or cohort products).
+ * Workshops without these product types can be freely watched.
+ */
+const isWorkshopFreelyWatchable = ({ module }: ViewerAbilityInput) => {
+	if (module?.type !== 'workshop') {
+		return false
+	}
+
+	const resourceProducts = module.resourceProducts ?? []
+
+	// No products means free access
+	if (resourceProducts.length === 0) {
+		return true
+	}
+
+	// Check if any product has type 'self-paced' or 'cohort'
+	const hasPaidProductType = resourceProducts.some((rp) => {
+		const productType = rp.product?.type
+		return productType === 'self-paced' || productType === 'cohort'
+	})
+
+	return !hasPaidProductType
 }
 
 const isFreelyVisible = ({

@@ -6,15 +6,13 @@ import {
 	ResourceStateSchema,
 	ResourceVisibilitySchema,
 } from '@coursebuilder/core/schemas/content-resource-schema'
+import { ProductTypeSchema } from '@coursebuilder/core/schemas/product-schema'
 
 export const NewProductSchema = z.object({
 	name: z.string().min(2).max(90),
 	quantityAvailable: z.coerce.number().default(-1),
 	price: z.coerce.number().gte(0).default(0),
-	type: z
-		.enum(['live', 'self-paced', 'membership', 'cohort'])
-		.default('self-paced')
-		.optional(),
+	type: ProductTypeSchema.default('self-paced').optional(),
 	state: ResourceStateSchema.default('draft').optional(),
 	visibility: ResourceVisibilitySchema.default('unlisted').optional(),
 })
@@ -33,7 +31,7 @@ export const ProductContentSchema = ContentResourceSchema.merge(
 			slug: z.string(),
 			state: ResourceStateSchema.default('draft'),
 			visibility: ResourceVisibilitySchema.default('unlisted'),
-			type: z.enum(['live', 'self-paced', 'membership']),
+			type: ProductTypeSchema,
 			discordRoleId: z.string().optional().nullable(),
 		}),
 	}),

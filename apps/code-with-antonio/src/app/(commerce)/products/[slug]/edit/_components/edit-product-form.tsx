@@ -286,6 +286,9 @@ export function EditProductForm({ product }: { product: Product }) {
 									<SelectItem value="self-paced">Self-paced</SelectItem>
 									<SelectItem value="membership">Membership</SelectItem>
 									<SelectItem value="cohort">Cohort</SelectItem>
+									<SelectItem value="source-code-access">
+										Source Code Access
+									</SelectItem>
 								</SelectContent>
 							</Select>
 							<FormMessage />

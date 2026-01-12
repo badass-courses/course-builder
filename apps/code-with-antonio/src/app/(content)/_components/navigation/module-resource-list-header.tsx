@@ -119,7 +119,7 @@ export function ModuleResourceListHeader({
 						href={
 							parentContext?.slug
 								? `/cohorts/${parentContext.slug}`
-								: `/${pluralize(moduleNavigation?.type || '')}`
+								: `/browse?type=${moduleNavigation?.type || ''}`
 						}
 					>
 						{parentContext?.title ?? pluralize(moduleNavigation.type)} {'/'}

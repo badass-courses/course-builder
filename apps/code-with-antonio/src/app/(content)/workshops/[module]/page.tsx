@@ -17,6 +17,7 @@ import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import { getProductSlugToIdMap } from '@/lib/product-map'
 import {
 	getActiveCoupon,
@@ -76,11 +77,16 @@ export async function generateMetadata(
 		description: workshop.fields?.description,
 		openGraph: {
 			images: [
-				getOGImageUrlForResource(
-					workshop as unknown as ContentResource & {
-						fields?: { slug: string }
-					},
-				),
+				workshop.fields?.coverImage?.url
+					? {
+							url: workshop.fields.coverImage.url,
+							alt: workshop.fields.title || '',
+						}
+					: getOGImageUrlForResource(
+							workshop as unknown as ContentResource & {
+								fields?: { slug: string }
+							},
+						),
 			],
 		},
 	}
@@ -129,8 +135,10 @@ export default async function ModulePage(props: Props) {
 	return (
 		<ResourceLayout
 			saleBannerData={saleBannerData}
+			sidebarClassName="mt-17"
 			sidebar={
-				product?.type === 'self-paced' ? (
+				product?.type === 'self-paced' ||
+				product?.type === 'source-code-access' ? (
 					<React.Suspense
 						fallback={
 							<div className="bg-background relative z-10 flex w-full flex-col gap-2 p-5 pb-16">
@@ -147,20 +155,7 @@ export default async function ModulePage(props: Props) {
 						>
 							{(pricingProps) => {
 								if (!pricingProps.product) {
-									return (
-										<ResourceSidebar>
-											<ModuleResourceList
-												className="border-r-0! w-full max-w-none"
-												wrapperClassName="overflow-hidden pb-0"
-												options={{
-													stretchToFullViewportHeight: false,
-													isCollapsible: false,
-													withHeader: false,
-													withImage: true,
-												}}
-											/>
-										</ResourceSidebar>
-									)
+									return null
 								}
 
 								const { product, ...restProps } = pricingProps
@@ -176,46 +171,48 @@ export default async function ModulePage(props: Props) {
 										}}
 									>
 										{pricingProps.allowPurchase &&
-										!pricingProps.hasPurchasedCurrentProduct ? (
-											<PriceCheckProvider
-												purchasedProductIds={restProps.purchasedProductIds}
-											>
-												<PricingWidget
-													className="bg-background relative z-10 px-5"
-													commerceProps={{ ...restProps, products: [product] }}
-													hasPurchasedCurrentProduct={
-														pricingProps.hasPurchasedCurrentProduct
-													}
-													product={product}
-													quantityAvailable={restProps.quantityAvailable}
-													pricingDataLoader={restProps.pricingDataLoader}
-													options={{
-														withImage: false,
-														withGuaranteeBadge: true,
-														isLiveEvent: false,
-														isCohort: product.type === 'cohort',
-														teamQuantityLimit: 100,
-														isPPPEnabled: true,
-														cancelUrl: `${env.NEXT_PUBLIC_URL}/workshops/${params.module}`,
-													}}
-												/>
-											</PriceCheckProvider>
-										) : (
-											<>
-												<ModuleResourceList
-													className="border-r-0! w-full max-w-none"
-													wrapperClassName="overflow-hidden pb-0 hidden md:block"
-													options={{
-														stretchToFullViewportHeight: false,
-														isCollapsible: false,
-														withHeader: false,
-														withImage: true,
-													}}
-												/>
-												<div className="p-3">
-													<Certificate resourceSlugOrId={params.module} />
-												</div>
-											</>
+											!pricingProps.hasPurchasedCurrentProduct && (
+												<PriceCheckProvider
+													purchasedProductIds={restProps.purchasedProductIds}
+												>
+													<PricingWidget
+														className="bg-background relative z-10 px-5"
+														commerceProps={{
+															...restProps,
+															products: [product],
+														}}
+														hasPurchasedCurrentProduct={
+															pricingProps.hasPurchasedCurrentProduct
+														}
+														product={product}
+														quantityAvailable={restProps.quantityAvailable}
+														pricingDataLoader={restProps.pricingDataLoader}
+														options={{
+															withImage: false,
+															withGuaranteeBadge: true,
+															isLiveEvent: false,
+															isCohort: product.type === 'cohort',
+															teamQuantityLimit: 100,
+															isPPPEnabled: true,
+															cancelUrl: `${env.NEXT_PUBLIC_URL}/workshops/${params.module}`,
+														}}
+													/>
+												</PriceCheckProvider>
+											)}
+										<ModuleResourceList
+											className="border-r-0! w-full max-w-none"
+											wrapperClassName="overflow-hidden pb-0 hidden md:block"
+											options={{
+												stretchToFullViewportHeight: false,
+												isCollapsible: false,
+												withHeader: false,
+												withImage: false,
+											}}
+										/>
+										{pricingProps.hasPurchasedCurrentProduct && (
+											<div className="p-3">
+												<Certificate resourceSlugOrId={params.module} />
+											</div>
 										)}
 									</ResourceSidebar>
 								)
@@ -231,14 +228,15 @@ export default async function ModulePage(props: Props) {
 						}}
 					>
 						<ModuleResourceList
-							className="border-r-0! w-full max-w-none"
+							className="w-full max-w-none"
+							wrapperClassName="overflow-hidden pb-0"
 							options={{
 								stretchToFullViewportHeight: false,
 								isCollapsible: false,
 								withHeader: false,
 								withImage: true,
+								listHeight: 300,
 							}}
-							wrapperClassName="overflow-hidden pb-0"
 						/>
 					</ResourceSidebar>
 				)
@@ -264,7 +262,7 @@ export default async function ModulePage(props: Props) {
 							}
 						: undefined
 				}
-				contributor={{ withBio: true, label: 'Hosted by' }}
+				contributor={{ withBio: true, label: 'Created by' }}
 				adminActions={
 					<ResourceAdminActions
 						resourceType="workshop"
@@ -300,13 +298,13 @@ export default async function ModulePage(props: Props) {
 								stretchToFullViewportHeight: false,
 								isCollapsible: false,
 								withHeader: false,
-								withImage: true,
+								withImage: false,
 							}}
 						/>
 					</div>
 				)}
 			</ResourceBody>
-			<ResourceShareFooter title={workshop.fields?.title || ''} />
+			{/* <ResourceShareFooter title={workshop.fields?.title || ''} /> */}
 		</ResourceLayout>
 	)
 }

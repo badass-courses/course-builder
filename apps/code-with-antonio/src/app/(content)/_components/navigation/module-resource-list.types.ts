@@ -9,6 +9,7 @@ import type { ModuleProgress } from '@coursebuilder/core/schemas'
 
 export type ModuleResourceListOptions = {
 	showLessonCount?: boolean
+	listHeight?: number
 	stretchToFullViewportHeight?: boolean
 	withHeader?: boolean
 	withImage?: boolean

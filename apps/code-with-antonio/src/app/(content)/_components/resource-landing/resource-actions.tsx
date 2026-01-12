@@ -88,7 +88,7 @@ export function ResourceActions({
 
 	return (
 		<div className={cn('', className)}>
-			<div className="mt-8 flex flex-wrap gap-2">
+			<div className="mt-8 flex flex-wrap items-center gap-3">
 				{isProgressAwareMode ? (
 					<ProgressAwareButton
 						moduleType={moduleType!}
@@ -169,7 +169,7 @@ function ProgressAwareButton({
 		)
 
 		return (
-			<Button size="lg" asChild>
+			<Button size="lg" className="h-12" asChild>
 				<Link href={href}>Continue Watching</Link>
 			</Button>
 		)
@@ -184,7 +184,7 @@ function ProgressAwareButton({
 		)
 
 		return (
-			<Button size="lg" asChild>
+			<Button size="lg" className="h-12" asChild>
 				<Link href={href}>Start Watching</Link>
 			</Button>
 		)
