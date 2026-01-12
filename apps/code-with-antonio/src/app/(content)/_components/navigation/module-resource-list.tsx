@@ -88,7 +88,7 @@ export default function ModuleResourceList({
 	}, [isCollapsible, isSidebarCollapsed, setIsSidebarCollapsed])
 
 	const getScrollAreaHeight = React.useCallback((headerHeight: number) => {
-		return `calc(100vh - ${Math.round(headerHeight)}px - var(--nav-height))`
+		return `calc(100vh - ${Math.round(headerHeight)}px)`
 	}, [])
 
 	const mergedOptions = React.useMemo(

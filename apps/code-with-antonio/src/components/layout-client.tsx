@@ -14,6 +14,7 @@ import SaleBanner from './navigation/sale-banner'
 export default function LayoutClient({
 	children,
 	withContainer = false,
+	withNavContainer = true,
 	className,
 	saleBannerData,
 	isCommerceEnabled = true,
@@ -25,16 +26,17 @@ export default function LayoutClient({
 	className?: string
 	saleBannerData?: SaleBannerData | null
 	isCommerceEnabled?: boolean
+	withNavContainer?: boolean
 }) {
 	return (
-		<div className={cn('')}>
+		<div className={cn('w-full')}>
 			{saleBannerData && (
 				<SaleBanner
 					saleBannerData={saleBannerData}
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
-			<Navigation withContainer={withContainer} />
+			<Navigation withContainer={withNavContainer || withContainer} />
 			<main
 				className={cn('', className, {
 					container: withContainer,

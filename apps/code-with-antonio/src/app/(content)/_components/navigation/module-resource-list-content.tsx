@@ -54,8 +54,7 @@ export function ModuleResourceListContent({
 
 	const getScrollAreaHeight =
 		options?.getScrollAreaHeight ??
-		((headerHeight: number) =>
-			`calc(100vh - ${Math.round(headerHeight)}px - var(--nav-height))`)
+		((headerHeight: number) => `calc(100vh - ${Math.round(headerHeight)}px)`)
 
 	const filteredResources = React.useMemo(
 		() => resources.filter((r) => r?.resource),
