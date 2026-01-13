@@ -28,7 +28,7 @@ export const UserSchema = userSchema.merge(
 			.array(
 				z.object({
 					type: z.string(),
-					expires: z.date().nullish(),
+					expires: z.coerce.date().nullish(),
 					metadata: z.record(z.any()),
 				}),
 			)
@@ -393,6 +393,36 @@ export function defineRulesForPurchases(
 		})
 	}
 
+	// Subscription entitlements grant access to content in the subscription product
+	const subscriptionEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'subscription_access',
+	)
+
+	if (user?.entitlements && subscriptionEntitlementType && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (
+				entitlement.type === subscriptionEntitlementType.id &&
+				(!entitlement.expires || entitlement.expires > new Date())
+			) {
+				const subscriptionProductId = entitlement.metadata?.productId
+
+				// Check if the current module is part of the subscription product
+				const moduleInSubscription = module.resourceProducts?.some(
+					(rp: { productId: string }) => rp.productId === subscriptionProductId,
+				)
+
+				if (moduleInSubscription) {
+					// Grant access to the module and all its resources
+					can('read', 'Content', { id: module.id })
+					if (allModuleResourceIds?.length) {
+						can('read', 'Content', { id: { $in: allModuleResourceIds } })
+					}
+					can('read', 'Discord')
+				}
+			}
+		})
+	}
+
 	// Grant access to lessons in sections with "free" tier and individual free lessons
 	if (module?.resources) {
 		const freeResourceIds: string[] = []
@@ -437,11 +467,11 @@ export function defineRulesForPurchases(
 	}
 
 	// Grant free access to workshops without self-paced or cohort products
-	if (isWorkshopFreelyWatchable(viewerAbilityInput)) {
-		can('read', 'Content', {
-			id: { $in: [module?.id, ...(allModuleResourceIds || [])] },
-		})
-	}
+	// if (isWorkshopFreelyWatchable(viewerAbilityInput)) {
+	// 	can('read', 'Content', {
+	// 		id: { $in: [module?.id, ...(allModuleResourceIds || [])] },
+	// 	})
+	// }
 
 	// lesson check
 	// TODO: validate

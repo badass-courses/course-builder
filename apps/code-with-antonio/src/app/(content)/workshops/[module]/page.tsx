@@ -139,7 +139,8 @@ export default async function ModulePage(props: Props) {
 			sidebarClassName="mt-17"
 			sidebar={
 				product?.type === 'self-paced' ||
-				product?.type === 'source-code-access' ? (
+				product?.type === 'source-code-access' ||
+				product?.type === 'membership' ? (
 					<React.Suspense
 						fallback={
 							<div className="bg-background relative z-10 flex w-full flex-col gap-2 p-5 pb-16">
@@ -246,7 +247,8 @@ export default async function ModulePage(props: Props) {
 															stretchToFullViewportHeight: false,
 															isCollapsible: false,
 															withHeader: false,
-															withImage: false,
+															withImage: true,
+															listHeight: 500,
 														}}
 													/>
 													<div className="p-3">

@@ -1,4 +1,5 @@
 import { inngest } from '@/inngest/inngest.server'
+import { createSubscriptionEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
@@ -158,34 +159,72 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				},
 			)
 
-			await step.run('give member learner role', async () => {
-				if (!user) {
-					throw new Error('user is null')
-				}
-				if (!organization) {
-					throw new Error('organization is null')
-				}
+			const organizationMembership = await step.run(
+				'give member learner role',
+				async () => {
+					if (!user) {
+						throw new Error('user is null')
+					}
+					if (!organization) {
+						throw new Error('organization is null')
+					}
 
-				const userMemberships = await db.getMembershipsForUser(user.id)
+					const userMemberships = await db.getMembershipsForUser(user.id)
 
-				const organizationMembership = userMemberships.find(
-					(membership) => membership.organizationId === organization.id,
-				)
+					const orgMembership = userMemberships.find(
+						(membership) => membership.organizationId === organization.id,
+					)
 
-				if (!organizationMembership) {
-					throw new Error('organizationMembership is null')
-				}
+					if (!orgMembership) {
+						throw new Error('organizationMembership is null')
+					}
 
-				await db.addRoleForMember({
-					memberId: organizationMembership.id,
-					organizationId: organization.id,
-					role: 'learner',
-				})
-			})
+					await db.addRoleForMember({
+						memberId: orgMembership.id,
+						organizationId: organization.id,
+						role: 'learner',
+					})
+
+					return orgMembership
+				},
+			)
 
 			if (!subscription) {
 				throw new Error('subscription is null')
 			}
+
+			// Create subscription entitlement for content access
+			await step.run('create subscription entitlement', async () => {
+				const subscriptionEntitlementType = await db.getEntitlementTypeByName(
+					'subscription_access',
+				)
+
+				if (!subscriptionEntitlementType) {
+					throw new Error('subscription_access entitlement type not found')
+				}
+
+				// Load product to get tier information
+				const product = await db.getProduct(merchantProduct.productId)
+				const tier = product?.fields?.tier || 'standard'
+
+				// Convert expiration to Date - Inngest serializes Date objects to ISO strings
+				const expiresAt = subscriptionInfo.currentPeriodEnd
+					? new Date(subscriptionInfo.currentPeriodEnd)
+					: undefined
+
+				await createSubscriptionEntitlement({
+					userId: user.id,
+					subscriptionId: subscription.id,
+					productId: merchantProduct.productId,
+					organizationId: organization.id,
+					organizationMembershipId: organizationMembership.id,
+					entitlementType: subscriptionEntitlementType.id,
+					expiresAt,
+					metadata: {
+						tier, // Include subscription tier for access level checks
+					},
+				})
+			})
 
 			await step.sendEvent(NEW_SUBSCRIPTION_CREATED_EVENT, {
 				name: NEW_SUBSCRIPTION_CREATED_EVENT,

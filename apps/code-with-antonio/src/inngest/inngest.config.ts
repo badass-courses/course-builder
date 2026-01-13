@@ -27,6 +27,7 @@ import {
 } from './functions/product-transfer-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
+import { handleSubscriptionUpdated } from './functions/stripe/handle-subscription-updated'
 import {
 	videoResourceAttached,
 	videoResourceDetached,
@@ -56,6 +57,7 @@ export const inngestConfig = {
 		syncPurchaseTags,
 		addPurchasesConvertkit,
 		stripeSubscriptionCheckoutSessionComplete,
+		handleSubscriptionUpdated,
 		createUserOrganizations,
 		ensurePersonalOrganizationWorkflow,
 		videoResourceAttached,

@@ -85,11 +85,14 @@ export function PricingWidget({
 	} = options
 
 	// Determine CTA label based on product type
-	const defaultCtaLabel = isCohort
-		? 'Enroll'
-		: isLiveEvent
-			? 'Reserve Your Spot'
-			: 'Buy Now'
+	const isMembership = product.type === 'membership'
+	const defaultCtaLabel = isMembership
+		? 'Subscribe'
+		: isCohort
+			? 'Enroll'
+			: isLiveEvent
+				? 'Reserve Your Spot'
+				: 'Buy Now'
 	const buttonLabel = ctaLabel ?? defaultCtaLabel
 
 	// Variant-specific rendering

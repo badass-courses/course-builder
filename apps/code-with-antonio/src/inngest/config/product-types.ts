@@ -2,6 +2,7 @@ import { env } from '@/env.mjs'
 import { getCohort } from '@/lib/cohorts-query'
 import {
 	createCohortEntitlement,
+	createSubscriptionEntitlement,
 	createWorkshopEntitlement,
 } from '@/lib/entitlements'
 import { getWorkshop } from '@/lib/workshops-query'
@@ -10,6 +11,11 @@ import {
 	USER_ADDED_TO_COHORT_EVENT,
 	USER_ADDED_TO_WORKSHOP_EVENT,
 } from '../functions/discord/add-discord-role-workflow'
+
+/**
+ * Event emitted when a user subscription is created (for Discord role assignment).
+ */
+export const USER_SUBSCRIPTION_CREATED_EVENT = 'user/subscription-created'
 
 /**
  * Shared product type configuration used across all workflows
@@ -38,9 +44,21 @@ export const PRODUCT_TYPE_CONFIG = {
 		getDiscordRoleId: (product: any) =>
 			product?.fields?.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 	},
-	// Future product types can be added here
-	// live: { ... },
-	// membership: { ... },
+	/**
+	 * Membership/subscription product type.
+	 * Grants access to ALL content via subscription_access entitlement.
+	 */
+	membership: {
+		resourceType: null, // subscription grants access to ALL content
+		queryFn: null, // no specific resource to query
+		contentAccess: 'subscription_access',
+		discordRole: 'subscription_discord_role',
+		createEntitlement: createSubscriptionEntitlement,
+		discordEvent: USER_SUBSCRIPTION_CREATED_EVENT,
+		logPrefix: 'subscription',
+		getDiscordRoleId: (product: any) =>
+			product?.fields?.discordRoleId || env.DISCORD_SUBSCRIBER_ROLE_ID,
+	},
 } as const
 
 // Entitlement config for backwards compatibility
@@ -59,12 +77,20 @@ export const ENTITLEMENT_CONFIG = {
 		discordEvent: PRODUCT_TYPE_CONFIG['self-paced'].discordEvent,
 		logPrefix: PRODUCT_TYPE_CONFIG['self-paced'].logPrefix,
 	},
+	membership: {
+		contentAccess: PRODUCT_TYPE_CONFIG.membership.contentAccess,
+		discordRole: PRODUCT_TYPE_CONFIG.membership.discordRole,
+		createEntitlement: PRODUCT_TYPE_CONFIG.membership.createEntitlement,
+		discordEvent: PRODUCT_TYPE_CONFIG.membership.discordEvent,
+		logPrefix: PRODUCT_TYPE_CONFIG.membership.logPrefix,
+	},
 } as const
 
 export type ProductType = keyof typeof PRODUCT_TYPE_CONFIG
 
 /**
- * Get resource data based on product type
+ * Get resource data based on product type.
+ * Note: Membership products return null since they don't have associated resources.
  */
 export const getResourceData = async (
 	resourceId: string,
@@ -73,6 +99,10 @@ export const getResourceData = async (
 	const config = PRODUCT_TYPE_CONFIG[productType]
 	if (!config) {
 		throw new Error(`Unsupported product type: ${productType}`)
+	}
+	// Membership products don't have associated resources
+	if (!config.queryFn) {
+		return null
 	}
 	return await config.queryFn(resourceId)
 }
