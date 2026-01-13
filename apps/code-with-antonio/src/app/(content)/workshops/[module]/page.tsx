@@ -8,16 +8,15 @@ import {
 	ResourceBody,
 	ResourceHeader,
 	ResourceLayout,
-	ResourceShareFooter,
+	ResourceMobileCta,
+	ResourceMobileCtaWithPricing,
 	ResourceSidebar,
-	ResourceVisibilityBanner,
 } from '@/app/(content)/_components/resource-landing'
-import { Contributor } from '@/components/contributor'
+import { CldImage } from '@/components/cld-image'
 import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
-import { useIsMobile } from '@/hooks/use-is-mobile'
 import { getProductSlugToIdMap } from '@/lib/product-map'
 import {
 	getActiveCoupon,
@@ -31,7 +30,9 @@ import {
 import { compileMDX } from '@/utils/compile-mdx'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { InformationCircleIcon } from '@heroicons/react/24/outline'
 import { and, eq } from 'drizzle-orm'
+import { ConstructionIcon, Info } from 'lucide-react'
 import { Course } from 'schema-dts'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
@@ -160,23 +161,38 @@ export default async function ModulePage(props: Props) {
 
 								const { product, ...restProps } = pricingProps
 
+								const cancelUrl = `${env.NEXT_PUBLIC_URL}/workshops/${params.module}`
+
+								// Get coupon ID for mobile CTA
+								const couponId =
+									restProps.couponIdFromCoupon ||
+									(restProps.couponFromCode?.id ?? undefined)
+
+								const showPricing =
+									pricingProps.allowPurchase &&
+									!pricingProps.hasPurchasedCurrentProduct
+								const showUnpublishedPreview =
+									!pricingProps.allowPurchase &&
+									!pricingProps.hasPurchasedCurrentProduct
+
 								return (
-									<ResourceSidebar
-										mobileCta={{
-											title: workshop?.fields?.title || '',
-											subtitle: (
-												<Contributor className="gap-1 text-sm [&_img]:w-5" />
-											),
-											buttonText: 'Start Learning',
-										}}
-									>
-										{pricingProps.allowPurchase &&
-											!pricingProps.hasPurchasedCurrentProduct && (
+									<>
+										<ResourceSidebar>
+											{showPricing && (
 												<PriceCheckProvider
 													purchasedProductIds={restProps.purchasedProductIds}
 												>
+													{workshop.fields.coverImage?.url && (
+														<div className="relative aspect-video w-full">
+															<CldImage
+																src={workshop.fields.coverImage?.url}
+																alt={workshop.fields.title}
+																fill
+															/>
+														</div>
+													)}
 													<PricingWidget
-														className="bg-background relative z-10 px-5"
+														className="relative z-10 px-5 pt-0"
 														commerceProps={{
 															...restProps,
 															products: [product],
@@ -189,58 +205,100 @@ export default async function ModulePage(props: Props) {
 														pricingDataLoader={restProps.pricingDataLoader}
 														options={{
 															withImage: false,
+															withTitle: false,
 															withGuaranteeBadge: true,
 															isLiveEvent: false,
 															isCohort: product.type === 'cohort',
 															teamQuantityLimit: 100,
 															isPPPEnabled: true,
-															cancelUrl: `${env.NEXT_PUBLIC_URL}/workshops/${params.module}`,
+															cancelUrl,
 														}}
 													/>
 												</PriceCheckProvider>
 											)}
-										{pricingProps.hasPurchasedCurrentProduct && (
-											<>
-												<ModuleResourceList
-													className="border-r-0! w-full max-w-none"
-													wrapperClassName="overflow-hidden pb-0 hidden md:block"
-													options={{
-														stretchToFullViewportHeight: false,
-														isCollapsible: false,
-														withHeader: false,
-														withImage: false,
-													}}
-												/>
-												<div className="p-3">
-													<Certificate resourceSlugOrId={params.module} />
-												</div>
-											</>
-										)}
-									</ResourceSidebar>
+											{showUnpublishedPreview && (
+												<>
+													<div className="bg-muted/50 border-b px-4 py-3">
+														<p className="text-muted-foreground inline-flex flex-wrap items-center text-sm">
+															<ConstructionIcon className="mr-1 inline-block size-4" />{' '}
+															Product not yet available for purchase.
+														</p>
+													</div>
+													<ModuleResourceList
+														className="w-full max-w-none border-0"
+														wrapperClassName="overflow-hidden pb-0"
+														options={{
+															stretchToFullViewportHeight: false,
+															isCollapsible: false,
+															withHeader: false,
+															withImage: true,
+															listHeight: 300,
+														}}
+													/>
+												</>
+											)}
+											{pricingProps.hasPurchasedCurrentProduct && (
+												<>
+													<ModuleResourceList
+														className="border-r-0! w-full max-w-none"
+														wrapperClassName="overflow-hidden pb-0 hidden md:block"
+														options={{
+															stretchToFullViewportHeight: false,
+															isCollapsible: false,
+															withHeader: false,
+															withImage: false,
+														}}
+													/>
+													<div className="p-3">
+														<Certificate resourceSlugOrId={params.module} />
+													</div>
+												</>
+											)}
+										</ResourceSidebar>
+										<ResourceMobileCtaWithPricing
+											title={workshop?.fields?.title || ''}
+											moduleType="workshop"
+											moduleSlug={params.module}
+											allowPurchase={pricingProps.allowPurchase ?? false}
+											hasPurchased={
+												pricingProps.hasPurchasedCurrentProduct ?? false
+											}
+											product={product}
+											pricingDataLoader={restProps.pricingDataLoader}
+											commerceProps={{
+												...restProps,
+												products: [product],
+											}}
+											cancelUrl={cancelUrl}
+											couponId={couponId}
+										/>
+									</>
 								)
 							}}
 						</WorkshopPricing>
 					</React.Suspense>
 				) : (
-					<ResourceSidebar
-						mobileCta={{
-							title: workshop?.fields?.title || '',
-							subtitle: <Contributor className="gap-1 text-sm [&_img]:w-5" />,
-							buttonText: 'Start Learning',
-						}}
-					>
-						<ModuleResourceList
-							className="w-full max-w-none"
-							wrapperClassName="overflow-hidden pb-0"
-							options={{
-								stretchToFullViewportHeight: false,
-								isCollapsible: false,
-								withHeader: false,
-								withImage: true,
-								listHeight: 300,
-							}}
+					<>
+						<ResourceSidebar>
+							<ModuleResourceList
+								className="w-full max-w-none"
+								wrapperClassName="overflow-hidden pb-0"
+								options={{
+									stretchToFullViewportHeight: false,
+									isCollapsible: false,
+									withHeader: false,
+									withImage: true,
+									listHeight: 300,
+								}}
+							/>
+						</ResourceSidebar>
+						<ResourceMobileCta
+							mode="progress"
+							title={workshop?.fields?.title || ''}
+							moduleType="workshop"
+							moduleSlug={params.module}
 						/>
-					</ResourceSidebar>
+					</>
 				)
 			}
 		>
@@ -285,7 +343,7 @@ export default async function ModulePage(props: Props) {
 			<ResourceBody>
 				{content ? (
 					<>
-						<span className="text-muted-foreground mb-4 text-sm uppercase">
+						<span className="text-muted-foreground mb-2 inline-flex text-sm uppercase">
 							Overview
 						</span>
 						<div className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl max-w-none">
@@ -301,14 +359,19 @@ export default async function ModulePage(props: Props) {
 							return null
 						}
 
-						if (!pricingProps.hasPurchasedCurrentProduct) {
+						// Only show content list when purchasable but not yet purchased
+						// (unpublished products show the list in the sidebar instead)
+						if (
+							pricingProps.allowPurchase &&
+							!pricingProps.hasPurchasedCurrentProduct
+						) {
 							return (
 								<div className="mt-8">
 									<h3 className="mb-3 text-xl font-bold sm:text-2xl">
 										Content
 									</h3>
 									<ModuleResourceList
-										className="border-border rounded-lg border"
+										className="border-border bg-card rounded-lg border"
 										options={{
 											stretchToFullViewportHeight: false,
 											isCollapsible: false,
@@ -320,6 +383,8 @@ export default async function ModulePage(props: Props) {
 								</div>
 							)
 						}
+
+						return null
 					}}
 				</WorkshopPricing>
 			</ResourceBody>

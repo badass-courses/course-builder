@@ -35,6 +35,19 @@ export {
 } from './resource-schedule-details'
 export type { ResourceScheduleDetailsProps } from './resource-schedule-details'
 
+export {
+	ResourceMobileCta,
+	ResourceMobileCtaWithPricing,
+} from './resource-mobile-cta'
+export type {
+	ResourceMobileCtaProps,
+	ResourceMobileCtaWithPricingProps,
+	PricingMobileCtaProps,
+	ProgressMobileCtaProps,
+	CustomMobileCtaProps,
+	MobileCtaMode,
+} from './resource-mobile-cta'
+
 // Re-export pricing components
 export * from './pricing'
 

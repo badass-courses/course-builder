@@ -62,7 +62,7 @@ export default function MDXVideo({
 				playbackRates={[0.75, 1, 1.25, 1.5, 1.75, 2]}
 				maxResolution="2160p"
 				minResolution="540p"
-				accentColor="#DD9637"
+				accentColor="#536AFF"
 				playbackId={data.muxPlaybackId}
 				thumbnailTime={thumbnailTime}
 				poster={poster}

@@ -196,7 +196,7 @@ export function PricingWidget({
 		>
 			<Pricing.Product className="w-full">
 				{withImage && <Pricing.ProductImage />}
-				<Pricing.Details className="px-0">
+				<Pricing.Details className="px-0 pt-0">
 					{withTitle && (
 						<Pricing.Name className="text-foreground mb-0 font-normal sm:text-xl" />
 					)}
@@ -208,7 +208,10 @@ export function PricingWidget({
 							<Pricing.TeamQuantityInput />
 						</>
 					)}
-					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
+					<Pricing.BuyButton
+						data-sr-button="default"
+						className="my-3 overflow-hidden rounded-sm"
+					>
 						<span className="relative z-10">{buttonLabel}</span>
 						<div
 							style={{ backgroundSize: '200% 100%' }}

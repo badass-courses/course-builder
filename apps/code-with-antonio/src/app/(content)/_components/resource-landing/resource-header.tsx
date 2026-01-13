@@ -79,7 +79,7 @@ export function ResourceHeader({
 			{/* Mobile image - only visible on smaller screens */}
 			{image && (
 				<CldImage
-					className="flex w-full lg:hidden"
+					className="mb-5 flex w-full rounded-lg lg:hidden"
 					width={image.width ?? 383}
 					height={image.height ?? 204}
 					src={image.url}

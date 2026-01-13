@@ -50,7 +50,7 @@
 	--color-gray-900: oklch(20.5% 0 0);
 	--color-gray-950: oklch(14.5% 0 0); */
 
-	--animate-shine: shine 5s linear infinite forwards 5s;
+	--animate-shine: shine 5s linear infinite forwards;
 	@keyframes shine {
 		0% {
 			background-position: 200%;
@@ -149,7 +149,7 @@
 	/* golden color scheme */
 	--background: oklch(0.141 0.005 285.823);
 	--foreground: oklch(0.985 0 0);
-	--card: oklch(0.23 0.006 285.885);
+	--card: oklch(0.17 0.006 285.885);
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.21 0.006 285.885);
 	--popover-foreground: oklch(0.985 0 0);

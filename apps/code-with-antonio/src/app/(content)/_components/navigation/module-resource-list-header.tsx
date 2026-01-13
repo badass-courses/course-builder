@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { CldImage } from '@/components/cld-image'
 import type { ResourceNavigation } from '@/lib/content-navigation'
 import { cn } from '@/utils/cn'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'

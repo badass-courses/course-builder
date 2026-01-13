@@ -207,7 +207,7 @@ export function SimplePostPlayer({
 		defaultHiddenCaptions: true,
 		streamType: 'on-demand',
 		thumbnailTime: thumbnailTime,
-		accentColor: '#DD9637',
+		accentColor: '#536AFF',
 		playbackRates: [0.75, 1, 1.25, 1.5, 1.75, 2],
 		maxResolution: '2160p',
 		minResolution: '540p',

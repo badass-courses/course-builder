@@ -128,12 +128,13 @@ export default function ModuleResourceList({
 			)}
 			<div className="flex flex-col">
 				{options?.withImage && moduleNavigation.fields?.coverImage?.url && (
-					<CldImage
-						src={moduleNavigation.fields?.coverImage?.url}
-						alt={moduleNavigation.fields?.title || ''}
-						width={403}
-						height={227}
-					/>
+					<div className="relative aspect-video w-full">
+						<CldImage
+							src={moduleNavigation.fields?.coverImage?.url}
+							alt={moduleNavigation.fields?.title || ''}
+							fill
+						/>
+					</div>
 				)}
 				{withHeader && (
 					<ModuleResourceListHeader
