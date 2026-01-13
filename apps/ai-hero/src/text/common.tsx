@@ -59,7 +59,7 @@ export default {
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
 	'primary-newsletter-tittle': 'Join over 50,000 Developers Becoming AI Heroes',
-	'primary-newsletter-byline': `Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Engineers.`,
+	'primary-newsletter-byline': `Subscribe to be the first to learn about AI Hero releases, updates, and special discounts for AI Heroes.`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
 	'video-newsletter-title': 'Ship AI Apps That Work',
