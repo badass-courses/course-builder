@@ -27,7 +27,7 @@ const LessonLayout = async (props: {
 					currentLessonSlug={params.lesson}
 					className="bg-card sticky top-0 hidden h-screen max-w-xs border-b border-r lg:block"
 				/>
-				<LayoutClient withNavContainer={false}>
+				<LayoutClient withNavContainer={false} withFooterContainer={false}>
 					<div className="flex min-w-0 items-start">
 						<Sheet>
 							<SheetTrigger className="bg-card/90 border-foreground/10 fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded border px-3 py-2 shadow-lg backdrop-blur-md lg:hidden dark:bg-gray-800/80">

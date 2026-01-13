@@ -15,6 +15,7 @@ export default function LayoutClient({
 	children,
 	withContainer = false,
 	withNavContainer = true,
+	withFooterContainer = true,
 	className,
 	saleBannerData,
 	isCommerceEnabled = true,
@@ -27,6 +28,7 @@ export default function LayoutClient({
 	saleBannerData?: SaleBannerData | null
 	isCommerceEnabled?: boolean
 	withNavContainer?: boolean
+	withFooterContainer?: boolean
 }) {
 	return (
 		<div className={cn('w-full')}>
@@ -44,7 +46,9 @@ export default function LayoutClient({
 			>
 				{children}
 			</main>
-			{withFooter && <Footer withContainer={withContainer} />}
+			{withFooter && (
+				<Footer withContainer={withFooterContainer || withContainer} />
+			)}
 		</div>
 	)
 }

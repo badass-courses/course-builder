@@ -67,7 +67,7 @@ const Home = async (props: Props) => {
 			isCommerceEnabled={isCommerceEnabled}
 		>
 			<div>
-				<section className="bg-primary dark:bg-primary-dark text-primary-foreground relative flex w-full flex-col items-center justify-center overflow-hidden py-10 lg:py-24">
+				<section className="bg-primary dark:bg-primary-dark text-primary-foreground relative flex w-full flex-col items-center justify-center overflow-hidden py-8">
 					<HeroBackground
 						size={0.6}
 						className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full select-none opacity-10"
@@ -88,7 +88,7 @@ const Home = async (props: Props) => {
 							</Button>
 						</div>
 						<div className="relative hidden items-center justify-center lg:flex">
-							<HeroIllustration />
+							<HeroIllustration className="-mb-8" />
 						</div>
 					</div>
 				</section>
