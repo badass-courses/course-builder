@@ -15,6 +15,7 @@ import { SubscribeToConvertkitForm } from '@/convertkit'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
+import { getAllWorkshops } from '@/lib/workshops-query'
 import { compileMDX } from '@/utils/compile-mdx'
 import { ChevronRight } from 'lucide-react'
 
@@ -60,7 +61,7 @@ const Home = async (props: Props) => {
 	const activeCoupon = await getActiveCoupon(searchParams)
 	const saleBannerData = await getSaleBannerData(activeCoupon)
 	const { content: bodyContent } = await compileMDX(page?.fields?.body || '')
-
+	const workshops = await getAllWorkshops()
 	return (
 		<LayoutClient
 			saleBannerData={saleBannerData}
@@ -114,26 +115,18 @@ const Home = async (props: Props) => {
 							</h2>
 						</div>
 						<div className="-mx-6 flex snap-x flex-row gap-5 overflow-x-auto px-6 pb-5 md:mx-0 md:grid md:grid-cols-3 md:px-0 md:pb-0 [&_a]:shrink-0 [&_a]:basis-2/3 [&_a]:snap-center">
-							{[
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760523672/thumbnail-cohort_2x_wwn6oa.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524905/jira_hhzgvi.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/support_bm52ka.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524905/ai-agent_ppu71y.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/youtube_ehczph.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/slack_geahvx.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/lovable_bg2b8y.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/google-docs_oompsy.jpg',
-								'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760524906/multi-tenant_pfy3yj.jpg',
-							].map((image) => (
+							{workshops.map((workshop) => (
 								<ResourceTeaser
-									key={image}
+									key={workshop.id}
 									variant="card"
-									title="Build and Deploy a B2B SaaS AI Support Platform"
-									metadata="35 chapters"
-									tags={['Convex', 'Tailwind', 'React', 'Next.js', 'Node.js']}
-									href="/courses/b2b-saas"
-									thumbnailBadge="FREE"
-									thumbnailUrl={image}
+									title={workshop.fields.title}
+									metadata={`${workshop.resources?.length ?? 0} chapters`}
+									tags={
+										workshop.tags?.map((tag) => tag.tag.fields?.label) ?? []
+									}
+									href={`/workshops/${workshop.fields.slug}`}
+									// thumbnailBadge="FREE"
+									thumbnailUrl={workshop.fields.coverImage?.url}
 								/>
 							))}
 						</div>
