@@ -4,7 +4,7 @@ import {
 	Shortlink,
 	ShortlinkAnalytics,
 	ShortlinkClickEvent,
-} from '@/lib/shortlinks-query'
+} from '@/lib/shortlinks-types'
 import {
 	BarChart3,
 	Globe,

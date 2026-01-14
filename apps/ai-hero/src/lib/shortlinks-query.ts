@@ -8,7 +8,15 @@ import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 import { and, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
-import { z } from 'zod'
+
+import {
+	CreateShortlinkInput,
+	CreateShortlinkSchema,
+	Shortlink,
+	ShortlinkAnalytics,
+	UpdateShortlinkInput,
+	UpdateShortlinkSchema,
+} from './shortlinks-types'
 
 const nanoid = customAlphabet(
 	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -16,49 +24,6 @@ const nanoid = customAlphabet(
 )
 
 const REDIS_KEY_PREFIX = 'shortlink:'
-
-/**
- * Schema for creating a shortlink
- */
-export const CreateShortlinkSchema = z.object({
-	slug: z
-		.string()
-		.min(1)
-		.max(50)
-		.regex(/^[a-zA-Z0-9_-]+$/)
-		.optional(),
-	url: z.string().url(),
-	description: z.string().max(255).optional(),
-})
-
-export type CreateShortlinkInput = z.infer<typeof CreateShortlinkSchema>
-
-/**
- * Schema for updating a shortlink
- */
-export const UpdateShortlinkSchema = z.object({
-	id: z.string(),
-	slug: z
-		.string()
-		.min(1)
-		.max(50)
-		.regex(/^[a-zA-Z0-9_-]+$/)
-		.optional(),
-	url: z.string().url().optional(),
-	description: z.string().max(255).optional(),
-})
-
-export type UpdateShortlinkInput = z.infer<typeof UpdateShortlinkSchema>
-
-/**
- * Shortlink type from database
- */
-export type Shortlink = typeof shortlink.$inferSelect
-
-/**
- * Shortlink click event type
- */
-export type ShortlinkClickEvent = typeof shortlinkClick.$inferSelect
 
 /**
  * Get all shortlinks with optional search filter
@@ -295,7 +260,10 @@ export async function deleteShortlink(id: string): Promise<void> {
 		throw new Error('Shortlink not found')
 	}
 
-	// Delete from database (cascade deletes clicks)
+	// Delete clicks first (manual cascade since PlanetScale doesn't support FKs)
+	await db.delete(shortlinkClick).where(eq(shortlinkClick.shortlinkId, id))
+
+	// Delete from database
 	await db.delete(shortlink).where(eq(shortlink.id, id))
 
 	// Remove from Redis
@@ -353,17 +321,6 @@ export async function recordClick(
 	} catch (error) {
 		await log.error('shortlink.click.error', { slug, error: String(error) })
 	}
-}
-
-/**
- * Analytics data for a shortlink
- */
-export interface ShortlinkAnalytics {
-	totalClicks: number
-	clicksByDay: { date: string; clicks: number }[]
-	topReferrers: { referrer: string; clicks: number }[]
-	deviceBreakdown: { device: string; clicks: number }[]
-	recentClicks: ShortlinkClickEvent[]
 }
 
 /**
