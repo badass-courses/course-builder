@@ -32,6 +32,7 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
+	useToast,
 } from '@coursebuilder/ui'
 
 import ShortlinkCrudDialog from './shortlink-crud-dialog'
@@ -56,9 +57,13 @@ function CopyButton({ text }: { text: string }) {
 	const [copied, setCopied] = useState(false)
 
 	const handleCopy = async () => {
-		await navigator.clipboard.writeText(text)
-		setCopied(true)
-		setTimeout(() => setCopied(false), 2000)
+		try {
+			await navigator.clipboard.writeText(text)
+			setCopied(true)
+			setTimeout(() => setCopied(false), 2000)
+		} catch (error) {
+			console.error('Failed to copy text to clipboard:', error)
+		}
 	}
 
 	return (
@@ -105,6 +110,7 @@ export default function ShortlinksManagement({
 }: {
 	initialShortlinks: Shortlink[]
 }) {
+	const { toast } = useToast()
 	const [shortlinks, setShortlinks] = useState<Shortlink[]>(initialShortlinks)
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebounce(searchTerm, 250)
@@ -174,9 +180,18 @@ export default function ShortlinksManagement({
 						(link) => link.id !== deleteConfirmation.shortlinkId,
 					),
 				)
+				setDeleteConfirmation({ isOpen: false, shortlinkId: null })
+			} catch (error) {
+				toast({
+					variant: 'destructive',
+					title: 'Failed to delete shortlink',
+					description:
+						error instanceof Error
+							? error.message
+							: 'An error occurred while deleting the shortlink',
+				})
 			} finally {
 				setIsDeleting(false)
-				setDeleteConfirmation({ isOpen: false, shortlinkId: null })
 			}
 		}
 	}

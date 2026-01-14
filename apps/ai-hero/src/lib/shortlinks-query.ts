@@ -72,14 +72,10 @@ export async function getShortlinkBySlug(
 	slug: string,
 ): Promise<Shortlink | null> {
 	// Try Redis cache first
-	const cachedUrl = await redis.get<string>(`${REDIS_KEY_PREFIX}${slug}`)
-	if (cachedUrl) {
+	const cachedLink = await redis.get<Shortlink>(`${REDIS_KEY_PREFIX}${slug}`)
+	if (cachedLink) {
 		await log.info('shortlink.cache.hit', { slug })
-		// Return minimal data for redirect
-		const link = await db.query.shortlink.findFirst({
-			where: eq(shortlink.slug, slug),
-		})
-		return link ?? null
+		return cachedLink
 	}
 
 	// Fallback to database
@@ -88,8 +84,8 @@ export async function getShortlinkBySlug(
 	})
 
 	if (link) {
-		// Cache for future lookups
-		await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link.url)
+		// Cache full object for future lookups
+		await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link)
 		await log.info('shortlink.cache.miss', { slug, cached: true })
 	}
 
@@ -162,15 +158,15 @@ export async function createShortlink(
 		throw new Error('Failed to insert shortlink')
 	}
 
-	// Cache in Redis
-	await redis.set(`${REDIS_KEY_PREFIX}${slug}`, parsed.url)
-
 	await log.info('shortlink.created', { slug, url: parsed.url })
 
 	const link = await getShortlinkById(insertedId)
 	if (!link) {
 		throw new Error('Failed to create shortlink')
 	}
+
+	// Cache full object in Redis
+	await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link)
 
 	revalidateTag('shortlinks', 'max')
 
@@ -215,22 +211,17 @@ export async function updateShortlink(
 		})
 		.where(eq(shortlink.id, parsed.id))
 
-	// Update Redis cache
 	const newSlug = parsed.slug ?? existing.slug
-	const newUrl = parsed.url ?? existing.url
 
 	// Remove old cache if slug changed
 	if (parsed.slug && parsed.slug !== existing.slug) {
 		await redis.del(`${REDIS_KEY_PREFIX}${existing.slug}`)
 	}
 
-	// Set new cache
-	await redis.set(`${REDIS_KEY_PREFIX}${newSlug}`, newUrl)
-
 	await log.info('shortlink.updated', {
 		id: parsed.id,
 		slug: newSlug,
-		url: newUrl,
+		url: parsed.url ?? existing.url,
 	})
 
 	revalidateTag('shortlinks', 'max')
@@ -239,6 +230,9 @@ export async function updateShortlink(
 	if (!updated) {
 		throw new Error('Failed to update shortlink')
 	}
+
+	// Cache full updated object in Redis
+	await redis.set(`${REDIS_KEY_PREFIX}${newSlug}`, updated)
 
 	return updated
 }
