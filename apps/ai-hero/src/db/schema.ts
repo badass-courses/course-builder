@@ -1,6 +1,9 @@
 import { mysqlTable } from '@/db/mysql-table'
+import { relations } from 'drizzle-orm'
+import { int, text, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 import { getCourseBuilderSchema } from '@coursebuilder/adapter-drizzle/mysql'
+import { guid } from '@coursebuilder/utils-core/guid'
 
 export const {
 	accounts,
@@ -90,3 +93,55 @@ export const {
 	entitlementsRelations,
 	entitlementTypes,
 } = getCourseBuilderSchema(mysqlTable)
+
+/**
+ * Shortlink table for URL shortening
+ */
+export const shortlink = mysqlTable('Shortlink', {
+	id: varchar('id', { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => guid()),
+	slug: varchar('slug', { length: 50 }).notNull().unique(),
+	url: text('url').notNull(),
+	description: varchar('description', { length: 255 }),
+	clicks: int('clicks').default(0).notNull(),
+	createdById: varchar('createdById', { length: 255 }).references(
+		() => users.id,
+	),
+	createdAt: timestamp('createdAt').defaultNow().notNull(),
+	updatedAt: timestamp('updatedAt').defaultNow().notNull(),
+})
+
+export const shortlinkRelations = relations(shortlink, ({ one, many }) => ({
+	createdBy: one(users, {
+		fields: [shortlink.createdById],
+		references: [users.id],
+	}),
+	clicks: many(shortlinkClick),
+}))
+
+/**
+ * Shortlink click events for analytics
+ */
+export const shortlinkClick = mysqlTable('ShortlinkClick', {
+	id: varchar('id', { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => guid()),
+	shortlinkId: varchar('shortlinkId', { length: 255 })
+		.notNull()
+		.references(() => shortlink.id, { onDelete: 'cascade' }),
+	timestamp: timestamp('timestamp').defaultNow().notNull(),
+	referrer: varchar('referrer', { length: 500 }),
+	userAgent: varchar('userAgent', { length: 500 }),
+	country: varchar('country', { length: 2 }),
+	device: varchar('device', { length: 50 }),
+})
+
+export const shortlinkClickRelations = relations(shortlinkClick, ({ one }) => ({
+	shortlink: one(shortlink, {
+		fields: [shortlinkClick.shortlinkId],
+		references: [shortlink.id],
+	}),
+}))
