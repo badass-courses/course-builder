@@ -106,9 +106,7 @@ export const shortlink = mysqlTable('Shortlink', {
 	url: text('url').notNull(),
 	description: varchar('description', { length: 255 }),
 	clicks: int('clicks').default(0).notNull(),
-	createdById: varchar('createdById', { length: 255 }).references(
-		() => users.id,
-	),
+	createdById: varchar('createdById', { length: 255 }),
 	createdAt: timestamp('createdAt').defaultNow().notNull(),
 	updatedAt: timestamp('updatedAt').defaultNow().notNull(),
 })
@@ -129,9 +127,7 @@ export const shortlinkClick = mysqlTable('ShortlinkClick', {
 		.notNull()
 		.primaryKey()
 		.$defaultFn(() => guid()),
-	shortlinkId: varchar('shortlinkId', { length: 255 })
-		.notNull()
-		.references(() => shortlink.id, { onDelete: 'cascade' }),
+	shortlinkId: varchar('shortlinkId', { length: 255 }).notNull(),
 	timestamp: timestamp('timestamp').defaultNow().notNull(),
 	referrer: varchar('referrer', { length: 500 }),
 	userAgent: varchar('userAgent', { length: 500 }),

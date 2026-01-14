@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import {
 	createShortlink,
-	CreateShortlinkSchema,
 	deleteShortlink,
 	getShortlinkById,
 	getShortlinks,
 	updateShortlink,
-	UpdateShortlinkSchema,
 } from '@/lib/shortlinks-query'
+import {
+	CreateShortlinkSchema,
+	UpdateShortlinkSchema,
+} from '@/lib/shortlinks-types'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
 

@@ -5,9 +5,9 @@ import Link from 'next/link'
 import {
 	createShortlink,
 	deleteShortlink,
-	Shortlink,
 	updateShortlink,
 } from '@/lib/shortlinks-query'
+import { Shortlink } from '@/lib/shortlinks-types'
 import {
 	BarChart3,
 	Check,
