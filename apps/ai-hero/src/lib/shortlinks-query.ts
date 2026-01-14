@@ -139,21 +139,38 @@ export async function createShortlink(
 	const slug = parsed.slug || (await generateUniqueSlug())
 
 	// Check slug availability
+	// Note: Database unique constraint provides final protection against race conditions
 	if (parsed.slug && !(await isSlugAvailable(slug))) {
 		throw new Error('Slug already exists')
 	}
 
-	const results = await db
-		.insert(shortlink)
-		.values({
-			slug,
-			url: parsed.url,
-			description: parsed.description,
-			createdById: session?.user?.id,
-		})
-		.$returningId()
+	let insertedId: string | undefined
+	try {
+		const results = await db
+			.insert(shortlink)
+			.values({
+				slug,
+				url: parsed.url,
+				description: parsed.description,
+				createdById: session?.user?.id,
+			})
+			.$returningId()
 
-	const insertedId = results[0]?.id
+		insertedId = results[0]?.id
+	} catch (error) {
+		// Handle unique constraint violation (race condition protection)
+		if (
+			error instanceof Error &&
+			(error.message.includes('Duplicate entry') ||
+				error.message.includes('UNIQUE constraint') ||
+				error.message.includes('already exists'))
+		) {
+			throw new Error('Slug already exists')
+		}
+		// Re-throw other errors
+		throw error
+	}
+
 	if (!insertedId) {
 		throw new Error('Failed to insert shortlink')
 	}
