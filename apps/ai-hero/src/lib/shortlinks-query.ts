@@ -212,21 +212,36 @@ export async function updateShortlink(
 	}
 
 	// Check slug availability if changing
+	// Note: Database unique constraint provides final protection against race conditions
 	if (parsed.slug && parsed.slug !== existing.slug) {
 		if (!(await isSlugAvailable(parsed.slug))) {
 			throw new Error('Slug already exists')
 		}
 	}
 
-	await db
-		.update(shortlink)
-		.set({
-			slug: parsed.slug ?? existing.slug,
-			url: parsed.url ?? existing.url,
-			description: parsed.description ?? existing.description,
-			updatedAt: new Date(),
-		})
-		.where(eq(shortlink.id, parsed.id))
+	try {
+		await db
+			.update(shortlink)
+			.set({
+				slug: parsed.slug ?? existing.slug,
+				url: parsed.url ?? existing.url,
+				description: parsed.description ?? existing.description,
+				updatedAt: new Date(),
+			})
+			.where(eq(shortlink.id, parsed.id))
+	} catch (error) {
+		// Handle unique constraint violation (race condition protection)
+		if (
+			error instanceof Error &&
+			(error.message.includes('Duplicate entry') ||
+				error.message.includes('UNIQUE constraint') ||
+				error.message.includes('already exists'))
+		) {
+			throw new Error('Slug already exists')
+		}
+		// Re-throw other errors
+		throw error
+	}
 
 	const newSlug = parsed.slug ?? existing.slug
 
