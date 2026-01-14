@@ -21,6 +21,7 @@ import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
+import { processWorkshopTranscripts } from './functions/process-workshop-transcripts'
 import {
 	apiProductTransferWorkflow,
 	productTransferWorkflow,
@@ -63,5 +64,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		processWorkshopTranscripts,
 	],
 }

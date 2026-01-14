@@ -94,6 +94,10 @@ import {
 	type RequestVideoSplitPoints,
 } from './events/split_video'
 import {
+	PROCESS_WORKSHOP_TRANSCRIPTS_EVENT,
+	ProcessWorkshopTranscripts,
+} from './events/workshop-transcript-processing'
+import {
 	CREATE_USER_ORGANIZATIONS_EVENT,
 	CreateUserOrganizations,
 } from './functions/create-user-organization'
@@ -133,6 +137,7 @@ export type Events = {
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[RESOURCE_CREATED_EVENT]: ResourceCreated
 	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
+	[PROCESS_WORKSHOP_TRANSCRIPTS_EVENT]: ProcessWorkshopTranscripts
 }
 
 const callbackBase =
