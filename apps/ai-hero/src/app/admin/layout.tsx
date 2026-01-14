@@ -3,6 +3,7 @@ import LayoutClient from '@/components/layout-client'
 import {
 	FileText,
 	Flag,
+	Link2,
 	ListChecks,
 	Mail,
 	TagIcon,
@@ -66,6 +67,10 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 									<NavItem href="/admin/flags">
 										<Flag className="size-4" />
 										Feature Flags
+									</NavItem>
+									<NavItem href="/admin/shortlinks">
+										<Link2 className="size-4" />
+										Shortlinks
 									</NavItem>
 								</li>
 							</ul>
