@@ -50,6 +50,8 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
 	try {
 		const workshops = await db.query.contentResource.findMany({
