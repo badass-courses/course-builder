@@ -23,12 +23,15 @@ describe('Subscription Entitlements', () => {
 		{ id: cohortEntitlementTypeId, name: 'cohort_content_access' },
 	]
 
-	// Mock a paid workshop (has self-paced product)
+	// Mock subscription product ID (used in entitlements and module)
+	const subscriptionProductId = 'prod-membership'
+
+	// Mock a paid workshop (has self-paced product attached to subscription)
 	const paidWorkshopModule = {
 		id: 'workshop-123',
 		type: 'workshop',
 		resourceProducts: [
-			{ productId: 'prod-1', product: { type: 'self-paced' } },
+			{ productId: subscriptionProductId, product: { type: 'self-paced' } },
 		],
 	} as any
 

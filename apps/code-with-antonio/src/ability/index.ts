@@ -393,11 +393,25 @@ export function defineRulesForPurchases(
 		})
 	}
 
-	// Subscription entitlements grant access to content in the subscription product
+	// Subscription entitlements grant access to content attached to the subscription product
 	const subscriptionEntitlementType = entitlementTypes?.find(
 		(entitlement) => entitlement.name === 'subscription_access',
 	)
 
+	// Grant Discord access for any active subscription (regardless of module context)
+	if (user?.entitlements && subscriptionEntitlementType) {
+		const hasActiveSubscription = user.entitlements.some(
+			(entitlement) =>
+				entitlement.type === subscriptionEntitlementType.id &&
+				(!entitlement.expires || entitlement.expires > new Date()),
+		)
+
+		if (hasActiveSubscription) {
+			can('read', 'Discord')
+		}
+	}
+
+	// Grant Content access only for modules attached to the subscription product
 	if (user?.entitlements && subscriptionEntitlementType && module?.id) {
 		user.entitlements.forEach((entitlement) => {
 			if (
@@ -417,7 +431,6 @@ export function defineRulesForPurchases(
 					if (allModuleResourceIds?.length) {
 						can('read', 'Content', { id: { $in: allModuleResourceIds } })
 					}
-					can('read', 'Discord')
 				}
 			}
 		})
