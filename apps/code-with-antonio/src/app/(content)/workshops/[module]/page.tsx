@@ -50,16 +50,28 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export async function generateStaticParams() {
-	const workshops = await db.query.contentResource.findMany({
-		where: and(eq(contentResource.type, 'workshop')),
-	})
+export const dynamic = 'force-dynamic'
 
-	return workshops
-		.filter((workshop) => Boolean(workshop.fields?.slug))
-		.map((workshop) => ({
-			module: workshop.fields?.slug,
-		}))
+export async function generateStaticParams() {
+	try {
+		const workshops = await db.query.contentResource.findMany({
+			where: and(eq(contentResource.type, 'workshop')),
+		})
+
+		return workshops
+			.filter((workshop) => Boolean(workshop.fields?.slug))
+			.map((workshop) => ({
+				module: workshop.fields?.slug,
+			}))
+	} catch (error) {
+		// If database is unavailable during build, return empty array
+		// Pages will be generated on-demand instead
+		console.warn(
+			'Failed to generate static params for workshops, database may be unavailable:',
+			error,
+		)
+		return []
+	}
 }
 
 export async function generateMetadata(

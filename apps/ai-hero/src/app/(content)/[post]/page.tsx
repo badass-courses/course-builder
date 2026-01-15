@@ -21,7 +21,19 @@ import { Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	CopyAsMarkdown,
+	OpenIn,
+	OpenInChatGPT,
+	OpenInClaude,
+	OpenInContent,
+	OpenInCursor,
+	OpenInScira,
+	OpenInT3,
+	OpenInTrigger,
+	OpenInv0,
+} from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import PostNextUpFromListPagination from '../_components/post-next-up-from-list-pagination'
@@ -122,6 +134,20 @@ export default async function PostPage(props: {
 												Source Code
 											</Link>
 										</Button>
+									)}
+									{post.fields?.body && (
+										<OpenIn query={post.fields?.body}>
+											<OpenInTrigger label="Use with AI" />
+											<OpenInContent>
+												<CopyAsMarkdown />
+												<OpenInChatGPT />
+												<OpenInClaude />
+												<OpenInCursor />
+												<OpenInT3 />
+												<OpenInScira />
+												<OpenInv0 />
+											</OpenInContent>
+										</OpenIn>
 									)}
 								</div>
 								<Suspense fallback={null}>
