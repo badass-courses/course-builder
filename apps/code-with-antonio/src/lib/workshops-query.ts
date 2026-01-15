@@ -246,6 +246,9 @@ export async function getAllWorkshops() {
 			// Deep nesting can cause stack overflow during RSC serialization
 			resources: {
 				orderBy: asc(contentResourceResource.position),
+				with: {
+					resource: true,
+				},
 			},
 		},
 		orderBy: desc(contentResource.createdAt),
