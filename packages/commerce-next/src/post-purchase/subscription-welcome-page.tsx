@@ -4,28 +4,13 @@ import * as React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { FileText } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import Balancer from 'react-wrap-balancer'
-import type { Stripe } from 'stripe'
 
 import { Subscription } from '@coursebuilder/core/schemas/subscription'
-import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
 import { Icon } from '../components'
-
-interface SubscriptionDetails {
-	status: string
-	quantity: number
-	interval: string
-	currentPeriodEnd: number
-	cancelAtPeriodEnd: boolean
-	price: {
-		unitAmount: number | null
-		currency: string
-	}
-}
 
 function formatPrice(amount: number | null, currency: string): string {
 	if (!amount) return 'N/A'
@@ -39,12 +24,43 @@ function formatSubscriptionInterval(interval: string): string {
 	return interval === 'month' ? 'Monthly' : 'Yearly'
 }
 
-interface Resource {
-	fields?: {
-		slug?: string
-	}
+/**
+ * Serializable subscription details extracted from Stripe.Subscription.
+ * Must be a plain object with no methods for Server->Client Component transfer.
+ */
+export type StripeSubscriptionData = {
+	status: string
+	quantity: number
+	interval: string
+	currentPeriodEnd: number
+	cancelAtPeriodEnd: boolean
+	unitAmount: number | null
+	currency: string
 }
 
+export type SubscriptionWelcomePageProps = {
+	subscription: Subscription | null
+	stripeSubscription: StripeSubscriptionData
+	isGithubConnected: boolean
+	isDiscordConnected?: boolean
+	providers?: any
+	/**
+	 * URL to Stripe billing portal. Only provided for subscription owners.
+	 * When null, billing details and manage button are hidden (for claimed seat holders).
+	 */
+	billingPortalUrl: string | null
+	/**
+	 * Optional slot for rendering a team invite widget.
+	 * Shown between subscription details and share section.
+	 */
+	teamSection?: React.ReactNode
+}
+
+/**
+ * Welcome page shown after a successful subscription purchase.
+ * Includes subscription details, billing management, and optional team invite widget
+ * for subscriptions with multiple seats.
+ */
 export function SubscriptionWelcomePage({
 	subscription,
 	stripeSubscription,
@@ -52,32 +68,13 @@ export function SubscriptionWelcomePage({
 	isDiscordConnected = false,
 	providers = {},
 	billingPortalUrl,
-}: {
-	subscription: Subscription | null
-	stripeSubscription: Stripe.Subscription
-	isGithubConnected: boolean
-	isDiscordConnected?: boolean
-	providers?: any
-	billingPortalUrl: string
-}) {
+	teamSection,
+}: SubscriptionWelcomePageProps) {
 	if (!subscription) {
 		redirect('/')
 	}
 
 	const product = subscription?.product
-
-	const subscriptionDetails: SubscriptionDetails = {
-		status: stripeSubscription.status,
-		quantity: stripeSubscription.items.data[0]?.quantity || 1,
-		interval:
-			stripeSubscription.items.data[0]?.price.recurring?.interval || 'month',
-		currentPeriodEnd: stripeSubscription.current_period_end,
-		cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
-		price: {
-			unitAmount: stripeSubscription.items.data[0]?.price.unit_amount,
-			currency: stripeSubscription.items.data[0]?.price.currency || 'usd',
-		},
-	}
 
 	return (
 		<main className="mx-auto flex w-full grow flex-col items-center justify-center py-16">
@@ -137,50 +134,67 @@ export function SubscriptionWelcomePage({
 								<div className="flex flex-col">
 									<span className="text-muted-foreground text-sm">Status</span>
 									<span className="capitalize">
-										{subscriptionDetails.status}
+										{stripeSubscription.status}
 									</span>
 								</div>
-								<div className="flex flex-col">
-									<span className="text-muted-foreground text-sm">Billing</span>
-									<span>
-										{formatSubscriptionInterval(subscriptionDetails.interval)} -{' '}
-										{formatPrice(
-											(subscriptionDetails.price.unitAmount ?? 0) *
-												subscriptionDetails.quantity,
-											subscriptionDetails.price.currency,
-										)}
-									</span>
-								</div>
-								<div className="flex flex-col">
-									<span className="text-muted-foreground text-sm">
-										Next Payment
-									</span>
-									<span>
-										{new Date(
-											subscriptionDetails.currentPeriodEnd * 1000,
-										).toLocaleDateString()}
-									</span>
-								</div>
+								{/* Only show billing details to subscription owner */}
+								{billingPortalUrl && (
+									<div className="flex flex-col">
+										<span className="text-muted-foreground text-sm">
+											Billing
+										</span>
+										<span>
+											{formatSubscriptionInterval(stripeSubscription.interval)}{' '}
+											-{' '}
+											{formatPrice(
+												(stripeSubscription.unitAmount ?? 0) *
+													stripeSubscription.quantity,
+												stripeSubscription.currency,
+											)}
+										</span>
+									</div>
+								)}
+								{billingPortalUrl && (
+									<div className="flex flex-col">
+										<span className="text-muted-foreground text-sm">
+											Next Payment
+										</span>
+										<span>
+											{new Date(
+												stripeSubscription.currentPeriodEnd * 1000,
+											).toLocaleDateString('en-US', {
+												year: 'numeric',
+												month: 'short',
+												day: 'numeric',
+											})}
+										</span>
+									</div>
+								)}
 								<div className="flex flex-col">
 									<span className="text-muted-foreground text-sm">Seats</span>
-									<span>{subscriptionDetails.quantity}</span>
+									<span>{stripeSubscription.quantity}</span>
 								</div>
 							</div>
 
-							{subscriptionDetails.cancelAtPeriodEnd && (
+							{stripeSubscription.cancelAtPeriodEnd && (
 								<div className="mt-2 rounded-md bg-yellow-50 p-3 text-sm text-yellow-800">
 									This subscription will cancel at the end of the current period
 								</div>
 							)}
 
-							<div className="mt-4 flex gap-2">
-								<Button asChild variant="outline">
-									<Link href={billingPortalUrl}>Manage Billing</Link>
-								</Button>
-							</div>
+							{/* Only show manage billing button to subscription owner */}
+							{billingPortalUrl && (
+								<div className="mt-4 flex gap-2">
+									<Button asChild variant="outline">
+										<Link href={billingPortalUrl}>Manage Billing</Link>
+									</Button>
+								</div>
+							)}
 						</div>
 					</div>
 
+					{/* Team section slot - for team subscriptions with multiple seats */}
+					{teamSection}
 					<div>
 						<h2 className="text-primary pb-4 text-sm uppercase">Share</h2>
 						<Share productName={product?.name || 'this subscription'} />

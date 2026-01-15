@@ -17,6 +17,8 @@ import {
 	hasAvailableSeats,
 	hasBulkPurchase,
 	hasChargesForPurchases,
+	hasTeamSubscription,
+	type TeamSubscriptionSeatInfo,
 } from './purchase-validators'
 
 export const UserSchema = userSchema.merge(
@@ -203,6 +205,8 @@ type ViewerAbilityInput = {
 	isSolution?: boolean
 	country?: string
 	purchases?: Purchase[]
+	/** Team subscriptions owned by the user with seat info */
+	teamSubscriptions?: TeamSubscriptionSeatInfo[]
 	entitlementTypes?: {
 		id: string
 		name: string
@@ -218,6 +222,7 @@ export function defineRulesForPurchases(
 		user,
 		country,
 		purchases = [],
+		teamSubscriptions = [],
 		module,
 		resource,
 		entitlementTypes,
@@ -297,11 +302,12 @@ export function defineRulesForPurchases(
 		can('read', 'Invoice')
 	}
 
-	if (hasBulkPurchase(purchases)) {
+	// Team access - bulk purchases or team subscriptions
+	if (hasBulkPurchase(purchases) || hasTeamSubscription(teamSubscriptions)) {
 		can('read', 'Team')
 	}
 
-	if (hasAvailableSeats(purchases)) {
+	if (hasAvailableSeats(purchases, teamSubscriptions)) {
 		can('invite', 'Team')
 	}
 

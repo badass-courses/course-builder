@@ -7,6 +7,7 @@ import { users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getUserActiveSubscription } from '@/lib/subscriptions'
 import { getProviders, getServerAuthSession } from '@/server/auth'
+import { subject } from '@casl/ability'
 import { eq } from 'drizzle-orm'
 
 import { Button } from '@coursebuilder/ui'
@@ -46,13 +47,20 @@ export default async function ProfilePage() {
 	)
 
 	// Fetch user's active subscription
-	const { subscription } = await getUserActiveSubscription(session.user.id)
+	const { subscription, organizationId } = await getUserActiveSubscription(
+		session.user.id,
+	)
 
-	// Get Stripe subscription details if user has an active subscription
+	// Get Stripe subscription details only if user can manage billing for the org
+	// Uses organization role permissions - only owners/admins can see billing details
 	let stripeSubscription = null
 	let billingPortalUrl: string | null = null
 
-	if (subscription?.merchantSubscription?.identifier) {
+	const canManageBilling =
+		organizationId &&
+		ability.can('read', subject('OrganizationBilling', { organizationId }))
+
+	if (subscription?.merchantSubscription?.identifier && canManageBilling) {
 		try {
 			stripeSubscription = await stripeProvider.getSubscription(
 				subscription.merchantSubscription.identifier,
@@ -89,7 +97,7 @@ export default async function ProfilePage() {
 							discordProvider={discordProvider}
 						/>
 
-						{stripeSubscription && subscription && (
+						{canManageBilling && stripeSubscription && subscription && (
 							<SubscriptionDetails
 								stripeSubscription={stripeSubscription}
 								subscription={subscription}

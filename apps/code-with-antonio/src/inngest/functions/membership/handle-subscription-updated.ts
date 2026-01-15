@@ -1,9 +1,12 @@
+import { db as drizzleDb } from '@/db'
+import { subscription as subscriptionTable } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import {
 	restoreEntitlementsForSubscription,
 	softDeleteEntitlementsForSubscription,
 	updateEntitlementExpirationForSubscription,
 } from '@/lib/entitlements'
+import { eq } from 'drizzle-orm'
 
 import { STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT } from '@coursebuilder/core/inngest/stripe/event-customer-subscription-updated'
 
@@ -19,7 +22,7 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 	{
 		event: STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT,
 	},
-	async ({ event, step, db }) => {
+	async ({ event, step, db, paymentProvider }) => {
 		const stripeSubscription = event.data.stripeEvent.data.object
 		const previousAttributes = event.data.stripeEvent.data.previous_attributes
 
@@ -163,6 +166,79 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					newExpiration,
 				)
 				return { newExpiration }
+			})
+		}
+
+		// Handle seat quantity changes (items or quantity changed)
+		// This happens when subscription quantity is updated in Stripe
+		if (previousAttributes?.items || previousAttributes?.quantity) {
+			await step.run('sync seat count', async () => {
+				// Fetch the actual subscription from Stripe to get accurate quantity
+				// The event data is often stripped during Inngest serialization
+				const stripeSubId = stripeSubscription.id
+				let newQuantity = 1
+
+				try {
+					const freshStripeSubscription =
+						await paymentProvider.getSubscription(stripeSubId)
+					// For per-seat subscriptions, quantity is at subscription level
+					// or on the first line item
+					const subQuantity = (freshStripeSubscription as { quantity?: number })
+						.quantity
+					const itemQuantity =
+						freshStripeSubscription.items?.data?.[0]?.quantity
+					newQuantity = subQuantity ?? itemQuantity ?? 1
+
+					console.log('Webhook sync seat count (from Stripe API):', {
+						stripeSubId,
+						subQuantity,
+						itemQuantity,
+						newQuantity,
+					})
+				} catch (error) {
+					console.error('Failed to fetch subscription from Stripe:', error)
+					// Fall back to event data (might be incomplete)
+					const subscriptionQuantity = (
+						stripeSubscription as { quantity?: number }
+					).quantity
+					const itemQuantity = (
+						stripeSubscription.items?.data?.[0] as { quantity?: number }
+					)?.quantity
+					newQuantity = subscriptionQuantity ?? itemQuantity ?? 1
+
+					console.log('Webhook sync seat count (fallback to event data):', {
+						subscriptionQuantity,
+						itemQuantity,
+						newQuantity,
+					})
+				}
+
+				// Update the seats field in subscription.fields
+				const existingSub = await drizzleDb.query.subscription.findFirst({
+					where: eq(subscriptionTable.id, subscription.id),
+				})
+
+				const currentFields = (existingSub?.fields as Record<string, any>) || {}
+
+				// Defensive check - ensure we don't lose ownerId
+				if (!currentFields.ownerId) {
+					console.warn(
+						`Webhook: Subscription ${subscription.id} missing ownerId, skipping seat sync to avoid data loss`,
+					)
+					return { action: 'skipped_missing_ownerId' }
+				}
+
+				await drizzleDb
+					.update(subscriptionTable)
+					.set({
+						fields: {
+							...currentFields,
+							seats: newQuantity,
+						},
+					})
+					.where(eq(subscriptionTable.id, subscription.id))
+
+				return { action: 'seats_updated', newQuantity }
 			})
 		}
 

@@ -7,11 +7,13 @@ import {
 	entitlements,
 	organizationMemberships,
 } from '@/db/schema'
+import { getAllUserEntitlements } from '@/lib/entitlements-query'
+import { getTeamSubscriptionsForUser } from '@/lib/team-subscriptions'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { getSubscriberFromCookie } from '@/trpc/api/routers/ability'
 import { subject } from '@casl/ability'
-import { and, eq, gt, isNull, or, sql } from 'drizzle-orm'
+import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 import { ContentResourceSchema } from '@coursebuilder/core/schemas'
 // Import type without implementation
@@ -97,28 +99,24 @@ export async function getCurrentAbilityRules({
 
 	const entitlementTypes = await db.query.entitlementTypes.findMany()
 
-	const currentMembership =
-		session?.user && organizationId
-			? await db.query.organizationMemberships.findFirst({
-					where: and(
-						eq(organizationMemberships.organizationId, organizationId),
-						eq(organizationMemberships.userId, session.user.id),
-					),
-				})
-			: null
-
-	const activeEntitlements = currentMembership
-		? await db.query.entitlements.findMany({
-				where: and(
-					eq(entitlements.organizationMembershipId, currentMembership.id),
-					or(
-						isNull(entitlements.expiresAt),
-						gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
-					),
-					isNull(entitlements.deletedAt),
-				),
-			})
+	// Load ALL active entitlements for the user across all their organizations
+	// This ensures subscription/workshop entitlements work regardless of which
+	// organization context the user is in
+	const activeEntitlements = session?.user?.id
+		? await getAllUserEntitlements(session.user.id)
 		: []
+
+	// Get team subscriptions owned by the user for seat management
+	const teamSubscriptions = session?.user?.id
+		? await getTeamSubscriptionsForUser(session.user.id)
+		: []
+
+	// Convert to seat info format for ability checks
+	const teamSubscriptionSeats = teamSubscriptions.map((ts) => ({
+		subscriptionId: ts.subscription.id,
+		totalSeats: ts.seats.total,
+		usedSeats: ts.seats.used,
+	}))
 
 	return defineRulesForPurchases({
 		user: {
@@ -133,6 +131,7 @@ export async function getCurrentAbilityRules({
 		country,
 		entitlementTypes,
 		isSolution: false,
+		teamSubscriptions: teamSubscriptionSeats,
 		...(convertkitSubscriber && {
 			subscriber: convertkitSubscriber,
 		}),

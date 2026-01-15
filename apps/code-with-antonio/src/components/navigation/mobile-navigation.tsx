@@ -10,7 +10,7 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import { Menu, Newspaper, X } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
-import { Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
+import { Badge, Button, Gravatar, Sheet, SheetContent } from '@coursebuilder/ui'
 import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 
 import { NavLinkItem } from './nav-link-item'
@@ -36,6 +36,9 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	const { setIsFeedbackDialogOpen } = useFeedback()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
+
+	const { data: hasActiveSubscription } =
+		api.ability.hasActiveSubscription.useQuery()
 
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
@@ -87,13 +90,23 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					>
 						<div className="flex w-full flex-col">
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 gap-3 border-b px-5 py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-3 border-b px-5 py-5">
 									{userAvatar}
-									<span className="text-xl font-bold">
-										{sessionData.user.name
-											? `Hey there, ${sessionData.user.name?.split(' ')[0]}`
-											: 'Hey there'}
-									</span>
+									<div className="flex flex-col gap-1">
+										<span className="text-xl font-bold">
+											{sessionData.user.name
+												? `Hey there, ${sessionData.user.name?.split(' ')[0]}`
+												: 'Hey there'}
+										</span>
+										{hasActiveSubscription && (
+											<Badge
+												variant="default"
+												className="w-fit bg-gradient-to-r from-amber-500 to-orange-500 px-1.5 py-0 text-[10px] font-bold text-white"
+											>
+												PRO MEMBER
+											</Badge>
+										)}
+									</div>
 								</div>
 							)}
 							{sessionStatus === 'unauthenticated' && (

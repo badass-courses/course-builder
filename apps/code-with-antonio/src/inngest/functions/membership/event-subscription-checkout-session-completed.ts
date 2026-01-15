@@ -1,6 +1,9 @@
+import { db as drizzleDb } from '@/db'
+import { subscription as subscriptionTable } from '@/db/schema'
 import { inngest } from '@/inngest/inngest.server'
 import { createSubscriptionEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
+import { eq } from 'drizzle-orm'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
@@ -8,6 +11,18 @@ import { parseSubscriptionInfoFromCheckoutSession } from '@coursebuilder/core/li
 import { User } from '@coursebuilder/core/schemas'
 import { checkoutSessionCompletedEvent } from '@coursebuilder/core/schemas/stripe/checkout-session-completed'
 
+/**
+ * Handles Stripe subscription checkout session completion.
+ *
+ * For single-seat subscriptions (qty=1):
+ * - Creates subscription with seats=1, ownerId=purchaser
+ * - Automatically creates entitlement for the purchaser
+ *
+ * For team subscriptions (qty>1):
+ * - Creates subscription with seats=N, ownerId=purchaser
+ * - Does NOT create entitlement automatically
+ * - Owner must claim a seat on /team page (consistent with bulk purchase behavior)
+ */
 export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 	{
 		id: 'stripe-subscription-checkout-session-completed',
@@ -135,6 +150,8 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				throw new Error('merchantProduct is null')
 			}
 
+			const isTeamSubscription = subscriptionInfo.quantity > 1
+
 			const { subscription } = await step.run(
 				'create a merchant subscription',
 				async () => {
@@ -158,6 +175,23 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 					return { subscription, merchantSubscription }
 				},
 			)
+
+			if (!subscription) {
+				throw new Error('subscription is null')
+			}
+
+			// Store seat count and owner for all subscriptions
+			await step.run('store subscription fields', async () => {
+				await drizzleDb
+					.update(subscriptionTable)
+					.set({
+						fields: {
+							seats: subscriptionInfo.quantity,
+							ownerId: user.id,
+						},
+					})
+					.where(eq(subscriptionTable.id, subscription.id))
+			})
 
 			const organizationMembership = await step.run(
 				'give member learner role',
@@ -189,42 +223,41 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				},
 			)
 
-			if (!subscription) {
-				throw new Error('subscription is null')
-			}
+			// Create subscription entitlement for single-seat subscriptions only
+			// Team subscriptions (qty > 1) require the owner to claim a seat via /team page
+			if (!isTeamSubscription) {
+				await step.run('create subscription entitlement', async () => {
+					const subscriptionEntitlementType = await db.getEntitlementTypeByName(
+						'subscription_access',
+					)
 
-			// Create subscription entitlement for content access
-			await step.run('create subscription entitlement', async () => {
-				const subscriptionEntitlementType = await db.getEntitlementTypeByName(
-					'subscription_access',
-				)
+					if (!subscriptionEntitlementType) {
+						throw new Error('subscription_access entitlement type not found')
+					}
 
-				if (!subscriptionEntitlementType) {
-					throw new Error('subscription_access entitlement type not found')
-				}
+					// Load product to get tier information
+					const product = await db.getProduct(merchantProduct.productId)
+					const tier = product?.fields?.tier || 'standard'
 
-				// Load product to get tier information
-				const product = await db.getProduct(merchantProduct.productId)
-				const tier = product?.fields?.tier || 'standard'
+					// Convert expiration to Date - Inngest serializes Date objects to ISO strings
+					const expiresAt = subscriptionInfo.currentPeriodEnd
+						? new Date(subscriptionInfo.currentPeriodEnd)
+						: undefined
 
-				// Convert expiration to Date - Inngest serializes Date objects to ISO strings
-				const expiresAt = subscriptionInfo.currentPeriodEnd
-					? new Date(subscriptionInfo.currentPeriodEnd)
-					: undefined
-
-				await createSubscriptionEntitlement({
-					userId: user.id,
-					subscriptionId: subscription.id,
-					productId: merchantProduct.productId,
-					organizationId: organization.id,
-					organizationMembershipId: organizationMembership.id,
-					entitlementType: subscriptionEntitlementType.id,
-					expiresAt,
-					metadata: {
-						tier, // Include subscription tier for access level checks
-					},
+					await createSubscriptionEntitlement({
+						userId: user.id,
+						subscriptionId: subscription.id,
+						productId: merchantProduct.productId,
+						organizationId: organization.id,
+						organizationMembershipId: organizationMembership.id,
+						entitlementType: subscriptionEntitlementType.id,
+						expiresAt,
+						metadata: {
+							tier, // Include subscription tier for access level checks
+						},
+					})
 				})
-			})
+			}
 
 			await step.sendEvent(NEW_SUBSCRIPTION_CREATED_EVENT, {
 				name: NEW_SUBSCRIPTION_CREATED_EVENT,
@@ -235,7 +268,7 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				user,
 			})
 
-			return { subscription, subscriptionInfo }
+			return { subscription, subscriptionInfo, isTeamSubscription }
 		}
 	},
 )

@@ -5,7 +5,9 @@ import {
 	hasAvailableSeats,
 	hasBulkPurchase,
 	hasInvoice,
+	hasTeamSubscription,
 	hasValidPurchase,
+	type TeamSubscriptionSeatInfo,
 } from './purchase-validators'
 
 test('coupon has seats left if used count less than maxUses', () => {
@@ -94,4 +96,46 @@ test('hasInvoice', () => {
 		},
 	] as Purchase[]
 	expect(hasInvoice(purchases)).toBe(true)
+})
+
+// Team subscription tests
+test('hasTeamSubscription returns true when team subscriptions exist', () => {
+	const subscriptions: TeamSubscriptionSeatInfo[] = [
+		{ subscriptionId: 'sub_1', totalSeats: 5, usedSeats: 2 },
+	]
+	expect(hasTeamSubscription(subscriptions)).toBe(true)
+})
+
+test('hasTeamSubscription returns false when no team subscriptions', () => {
+	expect(hasTeamSubscription([])).toBe(false)
+	expect(hasTeamSubscription(undefined)).toBe(false)
+})
+
+test('hasAvailableSeats returns true for team subscription with available seats', () => {
+	const subscriptions: TeamSubscriptionSeatInfo[] = [
+		{ subscriptionId: 'sub_1', totalSeats: 5, usedSeats: 2 },
+	]
+	expect(hasAvailableSeats([], subscriptions)).toBe(true)
+})
+
+test('hasAvailableSeats returns false for fully used team subscription', () => {
+	const subscriptions: TeamSubscriptionSeatInfo[] = [
+		{ subscriptionId: 'sub_1', totalSeats: 5, usedSeats: 5 },
+	]
+	expect(hasAvailableSeats([], subscriptions)).toBe(false)
+})
+
+test('hasAvailableSeats returns true if either bulk purchase OR team subscription has seats', () => {
+	const purchases = [
+		{
+			bulkCoupon: {
+				maxUses: 1,
+				usedCount: 1, // full
+			},
+		},
+	] as Purchase[]
+	const subscriptions: TeamSubscriptionSeatInfo[] = [
+		{ subscriptionId: 'sub_1', totalSeats: 5, usedSeats: 2 }, // has seats
+	]
+	expect(hasAvailableSeats(purchases, subscriptions)).toBe(true)
 })
