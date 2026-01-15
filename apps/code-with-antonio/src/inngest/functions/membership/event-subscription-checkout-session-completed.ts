@@ -181,11 +181,19 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 			}
 
 			// Store seat count and owner for all subscriptions
+			// Merge with existing fields to avoid data loss
 			await step.run('store subscription fields', async () => {
+				const existingSub = await drizzleDb.query.subscription.findFirst({
+					where: eq(subscriptionTable.id, subscription.id),
+				})
+				const currentFields =
+					(existingSub?.fields as Record<string, unknown>) || {}
+
 				await drizzleDb
 					.update(subscriptionTable)
 					.set({
 						fields: {
+							...currentFields,
 							seats: subscriptionInfo.quantity,
 							ownerId: user.id,
 						},
