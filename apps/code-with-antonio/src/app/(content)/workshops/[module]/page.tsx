@@ -155,8 +155,8 @@ export default async function ModulePage(props: Props) {
 				product?.type === 'membership' ? (
 					<React.Suspense
 						fallback={
-							<div className="bg-background relative z-10 flex w-full flex-col gap-2 p-5 pb-16">
-								<Skeleton className="bg-accent h-10 w-full" />
+							<div className="bg-background relative z-10 flex w-full flex-col gap-2 pb-16">
+								<Skeleton className="bg-accent h-24 w-full" />
 								<Skeleton className="bg-accent h-10 w-full" />
 								<Skeleton className="bg-accent h-10 w-full" />
 								<Skeleton className="bg-accent h-10 w-full" />

@@ -236,19 +236,15 @@ export async function getAllWorkshops() {
 			),
 		),
 		with: {
-			resources: {
+			tags: {
 				with: {
-					resource: {
-						with: {
-							resources: {
-								with: {
-									resource: true,
-								},
-								orderBy: asc(contentResourceResource.position),
-							},
-						},
-					},
+					tag: true,
 				},
+				orderBy: asc(contentResourceTagTable.position),
+			},
+			// Only fetch one level of resources for homepage listing
+			// Deep nesting can cause stack overflow during RSC serialization
+			resources: {
 				orderBy: asc(contentResourceResource.position),
 			},
 		},
