@@ -443,3 +443,41 @@ export async function getShortlinkAnalytics(
 		recentClicks: recentClicksQuery,
 	}
 }
+
+/**
+ * Recent click stats across all shortlinks
+ */
+export interface RecentClickStats {
+	last60Minutes: number
+	last24Hours: number
+}
+
+/**
+ * Get click counts for the last 60 minutes and 24 hours
+ */
+export async function getRecentClickStats(): Promise<RecentClickStats> {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	const [last60MinutesResult, last24HoursResult] = await Promise.all([
+		db
+			.select({ count: count() })
+			.from(shortlinkClick)
+			.where(
+				sql`${shortlinkClick.timestamp} >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)`,
+			),
+		db
+			.select({ count: count() })
+			.from(shortlinkClick)
+			.where(
+				sql`${shortlinkClick.timestamp} >= DATE_SUB(NOW(), INTERVAL 24 HOUR)`,
+			),
+	])
+
+	return {
+		last60Minutes: last60MinutesResult[0]?.count ?? 0,
+		last24Hours: last24HoursResult[0]?.count ?? 0,
+	}
+}

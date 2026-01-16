@@ -159,6 +159,10 @@ export default function ShortlinkCrudDialog({
 
 	const handleOpenChange = (open: boolean) => {
 		setIsOpen(open)
+		if (open && !shortlink) {
+			// Pre-fill slug with random value for new shortlinks
+			form.setValue('slug', nanoid())
+		}
 		if (!open) {
 			form.reset()
 			setSlugAvailable(null)

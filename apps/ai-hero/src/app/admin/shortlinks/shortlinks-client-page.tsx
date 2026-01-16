@@ -5,12 +5,14 @@ import Link from 'next/link'
 import {
 	createShortlink,
 	deleteShortlink,
+	RecentClickStats,
 	Shortlink,
 	updateShortlink,
 } from '@/lib/shortlinks-query'
 import {
 	BarChart3,
 	Check,
+	Clock,
 	Copy,
 	ExternalLink,
 	Pencil,
@@ -21,6 +23,8 @@ import {
 
 import {
 	Button,
+	Card,
+	CardContent,
 	Dialog,
 	DialogContent,
 	DialogDescription,
@@ -52,7 +56,7 @@ function useDebounce<T>(value: T, delay: number): T {
 	return debouncedValue
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, label }: { text: string; label?: string }) {
 	const [copied, setCopied] = useState(false)
 
 	const handleCopy = async () => {
@@ -79,7 +83,7 @@ function CopyButton({ text }: { text: string }) {
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>
-					<p>{copied ? 'Copied!' : 'Copy short URL'}</p>
+					<p>{copied ? 'Copied!' : label || 'Copy'}</p>
 				</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
@@ -95,15 +99,38 @@ function formatDate(date: Date | string): string {
 	})
 }
 
-function truncateUrl(url: string, maxLength: number = 40): string {
-	if (url.length <= maxLength) return url
-	return url.substring(0, maxLength) + '...'
+/**
+ * Format destination URL for display
+ * If it starts with aihero.dev or ai-hero.dev, show only the path
+ */
+function formatDestination(url: string): string {
+	try {
+		const parsed = new URL(url)
+		const host = parsed.hostname.toLowerCase()
+		if (
+			host === 'aihero.dev' ||
+			host === 'ai-hero.dev' ||
+			host === 'www.aihero.dev'
+		) {
+			return parsed.pathname + parsed.search + parsed.hash || '/'
+		}
+		// For other URLs, show truncated version
+		const display = url.replace(/^https?:\/\//, '')
+		if (display.length > 40) {
+			return display.substring(0, 40) + '...'
+		}
+		return display
+	} catch {
+		return url.length > 40 ? url.substring(0, 40) + '...' : url
+	}
 }
 
 export default function ShortlinksManagement({
 	initialShortlinks,
+	recentStats,
 }: {
 	initialShortlinks: Shortlink[]
+	recentStats: RecentClickStats
 }) {
 	const [shortlinks, setShortlinks] = useState<Shortlink[]>(initialShortlinks)
 	const [searchTerm, setSearchTerm] = useState('')
@@ -188,6 +215,30 @@ export default function ShortlinksManagement({
 					Shortlinks
 				</h1>
 
+				{/* Recent stats cards */}
+				<div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:w-fit">
+					<Card className="border-muted">
+						<CardContent className="flex items-center gap-3 p-4">
+							<Clock className="text-muted-foreground h-5 w-5" />
+							<div>
+								<p className="text-2xl font-bold">
+									{recentStats.last60Minutes}
+								</p>
+								<p className="text-muted-foreground text-xs">Last 60 min</p>
+							</div>
+						</CardContent>
+					</Card>
+					<Card className="border-muted">
+						<CardContent className="flex items-center gap-3 p-4">
+							<BarChart3 className="text-muted-foreground h-5 w-5" />
+							<div>
+								<p className="text-2xl font-bold">{recentStats.last24Hours}</p>
+								<p className="text-muted-foreground text-xs">Last 24 hours</p>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+
 				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-64">
 						<Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
@@ -243,7 +294,10 @@ export default function ShortlinksManagement({
 													<code className="bg-muted rounded px-2 py-1 text-sm">
 														/s/{link.slug}
 													</code>
-													<CopyButton text={`${baseUrl}/s/${link.slug}`} />
+													<CopyButton
+														text={`${baseUrl}/s/${link.slug}`}
+														label="Copy short URL"
+													/>
 												</div>
 											</td>
 											<td className="px-6 py-4">
@@ -251,8 +305,8 @@ export default function ShortlinksManagement({
 													<TooltipProvider>
 														<Tooltip>
 															<TooltipTrigger asChild>
-																<span className="text-sm">
-																	{truncateUrl(link.url)}
+																<span className="font-mono text-sm">
+																	{formatDestination(link.url)}
 																</span>
 															</TooltipTrigger>
 															<TooltipContent className="max-w-md">
@@ -260,6 +314,10 @@ export default function ShortlinksManagement({
 															</TooltipContent>
 														</Tooltip>
 													</TooltipProvider>
+													<CopyButton
+														text={link.url}
+														label="Copy destination"
+													/>
 													<a
 														href={link.url}
 														target="_blank"
@@ -336,7 +394,10 @@ export default function ShortlinksManagement({
 												<code className="bg-muted rounded px-2 py-1 text-sm">
 													/s/{link.slug}
 												</code>
-												<CopyButton text={`${baseUrl}/s/${link.slug}`} />
+												<CopyButton
+													text={`${baseUrl}/s/${link.slug}`}
+													label="Copy short URL"
+												/>
 											</div>
 											<span className="text-muted-foreground text-sm">
 												{link.clicks.toLocaleString()} clicks
@@ -348,15 +409,20 @@ export default function ShortlinksManagement({
 											<p className="text-muted-foreground mb-1 text-xs font-medium">
 												Destination
 											</p>
-											<a
-												href={link.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="flex items-center gap-2 text-sm hover:underline"
-											>
-												{truncateUrl(link.url, 50)}
-												<ExternalLink className="h-3 w-3" />
-											</a>
+											<div className="flex items-center gap-2">
+												<span className="font-mono text-sm">
+													{formatDestination(link.url)}
+												</span>
+												<CopyButton text={link.url} label="Copy destination" />
+												<a
+													href={link.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-muted-foreground hover:text-foreground"
+												>
+													<ExternalLink className="h-3 w-3" />
+												</a>
+											</div>
 										</div>
 										{link.description && (
 											<p className="text-muted-foreground mb-4 text-sm">
