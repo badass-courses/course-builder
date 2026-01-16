@@ -1,11 +1,14 @@
 import { db as drizzleDb } from '@/db'
 import { subscription as subscriptionTable } from '@/db/schema'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
+import { removeDiscordRole } from '@/lib/discord-utils'
 import {
 	restoreEntitlementsForSubscription,
 	softDeleteEntitlementsForSubscription,
 	updateEntitlementExpirationForSubscription,
 } from '@/lib/entitlements'
+import { log } from '@/server/logger'
 import { eq } from 'drizzle-orm'
 
 import { STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT } from '@coursebuilder/core/inngest/stripe/event-customer-subscription-updated'
@@ -107,9 +110,31 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					previousAttributes.status === 'active' ||
 					previousAttributes.status === 'trialing'
 
-				// If subscription became inactive, soft delete entitlements
+				// If subscription became inactive, soft delete entitlements and remove Discord role
 				if (canceledStatuses.includes(stripeSubscription.status)) {
 					await softDeleteEntitlementsForSubscription(subscription.id)
+
+					// Remove Discord subscriber role
+					if (env.DISCORD_SUBSCRIBER_ROLE_ID) {
+						const subWithOwner = await drizzleDb.query.subscription.findFirst({
+							where: eq(subscriptionTable.id, subscription.id),
+						})
+						const ownerId = (subWithOwner?.fields as Record<string, any>)
+							?.ownerId
+
+						if (ownerId) {
+							const discordResult = await removeDiscordRole(
+								ownerId,
+								env.DISCORD_SUBSCRIBER_ROLE_ID,
+							)
+							log.info('subscription_discord_role_removed', {
+								subscriptionId: subscription.id,
+								ownerId,
+								discordResult,
+							})
+						}
+					}
+
 					return { action: 'entitlements_soft_deleted' }
 				}
 

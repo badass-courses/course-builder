@@ -1,8 +1,14 @@
 import { db as drizzleDb } from '@/db'
 import { subscription as subscriptionTable } from '@/db/schema'
+import WelcomeSubscriptionEmail, {
+	WelcomeSubscriptionTeamEmail,
+} from '@/emails/welcome-subscription-email'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
 import { createSubscriptionEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
+import { log } from '@/server/logger'
+import { sendAnEmail } from '@/utils/send-an-email'
 import { eq } from 'drizzle-orm'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
@@ -266,6 +272,51 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 					})
 				})
 			}
+
+			// Get product name for email
+			const product = await step.run('get product for email', async () => {
+				return await db.getProduct(merchantProduct.productId)
+			})
+			const productName =
+				product?.name || product?.fields?.name || 'Subscription'
+
+			// Send welcome email
+			await step.run('send subscription welcome email', async () => {
+				if (isTeamSubscription) {
+					await sendAnEmail({
+						Component: WelcomeSubscriptionTeamEmail,
+						componentProps: {
+							productName,
+							userFirstName: user.name?.split(' ')[0],
+							quantity: subscriptionInfo.quantity,
+						},
+						Subject: `Welcome to ${productName}!`,
+						To: user.email,
+						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						type: 'transactional',
+					})
+				} else {
+					await sendAnEmail({
+						Component: WelcomeSubscriptionEmail,
+						componentProps: {
+							productName,
+							userFirstName: user.name?.split(' ')[0],
+						},
+						Subject: `Welcome to ${productName}!`,
+						To: user.email,
+						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						type: 'transactional',
+					})
+				}
+
+				await log.info('subscription_welcome_email.sent', {
+					subscriptionId: subscription.id,
+					userId: user.id,
+					isTeamSubscription,
+				})
+			})
 
 			await step.sendEvent(NEW_SUBSCRIPTION_CREATED_EVENT, {
 				name: NEW_SUBSCRIPTION_CREATED_EVENT,
