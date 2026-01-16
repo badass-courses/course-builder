@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { RESOURCE_UPDATED_EVENT } from '@/inngest/events/resource-management'
 import { inngest } from '@/inngest/inngest.server'
 
@@ -22,7 +21,6 @@ export const onEventSave = async (resource: ContentResource) => {
 	}
 
 	revalidatePath(`/events/${resource.fields?.slug}`)
-	redirect(`/events/${resource.fields?.slug}`)
 }
 
 /**

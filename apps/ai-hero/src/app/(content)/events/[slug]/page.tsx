@@ -14,6 +14,7 @@ import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
+import { compileMDX } from '@/utils/compile-mdx'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
@@ -207,6 +208,9 @@ export default async function EventPage(props: {
 		product?.fields.state === 'published' ||
 		couponBypassesSoldOut
 
+	// Compile MDX body content
+	const { content: mdxContent } = await compileMDX(event.fields.body || '')
+
 	return (
 		<LayoutClient withContainer>
 			<main className="relative">
@@ -299,9 +303,7 @@ export default async function EventPage(props: {
 							</div>
 						</header>
 						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
-							{event.fields.body && (
-								<ReactMarkdown>{event.fields.body}</ReactMarkdown>
-							)}
+							{mdxContent}
 						</article>
 					</div>
 					<EventSidebar event={event}>
