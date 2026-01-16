@@ -80,7 +80,8 @@ export const EventDetails: React.FC<{
 					<span className="inline-flex items-center gap-1 font-light opacity-90">
 						<MapPinIcon className="h-5 w-5 opacity-50" /> Location
 					</span>{' '}
-					Zoom (online remote)
+					Online (remote) - A calendar invite will be sent to your email when
+					you purchase.
 				</div>
 			</div>
 		</div>

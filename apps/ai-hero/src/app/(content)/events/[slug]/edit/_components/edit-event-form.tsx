@@ -62,6 +62,7 @@ export function EditEventForm({ event }: { event: Event }) {
 				details: event.fields.details || '',
 				slug: event.fields.slug ?? '',
 				timezone: event.fields.timezone || 'America/Los_Angeles',
+				location: event.fields.location || '',
 				attendeeInstructions: event.fields.attendeeInstructions || '',
 			},
 		},
@@ -210,6 +211,25 @@ const EventMetadataFormFields = ({
 					<FormItem className="px-5">
 						<FormLabel>Timezone:</FormLabel>
 						<Input {...field} readOnly disabled value={field.value || ''} />
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fields.location"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-semibold">Location</FormLabel>
+						<FormDescription>
+							Meeting link (e.g., Zoom URL) or physical address. This will
+							appear in calendar invites.
+						</FormDescription>
+						<Input
+							{...field}
+							placeholder="Zoom link or physical address"
+							value={field.value || ''}
+						/>
 						<FormMessage />
 					</FormItem>
 				)}
