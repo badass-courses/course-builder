@@ -10,7 +10,7 @@ import {
 import {
 	RecentClickStats,
 	ShortlinkWithAttributions,
-} from '@/lib/shortlinks-schemas'
+} from '@/lib/shortlinks-types'
 import {
 	BarChart3,
 	Check,

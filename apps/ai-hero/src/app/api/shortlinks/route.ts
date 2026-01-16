@@ -9,7 +9,7 @@ import {
 import {
 	CreateShortlinkSchema,
 	UpdateShortlinkSchema,
-} from '@/lib/shortlinks-schemas'
+} from '@/lib/shortlinks-types'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
 

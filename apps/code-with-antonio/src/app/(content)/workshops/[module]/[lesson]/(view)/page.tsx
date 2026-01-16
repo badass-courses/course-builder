@@ -10,42 +10,54 @@ import {
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
-	const workshops = await db.query.contentResource.findMany({
-		where: and(eq(contentResource.type, 'workshop')),
-	})
-
-	const routeParams: { module: string; lesson: string }[] = []
-
-	for (const workshop of workshops.filter((workshop) =>
-		Boolean(workshop.fields?.slug),
-	)) {
-		const workshopNavigation = await getWorkshopNavigation(
-			workshop.fields?.slug,
-		)
-
-		workshopNavigation?.resources?.forEach((wrapper) => {
-			const resource = wrapper.resource
-			if (resource.type === 'lesson') {
-				routeParams.push({
-					module: workshop.fields?.slug,
-					lesson: resource.fields?.slug,
-				})
-			} else if (resource.type === 'section') {
-				resource.resources?.forEach((sectionWrapper) => {
-					const sectionResource = sectionWrapper.resource
-					if (sectionResource.type === 'lesson') {
-						routeParams.push({
-							module: workshop.fields?.slug,
-							lesson: sectionResource.fields?.slug,
-						})
-					}
-				})
-			}
+	try {
+		const workshops = await db.query.contentResource.findMany({
+			where: and(eq(contentResource.type, 'workshop')),
 		})
-	}
 
-	return routeParams
+		const routeParams: { module: string; lesson: string }[] = []
+
+		for (const workshop of workshops.filter((workshop) =>
+			Boolean(workshop.fields?.slug),
+		)) {
+			const workshopNavigation = await getWorkshopNavigation(
+				workshop.fields?.slug,
+			)
+
+			workshopNavigation?.resources?.forEach((wrapper) => {
+				const resource = wrapper.resource
+				if (resource.type === 'lesson') {
+					routeParams.push({
+						module: workshop.fields?.slug,
+						lesson: resource.fields?.slug,
+					})
+				} else if (resource.type === 'section') {
+					resource.resources?.forEach((sectionWrapper) => {
+						const sectionResource = sectionWrapper.resource
+						if (sectionResource.type === 'lesson') {
+							routeParams.push({
+								module: workshop.fields?.slug,
+								lesson: sectionResource.fields?.slug,
+							})
+						}
+					})
+				}
+			})
+		}
+
+		return routeParams
+	} catch (error) {
+		// If database is unavailable during build, return empty array
+		// Pages will be generated on-demand instead
+		console.warn(
+			'Failed to generate static params for workshops, database may be unavailable:',
+			error,
+		)
+		return []
+	}
 }
 
 export async function generateMetadata(

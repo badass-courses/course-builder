@@ -22,7 +22,7 @@ import {
 	type ShortlinkClickEvent,
 	type ShortlinkWithAttributions,
 	type UpdateShortlinkInput,
-} from './shortlinks-schemas'
+} from './shortlinks-types'
 
 const nanoid = customAlphabet(
 	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -128,14 +128,10 @@ export async function getShortlinkBySlug(
 	slug: string,
 ): Promise<Shortlink | null> {
 	// Try Redis cache first
-	const cachedUrl = await redis.get<string>(`${REDIS_KEY_PREFIX}${slug}`)
-	if (cachedUrl) {
+	const cachedLink = await redis.get<Shortlink>(`${REDIS_KEY_PREFIX}${slug}`)
+	if (cachedLink) {
 		await log.info('shortlink.cache.hit', { slug })
-		// Return minimal data for redirect
-		const link = await db.query.shortlink.findFirst({
-			where: eq(shortlink.slug, slug),
-		})
-		return link ?? null
+		return cachedLink
 	}
 
 	// Fallback to database
@@ -144,8 +140,8 @@ export async function getShortlinkBySlug(
 	})
 
 	if (link) {
-		// Cache for future lookups
-		await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link.url)
+		// Cache full object for future lookups
+		await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link)
 		await log.info('shortlink.cache.miss', { slug, cached: true })
 	}
 
@@ -199,27 +195,40 @@ export async function createShortlink(
 	const slug = parsed.slug || (await generateUniqueSlug())
 
 	// Check slug availability
+	// Note: Database unique constraint provides final protection against race conditions
 	if (parsed.slug && !(await isSlugAvailable(slug))) {
 		throw new Error('Slug already exists')
 	}
 
-	const results = await db
-		.insert(shortlink)
-		.values({
-			slug,
-			url: parsed.url,
-			description: parsed.description,
-			createdById: session?.user?.id,
-		})
-		.$returningId()
+	let insertedId: string | undefined
+	try {
+		const results = await db
+			.insert(shortlink)
+			.values({
+				slug,
+				url: parsed.url,
+				description: parsed.description,
+				createdById: session?.user?.id,
+			})
+			.$returningId()
 
-	const insertedId = results[0]?.id
+		insertedId = results[0]?.id
+	} catch (error) {
+		// Handle unique constraint violation (race condition protection)
+		if (
+			error instanceof Error &&
+			(error.message.includes('Duplicate entry') ||
+				error.message.includes('UNIQUE constraint') ||
+				error.message.includes('already exists'))
+		) {
+			throw new Error('Slug already exists')
+		}
+		throw error
+	}
+
 	if (!insertedId) {
 		throw new Error('Failed to insert shortlink')
 	}
-
-	// Cache in Redis
-	await redis.set(`${REDIS_KEY_PREFIX}${slug}`, parsed.url)
 
 	await log.info('shortlink.created', { slug, url: parsed.url })
 
@@ -227,6 +236,9 @@ export async function createShortlink(
 	if (!link) {
 		throw new Error('Failed to create shortlink')
 	}
+
+	// Cache full object in Redis
+	await redis.set(`${REDIS_KEY_PREFIX}${slug}`, link)
 
 	revalidateTag('shortlinks', 'max')
 
@@ -255,38 +267,47 @@ export async function updateShortlink(
 	}
 
 	// Check slug availability if changing
+	// Note: Database unique constraint provides final protection against race conditions
 	if (parsed.slug && parsed.slug !== existing.slug) {
 		if (!(await isSlugAvailable(parsed.slug))) {
 			throw new Error('Slug already exists')
 		}
 	}
 
-	await db
-		.update(shortlink)
-		.set({
-			slug: parsed.slug ?? existing.slug,
-			url: parsed.url ?? existing.url,
-			description: parsed.description ?? existing.description,
-			updatedAt: new Date(),
-		})
-		.where(eq(shortlink.id, parsed.id))
+	try {
+		await db
+			.update(shortlink)
+			.set({
+				slug: parsed.slug ?? existing.slug,
+				url: parsed.url ?? existing.url,
+				description: parsed.description ?? existing.description,
+				updatedAt: new Date(),
+			})
+			.where(eq(shortlink.id, parsed.id))
+	} catch (error) {
+		// Handle unique constraint violation (race condition protection)
+		if (
+			error instanceof Error &&
+			(error.message.includes('Duplicate entry') ||
+				error.message.includes('UNIQUE constraint') ||
+				error.message.includes('already exists'))
+		) {
+			throw new Error('Slug already exists')
+		}
+		throw error
+	}
 
-	// Update Redis cache
 	const newSlug = parsed.slug ?? existing.slug
-	const newUrl = parsed.url ?? existing.url
 
 	// Remove old cache if slug changed
 	if (parsed.slug && parsed.slug !== existing.slug) {
 		await redis.del(`${REDIS_KEY_PREFIX}${existing.slug}`)
 	}
 
-	// Set new cache
-	await redis.set(`${REDIS_KEY_PREFIX}${newSlug}`, newUrl)
-
 	await log.info('shortlink.updated', {
 		id: parsed.id,
 		slug: newSlug,
-		url: newUrl,
+		url: parsed.url ?? existing.url,
 	})
 
 	revalidateTag('shortlinks', 'max')
@@ -295,6 +316,9 @@ export async function updateShortlink(
 	if (!updated) {
 		throw new Error('Failed to update shortlink')
 	}
+
+	// Cache full updated object in Redis
+	await redis.set(`${REDIS_KEY_PREFIX}${newSlug}`, updated)
 
 	return updated
 }
@@ -316,7 +340,15 @@ export async function deleteShortlink(id: string): Promise<void> {
 		throw new Error('Shortlink not found')
 	}
 
-	// Delete from database (cascade deletes clicks)
+	// Delete clicks first (manual cascade since PlanetScale doesn't support FKs)
+	await db.delete(shortlinkClick).where(eq(shortlinkClick.shortlinkId, id))
+
+	// Delete attributions
+	await db
+		.delete(shortlinkAttribution)
+		.where(eq(shortlinkAttribution.shortlinkId, id))
+
+	// Delete from database
 	await db.delete(shortlink).where(eq(shortlink.id, id))
 
 	// Remove from Redis
@@ -487,28 +519,6 @@ export async function getRecentClickStats(): Promise<RecentClickStats> {
 /**
  * Create a shortlink attribution record
  * This tracks when a user signs up or makes a purchase after clicking a shortlink
- *
- * @param data - Attribution data including shortlink slug, email, type, and optional user ID and metadata
- * @returns Promise that resolves when attribution is recorded
- *
- * @example
- * ```ts
- * // Track newsletter signup
- * await createShortlinkAttribution({
- *   shortlinkSlug: 'ai-course',
- *   email: 'user@example.com',
- *   type: 'signup'
- * })
- *
- * // Track purchase with user ID
- * await createShortlinkAttribution({
- *   shortlinkSlug: 'ai-course',
- *   email: 'user@example.com',
- *   userId: 'user-123',
- *   type: 'purchase',
- *   metadata: { productId: 'prod-456' }
- * })
- * ```
  */
 export async function createShortlinkAttribution(
 	data: ShortlinkAttributionData,

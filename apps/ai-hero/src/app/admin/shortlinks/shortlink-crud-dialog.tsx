@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { isSlugAvailable } from '@/lib/shortlinks-query'
-import { CreateShortlinkSchema, Shortlink } from '@/lib/shortlinks-schemas'
+import { CreateShortlinkSchema, Shortlink } from '@/lib/shortlinks-types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, RefreshCw } from 'lucide-react'
 import { customAlphabet } from 'nanoid'
