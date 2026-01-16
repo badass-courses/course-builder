@@ -30,6 +30,7 @@ import { MetadataFieldState } from '@coursebuilder/ui/resources-crud/metadata-fi
 import { MetadataFieldVisibility } from '@coursebuilder/ui/resources-crud/metadata-fields/metadata-field-visibility'
 
 import { AddToList } from './add-to-list'
+import { AuthorField } from './author-field'
 import { TagField } from './tag-field'
 import { VideoResourceField } from './video-resource-field'
 
@@ -174,6 +175,7 @@ export const PostMetadataFormFields: React.FC<{
 				)}
 			/>
 			<TagField resource={post} showEditButton />
+			<AuthorField resource={post} showEditButton />
 			<AddToList lists={lists} post={post} />
 			<FormField
 				control={form.control}

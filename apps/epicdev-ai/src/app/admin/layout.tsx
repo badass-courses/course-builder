@@ -10,6 +10,7 @@ import {
 	Presentation,
 	TagIcon,
 	TicketIcon,
+	UserCircle,
 } from 'lucide-react'
 
 import { NavItem } from './pages/_components/nav-link'
@@ -50,6 +51,10 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 									<NavItem href="/admin/tags">
 										<TagIcon className="h-4 w-4" />
 										Tags
+									</NavItem>
+									<NavItem href="/admin/authors">
+										<UserCircle className="h-4 w-4" />
+										Authors
 									</NavItem>
 									<NavItem href="/admin/emails">
 										<Mail className="h-4 w-4" />

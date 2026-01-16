@@ -10,6 +10,7 @@ import {
 import { getUsersSchema } from '../auth/users.js'
 import { getOrganizationMembershipsSchema } from '../org/organization-memberships.js'
 import { getContentContributionsSchema } from './content-contributions.js'
+import { getContentResourceAuthorSchema } from './content-resource-author.js'
 import { getContentResourceProductSchema } from './content-resource-product.js'
 import { getContentResourceResourceSchema } from './content-resource-resource.js'
 import { getContentResourceTagSchema } from './content-resource-tag.js'
@@ -65,6 +66,7 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 	const contentResourceResource = getContentResourceResourceSchema(mysqlTable)
 	const contentResourceProduct = getContentResourceProductSchema(mysqlTable)
 	const contentContributions = getContentContributionsSchema(mysqlTable)
+	const contentResourceAuthor = getContentResourceAuthorSchema(mysqlTable)
 	const contentResourceTag = getContentResourceTagSchema(mysqlTable)
 	const contentResourceVersion = getContentResourceVersionSchema(mysqlTable)
 	const organizationMemberships = getOrganizationMembershipsSchema(mysqlTable)
@@ -79,6 +81,11 @@ export function getContentResourceRelationsSchema(mysqlTable: MySqlTableFn) {
 			fields: [contentResource.createdByOrganizationMembershipId],
 			references: [organizationMemberships.id],
 			relationName: 'createdByOrganizationMembership',
+		}),
+		author: one(contentResourceAuthor, {
+			fields: [contentResource.id],
+			references: [contentResourceAuthor.contentResourceId],
+			relationName: 'contentResource',
 		}),
 		tags: many(contentResourceTag, { relationName: 'contentResource' }),
 		resources: many(contentResourceResource, { relationName: 'resourceOf' }),

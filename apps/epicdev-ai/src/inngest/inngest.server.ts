@@ -71,6 +71,14 @@ import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
 
 import {
+	AUTHOR_ROLE_ASSIGNMENT_COMPLETED_EVENT,
+	AUTHOR_ROLE_ASSIGNMENT_FAILED_EVENT,
+	AUTHOR_ROLE_ASSIGNMENT_STARTED_EVENT,
+	AuthorRoleAssignmentCompleted,
+	AuthorRoleAssignmentFailed,
+	AuthorRoleAssignmentStarted,
+} from './events/author-role-assignment'
+import {
 	BULK_CALENDAR_INVITE_EVENT,
 	BulkCalendarInviteSent,
 } from './events/bulk-calendar-invites'
@@ -138,6 +146,9 @@ export type Events = {
 	[USER_ADDED_TO_WORKSHOP_EVENT]: UserAddedToWorkshop
 	[COHORT_UPDATED_EVENT]: { data: CohortUpdatedPayload }
 	[BULK_CALENDAR_INVITE_EVENT]: BulkCalendarInviteSent
+	[AUTHOR_ROLE_ASSIGNMENT_STARTED_EVENT]: AuthorRoleAssignmentStarted
+	[AUTHOR_ROLE_ASSIGNMENT_COMPLETED_EVENT]: AuthorRoleAssignmentCompleted
+	[AUTHOR_ROLE_ASSIGNMENT_FAILED_EVENT]: AuthorRoleAssignmentFailed
 }
 
 const callbackBase =
