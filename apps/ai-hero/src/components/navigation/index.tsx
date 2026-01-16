@@ -30,6 +30,57 @@ import { useLiveEventToastNotifier } from './use-live-event-toast-notifier'
 import { useNavLinks } from './use-nav-links'
 import { UserMenu } from './user-menu'
 
+/**
+ * Session-dependent nav items that use mounted state to prevent hydration mismatch.
+ * By deferring render until after hydration, we ensure consistent tree structure.
+ */
+const SessionDependentNavItems = ({
+	sessionStatus,
+	subscriber,
+	setIsFeedbackDialogOpen,
+}: {
+	sessionStatus: 'loading' | 'authenticated' | 'unauthenticated'
+	subscriber: unknown
+	setIsFeedbackDialogOpen: (open: boolean) => void
+}) => {
+	const [mounted, setMounted] = React.useState(false)
+
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	// Return nothing during SSR and initial hydration to keep tree consistent
+	if (!mounted) {
+		return null
+	}
+
+	return (
+		<>
+			{sessionStatus === 'authenticated' && (
+				<NavLinkItem
+					className="hidden lg:flex"
+					label="Feedback"
+					onClick={() => {
+						setIsFeedbackDialogOpen(true)
+					}}
+				/>
+			)}
+			{sessionStatus === 'unauthenticated' && !subscriber && (
+				<NavLinkItem
+					href="/newsletter"
+					className="rounded-none border-l [&_span]:flex [&_span]:items-center"
+					label={
+						<>
+							<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
+							Newsletter
+						</>
+					}
+				/>
+			)}
+		</>
+	)
+}
+
 const Navigation = () => {
 	const navData = useNavLinks()
 	const pathname = usePathname()
@@ -338,27 +389,11 @@ const Navigation = () => {
 					</div>
 				)} */}
 					<ul className="hidden items-stretch md:flex">
-						{sessionStatus === 'authenticated' && (
-							<NavLinkItem
-								className="hidden lg:flex"
-								label="Feedback"
-								onClick={() => {
-									setIsFeedbackDialogOpen(true)
-								}}
-							/>
-						)}
-						{sessionStatus === 'unauthenticated' && !subscriber && (
-							<NavLinkItem
-								href="/newsletter"
-								className="rounded-none border-l [&_span]:flex [&_span]:items-center"
-								label={
-									<>
-										<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
-										Newsletter
-									</>
-								}
-							/>
-						)}
+						<SessionDependentNavItems
+							sessionStatus={sessionStatus}
+							subscriber={subscriber}
+							setIsFeedbackDialogOpen={setIsFeedbackDialogOpen}
+						/>
 						<UserMenu />
 						<ThemeToggle className="hover:bg-muted border-l px-5" />
 					</ul>

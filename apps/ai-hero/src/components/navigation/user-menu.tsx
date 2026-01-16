@@ -23,9 +23,23 @@ import { useFeedback } from '@coursebuilder/ui/feedback-widget'
 import { NavLinkItem } from './nav-link-item'
 
 /**
- * Desktop user menu component with dropdown
+ * Skeleton placeholder to ensure consistent tree structure during hydration.
+ * Using a separate component keeps the tree shape identical between server and client.
+ */
+const UserMenuSkeleton = () => (
+	<div className="flex items-stretch">
+		<div className="flex h-full items-center justify-center px-5">
+			<Skeleton className="bg-foreground/10 h-2 w-10 rounded" />
+		</div>
+	</div>
+)
+
+/**
+ * Desktop user menu component with dropdown.
+ * Uses mounted state to prevent hydration mismatch from session status changes.
  */
 export const UserMenu = () => {
+	const [mounted, setMounted] = React.useState(false)
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
@@ -36,14 +50,13 @@ export const UserMenu = () => {
 	const isAdmin = ability.can('manage', 'all')
 	const { setIsFeedbackDialogOpen } = useFeedback()
 
-	if (sessionStatus === 'loading') {
-		return (
-			<div className="flex items-stretch">
-				<div className="flex h-full items-center justify-center px-5">
-					<Skeleton className="bg-foreground/10 h-2 w-10 rounded" />
-				</div>
-			</div>
-		)
+	React.useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	// Always render skeleton on server and initial client render to match tree structure
+	if (!mounted || sessionStatus === 'loading') {
+		return <UserMenuSkeleton />
 	}
 
 	if (!sessionData?.user?.email) {
