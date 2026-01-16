@@ -2,13 +2,27 @@
 
 import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
-import { shortlink, shortlinkClick } from '@/db/schema'
+import { shortlink, shortlinkAttribution, shortlinkClick } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 import { and, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
-import { z } from 'zod'
+
+import { guid } from '@coursebuilder/utils-core/guid'
+
+import {
+	CreateShortlinkSchema,
+	UpdateShortlinkSchema,
+	type CreateShortlinkInput,
+	type RecentClickStats,
+	type Shortlink,
+	type ShortlinkAnalytics,
+	type ShortlinkAttributionData,
+	type ShortlinkClickEvent,
+	type ShortlinkWithAttributions,
+	type UpdateShortlinkInput,
+} from './shortlinks-schemas'
 
 const nanoid = customAlphabet(
 	'0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -16,49 +30,6 @@ const nanoid = customAlphabet(
 )
 
 const REDIS_KEY_PREFIX = 'shortlink:'
-
-/**
- * Schema for creating a shortlink
- */
-export const CreateShortlinkSchema = z.object({
-	slug: z
-		.string()
-		.min(1)
-		.max(50)
-		.regex(/^[a-zA-Z0-9_-]+$/)
-		.optional(),
-	url: z.string().url(),
-	description: z.string().max(255).optional(),
-})
-
-export type CreateShortlinkInput = z.infer<typeof CreateShortlinkSchema>
-
-/**
- * Schema for updating a shortlink
- */
-export const UpdateShortlinkSchema = z.object({
-	id: z.string(),
-	slug: z
-		.string()
-		.min(1)
-		.max(50)
-		.regex(/^[a-zA-Z0-9_-]+$/)
-		.optional(),
-	url: z.string().url().optional(),
-	description: z.string().max(255).optional(),
-})
-
-export type UpdateShortlinkInput = z.infer<typeof UpdateShortlinkSchema>
-
-/**
- * Shortlink type from database
- */
-export type Shortlink = typeof shortlink.$inferSelect
-
-/**
- * Shortlink click event type
- */
-export type ShortlinkClickEvent = typeof shortlinkClick.$inferSelect
 
 /**
  * Get all shortlinks with optional search filter
@@ -79,6 +50,56 @@ export async function getShortlinks(search?: string): Promise<Shortlink[]> {
 			: undefined,
 		orderBy: desc(shortlink.createdAt),
 	})
+
+	return links
+}
+
+/**
+ * Get all shortlinks with attribution counts
+ */
+export async function getShortlinksWithAttributions(
+	search?: string,
+): Promise<ShortlinkWithAttributions[]> {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	// Get shortlinks with attribution counts via subquery
+	const links = await db
+		.select({
+			id: shortlink.id,
+			slug: shortlink.slug,
+			url: shortlink.url,
+			description: shortlink.description,
+			clicks: shortlink.clicks,
+			createdAt: shortlink.createdAt,
+			updatedAt: shortlink.updatedAt,
+			createdById: shortlink.createdById,
+			signups: sql<number>`(
+				SELECT COUNT(*)
+				FROM ${shortlinkAttribution}
+				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
+				AND ${shortlinkAttribution.type} = 'signup'
+			)`.as('signups'),
+			purchases: sql<number>`(
+				SELECT COUNT(*)
+				FROM ${shortlinkAttribution}
+				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
+				AND ${shortlinkAttribution.type} = 'purchase'
+			)`.as('purchases'),
+		})
+		.from(shortlink)
+		.where(
+			search
+				? or(
+						like(shortlink.slug, `%${search}%`),
+						like(shortlink.url, `%${search}%`),
+						like(shortlink.description, `%${search}%`),
+					)
+				: undefined,
+		)
+		.orderBy(desc(shortlink.createdAt))
 
 	return links
 }
@@ -356,17 +377,6 @@ export async function recordClick(
 }
 
 /**
- * Analytics data for a shortlink
- */
-export interface ShortlinkAnalytics {
-	totalClicks: number
-	clicksByDay: { date: string; clicks: number }[]
-	topReferrers: { referrer: string; clicks: number }[]
-	deviceBreakdown: { device: string; clicks: number }[]
-	recentClicks: ShortlinkClickEvent[]
-}
-
-/**
  * Get analytics for a shortlink
  */
 export async function getShortlinkAnalytics(
@@ -445,14 +455,6 @@ export async function getShortlinkAnalytics(
 }
 
 /**
- * Recent click stats across all shortlinks
- */
-export interface RecentClickStats {
-	last60Minutes: number
-	last24Hours: number
-}
-
-/**
  * Get click counts for the last 60 minutes and 24 hours
  */
 export async function getRecentClickStats(): Promise<RecentClickStats> {
@@ -479,5 +481,88 @@ export async function getRecentClickStats(): Promise<RecentClickStats> {
 	return {
 		last60Minutes: last60MinutesResult[0]?.count ?? 0,
 		last24Hours: last24HoursResult[0]?.count ?? 0,
+	}
+}
+
+/**
+ * Create a shortlink attribution record
+ * This tracks when a user signs up or makes a purchase after clicking a shortlink
+ *
+ * @param data - Attribution data including shortlink slug, email, type, and optional user ID and metadata
+ * @returns Promise that resolves when attribution is recorded
+ *
+ * @example
+ * ```ts
+ * // Track newsletter signup
+ * await createShortlinkAttribution({
+ *   shortlinkSlug: 'ai-course',
+ *   email: 'user@example.com',
+ *   type: 'signup'
+ * })
+ *
+ * // Track purchase with user ID
+ * await createShortlinkAttribution({
+ *   shortlinkSlug: 'ai-course',
+ *   email: 'user@example.com',
+ *   userId: 'user-123',
+ *   type: 'purchase',
+ *   metadata: { productId: 'prod-456' }
+ * })
+ * ```
+ */
+export async function createShortlinkAttribution(
+	data: ShortlinkAttributionData,
+): Promise<void> {
+	try {
+		// Look up shortlink by slug
+		const link = await db.query.shortlink.findFirst({
+			where: eq(shortlink.slug, data.shortlinkSlug),
+		})
+
+		if (!link) {
+			await log.warn('shortlink.attribution.notfound', {
+				slug: data.shortlinkSlug,
+			})
+			return
+		}
+
+		// Check for existing attribution to avoid duplicates
+		const existing = await db.query.shortlinkAttribution.findFirst({
+			where: and(
+				eq(shortlinkAttribution.shortlinkId, link.id),
+				eq(shortlinkAttribution.email, data.email),
+				eq(shortlinkAttribution.type, data.type),
+			),
+		})
+
+		if (existing) {
+			await log.info('shortlink.attribution.duplicate', {
+				slug: data.shortlinkSlug,
+				email: data.email,
+				type: data.type,
+			})
+			return
+		}
+
+		// Insert attribution record
+		await db.insert(shortlinkAttribution).values({
+			id: guid(),
+			shortlinkId: link.id,
+			userId: data.userId,
+			email: data.email,
+			type: data.type,
+			metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
+		})
+
+		await log.info('shortlink.attribution.recorded', {
+			slug: data.shortlinkSlug,
+			email: data.email,
+			type: data.type,
+		})
+	} catch (error) {
+		await log.error('shortlink.attribution.error', {
+			slug: data.shortlinkSlug,
+			error: String(error),
+		})
 	}
 }

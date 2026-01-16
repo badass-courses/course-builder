@@ -11,6 +11,7 @@ import { getWorkshopWelcomeEmailVariant } from '@/inngest/utils/get-workshop-wel
 import { EntitlementSourceType } from '@/lib/entitlements'
 import { createResourceEntitlements } from '@/lib/entitlements-query'
 import { ensurePersonalOrganizationWithLearnerRole } from '@/lib/personal-organization-service'
+import { createShortlinkAttribution } from '@/lib/shortlinks-query'
 import { log } from '@/server/logger'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { isAfter, parse } from 'date-fns'
@@ -148,6 +149,64 @@ export const postPurchaseWorkflow = inngest.createFunction(
 		// Step 4: Determine purchase characteristics
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 		const isFullPriceCouponRedemption = Boolean(purchase.redeemedBulkCouponId)
+
+		// Step 4.5: Record shortlink attribution if present
+		await step.run('record shortlink attribution', async () => {
+			// Only process shortlink attribution for NEW_PURCHASE_CREATED_EVENT
+			// (not for full-price coupon redemptions)
+			if (event.name !== NEW_PURCHASE_CREATED_EVENT) {
+				return { skipped: true, reason: 'Not a new purchase event' }
+			}
+
+			const checkoutSessionId = event.data.checkoutSessionId
+			if (!checkoutSessionId || !paymentProvider) {
+				return {
+					skipped: true,
+					reason: 'No checkout session or payment provider',
+				}
+			}
+
+			try {
+				const checkoutSession =
+					await paymentProvider.options.paymentsAdapter.getCheckoutSession(
+						checkoutSessionId,
+					)
+
+				const shortlinkRef = checkoutSession.metadata?.shortlinkRef
+
+				if (!shortlinkRef) {
+					return { skipped: true, reason: 'No shortlink reference in metadata' }
+				}
+
+				// Record the attribution
+				await createShortlinkAttribution({
+					shortlinkSlug: shortlinkRef,
+					email: user.email,
+					userId: user.id,
+					type: 'purchase',
+					metadata: {
+						productId: product.id,
+						productName: product.name,
+						purchaseId: purchase.id,
+						totalAmount: purchase.totalAmount,
+					},
+				})
+
+				return {
+					recorded: true,
+					shortlinkRef,
+					userId: user.id,
+					email: user.email,
+				}
+			} catch (error: any) {
+				await log.warn('shortlink.attribution.checkout_session_error', {
+					checkoutSessionId,
+					purchaseId: purchase.id,
+					error: error.message,
+				})
+				return { error: error.message }
+			}
+		})
 
 		// Step 5: Grant coupon-based entitlements for new purchase
 		await step.sendEvent('grant coupon entitlements for purchase', {

@@ -5,10 +5,12 @@ import Link from 'next/link'
 import {
 	createShortlink,
 	deleteShortlink,
-	RecentClickStats,
-	Shortlink,
 	updateShortlink,
 } from '@/lib/shortlinks-query'
+import {
+	RecentClickStats,
+	ShortlinkWithAttributions,
+} from '@/lib/shortlinks-schemas'
 import {
 	BarChart3,
 	Check,
@@ -129,10 +131,11 @@ export default function ShortlinksManagement({
 	initialShortlinks,
 	recentStats,
 }: {
-	initialShortlinks: Shortlink[]
+	initialShortlinks: ShortlinkWithAttributions[]
 	recentStats: RecentClickStats
 }) {
-	const [shortlinks, setShortlinks] = useState<Shortlink[]>(initialShortlinks)
+	const [shortlinks, setShortlinks] =
+		useState<ShortlinkWithAttributions[]>(initialShortlinks)
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebounce(searchTerm, 250)
 	const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -167,7 +170,13 @@ export default function ShortlinksManagement({
 			throw new Error('URL is required')
 		}
 		const newLink = await createShortlink({ ...data, url: data.url })
-		setShortlinks([newLink, ...shortlinks])
+		// Add default attribution counts for new links
+		const newLinkWithAttributions: ShortlinkWithAttributions = {
+			...newLink,
+			signups: 0,
+			purchases: 0,
+		}
+		setShortlinks([newLinkWithAttributions, ...shortlinks])
 	}
 
 	const handleEdit = async (data: {
@@ -181,9 +190,17 @@ export default function ShortlinksManagement({
 		}
 		const updatedLink = await updateShortlink({ ...data, id: data.id })
 		setShortlinks(
-			shortlinks.map((link) =>
-				link.id === updatedLink.id ? updatedLink : link,
-			),
+			shortlinks.map((link) => {
+				if (link.id === updatedLink.id) {
+					// Preserve attribution counts from existing link
+					return {
+						...updatedLink,
+						signups: link.signups,
+						purchases: link.purchases,
+					}
+				}
+				return link
+			}),
 		)
 	}
 
@@ -276,6 +293,12 @@ export default function ShortlinksManagement({
 											Clicks
 										</th>
 										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+											Signups
+										</th>
+										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+											Purchases
+										</th>
+										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
 											Created
 										</th>
 										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -336,6 +359,16 @@ export default function ShortlinksManagement({
 											<td className="whitespace-nowrap px-6 py-4">
 												<span className="font-mono text-sm">
 													{link.clicks.toLocaleString()}
+												</span>
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className="font-mono text-sm">
+													{link.signups.toLocaleString()}
+												</span>
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className="font-mono text-sm">
+													{link.purchases.toLocaleString()}
 												</span>
 											</td>
 											<td className="whitespace-nowrap px-6 py-4 text-sm">
@@ -399,9 +432,11 @@ export default function ShortlinksManagement({
 													label="Copy short URL"
 												/>
 											</div>
-											<span className="text-muted-foreground text-sm">
-												{link.clicks.toLocaleString()} clicks
-											</span>
+											<div className="text-muted-foreground flex gap-3 text-sm">
+												<span>{link.clicks.toLocaleString()} clicks</span>
+												<span>{link.signups.toLocaleString()} signups</span>
+												<span>{link.purchases.toLocaleString()} purchases</span>
+											</div>
 										</div>
 									</div>
 									<div className="px-4 py-4">

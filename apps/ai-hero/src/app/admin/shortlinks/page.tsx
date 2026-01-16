@@ -1,6 +1,9 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getRecentClickStats, getShortlinks } from '@/lib/shortlinks-query'
+import {
+	getRecentClickStats,
+	getShortlinksWithAttributions,
+} from '@/lib/shortlinks-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import ShortlinksManagement from './shortlinks-client-page'
@@ -17,7 +20,7 @@ export default async function ShortlinksManagementPage() {
 	}
 
 	const [shortlinks, recentStats] = await Promise.all([
-		getShortlinks(),
+		getShortlinksWithAttributions(),
 		getRecentClickStats(),
 	])
 

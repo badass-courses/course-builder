@@ -1,10 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isSlugAvailable } from '@/lib/shortlinks-query'
-import { CreateShortlinkSchema, Shortlink } from '@/lib/shortlinks-schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, RefreshCw } from 'lucide-react'
+import { LinkIcon, Loader2, RefreshCw } from 'lucide-react'
 import { customAlphabet } from 'nanoid'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -25,6 +24,7 @@ import {
 	FormMessage,
 	Input,
 	Textarea,
+	useToast,
 } from '@coursebuilder/ui'
 
 const nanoid = customAlphabet(
@@ -50,22 +50,20 @@ const formSchema = z.object({
 
 type FormSchemaType = z.infer<typeof formSchema>
 
-type ShortlinkCrudDialogProps = {
-	shortlink?: Shortlink
-	onSubmit: (data: {
-		id?: string
-		slug?: string
-		url?: string
-		description?: string
-	}) => Promise<void>
-	children: React.ReactNode
+type CreateShortlinkButtonProps = {
+	postSlug: string
+	postTitle?: string
 }
 
-export default function ShortlinkCrudDialog({
-	shortlink,
-	onSubmit,
-	children,
-}: ShortlinkCrudDialogProps) {
+/**
+ * CreateShortlinkButton component for creating shortlinks from post edit form
+ * Pre-fills the URL with the post URL and description with post title
+ */
+export function CreateShortlinkButton({
+	postSlug,
+	postTitle,
+}: CreateShortlinkButtonProps) {
+	const { toast } = useToast()
 	const [isOpen, setIsOpen] = useState(false)
 	const [isCheckingSlug, setIsCheckingSlug] = useState(false)
 	const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
@@ -73,31 +71,15 @@ export default function ShortlinkCrudDialog({
 	const form = useForm<FormSchemaType>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			slug: shortlink?.slug || '',
-			url: shortlink?.url || '',
-			description: shortlink?.description || '',
+			slug: '',
+			url: `https://aihero.dev/posts/${postSlug}`,
+			description: postTitle || '',
 		},
 	})
 
 	const slugValue = form.watch('slug')
 
 	useEffect(() => {
-		if (shortlink) {
-			form.reset({
-				slug: shortlink.slug,
-				url: shortlink.url,
-				description: shortlink.description || '',
-			})
-		}
-	}, [shortlink, form])
-
-	useEffect(() => {
-		// Don't check if editing and slug hasn't changed
-		if (shortlink && slugValue === shortlink.slug) {
-			setSlugAvailable(null)
-			return
-		}
-
 		if (!slugValue || slugValue.length < 1) {
 			setSlugAvailable(null)
 			return
@@ -117,7 +99,7 @@ export default function ShortlinkCrudDialog({
 
 		const timeoutId = setTimeout(checkSlug, 300)
 		return () => clearTimeout(timeoutId)
-	}, [slugValue, shortlink])
+	}, [slugValue])
 
 	const generateSlug = () => {
 		form.setValue('slug', nanoid())
@@ -125,55 +107,78 @@ export default function ShortlinkCrudDialog({
 
 	const handleSubmit = async (values: FormSchemaType) => {
 		try {
-			if (shortlink) {
-				await onSubmit({
-					id: shortlink.id,
-					slug: values.slug !== shortlink.slug ? values.slug : undefined,
-					url: values.url !== shortlink.url ? values.url : undefined,
-					description:
-						values.description !== shortlink.description
-							? values.description
-							: undefined,
-				})
-			} else {
-				await onSubmit({
+			const res = await fetch('/api/shortlinks', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
 					slug: values.slug,
 					url: values.url,
 					description: values.description || undefined,
-				})
+				}),
+			})
+
+			if (!res.ok) {
+				const error = await res.text()
+				if (error.includes('already exists')) {
+					form.setError('slug', { message: 'This slug is already taken' })
+					return
+				}
+				throw new Error(error || 'Failed to create shortlink')
 			}
+
+			const result = await res.json()
+
+			toast({
+				title: 'Shortlink created',
+				description: `Short URL: https://aihero.dev/s/${result.slug}`,
+				duration: 5000,
+			})
+
 			setIsOpen(false)
-			form.reset()
+			form.reset({
+				slug: '',
+				url: `https://aihero.dev/posts/${postSlug}`,
+				description: postTitle || '',
+			})
 			setSlugAvailable(null)
 		} catch (error) {
-			if (error instanceof Error && error.message === 'Slug already exists') {
-				form.setError('slug', { message: 'This slug is already taken' })
-			} else {
-				throw error
-			}
+			toast({
+				title: 'Failed to create shortlink',
+				description:
+					error instanceof Error ? error.message : 'Unknown error occurred',
+				variant: 'destructive',
+			})
 		}
 	}
 
 	const handleOpenChange = (open: boolean) => {
 		setIsOpen(open)
-		if (open && !shortlink) {
-			// Pre-fill slug with random value for new shortlinks
+		if (open) {
+			// Pre-fill slug with random value when opening
 			form.setValue('slug', nanoid())
+			form.setValue('url', `https://aihero.dev/posts/${postSlug}`)
+			form.setValue('description', postTitle || '')
 		}
 		if (!open) {
-			form.reset()
+			form.reset({
+				slug: '',
+				url: `https://aihero.dev/posts/${postSlug}`,
+				description: postTitle || '',
+			})
 			setSlugAvailable(null)
 		}
 	}
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
-			<DialogTrigger asChild>{children}</DialogTrigger>
+			<DialogTrigger asChild>
+				<Button variant="ghost" size="icon" type="button">
+					<LinkIcon className="h-4 w-4" />
+				</Button>
+			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>
-						{shortlink ? 'Edit Shortlink' : 'Create Shortlink'}
-					</DialogTitle>
+					<DialogTitle>Create Shortlink</DialogTitle>
 				</DialogHeader>
 				<Form {...form}>
 					<form
@@ -287,10 +292,8 @@ export default function ShortlinkCrudDialog({
 								{form.formState.isSubmitting ? (
 									<>
 										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-										{shortlink ? 'Updating...' : 'Creating...'}
+										Creating...
 									</>
-								) : shortlink ? (
-									'Update Shortlink'
 								) : (
 									'Create Shortlink'
 								)}
