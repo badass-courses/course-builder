@@ -109,10 +109,10 @@ export const EventPricingWidgetContainer: React.FC<
 	} = props
 
 	const { fields } = event
-	const { startsAt, endsAt, timezone = 'America/Los_Angeles' } = fields
+	const { startsAt, endsAt } = fields
 	const product = products && products[0]
 	const { allowPurchase } = searchParams || {}
-
+	const timezone = fields.timezone || 'America/Los_Angeles'
 	// Timezone-aware date comparison
 	const nowInTz = new Date(
 		formatInTimeZone(new Date(), timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
@@ -234,6 +234,7 @@ export const EventPricingWidgetContainer: React.FC<
 					? 100
 					: quantityAvailable,
 		isPPPEnabled: false,
+		allowTeamPurchase: true,
 		cancelUrl: `${env.NEXT_PUBLIC_URL}/events/${event.fields?.slug || event.id}`,
 		...pricingWidgetOptions,
 		...pricingWidgetOptionsOverride,
@@ -242,33 +243,39 @@ export const EventPricingWidgetContainer: React.FC<
 	return (
 		<>
 			{enrollmentState.type === 'open' || allowPurchase ? (
-				<div className={cn('px-5 pb-5', className)}>
+				<div
+					className={cn('px-5 pb-5', className, {
+						'px-0 pb-0': hasPurchasedCurrentProduct,
+					})}
+				>
 					{renderImage()}
-					{eventDateString && (
+					{eventDateString && !hasPurchasedCurrentProduct && (
 						<div className="flex w-full items-center justify-center pt-5 text-center text-sm opacity-80">
 							{renderEventDate
 								? renderEventDate(eventDateString, eventTimeString)
 								: eventDateString}
 						</div>
 					)}
-					<PricingWidget
-						className="border-b-0"
-						product={product}
-						quantityAvailable={quantityAvailable}
-						commerceProps={{ ...commerceProps, products, couponFromCode }}
-						pricingDataLoader={pricingDataLoader}
-						prependFeatures={prependFeatures}
-						pricingWidgetOptions={mergedPricingOptions}
-						buyButtonContent={buyButtonContent}
-						buyButtonClassName={buyButtonClassName}
-						hideFeatures={hideFeatures}
-					/>
+					{!hasPurchasedCurrentProduct && (
+						<PricingWidget
+							className="border-b-0"
+							product={product}
+							quantityAvailable={quantityAvailable}
+							commerceProps={{ ...commerceProps, products, couponFromCode }}
+							pricingDataLoader={pricingDataLoader}
+							prependFeatures={prependFeatures}
+							pricingWidgetOptions={mergedPricingOptions}
+							buyButtonContent={buyButtonContent}
+							buyButtonClassName={buyButtonClassName}
+							hideFeatures={hideFeatures}
+						/>
+					)}
 				</div>
 			) : (
 				<>
 					{renderImage()}
 					{eventDateString && (
-						<div className="-mb-3 flex w-full items-center justify-center pt-5 text-center text-sm opacity-80">
+						<div className="flex w-full items-center justify-center pt-5 text-center text-sm opacity-80">
 							{renderEventDate
 								? renderEventDate(eventDateString, eventTimeString)
 								: eventDateString}

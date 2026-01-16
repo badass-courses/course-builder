@@ -98,6 +98,12 @@ import {
 } from './events/concepts'
 import { OCR_WEBHOOK_EVENT, OcrWebhook } from './events/ocr-webhook'
 import {
+	RESOURCE_CREATED_EVENT,
+	RESOURCE_UPDATED_EVENT,
+	ResourceCreated,
+	ResourceUpdated,
+} from './events/resource-management'
+import {
 	REQUEST_VIDEO_SPLIT_POINTS,
 	type RequestVideoSplitPoints,
 } from './events/split_video'
@@ -145,6 +151,8 @@ export type Events = {
 	[GRANT_COUPON_ENTITLEMENTS_EVENT]: GrantCouponEntitlementsEvent
 	[GRANT_COUPON_ENTITLEMENTS_FOR_PURCHASE_EVENT]: GrantCouponEntitlementsForPurchase
 	[CREATE_PPP_CREDIT_COUPONS_FOR_PURCHASERS_EVENT]: CreatePPPCreditCouponsForPurchasersEvent
+	[RESOURCE_CREATED_EVENT]: ResourceCreated
+	[RESOURCE_UPDATED_EVENT]: ResourceUpdated
 }
 
 const callbackBase =

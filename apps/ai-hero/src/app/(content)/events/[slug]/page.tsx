@@ -25,6 +25,7 @@ import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
+import { AttendeeInstructions } from './_components/event-attendee-instructions'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
@@ -241,8 +242,17 @@ export default async function EventPage(props: {
 					</div>
 				) : null}
 
+				{eventProps.hasPurchasedCurrentProduct && (
+					<div className="mx-auto max-w-4xl px-5 pt-8 lg:px-10">
+						<AttendeeInstructions
+							attendeeInstructions={event.fields.attendeeInstructions}
+							hasPurchased={Boolean(eventProps.hasPurchasedCurrentProduct)}
+						/>
+					</div>
+				)}
+
 				<div className="flex flex-col lg:flex-row">
-					<div>
+					<div className="w-full">
 						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b md:gap-10 lg:flex-row lg:pt-8">
 							{eventImage && (
 								<CldImage

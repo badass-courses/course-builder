@@ -84,6 +84,8 @@ export const env = createEnv({
 		CLOUDINARY_API_SECRET: z.string(),
 		PINECONE_API_KEY: z.string().optional(),
 		AXIOM_TOKEN: z.string().optional(),
+		GOOG_CREDENTIALS_JSON: z.string().optional(),
+		GOOG_CALENDAR_IMPERSONATE_USER: z.string().optional(),
 	},
 
 	/**
@@ -175,6 +177,8 @@ export const env = createEnv({
 		PINECONE_API_KEY: process.env.PINECONE_API_KEY,
 		AXIOM_TOKEN: process.env.AXIOM_TOKEN,
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
+		GOOG_CREDENTIALS_JSON: process.env.GOOG_CREDENTIALS_JSON,
+		GOOG_CALENDAR_IMPERSONATE_USER: process.env.GOOG_CALENDAR_IMPERSONATE_USER,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
