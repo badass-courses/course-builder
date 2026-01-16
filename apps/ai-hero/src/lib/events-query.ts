@@ -1,7 +1,7 @@
-import { db } from '@/db'
-import { contentResource } from '@/db/schema'
-import { EventSchema } from '@/lib/events'
-import { and, eq, or, sql } from 'drizzle-orm'
+import { courseBuilderAdapter, db } from '@/db'
+import { contentResource, contentResourceResource } from '@/db/schema'
+import { EventSchema, EventSeriesSchema } from '@/lib/events'
+import { and, asc, eq, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
 export async function getEvent(eventIdOrSlug: string) {
@@ -17,7 +17,12 @@ export async function getEvent(eventIdOrSlug: string) {
 			),
 		),
 		with: {
-			resources: true,
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
 			resourceProducts: {
 				with: {
 					product: {
@@ -33,6 +38,74 @@ export async function getEvent(eventIdOrSlug: string) {
 	const parsedEvent = EventSchema.safeParse(eventData)
 	if (!parsedEvent.success) {
 		console.error('Error parsing event', eventData)
+		return null
+	}
+
+	return parsedEvent.data
+}
+
+/**
+ * Retrieves an event or event-series by ID or slug
+ * Handles both single events and event series (with child events)
+ *
+ * @param eventIdOrSlug - The ID or slug of the event/event-series
+ * @returns The parsed event or event-series, or null if not found
+ */
+export async function getEventOrEventSeries(eventIdOrSlug: string) {
+	const eventData = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(contentResource.type, 'event'),
+				eq(contentResource.type, 'event-series'),
+			),
+			or(
+				eq(contentResource.id, eventIdOrSlug),
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					eventIdOrSlug,
+				),
+			),
+		),
+		with: {
+			resources: {
+				with: {
+					resource: true,
+				},
+				orderBy: asc(contentResourceResource.position),
+			},
+			tags: {
+				with: {
+					tag: true,
+				},
+			},
+			resourceProducts: {
+				with: {
+					product: {
+						with: {
+							price: true,
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if (!eventData) {
+		return null
+	}
+
+	let parsedEvent
+	if (eventData.type === 'event') {
+		parsedEvent = EventSchema.safeParse(eventData)
+	} else if (eventData.type === 'event-series') {
+		parsedEvent = EventSeriesSchema.safeParse(eventData)
+	} else {
+		console.error('Unknown event type', eventData.type)
+		return null
+	}
+
+	if (!parsedEvent.success) {
+		console.error('Error parsing event', eventData, parsedEvent.error)
 		return null
 	}
 

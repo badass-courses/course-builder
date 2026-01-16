@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
 import { products, purchases } from '@/db/schema'
@@ -13,8 +14,10 @@ import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
 import { getServerAuthSession } from '@/server/auth'
+import { compileMDX } from '@/utils/compile-mdx'
 import { formatInTimeZone } from 'date-fns-tz'
 import { count, eq } from 'drizzle-orm'
+import { CheckCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { Event as EventMetaSchema, Ticket } from 'schema-dts'
 
@@ -23,6 +26,7 @@ import { Product, productSchema, Purchase } from '@coursebuilder/core/schemas'
 import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
+import { AttendeeInstructions } from './_components/event-attendee-instructions'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
@@ -45,6 +49,17 @@ export async function generateMetadata(
 	return {
 		title: event.fields.title,
 		description: event.fields.description,
+		...(event.fields.image
+			? {
+					openGraph: {
+						images: [
+							{
+								url: event.fields.image,
+							},
+						],
+					},
+				}
+			: {}),
 	}
 }
 
@@ -53,6 +68,7 @@ export default async function EventPage(props: {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
 	const searchParams = await props.searchParams
+	const { allowPurchase } = searchParams
 	const params = await props.params
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -182,81 +198,136 @@ export default async function EventPage(props: {
 			'h:mm a',
 		)}`
 
+	const eventImage = event?.fields?.image
+
+	const couponBypassesSoldOut =
+		eventProps.couponFromCode?.fields?.bypassSoldOut === true
+
+	const ALLOW_PURCHASE =
+		allowPurchase === 'true' ||
+		product?.fields.state === 'published' ||
+		couponBypassesSoldOut
+
+	// Compile MDX body content
+	const { content: mdxContent } = await compileMDX(event.fields.body || '')
+
 	return (
-		<main className="container relative border-x px-0">
-			<EventMetadata
-				event={event}
-				quantityAvailable={eventProps.quantityAvailable}
-			/>
-			{event && ability.can('update', 'Content') && (
-				<div className="absolute right-5 top-5 flex items-center gap-2">
-					{product && (
-						<Button asChild variant="secondary">
-							<Link
-								href={`/products/${product?.fields?.slug || product?.id}/edit`}
-							>
-								Edit Product
+		<LayoutClient withContainer>
+			<main className="relative">
+				<EventMetadata
+					event={event}
+					quantityAvailable={eventProps.quantityAvailable}
+				/>
+				{event && ability.can('update', 'Content') && (
+					<div className="absolute right-5 top-5 z-10 flex items-center gap-2">
+						{product && (
+							<Button asChild variant="secondary" size="sm">
+								<Link
+									href={`/products/${product?.fields?.slug || product?.id}/edit`}
+								>
+									Edit Product
+								</Link>
+							</Button>
+						)}
+						<Button asChild variant="secondary" size="sm">
+							<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
+								Edit Event
 							</Link>
 						</Button>
-					)}
-					<Button asChild variant="secondary">
-						<Link href={`/events/${event.fields?.slug || event.id}/edit`}>
-							Edit Event
-						</Link>
-					</Button>
-				</div>
-			)}
-			{eventProps.hasPurchasedCurrentProduct ? (
-				<div className="flex w-full items-center border-b px-5 py-5 text-left">
-					You have purchased a ticket to this event. See you on {eventDate}.{' '}
-					<span role="img" aria-label="Waving hand">
-						👋
-					</span>
-				</div>
-			) : null}
-			<div className="flex w-full flex-col-reverse items-center justify-between px-5 py-8 md:flex-row md:px-8 lg:px-16">
-				<div className="mt-5 flex w-full flex-col items-center text-center md:mt-0 md:items-start md:text-left">
-					<div className="mb-2 flex flex-wrap items-center justify-center gap-2 text-base sm:justify-start">
-						<Link
-							href="/events"
-							className="text-primary w-full hover:underline sm:w-auto"
-						>
-							Live Workshop
-						</Link>
-						<span className="hidden opacity-50 sm:inline-block">・</span>
-						<p>{eventDate}</p>
-						<span className="opacity-50">・</span>
-						<p>{eventTime} (PT)</p>
 					</div>
-					<h1 className="font-heading text-balance text-5xl font-bold text-white sm:text-6xl lg:text-7xl">
-						{fields.title}
-					</h1>
-					{fields.description && (
-						<h2 className="mt-5 text-balance text-xl">{fields.description}</h2>
-					)}
-					<Contributor className="mt-5" />
-				</div>
-				{product?.fields?.image?.url && (
-					<CldImage
-						width={400}
-						height={400}
-						src={product?.fields.image.url}
-						alt={fields?.title}
-					/>
 				)}
-			</div>
-			<div className="flex flex-col-reverse border-t md:flex-row">
-				<article className="prose sm:prose-lg dark:prose-invert prose-headings:text-balance w-full max-w-none px-5 py-8 md:px-8">
-					{event.fields.body && (
-						<ReactMarkdown>{event.fields.body}</ReactMarkdown>
-					)}
-				</article>
-				<EventSidebar>
-					<EventPricingWidgetContainer {...eventProps} />
-					<EventDetails event={event} />
-				</EventSidebar>
-			</div>
-		</main>
+
+				{eventProps.hasPurchasedCurrentProduct ? (
+					<div className="flex w-full flex-col items-center justify-between gap-3 border-b p-3 text-left sm:flex-row">
+						<div className="flex items-center">
+							<CheckCircle className="mr-2 size-4 text-emerald-600 dark:text-emerald-300" />{' '}
+							You have purchased a ticket to this event. See you on {eventDate}.
+						</div>
+					</div>
+				) : null}
+
+				{eventProps.hasPurchasedCurrentProduct && (
+					<div className="mx-auto max-w-4xl px-5 pt-8 lg:px-10">
+						<AttendeeInstructions
+							attendeeInstructions={event.fields.attendeeInstructions}
+							hasPurchased={Boolean(eventProps.hasPurchasedCurrentProduct)}
+						/>
+					</div>
+				)}
+
+				<div className="flex flex-col lg:flex-row">
+					<div className="w-full">
+						<header className="from-card to-background flex w-full flex-col items-center justify-between bg-gradient-to-b md:gap-10 lg:flex-row lg:pt-8">
+							{eventImage && (
+								<CldImage
+									className="flex w-full lg:hidden"
+									width={383}
+									height={204}
+									src={eventImage}
+									alt={fields?.title}
+								/>
+							)}
+							<div className="mt-5 flex w-full flex-col items-center px-5 text-center lg:mt-0 lg:items-start lg:pl-10 lg:text-left">
+								<div className="text-foreground/80 mb-2 flex flex-wrap items-center justify-center gap-2 text-xs font-medium uppercase tracking-wider sm:justify-start">
+									<span className="">Live Workshop</span>
+									{/* <span className="hidden opacity-50 sm:inline-block">・</span>
+									{eventDate && <p className="hidden sm:block">{eventDate}</p>}
+									{eventTime && (
+										<>
+											<span className="hidden opacity-50 sm:inline-block">
+												・
+											</span>
+											<p className="hidden sm:block">{eventTime} (PT)</p>
+										</>
+									)} */}
+								</div>
+								<h1 className="text-balance text-4xl font-bold sm:text-5xl lg:text-6xl">
+									{fields.title}
+								</h1>
+								{fields.description && (
+									<h2 className="dark:text-primary mt-5 text-balance text-lg font-normal text-blue-700 sm:text-xl lg:text-2xl">
+										<ReactMarkdown
+											components={{
+												p: ({ children }) => <>{children}</>,
+											}}
+										>
+											{fields.description}
+										</ReactMarkdown>
+									</h2>
+								)}
+								<Contributor
+									imageSize={60}
+									className="mt-8 [&_div]:text-left"
+									withBio
+								/>
+							</div>
+						</header>
+						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
+							{mdxContent}
+						</article>
+					</div>
+					<EventSidebar event={event}>
+						{eventImage && (
+							<CldImage
+								className="hidden lg:flex"
+								width={383}
+								height={204}
+								src={eventImage}
+								alt={fields?.title}
+							/>
+						)}
+						{ALLOW_PURCHASE && (
+							<EventPricingWidgetContainer
+								{...eventProps}
+								hideFeatures
+								searchParams={searchParams}
+							/>
+						)}
+						<EventDetails event={event} />
+					</EventSidebar>
+				</div>
+			</main>
+		</LayoutClient>
 	)
 }
 

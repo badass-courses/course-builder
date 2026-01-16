@@ -8,21 +8,35 @@ import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateResource } from '@/lib/resources-query'
+import { EditorView } from '@codemirror/view'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
-import { ImagePlusIcon } from 'lucide-react'
+import MarkdownEditor from '@uiw/react-markdown-editor'
+import { Calendar, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 } from '@coursebuilder/ui'
+import {
+	CourseBuilderEditorThemeDark,
+	CourseBuilderEditorThemeLight,
+} from '@coursebuilder/ui/codemirror/editor'
 import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 
@@ -45,8 +59,11 @@ export function EditEventForm({ event }: { event: Event }) {
 				visibility: event.fields.visibility || 'public',
 				image: event.fields.image || '',
 				description: event.fields.description ?? '',
+				details: event.fields.details || '',
 				slug: event.fields.slug ?? '',
 				timezone: event.fields.timezone || 'America/Los_Angeles',
+				location: event.fields.location || '',
+				attendeeInstructions: event.fields.attendeeInstructions || '',
 			},
 		},
 	})
@@ -89,15 +106,17 @@ export function EditEventForm({ event }: { event: Event }) {
 			]}
 			theme={resolvedTheme}
 		>
-			<EventMetadataFormFields form={form} />
+			<EventMetadataFormFields form={form} theme={resolvedTheme} />
 		</ResourceForm>
 	)
 }
 
 const EventMetadataFormFields = ({
 	form,
+	theme,
 }: {
 	form: UseFormReturn<z.infer<typeof EventSchema>>
+	theme?: string
 }) => {
 	return (
 		<EditResourcesMetadataFields form={form}>
@@ -191,11 +210,132 @@ const EventMetadataFormFields = ({
 				render={({ field }) => (
 					<FormItem className="px-5">
 						<FormLabel>Timezone:</FormLabel>
-						<Input {...field} readOnly disabled />
+						<Input {...field} readOnly disabled value={field.value || ''} />
 						<FormMessage />
 					</FormItem>
 				)}
 			/>
+			<FormField
+				control={form.control}
+				name="fields.location"
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-semibold">Location</FormLabel>
+						<FormDescription>
+							Meeting link (e.g., Zoom URL) or physical address. This will
+							appear in calendar invites.
+						</FormDescription>
+						<Input
+							{...field}
+							placeholder="Zoom link or physical address"
+							value={field.value || ''}
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<Dialog>
+				<DialogTrigger asChild>
+					<div className="cursor-pointer px-5">
+						<FormLabel className="inline-flex items-center text-lg font-semibold">
+							<Calendar className="mr-1 size-4" /> Event Details
+						</FormLabel>
+						<FormDescription>
+							Details to be used in Google Calendar for this event.
+						</FormDescription>
+						<Textarea readOnly value={form.watch('fields.details') ?? ''} />
+					</div>
+				</DialogTrigger>
+				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
+					<DialogHeader>
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
+							<Calendar className="mr-1 size-4" /> Event Details
+						</DialogTitle>
+						<DialogDescription>
+							Details to be used in Google Calendar for this event. Markdown is
+							supported.
+						</DialogDescription>
+					</DialogHeader>
+					<FormField
+						control={form.control}
+						name="fields.details"
+						render={({ field }) => (
+							<FormItem>
+								<MarkdownEditor
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+									height="300px"
+									maxHeight="500px"
+									onChange={(value) => {
+										form.setValue('fields.details', value)
+									}}
+									value={field.value?.toString()}
+								/>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog>
+				<DialogTrigger asChild>
+					<div className="cursor-pointer px-5">
+						<FormLabel className="text-lg font-semibold">
+							Attendee Instructions
+						</FormLabel>
+						<FormDescription>
+							Instructions for attendees who have registered for this event.
+							Displayed on the event page.
+						</FormDescription>
+						<Textarea
+							readOnly
+							value={form.watch('fields.attendeeInstructions') ?? ''}
+						/>
+					</div>
+				</DialogTrigger>
+				<DialogContent className="scrollbar-thin max-w-(--breakpoint-md) max-h-[500px]">
+					<DialogHeader>
+						<DialogTitle className="inline-flex items-center text-lg font-semibold">
+							Attendee Instructions
+						</DialogTitle>
+						<DialogDescription>
+							Instructions for attendees who have registered for this event.
+							Displayed on the event page. Markdown is supported.
+						</DialogDescription>
+					</DialogHeader>
+					<FormField
+						control={form.control}
+						name="fields.attendeeInstructions"
+						render={({ field }) => (
+							<FormItem>
+								<MarkdownEditor
+									theme={
+										(theme === 'dark'
+											? CourseBuilderEditorThemeDark
+											: CourseBuilderEditorThemeLight) ||
+										CourseBuilderEditorThemeDark
+									}
+									extensions={[EditorView.lineWrapping]}
+									height="300px"
+									maxHeight="500px"
+									onChange={(value) => {
+										form.setValue('fields.attendeeInstructions', value)
+									}}
+									value={field.value?.toString()}
+								/>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</DialogContent>
+			</Dialog>
 		</EditResourcesMetadataFields>
 	)
 }

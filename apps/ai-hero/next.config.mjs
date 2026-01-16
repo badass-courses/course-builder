@@ -21,6 +21,7 @@ const config = {
 		turbopackFileSystemCacheForDev: true,
 	},
 	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
+	allowedDevOrigins: ['localhost:3000', '*.ngrok.app'],
 	images: {
 		remotePatterns: [
 			{
