@@ -536,22 +536,25 @@ export async function createShortlinkAttribution(
 			return
 		}
 
-		// Check for existing attribution to avoid duplicates
-		const existing = await db.query.shortlinkAttribution.findFirst({
-			where: and(
-				eq(shortlinkAttribution.shortlinkId, link.id),
-				eq(shortlinkAttribution.email, data.email),
-				eq(shortlinkAttribution.type, data.type),
-			),
-		})
-
-		if (existing) {
-			await log.info('shortlink.attribution.duplicate', {
-				slug: data.shortlinkSlug,
-				email: data.email,
-				type: data.type,
+		// Only dedupe signups - purchases should be recorded every time
+		// (user may buy multiple products via the same shortlink)
+		if (data.type === 'signup') {
+			const existing = await db.query.shortlinkAttribution.findFirst({
+				where: and(
+					eq(shortlinkAttribution.shortlinkId, link.id),
+					eq(shortlinkAttribution.email, data.email),
+					eq(shortlinkAttribution.type, data.type),
+				),
 			})
-			return
+
+			if (existing) {
+				await log.info('shortlink.attribution.duplicate', {
+					slug: data.shortlinkSlug,
+					userId: data.userId,
+					type: data.type,
+				})
+				return
+			}
 		}
 
 		// Insert attribution record
@@ -566,7 +569,7 @@ export async function createShortlinkAttribution(
 
 		await log.info('shortlink.attribution.recorded', {
 			slug: data.shortlinkSlug,
-			email: data.email,
+			userId: data.userId,
 			type: data.type,
 		})
 	} catch (error) {

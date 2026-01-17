@@ -38,6 +38,7 @@ import {
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
+	useToast,
 } from '@coursebuilder/ui'
 
 import ShortlinkCrudDialog from './shortlink-crud-dialog'
@@ -134,6 +135,7 @@ export default function ShortlinksManagement({
 	initialShortlinks: ShortlinkWithAttributions[]
 	recentStats: RecentClickStats
 }) {
+	const { toast } = useToast()
 	const [shortlinks, setShortlinks] =
 		useState<ShortlinkWithAttributions[]>(initialShortlinks)
 	const [searchTerm, setSearchTerm] = useState('')
@@ -218,6 +220,13 @@ export default function ShortlinksManagement({
 						(link) => link.id !== deleteConfirmation.shortlinkId,
 					),
 				)
+			} catch (error) {
+				toast({
+					title: 'Error deleting shortlink',
+					description:
+						error instanceof Error ? error.message : 'An error occurred',
+					variant: 'destructive',
+				})
 			} finally {
 				setIsDeleting(false)
 				setDeleteConfirmation({ isOpen: false, shortlinkId: null })
