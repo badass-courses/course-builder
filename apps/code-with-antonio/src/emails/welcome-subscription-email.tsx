@@ -124,8 +124,7 @@ export function WelcomeSubscriptionTeamEmail({
 		<Html>
 			<Head />
 			<Preview>
-				Your team subscription to {productName} is active! Manage your{' '}
-				{quantity} seats.
+				{`Your team subscription to ${productName} is active! Manage your ${quantity} seats.`}
 			</Preview>
 			<Body style={main}>
 				<Container style={container}>
