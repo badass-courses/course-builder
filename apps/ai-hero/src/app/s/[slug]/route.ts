@@ -51,7 +51,17 @@ export async function GET(
 			})
 		})
 
-		return NextResponse.redirect(link.url)
+		// Set attribution cookie and redirect
+		const response = NextResponse.redirect(link.url)
+		response.cookies.set('sl_ref', slug, {
+			maxAge: 60 * 60 * 24 * 30, // 30 days
+			path: '/',
+			httpOnly: false, // Allow JS access for form submission
+			sameSite: 'lax',
+			secure: process.env.NODE_ENV === 'production',
+		})
+
+		return response
 	} catch (error) {
 		await log.error('shortlink.redirect.failed', {
 			error: error instanceof Error ? error.message : 'Unknown error',

@@ -2,20 +2,26 @@
 
 import { revalidateTag } from 'next/cache'
 import { db } from '@/db'
-import { shortlink, shortlinkClick } from '@/db/schema'
+import { shortlink, shortlinkAttribution, shortlinkClick } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { redis } from '@/server/redis-client'
 import { and, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 
+import { guid } from '@coursebuilder/utils-core/guid'
+
 import {
-	CreateShortlinkInput,
 	CreateShortlinkSchema,
-	Shortlink,
-	ShortlinkAnalytics,
-	UpdateShortlinkInput,
 	UpdateShortlinkSchema,
+	type CreateShortlinkInput,
+	type RecentClickStats,
+	type Shortlink,
+	type ShortlinkAnalytics,
+	type ShortlinkAttributionData,
+	type ShortlinkClickEvent,
+	type ShortlinkWithAttributions,
+	type UpdateShortlinkInput,
 } from './shortlinks-types'
 
 const nanoid = customAlphabet(
@@ -44,6 +50,56 @@ export async function getShortlinks(search?: string): Promise<Shortlink[]> {
 			: undefined,
 		orderBy: desc(shortlink.createdAt),
 	})
+
+	return links
+}
+
+/**
+ * Get all shortlinks with attribution counts
+ */
+export async function getShortlinksWithAttributions(
+	search?: string,
+): Promise<ShortlinkWithAttributions[]> {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	// Get shortlinks with attribution counts via subquery
+	const links = await db
+		.select({
+			id: shortlink.id,
+			slug: shortlink.slug,
+			url: shortlink.url,
+			description: shortlink.description,
+			clicks: shortlink.clicks,
+			createdAt: shortlink.createdAt,
+			updatedAt: shortlink.updatedAt,
+			createdById: shortlink.createdById,
+			signups: sql<number>`(
+				SELECT COUNT(*)
+				FROM ${shortlinkAttribution}
+				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
+				AND ${shortlinkAttribution.type} = 'signup'
+			)`.as('signups'),
+			purchases: sql<number>`(
+				SELECT COUNT(*)
+				FROM ${shortlinkAttribution}
+				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
+				AND ${shortlinkAttribution.type} = 'purchase'
+			)`.as('purchases'),
+		})
+		.from(shortlink)
+		.where(
+			search
+				? or(
+						like(shortlink.slug, `%${search}%`),
+						like(shortlink.url, `%${search}%`),
+						like(shortlink.description, `%${search}%`),
+					)
+				: undefined,
+		)
+		.orderBy(desc(shortlink.createdAt))
 
 	return links
 }
@@ -167,7 +223,6 @@ export async function createShortlink(
 		) {
 			throw new Error('Slug already exists')
 		}
-		// Re-throw other errors
 		throw error
 	}
 
@@ -239,7 +294,6 @@ export async function updateShortlink(
 		) {
 			throw new Error('Slug already exists')
 		}
-		// Re-throw other errors
 		throw error
 	}
 
@@ -288,6 +342,11 @@ export async function deleteShortlink(id: string): Promise<void> {
 
 	// Delete clicks first (manual cascade since PlanetScale doesn't support FKs)
 	await db.delete(shortlinkClick).where(eq(shortlinkClick.shortlinkId, id))
+
+	// Delete attributions
+	await db
+		.delete(shortlinkAttribution)
+		.where(eq(shortlinkAttribution.shortlinkId, id))
 
 	// Delete from database
 	await db.delete(shortlink).where(eq(shortlink.id, id))
@@ -424,5 +483,99 @@ export async function getShortlinkAnalytics(
 		topReferrers: topReferrersQuery,
 		deviceBreakdown: deviceBreakdownQuery,
 		recentClicks: recentClicksQuery,
+	}
+}
+
+/**
+ * Get click counts for the last 60 minutes and 24 hours
+ */
+export async function getRecentClickStats(): Promise<RecentClickStats> {
+	const { ability } = await getServerAuthSession()
+	if (!ability.can('manage', 'all')) {
+		throw new Error('Unauthorized')
+	}
+
+	const [last60MinutesResult, last24HoursResult] = await Promise.all([
+		db
+			.select({ count: count() })
+			.from(shortlinkClick)
+			.where(
+				sql`${shortlinkClick.timestamp} >= DATE_SUB(NOW(), INTERVAL 60 MINUTE)`,
+			),
+		db
+			.select({ count: count() })
+			.from(shortlinkClick)
+			.where(
+				sql`${shortlinkClick.timestamp} >= DATE_SUB(NOW(), INTERVAL 24 HOUR)`,
+			),
+	])
+
+	return {
+		last60Minutes: last60MinutesResult[0]?.count ?? 0,
+		last24Hours: last24HoursResult[0]?.count ?? 0,
+	}
+}
+
+/**
+ * Create a shortlink attribution record
+ * This tracks when a user signs up or makes a purchase after clicking a shortlink
+ */
+export async function createShortlinkAttribution(
+	data: ShortlinkAttributionData,
+): Promise<void> {
+	try {
+		// Look up shortlink by slug
+		const link = await db.query.shortlink.findFirst({
+			where: eq(shortlink.slug, data.shortlinkSlug),
+		})
+
+		if (!link) {
+			await log.warn('shortlink.attribution.notfound', {
+				slug: data.shortlinkSlug,
+			})
+			return
+		}
+
+		// Only dedupe signups - purchases should be recorded every time
+		// (user may buy multiple products via the same shortlink)
+		if (data.type === 'signup') {
+			const existing = await db.query.shortlinkAttribution.findFirst({
+				where: and(
+					eq(shortlinkAttribution.shortlinkId, link.id),
+					eq(shortlinkAttribution.email, data.email),
+					eq(shortlinkAttribution.type, data.type),
+				),
+			})
+
+			if (existing) {
+				await log.info('shortlink.attribution.duplicate', {
+					slug: data.shortlinkSlug,
+					userId: data.userId,
+					type: data.type,
+				})
+				return
+			}
+		}
+
+		// Insert attribution record
+		await db.insert(shortlinkAttribution).values({
+			id: guid(),
+			shortlinkId: link.id,
+			userId: data.userId,
+			email: data.email,
+			type: data.type,
+			metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
+		})
+
+		await log.info('shortlink.attribution.recorded', {
+			slug: data.shortlinkSlug,
+			userId: data.userId,
+			type: data.type,
+		})
+	} catch (error) {
+		await log.error('shortlink.attribution.error', {
+			slug: data.shortlinkSlug,
+			error: String(error),
+		})
 	}
 }

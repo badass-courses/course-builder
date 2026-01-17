@@ -6,10 +6,11 @@ import { ImageResourceUploader } from '@/components/image-uploader/image-resourc
 import { withResourceForm } from '@/components/resource-form/with-resource-form'
 import type { List } from '@/lib/lists'
 import { Post } from '@/lib/posts'
-import { ImagePlusIcon, VideoIcon } from 'lucide-react'
+import { ImagePlusIcon, LinkIcon, VideoIcon } from 'lucide-react'
 
 import { VideoResource } from '@coursebuilder/core/schemas/video-resource'
 
+import { CreateShortlinkButton } from './create-shortlink-button'
 import { postFormConfig } from './post-form-config'
 import { PostFormFields } from './post-form-fields'
 import StandaloneVideoResourceUploaderAndViewer from './standalone-video-resource-uploader-and-viewer'
@@ -72,6 +73,18 @@ export function EditPostForm({
 						<VideoIcon strokeWidth={1.5} size={24} width={18} height={18} />
 					),
 					toolComponent: <StandaloneVideoResourceUploaderAndViewer />,
+				},
+				{
+					id: 'shortlinks',
+					icon: () => (
+						<LinkIcon strokeWidth={1.5} size={24} width={18} height={18} />
+					),
+					toolComponent: (
+						<CreateShortlinkButton
+							postSlug={post.fields?.slug || ''}
+							postTitle={post.fields?.title}
+						/>
+					),
 				},
 			],
 		},

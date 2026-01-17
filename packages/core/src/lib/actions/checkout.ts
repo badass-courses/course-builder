@@ -15,6 +15,10 @@ export async function checkout(
 		cookies,
 	}
 
+	// Extract shortlink reference from cookie
+	const shortlinkRefCookie = cookies.find((c) => c.name === 'sl_ref')
+	const shortlinkRef = shortlinkRefCookie?.value
+
 	const checkoutParamsParsed = CheckoutParamsSchema.safeParse({
 		...request.query,
 		country:
@@ -27,6 +31,7 @@ export async function checkout(
 			request.headers?.['x-forwarded-for'] ||
 			'0.0.0.0',
 		organizationId: request.query?.organizationId,
+		...(shortlinkRef && { shortlinkRef }),
 	})
 
 	if (!checkoutParamsParsed.success) {
