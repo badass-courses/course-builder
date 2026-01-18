@@ -38,6 +38,21 @@ export const PRODUCT_TYPE_CONFIG = {
 		getDiscordRoleId: (product: any) =>
 			product?.fields?.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 	},
+	/**
+	 * Source code access product type - grants access to private GitHub repos
+	 * Uses workshop_content_access entitlement to control source code downloads
+	 */
+	'source-code-access': {
+		resourceType: 'workshop',
+		queryFn: getWorkshop,
+		contentAccess: 'workshop_content_access',
+		discordRole: 'workshop_discord_role',
+		createEntitlement: createWorkshopEntitlement,
+		discordEvent: USER_ADDED_TO_WORKSHOP_EVENT,
+		logPrefix: 'source-code',
+		getDiscordRoleId: (product: any) =>
+			product?.fields?.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
+	},
 	// Future product types can be added here
 	// live: { ... },
 	// membership: { ... },
@@ -58,6 +73,14 @@ export const ENTITLEMENT_CONFIG = {
 		createEntitlement: PRODUCT_TYPE_CONFIG['self-paced'].createEntitlement,
 		discordEvent: PRODUCT_TYPE_CONFIG['self-paced'].discordEvent,
 		logPrefix: PRODUCT_TYPE_CONFIG['self-paced'].logPrefix,
+	},
+	'source-code-access': {
+		contentAccess: PRODUCT_TYPE_CONFIG['source-code-access'].contentAccess,
+		discordRole: PRODUCT_TYPE_CONFIG['source-code-access'].discordRole,
+		createEntitlement:
+			PRODUCT_TYPE_CONFIG['source-code-access'].createEntitlement,
+		discordEvent: PRODUCT_TYPE_CONFIG['source-code-access'].discordEvent,
+		logPrefix: PRODUCT_TYPE_CONFIG['source-code-access'].logPrefix,
 	},
 } as const
 

@@ -111,11 +111,11 @@ export const postPurchaseWorkflow = inngest.createFunction(
 	[
 		{
 			event: NEW_PURCHASE_CREATED_EVENT,
-			if: 'event.data.productType == "cohort" || event.data.productType == "self-paced"',
+			if: 'event.data.productType == "cohort" || event.data.productType == "self-paced" || event.data.productType == "source-code-access"',
 		},
 		{
 			event: FULL_PRICE_COUPON_REDEEMED_EVENT,
-			if: 'event.data.productType == "cohort" || event.data.productType == "self-paced"',
+			if: 'event.data.productType == "cohort" || event.data.productType == "self-paced" || event.data.productType == "source-code-access"',
 		},
 	],
 	async ({ event, step, db: adapter }) => {

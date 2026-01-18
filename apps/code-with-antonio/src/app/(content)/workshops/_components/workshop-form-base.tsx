@@ -97,6 +97,27 @@ export function WorkshopFormBase(
 			/>
 			<FormField
 				control={form.control}
+				render={({ field }) => (
+					<FormItem className="px-5">
+						<FormLabel className="text-lg font-bold">
+							Private GitHub Repo
+						</FormLabel>
+						<FormDescription className="mt-2 text-sm">
+							For paywalled source code access. Format: owner/repo (e.g.
+							code-with-antonio/my-private-repo)
+						</FormDescription>
+						<Input
+							{...field}
+							value={field.value || ''}
+							placeholder="owner/repo"
+						/>
+						<FormMessage />
+					</FormItem>
+				)}
+				name="fields.privateGithubRepo"
+			/>
+			<FormField
+				control={form.control}
 				name="fields.startsAt"
 				render={({ field }) => (
 					<FormItem className="px-5">

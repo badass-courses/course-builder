@@ -152,6 +152,7 @@ export async function getAbilityForResource(
 		canViewWorkshop: boolean
 		canViewLesson: boolean
 		isPendingOpenAccess: boolean
+		canDownloadSourceCode: boolean
 	}
 > {
 	const abilityRules = await getCurrentAbilityRules({
@@ -175,6 +176,11 @@ export async function getAbilityForResource(
 	const isPendingOpenAccess = ability.can('read', 'PendingOpenAccess')
 	const canCreate = ability.can('create', 'Content')
 
+	// Source code download requires purchase (not free watchability)
+	const canDownloadSourceCode = moduleResource
+		? ability.can('download', subject('SourceCode', { id: moduleResource.id }))
+		: false
+
 	return {
 		canViewWorkshop,
 		canViewLesson,
@@ -182,6 +188,7 @@ export async function getAbilityForResource(
 		isRegionRestricted,
 		isPendingOpenAccess,
 		canCreate,
+		canDownloadSourceCode,
 	}
 }
 

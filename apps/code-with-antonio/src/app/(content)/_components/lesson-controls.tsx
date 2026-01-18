@@ -15,23 +15,38 @@ import type { AbilityForResource } from '@coursebuilder/utils-auth/current-abili
 import { CopyProblemPromptButton } from '../workshops/_components/copy-problem-prompt-button'
 import { AutoPlayToggle } from './autoplay-toggle'
 import { ModuleLessonProgressToggle } from './module-lesson-progress-toggle'
+import {
+	SourceCodeDownloadButton,
+	SourceCodeLockedButton,
+} from './source-code-download-button'
 
+/**
+ * Controls displayed above lesson content including GitHub links,
+ * source code download, problem prompt, and progress toggle.
+ */
 export const LessonControls = async ({
 	lesson,
 	problem,
 	className,
 	moduleType = 'workshop',
+	moduleSlug,
+	privateGithubRepo,
 	abilityLoader,
 }: {
 	lesson: Lesson | null
 	problem?: Lesson | null
 	className?: string
 	moduleType?: 'tutorial' | 'workshop'
+	/** Workshop slug for source code download URL */
+	moduleSlug?: string
+	/** Private GitHub repo for source code download (format: owner/repo) */
+	privateGithubRepo?: string
 	abilityLoader: Promise<
 		Omit<AbilityForResource, 'canView'> & {
 			canViewWorkshop: boolean
 			canViewLesson: boolean
 			isPendingOpenAccess: boolean
+			canDownloadSourceCode: boolean
 		}
 	>
 }) => {
@@ -43,6 +58,12 @@ export const LessonControls = async ({
 		return null
 	}
 	const githubUrl = lesson.fields?.github || problem?.fields?.github
+	const ability = await abilityLoader
+	// Source code download requires purchased access (not just free view access)
+	const showSourceCodeDownload =
+		ability.canDownloadSourceCode && privateGithubRepo && moduleSlug
+	const showSourceCodeLocked =
+		!ability.canDownloadSourceCode && privateGithubRepo && moduleSlug
 
 	const hasSolution = lesson.resources?.some(
 		(resource) => resource.resource.type === 'solution',
@@ -80,6 +101,20 @@ export const LessonControls = async ({
 							<span className="hidden sm:inline-block">Source Code</span>
 						</Link>
 					</Button>
+				)}
+				{showSourceCodeDownload && (
+					<SourceCodeDownloadButton
+						moduleSlug={moduleSlug!}
+						lessonSlug={lesson.fields?.slug}
+						className="hover:bg-muted/50 border-r-border h-full rounded-none border-0 bg-transparent sm:border-r"
+					/>
+				)}
+				{showSourceCodeLocked && (
+					<SourceCodeLockedButton
+						moduleSlug={moduleSlug!}
+						lessonSlug={lesson.fields?.slug}
+						className="hover:bg-muted/50 border-r-border h-full rounded-none border-0 bg-transparent sm:border-r"
+					/>
 				)}
 			</div>
 			{isProblemLesson && (

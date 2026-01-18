@@ -8,7 +8,8 @@ import {
 	flattenNavigationResources,
 	getFirstResourceSlug,
 } from '@/lib/content-navigation'
-import { Github, Share2 } from 'lucide-react'
+import { track } from '@/utils/analytics'
+import { Download, Github, Lock, Share2 } from 'lucide-react'
 
 import {
 	Button,
@@ -16,13 +17,22 @@ import {
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
 } from '@coursebuilder/ui'
 import { cn } from '@coursebuilder/ui/utils/cn'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export type ResourceActionsProps = {
-	/** GitHub repository URL */
+	/** GitHub repository URL (public) */
 	githubUrl?: string
+	/**
+	 * Private GitHub repository for source code access (format: owner/repo).
+	 * When set and user canDownloadSourceCode, shows a "Source Code" download button.
+	 */
+	privateGithubRepo?: string
 	/** Resource title for share dialog */
 	title: string
 	/** Additional CSS classes */
@@ -39,8 +49,13 @@ export type ResourceActionsProps = {
 	moduleType?: string
 	/** Module slug for URL generation in progress-aware mode */
 	moduleSlug?: string
-	/** Whether user has access to view the content */
+	/** Whether user has access to view the content (can be free) */
 	hasAccess?: boolean
+	/**
+	 * Whether user has purchased access to download source code.
+	 * This is separate from hasAccess since viewing can be free but source code requires purchase.
+	 */
+	canDownloadSourceCode?: boolean
 	/** Whether the module requires a purchase (default: true) */
 	hasProduct?: boolean
 }
@@ -51,6 +66,7 @@ export type ResourceActionsProps = {
  * Provides consistent action buttons:
  * - Continue Watching / Start Watching (progress-aware when moduleType + moduleSlug provided)
  * - Code/GitHub link (if githubUrl provided)
+ * - Source Code download (if privateGithubRepo provided and user hasAccess)
  * - Share dialog
  *
  * @example Progress-aware mode (workshop)
@@ -58,9 +74,11 @@ export type ResourceActionsProps = {
  * <ResourceActions
  *   moduleType="workshop"
  *   moduleSlug={params.module}
- *   hasAccess={canView}
+ *   hasAccess={ability.canViewWorkshop}
+ *   canDownloadSourceCode={ability.canDownloadSourceCode}
  *   hasProduct={!!product}
  *   githubUrl={workshop?.fields?.github}
+ *   privateGithubRepo={workshop?.fields?.privateGithubRepo}
  *   title={workshop.fields?.title || ''}
  * />
  * ```
@@ -75,16 +93,24 @@ export type ResourceActionsProps = {
  */
 export function ResourceActions({
 	githubUrl,
+	privateGithubRepo,
 	title,
 	className,
 	firstResourceHref,
 	moduleType,
 	moduleSlug,
 	hasAccess = false,
+	canDownloadSourceCode = false,
 	hasProduct = true,
 }: ResourceActionsProps) {
 	// Progress-aware mode when moduleType + moduleSlug provided
 	const isProgressAwareMode = Boolean(moduleType && moduleSlug)
+
+	// Show source code download if user has purchased access and private repo is configured
+	const showSourceCodeDownload =
+		canDownloadSourceCode && privateGithubRepo && moduleSlug
+	const showLockedSourceCodeDownload =
+		!canDownloadSourceCode && privateGithubRepo && moduleSlug
 
 	return (
 		<div className={cn('', className)}>
@@ -106,14 +132,51 @@ export function ResourceActions({
 				{githubUrl && (
 					<Button variant="ghost" size="lg" asChild>
 						<Link href={githubUrl} target="_blank">
-							<Github className="mr-2 w-3" /> Code
+							<Github className="w-3" /> Code
 						</Link>
 					</Button>
+				)}
+				{showSourceCodeDownload && (
+					<Button variant="outline" size="lg" className="h-12" asChild>
+						<a
+							href={`/api/github/download?workshop=${moduleSlug}`}
+							download
+							onClick={() => {
+								track('source_code_download', {
+									workshopSlug: moduleSlug,
+									title,
+								})
+							}}
+						>
+							<Download className="w-3" /> Source Code
+						</a>
+					</Button>
+				)}
+				{showLockedSourceCodeDownload && (
+					<TooltipProvider>
+						<Tooltip delayDuration={0}>
+							<TooltipTrigger
+								onClick={() => {
+									track('source_code_locked_click', {
+										workshopSlug: moduleSlug,
+										title,
+									})
+								}}
+							>
+								<Button variant="outline" size="lg" className="h-12">
+									<Lock className="w-3" /> Source Code
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>
+								Purchase the workshop to access the source code.
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 				)}
 				<Dialog>
 					<DialogTrigger asChild>
 						<Button variant="ghost" size="lg">
-							<Share2 className="mr-2 w-3" /> Share
+							<Share2 className="w-3" /> Share
 						</Button>
 					</DialogTrigger>
 					<DialogContent>

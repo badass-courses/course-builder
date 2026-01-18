@@ -121,6 +121,7 @@ export function createWorkshopFormConfig(
 					| 'unlisted',
 				coverImage: workshop?.fields?.coverImage || { url: '', alt: '' },
 				github: workshop?.fields?.github || '',
+				privateGithubRepo: workshop?.fields?.privateGithubRepo || '',
 				timezone: workshop?.fields?.timezone || 'America/Los_Angeles',
 				startsAt: workshop?.fields?.startsAt
 					? new Date(workshop.fields.startsAt).toISOString()
