@@ -1,5 +1,7 @@
 import { cookies } from 'next/headers'
+import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
+import { getAllUserEntitlements } from '@/lib/entitlements-query'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
@@ -82,5 +84,33 @@ export const abilityRouter = createTRPCRouter({
 	getCurrentSubscriberFromCookie: publicProcedure.query(async ({ ctx }) => {
 		const subscriber = await getSubscriberFromCookie()
 		return subscriber
+	}),
+	/**
+	 * Check if the current user has an active subscription entitlement.
+	 * Returns true if user has a subscription_access entitlement that hasn't expired.
+	 */
+	hasActiveSubscription: publicProcedure.query(async () => {
+		const { session } = await getServerAuthSession()
+		if (!session?.user?.id) {
+			return false
+		}
+
+		// Get subscription_access entitlement type
+		const subscriptionType =
+			await courseBuilderAdapter.getEntitlementTypeByName('subscription_access')
+		if (!subscriptionType) {
+			return false
+		}
+
+		// Get all user entitlements across all orgs
+		const entitlements = await getAllUserEntitlements(session.user.id)
+
+		// Check if any is subscription_access and not expired
+		const now = new Date()
+		return entitlements.some(
+			(e) =>
+				e.entitlementType === subscriptionType.id &&
+				(!e.expiresAt || e.expiresAt > now),
+		)
 	}),
 })

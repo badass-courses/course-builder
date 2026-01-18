@@ -6,7 +6,7 @@ import { Clipboard } from 'lucide-react'
 import pluralize from 'pluralize'
 import { useCopyToClipboard } from 'react-use'
 
-import { Purchase } from '@coursebuilder/core/schemas'
+import type { Purchase } from '@coursebuilder/core/schemas'
 import { Alert, Button, Input } from '@coursebuilder/ui'
 import type { ButtonProps } from '@coursebuilder/ui/primitives/button'
 import type { InputProps } from '@coursebuilder/ui/primitives/input'
@@ -14,7 +14,17 @@ import { useToast } from '@coursebuilder/ui/primitives/use-toast'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { handleSelfRedeem } from '../utils/handle-self-redeem'
+import {
+	getInviteLink,
+	getSeatInfo,
+	type SeatInfo,
+	type TeamSource,
+} from './types'
 
+/**
+ * Default InviteTeam component with standard layout.
+ * Supports both bulk purchases and subscription sources.
+ */
 export default function InviteTeam(props: RootProps) {
 	return (
 		<Root {...props}>
@@ -29,27 +39,74 @@ export default function InviteTeam(props: RootProps) {
 	)
 }
 
+/**
+ * Callback result for subscription actions
+ */
+export type ActionResult = {
+	success: boolean
+	error?: string
+}
+
+/**
+ * Context type for InviteTeam component tree.
+ * Supports both legacy purchase-based and new source-based approaches.
+ */
 type InviteTeamContextType = {
-	purchase: Purchase
+	// Legacy props (for backwards compatibility)
+	purchase?: Purchase
 	existingPurchase?: Purchase | null
+	// New unified source
+	source?: TeamSource
+	// Computed values
+	seatInfo: SeatInfo
+	inviteLink: string
+	// State
 	disabled?: boolean
 	userEmail?: string | null
+	existingClaim?: boolean
+	// Callbacks for subscription actions
+	onSelfClaim?: () => Promise<ActionResult>
+	onInvite?: (email: string) => Promise<ActionResult>
+	onRemove?: (userId: string) => Promise<ActionResult>
 }
 
-type RootProps = InviteTeamContextType & {
+type RootProps = {
 	className?: string
-}
-
-type InnerContextType = {
-	inviteLink: string
-}
+	disabled?: boolean
+	userEmail?: string | null
+	existingClaim?: boolean
+	children?: React.ReactNode
+} & (
+	| {
+			// Legacy: bulk purchase only
+			purchase: Purchase
+			existingPurchase?: Purchase | null
+			source?: never
+			onSelfClaim?: never
+			onInvite?: never
+			onRemove?: never
+	  }
+	| {
+			// New: unified source
+			source: TeamSource
+			purchase?: never
+			existingPurchase?: never
+			onSelfClaim?: () => Promise<ActionResult>
+			onInvite?: (email: string) => Promise<ActionResult>
+			onRemove?: (userId: string) => Promise<ActionResult>
+	  }
+)
 
 const InviteTeamContext = React.createContext<
-	(InviteTeamContextType & InnerContextType) | undefined
+	InviteTeamContextType | undefined
 >(undefined)
 
+/**
+ * Provider for InviteTeam context.
+ * Allows custom context injection for testing or advanced use cases.
+ */
 export const InviteTeamProvider: React.FC<
-	InviteTeamContextType & { children: React.ReactNode; inviteLink: string }
+	InviteTeamContextType & { children: React.ReactNode }
 > = ({ children, ...props }) => {
 	return (
 		<InviteTeamContext.Provider value={props}>
@@ -58,6 +115,10 @@ export const InviteTeamProvider: React.FC<
 	)
 }
 
+/**
+ * Hook to access InviteTeam context.
+ * Must be used within InviteTeam.Root or InviteTeamProvider.
+ */
 export const useInviteTeam = () => {
 	const context = React.use(InviteTeamContext)
 	if (context === undefined) {
@@ -66,16 +127,60 @@ export const useInviteTeam = () => {
 	return context
 }
 
-const Root: React.FC<React.PropsWithChildren<RootProps>> = ({
+/**
+ * Root component for InviteTeam compound component.
+ * Sets up context for child components.
+ */
+const Root: React.FC<RootProps> = ({
 	children,
 	className,
+	disabled,
+	userEmail,
+	existingClaim,
 	...props
 }) => {
-	const code = props.purchase?.bulkCoupon?.id
-	const inviteLink = `${process.env.NEXT_PUBLIC_URL}?code=${code}`
+	const baseUrl = process.env.NEXT_PUBLIC_URL ?? ''
+
+	// Handle both legacy and new source approaches
+	let source: TeamSource
+	let seatInfo: SeatInfo
+	let inviteLink: string
+
+	if ('source' in props && props.source) {
+		// New source-based approach
+		source = props.source
+		seatInfo = getSeatInfo(source)
+		inviteLink = getInviteLink(source, baseUrl)
+	} else if ('purchase' in props && props.purchase) {
+		// Legacy purchase-based approach
+		source = {
+			type: 'bulk-purchase',
+			purchase: props.purchase,
+			existingPurchase: props.existingPurchase,
+		}
+		seatInfo = getSeatInfo(source)
+		inviteLink = getInviteLink(source, baseUrl)
+	} else {
+		throw new Error('InviteTeam.Root requires either source or purchase prop')
+	}
+
+	const contextValue: InviteTeamContextType = {
+		source,
+		purchase: source.type === 'bulk-purchase' ? source.purchase : undefined,
+		existingPurchase:
+			source.type === 'bulk-purchase' ? source.existingPurchase : undefined,
+		seatInfo,
+		inviteLink,
+		disabled,
+		userEmail,
+		existingClaim,
+		...('onSelfClaim' in props && { onSelfClaim: props.onSelfClaim }),
+		...('onInvite' in props && { onInvite: props.onInvite }),
+		...('onRemove' in props && { onRemove: props.onRemove }),
+	}
 
 	return (
-		<InviteTeamProvider {...props} inviteLink={inviteLink}>
+		<InviteTeamProvider {...contextValue}>
 			<section className={cn('w-full', className)}>{children}</section>
 		</InviteTeamProvider>
 	)
@@ -86,20 +191,22 @@ type SeatsAvailableProps = {
 	className?: string
 }
 
+/**
+ * Displays the number of available seats.
+ * Works with both bulk purchases and subscriptions.
+ */
 const SeatsAvailable: React.FC<
 	React.PropsWithChildren<SeatsAvailableProps>
 > = ({ children, asChild, className }) => {
-	const { purchase } = useInviteTeam()
+	const { seatInfo } = useInviteTeam()
 	const Comp = asChild ? Slot : 'p'
-	const numberOfRedemptionsLeft =
-		Number(purchase?.bulkCoupon?.maxUses) -
-		Number(purchase?.bulkCoupon?.usedCount)
+
 	return (
 		<Comp className={cn('', className)}>
 			You have{' '}
 			<span>
-				{numberOfRedemptionsLeft} team{' '}
-				{pluralize('seat', numberOfRedemptionsLeft)} available.
+				{seatInfo.available} team {pluralize('seat', seatInfo.available)}{' '}
+				available.
 			</span>
 		</Comp>
 	)
@@ -108,10 +215,12 @@ const SeatsAvailable: React.FC<
 type InviteLinkProps = {
 	className?: string
 	asChild?: boolean
-
 	[key: string]: InputProps[keyof InputProps]
 }
 
+/**
+ * Input field displaying the invite link.
+ */
 const InviteLink: React.FC<React.PropsWithChildren<InviteLinkProps>> = ({
 	children,
 	asChild,
@@ -119,7 +228,7 @@ const InviteLink: React.FC<React.PropsWithChildren<InviteLinkProps>> = ({
 	...props
 }) => {
 	const Comp = asChild ? Slot : Input
-	const { purchase, disabled = false, inviteLink } = useInviteTeam()
+	const { disabled = false, inviteLink } = useInviteTeam()
 
 	return (
 		<Comp
@@ -143,6 +252,9 @@ type CopyInviteLinkButtonProps = {
 	[key: string]: ButtonProps[keyof ButtonProps]
 }
 
+/**
+ * Button to copy the invite link to clipboard.
+ */
 const CopyInviteLinkButton: React.FC<
 	React.PropsWithChildren<CopyInviteLinkButtonProps>
 > = ({
@@ -152,7 +264,7 @@ const CopyInviteLinkButton: React.FC<
 	...props
 }) => {
 	const Comp = asChild ? Slot : Button
-	const { purchase, disabled = false, inviteLink } = useInviteTeam()
+	const { disabled = false, inviteLink } = useInviteTeam()
 
 	const [_, setCopied] = useCopyToClipboard()
 	const { toast } = useToast()
@@ -181,6 +293,10 @@ type SelfRedeemButtonProps = {
 	[key: string]: ButtonProps[keyof ButtonProps]
 }
 
+/**
+ * Button for the current user to claim a seat for themselves.
+ * Handles both bulk purchase (coupon-based) and subscription (entitlement-based) redemption.
+ */
 const SelfRedeemButton: React.FC<
 	React.PropsWithChildren<SelfRedeemButtonProps>
 > = ({
@@ -191,71 +307,98 @@ const SelfRedeemButton: React.FC<
 }) => {
 	const Comp = asChild ? Slot : Button
 	const {
+		source,
 		purchase,
 		disabled = false,
 		userEmail,
 		existingPurchase,
+		existingClaim,
+		onSelfClaim,
 	} = useInviteTeam()
 
 	const [isLoading, setIsLoading] = React.useState(false)
 	const { toast } = useToast()
 	const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
-	const canRedeem = !existingPurchase
-	return canRedeem ? (
-		<>
+
+	// Determine if user can redeem based on source type
+	const canRedeem =
+		source?.type === 'subscription' ? !existingClaim : !existingPurchase
+
+	if (!canRedeem) return null
+
+	const handleClick = async () => {
+		if (!userEmail) return
+
+		setIsLoading(true)
+		setErrorMessage(null)
+
+		try {
+			if (source?.type === 'subscription' && onSelfClaim) {
+				// Subscription: use callback
+				const result = await onSelfClaim()
+
+				if (result.success) {
+					toast({
+						title:
+							'Success! You have successfully claimed a seat for yourself.',
+					})
+				} else {
+					const message =
+						result.error ||
+						'We were unable to claim a seat for this account. Please try again.'
+					setErrorMessage(message)
+					toast({ title: message })
+				}
+			} else if (source?.type === 'bulk-purchase' || purchase) {
+				// Bulk purchase: use existing handler
+				const targetPurchase = purchase ?? (source as any)?.purchase
+				handleSelfRedeem(
+					userEmail,
+					targetPurchase?.bulkCoupon?.id as string,
+					targetPurchase?.productId,
+					(params) => {
+						if (params.status === 'success') {
+							toast({
+								title:
+									'Success! You have successfully redeemed a seat for yourself.',
+							})
+						} else {
+							console.debug(params.error)
+							if (params.error.startsWith('already-purchased-')) {
+								const message =
+									'You have already redeemed a seat for yourself. Please contact support if you are having trouble accessing it.'
+								setErrorMessage(message)
+								toast({ title: message })
+							} else {
+								const message =
+									'We were unable to redeem a seat for this account. If the issue persists, please reach out to support.'
+								setErrorMessage(message)
+								toast({ title: message })
+							}
+						}
+					},
+				)
+			}
+		} finally {
+			setIsLoading(false)
+		}
+	}
+
+	return (
+		<div className={cn('flex flex-col gap-2', className)}>
 			<Comp
 				variant="outline"
-				className={cn('text-primary w-full', className)}
+				className="text-primary w-full"
 				type="button"
 				disabled={isLoading || disabled || !userEmail || !canRedeem}
-				onClick={() => {
-					if (userEmail) {
-						setIsLoading(true)
-						handleSelfRedeem(
-							userEmail,
-							purchase.bulkCoupon?.id as string,
-							purchase.productId,
-							(params) => {
-								if (params.status === 'success') {
-									console.log('redeemedPurchase', params.redeemedPurchase)
-
-									toast({
-										title:
-											'Success! You have successfully redeemed a seat for yourself.',
-									})
-									setIsLoading(false)
-								} else {
-									setIsLoading(false)
-									// TODO: report to sentry or support?
-									console.debug(params.error)
-									if (params.error.startsWith('already-purchased-')) {
-										const message =
-											'You have already redeemed a seat for yourself. Please contact support if you are having trouble accessing it.'
-										setErrorMessage(message)
-										toast({
-											title: message,
-										})
-									} else {
-										const message =
-											'We were unable to redeem a seat for this account. If the issue persists, please reach out to support.'
-										setErrorMessage(message)
-										toast({
-											title:
-												'We were unable to redeem a seat for this account. If the issue persists, please reach out to support.',
-										})
-									}
-								}
-							},
-						)
-					}
-				}}
+				onClick={handleClick}
 				{...props}
 			>
 				{isLoading ? 'Claiming a seat...' : children}
 			</Comp>
 			{errorMessage && <Alert>{errorMessage}</Alert>}
-		</>
-	) : null
+		</div>
+	)
 }
 
 export {

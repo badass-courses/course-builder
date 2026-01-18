@@ -90,14 +90,18 @@ export default async function VerifyLoginPage({
 	)
 
 	return (
-		<LayoutClient withContainer>
-			<Login
-				title="Log in to join"
-				csrfToken={csrfToken}
-				providers={providers}
-				subtitle={`We'll create your account if you don't have one yet.`}
-				callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
-			/>
+		<LayoutClient>
+			<div className="bg-muted flex min-h-[calc(100svh-77px)] flex-col items-center justify-center p-6 md:p-10">
+				<div className="w-full max-w-sm md:max-w-4xl">
+					<Login
+						title="Log in to join"
+						csrfToken={csrfToken}
+						providers={providers}
+						subtitle={`We'll create your account if you don't have one yet.`}
+						callbackUrl={`${callbackUrl}?${checkoutSearchParams.toString()}`}
+					/>
+				</div>
+			</div>
 		</LayoutClient>
 	)
 }

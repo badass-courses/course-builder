@@ -2,7 +2,9 @@ import Stripe from 'stripe'
 
 import { PURCHASE_STATUS_UPDATED_EVENT } from '../../inngest/commerce/event-purchase-status-updated'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '../../inngest/stripe/event-checkout-session-completed'
+import { STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT } from '../../inngest/stripe/event-customer-subscription-updated'
 import { checkoutSessionCompletedEvent } from '../../schemas/stripe/checkout-session-completed'
+import { customerSubscriptionUpdatedEvent } from '../../schemas/stripe/customer-subscription-updated'
 import {
 	InternalOptions,
 	InternalProvider,
@@ -314,9 +316,15 @@ export async function processStripeWebhook(
 			break
 		case 'customer.subscription.updated':
 			console.log('customer.subscription.updated', event)
-			// update the subscription
-			// some status update for an existing subscription
-			// Occurs whenever a subscription changes (e.g., switching from one plan to another, or changing the status from trial to active).
+			// Dispatch to Inngest for subscription lifecycle handling
+			// Occurs whenever a subscription changes (e.g., switching from one plan to another,
+			// changing status from trial to active, cancellation, reactivation, renewal).
+			await options.inngest.send({
+				name: STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT,
+				data: {
+					stripeEvent: customerSubscriptionUpdatedEvent.parse(event),
+				},
+			})
 			break
 		case 'checkout.session.completed':
 			console.log('checkout.session.completed', event)

@@ -9,6 +9,8 @@ export type EntitlementType =
 	| 'cohort_discord_role'
 	| 'workshop_content_access'
 	| 'workshop_discord_role'
+	| 'subscription_access'
+	| 'subscription_discord_role'
 	| 'subscription_tier'
 
 export enum EntitlementSourceType {
@@ -306,6 +308,126 @@ export async function createWorkshopEntitlement({
 		metadata: finalMetadata,
 	})
 	return entitlementId
+}
+
+/**
+ * Creates a subscription entitlement for a user.
+ * Subscription entitlements grant access to ALL content (unlike workshop/cohort entitlements
+ * which are tied to specific resources).
+ * @returns The ID of the created entitlement
+ */
+export async function createSubscriptionEntitlement({
+	userId,
+	subscriptionId,
+	productId,
+	organizationId,
+	organizationMembershipId,
+	entitlementType,
+	expiresAt,
+	metadata = {},
+}: {
+	userId: string
+	subscriptionId: string
+	productId: string
+	organizationId: string
+	organizationMembershipId: string
+	entitlementType: string
+	expiresAt?: Date
+	metadata?: Record<string, any>
+}): Promise<string> {
+	const entitlementId = `sub-${subscriptionId}-${guid()}`
+
+	await db.insert(entitlements).values({
+		id: entitlementId,
+		entitlementType,
+		userId,
+		organizationId,
+		organizationMembershipId,
+		sourceType: EntitlementSourceType.SUBSCRIPTION,
+		sourceId: subscriptionId,
+		expiresAt,
+		metadata: {
+			...metadata,
+			productId,
+		},
+	})
+	return entitlementId
+}
+
+/**
+ * Soft delete entitlements for a subscription when canceled/unpaid.
+ * @param subscriptionId - The subscription ID whose entitlements should be soft deleted
+ */
+export async function softDeleteEntitlementsForSubscription(
+	subscriptionId: string,
+) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: new Date(),
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceId, subscriptionId),
+				eq(entitlements.sourceType, EntitlementSourceType.SUBSCRIPTION),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
+}
+
+/**
+ * Restore entitlements for a subscription when reactivated.
+ * @param subscriptionId - The subscription ID whose entitlements should be restored
+ * @param expiresAt - The new expiration date for the entitlements
+ */
+export async function restoreEntitlementsForSubscription(
+	subscriptionId: string,
+	expiresAt: Date,
+) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			deletedAt: null,
+			expiresAt,
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceId, subscriptionId),
+				eq(entitlements.sourceType, EntitlementSourceType.SUBSCRIPTION),
+			),
+		)
+
+	return result
+}
+
+/**
+ * Update the expiration date for subscription entitlements (e.g., on renewal).
+ * @param subscriptionId - The subscription ID whose entitlements should be updated
+ * @param newExpiration - The new expiration date
+ */
+export async function updateEntitlementExpirationForSubscription(
+	subscriptionId: string,
+	newExpiration: Date,
+) {
+	const result = await db
+		.update(entitlements)
+		.set({
+			expiresAt: newExpiration,
+			updatedAt: new Date(),
+		})
+		.where(
+			and(
+				eq(entitlements.sourceId, subscriptionId),
+				eq(entitlements.sourceType, EntitlementSourceType.SUBSCRIPTION),
+				isNull(entitlements.deletedAt),
+			),
+		)
+
+	return result
 }
 
 /**

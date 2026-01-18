@@ -67,7 +67,11 @@ export const PricingWidget: React.FC<{
 					<Pricing.TeamQuantityInput />
 					<Pricing.BuyButton className="dark:bg-primary dark:hover:bg-primary/90 relative mt-3 h-16 max-w-xs bg-blue-600 text-lg font-semibold hover:bg-blue-700">
 						<span className="relative z-10">
-							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
+							{product.type === 'membership'
+								? 'Subscribe'
+								: product.type === 'cohort'
+									? 'Enroll'
+									: 'Buy Now'}
 						</span>
 						<div
 							style={{

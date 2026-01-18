@@ -63,12 +63,7 @@ export const PricingWidget: React.FC<{
 				<Pricing.Details className="pt-0">
 					<Pricing.Name />
 					<Pricing.LiveQuantity className="bg-primary/10 text-primary px-2 pb-1 font-semibold" />
-					<div className="flex items-center gap-1">
-						<Pricing.Price />
-						{product.type === 'membership' && (
-							<span className="text-xl opacity-80">/ year</span>
-						)}
-					</div>
+					<Pricing.Price />
 
 					{pricingWidgetOptions?.allowTeamPurchase && (
 						<>
@@ -77,7 +72,7 @@ export const PricingWidget: React.FC<{
 						</>
 					)}
 					<Pricing.BuyButton className="from-primary bg-linear-to-bl text-white! relative my-3 w-auto min-w-[260px] origin-bottom rounded-md to-indigo-800 px-6 py-6 text-lg font-semibold shadow-lg shadow-indigo-800/30 transition ease-in-out hover:hue-rotate-[8deg]">
-						{ctaLabel}
+						{product.type === 'membership' ? 'Subscribe' : ctaLabel}
 					</Pricing.BuyButton>
 					<Pricing.GuaranteeBadge />
 					<Pricing.LiveRefundPolicy />

@@ -1,0 +1,15 @@
+---
+description: no dynamic imports - always use static imports at the top of the file
+globs: *.tsx, *.ts
+---
+
+- never use inline imports in type annotations like `import('module').Type`
+- never use dynamic imports like `await import('module')` or
+  `const x = await import('module')`
+- always import types and modules at the top of the file using standard import
+  statements
+- prefer
+  `import type { Subscription } from '@coursebuilder/core/schemas/subscription'`
+  over inline `import('@coursebuilder/core/schemas/subscription').Subscription`
+- if you think you need dynamic imports for code splitting, use Next.js
+  `dynamic()` instead

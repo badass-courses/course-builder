@@ -10,6 +10,7 @@ import { ChevronDownIcon } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 import {
+	Badge,
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuLabel,
@@ -28,6 +29,9 @@ export const UserMenu = () => {
 	const { data: sessionData, status: sessionStatus } = useSession()
 	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
+
+	const { data: hasActiveSubscription } =
+		api.ability.hasActiveSubscription.useQuery()
 
 	const canViewTeam = ability.can('invite', 'Team')
 	const canCreateContent = ability.can('create', 'Content')
@@ -76,6 +80,14 @@ export const UserMenu = () => {
 						<span className="w-full max-w-[20ch] truncate overflow-ellipsis">
 							{sessionData.user.name?.split(' ')[0] || 'Account'}
 						</span>
+						{hasActiveSubscription && (
+							<Badge
+								variant="default"
+								className="bg-gradient-to-r from-amber-500 to-orange-500 px-1.5 py-0 text-[10px] font-bold text-white"
+							>
+								PRO
+							</Badge>
+						)}
 						<ChevronDownIcon className="size-4" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>

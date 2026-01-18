@@ -193,6 +193,15 @@ export interface PaymentsAdapter {
 	): Promise<Stripe.Response<Stripe.Product>>
 	getSubscription(subscriptionId: string): Promise<Stripe.Subscription>
 	getBillingPortalUrl(customerId: string, returnUrl: string): Promise<string>
+	/**
+	 * Updates the quantity of a subscription item (for team seat management).
+	 * @param subscriptionId - The Stripe subscription ID
+	 * @param newQuantity - The new quantity for the subscription item
+	 */
+	updateSubscriptionItemQuantity(
+		subscriptionId: string,
+		newQuantity: number,
+	): Promise<Stripe.SubscriptionItem>
 }
 
 export type InternalProvider<T = ProviderType> = T extends 'transcription'

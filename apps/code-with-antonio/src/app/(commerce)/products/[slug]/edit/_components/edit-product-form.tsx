@@ -163,6 +163,8 @@ export function EditProductForm({ product }: { product: Product }) {
 					? new Date(product.fields.closeEnrollment).toISOString()
 					: null,
 				discordRoleId: product.fields.discordRoleId ?? '',
+				billingInterval: product.fields.billingInterval ?? 'year',
+				tier: product.fields.tier ?? 'standard',
 			},
 		},
 	})
@@ -296,6 +298,75 @@ export function EditProductForm({ product }: { product: Product }) {
 					)
 				}}
 			/>
+			{/* Membership-specific fields */}
+			{form.watch('type') === 'membership' && (
+				<>
+					<FormField
+						control={form.control}
+						name="fields.billingInterval"
+						render={({ field }) => {
+							return (
+								<FormItem className="px-5">
+									<FormLabel className="text-lg font-bold">
+										Billing Interval
+									</FormLabel>
+									<FormDescription className="mt-2 text-sm">
+										How often should subscribers be billed?
+									</FormDescription>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value || 'year'}
+									>
+										<FormControl>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Select billing interval..." />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											<SelectItem value="month">Monthly</SelectItem>
+											<SelectItem value="year">Yearly</SelectItem>
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)
+						}}
+					/>
+					<FormField
+						control={form.control}
+						name="fields.tier"
+						render={({ field }) => {
+							return (
+								<FormItem className="px-5">
+									<FormLabel className="text-lg font-bold">
+										Subscription Tier
+									</FormLabel>
+									<FormDescription className="mt-2 text-sm">
+										What tier of access does this membership grant? Pro
+										subscribers can access all content including pro-tier
+										resources.
+									</FormDescription>
+									<Select
+										onValueChange={field.onChange}
+										defaultValue={field.value || 'standard'}
+									>
+										<FormControl>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Select tier..." />
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											<SelectItem value="standard">Standard</SelectItem>
+											<SelectItem value="pro">Pro</SelectItem>
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)
+						}}
+					/>
+				</>
+			)}
 			<FormField
 				control={form.control}
 				name="fields.openEnrollment"

@@ -3,6 +3,11 @@ import LayoutClient from '@/components/layout-client'
 import { courseBuilderAdapter, db } from '@/db'
 import { coupon } from '@/db/schema'
 import { getPricingData } from '@/lib/pricing-query'
+import {
+	getTeamSubscriptionsForUser,
+	hasUserClaimedSeat,
+	type TeamSubscription,
+} from '@/lib/team-subscriptions'
 import { getServerAuthSession } from '@/server/auth'
 import { eq } from 'drizzle-orm'
 
@@ -24,10 +29,14 @@ export type TeamPageData = {
 			availableUpgrades: UpgradableProduct[]
 		} | null
 	}[]
-
+	teamSubscriptions: Array<TeamSubscription & { userHasClaimed: boolean }>
 	user?: User | null
 }
 
+/**
+ * Loads data for the team management page.
+ * Includes both bulk purchases (coupon-based teams) and subscription teams.
+ */
 async function teamPageDataLoader(): Promise<TeamPageData> {
 	const { getPurchasesForUser, getPurchaseDetails } = courseBuilderAdapter
 
@@ -37,22 +46,16 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 	if (!user) {
 		return {
 			bulkPurchases: [],
+			teamSubscriptions: [],
 			user,
 		}
 	}
 
+	// Load bulk purchases
 	const purchases = await getPurchasesForUser(user.id)
-
 	const bulkPurchasesData = purchases.filter(
 		(purchase) => purchase.bulkCouponId,
 	)
-
-	if (!bulkPurchasesData.length) {
-		return {
-			bulkPurchases: [],
-			user,
-		}
-	}
 
 	const bulkPurchases = await Promise.all(
 		bulkPurchasesData.map(async (bulkPurchase) => {
@@ -78,8 +81,20 @@ async function teamPageDataLoader(): Promise<TeamPageData> {
 		}),
 	)
 
+	// Load team subscriptions (seats > 1, user is owner)
+	const teamSubscriptions = await getTeamSubscriptionsForUser(user.id)
+
+	// Check if user has claimed a seat on each subscription
+	const teamSubscriptionsWithClaimStatus = await Promise.all(
+		teamSubscriptions.map(async (sub) => ({
+			...sub,
+			userHasClaimed: await hasUserClaimedSeat(sub.subscription.id, user.id),
+		})),
+	)
+
 	return {
 		bulkPurchases,
+		teamSubscriptions: teamSubscriptionsWithClaimStatus,
 		user,
 	}
 }

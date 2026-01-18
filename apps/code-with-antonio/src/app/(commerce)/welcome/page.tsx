@@ -1,11 +1,16 @@
 import * as React from 'react'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { WelcomeTeamWidget } from '@/app/(commerce)/welcome/welcome-team-widget'
 import LayoutClient from '@/components/layout-client'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { getSubscription } from '@/lib/subscriptions'
+import {
+	getTeamSubscription,
+	hasUserClaimedSeat,
+} from '@/lib/team-subscriptions'
 import {
 	discordAccountsForCurrentUser,
 	githubAccountsForCurrentUser,
@@ -16,8 +21,12 @@ import {
 	initiatePurchaseTransfer,
 } from '@/purchase-transfer/purchase-transfer-actions'
 import { authOptions, getServerAuthSession } from '@/server/auth'
+import { subject } from '@casl/ability'
 
-import { SubscriptionWelcomePage } from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
+import {
+	SubscriptionWelcomePage,
+	type StripeSubscriptionData,
+} from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
@@ -136,7 +145,7 @@ const Welcome = async (props: {
 }) => {
 	const searchParams = await props.searchParams
 	await headers()
-	const { session } = await getServerAuthSession()
+	const { session, ability } = await getServerAuthSession()
 
 	const { purchaseId, subscriptionId } = searchParams
 
@@ -207,30 +216,78 @@ const Welcome = async (props: {
 			redirect(`/`)
 		}
 
-		const stripeSubscription = await stripeProvider.getSubscription(
+		const rawStripeSubscription = await stripeProvider.getSubscription(
 			subscription?.merchantSubscription?.identifier,
 		)
 
-		const billingPortalUrl = await stripeProvider.getBillingPortalUrl(
-			typeof stripeSubscription.customer === 'string'
-				? stripeSubscription.customer
-				: stripeSubscription.customer.id,
-			`${env.COURSEBUILDER_URL}/welcome?subscriptionId=${subscription.id}`,
-		)
+		// Extract only serializable data from Stripe subscription
+		const stripeSubscription: StripeSubscriptionData = {
+			status: rawStripeSubscription.status,
+			quantity: rawStripeSubscription.items.data[0]?.quantity ?? 1,
+			interval:
+				rawStripeSubscription.items.data[0]?.price.recurring?.interval ??
+				'month',
+			currentPeriodEnd: rawStripeSubscription.current_period_end,
+			cancelAtPeriodEnd: rawStripeSubscription.cancel_at_period_end,
+			unitAmount:
+				rawStripeSubscription.items.data[0]?.price.unit_amount ?? null,
+			currency: rawStripeSubscription.items.data[0]?.price.currency ?? 'usd',
+		}
+
+		// Only provide billing portal URL if user can manage billing for the org
+		// Uses organization role permissions - only owners/admins can manage billing
+		let billingPortalUrl: string | null = null
+		const canManageBilling =
+			subscription.organizationId &&
+			ability.can(
+				'read',
+				subject('OrganizationBilling', {
+					organizationId: subscription.organizationId,
+				}),
+			)
+
+		if (canManageBilling) {
+			billingPortalUrl = await stripeProvider.getBillingPortalUrl(
+				typeof rawStripeSubscription.customer === 'string'
+					? rawStripeSubscription.customer
+					: rawStripeSubscription.customer.id,
+				`${env.COURSEBUILDER_URL}/welcome?subscriptionId=${subscription.id}`,
+			)
+		}
 
 		const isGithubConnected = await githubAccountsForCurrentUser()
 		const isDiscordConnected = await discordAccountsForCurrentUser()
 
+		// Check if this is a team subscription (seats > 1)
+		let teamSection: React.ReactNode = null
+
+		if (stripeSubscription.quantity > 1 && session?.user?.id) {
+			const teamSub = await getTeamSubscription(subscriptionId, session.user.id)
+			if (teamSub) {
+				const userHasClaimed = await hasUserClaimedSeat(
+					subscriptionId,
+					session.user.id,
+				)
+				teamSection = (
+					<WelcomeTeamWidget
+						teamSubscription={{ ...teamSub, userHasClaimed }}
+						userEmail={session?.user?.email}
+					/>
+				)
+			}
+		}
+
 		return (
-			<div className="">
+			<LayoutClient withContainer>
 				<SubscriptionWelcomePage
 					subscription={subscription}
 					stripeSubscription={stripeSubscription}
 					isGithubConnected={isGithubConnected}
 					isDiscordConnected={isDiscordConnected}
 					billingPortalUrl={billingPortalUrl}
+					teamSection={teamSection}
 				/>
-			</div>
+			</LayoutClient>
 		)
 	}
 }

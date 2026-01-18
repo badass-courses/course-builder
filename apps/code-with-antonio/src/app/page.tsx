@@ -52,15 +52,15 @@ const Home = async (props: Props) => {
 	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
 	// 	await getPricingProps({ searchParams })
 	const isCommerceEnabled = await commerceEnabled()
-	const page = await getPage('homepage-default')
-	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
-		title: page.resources[0]?.resource?.fields?.title,
-	}
+	// const page = await getPage('homepage-default')
+	// const firstPageResource = page?.resources?.[0] && {
+	// 	path: page.resources[0]?.resource?.fields?.slug,
+	// 	title: page.resources[0]?.resource?.fields?.title,
+	// }
 	const searchParams = await props.searchParams
 	const activeCoupon = await getActiveCoupon(searchParams)
 	const saleBannerData = await getSaleBannerData(activeCoupon)
-	const { content: bodyContent } = await compileMDX(page?.fields?.body || '')
+	// const { content: bodyContent } = await compileMDX(page?.fields?.body || '')
 	const workshops = await getAllWorkshops()
 	return (
 		<LayoutClient
@@ -93,7 +93,7 @@ const Home = async (props: Props) => {
 						</div>
 					</div>
 				</section>
-				<section>
+				{/* <section>
 					<div className="container py-8 sm:py-20">
 						<ResourceTeaser
 							label="New Cohort-based Course"
@@ -106,32 +106,34 @@ const Home = async (props: Props) => {
 							thumbnailUrl="https://res.cloudinary.com/dezn0ffbx/image/upload/v1760523672/thumbnail-cohort_2x_wwn6oa.jpg"
 						/>
 					</div>
-				</section>
-				<section className="bg-muted">
-					<div className="container pb-0 pt-7 md:py-20">
-						<div className="flex w-full items-center justify-between pb-5 md:pb-16">
-							<h2 className="text-foreground text-2xl font-medium leading-9 md:text-3xl">
-								Featured Self-paced Courses
-							</h2>
+				</section> */}
+				{workshops && workshops.length > 0 && (
+					<section className="bg-muted">
+						<div className="container pb-0 pt-7 md:py-20">
+							<div className="flex w-full items-center justify-between pb-5 md:pb-16">
+								<h2 className="text-foreground text-2xl font-medium leading-9 md:text-3xl">
+									Featured Self-paced Courses
+								</h2>
+							</div>
+							<div className="-mx-6 flex snap-x flex-row gap-5 overflow-x-auto px-6 pb-5 md:mx-0 md:grid md:grid-cols-3 md:px-0 md:pb-0 [&_a]:shrink-0 [&_a]:basis-2/3 [&_a]:snap-center">
+								{workshops.map((workshop) => (
+									<ResourceTeaser
+										key={workshop.id}
+										variant="card"
+										title={workshop.fields.title}
+										metadata={`${workshop.resources?.length ?? 0} chapters`}
+										tags={
+											workshop.tags?.map((tag) => tag.tag.fields?.label) ?? []
+										}
+										href={`/workshops/${workshop.fields.slug}`}
+										// thumbnailBadge="FREE"
+										thumbnailUrl={workshop.fields.coverImage?.url}
+									/>
+								))}
+							</div>
 						</div>
-						<div className="-mx-6 flex snap-x flex-row gap-5 overflow-x-auto px-6 pb-5 md:mx-0 md:grid md:grid-cols-3 md:px-0 md:pb-0 [&_a]:shrink-0 [&_a]:basis-2/3 [&_a]:snap-center">
-							{workshops.map((workshop) => (
-								<ResourceTeaser
-									key={workshop.id}
-									variant="card"
-									title={workshop.fields.title}
-									metadata={`${workshop.resources?.length ?? 0} chapters`}
-									tags={
-										workshop.tags?.map((tag) => tag.tag.fields?.label) ?? []
-									}
-									href={`/workshops/${workshop.fields.slug}`}
-									// thumbnailBadge="FREE"
-									thumbnailUrl={workshop.fields.coverImage?.url}
-								/>
-							))}
-						</div>
-					</div>
-				</section>
+					</section>
+				)}
 				<section>
 					<div className="container flex grid-cols-2 flex-col-reverse items-center gap-7 py-7 md:grid md:gap-16 md:py-20">
 						<div className="flex flex-col items-center gap-4 text-center md:items-start md:text-left">

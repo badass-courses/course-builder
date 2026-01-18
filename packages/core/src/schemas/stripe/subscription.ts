@@ -11,8 +11,12 @@ export const stripeSubscriptionSchema = z.object({
 		'incomplete',
 		'incomplete_expired',
 		'trialing',
+		'paused',
 	]),
 	customer: z.string(),
+	current_period_end: z.number().optional(),
+	cancel_at: z.number().nullable().optional(),
+	cancel_at_period_end: z.boolean().optional(),
 	items: z.object({
 		data: z.array(
 			z.object({

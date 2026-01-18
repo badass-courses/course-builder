@@ -4,10 +4,12 @@ import { courseBuilderAdapter } from '@/db'
 import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import {
+	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
 	getWorkshopProduct,
 } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 
 import { propsForCommerce } from '@coursebuilder/core/pricing/props-for-commerce'
 import { productSchema, type Purchase } from '@coursebuilder/core/schemas'
@@ -70,25 +72,52 @@ export async function WorkshopPricing({
 				},
 			)
 
-			if (!purchaseForProduct) {
+			// Get workshop resource to check ability (cached)
+			const workshop = await getCachedMinimalWorkshop(moduleSlug)
+
+			// Use ability system to check if user can view workshop
+			// This handles both direct purchases AND subscription entitlements
+			const { canViewWorkshop } = workshop
+				? await getAbilityForResource(undefined, workshop.id)
+				: { canViewWorkshop: false }
+
+			if (!purchaseForProduct && !canViewWorkshop) {
 				workshopProps = baseProps
 			} else {
-				const { purchase, existingPurchase } =
-					await courseBuilderAdapter.getPurchaseDetails(
-						purchaseForProduct.id,
-						user.id,
-					)
-				const purchasedProductIds =
-					commerceProps?.purchases?.map((purchase) => purchase.productId) || []
-				workshopProps = {
-					...baseProps,
-					hasPurchasedCurrentProduct: Boolean(
-						purchase &&
-							(purchase.status === 'Valid' || purchase.status === 'Restricted'),
-					),
-					existingPurchase,
-					quantityAvailable: product.quantityAvailable,
-					purchasedProductIds,
+				let hasPurchasedCurrentProduct = canViewWorkshop
+
+				if (purchaseForProduct) {
+					const { purchase, existingPurchase } =
+						await courseBuilderAdapter.getPurchaseDetails(
+							purchaseForProduct.id,
+							user.id,
+						)
+					hasPurchasedCurrentProduct =
+						hasPurchasedCurrentProduct ||
+						Boolean(
+							purchase &&
+								(purchase.status === 'Valid' ||
+									purchase.status === 'Restricted'),
+						)
+					workshopProps = {
+						...baseProps,
+						hasPurchasedCurrentProduct,
+						existingPurchase,
+						quantityAvailable: product.quantityAvailable,
+						purchasedProductIds:
+							commerceProps?.purchases?.map((purchase) => purchase.productId) ||
+							[],
+					}
+				} else {
+					// User has access via subscription/entitlement but no direct purchase
+					workshopProps = {
+						...baseProps,
+						hasPurchasedCurrentProduct: true,
+						quantityAvailable: product.quantityAvailable,
+						purchasedProductIds:
+							commerceProps?.purchases?.map((purchase) => purchase.productId) ||
+							[],
+					}
 				}
 			}
 		}
