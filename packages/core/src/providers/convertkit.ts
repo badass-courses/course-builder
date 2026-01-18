@@ -273,7 +273,7 @@ export async function subscribeToEndpoint({
 	if (!endPoint) {
 		throw new Error('No endPoint provided')
 	}
-	return await fetch(`${convertkitBaseUrl}${endPoint}`, {
+	const response = await fetch(`${convertkitBaseUrl}${endPoint}`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json; charset=utf-8',
@@ -283,16 +283,21 @@ export async function subscribeToEndpoint({
 			api_key: convertkitApiKey,
 		}),
 	})
-		.then((res) => res.json())
-		.then(
-			({ subscription }: { subscription: { subscriber: { id: number } } }) => {
-				return subscription.subscriber
-			},
+
+	const data = await response.json()
+
+	if (!response.ok) {
+		const errorMessage = data?.error || data?.message || 'ConvertKit API error'
+		throw new Error(`ConvertKit subscription failed: ${errorMessage}`)
+	}
+
+	if (!data?.subscription?.subscriber) {
+		throw new Error(
+			`Unexpected ConvertKit response structure: ${JSON.stringify(data)}`,
 		)
-		.catch((error) => {
-			console.error(error)
-			throw error
-		})
+	}
+
+	return data.subscription.subscriber
 }
 
 async function fetchSubscriber({

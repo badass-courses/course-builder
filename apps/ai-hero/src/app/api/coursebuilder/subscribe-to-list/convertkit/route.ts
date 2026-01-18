@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
-import { coursebuilder } from '@/coursebuilder/course-builder-config'
+import { POST as courseBuilderPOST } from '@/coursebuilder/course-builder-config'
 import { createShortlinkAttribution } from '@/lib/shortlinks-query'
 
 /**
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 	})
 
 	// Get the original response from coursebuilder
-	const response = await coursebuilder.POST(clonedRequest)
+	const response = await courseBuilderPOST(clonedRequest)
 
 	// Only track attribution on successful subscriptions (status 200)
 	if (response.status === 200 && email) {
