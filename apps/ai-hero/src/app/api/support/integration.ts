@@ -391,8 +391,8 @@ function getQuickLinks(): ContentSearchResult[] {
 		{
 			id: 'quick-twitter',
 			type: 'social',
-			title: 'AI Hero on Twitter',
-			url: 'https://twitter.com/aaborisag',
+			title: 'Matt Pocock on Twitter',
+			url: 'https://x.com/mattpocockuk',
 		},
 		{
 			id: 'quick-support',
