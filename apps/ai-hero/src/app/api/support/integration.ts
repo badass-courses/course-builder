@@ -1,11 +1,4 @@
-import { courseBuilderAdapter, db } from '@/db'
-import {
-	merchantCharge,
-	products,
-	purchases,
-	purchaseUserTransfer,
-	users,
-} from '@/db/schema'
+import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import type {
 	ActionResult,
@@ -13,7 +6,6 @@ import type {
 	SupportIntegration,
 	User,
 } from '@skillrecordings/sdk/integration'
-import { eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -21,23 +13,23 @@ import { v4 as uuidv4 } from 'uuid'
  *
  * Implements the SupportIntegration interface to allow the support agent
  * to look up users, purchases, and perform actions like refunds and transfers.
+ *
+ * Uses courseBuilderAdapter for all database operations to ensure consistency
+ * with the rest of the application (organization setup, proper relations, etc.)
  */
 export const integration: SupportIntegration = {
 	/**
 	 * Look up user by email address
 	 */
 	async lookupUser(email: string): Promise<User | null> {
-		const user = await db.query.users.findFirst({
-			where: eq(users.email, email),
-		})
-
+		const user = await courseBuilderAdapter.getUserByEmail?.(email)
 		if (!user) return null
 
 		return {
 			id: user.id,
 			email: user.email,
 			name: user.name ?? undefined,
-			createdAt: user.createdAt ?? new Date(),
+			createdAt: new Date(), // Adapter doesn't return createdAt
 		}
 	},
 
@@ -45,23 +37,17 @@ export const integration: SupportIntegration = {
 	 * Get all purchases for a user
 	 */
 	async getPurchases(userId: string): Promise<Purchase[]> {
-		const userPurchases = await db.query.purchases.findMany({
-			where: eq(purchases.userId, userId),
-			with: {
-				product: true,
-				merchantCharge: true,
-			},
-		})
+		const userPurchases = await courseBuilderAdapter.getPurchasesForUser(userId)
 
 		return userPurchases.map((p) => ({
 			id: p.id,
 			productId: p.productId,
 			productName: p.product?.name ?? 'Unknown Product',
 			purchasedAt: p.createdAt,
-			amount: Math.round(parseFloat(p.totalAmount) * 100), // Convert to cents
+			amount: Math.round(Number(p.totalAmount) * 100), // Convert to cents
 			currency: 'USD',
-			stripeChargeId: p.merchantCharge?.identifier ?? undefined,
-			status: mapPurchaseStatus(p.status),
+			stripeChargeId: p.merchantChargeId ?? undefined,
+			status: mapPurchaseStatus(p.status ?? 'Valid'),
 		}))
 	},
 
@@ -78,17 +64,24 @@ export const integration: SupportIntegration = {
 		refundId: string
 	}): Promise<ActionResult> {
 		try {
-			await db
-				.update(purchases)
-				.set({
-					status: 'Refunded',
-					fields: {
-						refundReason: reason,
-						stripeRefundId: refundId,
-						refundedAt: new Date().toISOString(),
-					},
-				})
-				.where(eq(purchases.id, purchaseId))
+			// Get the purchase to find the charge ID
+			const purchase = await courseBuilderAdapter.getPurchase(purchaseId)
+			if (!purchase) {
+				return { success: false, error: 'Purchase not found' }
+			}
+
+			if (!purchase.merchantChargeId) {
+				return {
+					success: false,
+					error: 'No charge ID associated with purchase',
+				}
+			}
+
+			// Use adapter to update purchase status
+			await courseBuilderAdapter.updatePurchaseStatusForCharge(
+				purchase.merchantChargeId,
+				'Refunded',
+			)
 
 			return { success: true }
 		} catch (error) {
@@ -112,45 +105,24 @@ export const integration: SupportIntegration = {
 		toEmail: string
 	}): Promise<ActionResult> {
 		try {
-			// Find or create the target user
-			let toUser = await db.query.users.findFirst({
-				where: eq(users.email, toEmail),
-			})
+			// Find or create the target user via adapter
+			const { user: toUser } =
+				await courseBuilderAdapter.findOrCreateUser(toEmail)
 
 			if (!toUser) {
-				// Create user directly via database insert
-				const newUserId = uuidv4()
-				await db.insert(users).values({
-					id: newUserId,
-					email: toEmail,
-				})
-				toUser = await db.query.users.findFirst({
-					where: eq(users.id, newUserId),
-				})
-				if (!toUser) {
-					return { success: false, error: 'Failed to create user' }
-				}
+				return { success: false, error: 'Failed to find or create user' }
 			}
 
-			// Record the transfer
-			await db.insert(purchaseUserTransfer).values({
-				id: uuidv4(),
+			// Use adapter to transfer the purchase
+			const transfer = await courseBuilderAdapter.transferPurchaseToUser({
 				purchaseId,
 				sourceUserId: fromUserId,
 				targetUserId: toUser.id,
-				transferState: 'COMPLETED',
-				createdAt: new Date(),
-				completedAt: new Date(),
 			})
 
-			// Update purchase ownership
-			await db
-				.update(purchases)
-				.set({
-					userId: toUser.id,
-					status: 'Transferred',
-				})
-				.where(eq(purchases.id, purchaseId))
+			if (!transfer) {
+				return { success: false, error: 'Transfer failed' }
+			}
 
 			return { success: true }
 		} catch (error) {
@@ -200,18 +172,17 @@ export const integration: SupportIntegration = {
 	}): Promise<ActionResult> {
 		try {
 			// Check if email is already taken
-			const existing = await db.query.users.findFirst({
-				where: eq(users.email, newEmail),
-			})
+			const existing = await courseBuilderAdapter.getUserByEmail?.(newEmail)
 
 			if (existing && existing.id !== userId) {
 				return { success: false, error: 'Email already in use' }
 			}
 
-			await db
-				.update(users)
-				.set({ email: newEmail })
-				.where(eq(users.id, userId))
+			// Use adapter's updateUser method with just the fields to update
+			await courseBuilderAdapter.updateUser?.({
+				id: userId,
+				email: newEmail,
+			})
 
 			return { success: true }
 		} catch (error) {
@@ -233,7 +204,11 @@ export const integration: SupportIntegration = {
 		newName: string
 	}): Promise<ActionResult> {
 		try {
-			await db.update(users).set({ name: newName }).where(eq(users.id, userId))
+			// Use adapter's updateUser method with just the fields to update
+			await courseBuilderAdapter.updateUser?.({
+				id: userId,
+				name: newName,
+			})
 
 			return { success: true }
 		} catch (error) {
