@@ -15,6 +15,7 @@ import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/comm
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
 import { parseSubscriptionInfoFromCheckoutSession } from '@coursebuilder/core/lib/pricing/stripe-subscription-utils'
 import { User } from '@coursebuilder/core/schemas'
+import type { SubscriptionTier } from '@coursebuilder/core/schemas'
 import { checkoutSessionCompletedEvent } from '@coursebuilder/core/schemas/stripe/checkout-session-completed'
 
 /**
@@ -251,7 +252,7 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 
 					// Load product to get tier information
 					const product = await db.getProduct(merchantProduct.productId)
-					const tier = product?.fields?.tier || 'standard'
+					const tier = (product?.fields?.tier as SubscriptionTier) || 'standard'
 
 					// Convert expiration to Date - Inngest serializes Date objects to ISO strings
 					const expiresAt = subscriptionInfo.currentPeriodEnd
@@ -277,8 +278,7 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 			const product = await step.run('get product for email', async () => {
 				return await db.getProduct(merchantProduct.productId)
 			})
-			const productName =
-				product?.name || product?.fields?.name || 'Subscription'
+			const productName = product?.name || 'Subscription'
 
 			// Send welcome email
 			await step.run('send subscription welcome email', async () => {

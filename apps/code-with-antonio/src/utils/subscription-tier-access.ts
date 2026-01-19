@@ -10,7 +10,9 @@
  * - No subscription: Access to 'free' content only (if any)
  */
 
-export type SubscriptionTier = 'pro' | 'standard' | null
+import type { SubscriptionTier } from '@coursebuilder/core/schemas'
+
+export type { SubscriptionTier }
 export type ResourceTier = 'pro' | 'standard' | 'free' | undefined | null
 
 /**
