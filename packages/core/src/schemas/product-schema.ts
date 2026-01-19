@@ -19,7 +19,10 @@ export type ProductType = z.infer<typeof ProductTypeSchema>
  * - pro: Access to all content including pro tier
  * - null: No tier specified (e.g., non-membership products)
  */
-export const SubscriptionTierSchema = z.enum(['standard', 'pro']).nullable()
+export const SubscriptionTierSchema = z
+	.enum(['standard', 'pro'])
+	.optional()
+	.nullable()
 
 export type SubscriptionTier = z.infer<typeof SubscriptionTierSchema>
 
