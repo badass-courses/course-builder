@@ -17,6 +17,10 @@ import { integration } from '../integration'
  *
  * All requests are authenticated via HMAC-SHA256 signature.
  */
+if (!env.SUPPORT_WEBHOOK_SECRET) {
+	throw new Error('SUPPORT_WEBHOOK_SECRET is required for support integration')
+}
+
 const handler = createSupportHandler({
 	integration,
 	webhookSecret: env.SUPPORT_WEBHOOK_SECRET,
