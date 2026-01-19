@@ -386,7 +386,7 @@ function getQuickLinks(): ContentSearchResult[] {
 			id: 'quick-discord',
 			type: 'social',
 			title: 'AI Hero Discord',
-			url: 'https://discord.gg/aihero',
+			url: 'https://aihero.dev/discord',
 		},
 		{
 			id: 'quick-twitter',
