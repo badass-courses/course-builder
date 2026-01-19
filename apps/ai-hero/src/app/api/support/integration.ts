@@ -13,7 +13,7 @@ import type {
 	SupportIntegration,
 	User,
 } from '@skillrecordings/sdk/integration'
-import { and, eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -118,15 +118,18 @@ export const integration: SupportIntegration = {
 			})
 
 			if (!toUser) {
-				// Create user via adapter to ensure proper setup
-				const newUser = await courseBuilderAdapter.createUser?.({
+				// Create user directly via database insert
+				const newUserId = uuidv4()
+				await db.insert(users).values({
+					id: newUserId,
 					email: toEmail,
-					emailVerified: null,
 				})
-				if (!newUser) {
+				toUser = await db.query.users.findFirst({
+					where: eq(users.id, newUserId),
+				})
+				if (!toUser) {
 					return { success: false, error: 'Failed to create user' }
 				}
-				toUser = newUser as typeof toUser
 			}
 
 			// Record the transfer
