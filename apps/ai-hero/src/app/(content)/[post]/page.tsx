@@ -79,6 +79,10 @@ export default async function PostPage(props: {
 			resource.type === 'videoResource',
 	)
 
+	const markdownToCopy = `# ${post?.fields?.title}
+
+${post?.fields?.body}`
+
 	return (
 		<main className="bg-card w-full dark:bg-transparent">
 			{hasVideo && <PlayerContainer post={post} />}
@@ -121,34 +125,42 @@ export default async function PostPage(props: {
 						<div className="mx-auto flex w-full flex-col gap-5 px-5 md:px-10 lg:px-14">
 							<PostTitle post={post} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
-								<div className="flex items-center gap-8">
+								<div className="flex w-full flex-wrap items-center gap-5">
 									<Contributor className="flex [&_img]:w-8" />
-									{post.fields?.github && (
-										<Button
-											asChild
-											variant="outline"
-											className="h-11 text-base"
-										>
-											<Link href={post.fields?.github} target="_blank">
-												<Github className="text-muted-foreground size-4" />
-												Source Code
-											</Link>
-										</Button>
-									)}
-									{post.fields?.body && (
-										<OpenIn query={post.fields?.body}>
-											<OpenInTrigger label="Use with AI" />
-											<OpenInContent>
-												<CopyAsMarkdown />
-												<OpenInChatGPT />
+									<div
+										className={cn('flex flex-wrap items-center gap-2', {
+											'grid w-full grid-cols-2 sm:flex sm:w-auto':
+												post.fields?.github,
+										})}
+									>
+										{post.fields?.github && (
+											<Button
+												asChild
+												size="default"
+												variant="outline"
+												className=""
+											>
+												<Link href={post.fields?.github} target="_blank">
+													<Github className="text-muted-foreground size-4" />
+													Source Code
+												</Link>
+											</Button>
+										)}
+										{post.fields?.body && (
+											<OpenIn query={markdownToCopy}>
+												<OpenInTrigger label="Use with AI" />
+												<OpenInContent>
+													<CopyAsMarkdown />
+													{/* <OpenInChatGPT />
 												<OpenInClaude />
 												<OpenInCursor />
 												<OpenInT3 />
 												<OpenInScira />
-												<OpenInv0 />
-											</OpenInContent>
-										</OpenIn>
-									)}
+												<OpenInv0 /> */}
+												</OpenInContent>
+											</OpenIn>
+										)}
+									</div>
 								</div>
 								<Suspense fallback={null}>
 									<PostActionBar post={post} />
