@@ -1,8 +1,10 @@
 import * as React from 'react'
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { CldImage } from '@/components/cld-image'
 import { Contributor } from '@/components/contributor'
+import LayoutClient from '@/components/layout-client'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { EventSchema } from '@/lib/events'
@@ -21,42 +23,47 @@ import {
 } from '@coursebuilder/ui'
 
 export const metadata: Metadata = {
-	title: 'Live Events & Workshops hosted by Matt Pocock',
+	title: 'Live Workshops hosted by Matt Pocock',
 }
 
 export default async function EventIndexPage() {
 	const { ability } = await getServerAuthSession()
 
 	return (
-		<>
-			<main className="container relative flex h-full min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-0 lg:border-x">
-				<div className="max-w-(--breakpoint-md) w-full border-b px-5 py-16 md:border-dashed">
-					<h1 className="font-heading text-center text-5xl font-bold">
-						<span className="text-stroke-1 text-stroke-primary text-stroke-fill-background">
-							Live
-						</span>{' '}
-						<span className="text-gray-100">Events & Workshops</span>
-					</h1>
-				</div>
-				<EventsList />
+		<LayoutClient withContainer>
+			<main className="flex min-h-[calc(100vh-var(--nav-height))] flex-col items-center px-5 py-16">
+				<h1 className="font-heading text-center text-5xl font-bold">
+					Live Workshops
+				</h1>
+				<h2 className="mt-3 inline-flex items-center gap-2 text-center text-xl font-normal">
+					Hosted by{' '}
+					<Image
+						src={'/matt-pocock.jpg'}
+						alt="Matt Pocock"
+						width={40}
+						height={40}
+						className="rounded-full"
+					/>{' '}
+					Matt Pocock
+				</h2>
+				<EventsList ability={ability} />
 				{ability.can('update', 'Content') ? (
-					<div className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full items-center justify-center border-t border-dashed py-10">
+					<div className="max-w-(--breakpoint-md) mx-auto mt-10 flex w-full items-center justify-center py-10">
 						<Button asChild variant="secondary">
 							<Link href={`/events/new`}>New Event</Link>
 						</Button>
 					</div>
 				) : null}
-				<div
-					className="max-w-(--breakpoint-md) absolute top-0 -z-10 h-full w-full border-dashed md:border-x"
-					aria-hidden="true"
-				/>
 			</main>
-		</>
+		</LayoutClient>
 	)
 }
 
-async function EventsList() {
-	const { ability } = await getServerAuthSession()
+async function EventsList({
+	ability,
+}: {
+	ability: Awaited<ReturnType<typeof getServerAuthSession>>['ability']
+}) {
 	const eventsModule = await db.query.contentResource.findMany({
 		where: eq(contentResource.type, 'event'),
 		with: {
@@ -87,8 +94,12 @@ async function EventsList() {
 	)
 
 	return (
-		<ul className="max-w-(--breakpoint-md) mx-auto mt-8 flex w-full flex-col gap-5 px-8 md:px-8">
-			{publicEvents.length === 0 && <p>There are no public events.</p>}
+		<ul className="mx-auto mt-16 flex w-full flex-col gap-5">
+			{publicEvents.length === 0 && (
+				<p className="w-full text-center">
+					There are no public live workshops.
+				</p>
+			)}
 			{events.map((event) => {
 				const { fields } = event
 				const { startsAt, endsAt } = fields

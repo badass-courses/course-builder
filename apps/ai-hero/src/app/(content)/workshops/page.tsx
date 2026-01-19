@@ -59,7 +59,7 @@ export default async function Workshops(props: {
 						</h1>
 					</div>
 					<div className="relative w-full">
-						<WorkshopsList />
+						<WorkshopsList ability={ability} />
 						{ability.can('update', 'Content') ? (
 							<div className="mx-auto flex w-full items-center justify-center py-16">
 								<Button asChild variant="secondary" className="gap-1">
@@ -95,7 +95,11 @@ export default async function Workshops(props: {
 	)
 }
 
-async function WorkshopsList() {
+async function WorkshopsList({
+	ability,
+}: {
+	ability: Awaited<ReturnType<typeof getServerAuthSession>>['ability']
+}) {
 	const products = await db.query.contentResourceProduct.findMany({
 		with: {
 			resource: {
@@ -124,7 +128,6 @@ async function WorkshopsList() {
 		[...allWorkshops, ...cohorts],
 		(item) => item.id,
 	) as ContentResource[]
-	const { ability } = await getServerAuthSession()
 
 	const canEdit = ability.can('create', 'Content')
 	if (canEdit) {

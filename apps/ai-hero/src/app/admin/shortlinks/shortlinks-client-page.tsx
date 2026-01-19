@@ -7,10 +7,14 @@ import {
 	deleteShortlink,
 	updateShortlink,
 } from '@/lib/shortlinks-query'
-import { Shortlink } from '@/lib/shortlinks-types'
+import {
+	RecentClickStats,
+	ShortlinkWithAttributions,
+} from '@/lib/shortlinks-types'
 import {
 	BarChart3,
 	Check,
+	Clock,
 	Copy,
 	ExternalLink,
 	Pencil,
@@ -21,6 +25,8 @@ import {
 
 import {
 	Button,
+	Card,
+	CardContent,
 	Dialog,
 	DialogContent,
 	DialogDescription,
@@ -53,17 +59,13 @@ function useDebounce<T>(value: T, delay: number): T {
 	return debouncedValue
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, label }: { text: string; label?: string }) {
 	const [copied, setCopied] = useState(false)
 
 	const handleCopy = async () => {
-		try {
-			await navigator.clipboard.writeText(text)
-			setCopied(true)
-			setTimeout(() => setCopied(false), 2000)
-		} catch (error) {
-			console.error('Failed to copy text to clipboard:', error)
-		}
+		await navigator.clipboard.writeText(text)
+		setCopied(true)
+		setTimeout(() => setCopied(false), 2000)
 	}
 
 	return (
@@ -84,7 +86,7 @@ function CopyButton({ text }: { text: string }) {
 					</Button>
 				</TooltipTrigger>
 				<TooltipContent>
-					<p>{copied ? 'Copied!' : 'Copy short URL'}</p>
+					<p>{copied ? 'Copied!' : label || 'Copy'}</p>
 				</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
@@ -100,18 +102,42 @@ function formatDate(date: Date | string): string {
 	})
 }
 
-function truncateUrl(url: string, maxLength: number = 40): string {
-	if (url.length <= maxLength) return url
-	return url.substring(0, maxLength) + '...'
+/**
+ * Format destination URL for display
+ * If it starts with aihero.dev or ai-hero.dev, show only the path
+ */
+function formatDestination(url: string): string {
+	try {
+		const parsed = new URL(url)
+		const host = parsed.hostname.toLowerCase()
+		if (
+			host === 'aihero.dev' ||
+			host === 'ai-hero.dev' ||
+			host === 'www.aihero.dev'
+		) {
+			return parsed.pathname + parsed.search + parsed.hash || '/'
+		}
+		// For other URLs, show truncated version
+		const display = url.replace(/^https?:\/\//, '')
+		if (display.length > 40) {
+			return display.substring(0, 40) + '...'
+		}
+		return display
+	} catch {
+		return url.length > 40 ? url.substring(0, 40) + '...' : url
+	}
 }
 
 export default function ShortlinksManagement({
 	initialShortlinks,
+	recentStats,
 }: {
-	initialShortlinks: Shortlink[]
+	initialShortlinks: ShortlinkWithAttributions[]
+	recentStats: RecentClickStats
 }) {
 	const { toast } = useToast()
-	const [shortlinks, setShortlinks] = useState<Shortlink[]>(initialShortlinks)
+	const [shortlinks, setShortlinks] =
+		useState<ShortlinkWithAttributions[]>(initialShortlinks)
 	const [searchTerm, setSearchTerm] = useState('')
 	const debouncedSearchTerm = useDebounce(searchTerm, 250)
 	const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -146,7 +172,13 @@ export default function ShortlinksManagement({
 			throw new Error('URL is required')
 		}
 		const newLink = await createShortlink({ ...data, url: data.url })
-		setShortlinks([newLink, ...shortlinks])
+		// Add default attribution counts for new links
+		const newLinkWithAttributions: ShortlinkWithAttributions = {
+			...newLink,
+			signups: 0,
+			purchases: 0,
+		}
+		setShortlinks([newLinkWithAttributions, ...shortlinks])
 	}
 
 	const handleEdit = async (data: {
@@ -160,9 +192,17 @@ export default function ShortlinksManagement({
 		}
 		const updatedLink = await updateShortlink({ ...data, id: data.id })
 		setShortlinks(
-			shortlinks.map((link) =>
-				link.id === updatedLink.id ? updatedLink : link,
-			),
+			shortlinks.map((link) => {
+				if (link.id === updatedLink.id) {
+					// Preserve attribution counts from existing link
+					return {
+						...updatedLink,
+						signups: link.signups,
+						purchases: link.purchases,
+					}
+				}
+				return link
+			}),
 		)
 	}
 
@@ -180,18 +220,16 @@ export default function ShortlinksManagement({
 						(link) => link.id !== deleteConfirmation.shortlinkId,
 					),
 				)
-				setDeleteConfirmation({ isOpen: false, shortlinkId: null })
 			} catch (error) {
 				toast({
-					variant: 'destructive',
-					title: 'Failed to delete shortlink',
+					title: 'Error deleting shortlink',
 					description:
-						error instanceof Error
-							? error.message
-							: 'An error occurred while deleting the shortlink',
+						error instanceof Error ? error.message : 'An error occurred',
+					variant: 'destructive',
 				})
 			} finally {
 				setIsDeleting(false)
+				setDeleteConfirmation({ isOpen: false, shortlinkId: null })
 			}
 		}
 	}
@@ -202,6 +240,30 @@ export default function ShortlinksManagement({
 				<h1 className="font-heading text-xl font-bold sm:text-3xl">
 					Shortlinks
 				</h1>
+
+				{/* Recent stats cards */}
+				<div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:w-fit">
+					<Card className="border-muted">
+						<CardContent className="flex items-center gap-3 p-4">
+							<Clock className="text-muted-foreground h-5 w-5" />
+							<div>
+								<p className="text-2xl font-bold">
+									{recentStats.last60Minutes}
+								</p>
+								<p className="text-muted-foreground text-xs">Last 60 min</p>
+							</div>
+						</CardContent>
+					</Card>
+					<Card className="border-muted">
+						<CardContent className="flex items-center gap-3 p-4">
+							<BarChart3 className="text-muted-foreground h-5 w-5" />
+							<div>
+								<p className="text-2xl font-bold">{recentStats.last24Hours}</p>
+								<p className="text-muted-foreground text-xs">Last 24 hours</p>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
 
 				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-64">
@@ -226,7 +288,7 @@ export default function ShortlinksManagement({
 					</div>
 				) : (
 					<>
-						<div className="hidden overflow-hidden rounded-lg shadow-sm sm:block">
+						<div className="hidden overflow-x-auto rounded-lg shadow-sm sm:block">
 							<table className="divide-border min-w-full divide-y">
 								<thead>
 									<tr>
@@ -238,6 +300,12 @@ export default function ShortlinksManagement({
 										</th>
 										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
 											Clicks
+										</th>
+										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+											Signups
+										</th>
+										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+											Purchases
 										</th>
 										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
 											Created
@@ -258,7 +326,10 @@ export default function ShortlinksManagement({
 													<code className="bg-muted rounded px-2 py-1 text-sm">
 														/s/{link.slug}
 													</code>
-													<CopyButton text={`${baseUrl}/s/${link.slug}`} />
+													<CopyButton
+														text={`${baseUrl}/s/${link.slug}`}
+														label="Copy short URL"
+													/>
 												</div>
 											</td>
 											<td className="px-6 py-4">
@@ -266,8 +337,8 @@ export default function ShortlinksManagement({
 													<TooltipProvider>
 														<Tooltip>
 															<TooltipTrigger asChild>
-																<span className="text-sm">
-																	{truncateUrl(link.url)}
+																<span className="font-mono text-sm">
+																	{formatDestination(link.url)}
 																</span>
 															</TooltipTrigger>
 															<TooltipContent className="max-w-md">
@@ -275,6 +346,10 @@ export default function ShortlinksManagement({
 															</TooltipContent>
 														</Tooltip>
 													</TooltipProvider>
+													<CopyButton
+														text={link.url}
+														label="Copy destination"
+													/>
 													<a
 														href={link.url}
 														target="_blank"
@@ -293,6 +368,16 @@ export default function ShortlinksManagement({
 											<td className="whitespace-nowrap px-6 py-4">
 												<span className="font-mono text-sm">
 													{link.clicks.toLocaleString()}
+												</span>
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className="font-mono text-sm">
+													{link.signups.toLocaleString()}
+												</span>
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className="font-mono text-sm">
+													{link.purchases.toLocaleString()}
 												</span>
 											</td>
 											<td className="whitespace-nowrap px-6 py-4 text-sm">
@@ -351,11 +436,16 @@ export default function ShortlinksManagement({
 												<code className="bg-muted rounded px-2 py-1 text-sm">
 													/s/{link.slug}
 												</code>
-												<CopyButton text={`${baseUrl}/s/${link.slug}`} />
+												<CopyButton
+													text={`${baseUrl}/s/${link.slug}`}
+													label="Copy short URL"
+												/>
 											</div>
-											<span className="text-muted-foreground text-sm">
-												{link.clicks.toLocaleString()} clicks
-											</span>
+											<div className="text-muted-foreground flex gap-3 text-sm">
+												<span>{link.clicks.toLocaleString()} clicks</span>
+												<span>{link.signups.toLocaleString()} signups</span>
+												<span>{link.purchases.toLocaleString()} purchases</span>
+											</div>
 										</div>
 									</div>
 									<div className="px-4 py-4">
@@ -363,15 +453,20 @@ export default function ShortlinksManagement({
 											<p className="text-muted-foreground mb-1 text-xs font-medium">
 												Destination
 											</p>
-											<a
-												href={link.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="flex items-center gap-2 text-sm hover:underline"
-											>
-												{truncateUrl(link.url, 50)}
-												<ExternalLink className="h-3 w-3" />
-											</a>
+											<div className="flex items-center gap-2">
+												<span className="font-mono text-sm">
+													{formatDestination(link.url)}
+												</span>
+												<CopyButton text={link.url} label="Copy destination" />
+												<a
+													href={link.url}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="text-muted-foreground hover:text-foreground"
+												>
+													<ExternalLink className="h-3 w-3" />
+												</a>
+											</div>
 										</div>
 										{link.description && (
 											<p className="text-muted-foreground mb-4 text-sm">

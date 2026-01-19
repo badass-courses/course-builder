@@ -117,6 +117,7 @@ export const shortlinkRelations = relations(shortlink, ({ one, many }) => ({
 		references: [users.id],
 	}),
 	clicks: many(shortlinkClick),
+	attributions: many(shortlinkAttribution),
 }))
 
 /**
@@ -141,3 +142,33 @@ export const shortlinkClickRelations = relations(shortlinkClick, ({ one }) => ({
 		references: [shortlink.id],
 	}),
 }))
+
+/**
+ * Shortlink attribution tracking for signups/purchases
+ */
+export const shortlinkAttribution = mysqlTable('ShortlinkAttribution', {
+	id: varchar('id', { length: 255 })
+		.notNull()
+		.primaryKey()
+		.$defaultFn(() => guid()),
+	shortlinkId: varchar('shortlinkId', { length: 255 }).notNull(),
+	userId: varchar('userId', { length: 255 }),
+	email: varchar('email', { length: 255 }),
+	type: varchar('type', { length: 50 }).notNull(),
+	metadata: text('metadata'),
+	createdAt: timestamp('createdAt').defaultNow().notNull(),
+})
+
+export const shortlinkAttributionRelations = relations(
+	shortlinkAttribution,
+	({ one }) => ({
+		shortlink: one(shortlink, {
+			fields: [shortlinkAttribution.shortlinkId],
+			references: [shortlink.id],
+		}),
+		user: one(users, {
+			fields: [shortlinkAttribution.userId],
+			references: [users.id],
+		}),
+	}),
+)

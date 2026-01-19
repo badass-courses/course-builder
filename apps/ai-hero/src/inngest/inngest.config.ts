@@ -16,6 +16,10 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import {
+	calendarSync,
+	handleRefundAndRemoveFromCalendar,
+} from './functions/calendar-sync'
 import { cohortEntitlementSyncUser } from './functions/cohort-entitlement-sync-user'
 import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sync-workflow'
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
@@ -24,11 +28,13 @@ import { grantCouponEntitlements } from './functions/coupon/grant-coupon-entitle
 import { grantCouponEntitlementsForPurchase } from './functions/coupon/grant-coupon-entitlements-for-purchase'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { postEventPurchase } from './functions/post-event-purchase'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
 	apiProductTransferWorkflow,
 	productTransferWorkflow,
 } from './functions/product-transfer-workflow'
+import { sendLiveEventWelcomeEmail } from './functions/send-live-event-welcome-email'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -71,5 +77,9 @@ export const inngestConfig = {
 		grantCouponEntitlements,
 		grantCouponEntitlementsForPurchase,
 		createPPPCreditCouponsForPurchasers,
+		calendarSync,
+		postEventPurchase,
+		handleRefundAndRemoveFromCalendar,
+		sendLiveEventWelcomeEmail,
 	],
 }

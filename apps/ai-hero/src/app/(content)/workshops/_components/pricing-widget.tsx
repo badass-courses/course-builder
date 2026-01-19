@@ -34,6 +34,12 @@ export type PricingWidgetProps = {
 	}[]
 	className?: string
 	prependFeatures?: ProductPricingFeature[]
+	/** Custom content for the buy button. Overrides default text based on product type. */
+	buyButtonContent?: React.ReactNode
+	/** Additional className for the buy button */
+	buyButtonClassName?: string
+	/** Hide the default product features section */
+	hideFeatures?: boolean
 }
 
 /**
@@ -51,6 +57,9 @@ export const PricingWidget = ({
 	workshops,
 	className,
 	prependFeatures,
+	buyButtonContent,
+	buyButtonClassName,
+	hideFeatures,
 }: PricingWidgetProps) => {
 	const couponFromCode = commerceProps?.couponFromCode
 	const { validCoupon } = useCoupon(couponFromCode)
@@ -77,9 +86,19 @@ export const PricingWidget = ({
 					<Pricing.Price className="**:aria-[live='polite']:text-5xl [&_sup]:-mt-1" />
 					<Pricing.TeamToggle className='[&_button>span[data-state="checked"]]:bg-primary mt-0' />
 					<Pricing.TeamQuantityInput />
-					<Pricing.BuyButton className="dark:bg-primary relative mt-3 h-16 max-w-xs cursor-pointer overflow-hidden rounded-xl bg-blue-600 text-lg font-semibold shadow-xl hover:bg-blue-700 dark:hover:brightness-110">
+					<Pricing.BuyButton
+						className={cn(
+							'dark:bg-primary relative mt-3 h-16 max-w-xs cursor-pointer overflow-hidden rounded-xl bg-blue-600 text-lg font-semibold shadow-xl hover:bg-blue-700 dark:hover:brightness-110',
+							buyButtonClassName,
+						)}
+					>
 						<span className="relative z-10">
-							{product.type === 'cohort' ? 'Enroll' : 'Buy Now'}
+							{buyButtonContent ??
+								(product.type === 'cohort'
+									? 'Enroll'
+									: product.type === 'live'
+										? 'Buy Ticket'
+										: 'Buy Now')}
 						</span>
 						<div
 							style={{
@@ -94,11 +113,13 @@ export const PricingWidget = ({
 					<Pricing.PPPToggle className="bg-muted [&_button[data-state='unchecked']]:border-foreground/20 mt-5 max-w-sm rounded p-5 [&_label]:rounded-lg" />
 				</Pricing.Details>
 			</Pricing.Product>
-			<ProductPricingFeatures
-				workshops={workshops ?? []}
-				productType={product.type}
-				prependFeatures={prependFeatures}
-			/>
+			{!hideFeatures && (
+				<ProductPricingFeatures
+					workshops={workshops ?? []}
+					productType={product.type}
+					prependFeatures={prependFeatures}
+				/>
+			)}
 		</Pricing.Root>
 	)
 }

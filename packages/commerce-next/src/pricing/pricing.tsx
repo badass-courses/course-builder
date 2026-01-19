@@ -731,7 +731,7 @@ const LiveQuantity = ({
 				<div
 					className={cn(
 						{
-							'bg-foreground/20 text-foreground inline-flex items-center rounded px-2.5 pb-1.5 pt-1 text-center text-sm font-medium uppercase leading-none':
+							'bg-foreground/20 text-foreground inline-flex items-center rounded px-1.5 py-1 text-center text-sm font-medium uppercase leading-none':
 								!isSoldOut,
 							'inline-flex rounded bg-red-300/20 px-2 py-1 text-center text-sm font-medium uppercase leading-none text-red-300':
 								isSoldOut,
