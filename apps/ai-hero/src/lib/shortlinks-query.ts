@@ -65,7 +65,8 @@ export async function getShortlinksWithAttributions(
 		throw new Error('Unauthorized')
 	}
 
-	// Get shortlinks with attribution counts via subquery
+	// Get shortlinks with attribution counts using LEFT JOIN and GROUP BY
+	// (correlated subqueries with drizzle sql template don't correlate properly)
 	const links = await db
 		.select({
 			id: shortlink.id,
@@ -76,20 +77,20 @@ export async function getShortlinksWithAttributions(
 			createdAt: shortlink.createdAt,
 			updatedAt: shortlink.updatedAt,
 			createdById: shortlink.createdById,
-			signups: sql<number>`(
-				SELECT COUNT(*)
-				FROM ${shortlinkAttribution}
-				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
-				AND ${shortlinkAttribution.type} = 'signup'
-			)`.as('signups'),
-			purchases: sql<number>`(
-				SELECT COUNT(*)
-				FROM ${shortlinkAttribution}
-				WHERE ${shortlinkAttribution.shortlinkId} = ${shortlink.id}
-				AND ${shortlinkAttribution.type} = 'purchase'
-			)`.as('purchases'),
+			signups:
+				sql<number>`COALESCE(SUM(CASE WHEN ${shortlinkAttribution.type} = 'signup' THEN 1 ELSE 0 END), 0)`
+					.mapWith(Number)
+					.as('signups'),
+			purchases:
+				sql<number>`COALESCE(SUM(CASE WHEN ${shortlinkAttribution.type} = 'purchase' THEN 1 ELSE 0 END), 0)`
+					.mapWith(Number)
+					.as('purchases'),
 		})
 		.from(shortlink)
+		.leftJoin(
+			shortlinkAttribution,
+			eq(shortlink.id, shortlinkAttribution.shortlinkId),
+		)
 		.where(
 			search
 				? or(
@@ -98,6 +99,16 @@ export async function getShortlinksWithAttributions(
 						like(shortlink.description, `%${search}%`),
 					)
 				: undefined,
+		)
+		.groupBy(
+			shortlink.id,
+			shortlink.slug,
+			shortlink.url,
+			shortlink.description,
+			shortlink.clicks,
+			shortlink.createdAt,
+			shortlink.updatedAt,
+			shortlink.createdById,
 		)
 		.orderBy(desc(shortlink.createdAt))
 

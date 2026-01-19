@@ -288,7 +288,7 @@ export default function ShortlinksManagement({
 					</div>
 				) : (
 					<>
-						<div className="hidden overflow-hidden rounded-lg shadow-sm sm:block">
+						<div className="hidden overflow-x-auto rounded-lg shadow-sm sm:block">
 							<table className="divide-border min-w-full divide-y">
 								<thead>
 									<tr>
