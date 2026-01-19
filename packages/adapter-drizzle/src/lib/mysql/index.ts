@@ -1623,10 +1623,10 @@ export function mySqlDrizzleAdapter(
 				currentMerchantPrice.identifier,
 			)
 
-			// Check if type changed (one-time <-> membership requires price recreation)
-			const typeChanged = currentProduct.type !== input.type
-			const becameMembership = typeChanged && input.type === 'membership'
-			const wasMemership = typeChanged && currentProduct.type === 'membership'
+			// Check if type changed to/from membership (requires Stripe price recreation)
+			const membershipTypeChanged =
+				currentProduct.type !== input.type &&
+				(input.type === 'membership' || currentProduct.type === 'membership')
 
 			// Check if billing interval changed for membership products
 			const billingIntervalChanged =
@@ -1634,17 +1634,18 @@ export function mySqlDrizzleAdapter(
 				currentProduct.type === 'membership' &&
 				currentProduct.fields?.billingInterval !== input.fields?.billingInterval
 
-			// Check if Stripe price doesn't match expected recurring status
-			// (e.g., product is membership but Stripe price is one-time)
+			// Check if Stripe price recurring status doesn't match expected state for input type:
+			// - membership products require recurring=true
+			// - non-membership products require recurring=false (null/undefined)
+			const isMembership = input.type === 'membership'
 			const stripePriceMismatch =
-				input.type === 'membership' && !currentStripePrice.recurring
+				isMembership !== !!currentStripePrice.recurring
 
-			// Need to recreate price if: price changed, type changed, billing interval changed,
-			// or Stripe price doesn't match expected recurring status
+			// Need to recreate price if: price changed, type changed to/from membership,
+			// billing interval changed, or Stripe price doesn't match expected recurring status
 			const needsPriceRecreation =
 				priceChanged ||
-				becameMembership ||
-				wasMemership ||
+				membershipTypeChanged ||
 				billingIntervalChanged ||
 				stripePriceMismatch
 
