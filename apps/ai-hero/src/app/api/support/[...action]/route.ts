@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/env.mjs'
 import { createSupportHandler } from '@skillrecordings/sdk/handler'
 
@@ -17,13 +18,19 @@ import { integration } from '../integration'
  *
  * All requests are authenticated via HMAC-SHA256 signature.
  */
-if (!env.SUPPORT_WEBHOOK_SECRET) {
-	throw new Error('SUPPORT_WEBHOOK_SECRET is required for support integration')
+export async function POST(request: NextRequest) {
+	// Check at request time, not build time
+	if (!env.SUPPORT_WEBHOOK_SECRET) {
+		return NextResponse.json(
+			{ error: 'Support integration not configured' },
+			{ status: 503 },
+		)
+	}
+
+	const handler = createSupportHandler({
+		integration,
+		webhookSecret: env.SUPPORT_WEBHOOK_SECRET,
+	})
+
+	return handler(request)
 }
-
-const handler = createSupportHandler({
-	integration,
-	webhookSecret: env.SUPPORT_WEBHOOK_SECRET,
-})
-
-export { handler as POST }
