@@ -8,10 +8,47 @@ import {
 	softDeleteEntitlementsForSubscription,
 	updateEntitlementExpirationForSubscription,
 } from '@/lib/entitlements'
+import {
+	TeamSubscriptionFieldsSchema,
+	type TeamSubscriptionFields,
+} from '@/lib/team-subscriptions'
 import { log } from '@/server/logger'
 import { eq } from 'drizzle-orm'
+import type Stripe from 'stripe'
+import { z } from 'zod'
 
 import { STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT } from '@coursebuilder/core/inngest/stripe/event-customer-subscription-updated'
+
+/**
+ * Schema for parsing Stripe subscription item data within previousAttributes.
+ * Stripe nests period information inside items when they change during renewal.
+ */
+const stripeSubscriptionItemSchema = z.object({
+	current_period_end: z.number().optional(),
+	current_period_start: z.number().optional(),
+	quantity: z.number().optional(),
+})
+
+/**
+ * Schema for parsing previousAttributes from Stripe webhook events.
+ * This captures the fields we care about for subscription lifecycle management.
+ */
+const previousAttributesSchema = z
+	.object({
+		current_period_end: z.number().optional(),
+		cancel_at_period_end: z.boolean().optional(),
+		status: z.string().optional(),
+		quantity: z.number().optional(),
+		items: z
+			.object({
+				data: z.array(stripeSubscriptionItemSchema),
+			})
+			.optional(),
+	})
+	.passthrough()
+	.optional()
+
+type PreviousAttributes = z.infer<typeof previousAttributesSchema>
 
 /**
  * Handle Stripe subscription lifecycle events (status changes, renewals, cancellations).
@@ -27,7 +64,14 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 	},
 	async ({ event, step, db, paymentProvider }) => {
 		const stripeSubscription = event.data.stripeEvent.data.object
-		const previousAttributes = event.data.stripeEvent.data.previous_attributes
+
+		// Parse previousAttributes with zod for type-safe access
+		const parsedPrevAttrs = previousAttributesSchema.safeParse(
+			event.data.stripeEvent.data.previous_attributes,
+		)
+		const previousAttributes = parsedPrevAttrs.success
+			? parsedPrevAttrs.data
+			: undefined
 
 		// Find our subscription record via Stripe subscription id
 		const subscription = await step.run('find subscription', async () => {
@@ -35,10 +79,10 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 				return await db.getSubscriptionForStripeId(stripeSubscription.id)
 			} catch (error) {
 				// Subscription might not exist in our system (created before this system)
-				console.warn(
-					`No subscription found for Stripe ID ${stripeSubscription.id}`,
+				log.warn('subscription_not_found_for_stripe_id', {
+					stripeSubscriptionId: stripeSubscription.id,
 					error,
-				)
+				})
 				return null
 			}
 		})
@@ -59,7 +103,10 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					// User scheduled cancellation - set expiration to when access ends
 					const ts = cancelAt ?? periodEnd
 					if (!ts) {
-						console.error('No cancel_at or current_period_end available')
+						log.error('subscription_missing_cancel_dates', {
+							subscriptionId: subscription.id,
+							stripeSubscriptionId: stripeSubscription.id,
+						})
 						return { action: 'error', reason: 'missing_dates' }
 					}
 					const accessEndsAt =
@@ -73,7 +120,10 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 				} else {
 					// User reactivated (undid scheduled cancellation)
 					if (!periodEnd) {
-						console.error('No current_period_end available for reactivation')
+						log.error('subscription_missing_period_end_for_reactivation', {
+							subscriptionId: subscription.id,
+							stripeSubscriptionId: stripeSubscription.id,
+						})
 						return { action: 'error', reason: 'missing_period_end' }
 					}
 					const newExpiration =
@@ -81,7 +131,7 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 							? new Date(periodEnd * 1000)
 							: new Date(periodEnd)
 
-					await restoreEntitlementsForSubscription(
+					await updateEntitlementExpirationForSubscription(
 						subscription.id,
 						newExpiration,
 					)
@@ -106,9 +156,6 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					'incomplete_expired',
 					'paused',
 				]
-				const wasActive =
-					previousAttributes.status === 'active' ||
-					previousAttributes.status === 'trialing'
 
 				// If subscription became inactive, soft delete entitlements and remove Discord role
 				if (canceledStatuses.includes(stripeSubscription.status)) {
@@ -119,15 +166,19 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 						const subWithOwner = await drizzleDb.query.subscription.findFirst({
 							where: eq(subscriptionTable.id, subscription.id),
 						})
-						const ownerId = (subWithOwner?.fields as Record<string, any>)
-							?.ownerId
+						const fieldsParsed = TeamSubscriptionFieldsSchema.safeParse(
+							subWithOwner?.fields,
+						)
+						const ownerId = fieldsParsed.success
+							? fieldsParsed.data.ownerId
+							: undefined
 
 						if (ownerId) {
 							const discordResult = await removeDiscordRole(
 								ownerId,
 								env.DISCORD_SUBSCRIBER_ROLE_ID,
 							)
-							log.info('subscription_discord_role_removed', {
+							await log.info('subscription_discord_role_removed', {
 								subscriptionId: subscription.id,
 								ownerId,
 								discordResult,
@@ -139,9 +190,11 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 				}
 
 				// If subscription was reactivated, restore entitlements
+				const previousStatus = previousAttributes?.status
 				if (
 					stripeSubscription.status === 'active' &&
-					canceledStatuses.includes(previousAttributes.status as string)
+					previousStatus &&
+					canceledStatuses.includes(previousStatus)
 				) {
 					// Handle both number (unix timestamp) and string date formats
 					const periodEnd = stripeSubscription.current_period_end
@@ -165,26 +218,45 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 		}
 
 		// Handle renewal (period end changed = billing cycle renewed)
-		if (previousAttributes?.current_period_end && !previousAttributes?.status) {
+		// Check both top-level and nested in items (Stripe can put it either place)
+		const topLevelPeriodEndChanged = previousAttributes?.current_period_end
+		const nestedPeriodEndChanged =
+			previousAttributes?.items?.data?.[0]?.current_period_end
+
+		if (
+			(topLevelPeriodEndChanged || nestedPeriodEndChanged) &&
+			!previousAttributes?.status
+		) {
 			await step.run('extend entitlement expiration', async () => {
-				const periodEnd = stripeSubscription.current_period_end
+				// Stripe webhook events often have partial objects, fetch the full subscription
+				let periodEnd: number | undefined =
+					stripeSubscription.current_period_end
+
 				if (!periodEnd) {
-					console.error('No current_period_end in renewal event')
+					// Fetch from Stripe API to get the actual current_period_end
+					try {
+						const freshSubscription: Stripe.Subscription =
+							await paymentProvider.getSubscription(stripeSubscription.id)
+						periodEnd = freshSubscription.current_period_end
+					} catch (error) {
+						log.error('subscription_stripe_fetch_failed', {
+							subscriptionId: subscription.id,
+							stripeSubscriptionId: stripeSubscription.id,
+							error,
+						})
+					}
+				}
+
+				if (!periodEnd) {
+					log.error('subscription_missing_period_end_after_fetch', {
+						subscriptionId: subscription.id,
+						stripeSubscriptionId: stripeSubscription.id,
+					})
 					return { action: 'error', reason: 'missing_period_end' }
 				}
 
-				// Handle both number (unix timestamp) and string date formats
-				const newExpiration =
-					typeof periodEnd === 'number'
-						? new Date(periodEnd * 1000)
-						: new Date(periodEnd)
-
-				if (isNaN(newExpiration.getTime())) {
-					console.error('Invalid renewal date', {
-						current_period_end: periodEnd,
-					})
-					return { action: 'error', reason: 'invalid_date' }
-				}
+				// Stripe timestamps are always unix seconds
+				const newExpiration = new Date(periodEnd * 1000)
 
 				await updateEntitlementExpirationForSubscription(
 					subscription.id,
@@ -204,38 +276,27 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 				let newQuantity = 1
 
 				try {
-					const freshStripeSubscription =
+					const freshStripeSubscription: Stripe.Subscription =
 						await paymentProvider.getSubscription(stripeSubId)
-					// For per-seat subscriptions, quantity is at subscription level
-					// or on the first line item
-					const subQuantity = (freshStripeSubscription as { quantity?: number })
-						.quantity
-					const itemQuantity =
-						freshStripeSubscription.items?.data?.[0]?.quantity
-					newQuantity = subQuantity ?? itemQuantity ?? 1
+					// For per-seat subscriptions, quantity is on the first line item
+					const itemQuantity = freshStripeSubscription.items.data[0]?.quantity
+					newQuantity = itemQuantity ?? 1
 
-					console.log('Webhook sync seat count (from Stripe API):', {
+					log.info('subscription_seat_sync_from_stripe', {
+						subscriptionId: subscription.id,
 						stripeSubId,
-						subQuantity,
 						itemQuantity,
 						newQuantity,
 					})
 				} catch (error) {
-					console.error('Failed to fetch subscription from Stripe:', error)
-					// Fall back to event data (might be incomplete)
-					const subscriptionQuantity = (
-						stripeSubscription as { quantity?: number }
-					).quantity
-					const itemQuantity = (
-						stripeSubscription.items?.data?.[0] as { quantity?: number }
-					)?.quantity
-					newQuantity = subscriptionQuantity ?? itemQuantity ?? 1
-
-					console.log('Webhook sync seat count (fallback to event data):', {
-						subscriptionQuantity,
-						itemQuantity,
-						newQuantity,
+					log.error('subscription_seat_sync_stripe_fetch_failed', {
+						subscriptionId: subscription.id,
+						stripeSubId,
+						error,
 					})
+					// Fall back to event data (might be incomplete)
+					// Event schema doesn't include quantity, default to 1
+					newQuantity = 1
 				}
 
 				// Update the seats field in subscription.fields
@@ -243,24 +304,29 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					where: eq(subscriptionTable.id, subscription.id),
 				})
 
-				const currentFields = (existingSub?.fields as Record<string, any>) || {}
+				const fieldsParsed = TeamSubscriptionFieldsSchema.safeParse(
+					existingSub?.fields,
+				)
 
-				// Defensive check - ensure we don't lose ownerId
-				if (!currentFields.ownerId) {
-					console.warn(
-						`Webhook: Subscription ${subscription.id} missing ownerId, skipping seat sync to avoid data loss`,
-					)
-					return { action: 'skipped_missing_ownerId' }
+				// Defensive check - ensure we have valid fields with ownerId
+				if (!fieldsParsed.success) {
+					log.warn('subscription_missing_fields', {
+						subscriptionId: subscription.id,
+						fields: existingSub?.fields,
+						errors: fieldsParsed.error.errors,
+					})
+					return { action: 'skipped_invalid_fields' }
+				}
+
+				const currentFields = fieldsParsed.data
+				const updatedFields: TeamSubscriptionFields = {
+					...currentFields,
+					seats: newQuantity,
 				}
 
 				await drizzleDb
 					.update(subscriptionTable)
-					.set({
-						fields: {
-							...currentFields,
-							seats: newQuantity,
-						},
-					})
+					.set({ fields: updatedFields })
 					.where(eq(subscriptionTable.id, subscription.id))
 
 				return { action: 'seats_updated', newQuantity }

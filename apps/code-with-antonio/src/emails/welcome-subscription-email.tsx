@@ -27,7 +27,7 @@ export default function WelcomeSubscriptionEmail({
 	productName,
 	userFirstName,
 	supportEmail = env.NEXT_PUBLIC_SUPPORT_EMAIL,
-	dashboardUrl = `${env.COURSEBUILDER_URL}/workshops`,
+	dashboardUrl = `${env.COURSEBUILDER_URL}/browse`,
 }: WelcomeSubscriptionEmailProps) {
 	const greeting = userFirstName ? `Hey ${userFirstName},` : 'Hi there,'
 
