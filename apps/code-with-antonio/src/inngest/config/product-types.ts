@@ -71,10 +71,6 @@ export const getResourceData = async (
 	if (!config) {
 		throw new Error(`Unsupported product type: ${productType}`)
 	}
-	// Membership products don't have associated resources
-	if (!config.queryFn) {
-		return null
-	}
 	return await config.queryFn(resourceId)
 }
 
