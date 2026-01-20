@@ -108,6 +108,13 @@ export interface WelcomeSubscriptionTeamEmailProps {
 }
 
 /**
+ * Returns properly pluralized seat label: "1 seat" or "{n} seats"
+ */
+function formatSeats(quantity: number): string {
+	return quantity === 1 ? '1 seat' : `${quantity} seats`
+}
+
+/**
  * Welcome email sent to team purchasers after buying a team subscription.
  * Explains seat management and how to invite team members.
  */
@@ -124,7 +131,7 @@ export function WelcomeSubscriptionTeamEmail({
 		<Html>
 			<Head />
 			<Preview>
-				{`Your team subscription to ${productName} is active! Manage your ${quantity} seats.`}
+				{`Your team subscription to ${productName} is active! Manage your ${formatSeats(quantity)}.`}
 			</Preview>
 			<Body style={main}>
 				<Container style={container}>
@@ -138,7 +145,7 @@ export function WelcomeSubscriptionTeamEmail({
 							<Text style={text}>
 								You've successfully purchased a team subscription to{' '}
 								<strong>{productName}</strong> with{' '}
-								<strong>{quantity} seats</strong>.
+								<strong>{formatSeats(quantity)}</strong>.
 							</Text>
 						</Section>
 

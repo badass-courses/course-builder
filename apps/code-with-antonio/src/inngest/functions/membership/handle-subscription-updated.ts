@@ -270,36 +270,9 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 		// This happens when subscription quantity is updated in Stripe
 		if (previousAttributes?.items || previousAttributes?.quantity) {
 			await step.run('sync seat count', async () => {
-				// Fetch the actual subscription from Stripe to get accurate quantity
-				// The event data is often stripped during Inngest serialization
 				const stripeSubId = stripeSubscription.id
-				let newQuantity = 1
 
-				try {
-					const freshStripeSubscription: Stripe.Subscription =
-						await paymentProvider.getSubscription(stripeSubId)
-					// For per-seat subscriptions, quantity is on the first line item
-					const itemQuantity = freshStripeSubscription.items.data[0]?.quantity
-					newQuantity = itemQuantity ?? 1
-
-					log.info('subscription_seat_sync_from_stripe', {
-						subscriptionId: subscription.id,
-						stripeSubId,
-						itemQuantity,
-						newQuantity,
-					})
-				} catch (error) {
-					log.error('subscription_seat_sync_stripe_fetch_failed', {
-						subscriptionId: subscription.id,
-						stripeSubId,
-						error,
-					})
-					// Fall back to event data (might be incomplete)
-					// Event schema doesn't include quantity, default to 1
-					newQuantity = 1
-				}
-
-				// Update the seats field in subscription.fields
+				// Fetch existing subscription FIRST so fields can be used as fallback
 				const existingSub = await drizzleDb.query.subscription.findFirst({
 					where: eq(subscriptionTable.id, subscription.id),
 				})
@@ -319,6 +292,72 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 				}
 
 				const currentFields = fieldsParsed.data
+				let newQuantity: number | undefined
+
+				// Layer 1: Try fresh fetch from Stripe API
+				try {
+					const freshStripeSubscription: Stripe.Subscription =
+						await paymentProvider.getSubscription(stripeSubId)
+					// For per-seat subscriptions, quantity is on the first line item
+					const itemQuantity = freshStripeSubscription.items.data[0]?.quantity
+					newQuantity = itemQuantity
+
+					if (newQuantity !== undefined) {
+						log.info('subscription_seat_sync_from_stripe', {
+							subscriptionId: subscription.id,
+							stripeSubId,
+							itemQuantity,
+							newQuantity,
+						})
+					}
+				} catch (error) {
+					log.error('subscription_seat_sync_stripe_fetch_failed', {
+						subscriptionId: subscription.id,
+						stripeSubId,
+						error,
+					})
+				}
+
+				// Layer 2: Fall back to previousAttributes from webhook event
+				if (newQuantity === undefined) {
+					const prevAttrQuantity =
+						previousAttributes?.quantity ??
+						previousAttributes?.items?.data?.[0]?.quantity
+
+					if (prevAttrQuantity !== undefined) {
+						newQuantity = prevAttrQuantity
+						log.info('subscription_seat_sync_from_previous_attributes', {
+							subscriptionId: subscription.id,
+							stripeSubId,
+							newQuantity,
+							source:
+								previousAttributes?.quantity !== undefined
+									? 'quantity'
+									: 'items',
+						})
+					}
+				}
+
+				// Layer 3: Fall back to existing subscription fields (currentFields.seats)
+				if (newQuantity === undefined && currentFields.seats !== undefined) {
+					newQuantity = currentFields.seats
+					log.info('subscription_seat_sync_from_existing_fields', {
+						subscriptionId: subscription.id,
+						stripeSubId,
+						newQuantity,
+					})
+				}
+
+				// Layer 4: Last resort default to 1
+				if (newQuantity === undefined) {
+					newQuantity = 1
+					log.warn('subscription_seat_sync_fallback_to_default', {
+						subscriptionId: subscription.id,
+						stripeSubId,
+						newQuantity,
+					})
+				}
+
 				const updatedFields: TeamSubscriptionFields = {
 					...currentFields,
 					seats: newQuantity,
