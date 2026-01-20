@@ -3,10 +3,13 @@ import {
 	createAuthor,
 	deleteAuthor,
 	findOrCreateUserAndAssignAuthorRole,
+	getAssignedAuthorId,
 	getAuthor,
 	getAuthors,
+	getKentUser,
 	getResourceAuthor,
 	removeAuthorFromResource,
+	updateAuthorImage,
 	updateAuthorName,
 } from '@/lib/authors-query'
 import { getServerAuthSession } from '@/server/auth'
@@ -15,26 +18,20 @@ import { TRPCError } from '@trpc/server'
 import { z } from 'zod'
 
 export const authorsRouter = createTRPCRouter({
-	/**
-	 * Get all authors (users with author role)
-	 */
+	getKentUser: publicProcedure.query(async () => {
+		return getKentUser()
+	}),
+
 	getAuthors: publicProcedure.query(async () => {
 		return getAuthors()
 	}),
 
-	/**
-	 * Get a single author by user ID
-	 */
 	getAuthor: publicProcedure
 		.input(z.object({ userId: z.string() }))
 		.query(async ({ input }) => {
 			return getAuthor(input.userId)
 		}),
 
-	/**
-	 * Create an author by finding or creating a user by email, then assigning the "author" role.
-	 * This function handles user lookup/creation and role assignment with Inngest logging.
-	 */
 	createAuthor: publicProcedure
 		.input(
 			z.object({
@@ -50,9 +47,6 @@ export const authorsRouter = createTRPCRouter({
 			return findOrCreateUserAndAssignAuthorRole(input.email, input.name)
 		}),
 
-	/**
-	 * Update an author's name
-	 */
 	updateAuthorName: publicProcedure
 		.input(
 			z.object({
@@ -68,10 +62,24 @@ export const authorsRouter = createTRPCRouter({
 			return updateAuthorName(input.userId, input.name)
 		}),
 
-	/**
-	 * Delete an author by removing the "author" role from a user
-	 * This reverts the user's role back to "user" (does NOT delete the user)
-	 */
+	updateAuthorImage: publicProcedure
+		.input(
+			z.object({
+				userId: z.string(),
+				image: z.union([
+					z.string().url('Please enter a valid image URL'),
+					z.null(),
+				]),
+			}),
+		)
+		.mutation(async ({ input }) => {
+			const { ability } = await getServerAuthSession()
+			if (!ability.can('manage', 'all')) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' })
+			}
+			return updateAuthorImage(input.userId, input.image)
+		}),
+
 	deleteAuthor: publicProcedure
 		.input(z.object({ userId: z.string() }))
 		.mutation(async ({ input }) => {
@@ -83,18 +91,29 @@ export const authorsRouter = createTRPCRouter({
 			return { success: true }
 		}),
 
-	/**
-	 * Get the author assigned to a resource, with fallback to createdBy
-	 */
+	getAssignedAuthorId: publicProcedure
+		.input(z.object({ resourceId: z.string() }))
+		.query(async ({ input }) => {
+			return getAssignedAuthorId(input.resourceId)
+		}),
+
 	getResourceAuthor: publicProcedure
 		.input(z.object({ resourceId: z.string() }))
 		.query(async ({ input }) => {
-			return getResourceAuthor(input.resourceId)
+			try {
+				return await getResourceAuthor(input.resourceId)
+			} catch (error) {
+				console.error('getResourceAuthor error:', error)
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message:
+						error instanceof Error
+							? error.message
+							: 'Failed to get resource author',
+				})
+			}
 		}),
 
-	/**
-	 * Assign an author (user) to a resource
-	 */
 	assignAuthorToResource: publicProcedure
 		.input(
 			z.object({
@@ -111,10 +130,6 @@ export const authorsRouter = createTRPCRouter({
 			return { success: true }
 		}),
 
-	/**
-	 * Remove author assignment from a resource
-	 * This will cause the resource to fallback to createdBy
-	 */
 	removeAuthorFromResource: publicProcedure
 		.input(z.object({ resourceId: z.string() }))
 		.mutation(async ({ input }) => {

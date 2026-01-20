@@ -2,15 +2,9 @@
 
 import crypto from 'node:crypto'
 import { revalidateTag } from 'next/cache'
-import { User } from '@/ability'
-import { db } from '@/db'
-import {
-	contentResource,
-	contentResourceAuthor,
-	roles,
-	userRoles,
-	users,
-} from '@/db/schema'
+import { User, UserSchema } from '@/ability'
+import { courseBuilderAdapter, db } from '@/db'
+import { contentResource, roles, userRoles, users } from '@/db/schema'
 import {
 	AUTHOR_ROLE_ASSIGNMENT_COMPLETED_EVENT,
 	AUTHOR_ROLE_ASSIGNMENT_FAILED_EVENT,
@@ -36,7 +30,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 	})
 
 	try {
-		// Step 1: Check if user exists by email
 		const existingUser = await db.query.users.findFirst({
 			where: eq(users.email, email),
 		})
@@ -51,9 +44,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 				email,
 			})
 		} else {
-			// Step 2: Create new user if doesn't exist
-			// Just create the user record - the user/created event will handle
-			// role assignment and organization setup
 			userId = crypto.randomUUID()
 
 			await db.insert(users).values({
@@ -72,8 +62,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 				name,
 			})
 
-			// Send user created event to trigger user setup workflows
-			// This will handle role assignment and organization creation
 			await inngest.send({
 				name: 'user/created',
 				user: {
@@ -85,7 +73,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 			})
 		}
 
-		// Step 3: Assign author role (this function handles checking if role already exists)
 		const author = await createAuthor(userId)
 
 		await log.info('author.assignment.completed', {
@@ -95,7 +82,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 			wasCreated,
 		})
 
-		// Send single event to Inngest for logging/monitoring (includes all info)
 		await inngest.send({
 			name: AUTHOR_ROLE_ASSIGNMENT_COMPLETED_EVENT,
 			data: {
@@ -117,7 +103,6 @@ export async function findOrCreateUserAndAssignAuthorRole(
 			error: errorMessage,
 		})
 
-		// Send failure event to Inngest
 		await inngest.send({
 			name: AUTHOR_ROLE_ASSIGNMENT_FAILED_EVENT,
 			data: {
@@ -129,6 +114,31 @@ export async function findOrCreateUserAndAssignAuthorRole(
 		})
 
 		throw error
+	}
+}
+
+/**
+ * Get Kent C Dodds user by email (regardless of role).
+ * @returns Kent C Dodds user or null if not found
+ */
+export async function getKentUser(): Promise<User | null> {
+	const KENT_EMAIL = 'me@kentcdodds.com'
+	const kentUser = await db.query.users.findFirst({
+		where: eq(users.email, KENT_EMAIL),
+	})
+
+	if (!kentUser) {
+		return null
+	}
+
+	return {
+		...kentUser,
+		role: (kentUser.role as 'admin' | 'user' | 'contributor') || 'user',
+		memberships: [],
+		roles: [],
+		organizationRoles: [],
+		fields: kentUser.fields || {},
+		entitlements: [],
 	}
 }
 
@@ -151,7 +161,6 @@ export async function getAuthors(): Promise<User[]> {
 		.innerJoin(roles, eq(userRoles.roleId, roles.id))
 		.where(and(eq(roles.name, 'author'), isNull(userRoles.deletedAt)))
 
-	// Transform to match User type
 	return authorsFromRoles.map((author) => ({
 		...author,
 		role: (author.role as 'admin' | 'user' | 'contributor') || 'user',
@@ -210,7 +219,6 @@ export async function getAuthor(userId: string): Promise<User | null> {
  * @returns The user with author role
  */
 export async function createAuthor(userId: string): Promise<User> {
-	// Find the "author" role
 	const authorRole = await db.query.roles.findFirst({
 		where: eq(roles.name, 'author'),
 	})
@@ -221,7 +229,6 @@ export async function createAuthor(userId: string): Promise<User> {
 		)
 	}
 
-	// Check if user already has the author role
 	const existingUserRole = await db.query.userRoles.findFirst({
 		where: and(
 			eq(userRoles.userId, userId),
@@ -230,7 +237,6 @@ export async function createAuthor(userId: string): Promise<User> {
 	})
 
 	if (existingUserRole) {
-		// User already has author role, but ensure their role field is updated
 		await db
 			.update(users)
 			.set({
@@ -257,7 +263,6 @@ export async function createAuthor(userId: string): Promise<User> {
 		}
 	}
 
-	// Assign the author role
 	await db.insert(userRoles).values({
 		userId: userId,
 		roleId: authorRole.id,
@@ -267,7 +272,6 @@ export async function createAuthor(userId: string): Promise<User> {
 		deletedAt: null,
 	})
 
-	// Update the user's role field to 'author' to reflect author status
 	await db
 		.update(users)
 		.set({
@@ -275,7 +279,6 @@ export async function createAuthor(userId: string): Promise<User> {
 		})
 		.where(eq(users.id, userId))
 
-	// Get the user
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 	})
@@ -335,12 +338,48 @@ export async function updateAuthorName(
 }
 
 /**
+ * Update an author's image.
+ * @param userId - The user ID to update
+ * @param image - The image URL to set (can be null to remove image)
+ * @returns The updated user
+ */
+export async function updateAuthorImage(
+	userId: string,
+	image: string | null,
+): Promise<User> {
+	await db
+		.update(users)
+		.set({
+			image: image,
+		})
+		.where(eq(users.id, userId))
+
+	const user = await db.query.users.findFirst({
+		where: eq(users.id, userId),
+	})
+
+	if (!user) {
+		throw new Error('User not found')
+	}
+
+	revalidateTag('authors', 'max')
+	return {
+		...user,
+		role: (user.role as 'admin' | 'user' | 'contributor') || 'user',
+		memberships: [],
+		roles: [{ name: 'author' }],
+		organizationRoles: [],
+		fields: {},
+		entitlements: [],
+	}
+}
+
+/**
  * Delete an author by removing the "author" role from a user.
  * This reverts the user's role back to "user" (does NOT delete the user).
  * @param userId - The user ID to remove the author role from
  */
 export async function deleteAuthor(userId: string): Promise<void> {
-	// Find the "author" role
 	const authorRole = await db.query.roles.findFirst({
 		where: eq(roles.name, 'author'),
 	})
@@ -349,7 +388,6 @@ export async function deleteAuthor(userId: string): Promise<void> {
 		throw new Error('Author role not found')
 	}
 
-	// Soft delete the user role (set deletedAt)
 	await db
 		.update(userRoles)
 		.set({
@@ -360,7 +398,6 @@ export async function deleteAuthor(userId: string): Promise<void> {
 			and(eq(userRoles.userId, userId), eq(userRoles.roleId, authorRole.id)),
 		)
 
-	// Revert the user's role field back to 'user'
 	await db
 		.update(users)
 		.set({
@@ -372,61 +409,159 @@ export async function deleteAuthor(userId: string): Promise<void> {
 }
 
 /**
+ * Get the assigned author ID for a resource (if one exists).
+ * Reads from contentResource.fields.authorId
+ * @param resourceId - The resource ID to check
+ * @returns The assigned author user ID, or null if no author is assigned
+ */
+export async function getAssignedAuthorId(
+	resourceId: string,
+): Promise<string | null> {
+	try {
+		const resource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, resourceId),
+		})
+
+		if (!resource) {
+			await log.warn('getAssignedAuthorId.resource-not-found', {
+				resourceId,
+			})
+			return null
+		}
+
+		const rawFields = resource.fields as any
+
+		let authorId = rawFields?.authorId
+
+		if (authorId === null || authorId === undefined || authorId === '') {
+			authorId = null
+		}
+
+		await log.info('getAssignedAuthorId.result', {
+			resourceId,
+			authorId: authorId || null,
+			hasFields: !!rawFields,
+			fieldsKeys: rawFields ? Object.keys(rawFields).slice(0, 10) : [],
+		})
+
+		return typeof authorId === 'string' && authorId.length > 0 ? authorId : null
+	} catch (error) {
+		await log.error('getAssignedAuthorId.error', {
+			resourceId,
+			error: error instanceof Error ? error.message : String(error),
+		})
+		console.error('❌ getAssignedAuthorId error:', error)
+		return null
+	}
+}
+
+/**
  * Get the author assigned to a resource, with fallback to createdBy.
+ * Reads authorId from contentResource.fields.authorId
  * @param resourceId - The resource ID to get the author for
  * @returns The author user, or null if not found
  */
 export async function getResourceAuthor(
 	resourceId: string,
 ): Promise<User | null> {
-	// Try to get assigned author from ContentResourceAuthor
-	const assignedAuthor = await db.query.contentResourceAuthor.findFirst({
-		where: eq(contentResourceAuthor.contentResourceId, resourceId),
-		with: {
-			user: true,
-		},
-	})
+	try {
+		const resource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, resourceId),
+			with: {
+				createdBy: true,
+			},
+		})
 
-	if (assignedAuthor?.user) {
-		return {
-			...assignedAuthor.user,
-			role:
-				(assignedAuthor.user.role as 'admin' | 'user' | 'contributor') ||
-				'user',
-			memberships: [],
-			roles: [],
-			organizationRoles: [],
-			fields: {},
-			entitlements: [],
+		if (!resource) {
+			return null
 		}
-	}
 
-	// Fallback to createdBy user
-	const resource = await db.query.contentResource.findFirst({
-		where: eq(contentResource.id, resourceId),
-		with: {
-			createdBy: true,
-		},
-	})
+		const authorId = (resource.fields as any)?.authorId
 
-	if (resource?.createdBy) {
-		return {
-			...resource.createdBy,
-			role:
-				(resource.createdBy.role as 'admin' | 'user' | 'contributor') || 'user',
-			memberships: [],
-			roles: [],
-			organizationRoles: [],
-			fields: {},
-			entitlements: [],
+		if (authorId) {
+			const assignedUser = await db.query.users.findFirst({
+				where: eq(users.id, authorId),
+			})
+
+			if (assignedUser) {
+				const userData = {
+					...assignedUser,
+					role:
+						(assignedUser.role as
+							| 'admin'
+							| 'user'
+							| 'contributor'
+							| null
+							| undefined) || 'user',
+					memberships: null,
+					roles: null,
+					organizationRoles: null,
+					fields: assignedUser.fields || {},
+					entitlements: [],
+				}
+
+				const parsed = UserSchema.safeParse(userData)
+				if (!parsed.success) {
+					await log.error('getResourceAuthor.user-validation-failed', {
+						resourceId,
+						errors: parsed.error.format(),
+					})
+					return {
+						...userData,
+						id: assignedUser.id,
+						email: assignedUser.email || null,
+						name: assignedUser.name || null,
+					} as User
+				}
+
+				return parsed.data
+			}
 		}
-	}
 
-	return null
+		if (resource.createdBy) {
+			const user = resource.createdBy
+			const userData = {
+				...user,
+				role:
+					(user.role as 'admin' | 'user' | 'contributor' | null | undefined) ||
+					'user',
+				memberships: null,
+				roles: null,
+				organizationRoles: null,
+				fields: user.fields || {},
+				entitlements: [],
+			}
+
+			const parsed = UserSchema.safeParse(userData)
+			if (!parsed.success) {
+				await log.error('getResourceAuthor.user-validation-failed', {
+					resourceId,
+					errors: parsed.error.format(),
+				})
+				return {
+					...userData,
+					id: user.id,
+					email: user.email || null,
+					name: user.name || null,
+				} as User
+			}
+
+			return parsed.data
+		}
+
+		return null
+	} catch (error) {
+		await log.error('getResourceAuthor.error', {
+			resourceId,
+			error: error instanceof Error ? error.message : String(error),
+		})
+		throw error
+	}
 }
 
 /**
  * Assign an author (user) to a resource.
+ * Stores authorId in contentResource.fields.authorId
  * @param resourceId - The resource ID
  * @param userId - The user ID to assign as author
  */
@@ -434,44 +569,111 @@ export async function assignAuthorToResource(
 	resourceId: string,
 	userId: string,
 ): Promise<void> {
-	// Check if assignment already exists
-	const existing = await db.query.contentResourceAuthor.findFirst({
-		where: eq(contentResourceAuthor.contentResourceId, resourceId),
+	await log.info('assignAuthorToResource.start', {
+		resourceId,
+		userId,
 	})
 
-	if (existing) {
-		// Update existing assignment
-		await db
-			.update(contentResourceAuthor)
-			.set({
-				userId: userId,
-				updatedAt: new Date(),
-			})
-			.where(eq(contentResourceAuthor.contentResourceId, resourceId))
-	} else {
-		// Create new assignment
-		await db.insert(contentResourceAuthor).values({
-			contentResourceId: resourceId,
-			userId: userId,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		})
-	}
+	try {
+		const currentResource =
+			await courseBuilderAdapter.getContentResource(resourceId)
 
-	revalidateTag(`resource-${resourceId}`, 'max')
+		if (!currentResource) {
+			await log.error('assignAuthorToResource.resource-not-found', {
+				resourceId,
+				userId,
+			})
+			throw new Error(`Resource ${resourceId} not found`)
+		}
+
+		const updatedResource =
+			await courseBuilderAdapter.updateContentResourceFields({
+				id: resourceId,
+				fields: {
+					...currentResource.fields,
+					authorId: userId,
+				},
+			})
+
+		if (!updatedResource) {
+			await log.error('assignAuthorToResource.update-failed', {
+				resourceId,
+				userId,
+				message: 'updateContentResourceFields returned null/undefined',
+			})
+			throw new Error(`Failed to update resource ${resourceId}`)
+		}
+
+		revalidateTag(`resource-${resourceId}`, 'max')
+
+		await log.info('assignAuthorToResource.success', {
+			resourceId,
+			userId,
+		})
+	} catch (error) {
+		await log.error('assignAuthorToResource.error', {
+			resourceId,
+			userId,
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		throw error
+	}
 }
 
 /**
  * Remove author assignment from a resource.
+ * Removes authorId from contentResource.fields.authorId
  * This will cause the resource to fallback to createdBy.
  * @param resourceId - The resource ID
  */
 export async function removeAuthorFromResource(
 	resourceId: string,
 ): Promise<void> {
-	await db
-		.delete(contentResourceAuthor)
-		.where(eq(contentResourceAuthor.contentResourceId, resourceId))
+	await log.info('removeAuthorFromResource.start', {
+		resourceId,
+	})
 
-	revalidateTag(`resource-${resourceId}`, 'max')
+	try {
+		// Get current resource to preserve existing fields
+		const currentResource =
+			await courseBuilderAdapter.getContentResource(resourceId)
+
+		if (!currentResource) {
+			await log.error('removeAuthorFromResource.resource-not-found', {
+				resourceId,
+			})
+			throw new Error(`Resource ${resourceId} not found`)
+		}
+
+		// Remove authorId from fields
+		const { authorId, ...fieldsWithoutAuthorId } = currentResource.fields as any
+
+		const updatedResource =
+			await courseBuilderAdapter.updateContentResourceFields({
+				id: resourceId,
+				fields: fieldsWithoutAuthorId,
+			})
+
+		if (!updatedResource) {
+			await log.error('removeAuthorFromResource.update-failed', {
+				resourceId,
+				message: 'updateContentResourceFields returned null/undefined',
+			})
+			throw new Error(`Failed to update resource ${resourceId}`)
+		}
+
+		revalidateTag(`resource-${resourceId}`, 'max')
+
+		await log.info('removeAuthorFromResource.success', {
+			resourceId,
+		})
+	} catch (error) {
+		await log.error('removeAuthorFromResource.error', {
+			resourceId,
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+		throw error
+	}
 }

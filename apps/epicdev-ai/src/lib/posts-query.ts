@@ -364,12 +364,22 @@ export async function updatePost(
 	}
 
 	try {
+		const dbResource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, currentPost.id),
+		})
+		const dbAuthorId = (dbResource?.fields as any)?.authorId
+
 		const result = await courseBuilderAdapter.updateContentResourceFields({
 			id: currentPost.id,
 			fields: {
 				...currentPost.fields,
 				...input.fields,
 				slug: postSlug,
+				...(dbAuthorId &&
+				typeof dbAuthorId === 'string' &&
+				dbAuthorId.length > 0
+					? { authorId: dbAuthorId }
+					: {}),
 			},
 		})
 
@@ -445,7 +455,17 @@ export async function getPost(slugOrId: string) {
 		return null
 	}
 
-	return postParsed.data
+	const parsedPost = postParsed.data
+	const rawFields = (post as any)?.fields || {}
+	const authorId = rawFields?.authorId
+
+	return {
+		...parsedPost,
+		fields: {
+			...parsedPost.fields,
+			...(authorId && { authorId }),
+		},
+	}
 }
 
 export async function deletePost(id: string) {
@@ -820,6 +840,11 @@ export async function writePostUpdateToDatabase(input: {
 
 	try {
 		console.log('🔄 Updating post fields in database')
+		const dbResource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, currentPost.id),
+		})
+		const dbAuthorId = (dbResource?.fields as any)?.authorId
+
 		await courseBuilderAdapter.updateContentResourceFields({
 			id: currentPost.id,
 			fields: {
@@ -829,6 +854,11 @@ export async function writePostUpdateToDatabase(input: {
 				duration,
 				timeToRead,
 				slug: postSlug,
+				...(dbAuthorId &&
+				typeof dbAuthorId === 'string' &&
+				dbAuthorId.length > 0
+					? { authorId: dbAuthorId }
+					: {}),
 			},
 		})
 		console.log('✅ Post fields updated successfully')
@@ -1084,7 +1114,17 @@ export async function getPostOrList(slugOrId: string) {
 		return null
 	}
 
-	return parsed.data
+	const parsedData = parsed.data
+	const rawFields = (postOrList as any)?.fields || {}
+	const authorId = rawFields?.authorId
+
+	return {
+		...parsedData,
+		fields: {
+			...parsedData.fields,
+			...(authorId && { authorId }),
+		},
+	}
 }
 
 export async function getProductForPost(

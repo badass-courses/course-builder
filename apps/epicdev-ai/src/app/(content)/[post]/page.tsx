@@ -1,13 +1,15 @@
 import React, { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
+import config from '@/config'
 import { courseBuilderAdapter, db } from '@/db'
-import { products } from '@/db/schema'
+import { contentResource, products, users } from '@/db/schema'
 import { commerceEnabled } from '@/flags'
 import { getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
@@ -19,6 +21,7 @@ import { log } from '@/server/logger'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { eq } from 'drizzle-orm'
 import { ChevronLeft, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -128,7 +131,7 @@ export default async function PostPage(props: {
 							<PostTitle post={post} />
 							<div className="relative mb-3 flex w-full items-center justify-center gap-3">
 								<div className="flex w-full items-center justify-center gap-8">
-									<Contributor className=" " />
+									<PostContributor post={post} />
 									{post.fields?.github && (
 										<Button
 											asChild
@@ -258,6 +261,68 @@ async function PostTitle({ post }: { post: Post | null }) {
 			</ReactMarkdown>
 		</h1>
 	)
+}
+
+/**
+ * Component that displays the post author.
+ * Reads authorId from post.fields.authorId and fetches the user from the database.
+ * Falls back to Kent C. Dodds if no authorId is set.
+ */
+async function PostContributor({ post }: { post: Post }) {
+	let authorId = (post.fields as any)?.authorId
+	if (!authorId || typeof authorId !== 'string' || authorId.length === 0) {
+		const resource = await db.query.contentResource.findFirst({
+			where: eq(contentResource.id, post.id),
+		})
+		authorId = (resource?.fields as any)?.authorId
+	}
+
+	let author = null
+	if (authorId && typeof authorId === 'string' && authorId.length > 0) {
+		author = await db.query.users.findFirst({
+			where: eq(users.id, authorId),
+			columns: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+			},
+		})
+	}
+
+	if (author) {
+		const authorInitial =
+			(author.name || author.email || 'A')[0]?.toUpperCase() || 'A'
+		const authorName = author.name || author.email || 'Author'
+		const authorAlt = author.name || author.email || 'Author'
+
+		return (
+			<div className="flex items-center gap-2 font-normal">
+				{author.image ? (
+					<Image
+						src={author.image}
+						alt={authorAlt}
+						width={40}
+						height={40}
+						className="bg-muted ring-gray-800/7.5 shrink-0 rounded-full ring-1"
+					/>
+				) : (
+					<div className="bg-muted ring-gray-800/7.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1">
+						<span className="text-foreground/60 text-sm font-medium">
+							{authorInitial}
+						</span>
+					</div>
+				)}
+				<div className="flex flex-col">
+					<span className="text-foreground/90 font-heading text-base font-medium">
+						{authorName}
+					</span>
+				</div>
+			</div>
+		)
+	}
+
+	return <Contributor className=" " />
 }
 
 async function PlayerContainer({

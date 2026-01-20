@@ -1,10 +1,14 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Script from 'next/script'
 import { User } from '@/ability'
+import { env } from '@/env.mjs'
+import { createImageResource } from '@/lib/image-resource-query'
 import { api } from '@/trpc/react'
 import { Pencil, Plus, Search, Trash2, User as UserIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 import {
 	Button,
@@ -15,11 +19,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 	Input,
+	ScrollArea,
 } from '@coursebuilder/ui'
 
 import AuthorCrudDialog from './author-crud-dialog'
 
-// Custom debounce hook
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState<T>(value)
 
@@ -37,9 +41,127 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 /**
- * Client component for managing authors.
- * Displays list of users with author role and allows adding/removing the role.
+ * Component for selecting an image from uploaded images
  */
+function ImageSelector({
+	selectedImage,
+	onSelectImage,
+}: {
+	selectedImage: string | null
+	onSelectImage: (url: string) => void
+}) {
+	const { data } = api.imageResources.getAll.useQuery()
+	const images: Array<{ id: string; url: string; alt?: string | null }> =
+		data ?? []
+
+	return (
+		<div className="grid grid-cols-3 gap-2">
+			{images.length > 0 ? (
+				images.map((asset) => {
+					if (!asset?.url) return null
+					const imageUrl = asset.url.replace('http://', 'https://')
+					return (
+						<div
+							key={asset.id}
+							className={`relative cursor-pointer rounded border-2 transition ${
+								selectedImage === imageUrl
+									? 'border-primary'
+									: 'border-transparent hover:border-gray-300'
+							}`}
+							onClick={() => onSelectImage(imageUrl)}
+						>
+							<Image
+								src={imageUrl}
+								alt={asset.id}
+								width={200}
+								height={200}
+								className="aspect-square w-full rounded object-cover"
+							/>
+						</div>
+					)
+				})
+			) : (
+				<div className="col-span-3 py-4 text-center text-sm text-gray-500">
+					No images uploaded yet. Upload images using the button below.
+				</div>
+			)}
+		</div>
+	)
+}
+
+function CloudinaryUploadButtonWithCallback({
+	dir,
+	id,
+	onImageUploaded,
+}: {
+	dir: string
+	id: string
+	onImageUploaded: (url: string) => void
+}) {
+	const session = useSession()
+	const cloudinaryRef = useRef<any>(undefined)
+	const widgetRef = useRef<any>(undefined)
+
+	useEffect(() => {
+		if ((window as any).cloudinary) {
+			cloudinaryRef.current = (window as any).cloudinary
+		}
+	}, [])
+
+	return session?.data?.user ? (
+		<div>
+			<Script
+				strategy="afterInteractive"
+				onLoad={() => {
+					cloudinaryRef.current = (window as any).cloudinary
+				}}
+				src="https://upload-widget.cloudinary.com/global/all.js"
+				type="text/javascript"
+			/>
+			<Button
+				type="button"
+				variant="outline"
+				className="flex w-full"
+				onClick={() => {
+					if (!cloudinaryRef.current) {
+						console.error('Cloudinary widget not loaded yet')
+						alert(
+							'Cloudinary widget is still loading. Please wait a moment and try again.',
+						)
+						return
+					}
+
+					if (!widgetRef.current) {
+						widgetRef.current = cloudinaryRef.current.createUploadWidget(
+							{
+								cloudName: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+								uploadPreset: env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+								folder: `${dir}/${id}`,
+							},
+							(error: any, result: any) => {
+								if (!error && result && result.event === 'success') {
+									console.debug('Image uploaded:', result.info)
+									createImageResource({
+										asset_id: result.info.asset_id,
+										secure_url: result.info.secure_url,
+									}).then(() => {
+										onImageUploaded(result.info.secure_url)
+									})
+								} else if (error) {
+									console.error('Cloudinary upload error:', error)
+								}
+							},
+						)
+					}
+					widgetRef.current.open()
+				}}
+			>
+				Upload Image
+			</Button>
+		</div>
+	) : null
+}
+
 export default function AuthorManagement({
 	initialAuthors,
 }: {
@@ -56,7 +178,8 @@ export default function AuthorManagement({
 		isOpen: boolean
 		userId: string | null
 		name: string
-	}>({ isOpen: false, userId: null, name: '' })
+		image: string | null
+	}>({ isOpen: false, userId: null, name: '', image: null })
 
 	const utils = api.useUtils()
 	const { data: authorsData, refetch } = api.authors.getAuthors.useQuery(
@@ -66,7 +189,6 @@ export default function AuthorManagement({
 		},
 	)
 
-	// Update local state when query data changes
 	useEffect(() => {
 		if (authorsData) {
 			setAuthors(authorsData)
@@ -96,7 +218,14 @@ export default function AuthorManagement({
 		onSuccess: async () => {
 			await utils.authors.getAuthors.invalidate()
 			await refetch()
-			setEditDialog({ isOpen: false, userId: null, name: '' })
+			setEditDialog({ isOpen: false, userId: null, name: '', image: null })
+		},
+	})
+
+	const updateAuthorImageMutation = api.authors.updateAuthorImage.useMutation({
+		onSuccess: async () => {
+			await utils.authors.getAuthors.invalidate()
+			await refetch()
 		},
 	})
 
@@ -117,6 +246,7 @@ export default function AuthorManagement({
 			isOpen: true,
 			userId: author.id,
 			name: author.name || '',
+			image: author.image || null,
 		})
 	}
 
@@ -125,6 +255,15 @@ export default function AuthorManagement({
 			await updateAuthorNameMutation.mutateAsync({
 				userId: editDialog.userId,
 				name: editDialog.name.trim(),
+			})
+		}
+	}
+
+	const handleUpdateImage = async () => {
+		if (editDialog.userId) {
+			await updateAuthorImageMutation.mutateAsync({
+				userId: editDialog.userId,
+				image: editDialog.image || null,
 			})
 		}
 	}
@@ -311,39 +450,170 @@ export default function AuthorManagement({
 				open={editDialog.isOpen}
 				onOpenChange={(isOpen) => setEditDialog({ ...editDialog, isOpen })}
 			>
-				<DialogContent>
+				<DialogContent className="sm:max-w-[600px]">
 					<DialogHeader>
-						<DialogTitle>Edit Author Name</DialogTitle>
+						<DialogTitle>Edit Author</DialogTitle>
 						<DialogDescription>
-							Update the name for this author.
+							Update the name and image for this author.
 						</DialogDescription>
 					</DialogHeader>
-					<div className="py-4">
-						<Input
-							placeholder="Author name"
-							value={editDialog.name}
-							onChange={(e) =>
-								setEditDialog({ ...editDialog, name: e.target.value })
-							}
-						/>
+					<div className="space-y-4 py-4">
+						<div>
+							<label className="mb-2 block text-sm font-medium">Name</label>
+							<Input
+								placeholder="Author name"
+								value={editDialog.name}
+								onChange={(e) =>
+									setEditDialog({ ...editDialog, name: e.target.value })
+								}
+							/>
+						</div>
+						<div>
+							<label className="mb-2 block text-sm font-medium">
+								Image URL
+							</label>
+							<Input
+								placeholder="https://example.com/image.png"
+								value={editDialog.image || ''}
+								onChange={async (e) => {
+									const newImage = e.target.value || null
+									setEditDialog({ ...editDialog, image: newImage })
+									if (editDialog.userId) {
+										try {
+											await updateAuthorImageMutation.mutateAsync({
+												userId: editDialog.userId,
+												image: newImage,
+											})
+										} catch (error) {
+											console.error('Failed to save image:', error)
+										}
+									}
+								}}
+								onDrop={async (e) => {
+									e.preventDefault()
+									const result = e.dataTransfer.getData('text/plain')
+									const urlMatch = result.match(/\(([^)]+)\)/) || [null, result]
+									if (urlMatch[1]) {
+										const newImage = urlMatch[1]
+										setEditDialog({ ...editDialog, image: newImage })
+										if (editDialog.userId) {
+											try {
+												await updateAuthorImageMutation.mutateAsync({
+													userId: editDialog.userId,
+													image: newImage,
+												})
+											} catch (error) {
+												console.error('Failed to save image:', error)
+											}
+										}
+									}
+								}}
+								onDragOver={(e) => e.preventDefault()}
+							/>
+							{editDialog.image && (
+								<div className="mt-2">
+									<Image
+										src={editDialog.image}
+										alt="Preview"
+										width={80}
+										height={80}
+										className="h-20 w-20 rounded-full object-cover"
+									/>
+								</div>
+							)}
+						</div>
+						<div>
+							<label className="mb-2 block text-sm font-medium">
+								Select from Uploaded Images
+							</label>
+							<ScrollArea className="h-48 rounded-md border p-4">
+								<ImageSelector
+									selectedImage={editDialog.image}
+									onSelectImage={async (url) => {
+										setEditDialog({ ...editDialog, image: url })
+										if (editDialog.userId) {
+											try {
+												await updateAuthorImageMutation.mutateAsync({
+													userId: editDialog.userId,
+													image: url,
+												})
+											} catch (error) {
+												console.error('Failed to save image:', error)
+											}
+										}
+									}}
+								/>
+							</ScrollArea>
+							{editDialog.userId && (
+								<div className="mt-2">
+									<CloudinaryUploadButtonWithCallback
+										dir="authors"
+										id={editDialog.userId}
+										onImageUploaded={async (url) => {
+											setEditDialog({ ...editDialog, image: url })
+											try {
+												await updateAuthorImageMutation.mutateAsync({
+													userId: editDialog.userId!,
+													image: url,
+												})
+											} catch (error) {
+												console.error('Failed to save image:', error)
+											}
+										}}
+									/>
+								</div>
+							)}
+						</div>
 					</div>
 					<DialogFooter>
 						<Button
 							variant="outline"
 							onClick={() =>
-								setEditDialog({ isOpen: false, userId: null, name: '' })
+								setEditDialog({
+									isOpen: false,
+									userId: null,
+									name: '',
+									image: null,
+								})
 							}
 						>
 							Cancel
 						</Button>
-						<Button
-							onClick={handleUpdateName}
-							disabled={
-								!editDialog.name.trim() || updateAuthorNameMutation.isPending
-							}
-						>
-							{updateAuthorNameMutation.isPending ? 'Saving...' : 'Save'}
-						</Button>
+						<div className="flex gap-2">
+							<Button
+								onClick={handleUpdateName}
+								disabled={
+									!editDialog.name.trim() || updateAuthorNameMutation.isPending
+								}
+								variant="outline"
+							>
+								{updateAuthorNameMutation.isPending ? 'Saving...' : 'Save Name'}
+							</Button>
+							<Button
+								onClick={handleUpdateImage}
+								disabled={updateAuthorImageMutation.isPending}
+								variant="outline"
+							>
+								{updateAuthorImageMutation.isPending
+									? 'Saving...'
+									: 'Save Image'}
+							</Button>
+							<Button
+								onClick={async () => {
+									await Promise.all([handleUpdateName(), handleUpdateImage()])
+								}}
+								disabled={
+									!editDialog.name.trim() ||
+									updateAuthorNameMutation.isPending ||
+									updateAuthorImageMutation.isPending
+								}
+							>
+								{updateAuthorNameMutation.isPending ||
+								updateAuthorImageMutation.isPending
+									? 'Saving...'
+									: 'Save All'}
+							</Button>
+						</div>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>

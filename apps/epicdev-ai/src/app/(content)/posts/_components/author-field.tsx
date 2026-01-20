@@ -1,11 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { User } from '@/ability'
 import { api } from '@/trpc/react'
-import { Pencil, User as UserIcon, X } from 'lucide-react'
+import { Pencil } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 import {
 	Button,
@@ -29,6 +29,10 @@ export interface AuthorFieldProps {
 	resource: {
 		id: string
 		createdById: string
+		fields?: {
+			authorId?: string | null
+			[key: string]: any
+		}
 		author?: {
 			contentResourceId: string
 			userId: string
@@ -60,46 +64,137 @@ export const AuthorField: React.FC<AuthorFieldProps> = ({
 	const utils = api.useUtils()
 	const { data: authors, isLoading: authorsLoading } =
 		api.authors.getAuthors.useQuery()
+	const { data: kentUser, isLoading: kentLoading } =
+		api.authors.getKentUser.useQuery()
+
+	const resourceAuthorId = (resource.fields as any)?.authorId || null
+
+	const { data: dbAssignedAuthorId, isLoading: assignedAuthorIdLoading } =
+		api.authors.getAssignedAuthorId.useQuery(
+			{ resourceId: resource.id },
+			{
+				initialData: resourceAuthorId,
+				refetchOnMount: false,
+				refetchOnWindowFocus: false,
+			},
+		)
 	const { data: currentAuthor, isLoading: authorLoading } =
 		api.authors.getResourceAuthor.useQuery(
 			{ resourceId: resource.id },
 			{
-				// Use assigned author if available, otherwise fallback to createdBy
 				initialData: resource.author?.user || null,
 			},
 		)
 
 	const assignAuthorMutation = api.authors.assignAuthorToResource.useMutation({
-		onSuccess: () => {
-			utils.authors.getResourceAuthor.invalidate({ resourceId: resource.id })
+		onSuccess: async () => {
+			await utils.authors.getAssignedAuthorId.invalidate({
+				resourceId: resource.id,
+			})
+		},
+		onError: (error) => {
+			let errorMessage = 'Failed to assign author'
+			if (error instanceof Error) {
+				errorMessage = error.message
+			} else if (typeof error === 'object' && error !== null) {
+				const err = error as any
+				if (err.message) {
+					errorMessage = err.message
+				} else if (err.data?.zodError?.formErrors?.[0]) {
+					errorMessage = err.data.zodError.formErrors[0]
+				}
+			}
+			toast.error(errorMessage, {
+				icon: '⛔️',
+			})
 		},
 	})
 
 	const removeAuthorMutation = api.authors.removeAuthorFromResource.useMutation(
 		{
-			onSuccess: () => {
-				utils.authors.getResourceAuthor.invalidate({ resourceId: resource.id })
+			onSuccess: async () => {
+				await utils.authors.getAssignedAuthorId.invalidate({
+					resourceId: resource.id,
+				})
+				setSelectedValue(kentAuthor?.id || USE_CREATED_BY_VALUE)
+			},
+			onError: (error) => {
+				let errorMessage = 'Failed to remove author'
+				if (error instanceof Error) {
+					errorMessage = error.message
+				} else if (typeof error === 'object' && error !== null) {
+					const err = error as any
+					if (err.message) {
+						errorMessage = err.message
+					} else if (err.data?.zodError?.formErrors?.[0]) {
+						errorMessage = err.data.zodError.formErrors[0]
+					}
+				}
+				toast.error(errorMessage, {
+					icon: '⛔️',
+				})
 			},
 		},
 	)
 
+	const USE_CREATED_BY_VALUE = '__use_created_by__'
+
+	const isLoading =
+		authorsLoading || authorLoading || kentLoading || assignedAuthorIdLoading
+
+	const kentAuthor = kentUser
+
+	const otherAuthors =
+		authors?.filter((author) => author.id !== kentAuthor?.id) || []
+
+	const assignedAuthorId = resourceAuthorId || dbAssignedAuthorId || null
+
+	const [selectedValue, setSelectedValue] = React.useState<string | null>(
+		() => {
+			return resourceAuthorId || null
+		},
+	)
+
+	React.useEffect(() => {
+		if (assignedAuthorId) {
+			setSelectedValue(assignedAuthorId)
+		} else if (!assignedAuthorIdLoading && !isLoading) {
+			setSelectedValue(kentAuthor?.id || USE_CREATED_BY_VALUE)
+		}
+	}, [
+		assignedAuthorId,
+		assignedAuthorIdLoading,
+		isLoading,
+		kentAuthor?.id,
+		resourceAuthorId,
+	])
+
 	const handleAuthorChange = async (userId: string) => {
-		if (userId === '') {
-			// Clear assignment (fallback to createdBy)
-			await removeAuthorMutation.mutateAsync({ resourceId: resource.id })
-		} else {
-			// Assign author
-			await assignAuthorMutation.mutateAsync({
-				resourceId: resource.id,
-				userId,
+		setSelectedValue(userId)
+
+		try {
+			if (userId === USE_CREATED_BY_VALUE) {
+				await removeAuthorMutation.mutateAsync({ resourceId: resource.id })
+			} else {
+				await assignAuthorMutation.mutateAsync({
+					resourceId: resource.id,
+					userId,
+				})
+			}
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: 'Failed to assign author. Please try again.'
+			toast.error(errorMessage, {
+				icon: '⛔️',
 			})
+			// Revert the selected value on error
+			const currentAssignedId =
+				assignedAuthorId || kentAuthor?.id || USE_CREATED_BY_VALUE
+			setSelectedValue(currentAssignedId)
 		}
 	}
-
-	const isLoading = authorsLoading || authorLoading
-	const hasAssignedAuthor =
-		resource.author !== null && resource.author !== undefined
-	const isUsingFallback = !hasAssignedAuthor
 
 	return (
 		<div className="px-5">
@@ -125,65 +220,37 @@ export const AuthorField: React.FC<AuthorFieldProps> = ({
 				</div>
 			) : (
 				<div className="space-y-3">
-					{/* Current Author Display */}
-					{currentAuthor && (
-						<div className="flex items-center gap-3 rounded-lg border p-3">
-							{currentAuthor.image ? (
-								<Image
-									src={currentAuthor.image}
-									alt={currentAuthor.name || 'Author'}
-									width={40}
-									height={40}
-									className="rounded-full object-cover"
-								/>
-							) : (
-								<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-									<UserIcon className="h-5 w-5 text-gray-500" />
-								</div>
-							)}
-							<div className="flex-1">
-								<p className="font-medium">{currentAuthor.name || 'No name'}</p>
-								<p className="text-sm text-gray-500">{currentAuthor.email}</p>
-								{isUsingFallback && (
-									<p className="text-xs text-gray-400">
-										(Using createdBy - no author assigned)
-									</p>
-								)}
-							</div>
-							{hasAssignedAuthor && (
-								<Button
-									variant="ghost"
-									size="icon"
-									onClick={() => handleAuthorChange('')}
-									title="Remove author assignment (fallback to createdBy)"
-								>
-									<X className="h-4 w-4" />
-								</Button>
-							)}
-						</div>
-					)}
-
 					{/* Author Selector */}
-					{authors && authors.length > 0 ? (
+					{(authors && authors.length > 0) || kentAuthor ? (
 						<Select
-							value={hasAssignedAuthor ? resource.author?.userId : ''}
+							value={selectedValue || undefined}
 							onValueChange={handleAuthorChange}
 							disabled={
 								assignAuthorMutation.isPending || removeAuthorMutation.isPending
 							}
 						>
 							<SelectTrigger>
-								<SelectValue
-									placeholder={
-										hasAssignedAuthor
-											? 'Change author...'
-											: 'Assign author (or use createdBy)...'
-									}
-								/>
+								<SelectValue placeholder="Select author..." />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="">Use createdBy (default)</SelectItem>
-								{authors.map((author) => (
+								{/* Kent C Dodds first (ALWAYS the default) */}
+								{kentAuthor && (
+									<SelectItem value={kentAuthor.id}>
+										{kentAuthor.name || kentAuthor.email}
+										{kentAuthor.email &&
+											kentAuthor.name &&
+											` (${kentAuthor.email})`}{' '}
+										<span className="text-muted-foreground text-xs">
+											(default)
+										</span>
+									</SelectItem>
+								)}
+								{/* Use createdBy option */}
+								<SelectItem value={USE_CREATED_BY_VALUE}>
+									Use createdBy
+								</SelectItem>
+								{/* Other authors */}
+								{otherAuthors.map((author) => (
 									<SelectItem key={author.id} value={author.id}>
 										{author.name || author.email}
 										{author.email && author.name && ` (${author.email})`}
@@ -194,20 +261,10 @@ export const AuthorField: React.FC<AuthorFieldProps> = ({
 					) : (
 						<div className="flex flex-col gap-2">
 							<FormDescription>
-								No authors available. Assign the "author" role to users in the{' '}
-								<Link href="/admin/authors" className="text-primary underline">
-									Authors
-								</Link>{' '}
-								page. The resource will use the createdBy user by default.
+								No authors available. Kent C. Dodds will be assigned as the
+								default author.
 							</FormDescription>
 						</div>
-					)}
-
-					{isUsingFallback && (
-						<FormDescription className="text-xs">
-							Currently using createdBy user. Select an author above to assign a
-							specific author.
-						</FormDescription>
 					)}
 				</div>
 			)}
