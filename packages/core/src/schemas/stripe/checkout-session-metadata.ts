@@ -16,6 +16,7 @@ export const CheckoutSessionMetadataSchema = z.object({
 	organizationId: z.string().optional(),
 	discountType: z.enum(['fixed', 'percentage']).optional(),
 	discountAmount: z.number().optional(),
+	shortlinkRef: z.string().optional(),
 })
 export type CheckoutSessionMetadata = z.infer<
 	typeof CheckoutSessionMetadataSchema

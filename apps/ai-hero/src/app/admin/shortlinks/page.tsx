@@ -1,8 +1,16 @@
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { getShortlinks } from '@/lib/shortlinks-query'
+import {
+	getRecentClickStats,
+	getShortlinksWithAttributions,
+} from '@/lib/shortlinks-query'
 import { getServerAuthSession } from '@/server/auth'
 
 import ShortlinksManagement from './shortlinks-client-page'
+
+export const metadata: Metadata = {
+	title: 'Shortlinks | AI Hero by Matt Pocock',
+}
 
 export default async function ShortlinksManagementPage() {
 	const { ability } = await getServerAuthSession()
@@ -11,6 +19,15 @@ export default async function ShortlinksManagementPage() {
 		notFound()
 	}
 
-	const shortlinks = await getShortlinks()
-	return <ShortlinksManagement initialShortlinks={shortlinks} />
+	const [shortlinks, recentStats] = await Promise.all([
+		getShortlinksWithAttributions(),
+		getRecentClickStats(),
+	])
+
+	return (
+		<ShortlinksManagement
+			initialShortlinks={shortlinks}
+			recentStats={recentStats}
+		/>
+	)
 }

@@ -13,6 +13,7 @@ import { env } from '@/env.mjs'
 import type { Event } from '@/lib/events'
 import { getEvent } from '@/lib/events-query'
 import { getPricingData } from '@/lib/pricing-query'
+import { getSaleBannerData } from '@/lib/sale-banner'
 import { getServerAuthSession } from '@/server/auth'
 import { compileMDX } from '@/utils/compile-mdx'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -27,6 +28,7 @@ import { first } from '@coursebuilder/nodash'
 import { Button } from '@coursebuilder/ui'
 
 import { AttendeeInstructions } from './_components/event-attendee-instructions'
+import { EventBodyWithPricing } from './_components/event-body-with-pricing'
 import { EventDetails } from './_components/event-details'
 import { EventPageProps } from './_components/event-page-props'
 import { EventPricingWidgetContainer } from './_components/event-pricing-widget-container'
@@ -85,30 +87,62 @@ export default async function EventPage(props: {
 
 	let eventProps: EventPageProps
 	let product: Product | null = null
+	let defaultCoupon: EventPageProps['defaultCoupon'] = null
+	let saleData: EventPageProps['saleData'] = null
 
 	if (productParsed.success) {
 		product = productParsed.data
-
-		const pricingDataLoader = getPricingData({
-			productId: product.id,
-		})
 
 		const countryCode =
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
 			'US'
-		const commerceProps = await propsForCommerce(
-			{
-				query: {
-					allowPurchase: 'true',
-					...searchParams,
+
+		// Fetch commerce props and default coupon in parallel
+		const [commerceProps, couponResult] = await Promise.all([
+			propsForCommerce(
+				{
+					query: {
+						allowPurchase: 'true',
+						...searchParams,
+					},
+					userId: user?.id,
+					products: [productParsed.data],
+					countryCode,
 				},
-				userId: user?.id,
-				products: [productParsed.data],
-				countryCode,
-			},
-			courseBuilderAdapter,
-		)
+				courseBuilderAdapter,
+			),
+			courseBuilderAdapter.getDefaultCoupon([product.id]),
+		])
+
+		const defaultCouponFromAdapter = couponResult?.defaultCoupon ?? null
+
+		// Determine the active merchant coupon for pricing data
+		let merchantCouponId: string | undefined
+		let usedCouponId: string | undefined
+
+		if (defaultCouponFromAdapter?.merchantCouponId) {
+			merchantCouponId = defaultCouponFromAdapter.merchantCouponId
+			usedCouponId = defaultCouponFromAdapter.id
+		} else if (commerceProps.couponIdFromCoupon) {
+			const coupon = await courseBuilderAdapter.couponForIdOrCode({
+				couponId: commerceProps.couponIdFromCoupon,
+			})
+			if (coupon?.merchantCoupon?.id) {
+				merchantCouponId = coupon.merchantCoupon.id
+				usedCouponId = coupon.id
+			}
+		} else if (commerceProps.couponFromCode?.merchantCoupon?.id) {
+			merchantCouponId = commerceProps.couponFromCode.merchantCoupon.id
+			usedCouponId = commerceProps.couponFromCode.id
+		}
+
+		// Create pricing data loader with coupon information
+		const pricingDataLoader = getPricingData({
+			productId: product.id,
+			merchantCouponId,
+			usedCouponId,
+		})
 
 		const { count: purchaseCount } = await db
 			.select({ count: count() })
@@ -133,7 +167,13 @@ export default async function EventPage(props: {
 			quantityAvailable = -1
 		}
 
-		const baseProps = {
+		// Get sale banner data if there's a default coupon
+		if (defaultCouponFromAdapter) {
+			defaultCoupon = defaultCouponFromAdapter
+			saleData = await getSaleBannerData(defaultCouponFromAdapter)
+		}
+
+		const baseProps: EventPageProps = {
 			event,
 			availableBonuses: [],
 			purchaseCount,
@@ -141,6 +181,8 @@ export default async function EventPage(props: {
 			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 			product,
 			pricingDataLoader,
+			defaultCoupon,
+			saleData,
 			...commerceProps,
 		}
 
@@ -180,6 +222,8 @@ export default async function EventPage(props: {
 				purchaseToUpgrade: null,
 				quantityAvailable: -1,
 			}),
+			defaultCoupon: null,
+			saleData: null,
 		}
 	}
 
@@ -208,8 +252,14 @@ export default async function EventPage(props: {
 		product?.fields.state === 'published' ||
 		couponBypassesSoldOut
 
-	// Compile MDX body content
-	const { content: mdxContent } = await compileMDX(event.fields.body || '')
+	// Add allowPurchase to eventProps for MDX components
+	eventProps = { ...eventProps, allowPurchase: ALLOW_PURCHASE }
+
+	// For events with products, body is compiled inside EventBodyWithPricing with pricing-aware components
+	// For events without products, compile body here without pricing context
+	const { content: mdxContent } = !product
+		? await compileMDX(event.fields.body || '')
+		: { content: null }
 
 	return (
 		<LayoutClient withContainer>
@@ -302,8 +352,15 @@ export default async function EventPage(props: {
 								/>
 							</div>
 						</header>
-						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
-							{mdxContent}
+						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-hr:border-border prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
+							{product ? (
+								<EventBodyWithPricing
+									rawBody={event.fields.body || ''}
+									pricingProps={eventProps}
+								/>
+							) : (
+								mdxContent
+							)}
 						</article>
 					</div>
 					<EventSidebar event={event}>

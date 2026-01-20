@@ -45,6 +45,14 @@ export type Shortlink = typeof shortlink.$inferSelect
 export type ShortlinkClickEvent = typeof shortlinkClick.$inferSelect
 
 /**
+ * Shortlink with attribution counts
+ */
+export type ShortlinkWithAttributions = Shortlink & {
+	signups: number
+	purchases: number
+}
+
+/**
  * Analytics data for a shortlink
  */
 export interface ShortlinkAnalytics {
@@ -53,4 +61,23 @@ export interface ShortlinkAnalytics {
 	topReferrers: { referrer: string; clicks: number }[]
 	deviceBreakdown: { device: string; clicks: number }[]
 	recentClicks: ShortlinkClickEvent[]
+}
+
+/**
+ * Recent click stats across all shortlinks
+ */
+export interface RecentClickStats {
+	last60Minutes: number
+	last24Hours: number
+}
+
+/**
+ * Attribution data type
+ */
+export type ShortlinkAttributionData = {
+	shortlinkSlug: string
+	email: string
+	userId?: string
+	type: 'signup' | 'purchase'
+	metadata?: Record<string, unknown>
 }

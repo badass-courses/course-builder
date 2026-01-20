@@ -31,6 +31,7 @@ export const CheckoutParamsSchema = z.object({
 	cancelUrl: z.string(),
 	usedCouponId: z.string().optional(),
 	organizationId: z.string().optional(),
+	shortlinkRef: z.string().optional(),
 })
 
 export type CheckoutParams = z.infer<typeof CheckoutParamsSchema>
@@ -686,6 +687,7 @@ export async function stripeCheckout({
 						? merchantCoupon.amountDiscount
 						: stripeCouponPercentOff * 100,
 				}),
+				...(params.shortlinkRef && { shortlinkRef: params.shortlinkRef }),
 			})
 
 			console.log('🔍 [FINAL CHECKOUT SESSION]', {

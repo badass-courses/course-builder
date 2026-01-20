@@ -52,6 +52,20 @@ export type NavigationMenuData = {
 		label: React.ReactNode | string
 	}
 	pastCohorts: CohortItem[]
+	events: EventItem[]
+}
+
+export type EventItem = {
+	href: string
+	date: string
+	image: {
+		src: string
+		alt: string
+		width: number
+		height: number
+	}
+	title: string
+	description: string
 }
 
 /**
@@ -73,7 +87,25 @@ export function useNavLinks(): NavigationMenuData {
 		},
 	]
 
-	const cohorts: CohortItem[] = [
+	const events: EventItem[] = [
+		// {
+		// 	href: '/events/turn-ai-agents-into-autonomous-software-engineers-with-ralph',
+		// 	date: 'February 11, 2026',
+		// 	image: {
+		// 		src: 'https://res.cloudinary.com/total-typescript/image/upload/v1768901937/events/event-w2789/vsanotsxrpkxykezruby.jpg',
+		// 		alt: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
+		// 		width: 960 / 6,
+		// 		height: 540 / 6,
+		// 	},
+		// 	title: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
+		// 	description:
+		// 		"Learn to build backlog agents, design effective PRDs, and implement feedback loops.",
+		// },
+	]
+
+	const cohorts: CohortItem[] = []
+
+	const pastCohorts: CohortItem[] = [
 		{
 			href: '/cohorts/build-your-own-ai-personal-assistant-in-typescript',
 			image: {
@@ -85,9 +117,6 @@ export function useNavLinks(): NavigationMenuData {
 			title: 'Build Your Own AI Personal Assistant in TypeScript',
 			subtitle: 'December 8—12, 2025',
 		},
-	]
-
-	const pastCohorts: CohortItem[] = [
 		{
 			href: '/cohorts/build-deepsearch-in-typescript',
 			image: {
@@ -147,5 +176,6 @@ export function useNavLinks(): NavigationMenuData {
 		freeTutorials,
 		browseAll,
 		pastCohorts,
+		events,
 	}
 }
