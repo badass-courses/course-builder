@@ -8,6 +8,8 @@ import {
 import { productSchema } from '@coursebuilder/core/schemas/index'
 import type { EventSeriesFormData } from '@coursebuilder/ui/event-creation/create-event-form'
 
+import { FeaturedSchema } from './posts'
+
 export {
 	type EventSeriesFormData,
 	type EventFormData,
@@ -49,7 +51,7 @@ export const EventSchema = ContentResourceSchema.merge(
 				.optional(),
 			calendarId: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
-			featured: z.boolean().default(false).optional(),
+			featured: FeaturedSchema.optional(),
 		}),
 	}),
 )

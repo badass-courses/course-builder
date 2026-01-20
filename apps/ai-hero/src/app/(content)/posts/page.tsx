@@ -9,6 +9,7 @@ import config from '@/config'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { env } from '@/env.mjs'
+import type { Event } from '@/lib/events'
 import type { List } from '@/lib/lists'
 import { getAllLists, getList } from '@/lib/lists-query'
 import { getPage } from '@/lib/pages-query'
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
 	},
 }
 
-const FeaturedGrid = ({ posts }: { posts: (Post | List)[] }) => {
+const FeaturedGrid = ({ posts }: { posts: (Post | List | Event)[] }) => {
 	const primary = posts?.find((p) => p?.fields?.featured?.layout === 'primary')
 	const secondary = posts
 		?.filter((p) => p?.fields?.featured?.layout === 'secondary')
@@ -197,7 +198,7 @@ export default async function PostsIndexPage() {
 }
 
 const PostTeaser: React.FC<{
-	post?: Post | List
+	post?: Post | List | Event
 	i?: number
 	className?: string
 	isHighlighted?: boolean
@@ -246,6 +247,21 @@ const PostTeaser: React.FC<{
 							{post.type === 'cohort' && (
 								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
 									<Calendar className="w-3" /> Cohort-based Course
+								</p>
+							)}
+							{post.type === 'event' && (
+								<p className="text-primary inline-flex items-center gap-1 pb-1.5 font-mono text-xs font-medium uppercase">
+									<Calendar className="w-3" />{' '}
+									{'startsAt' in post.fields && post.fields.startsAt
+										? new Date(post.fields.startsAt).toLocaleDateString(
+												'en-US',
+												{
+													month: 'short',
+													day: 'numeric',
+													year: 'numeric',
+												},
+											)
+										: 'Live Event'}
 								</p>
 							)}
 							<CardTitle
