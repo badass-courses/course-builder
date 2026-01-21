@@ -34,7 +34,7 @@ export function InfiniteHits() {
 	// Show skeleton during initial load or when search is stalled (refinements being applied)
 	if (status === 'loading' || status === 'stalled') {
 		return (
-			<div className="grid grid-cols-3 gap-4" aria-live="polite">
+			<div className="grid grid-cols-2 gap-4 sm:grid-cols-3" aria-live="polite">
 				<div className="sr-only">Loading results...</div>
 				{Array.from({ length: 5 }).map((_, i) => (
 					<SkeletonItem key={i} />
@@ -44,7 +44,7 @@ export function InfiniteHits() {
 	}
 
 	return items.length === 0 && status !== 'idle' ? (
-		<div className="grid grid-cols-3 gap-4" aria-live="polite">
+		<div className="grid grid-cols-2 gap-4 sm:grid-cols-3" aria-live="polite">
 			<div className="sr-only">Loading results...</div>
 			{Array.from({ length: 5 }).map((_, i) => (
 				<SkeletonItem key={i} />
@@ -52,7 +52,7 @@ export function InfiniteHits() {
 		</div>
 	) : (
 		<div>
-			<ul className="grid grid-cols-3 gap-4">
+			<ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
 				{items.map((item) => (
 					<Hit key={item.objectID} hit={item} />
 				))}

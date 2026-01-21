@@ -26,6 +26,7 @@ import { useFeedback } from '@coursebuilder/ui/feedback-widget/feedback-context'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { LogoMark } from '../brand/logo'
+import { CldImage } from '../cld-image'
 import { ContributorImage } from '../contributor'
 import { FeaturedCountdown } from './countdown'
 import { LogoVideo } from './logo-video'
@@ -70,7 +71,11 @@ const Navigation = ({
 	const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		const formData = new FormData(e.currentTarget)
-		const query = formData.get('query')?.toString().trim()
+		// Two inputs share the same name (desktop/mobile), get the non-empty one
+		const queries = formData.getAll('query')
+		const query = queries
+			.map((q) => (typeof q === 'string' ? q.trim() : ''))
+			.find(Boolean)
 
 		if (!query) return
 
@@ -118,48 +123,60 @@ const Navigation = ({
 												asChild
 												className="border-border col-span-2 overflow-hidden border p-0"
 											>
-												<Link
-													prefetch
-													href={getResourcePath(
-														navData.browse.featured.type,
-														navData.browse.featured.slug,
-													)}
-													className="flex flex-col justify-between"
-												>
-													<div className="flex flex-col gap-1 p-4">
-														{navData.browse.featured.metadata && (
-															<div className="text-xs font-medium opacity-80">
-																{navData.browse.featured.metadata}
+												{navData.browse.featured && (
+													<Link
+														prefetch
+														href={getResourcePath(
+															navData.browse.featured.type,
+															navData.browse.featured.slug,
+														)}
+														className="flex flex-col justify-between"
+													>
+														<div className="flex flex-col gap-1 p-4">
+															{navData.browse.featured.metadata && (
+																<div className="text-xs font-medium opacity-80">
+																	{navData.browse.featured.metadata}
+																</div>
+															)}
+															{navData.browse.featured.image && (
+																<div className="relative mb-2 aspect-video">
+																	<CldImage
+																		src={navData.browse.featured.image}
+																		alt={navData.browse.featured.title}
+																		fill
+																		className="rounded-lg object-cover"
+																	/>
+																</div>
+															)}
+															<div className="line-clamp-3 text-lg font-semibold leading-tight">
+																{navData.browse.featured.title}
+															</div>
+														</div>
+
+														{navData.browse.featured.badge && (
+															<div className="bg-primary text-primary-foreground flex w-full justify-between px-5 pt-2">
+																<div className="flex flex-col">
+																	<div className="text-lg font-semibold">
+																		{navData.browse.featured.badge}
+																	</div>
+																	<div className="tex-sm">
+																		{navData.browse.featured.expires && (
+																			<>
+																				Offer ends in{' '}
+																				<FeaturedCountdown
+																					expires={
+																						navData.browse.featured.expires
+																					}
+																				/>
+																			</>
+																		)}
+																	</div>
+																</div>
+																<ContributorImage />
 															</div>
 														)}
-														<div className="line-clamp-3 text-lg font-semibold leading-tight">
-															{navData.browse.featured.title}
-														</div>
-													</div>
-
-													{navData.browse.featured.badge && (
-														<div className="bg-primary text-primary-foreground flex w-full justify-between px-5 pt-2">
-															<div className="flex flex-col">
-																<div className="text-lg font-semibold">
-																	{navData.browse.featured.badge}
-																</div>
-																<div className="tex-sm">
-																	{navData.browse.featured.expires && (
-																		<>
-																			Offer ends in{' '}
-																			<FeaturedCountdown
-																				expires={
-																					navData.browse.featured.expires
-																				}
-																			/>
-																		</>
-																	)}
-																</div>
-															</div>
-															<ContributorImage />
-														</div>
-													)}
-												</Link>
+													</Link>
+												)}
 											</NavigationMenuLink>
 											<ul className="col-span-3">
 												{navData.browse.items.map((item) => (
@@ -215,6 +232,9 @@ const Navigation = ({
 								type="search"
 								disabled={isSearching}
 							/>
+							<button type="submit" className="sr-only">
+								Search
+							</button>
 						</form>
 					)}
 				</div>

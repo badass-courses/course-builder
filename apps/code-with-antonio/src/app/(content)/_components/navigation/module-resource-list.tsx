@@ -54,6 +54,9 @@ export default function ModuleResourceList({
 			},
 			{
 				enabled: !!moduleNavigation?.id,
+				// Cache ability rules for 5 minutes to prevent excessive refetches
+				staleTime: 5 * 60 * 1000,
+				refetchOnWindowFocus: false,
 			},
 		)
 

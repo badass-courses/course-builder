@@ -325,7 +325,7 @@ export default async function ModulePage(props: Props) {
 
 			<ResourceHeader
 				visibility={workshop.fields?.visibility}
-				badge={{ label: 'Workshop' }}
+				badge={{ label: 'Course' }}
 				title={workshop.fields?.title || ''}
 				description={workshop.fields?.description || ''}
 				image={

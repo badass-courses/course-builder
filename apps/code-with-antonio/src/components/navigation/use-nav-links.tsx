@@ -7,7 +7,7 @@ import type { NavLinkItem } from './nav-link-item'
 
 export type NavigationMenuData = {
 	browse: {
-		featured: FeaturedResource
+		featured?: FeaturedResource
 		items: ResourceItem[]
 	}
 }
@@ -20,6 +20,7 @@ export type FeaturedResource = {
 	badge?: string
 	metadata?: string | null
 	expires?: Date | null
+	image?: string | null
 }
 
 export type ResourceItem = {
@@ -33,12 +34,15 @@ export type ResourceItem = {
  */
 export function useNavLinks(): NavigationMenuData {
 	let featuredProduct: FeaturedResource = {
-		type: 'cohort',
-		slug: 'ai-powered-applications-with-ai-sdk-and-next-js-mwrd3',
-		title: 'Building AI-Powered Applications with React and Next.js',
-		description: 'Building AI-Powered Applications with React and Next.js',
-		expires: null,
-		metadata: 'Dec 1—Dec 5, 2025',
+		type: 'workshop',
+		slug: 'build-and-deploy-a-cursor-clone',
+		title: 'Build and Deploy a Cursor Clone',
+		description: `You'll learn how to create a professional IDE with a CodeMirror 6 editor featuring syntax highlighting, code folding, and a minimap, integrate AI-powered code suggestions and quick edit functionality using Claude, handle background job execution for AI agents with multi-tool capabilities, and build a full SaaS business layer with authentication and GitHub OAuth.`,
+		image:
+			'https://res.cloudinary.com/dezn0ffbx/image/upload/v1768309978/workshops/workshop_6lw0i/57a97191-e92c-442d-a56d-218542c56c95-lr3qgo.webp',
+		// badge: 'NEW',
+		// expires: null,
+		// metadata: 'Dec 1—Dec 5, 2025',
 	}
 	const { data: defaultCouponData } = api.pricing.defaultCoupon.useQuery()
 	const firstProductResource =
@@ -61,16 +65,16 @@ export function useNavLinks(): NavigationMenuData {
 		featured: featuredProduct,
 		items: [
 			{
-				href: '/browse?type=cohort',
-				title: 'Cohort-based Courses',
-				description: 'View and enroll in upcoming cohorts',
-			},
-			{
 				href: '/browse?type=workshop',
 				title: 'Self-paced Courses',
 				description:
 					'Learn by building real-world projects with modern stack and AI.',
 			},
+			// {
+			// 	href: '/browse?type=cohort',
+			// 	title: 'Cohort-based Courses',
+			// 	description: 'View and enroll in upcoming cohorts',
+			// },
 			{
 				href: '/browse',
 				title: 'Browse All',
