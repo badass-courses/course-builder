@@ -189,7 +189,7 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 					return { action: 'entitlements_soft_deleted' }
 				}
 
-				// If subscription was reactivated, restore entitlements
+				// If subscription was reactivated from canceled state, restore entitlements
 				const previousStatus = previousAttributes?.status
 				if (
 					stripeSubscription.status === 'active' &&
@@ -210,6 +210,35 @@ export const handleSubscriptionUpdated = inngest.createFunction(
 							newExpiration,
 						)
 						return { action: 'entitlements_restored' }
+					}
+				}
+
+				// If status changed to active from a non-canceled state (e.g., trialing → active),
+				// extend entitlement expiry to match the new billing period.
+				// Without this, transitions like trial conversion would leave expiresAt unchanged
+				// while Stripe's current_period_end advances.
+				if (
+					stripeSubscription.status === 'active' &&
+					previousStatus &&
+					!canceledStatuses.includes(previousStatus)
+				) {
+					const periodEnd = stripeSubscription.current_period_end
+					const newExpiration = periodEnd
+						? typeof periodEnd === 'number'
+							? new Date(periodEnd * 1000)
+							: new Date(periodEnd)
+						: undefined
+
+					if (newExpiration && !isNaN(newExpiration.getTime())) {
+						await updateEntitlementExpirationForSubscription(
+							subscription.id,
+							newExpiration,
+						)
+						return {
+							action: 'entitlements_expiration_extended',
+							previousStatus,
+							newExpiration,
+						}
 					}
 				}
 
