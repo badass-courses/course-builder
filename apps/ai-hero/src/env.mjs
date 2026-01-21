@@ -86,6 +86,7 @@ export const env = createEnv({
 		AXIOM_TOKEN: z.string().optional(),
 		GOOG_CREDENTIALS_JSON: z.string().optional(),
 		GOOG_CALENDAR_IMPERSONATE_USER: z.string().optional(),
+		SUPPORT_WEBHOOK_SECRET: z.string().optional(),
 	},
 
 	/**
@@ -179,6 +180,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_AXIOM_DATASET: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 		GOOG_CREDENTIALS_JSON: process.env.GOOG_CREDENTIALS_JSON,
 		GOOG_CALENDAR_IMPERSONATE_USER: process.env.GOOG_CALENDAR_IMPERSONATE_USER,
+		SUPPORT_WEBHOOK_SECRET: process.env.SUPPORT_WEBHOOK_SECRET,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

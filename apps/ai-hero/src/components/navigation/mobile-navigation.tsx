@@ -59,7 +59,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 	)
 
 	return (
-		<div className="flex items-stretch md:hidden">
+		<div className="flex items-stretch lg:hidden">
 			<Button
 				variant="ghost"
 				className="h-16 w-16 items-center justify-center border-l"
@@ -117,16 +117,16 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									}
 								/>
 							)}
-							<div className="flex w-full flex-col gap-3">
+							<div className="flex w-full flex-col gap-5">
 								{navData.courses.length > 0 && (
 									<div className="flex flex-col">
-										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
 											Courses
 										</div>
-										<ul className="flex flex-col gap-1">
+										<ul className="flex flex-col">
 											{navData.courses.map((course) => (
 												<NavLinkItem
-													className=""
+													className="text-sm"
 													key={course.href}
 													href={course.href}
 													label={course.title}
@@ -135,15 +135,32 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 										</ul>
 									</div>
 								)}
+								{navData.events.length > 0 && (
+									<div className="flex flex-col">
+										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
+											Events
+										</div>
+										<ul className="flex flex-col">
+											{navData.events.map((event) => (
+												<NavLinkItem
+													className="text-sm"
+													key={event.href}
+													href={event.href}
+													label={`${event.title} - ${event.date}`}
+												/>
+											))}
+										</ul>
+									</div>
+								)}
 								{navData.cohorts.length > 0 && (
 									<div className="flex flex-col">
-										<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
 											Cohorts
 										</div>
-										<ul className="flex flex-col gap-1">
+										<ul className="flex flex-col">
 											{navData.cohorts.map((cohort) => (
 												<NavLinkItem
-													className=""
+													className="text-sm"
 													key={cohort.href}
 													href={cohort.href}
 													label={cohort.title}
@@ -153,18 +170,18 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									</div>
 								)}
 								<div className="flex flex-col">
-									<div className="text-muted-foreground px-5 py-2 text-xs font-semibold uppercase tracking-wider">
+									<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
 										Free Tutorials
 									</div>
-									<ul className="flex flex-col gap-1">
+									<ul className="flex flex-col">
 										<NavLinkItem
-											className=""
+											className="text-sm"
 											href={navData.freeTutorials.featured.href}
 											label={navData.freeTutorials.featured.title}
 										/>
 										{navData.freeTutorials.items.map((tutorial) => (
 											<NavLinkItem
-												className=""
+												className="text-sm"
 												key={tutorial.href}
 												href={tutorial.href}
 												label={tutorial.title}
@@ -172,15 +189,15 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 										))}
 									</ul>
 								</div>
-								<ul className="border-foreground/20 flex flex-col gap-1 border-t pt-2">
+								<ul className="border-border flex flex-col border-t pt-2">
 									<NavLinkItem
-										className=""
+										className="text-sm"
 										href={navData.browseAll.href}
 										label={navData.browseAll.label}
 									/>
 									{sessionStatus === 'authenticated' && (
 										<NavLinkItem
-											className=""
+											className="text-sm"
 											label="Send Feedback"
 											onClick={() => setIsFeedbackDialogOpen(true)}
 										/>
@@ -188,24 +205,28 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 
 									{canViewTeam && !isAdmin && (
 										<NavLinkItem
-											className=""
+											className="text-sm"
 											label="Invite Team"
 											href="/team"
 										/>
 									)}
 									{canViewInvoice && (
 										<NavLinkItem
-											className=""
+											className="text-sm"
 											href="/invoices"
 											label="Invoices"
 										/>
 									)}
 									{sessionStatus === 'authenticated' && (
-										<NavLinkItem className="" href="/profile" label="Profile" />
+										<NavLinkItem
+											className="text-sm"
+											href="/profile"
+											label="Profile"
+										/>
 									)}
 									{canCreateContent && (
 										<NavLinkItem
-											className=""
+											className="text-sm"
 											href="/admin/pages"
 											label="Admin"
 										/>
@@ -218,7 +239,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 							{sessionStatus === 'authenticated' && (
 								<>
 									<NavLinkItem
-										className="pl-4"
+										className="pl-4 text-sm"
 										href="#"
 										label="Log out"
 										onClick={() => signOut()}
@@ -228,7 +249,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 									/>
 								</>
 							)}
-							<ThemeToggle className="text-lg [&_svg]:h-5 [&_svg]:w-5" />
+							<ThemeToggle className="text-sm [&_svg]:h-5 [&_svg]:w-5" />
 						</div>
 					</nav>
 				</SheetContent>
