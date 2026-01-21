@@ -69,10 +69,10 @@ async function fetchGenericResourceFromDb(slugOrId: string) {
 						},
 					},
 				},
-			},
-			resourceProducts: {
-				with: {
-					product: true,
+				resourceProducts: {
+					with: {
+						product: true,
+					},
 				},
 			},
 		})
