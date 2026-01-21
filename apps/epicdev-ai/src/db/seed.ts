@@ -49,6 +49,10 @@ const seededRoles = [
 		name: 'contributor',
 		id: 'role_clt5a97j7000008jp46bx6r62',
 	},
+	{
+		name: 'author',
+		id: 'role_83947261590834756219483',
+	},
 ]
 
 for (const seedRole of seededRoles) {

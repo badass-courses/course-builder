@@ -1,6 +1,6 @@
 import { ResourceFormConfig } from '@/components/resource-form/with-resource-form'
 import { Post, PostSchema, PostUpdate } from '@/lib/posts'
-import { autoUpdatePost, updatePost } from '@/lib/posts-query'
+import { autoUpdatePost, getPost, updatePost } from '@/lib/posts-query'
 import { z } from 'zod'
 
 /**
@@ -63,9 +63,12 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 		if (!resource.id || !resource.fields) {
 			throw new Error('Invalid resource data')
 		}
+		const currentPost = await getPost(resource.id)
+
 		const postUpdate: PostUpdate = {
 			id: resource.id,
 			fields: {
+				...(currentPost?.fields || {}),
 				title: resource.fields.title || '',
 				body: resource.fields.body || '',
 				slug: resource.fields.slug || '',
@@ -86,9 +89,12 @@ export const postFormConfig: ResourceFormConfig<Post, typeof PostSchema> = {
 		if (!resource.id || !resource.fields) {
 			throw new Error('Invalid resource data')
 		}
+		const currentPost = await getPost(resource.id)
+
 		const postUpdate: PostUpdate = {
 			id: resource.id,
 			fields: {
+				...(currentPost?.fields || {}),
 				title: resource.fields.title || '',
 				body: resource.fields.body || '',
 				slug: resource.fields.slug || '',

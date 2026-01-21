@@ -17,6 +17,7 @@ import { inngest } from '@/inngest/inngest.server'
 
 import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
+import { authorRoleAssignmentMonitor } from './functions/author-role-assignment'
 import { processBulkCalendarInvites } from './functions/bulk-calendar-invites'
 import {
 	calendarSync,
@@ -77,5 +78,6 @@ export const inngestConfig = {
 		sendWorkshopAccessEmails,
 		refundEntitlements,
 		processBulkCalendarInvites,
+		authorRoleAssignmentMonitor,
 	],
 }
