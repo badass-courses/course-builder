@@ -44,8 +44,12 @@ export default async function LessonSolutionPage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const params = await props.params
-	const data = await getCachedExerciseSolution(params.lesson)
-	const workshop = await getCachedMinimalWorkshop(params.module)
+
+	// Parallelize solution and workshop fetches
+	const [data, workshop] = await Promise.all([
+		getCachedExerciseSolution(params.lesson),
+		getCachedMinimalWorkshop(params.module),
+	])
 
 	if (!data) {
 		notFound()

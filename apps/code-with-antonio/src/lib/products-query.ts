@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter, db } from '@/db'
 import {
@@ -83,9 +84,15 @@ export async function updateProduct(input: Product) {
 	return courseBuilderAdapter.updateProduct(input)
 }
 
-export async function getProduct(productSlugOrId?: string) {
+/**
+ * Gets a product by slug or ID.
+ * Cached per-request to prevent duplicate database queries.
+ */
+export const getProduct = cache(async function getProductImpl(
+	productSlugOrId?: string,
+) {
 	return courseBuilderAdapter.getProduct(productSlugOrId)
-}
+})
 
 export async function getProducts() {
 	const productsData = await db.query.products.findMany({

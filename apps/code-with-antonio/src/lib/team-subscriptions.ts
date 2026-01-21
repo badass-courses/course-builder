@@ -1,10 +1,11 @@
+import { cache } from 'react'
 import { courseBuilderAdapter, db } from '@/db'
 import {
 	entitlements,
 	subscription as subscriptionTable,
 	users,
 } from '@/db/schema'
-import { and, eq, isNull } from 'drizzle-orm'
+import { and, eq, inArray, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 
 import {
@@ -65,25 +66,31 @@ export type TeamSubscription = {
 /**
  * Gets all team subscriptions where the user is the owner.
  * Team subscriptions are subscriptions with seats > 1.
+ * Cached per-request to prevent duplicate database queries.
  *
  * @param userId - The user ID to get team subscriptions for
  * @returns Array of team subscriptions with member info
  */
-export async function getTeamSubscriptionsForUser(
-	userId: string,
-): Promise<TeamSubscription[]> {
-	// Get user's memberships to find their organizations
-	const memberships = await courseBuilderAdapter.getMembershipsForUser(userId)
+export const getTeamSubscriptionsForUser = cache(
+	async function getTeamSubscriptionsForUserImpl(
+		userId: string,
+	): Promise<TeamSubscription[]> {
+		// Get user's memberships to find their organizations
+		const memberships = await courseBuilderAdapter.getMembershipsForUser(userId)
 
-	const teamSubscriptions: TeamSubscription[] = []
+		const teamSubscriptions: TeamSubscription[] = []
+		const organizationIds = memberships
+			.map((m) => m.organizationId)
+			.filter((id): id is string => id !== null)
 
-	for (const membership of memberships) {
-		if (!membership.organizationId) continue
+		if (organizationIds.length === 0) {
+			return []
+		}
 
-		// Find subscriptions in this organization where user is owner
-		const orgSubscriptions = await db.query.subscription.findMany({
+		// Batch query all subscriptions for user's organizations
+		const allOrgSubscriptions = await db.query.subscription.findMany({
 			where: and(
-				eq(subscriptionTable.organizationId, membership.organizationId),
+				inArray(subscriptionTable.organizationId, organizationIds),
 				eq(subscriptionTable.status, 'active'),
 			),
 			with: {
@@ -92,51 +99,66 @@ export async function getTeamSubscriptionsForUser(
 			},
 		})
 
-		for (const sub of orgSubscriptions) {
-			// Parse fields to check if this is a team subscription owned by this user
+		// Filter to team subscriptions owned by this user
+		const teamSubs = allOrgSubscriptions.filter((sub) => {
 			const fieldsParsed = TeamSubscriptionFieldsSchema.safeParse(sub.fields)
+			if (!fieldsParsed.success) return false
+			const fields = fieldsParsed.data
+			return fields.seats > 1 && fields.ownerId === userId
+		})
 
-			if (!fieldsParsed.success) {
-				console.warn(
-					`Subscription ${sub.id} has invalid fields:`,
-					sub.fields,
-					fieldsParsed.error.errors,
-				)
-				continue
-			}
+		if (teamSubs.length === 0) {
+			return []
+		}
 
+		// Batch query all entitlements for team subscriptions
+		const subscriptionIds = teamSubs.map((s) => s.id)
+		const allEntitlements = await db.query.entitlements.findMany({
+			where: and(
+				inArray(entitlements.sourceId, subscriptionIds),
+				eq(entitlements.sourceType, 'SUBSCRIPTION'),
+				isNull(entitlements.deletedAt),
+			),
+		})
+
+		// Batch query all users for entitlements (fix N+1)
+		const userIds = [
+			...new Set(
+				allEntitlements.map((e) => e.userId).filter((id): id is string => !!id),
+			),
+		]
+		const allUsers =
+			userIds.length > 0
+				? await db.query.users.findMany({
+						where: inArray(users.id, userIds),
+					})
+				: []
+		const userMap = new Map(allUsers.map((u) => [u.id, u]))
+
+		// Build team subscriptions with members
+		for (const sub of teamSubs) {
+			const fieldsParsed = TeamSubscriptionFieldsSchema.safeParse(sub.fields)
+			if (!fieldsParsed.success) continue
 			const fields = fieldsParsed.data
 
-			// Only include team subscriptions (seats > 1) where user is owner
-			if (fields.seats <= 1 || fields.ownerId !== userId) continue
+			const subEntitlements = allEntitlements.filter(
+				(e) => e.sourceId === sub.id,
+			)
 
-			// Get all members (entitlements) for this subscription
-			const memberEntitlements = await db.query.entitlements.findMany({
-				where: and(
-					eq(entitlements.sourceId, sub.id),
-					eq(entitlements.sourceType, 'SUBSCRIPTION'),
-					isNull(entitlements.deletedAt),
-				),
-			})
-
-			// Get user details for each entitlement
-			const members: TeamMember[] = []
-			for (const ent of memberEntitlements) {
-				if (!ent.userId) continue
-				const user = await db.query.users.findFirst({
-					where: eq(users.id, ent.userId),
-				})
-
-				if (user) {
-					members.push({
+			const members: TeamMember[] = subEntitlements
+				.filter((ent) => ent.userId)
+				.map((ent) => {
+					const user = userMap.get(ent.userId!)
+					if (!user) return null
+					return {
 						userId: user.id,
 						email: user.email ?? '',
 						name: user.name,
 						joinedAt: ent.createdAt ?? new Date(),
 						entitlementId: ent.id,
-					})
-				}
-			}
+					}
+				})
+				.filter((m): m is TeamMember => m !== null)
 
 			const seats: SeatInfo = {
 				total: fields.seats,
@@ -144,23 +166,10 @@ export async function getTeamSubscriptionsForUser(
 				available: fields.seats - members.length,
 			}
 
-			// Parse subscription and product with error handling
 			const parsedSubscription = SubscriptionSchema.safeParse(sub)
 			const parsedProduct = productSchema.safeParse(sub.product)
 
-			if (!parsedSubscription.success) {
-				console.warn(
-					`Failed to parse subscription ${sub.id}:`,
-					parsedSubscription.error.errors,
-				)
-				continue
-			}
-
-			if (!parsedProduct.success) {
-				console.warn(
-					`Failed to parse product for subscription ${sub.id}:`,
-					parsedProduct.error.errors,
-				)
+			if (!parsedSubscription.success || !parsedProduct.success) {
 				continue
 			}
 
@@ -173,10 +182,10 @@ export async function getTeamSubscriptionsForUser(
 				ownerId: fields.ownerId,
 			})
 		}
-	}
 
-	return teamSubscriptions
-}
+		return teamSubscriptions
+	},
+)
 
 /**
  * Gets a specific team subscription by ID, including member information.
