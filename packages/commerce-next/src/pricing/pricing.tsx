@@ -204,8 +204,13 @@ const Price = ({
 	className?: string
 	children?: React.ReactNode
 }) => {
-	const { formattedPrice, status } = usePricing()
+	const { formattedPrice, status, product } = usePricing()
 	const { isDiscount } = usePriceCheck()
+
+	// Check if this is a membership product with recurring billing
+	const isMembership = product.type === 'membership'
+	const billingInterval = product.fields?.billingInterval || 'year'
+	const intervalLabel = billingInterval === 'month' ? '/month' : '/year'
 
 	const appliedMerchantCoupon = formattedPrice?.appliedMerchantCoupon
 	const appliedFixedDiscount = formattedPrice?.appliedFixedDiscount
@@ -274,6 +279,14 @@ const Price = ({
 										{formattedPrice?.calculatedPrice &&
 											formatUsd(formattedPrice?.calculatedPrice).cents}
 									</span>
+									{isMembership && (
+										<span
+											className="font-heading ml-1 self-end text-xl font-medium opacity-70"
+											aria-hidden="true"
+										>
+											{intervalLabel}
+										</span>
+									)}
 									{Boolean(
 										appliedMerchantCoupon || isDiscount(formattedPrice),
 									) && (
@@ -507,6 +520,9 @@ const BuyButton = ({
 		isSoldOut,
 	} = usePricing()
 
+	const isMembership = product.type === 'membership'
+	const defaultAction = isMembership ? 'Subscribe' : 'Buy Now'
+
 	return (
 		<Comp
 			className={cn(
@@ -523,7 +539,7 @@ const BuyButton = ({
 					? 'Sold Out'
 					: formattedPrice?.upgradeFromPurchaseId
 						? `Upgrade Now`
-						: product?.fields.action || `Buy Now`}
+						: product?.fields.action || defaultAction}
 		</Comp>
 	)
 }

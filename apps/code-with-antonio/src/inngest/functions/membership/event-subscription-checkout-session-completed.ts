@@ -1,12 +1,35 @@
+import { db as drizzleDb } from '@/db'
+import { subscription as subscriptionTable } from '@/db/schema'
+import WelcomeSubscriptionEmail, {
+	WelcomeSubscriptionTeamEmail,
+} from '@/emails/welcome-subscription-email'
+import { env } from '@/env.mjs'
 import { inngest } from '@/inngest/inngest.server'
+import { createSubscriptionEntitlement } from '@/lib/entitlements'
 import { ensurePersonalOrganization } from '@/lib/personal-organization-service'
+import { log } from '@/server/logger'
+import { sendAnEmail } from '@/utils/send-an-email'
+import { eq } from 'drizzle-orm'
 
 import { NEW_SUBSCRIPTION_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-subscription-created'
 import { STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
 import { parseSubscriptionInfoFromCheckoutSession } from '@coursebuilder/core/lib/pricing/stripe-subscription-utils'
 import { User } from '@coursebuilder/core/schemas'
+import type { SubscriptionTier } from '@coursebuilder/core/schemas'
 import { checkoutSessionCompletedEvent } from '@coursebuilder/core/schemas/stripe/checkout-session-completed'
 
+/**
+ * Handles Stripe subscription checkout session completion.
+ *
+ * For single-seat subscriptions (qty=1):
+ * - Creates subscription with seats=1, ownerId=purchaser
+ * - Automatically creates entitlement for the purchaser
+ *
+ * For team subscriptions (qty>1):
+ * - Creates subscription with seats=N, ownerId=purchaser
+ * - Does NOT create entitlement automatically
+ * - Owner must claim a seat on /team page (consistent with bulk purchase behavior)
+ */
 export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 	{
 		id: 'stripe-subscription-checkout-session-completed',
@@ -134,6 +157,8 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				throw new Error('merchantProduct is null')
 			}
 
+			const isTeamSubscription = subscriptionInfo.quantity > 1
+
 			const { subscription } = await step.run(
 				'create a merchant subscription',
 				async () => {
@@ -158,34 +183,140 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				},
 			)
 
-			await step.run('give member learner role', async () => {
-				if (!user) {
-					throw new Error('user is null')
-				}
-				if (!organization) {
-					throw new Error('organization is null')
-				}
-
-				const userMemberships = await db.getMembershipsForUser(user.id)
-
-				const organizationMembership = userMemberships.find(
-					(membership) => membership.organizationId === organization.id,
-				)
-
-				if (!organizationMembership) {
-					throw new Error('organizationMembership is null')
-				}
-
-				await db.addRoleForMember({
-					memberId: organizationMembership.id,
-					organizationId: organization.id,
-					role: 'learner',
-				})
-			})
-
 			if (!subscription) {
 				throw new Error('subscription is null')
 			}
+
+			// Store seat count and owner for all subscriptions
+			// Merge with existing fields to avoid data loss
+			await step.run('store subscription fields', async () => {
+				const existingSub = await drizzleDb.query.subscription.findFirst({
+					where: eq(subscriptionTable.id, subscription.id),
+				})
+				const currentFields =
+					(existingSub?.fields as Record<string, unknown>) || {}
+
+				await drizzleDb
+					.update(subscriptionTable)
+					.set({
+						fields: {
+							...currentFields,
+							seats: subscriptionInfo.quantity,
+							ownerId: user.id,
+						},
+					})
+					.where(eq(subscriptionTable.id, subscription.id))
+			})
+
+			const organizationMembership = await step.run(
+				'give member learner role',
+				async () => {
+					if (!user) {
+						throw new Error('user is null')
+					}
+					if (!organization) {
+						throw new Error('organization is null')
+					}
+
+					const userMemberships = await db.getMembershipsForUser(user.id)
+
+					const orgMembership = userMemberships.find(
+						(membership) => membership.organizationId === organization.id,
+					)
+
+					if (!orgMembership) {
+						throw new Error('organizationMembership is null')
+					}
+
+					await db.addRoleForMember({
+						memberId: orgMembership.id,
+						organizationId: organization.id,
+						role: 'learner',
+					})
+
+					return orgMembership
+				},
+			)
+
+			// Create subscription entitlement for single-seat subscriptions only
+			// Team subscriptions (qty > 1) require the owner to claim a seat via /team page
+			if (!isTeamSubscription) {
+				await step.run('create subscription entitlement', async () => {
+					const subscriptionEntitlementType = await db.getEntitlementTypeByName(
+						'subscription_access',
+					)
+
+					if (!subscriptionEntitlementType) {
+						throw new Error('subscription_access entitlement type not found')
+					}
+
+					// Load product to get tier information
+					const product = await db.getProduct(merchantProduct.productId)
+					const tier = (product?.fields?.tier as SubscriptionTier) || 'standard'
+
+					// Convert expiration to Date - Inngest serializes Date objects to ISO strings
+					const expiresAt = subscriptionInfo.currentPeriodEnd
+						? new Date(subscriptionInfo.currentPeriodEnd)
+						: undefined
+
+					await createSubscriptionEntitlement({
+						userId: user.id,
+						subscriptionId: subscription.id,
+						productId: merchantProduct.productId,
+						organizationId: organization.id,
+						organizationMembershipId: organizationMembership.id,
+						entitlementType: subscriptionEntitlementType.id,
+						expiresAt,
+						metadata: {
+							tier, // Include subscription tier for access level checks
+						},
+					})
+				})
+			}
+
+			// Get product name for email
+			const product = await step.run('get product for email', async () => {
+				return await db.getProduct(merchantProduct.productId)
+			})
+			const productName = product?.name || 'Subscription'
+
+			// Send welcome email
+			await step.run('send subscription welcome email', async () => {
+				if (isTeamSubscription) {
+					await sendAnEmail({
+						Component: WelcomeSubscriptionTeamEmail,
+						componentProps: {
+							productName,
+							userFirstName: user.name?.split(' ')[0],
+							quantity: subscriptionInfo.quantity,
+						},
+						Subject: `Welcome to ${productName}!`,
+						To: user.email,
+						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						type: 'transactional',
+					})
+				} else {
+					await sendAnEmail({
+						Component: WelcomeSubscriptionEmail,
+						componentProps: {
+							productName,
+							userFirstName: user.name?.split(' ')[0],
+						},
+						Subject: `Welcome to ${productName}!`,
+						To: user.email,
+						ReplyTo: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						From: env.NEXT_PUBLIC_SUPPORT_EMAIL,
+						type: 'transactional',
+					})
+				}
+
+				await log.info('subscription_welcome_email.sent', {
+					subscriptionId: subscription.id,
+					userId: user.id,
+					isTeamSubscription,
+				})
+			})
 
 			await step.sendEvent(NEW_SUBSCRIPTION_CREATED_EVENT, {
 				name: NEW_SUBSCRIPTION_CREATED_EVENT,
@@ -196,7 +327,7 @@ export const stripeSubscriptionCheckoutSessionComplete = inngest.createFunction(
 				user,
 			})
 
-			return { subscription, subscriptionInfo }
+			return { subscription, subscriptionInfo, isTeamSubscription }
 		}
 	},
 )

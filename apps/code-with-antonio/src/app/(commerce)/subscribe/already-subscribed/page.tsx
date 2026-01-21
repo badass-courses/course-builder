@@ -59,7 +59,7 @@ export default async function AlreadySubscribedPage() {
 								</p>
 								<div className="flex flex-col gap-2">
 									<Button asChild>
-										<Link href="/team/invite">
+										<Link href="/team">
 											<Plus className="mr-2 h-4 w-4" />
 											Add Team Members
 										</Link>
@@ -84,10 +84,7 @@ export default async function AlreadySubscribedPage() {
 								</p>
 								<div className="flex flex-col gap-2">
 									<Button asChild>
-										<Link href="/learn">Go to Dashboard</Link>
-									</Button>
-									<Button variant="outline" asChild>
-										<Link href="/resources">Browse Resources</Link>
+										<Link href="/browse">Browse Resources</Link>
 									</Button>
 								</div>
 							</CardContent>
@@ -97,7 +94,7 @@ export default async function AlreadySubscribedPage() {
 					<div className="mt-8 text-center">
 						<p className="text-muted-foreground text-sm">
 							Need help?{' '}
-							<Link href="/support" className="text-primary hover:underline">
+							<Link href="/contact" className="text-primary hover:underline">
 								Contact Support
 							</Link>
 						</p>

@@ -11,6 +11,7 @@ import { getPricingData } from '@/lib/pricing-query'
 import { getProduct } from '@/lib/products-query'
 import { getWorkshop } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { count, eq } from 'drizzle-orm'
 import { CheckCircle } from 'lucide-react'
 
@@ -104,22 +105,41 @@ export async function PricingWidgetServer({
 
 	productProps = baseProps
 
-	if (user && purchaseForProduct) {
-		const { purchase, existingPurchase } =
-			await courseBuilderAdapter.getPurchaseDetails(
-				purchaseForProduct.id,
-				user.id,
-			)
+	// Use ability system to check if user can view the resource
+	// This handles both direct purchases AND subscription entitlements
+	const { canViewWorkshop } =
+		user && resource
+			? await getAbilityForResource(undefined, resource.id)
+			: { canViewWorkshop: false }
 
-		productProps = {
-			...baseProps,
-			hasPurchasedCurrentProduct: Boolean(purchase),
-			...(Boolean(existingPurchase)
-				? {
-						purchasedProductIds: [existingPurchase?.productId],
-						existingPurchase: existingPurchase,
-					}
-				: {}),
+	if (user && (purchaseForProduct || canViewWorkshop)) {
+		let hasPurchasedCurrentProduct = canViewWorkshop
+
+		if (purchaseForProduct) {
+			const { purchase, existingPurchase } =
+				await courseBuilderAdapter.getPurchaseDetails(
+					purchaseForProduct.id,
+					user.id,
+				)
+			hasPurchasedCurrentProduct =
+				hasPurchasedCurrentProduct || Boolean(purchase)
+
+			productProps = {
+				...baseProps,
+				hasPurchasedCurrentProduct,
+				...(Boolean(existingPurchase)
+					? {
+							purchasedProductIds: [existingPurchase?.productId],
+							existingPurchase: existingPurchase,
+						}
+					: {}),
+			}
+		} else {
+			// User has access via subscription/entitlement but no direct purchase
+			productProps = {
+				...baseProps,
+				hasPurchasedCurrentProduct: true,
+			}
 		}
 	}
 

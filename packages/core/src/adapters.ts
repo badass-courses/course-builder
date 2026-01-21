@@ -310,6 +310,10 @@ export interface CourseBuilderAdapter<
 	getSubscriptionForStripeId(
 		stripeSubscriptionId: string,
 	): Promise<Subscription | null>
+	updateSubscriptionStatus(
+		subscriptionId: string,
+		status: string,
+	): Promise<void>
 	getPurchasesForBulkCouponId(
 		bulkCouponId: string,
 	): Promise<(Purchase & { user: User })[]>
@@ -678,6 +682,7 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	createMerchantSession: async () => Promise.resolve({} as MerchantSession),
 	createSubscription: async () => null,
 	getSubscriptionForStripeId: async () => null,
+	updateSubscriptionStatus: async () => undefined,
 	getPurchasesForBulkCouponId: async () => [],
 }
 

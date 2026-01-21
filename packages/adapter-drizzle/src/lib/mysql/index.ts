@@ -1604,26 +1604,56 @@ export function mySqlDrizzleAdapter(
 				currentProduct.price.unitAmount.toString() !==
 				input.price?.unitAmount.toString()
 
-			if (priceChanged) {
-				const currentMerchantPrice = merchantPriceSchema.nullish().parse(
-					await client.query.merchantPrice.findFirst({
-						where: (merchantPrice, { eq, and }) =>
-							and(
-								eq(merchantPrice.merchantProductId, merchantProduct.id),
-								eq(merchantPrice.status, 1),
-							),
-					}),
-				)
+			// Get current merchant price and Stripe price to check if it needs updating
+			const currentMerchantPrice = merchantPriceSchema.nullish().parse(
+				await client.query.merchantPrice.findFirst({
+					where: (merchantPrice, { eq, and }) =>
+						and(
+							eq(merchantPrice.merchantProductId, merchantProduct.id),
+							eq(merchantPrice.status, 1),
+						),
+				}),
+			)
 
-				if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
-					throw new Error(`Merchant price not found`)
-				}
+			if (!currentMerchantPrice || !currentMerchantPrice.identifier) {
+				throw new Error(`Merchant price not found`)
+			}
 
-				const currentStripePrice = await paymentProvider.getPrice(
-					currentMerchantPrice.identifier,
-				)
+			const currentStripePrice = await paymentProvider.getPrice(
+				currentMerchantPrice.identifier,
+			)
 
-				const newStripePrice = await paymentProvider.createPrice({
+			// Check if type changed to/from membership (requires Stripe price recreation)
+			const membershipTypeChanged =
+				currentProduct.type !== input.type &&
+				(input.type === 'membership' || currentProduct.type === 'membership')
+
+			// Check if billing interval changed for membership products
+			const billingIntervalChanged =
+				input.type === 'membership' &&
+				currentProduct.type === 'membership' &&
+				currentProduct.fields?.billingInterval !== input.fields?.billingInterval
+
+			// Check if Stripe price recurring status doesn't match expected state for input type:
+			// - membership products require recurring=true
+			// - non-membership products require recurring=false (null/undefined)
+			const isMembership = input.type === 'membership'
+			const stripePriceMismatch =
+				isMembership !== !!currentStripePrice.recurring
+
+			// Need to recreate price if: price changed, type changed to/from membership,
+			// billing interval changed, or Stripe price doesn't match expected recurring status
+			const needsPriceRecreation =
+				priceChanged ||
+				membershipTypeChanged ||
+				billingIntervalChanged ||
+				stripePriceMismatch
+
+			if (needsPriceRecreation) {
+				// Get billing interval from input or default to 'year'
+				const billingInterval = input.fields?.billingInterval || 'year'
+
+				const priceParams = {
 					product: stripeProduct.id,
 					unit_amount: Math.floor(Number(input.price?.unitAmount || 0) * 100),
 					currency: 'usd',
@@ -1631,7 +1661,19 @@ export function mySqlDrizzleAdapter(
 						slug: input.fields.slug,
 					},
 					active: true,
+					// Membership products get recurring billing
+					...(input.type === 'membership' && {
+						recurring: { interval: billingInterval },
+					}),
+				}
+
+				console.log('[updateProduct] Creating Stripe price with params:', {
+					...priceParams,
+					isMembership: input.type === 'membership',
+					billingInterval,
 				})
+
+				const newStripePrice = await paymentProvider.createPrice(priceParams)
 
 				await paymentProvider.updateProduct(stripeProduct.id, {
 					default_price: newStripePrice.id,
@@ -1763,6 +1805,10 @@ export function mySqlDrizzleAdapter(
 				metadata: {
 					slug: product?.fields?.slug || null,
 				},
+				// Membership products get recurring billing
+				...(input.type === 'membership' && {
+					recurring: { interval: input.billingInterval || 'year' },
+				}),
 			})
 
 			const newMerchantProductId = `mproduct_${v4()}`
@@ -4387,6 +4433,15 @@ export function mySqlDrizzleAdapter(
 			}
 
 			return subscriptionParsed.data
+		},
+		updateSubscriptionStatus: async (
+			subscriptionId: string,
+			status: string,
+		) => {
+			await client
+				.update(subscriptionTable)
+				.set({ status })
+				.where(eq(subscriptionTable.id, subscriptionId))
 		},
 	}
 

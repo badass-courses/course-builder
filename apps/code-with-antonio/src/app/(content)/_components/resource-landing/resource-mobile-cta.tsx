@@ -144,6 +144,7 @@ export function ResourceMobileCta(props: ResourceMobileCtaProps) {
 					<PricingMobileCtaContent
 						title={props.title}
 						ctaLabel={props.ctaLabel}
+						product={props.product}
 					/>
 				</Pricing.Root>
 			</div>
@@ -173,11 +174,17 @@ export function ResourceMobileCta(props: ResourceMobileCtaProps) {
  */
 function PricingMobileCtaContent({
 	title,
-	ctaLabel = 'Buy',
+	ctaLabel,
+	product,
 }: {
 	title: string
 	ctaLabel?: string
+	product: Product
 }) {
+	const isMembership = product.type === 'membership'
+	const defaultLabel = isMembership ? 'Subscribe' : 'Buy'
+	const label = ctaLabel ?? defaultLabel
+
 	return (
 		<Pricing.Product className="flex w-full flex-row items-center justify-between gap-3">
 			<div className="flex w-full flex-col gap-0.5">
@@ -185,7 +192,7 @@ function PricingMobileCtaContent({
 				<Pricing.Price className="flex-row items-baseline gap-2 [&>div]:mt-0 [&>div]:h-auto [&>div]:text-base [&_[aria-live]]:text-base [&_[aria-live]]:font-bold [&_[data-save-percent]]:text-xs [&_span.sup]:hidden [&_sup]:hidden" />
 			</div>
 			<Pricing.BuyButton className="h-10 w-auto rounded-md px-8">
-				{ctaLabel}
+				{label}
 			</Pricing.BuyButton>
 		</Pricing.Product>
 	)
