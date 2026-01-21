@@ -23,12 +23,20 @@ export const authorsRouter = createTRPCRouter({
 	}),
 
 	getAuthors: publicProcedure.query(async () => {
+		const { ability } = await getServerAuthSession()
+		if (!ability.can('manage', 'all')) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' })
+		}
 		return getAuthors()
 	}),
 
 	getAuthor: publicProcedure
 		.input(z.object({ userId: z.string() }))
 		.query(async ({ input }) => {
+			const { ability } = await getServerAuthSession()
+			if (!ability.can('manage', 'all')) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' })
+			}
 			return getAuthor(input.userId)
 		}),
 

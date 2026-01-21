@@ -190,10 +190,6 @@ import {
 	getContentContributionsSchema,
 } from './schemas/content/content-contributions.js'
 import {
-	getContentResourceAuthorRelationsSchema,
-	getContentResourceAuthorSchema,
-} from './schemas/content/content-resource-author.js'
-import {
 	getContentResourceProductRelationsSchema,
 	getContentResourceProductSchema,
 } from './schemas/content/content-resource-product.js'
@@ -316,9 +312,6 @@ export function getCourseBuilderSchema(mysqlTable: MySqlTableFn) {
 		contentResourceVersionRelations:
 			getContentResourceVersionRelationsSchema(mysqlTable),
 		contentResourceRelations: getContentResourceRelationsSchema(mysqlTable),
-		contentResourceAuthor: getContentResourceAuthorSchema(mysqlTable),
-		contentResourceAuthorRelations:
-			getContentResourceAuthorRelationsSchema(mysqlTable),
 		contentResourceResource: getContentResourceResourceSchema(mysqlTable),
 		contentResourceResourceRelations:
 			getContentResourceResourceRelationsSchema(mysqlTable),
@@ -389,7 +382,6 @@ export function mySqlDrizzleAdapter(
 		sessions,
 		verificationTokens,
 		contentResource,
-		contentResourceAuthor,
 		contentResourceResource,
 		contentResourceProduct,
 		contentResourceTag,

@@ -33,13 +33,6 @@ export interface AuthorFieldProps {
 			authorId?: string | null
 			[key: string]: any
 		}
-		author?: {
-			contentResourceId: string
-			userId: string
-			createdAt: Date
-			updatedAt: Date
-			user: User
-		} | null
 	}
 	/**
 	 * Label for the field
@@ -79,12 +72,7 @@ export const AuthorField: React.FC<AuthorFieldProps> = ({
 			},
 		)
 	const { data: currentAuthor, isLoading: authorLoading } =
-		api.authors.getResourceAuthor.useQuery(
-			{ resourceId: resource.id },
-			{
-				initialData: resource.author?.user || null,
-			},
-		)
+		api.authors.getResourceAuthor.useQuery({ resourceId: resource.id })
 
 	const assignAuthorMutation = api.authors.assignAuthorToResource.useMutation({
 		onSuccess: async () => {

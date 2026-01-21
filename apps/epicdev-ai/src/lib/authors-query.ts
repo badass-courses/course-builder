@@ -237,13 +237,8 @@ export async function createAuthor(userId: string): Promise<User> {
 	})
 
 	if (existingUserRole) {
-		await db
-			.update(users)
-			.set({
-				role: 'author',
-			})
-			.where(eq(users.id, userId))
-
+		// User already has author role via userRoles join table
+		// Don't modify users.role - keep their primary role as-is
 		const user = await db.query.users.findFirst({
 			where: eq(users.id, userId),
 		})
@@ -272,13 +267,8 @@ export async function createAuthor(userId: string): Promise<User> {
 		deletedAt: null,
 	})
 
-	await db
-		.update(users)
-		.set({
-			role: 'author',
-		})
-		.where(eq(users.id, userId))
-
+	// Don't modify users.role - author role is managed via userRoles join table
+	// Keep the user's primary role as-is (admin, user, or contributor)
 	const user = await db.query.users.findFirst({
 		where: eq(users.id, userId),
 	})
