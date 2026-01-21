@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { SubscribeToConvertkitForm } from '@/convertkit'
+import { SubscribeForm } from '@/components/subscribe-form'
 import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { Moon, Sun } from 'lucide-react'
@@ -100,7 +100,7 @@ export default function Footer({
 							Log in
 						</Link>
 					) : (
-						<SubscribeToConvertkitForm
+						<SubscribeForm
 							emailPlaceholder="Your email"
 							className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
 						/>

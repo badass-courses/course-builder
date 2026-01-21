@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
 		// Use a background image
 		const backgroundImageUrl =
-			'https://res.cloudinary.com/total-typescript/image/upload/v1750072547/aih-sale-card-bg_2x.jpg'
+			'https://res.cloudinary.com/dezn0ffbx/image/upload/v1768999050/default-share-card-background_2x_pflypb.jpg'
 
 		return new ImageResponse(
 			(
@@ -103,25 +103,21 @@ export async function GET(request: Request) {
 					</div> */}
 
 					{/* Main content area */}
-					<main tw="flex p-26 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
+					<main tw="flex p-26 pt-48 pb-32 relative z-10 flex-col w-full h-full grow items-start justify">
 						<div tw="flex flex-col items-start">
-							<div tw="text-[72px] text-white max-w-[600px] leading-tight mb-4 font-bold">
+							<div tw="text-[60px] text-white max-w-[600px] leading-tight mb-4 font-bold">
 								{title}
 							</div>
-							<div tw="text-[36px] text-white/75 max-w-[600px] leading-tight mb-12">
+							{/* <div tw="text-[36px] text-white/75 max-w-[600px] leading-tight mb-12">
 								with Matt Pocock
-							</div>
+							</div> */}
 
 							{discountPercentage ? (
-								<div tw="flex items-center justify-center bg-[#FDAEBA] text-black px-10 py-5 rounded-md text-[38px] font-bold">
+								<div tw="flex items-center justify-center bg-[#fff] text-black px-10 py-5 rounded-md text-[38px] font-bold">
 									<span tw="text-[50px] mr-5">Save {discountPercentage}%</span>{' '}
 									for a limited time!
 								</div>
-							) : (
-								<div tw="flex items-center justify-center bg-[#FDAEBA] text-black px-10 py-5 rounded-md text-[38px] font-bold">
-									Master Modern AI Development
-								</div>
-							)}
+							) : null}
 						</div>
 					</main>
 				</div>
