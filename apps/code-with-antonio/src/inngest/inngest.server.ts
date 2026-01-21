@@ -66,6 +66,10 @@ import {
 	STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT,
 	StripeCheckoutSessionCompleted,
 } from '@coursebuilder/core/inngest/stripe/event-checkout-session-completed'
+import {
+	STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT,
+	StripeCustomerSubscriptionUpdated,
+} from '@coursebuilder/core/inngest/stripe/event-customer-subscription-updated'
 import DeepgramProvider from '@coursebuilder/core/providers/deepgram'
 import OpenAIProvider from '@coursebuilder/core/providers/openai'
 import PartykitProvider from '@coursebuilder/core/providers/partykit'
@@ -121,6 +125,7 @@ export type Events = {
 	[NO_PROGRESS_MADE_EVENT]: NoProgressMade
 	[SYNC_PURCHASE_TAGS_EVENT]: SyncPurchaseTags
 	[STRIPE_CHECKOUT_SESSION_COMPLETED_EVENT]: StripeCheckoutSessionCompleted
+	[STRIPE_CUSTOMER_SUBSCRIPTION_UPDATED_EVENT]: StripeCustomerSubscriptionUpdated
 	[CREATE_USER_ORGANIZATIONS_EVENT]: CreateUserOrganizations
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[VIDEO_ATTACHED_EVENT]: VideoAttached

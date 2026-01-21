@@ -17,6 +17,8 @@ import {
 	hasAvailableSeats,
 	hasBulkPurchase,
 	hasChargesForPurchases,
+	hasTeamSubscription,
+	type TeamSubscriptionSeatInfo,
 } from './purchase-validators'
 
 export const UserSchema = userSchema.merge(
@@ -28,7 +30,7 @@ export const UserSchema = userSchema.merge(
 			.array(
 				z.object({
 					type: z.string(),
-					expires: z.date().nullish(),
+					expires: z.coerce.date().nullish(),
 					metadata: z.record(z.any()),
 				}),
 			)
@@ -203,6 +205,8 @@ type ViewerAbilityInput = {
 	isSolution?: boolean
 	country?: string
 	purchases?: Purchase[]
+	/** Team subscriptions owned by the user with seat info */
+	teamSubscriptions?: TeamSubscriptionSeatInfo[]
 	entitlementTypes?: {
 		id: string
 		name: string
@@ -218,6 +222,7 @@ export function defineRulesForPurchases(
 		user,
 		country,
 		purchases = [],
+		teamSubscriptions = [],
 		module,
 		resource,
 		entitlementTypes,
@@ -297,11 +302,12 @@ export function defineRulesForPurchases(
 		can('read', 'Invoice')
 	}
 
-	if (hasBulkPurchase(purchases)) {
+	// Team access - bulk purchases or team subscriptions
+	if (hasBulkPurchase(purchases) || hasTeamSubscription(teamSubscriptions)) {
 		can('read', 'Team')
 	}
 
-	if (hasAvailableSeats(purchases)) {
+	if (hasAvailableSeats(purchases, teamSubscriptions)) {
 		can('invite', 'Team')
 	}
 
@@ -393,6 +399,49 @@ export function defineRulesForPurchases(
 		})
 	}
 
+	// Subscription entitlements grant access to content attached to the subscription product
+	const subscriptionEntitlementType = entitlementTypes?.find(
+		(entitlement) => entitlement.name === 'subscription_access',
+	)
+
+	// Grant Discord access for any active subscription (regardless of module context)
+	if (user?.entitlements && subscriptionEntitlementType) {
+		const hasActiveSubscription = user.entitlements.some(
+			(entitlement) =>
+				entitlement.type === subscriptionEntitlementType.id &&
+				(!entitlement.expires || entitlement.expires > new Date()),
+		)
+
+		if (hasActiveSubscription) {
+			can('read', 'Discord')
+		}
+	}
+
+	// Grant Content access only for modules attached to the subscription product
+	if (user?.entitlements && subscriptionEntitlementType && module?.id) {
+		user.entitlements.forEach((entitlement) => {
+			if (
+				entitlement.type === subscriptionEntitlementType.id &&
+				(!entitlement.expires || entitlement.expires > new Date())
+			) {
+				const subscriptionProductId = entitlement.metadata?.productId
+
+				// Check if the current module is part of the subscription product
+				const moduleInSubscription = module.resourceProducts?.some(
+					(rp: { productId: string }) => rp.productId === subscriptionProductId,
+				)
+
+				if (moduleInSubscription) {
+					// Grant access to the module and all its resources
+					can('read', 'Content', { id: module.id })
+					if (allModuleResourceIds?.length) {
+						can('read', 'Content', { id: { $in: allModuleResourceIds } })
+					}
+				}
+			}
+		})
+	}
+
 	// Grant access to lessons in sections with "free" tier and individual free lessons
 	if (module?.resources) {
 		const freeResourceIds: string[] = []
@@ -436,7 +485,7 @@ export function defineRulesForPurchases(
 		}
 	}
 
-	// Grant free access to workshops without self-paced or cohort products
+	// Grant free access to workshops without self-paced, cohort, or membership products
 	if (isWorkshopFreelyWatchable(viewerAbilityInput)) {
 		can('read', 'Content', {
 			id: { $in: [module?.id, ...(allModuleResourceIds || [])] },
@@ -481,13 +530,9 @@ const canViewTip = ({ resource }: ViewerAbilityInput) => {
 	return resource?.type === 'tip'
 }
 
-const canViewTalk = ({ resource }: ViewerAbilityInput) => {
-	return resource?.type === 'talk'
-}
-
 /**
- * Checks if a workshop has no paid product restrictions (no self-paced or cohort products).
- * Workshops without these product types can be freely watched.
+ * Checks if a workshop has no paid product restrictions.
+ * Workshops without self-paced, cohort, or membership products can be freely watched.
  */
 const isWorkshopFreelyWatchable = ({ module }: ViewerAbilityInput) => {
 	if (module?.type !== 'workshop') {
@@ -501,10 +546,14 @@ const isWorkshopFreelyWatchable = ({ module }: ViewerAbilityInput) => {
 		return true
 	}
 
-	// Check if any product has type 'self-paced' or 'cohort'
+	// Check if any product has a paid type
 	const hasPaidProductType = resourceProducts.some((rp) => {
 		const productType = rp.product?.type
-		return productType === 'self-paced' || productType === 'cohort'
+		return (
+			productType === 'self-paced' ||
+			productType === 'cohort' ||
+			productType === 'membership'
+		)
 	})
 
 	return !hasPaidProductType

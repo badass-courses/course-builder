@@ -233,6 +233,27 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 			})
 			.then((session) => session.url)
 	}
+	/**
+	 * Updates the quantity of a subscription item.
+	 * Used for team subscriptions to add/remove seats.
+	 * Stripe will handle proration automatically.
+	 */
+	async updateSubscriptionItemQuantity(
+		subscriptionId: string,
+		newQuantity: number,
+	) {
+		const subscription =
+			await this.stripe.subscriptions.retrieve(subscriptionId)
+		const subscriptionItem = subscription.items.data[0]
+
+		if (!subscriptionItem) {
+			throw new Error('No subscription item found')
+		}
+
+		return this.stripe.subscriptionItems.update(subscriptionItem.id, {
+			quantity: newQuantity,
+		})
+	}
 }
 
 export const mockStripeAdapter: PaymentsAdapter = {
@@ -255,6 +276,7 @@ export const mockStripeAdapter: PaymentsAdapter = {
 	createProduct: async () => ({}) as any,
 	getSubscription: async () => ({}) as any,
 	getBillingPortalUrl: async () => 'mock-billing-portal-url',
+	updateSubscriptionItemQuantity: async () => ({}) as any,
 }
 
 export const MockStripeProvider: PaymentsProviderConfig = {

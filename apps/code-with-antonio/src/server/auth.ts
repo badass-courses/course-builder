@@ -233,10 +233,18 @@ export const authOptions: NextAuthConfig = {
 			const organizationId = headersList.get('x-organization-id')
 			const role = dbUser?.role || 'user'
 
+			// Map organization roles with their organizationId for ability checks and middleware
+			// Include the membership's organizationId since the role table's organizationId may be null
 			const organizationRoles =
-				dbUser?.organizationMemberships.flatMap((membership) =>
-					membership.organizationMembershipRoles.map((role) => role.role),
-				) || []
+				dbUser?.organizationMemberships
+					.filter((membership) => membership.organizationId)
+					.flatMap((membership) =>
+						membership.organizationMembershipRoles.map((membershipRole) => ({
+							...membershipRole.role,
+							organizationId: membership.organizationId!,
+							active: membershipRole.active,
+						})),
+					) || []
 
 			const currentMembership = organizationId
 				? await db.query.organizationMemberships.findFirst({

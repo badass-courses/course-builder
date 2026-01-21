@@ -38,9 +38,6 @@ export const PRODUCT_TYPE_CONFIG = {
 		getDiscordRoleId: (product: any) =>
 			product?.fields?.discordRoleId || env.DISCORD_PURCHASER_ROLE_ID,
 	},
-	// Future product types can be added here
-	// live: { ... },
-	// membership: { ... },
 } as const
 
 // Entitlement config for backwards compatibility
@@ -64,7 +61,7 @@ export const ENTITLEMENT_CONFIG = {
 export type ProductType = keyof typeof PRODUCT_TYPE_CONFIG
 
 /**
- * Get resource data based on product type
+ * Get resource data based on product type.
  */
 export const getResourceData = async (
 	resourceId: string,
