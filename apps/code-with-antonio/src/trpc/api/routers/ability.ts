@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
 import { env } from '@/env.mjs'
 import { getAllUserEntitlements } from '@/lib/entitlements-query'
+import { getSubscriberFromCookie as getDbSubscriber } from '@/lib/subscribe-actions'
 import { SubscriberSchema } from '@/schemas/subscriber'
 import { getServerAuthSession } from '@/server/auth'
 import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
@@ -42,7 +43,25 @@ export async function fetchSubscriber(convertkitId: string | number) {
 	return { ...subscriber, tags }
 }
 
+/**
+ * Get subscriber from cookie. Checks both database subscriber cookie (cb_subscriber)
+ * and legacy ConvertKit cookie (ck_subscriber) for backwards compatibility.
+ */
 export async function getSubscriberFromCookie() {
+	// First check our database subscriber cookie
+	const dbSubscriber = await getDbSubscriber()
+	if (dbSubscriber) {
+		// Return in a format compatible with the existing subscriber schema
+		return {
+			id: 0, // No ConvertKit ID for db subscribers
+			email_address: dbSubscriber.email,
+			state: 'active' as const,
+			created_at: dbSubscriber.subscribedAt,
+			fields: {},
+		}
+	}
+
+	// Fall back to legacy ConvertKit cookie
 	const cookieStore = await cookies()
 	if (!cookieStore) return null
 

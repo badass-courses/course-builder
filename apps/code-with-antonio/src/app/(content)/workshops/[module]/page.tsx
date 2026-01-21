@@ -50,8 +50,6 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export const dynamic = 'force-dynamic'
-
 export async function generateStaticParams() {
 	try {
 		const workshops = await db.query.contentResource.findMany({
@@ -114,19 +112,25 @@ export default async function ModulePage(props: Props) {
 		notFound()
 	}
 
-	const [ability, product] = await Promise.all([
-		getAbilityForResource(undefined, params.module),
+	// Parallelize all independent data fetches for better performance
+	// Use workshop.id (not slug) for ability checks - IDs use database indexes
+	const [
+		ability,
+		product,
+		saleBannerData,
+		purchaseData,
+		productMap,
+		defaultCoupon,
+	] = await Promise.all([
+		getAbilityForResource(undefined, workshop.id),
 		getCachedWorkshopProduct(params.module),
+		getSaleBannerDataFromSearchParams(searchParams),
+		createWorkshopPurchaseDataLoader(params.module, searchParams),
+		getProductSlugToIdMap(),
+		getActiveCoupon(searchParams),
 	])
-	const saleBannerData = await getSaleBannerDataFromSearchParams(searchParams)
 
-	// Load purchase data for MDX components
-	const purchaseData = await createWorkshopPurchaseDataLoader(
-		params.module,
-		searchParams,
-	)
-	const productMap = await getProductSlugToIdMap()
-	const defaultCoupon = await getActiveCoupon(searchParams)
+	// saleData depends on defaultCoupon, so fetch after
 	const saleData = await getSaleBannerData(defaultCoupon)
 
 	const mdxComponents = createPricingMdxComponents({
@@ -325,7 +329,7 @@ export default async function ModulePage(props: Props) {
 
 			<ResourceHeader
 				visibility={workshop.fields?.visibility}
-				badge={{ label: 'Workshop' }}
+				badge={{ label: 'Course' }}
 				title={workshop.fields?.title || ''}
 				description={workshop.fields?.description || ''}
 				image={

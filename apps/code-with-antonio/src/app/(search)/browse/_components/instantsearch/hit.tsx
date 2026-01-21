@@ -17,14 +17,14 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				return 'tutorial'
 
 			case 'article':
-				return 'article'
+				return 'Article'
 
 			case 'nextUp':
 				return 'nextUp'
 			case 'post':
 				return 'post'
 			case 'workshop':
-				return 'workshop'
+				return 'Course'
 			case 'cohort':
 				return 'cohort'
 			default:

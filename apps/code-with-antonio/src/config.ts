@@ -1,7 +1,7 @@
 const config = {
 	defaultTitle: `${process.env.NEXT_PUBLIC_SITE_TITLE}`,
 	description: process.env.NEXT_PUBLIC_PRODUCT_DESCRIPTION,
-	author: `${process.env.NEXT_PUBLIC_PARTNER_FIRST_NAME}`,
+	author: `Antonio`,
 	additionalLinkTags: [
 		{
 			rel: 'icon',
@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Build%20DeepSearch%20in%20TypeScript`, // `card@2x.jpg`,
+				url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Code%20with%20Antonio`, // `card@2x.jpg`,
 				width: 1200,
 				height: 630,
 			},

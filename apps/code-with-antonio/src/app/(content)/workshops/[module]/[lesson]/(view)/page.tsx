@@ -10,8 +10,6 @@ import {
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
-export const dynamic = 'force-dynamic'
-
 export async function generateStaticParams() {
 	try {
 		const workshops = await db.query.contentResource.findMany({
@@ -88,8 +86,12 @@ type Props = {
 export default async function LessonPageWrapper(props: Props) {
 	const searchParams = await props.searchParams
 	const params = await props.params
-	const lesson = await getCachedLesson(params.lesson)
-	const workshop = await getCachedMinimalWorkshop(params.module)
+
+	// Parallelize lesson and workshop fetches
+	const [lesson, workshop] = await Promise.all([
+		getCachedLesson(params.lesson),
+		getCachedMinimalWorkshop(params.module),
+	])
 
 	return (
 		<LessonPage

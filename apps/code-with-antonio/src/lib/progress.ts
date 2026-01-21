@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import { cookies } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
 import { resourceProgress } from '@/db/schema'
@@ -140,62 +141,69 @@ export async function sendInngestProgressEvent({
 	})
 }
 
-export async function getModuleProgressForUser(
-	moduleIdOrSlug: string,
-): Promise<ModuleProgress | null> {
-	const { session } = await getServerAuthSession()
-	if (session?.user) {
-		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
-			session.user.id,
-			moduleIdOrSlug,
+/**
+ * Gets module progress for the current user.
+ * Cached per-request to prevent duplicate database queries.
+ */
+export const getModuleProgressForUser = cache(
+	async function getModuleProgressForUserImpl(
+		moduleIdOrSlug: string,
+	): Promise<ModuleProgress | null> {
+		const { session } = await getServerAuthSession()
+		if (session?.user) {
+			const moduleProgress =
+				await courseBuilderAdapter.getModuleProgressForUser(
+					session.user.id,
+					moduleIdOrSlug,
+				)
+
+			return moduleProgress
+		}
+
+		const subscriberCookie = (await cookies()).get('ck_subscriber')
+
+		if (!subscriberCookie) {
+			console.debug('no subscriber cookie')
+			return {
+				completedLessons: [],
+				nextResource: null,
+				percentCompleted: 0,
+				completedLessonsCount: 0,
+				totalLessonsCount: 0,
+			}
+		}
+
+		const parsedSubscriber = SubscriberSchema.safeParse(
+			JSON.parse(subscriberCookie.value),
 		)
 
+		if (!parsedSubscriber.success) {
+			console.error('Error parsing subscriber', parsedSubscriber.error)
+			return {
+				completedLessons: [],
+				nextResource: null,
+				percentCompleted: 0,
+				completedLessonsCount: 0,
+				totalLessonsCount: 0,
+			}
+		}
+
+		const subscriber = parsedSubscriber.data
+
+		if (!subscriber?.email_address) {
+			console.debug('no subscriber cookie')
+			return {
+				completedLessons: [],
+				nextResource: null,
+				percentCompleted: 0,
+				completedLessonsCount: 0,
+				totalLessonsCount: 0,
+			}
+		}
+		const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
+			subscriber.email_address,
+			moduleIdOrSlug,
+		)
 		return moduleProgress
-	}
-
-	const subscriberCookie = (await cookies()).get('ck_subscriber')
-
-	if (!subscriberCookie) {
-		console.debug('no subscriber cookie')
-		return {
-			completedLessons: [],
-			nextResource: null,
-			percentCompleted: 0,
-			completedLessonsCount: 0,
-			totalLessonsCount: 0,
-		}
-	}
-
-	const parsedSubscriber = SubscriberSchema.safeParse(
-		JSON.parse(subscriberCookie.value),
-	)
-
-	if (!parsedSubscriber.success) {
-		console.error('Error parsing subscriber', parsedSubscriber.error)
-		return {
-			completedLessons: [],
-			nextResource: null,
-			percentCompleted: 0,
-			completedLessonsCount: 0,
-			totalLessonsCount: 0,
-		}
-	}
-
-	const subscriber = parsedSubscriber.data
-
-	if (!subscriber?.email_address) {
-		console.debug('no subscriber cookie')
-		return {
-			completedLessons: [],
-			nextResource: null,
-			percentCompleted: 0,
-			completedLessonsCount: 0,
-			totalLessonsCount: 0,
-		}
-	}
-	const moduleProgress = await courseBuilderAdapter.getModuleProgressForUser(
-		subscriber.email_address,
-		moduleIdOrSlug,
-	)
-	return moduleProgress
-}
+	},
+)

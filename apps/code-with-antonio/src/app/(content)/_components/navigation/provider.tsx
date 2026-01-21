@@ -28,14 +28,17 @@ export const ContentNavigationProvider = ({
 	const navigationData = React.use(navigationDataLoader)
 	const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false)
 
+	// Memoize context value to prevent unnecessary re-renders of all consumers
+	const value = React.useMemo<ContentNavigationContextValue>(
+		() =>
+			navigationData
+				? { ...navigationData, isSidebarCollapsed, setIsSidebarCollapsed }
+				: null,
+		[navigationData, isSidebarCollapsed],
+	)
+
 	return (
-		<ContentNavigationContext.Provider
-			value={
-				navigationData
-					? { ...navigationData, isSidebarCollapsed, setIsSidebarCollapsed }
-					: null
-			}
-		>
+		<ContentNavigationContext.Provider value={value}>
 			{children}
 		</ContentNavigationContext.Provider>
 	)

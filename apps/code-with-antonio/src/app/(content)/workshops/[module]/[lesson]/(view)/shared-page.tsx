@@ -48,7 +48,11 @@ export async function LessonPage({
 		notFound()
 	}
 
-	const abilityLoader = getAbilityForResource(params.lesson, params.module)
+	// Use IDs (not slugs) for ability checks - IDs use database indexes
+	const abilityLoader = getAbilityForResource(
+		lesson.id,
+		workshop?.id || params.module,
+	)
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
 
 	const ability = await abilityLoader
@@ -67,6 +71,7 @@ export async function LessonPage({
 					lessonType={lessonType}
 					workshop={workshop}
 					ability={ability}
+					abilityLoader={abilityLoader}
 				/>
 				<LessonControls
 					abilityLoader={abilityLoader}
@@ -176,6 +181,7 @@ async function PlayerContainer({
 	params,
 	workshop,
 	ability,
+	abilityLoader,
 }: {
 	lesson: Lesson | null
 	lessonType?: 'lesson' | 'exercise' | 'solution'
@@ -187,12 +193,17 @@ async function PlayerContainer({
 		canViewLesson: boolean
 		isPendingOpenAccess: boolean
 	}
+	abilityLoader: Promise<
+		Omit<AbilityForResource, 'canView'> & {
+			canViewWorkshop: boolean
+			canViewLesson: boolean
+			isPendingOpenAccess: boolean
+		}
+	>
 }) {
 	if (!lesson) {
 		notFound()
 	}
-
-	const abilityLoader = getAbilityForResource(params.lesson, params.module)
 
 	// const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
 	const muxPlaybackId = ability.canViewLesson

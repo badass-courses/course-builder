@@ -10,8 +10,8 @@ import {
 import { CldImage } from '@/components/cld-image'
 import ResourceTeaser from '@/components/content/resource-teaser'
 import LayoutClient from '@/components/layout-client'
+import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import config from '@/config'
-import { SubscribeToConvertkitForm } from '@/convertkit'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
@@ -148,7 +148,7 @@ const Home = async (props: Props) => {
 								Join builder’s list to get notified when new cohorts open,
 								unlock early-bird pricing, and never miss a new course.
 							</h4>
-							<SubscribeToConvertkitForm className="mt-3 flex w-full max-w-sm flex-col items-start gap-3 text-left lg:max-w-full lg:flex-row lg:items-end" />
+							<SubscribeFormWithStatus className="mt-3 flex w-full max-w-sm flex-col items-start gap-3 text-left lg:max-w-full lg:flex-row lg:items-end" />
 						</div>
 						<div className="bg-primary text-primary-foreground relative flex items-center justify-center overflow-hidden rounded-lg">
 							<CldImage

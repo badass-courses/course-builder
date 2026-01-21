@@ -8,11 +8,16 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 const FREE_TYPES = ['tutorial', 'post', 'list', 'article']
 
+interface BrowseByProps {
+	/** Optional callback when a filter is selected (useful for closing mobile sheet) */
+	onSelect?: () => void
+}
+
 /**
  * BrowseBy navigation component for filtering content by type.
  * Provides preset filters for content categories: Newest, Cohort-based, Self-paced, and Free.
  */
-export default function BrowseBy() {
+export default function BrowseBy({ onSelect }: BrowseByProps) {
 	const { items, refine } = useRefinementList({
 		attribute: 'type',
 		operator: 'or',
@@ -51,6 +56,7 @@ export default function BrowseBy() {
 				refine(item.value)
 			}
 		})
+		onSelect?.()
 	}
 
 	const handleCohortClick = () => {
@@ -62,6 +68,7 @@ export default function BrowseBy() {
 		})
 		// Then refine cohort
 		refine('cohort')
+		onSelect?.()
 	}
 
 	const handleWorkshopClick = () => {
@@ -73,6 +80,7 @@ export default function BrowseBy() {
 		})
 		// Then refine workshop
 		refine('workshop')
+		onSelect?.()
 	}
 
 	const handleFreeClick = () => {
@@ -84,19 +92,24 @@ export default function BrowseBy() {
 		})
 		// Then refine all free types
 		FREE_TYPES.forEach((type) => refine(type))
+		onSelect?.()
 	}
 
 	return (
-		<ul className="flex flex-col gap-5">
-			<li>
+		<ul className="flex flex-wrap gap-3 md:flex-col md:gap-5">
+			<li className="hidden w-full md:block">
 				<p className="pb-5">Browse by</p>
 				<Separator />
 			</li>
 			<li>
 				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isNewestActive,
-					})}
+					className={cn(
+						'cursor-pointer rounded-full border px-4 py-2 transition-colors md:border-0 md:p-0',
+						{
+							'border-primary bg-primary/10 text-primary md:bg-transparent':
+								isNewestActive,
+						},
+					)}
 					onClick={handleNewestClick}
 					aria-pressed={isNewestActive}
 				>
@@ -105,37 +118,49 @@ export default function BrowseBy() {
 			</li>
 			<li>
 				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isCohortActive,
-					})}
-					onClick={handleCohortClick}
-					aria-pressed={isCohortActive}
-				>
-					Cohort-based
-				</button>
-			</li>
-			<li>
-				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isWorkshopActive,
-					})}
+					className={cn(
+						'cursor-pointer rounded-full border px-4 py-2 transition-colors md:border-0 md:p-0',
+						{
+							'border-primary bg-primary/10 text-primary md:bg-transparent':
+								isWorkshopActive,
+						},
+					)}
 					onClick={handleWorkshopClick}
 					aria-pressed={isWorkshopActive}
 				>
-					Self-paced
+					Courses
 				</button>
 			</li>
 			<li>
 				<button
-					className={cn('cursor-pointer', {
-						'text-primary': isFreeActive,
-					})}
+					className={cn(
+						'cursor-pointer rounded-full border px-4 py-2 transition-colors md:border-0 md:p-0',
+						{
+							'border-primary bg-primary/10 text-primary md:bg-transparent':
+								isCohortActive,
+						},
+					)}
+					onClick={handleCohortClick}
+					aria-pressed={isCohortActive}
+				>
+					Cohorts
+				</button>
+			</li>
+			{/* <li>
+				<button
+					className={cn(
+						'cursor-pointer rounded-full border px-4 py-2 transition-colors md:border-0 md:p-0',
+						{
+							'border-primary bg-primary/10 text-primary md:bg-transparent':
+								isFreeActive,
+						},
+					)}
 					onClick={handleFreeClick}
 					aria-pressed={isFreeActive}
 				>
 					Free
 				</button>
-			</li>
+			</li> */}
 		</ul>
 	)
 }

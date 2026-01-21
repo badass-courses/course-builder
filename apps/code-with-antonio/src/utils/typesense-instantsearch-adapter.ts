@@ -8,11 +8,13 @@ import {
 } from '@coursebuilder/utils-search/typesense-adapter'
 
 // App-specific configuration
+// Note: queryBy defines which fields are searched via text queries
+// tags.fields.label allows searching by tag names (e.g., "react", "typescript")
 const config = createDefaultConfig({
 	apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY ?? '',
 	host: process.env.NEXT_PUBLIC_TYPESENSE_HOST ?? 'test',
 	port: Number(process.env.NEXT_PUBLIC_TYPESENSE_PORT) ?? 8108,
-	queryBy: 'title,description,summary',
+	queryBy: 'title,description,summary,tags.fields.label',
 	preset: 'updated_at_timestamp',
 	sortBy: '_text_match:desc', // default sort
 })

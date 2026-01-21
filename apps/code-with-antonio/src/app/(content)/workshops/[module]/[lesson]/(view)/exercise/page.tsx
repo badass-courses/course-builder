@@ -39,8 +39,12 @@ export default async function LessonExercisePage(props: {
 }) {
 	const searchParams = await props.searchParams
 	const params = await props.params
-	const lesson = await getLesson(params.lesson)
-	const workshop = await getCachedMinimalWorkshop(params.module)
+
+	// Parallelize lesson and workshop fetches
+	const [lesson, workshop] = await Promise.all([
+		getLesson(params.lesson),
+		getCachedMinimalWorkshop(params.module),
+	])
 
 	return (
 		<LessonProvider lesson={lesson}>

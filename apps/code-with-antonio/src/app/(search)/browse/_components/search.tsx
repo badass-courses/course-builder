@@ -5,10 +5,20 @@ import {
 	TYPESENSE_COLLECTION_NAME,
 	typesenseInstantsearchAdapter,
 } from '@/utils/typesense-instantsearch-adapter'
+import { SlidersHorizontal } from 'lucide-react'
 import { useQueryState } from 'nuqs'
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 import { Configure, useInstantSearch } from 'react-instantsearch'
 import { InstantSearchNext } from 'react-instantsearch-nextjs'
+
+import {
+	Button,
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from '@coursebuilder/ui'
 
 import { InfiniteHits } from './infinite-hits'
 import BrowseBy from './instantsearch/browse-by'
@@ -44,6 +54,7 @@ export default SearchWithErrorBoundary
  */
 function SearchContent() {
 	const { refresh } = useInstantSearch()
+	const [isFilterOpen, setIsFilterOpen] = React.useState(false)
 
 	React.useEffect(() => {
 		refresh()
@@ -55,13 +66,39 @@ function SearchContent() {
 				filters={'visibility:public && state:published'}
 				hitsPerPage={40}
 			/>
-			<div className="grid min-h-[calc(100svh-77px)] grid-cols-12 gap-10 py-10">
-				<aside className="col-span-3">
+			<div className="flex flex-col gap-4 py-6 md:grid md:grid-cols-12 md:gap-10 md:py-10">
+				{/* Desktop sidebar */}
+				<aside className="hidden md:col-span-3 md:block">
 					<BrowseBy />
 				</aside>
 
-				<div className="col-span-9 flex flex-col gap-4">
-					<SearchBox />
+				<div className="flex flex-col gap-4 md:col-span-9">
+					{/* Mobile filter button + search box row */}
+					<div className="flex items-center gap-3">
+						<Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+							<SheetTrigger asChild>
+								<Button
+									variant="outline"
+									size="icon"
+									className="shrink-0 md:hidden"
+									aria-label="Open filters"
+								>
+									<SlidersHorizontal className="size-4" />
+								</Button>
+							</SheetTrigger>
+							<SheetContent side="bottom" className="max-h-[70vh]">
+								<SheetHeader>
+									<SheetTitle>Filters</SheetTitle>
+								</SheetHeader>
+								<div className="overflow-y-auto px-4 pb-6">
+									<BrowseBy onSelect={() => setIsFilterOpen(false)} />
+								</div>
+							</SheetContent>
+						</Sheet>
+						<div className="flex-1">
+							<SearchBox />
+						</div>
+					</div>
 					<InfiniteHits />
 				</div>
 			</div>

@@ -40,7 +40,7 @@ export default function LayoutClient({
 			)}
 			<Navigation withContainer={withNavContainer || withContainer} />
 			<main
-				className={cn('', className, {
+				className={cn('min-h-[calc(100dvh-var(--nav-height))]', className, {
 					container: withContainer,
 				})}
 			>

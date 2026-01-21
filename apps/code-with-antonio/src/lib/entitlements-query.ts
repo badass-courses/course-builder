@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { db } from '@/db'
 import { entitlements, organizationMemberships } from '@/db/schema'
 import {
@@ -9,33 +10,36 @@ import { and, eq, gt, inArray, isNull, or, sql } from 'drizzle-orm'
 
 /**
  * Get all active entitlements for a user across all their organizations
- * Excludes soft-deleted entitlements
+ * Excludes soft-deleted entitlements.
+ * Cached per-request to prevent duplicate database queries.
  */
-export async function getAllUserEntitlements(userId: string) {
-	// Get all organization memberships for the user
-	const allMemberships = await db.query.organizationMemberships.findMany({
-		where: eq(organizationMemberships.userId, userId),
-	})
+export const getAllUserEntitlements = cache(
+	async function getAllUserEntitlementsImpl(userId: string) {
+		// Get all organization memberships for the user
+		const allMemberships = await db.query.organizationMemberships.findMany({
+			where: eq(organizationMemberships.userId, userId),
+		})
 
-	const allMembershipIds = allMemberships.map((m) => m.id)
+		const allMembershipIds = allMemberships.map((m) => m.id)
 
-	// Load entitlements from ALL user organizations
-	const activeEntitlements =
-		allMembershipIds.length > 0
-			? await db.query.entitlements.findMany({
-					where: and(
-						inArray(entitlements.organizationMembershipId, allMembershipIds),
-						or(
-							isNull(entitlements.expiresAt),
-							gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+		// Load entitlements from ALL user organizations
+		const activeEntitlements =
+			allMembershipIds.length > 0
+				? await db.query.entitlements.findMany({
+						where: and(
+							inArray(entitlements.organizationMembershipId, allMembershipIds),
+							or(
+								isNull(entitlements.expiresAt),
+								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
+							),
+							isNull(entitlements.deletedAt),
 						),
-						isNull(entitlements.deletedAt),
-					),
-				})
-			: []
+					})
+				: []
 
-	return activeEntitlements
-}
+		return activeEntitlements
+	},
+)
 
 /**
  * Create resource entitlements based on product type
