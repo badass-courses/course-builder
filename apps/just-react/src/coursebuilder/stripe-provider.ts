@@ -9,7 +9,7 @@ export const stripeProvider = StripeProvider({
 	baseSuccessUrl: `${env.COURSEBUILDER_URL}`,
 	cancelUrl: `${env.COURSEBUILDER_URL}`,
 	paymentsAdapter: new StripePaymentAdapter({
-		stripeToken: env.STRIPE_SECRET_TOKEN,
-		stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET,
+		stripeToken: env.STRIPE_SECRET_TOKEN || '',
+		stripeWebhookSecret: env.STRIPE_WEBHOOK_SECRET || '',
 	}),
 })

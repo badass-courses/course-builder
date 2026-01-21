@@ -17,7 +17,10 @@ import {
 } from '@/purchase-transfer/purchase-transfer-actions'
 import { authOptions, getServerAuthSession } from '@/server/auth'
 
-import { SubscriptionWelcomePage } from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
+import {
+	SubscriptionWelcomePage,
+	type StripeSubscriptionData,
+} from '@coursebuilder/commerce-next/post-purchase/subscription-welcome-page'
 import { WelcomePage } from '@coursebuilder/commerce-next/post-purchase/welcome-page'
 import { convertToSerializeForNextResponse } from '@coursebuilder/commerce-next/utils/serialize-for-next-response'
 import { PurchaseUserTransfer } from '@coursebuilder/core/schemas'
@@ -207,14 +210,28 @@ const Welcome = async (props: {
 			redirect(`/`)
 		}
 
-		const stripeSubscription = await stripeProvider.getSubscription(
+		const rawStripeSubscription = await stripeProvider.getSubscription(
 			subscription?.merchantSubscription?.identifier,
 		)
 
+		// Extract only serializable data from Stripe subscription
+		const stripeSubscription: StripeSubscriptionData = {
+			status: rawStripeSubscription.status,
+			quantity: rawStripeSubscription.items.data[0]?.quantity ?? 1,
+			interval:
+				rawStripeSubscription.items.data[0]?.price.recurring?.interval ??
+				'month',
+			currentPeriodEnd: rawStripeSubscription.current_period_end,
+			cancelAtPeriodEnd: rawStripeSubscription.cancel_at_period_end,
+			unitAmount:
+				rawStripeSubscription.items.data[0]?.price.unit_amount ?? null,
+			currency: rawStripeSubscription.items.data[0]?.price.currency ?? 'usd',
+		}
+
 		const billingPortalUrl = await stripeProvider.getBillingPortalUrl(
-			typeof stripeSubscription.customer === 'string'
-				? stripeSubscription.customer
-				: stripeSubscription.customer.id,
+			typeof rawStripeSubscription.customer === 'string'
+				? rawStripeSubscription.customer
+				: rawStripeSubscription.customer.id,
 			`${env.COURSEBUILDER_URL}/welcome?subscriptionId=${subscription.id}`,
 		)
 
