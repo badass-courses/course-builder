@@ -1,5 +1,5 @@
 import { ParsedUrlQuery } from 'querystring'
-import { headers } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
@@ -37,8 +37,17 @@ export default async function LoginPage({
 		return redirect(`/subscribe/already-subscribed`)
 	}
 
+	// Read shortlink reference from cookie for attribution tracking
+	const cookieStore = await cookies()
+	const shortlinkRef = cookieStore.get('sl_ref')?.value
+
 	const stripe = await stripeProvider.createCheckoutSession(
-		{ ...checkoutParams, userId: user?.id, organizationId },
+		{
+			...checkoutParams,
+			userId: user?.id,
+			organizationId,
+			...(shortlinkRef && { shortlinkRef }),
+		},
 		courseBuilderAdapter,
 	)
 	return redirect(stripe.redirect)
