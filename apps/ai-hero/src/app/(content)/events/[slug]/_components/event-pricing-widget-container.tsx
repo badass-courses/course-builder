@@ -16,6 +16,7 @@ import type { PricingOptions } from '@coursebuilder/core/types'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import type { EventPageProps } from './event-page-props'
+import { LoggedInWaitlistButton } from './logged-in-waitlist-button'
 
 type EnrollmentState =
 	| { type: 'open' }
@@ -105,6 +106,7 @@ export const EventPricingWidgetContainer: React.FC<
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
 		couponFromCode,
+		userData,
 		...commerceProps
 	} = props
 
@@ -201,10 +203,27 @@ export const EventPricingWidgetContainer: React.FC<
 
 	// Default waitlist form renderer
 	const renderWaitlistForm = () => {
+		// Allow custom override first
 		if (renderWaitlistFormProp) {
 			return renderWaitlistFormProp()
 		}
 
+		// For logged-in users, show simple button (no need to enter name/email)
+		if (userData) {
+			return (
+				<LoggedInWaitlistButton
+					email={userData.email}
+					name={userData.name ?? undefined}
+					fields={waitlistCkFields}
+					actionLabel="Join Waitlist"
+					className="mt-5 h-12 w-full text-base"
+					productName={product?.name}
+					productId={product?.id}
+				/>
+			)
+		}
+
+		// For anonymous users, show full form
 		return (
 			<SubscribeToConvertkitForm
 				fields={waitlistCkFields}
