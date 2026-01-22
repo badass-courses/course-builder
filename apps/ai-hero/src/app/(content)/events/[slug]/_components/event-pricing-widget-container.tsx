@@ -131,9 +131,13 @@ export const EventPricingWidgetContainer: React.FC<
 			.slice(0, 10),
 	}
 
+	// Check if sold out (limited seats and none available)
+	const hasLimitedSeats = totalQuantity > 0
+	const isSoldOut = hasLimitedSeats && quantityAvailable <= 0
+
 	/**
-	 * Determines the current enrollment state based on event timing
-	 * and product configuration.
+	 * Determines the current enrollment state based on event timing,
+	 * seat availability, and product configuration.
 	 */
 	const getEnrollmentState = (): EnrollmentState => {
 		// Bypass if coupon allows it
@@ -141,7 +145,16 @@ export const EventPricingWidgetContainer: React.FC<
 			return { type: 'open' }
 		}
 
-		// Events are simpler than cohorts - they're open if upcoming
+		// Check sold out FIRST (before checking if upcoming)
+		if (isSoldOut) {
+			return {
+				type: 'closed',
+				title: 'Sold Out',
+				subtitle: 'Join the waitlist to be notified if spots become available.',
+			}
+		}
+
+		// Events are open if upcoming and not sold out
 		if (isUpcoming) {
 			return { type: 'open' }
 		}
