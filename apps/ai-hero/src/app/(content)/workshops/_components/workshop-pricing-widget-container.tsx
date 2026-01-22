@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { CldImage } from '@/components/cld-image'
 import type { ProductPricingFeature } from '@/components/commerce/product-pricing-features'
 import { SubscribeToConvertkitForm } from '@/convertkit'
 import { env } from '@/env.mjs'
@@ -14,6 +13,9 @@ import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { PricingWidget } from './pricing-widget'
 import type { WorkshopPageProps } from './workshop-page-props'
+
+/** Polling interval for seat availability (5 seconds) */
+const AVAILABILITY_POLL_INTERVAL = 5000
 
 export const WorkshopPricingWidgetContainer: React.FC<
 	WorkshopPageProps & {
@@ -38,13 +40,55 @@ export const WorkshopPricingWidgetContainer: React.FC<
 }) => {
 	const {
 		product,
-		quantityAvailable,
+		quantityAvailable: initialQuantityAvailable,
 		pricingDataLoader,
 		hasPurchasedCurrentProduct,
 		...commerceProps
 	} = props
 	const couponFromCode = commerceProps?.couponFromCode
 	const { allowPurchase } = searchParams || {}
+
+	// Track current availability with polling for live events
+	const [currentQuantityAvailable, setCurrentQuantityAvailable] =
+		React.useState(initialQuantityAvailable)
+
+	const isLiveEvent = product?.type === 'live'
+	const hasLimitedSeats = initialQuantityAvailable !== -1
+
+	// Poll for seat availability on live events with limited seats
+	React.useEffect(() => {
+		if (!isLiveEvent || !hasLimitedSeats || !product?.id) {
+			return
+		}
+
+		const checkAvailability = async () => {
+			try {
+				const response = await fetch(`/api/products/${product.id}/availability`)
+				if (response.ok) {
+					const data = await response.json()
+					if (typeof data.quantityAvailable === 'number') {
+						setCurrentQuantityAvailable(data.quantityAvailable)
+					}
+				}
+			} catch (error) {
+				// Silently fail - we'll try again on next interval
+			}
+		}
+
+		// Initial check after mount
+		const initialTimeout = setTimeout(checkAvailability, 1000)
+
+		// Set up polling interval
+		const intervalId = setInterval(
+			checkAvailability,
+			AVAILABILITY_POLL_INTERVAL,
+		)
+
+		return () => {
+			clearTimeout(initialTimeout)
+			clearInterval(intervalId)
+		}
+	}, [isLiveEvent, hasLimitedSeats, product?.id])
 
 	// Get current time in PT for comparison
 	const tz = 'America/Los_Angeles'
@@ -65,10 +109,10 @@ export const WorkshopPricingWidgetContainer: React.FC<
 		? new Date(openEnrollment) > nowInPT
 		: false
 
-	// Check if sold out (for live events)
+	// Check if sold out (for live events) - uses polled value
 	const isSoldOut =
-		product?.type === 'live' &&
-		quantityAvailable <= 0 &&
+		isLiveEvent &&
+		currentQuantityAvailable <= 0 &&
 		!couponFromCode?.fields?.bypassSoldOut
 
 	// Determine enrollment state
@@ -166,7 +210,7 @@ export const WorkshopPricingWidgetContainer: React.FC<
 					<PricingWidget
 						workshops={workshops}
 						product={product}
-						quantityAvailable={quantityAvailable}
+						quantityAvailable={currentQuantityAvailable}
 						commerceProps={{ ...commerceProps, products: [product] }}
 						pricingDataLoader={pricingDataLoader}
 						hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
