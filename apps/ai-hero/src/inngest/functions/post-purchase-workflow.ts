@@ -175,8 +175,21 @@ export const postPurchaseWorkflow = inngest.createFunction(
 				const shortlinkRef = checkoutSession.metadata?.shortlinkRef
 
 				if (!shortlinkRef) {
+					await log.info('shortlink.attribution.no_ref_in_metadata', {
+						checkoutSessionId,
+						purchaseId: purchase.id,
+						productId: product.id,
+						metadata: checkoutSession.metadata,
+					})
 					return { skipped: true, reason: 'No shortlink reference in metadata' }
 				}
+
+				await log.info('shortlink.attribution.found_ref', {
+					checkoutSessionId,
+					shortlinkRef,
+					purchaseId: purchase.id,
+					productId: product.id,
+				})
 
 				// Record the attribution
 				await createShortlinkAttribution({
