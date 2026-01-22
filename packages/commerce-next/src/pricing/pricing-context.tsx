@@ -69,7 +69,8 @@ export const PricingProvider = ({
 
 	const isSoldOut = Boolean(
 		!hasUsedCouponWithBypassSoldOut &&
-			state.context.product.type === 'live' &&
+			(state.context.product.type === 'live' ||
+				state.context.product.type === 'cohort') &&
 			pricingData.quantityAvailable !== -1 &&
 			(pricingData.quantityAvailable || 0) <= 0,
 	)
