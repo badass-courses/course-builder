@@ -67,6 +67,12 @@ export async function init({
 			options: {},
 		}))
 
+	console.log('[INIT] request cookies:', {
+		rawCookieKeys: Object.keys(reqCookies || {}),
+		convertedCount: cookies.length,
+		hasSl_ref: cookies.some((c) => c.name === 'sl_ref'),
+	})
+
 	return { options, cookies }
 }
 
