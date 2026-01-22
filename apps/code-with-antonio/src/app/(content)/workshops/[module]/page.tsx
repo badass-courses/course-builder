@@ -45,6 +45,9 @@ import { Certificate } from '../../_components/module-certificate-container'
 import ModuleResourceList from '../../_components/navigation/module-resource-list'
 import { PricingWidget } from '../../_components/resource-landing'
 
+// Force dynamic rendering - page uses headers() for auth which is incompatible with static generation
+export const dynamic = 'force-dynamic'
+
 type Props = {
 	params: Promise<{ module: string }>
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>

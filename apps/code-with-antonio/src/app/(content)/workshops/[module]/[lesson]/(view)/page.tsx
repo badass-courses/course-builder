@@ -10,6 +10,9 @@ import {
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
 
+// Force dynamic rendering - page uses headers() for auth which is incompatible with static generation
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
 	try {
 		const workshops = await db.query.contentResource.findMany({
