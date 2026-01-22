@@ -7,6 +7,10 @@
 	"author": "",
 	"main": "index.tsx",
 	"types": "index.tsx",
+	"scripts": {
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit"
+	},
 	"dependencies": {
 		"@auth/core": "0.37.2",
 		"@codemirror/commands": "^6.6.0",
