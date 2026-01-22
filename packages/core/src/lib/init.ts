@@ -58,7 +58,14 @@ export async function init({
 		getCurrentUser: courseBuilderOptions.getCurrentUser,
 	}
 
-	const cookies: cookie.Cookie[] = []
+	// Convert request cookies to Cookie[] format for actions
+	const cookies: cookie.Cookie[] = Object.entries(reqCookies || {})
+		.filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+		.map(([name, value]) => ({
+			name,
+			value,
+			options: {},
+		}))
 
 	return { options, cookies }
 }
