@@ -1,4 +1,5 @@
-import { courseBuilderAdapter } from '@/db'
+import { courseBuilderAdapter, db } from '@/db'
+import { purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
 import type {
@@ -6,10 +7,12 @@ import type {
 	ContentSearchRequest,
 	ContentSearchResponse,
 	ContentSearchResult,
+	ProductStatus,
 	Purchase,
 	SupportIntegration,
 	User,
 } from '@skillrecordings/sdk/integration'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -221,6 +224,74 @@ export const integration: SupportIntegration = {
 				success: false,
 				error: error instanceof Error ? error.message : 'Unknown error',
 			}
+		}
+	},
+
+	/**
+	 * Get product availability status
+	 *
+	 * Returns seat availability, sold out status, and enrollment windows
+	 * for live workshops and cohort-based products.
+	 */
+	async getProductStatus(productId: string): Promise<ProductStatus | null> {
+		// Get product via adapter (handles slug or ID lookup)
+		const product = await courseBuilderAdapter.getProduct(productId)
+
+		if (!product) return null
+
+		// Count active purchases for this product
+		const activePurchases = await db
+			.select({ count: sql<number>`count(*)` })
+			.from(purchases)
+			.where(
+				and(
+					eq(purchases.productId, product.id),
+					inArray(purchases.status, ['Valid', 'Restricted']),
+				),
+			)
+		const activePurchaseCount = Number(activePurchases[0]?.count ?? 0)
+
+		const quantityAvailable = product.quantityAvailable ?? -1
+		const isUnlimited = quantityAvailable === -1
+		const quantityRemaining = isUnlimited
+			? -1
+			: Math.max(0, quantityAvailable - activePurchaseCount)
+		const soldOut = !isUnlimited && quantityRemaining <= 0
+
+		// Map product fields.state to SDK state
+		const stateMap: Record<string, ProductStatus['state']> = {
+			draft: 'draft',
+			published: 'active',
+			archived: 'archived',
+			deleted: 'archived',
+		}
+		const state = stateMap[product.fields?.state ?? 'draft'] ?? 'draft'
+
+		// Map product type
+		const productType = (product.type ??
+			'self-paced') as ProductStatus['productType']
+
+		// Check enrollment window for cohorts
+		const now = new Date()
+		const enrollmentOpen = product.fields?.openEnrollment
+		const enrollmentClose = product.fields?.closeEnrollment
+		const withinEnrollmentWindow =
+			(!enrollmentOpen || new Date(enrollmentOpen) <= now) &&
+			(!enrollmentClose || new Date(enrollmentClose) >= now)
+
+		// Product is available if: published, not sold out, and within enrollment window (if applicable)
+		const available = state === 'active' && !soldOut && withinEnrollmentWindow
+
+		return {
+			productId: product.id,
+			productType,
+			available,
+			soldOut,
+			quantityAvailable,
+			quantityRemaining,
+			state,
+			enrollmentOpen: enrollmentOpen ?? undefined,
+			enrollmentClose: enrollmentClose ?? undefined,
 		}
 	},
 

@@ -101,7 +101,7 @@
 		"@sindresorhus/slugify": "^2.2.1",
 		"@skillrecordings/analytics": "^1.0.1",
 		"@skillrecordings/config": "^0.0.3",
-		"@skillrecordings/sdk": "^0.3.0",
+		"@skillrecordings/sdk": "^0.4.0",
 		"@skillrecordings/time": "^0.0.13",
 		"@t3-oss/env-nextjs": "^0.7.1",
 		"@tanstack/react-query": "5.54.1",
