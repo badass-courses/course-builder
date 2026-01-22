@@ -7,7 +7,7 @@ import {
 	getSolution,
 	getSolutionForLesson,
 } from '@/lib/solutions-query'
-import { log } from '@/server/logger'
+import { log, serializeError } from '@/server/logger'
 import { createTRPCRouter, protectedProcedure } from '@/trpc/api/trpc'
 import { z } from 'zod'
 
@@ -77,7 +77,9 @@ export const solutionsRouter = createTRPCRouter({
 				const solution = await createSolutionAction(input)
 				return solution
 			} catch (error) {
-				log.error('solution.create.trpc.error', { error })
+				void log.error('solution.create.trpc.error', {
+					error: serializeError(error),
+				})
 				throw error
 			}
 		}),
@@ -96,7 +98,9 @@ export const solutionsRouter = createTRPCRouter({
 				const { solutionId } = input
 				return deleteSolutionAction(solutionId)
 			} catch (error) {
-				log.error('solution.delete.trpc.error', { error })
+				void log.error('solution.delete.trpc.error', {
+					error: serializeError(error),
+				})
 				throw error
 			}
 		}),
@@ -115,7 +119,9 @@ export const solutionsRouter = createTRPCRouter({
 				const { solutionId } = input
 				return getLessonForSolution(solutionId)
 			} catch (error) {
-				log.error('solution.getParentLesson.trpc.error', { error })
+				void log.error('solution.getParentLesson.trpc.error', {
+					error: serializeError(error),
+				})
 				throw error
 			}
 		}),
