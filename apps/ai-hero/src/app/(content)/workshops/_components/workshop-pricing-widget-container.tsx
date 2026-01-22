@@ -55,9 +55,9 @@ export const WorkshopPricingWidgetContainer: React.FC<
 	const isLiveEvent = product?.type === 'live'
 	const hasLimitedSeats = initialQuantityAvailable !== -1
 
-	// Poll for seat availability on live events with limited seats
+	// Poll for seat availability on products with limited seats
 	React.useEffect(() => {
-		if (!isLiveEvent || !hasLimitedSeats || !product?.id) {
+		if (!hasLimitedSeats || !product?.id) {
 			return
 		}
 
@@ -88,7 +88,7 @@ export const WorkshopPricingWidgetContainer: React.FC<
 			clearTimeout(initialTimeout)
 			clearInterval(intervalId)
 		}
-	}, [isLiveEvent, hasLimitedSeats, product?.id])
+	}, [hasLimitedSeats, product?.id])
 
 	// Get current time in PT for comparison
 	const tz = 'America/Los_Angeles'
@@ -109,9 +109,9 @@ export const WorkshopPricingWidgetContainer: React.FC<
 		? new Date(openEnrollment) > nowInPT
 		: false
 
-	// Check if sold out (for live events) - uses polled value
+	// Check if sold out (any product with limited seats) - uses polled value
 	const isSoldOut =
-		isLiveEvent &&
+		hasLimitedSeats &&
 		currentQuantityAvailable <= 0 &&
 		!couponFromCode?.fields?.bypassSoldOut
 
