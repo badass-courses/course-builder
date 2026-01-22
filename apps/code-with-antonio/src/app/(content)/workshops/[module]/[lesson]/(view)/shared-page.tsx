@@ -12,8 +12,8 @@ import { env } from '@/env.mjs'
 import { ActiveHeadingProvider } from '@/hooks/use-active-heading'
 import type { Lesson } from '@/lib/lessons'
 import {
-	getLessonMuxPlaybackId,
-	getLessonVideoTranscript,
+	getCachedLessonMuxPlaybackId,
+	getCachedLessonVideoTranscript,
 } from '@/lib/lessons-query'
 import { MinimalWorkshop } from '@/lib/workshops'
 import { cn } from '@/utils/cn'
@@ -160,7 +160,7 @@ async function TranscriptContainer({
 		}
 	>
 }) {
-	const transcriptLoader = getLessonVideoTranscript(lessonId)
+	const transcriptLoader = getCachedLessonVideoTranscript(lessonId)
 
 	return (
 		<div className={cn('pt-4', className)}>
@@ -205,9 +205,9 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	// const playbackIdLoader = getLessonMuxPlaybackId(lesson.id)
+	// const playbackIdLoader = getCachedLessonMuxPlaybackId(lesson.id)
 	const muxPlaybackId = ability.canViewLesson
-		? await getLessonMuxPlaybackId(lesson.id)
+		? await getCachedLessonMuxPlaybackId(lesson.id)
 		: null
 	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
 		return resource.type === 'videoResource'

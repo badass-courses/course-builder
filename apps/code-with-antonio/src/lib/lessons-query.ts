@@ -7,7 +7,6 @@ import {
 	contentResourceResource,
 	contentResourceTag,
 } from '@/db/schema'
-import { env } from '@/env.mjs'
 import {
 	LessonSchema,
 	NewLessonInputSchema,
@@ -19,7 +18,6 @@ import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { Redis } from '@upstash/redis'
 import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -33,8 +31,6 @@ import { last } from '@coursebuilder/nodash'
 import { Lesson } from './lessons'
 import { SolutionSchema } from './solution'
 import { getCachedSolution, getSolution } from './solutions-query'
-
-const redis = Redis.fromEnv()
 
 export const getLessonVideoTranscript = async (
 	lessonIdOrSlug?: string | null,
@@ -61,6 +57,12 @@ export const getLessonVideoTranscript = async (
 
 	return parsedResult.data[0]?.transcript
 }
+
+export const getCachedLessonVideoTranscript = unstable_cache(
+	async (lessonIdOrSlug: string) => getLessonVideoTranscript(lessonIdOrSlug),
+	['lesson-transcript'],
+	{ revalidate: false, tags: ['lesson-transcript'] },
+)
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
 	const query = sql`SELECT *
@@ -106,6 +108,12 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 
 	return parsedResult.data[0]?.muxPlaybackId
 }
+
+export const getCachedLessonMuxPlaybackId = unstable_cache(
+	async (lessonIdOrSlug: string) => getLessonMuxPlaybackId(lessonIdOrSlug),
+	['lesson-playback-id'],
+	{ revalidate: false, tags: ['lesson-playback-id'] },
+)
 
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
@@ -172,70 +180,52 @@ export const addVideoResourceToLesson = async ({
 
 export const getCachedLesson = unstable_cache(
 	async (slug: string) => getLesson(slug),
-	['lesson'],
+	['lesson-full'],
 	{ revalidate: 3600, tags: ['lesson'] },
 )
 
 export async function getLesson(lessonSlugOrId: string) {
-	// const start = new Date().getTime()
-
-	const cachedLesson = await redis.get(
-		`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-	)
-
-	const lesson = cachedLesson
-		? cachedLesson
-		: await db.query.contentResource.findFirst({
-				where: and(
-					or(
-						eq(
-							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-							lessonSlugOrId,
-						),
-						eq(contentResource.id, lessonSlugOrId),
-						like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
-					),
-					or(
-						eq(contentResource.type, 'lesson'),
-						eq(contentResource.type, 'exercise'),
-						eq(contentResource.type, 'solution'),
-						eq(contentResource.type, 'post'),
-					),
+	const lesson = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					lessonSlugOrId,
 				),
+				eq(contentResource.id, lessonSlugOrId),
+				like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
+			),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+				eq(contentResource.type, 'post'),
+			),
+		),
+		with: {
+			tags: {
 				with: {
-					tags: {
-						with: {
-							tag: true,
-						},
-						orderBy: asc(contentResourceTag.position),
-					},
-					resources: {
-						with: {
-							resource: {
-								columns: {
-									type: true,
-								},
-							},
+					tag: true,
+				},
+				orderBy: asc(contentResourceTag.position),
+			},
+			resources: {
+				with: {
+					resource: {
+						columns: {
+							type: true,
 						},
 					},
 				},
-			})
+			},
+		},
+	})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
 		console.error('Error parsing lesson', lesson, parsedLesson.error)
 		return null
 	}
-
-	if (!cachedLesson) {
-		await redis.set(
-			`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-			lesson,
-			{ ex: 10 },
-		)
-	}
-
-	// console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
 	return parsedLesson.data
 }

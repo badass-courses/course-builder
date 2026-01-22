@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
@@ -32,10 +33,12 @@ import { last } from '@coursebuilder/nodash'
 
 import { upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedWorkshopNavigation = unstable_cache(
-	async (slug: string) => getWorkshopNavigation(slug),
-	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
+export const getCachedWorkshopNavigation = cache(
+	unstable_cache(
+		async (slug: string) => getWorkshopNavigation(slug),
+		['workshop-navigation'],
+		{ revalidate: 3600, tags: ['workshop-navigation'] },
+	),
 )
 
 /**
@@ -46,10 +49,12 @@ export async function getWorkshopNavigation(moduleSlugOrId: string) {
 	return getContentNavigation(moduleSlugOrId)
 }
 
-export const getCachedWorkshopProduct = unstable_cache(
-	async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
-	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
+export const getCachedWorkshopProduct = cache(
+	unstable_cache(
+		async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
+		['workshop-product'],
+		{ revalidate: 3600, tags: ['workshop-product'] },
+	),
 )
 
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
@@ -109,10 +114,12 @@ LIMIT 1;`
 	return parsedProduct.data
 }
 
-export const getCachedMinimalWorkshop = unstable_cache(
-	async (slug: string) => getMinimalWorkshop(slug),
-	['workshop'],
-	{ revalidate: 3600, tags: ['workshop'] },
+export const getCachedMinimalWorkshop = cache(
+	unstable_cache(
+		async (slug: string) => getMinimalWorkshop(slug),
+		['workshop-minimal'],
+		{ revalidate: 3600, tags: ['workshop-minimal'] },
+	),
 )
 
 export async function getMinimalWorkshop(moduleSlugOrId: string) {
