@@ -93,7 +93,7 @@
 		},
 		"typecheck": {
 			"dependsOn": ["^topo", "^build"],
-			"outputs": [".tsbuildinfo"]
+			"outputs": [".tsbuildinfo", "tsconfig.tsbuildinfo"]
 		},
 		"test": {
 			"outputs": ["coverage/**"],
