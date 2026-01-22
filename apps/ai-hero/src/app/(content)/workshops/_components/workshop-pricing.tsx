@@ -2,14 +2,12 @@
 
 import * as React from 'react'
 import { usePathname } from 'next/navigation'
-import { env } from '@/env.mjs'
 
 import { PriceCheckProvider } from '@coursebuilder/commerce-next/pricing/pricing-check-context'
-import { cn } from '@coursebuilder/ui/utils/cn'
 
-import { PricingWidget } from './pricing-widget'
 import { useWorkshopNavigation } from './workshop-navigation-provider'
 import type { WorkshopPageProps } from './workshop-page-props'
+import { WorkshopPricingWidgetContainer } from './workshop-pricing-widget-container'
 
 export function WorkshopPricingClient({
 	product,
@@ -26,7 +24,6 @@ export function WorkshopPricingClient({
 }) {
 	const teamQuantityLimit = 100
 	const pathname = usePathname()
-	const cancelUrl = product ? `${env.NEXT_PUBLIC_URL}${pathname}` : ''
 	const workshopNavigation = useWorkshopNavigation()
 	const workshops =
 		(workshopNavigation?.parents?.[0]?.resources &&
@@ -36,26 +33,21 @@ export function WorkshopPricingClient({
 			}))) ||
 		[]
 
-	const { allowPurchase } = React.use(searchParams)
+	const resolvedSearchParams = React.use(searchParams)
 
-	return product && (product.fields.state === 'published' || allowPurchase) ? (
+	return product ? (
 		<PriceCheckProvider purchasedProductIds={purchasedProductIds}>
-			<PricingWidget
-				className={cn('px-5', className)}
-				workshops={workshops}
-				commerceProps={{ ...commerceProps, products: [product] }}
-				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+			<WorkshopPricingWidgetContainer
+				className={className}
 				product={product}
 				quantityAvailable={quantityAvailable}
 				pricingDataLoader={pricingDataLoader}
+				hasPurchasedCurrentProduct={hasPurchasedCurrentProduct}
+				searchParams={resolvedSearchParams}
+				workshops={workshops}
+				pathname={pathname}
 				pricingWidgetOptions={{
-					withImage: false,
-					withGuaranteeBadge: true,
-					isLiveEvent: false,
-					isCohort: product.type === 'cohort',
 					teamQuantityLimit,
-					isPPPEnabled: true,
-					cancelUrl: cancelUrl,
 				}}
 				{...commerceProps}
 			/>
