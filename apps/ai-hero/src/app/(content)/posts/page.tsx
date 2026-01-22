@@ -280,7 +280,10 @@ const PostTeaser: React.FC<{
 						)}
 						{isHighlighted && (
 							<Button className="mt-4 md:mt-8" variant="outline">
-								Learn More <ChevronRight className="ml-2 w-3" />
+								{'startsAt' in post.fields && post.fields.startsAt
+									? 'Register Now'
+									: 'Learn More'}{' '}
+								<ChevronRight className="ml-2 w-3" />
 							</Button>
 						)}
 					</div>
