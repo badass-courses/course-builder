@@ -1,8 +1,6 @@
 import { inngest } from '@/inngest/inngest.server'
 import { getEventOrEventSeries } from '@/lib/events-query'
 import { addUserToGoogleCalendarEvent } from '@/lib/google-calendar'
-import { createShortlinkAttribution } from '@/lib/shortlinks-query'
-import { log } from '@/server/logger'
 
 import { FULL_PRICE_COUPON_REDEEMED_EVENT } from '@coursebuilder/core/inngest/commerce/event-full-price-coupon-redeemed'
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'
@@ -31,7 +29,7 @@ export const postEventPurchase = inngest.createFunction(
 			if: 'event.data.productType == "live"',
 		},
 	],
-	async ({ event, step, db: adapter, paymentProvider }) => {
+	async ({ event, step, db: adapter }) => {
 		const purchase = await step.run(`get purchase`, async () => {
 			return adapter.getPurchase(event.data.purchaseId)
 		})
@@ -56,76 +54,8 @@ export const postEventPurchase = inngest.createFunction(
 			throw new Error(`user not found`)
 		}
 
-		// Record shortlink attribution if present
-		await step.run('record shortlink attribution', async () => {
-			// Only process shortlink attribution for NEW_PURCHASE_CREATED_EVENT
-			// (not for full-price coupon redemptions)
-			if (event.name !== NEW_PURCHASE_CREATED_EVENT) {
-				return { skipped: true, reason: 'Not a new purchase event' }
-			}
-
-			const checkoutSessionId = event.data.checkoutSessionId
-			if (!checkoutSessionId || !paymentProvider) {
-				return {
-					skipped: true,
-					reason: 'No checkout session or payment provider',
-				}
-			}
-
-			try {
-				const checkoutSession =
-					await paymentProvider.options.paymentsAdapter.getCheckoutSession(
-						checkoutSessionId,
-					)
-
-				const shortlinkRef = checkoutSession.metadata?.shortlinkRef
-
-				if (!shortlinkRef) {
-					await log.info('shortlink.attribution.no_ref_in_metadata', {
-						checkoutSessionId,
-						purchaseId: purchase.id,
-						productId: product.id,
-						metadata: checkoutSession.metadata,
-					})
-					return { skipped: true, reason: 'No shortlink reference in metadata' }
-				}
-
-				await log.info('shortlink.attribution.found_ref', {
-					checkoutSessionId,
-					shortlinkRef,
-					purchaseId: purchase.id,
-					productId: product.id,
-				})
-
-				// Record the attribution
-				await createShortlinkAttribution({
-					shortlinkSlug: shortlinkRef,
-					email: user.email,
-					userId: user.id,
-					type: 'purchase',
-					metadata: {
-						productId: product.id,
-						productName: product.name,
-						purchaseId: purchase.id,
-						totalAmount: purchase.totalAmount,
-					},
-				})
-
-				return {
-					recorded: true,
-					shortlinkRef,
-					userId: user.id,
-					email: user.email,
-				}
-			} catch (error: any) {
-				await log.warn('shortlink.attribution.checkout_session_error', {
-					checkoutSessionId,
-					purchaseId: purchase.id,
-					error: error.message,
-				})
-				return { error: error.message }
-			}
-		})
+		// Note: Shortlink attribution is handled by the dedicated shortlink-attribution
+		// inngest function which runs for ALL purchase types
 
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 
