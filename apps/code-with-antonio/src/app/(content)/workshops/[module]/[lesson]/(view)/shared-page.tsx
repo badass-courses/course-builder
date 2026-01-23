@@ -60,7 +60,11 @@ export async function LessonPage({
 	})
 
 	if (!lesson) {
-		log.warn('page.lesson.not_found', { requestId, path, lessonSlug: params.lesson })
+		log.warn('page.lesson.not_found', {
+			requestId,
+			path,
+			lessonSlug: params.lesson,
+		})
 		notFound()
 	}
 
@@ -84,7 +88,11 @@ export async function LessonPage({
 	})
 
 	if (!ability.canViewLesson) {
-		log.info('page.lesson.redirect.no_access', { requestId, path, lessonId: lesson.id })
+		log.info('page.lesson.redirect.no_access', {
+			requestId,
+			path,
+			lessonId: lesson.id,
+		})
 		redirect(`/workshops/${params.module}`)
 	}
 
