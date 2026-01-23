@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
 import { purchases } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { eq } from 'drizzle-orm'
 
 import { formatPricesForProduct } from '@coursebuilder/core'
@@ -17,12 +18,22 @@ import { getProducts } from './products-query'
 export async function getPricingData(
 	options: Partial<FormatPricesForProductOptions>,
 ): Promise<PricingData> {
-	if (!options.productId)
+	const startTime = performance.now()
+	await log.debug('query.pricing.start', {
+		productId: options.productId,
+		event: 'query.pricing.start',
+	})
+
+	if (!options.productId) {
+		await log.debug('query.pricing.no_product', {
+			durationMs: performance.now() - startTime,
+		})
 		return {
 			formattedPrice: null,
 			purchaseToUpgrade: null,
 			quantityAvailable: -1,
 		}
+	}
 
 	const formattedPrice = await formatPricesForProduct({
 		...options,
@@ -51,6 +62,15 @@ export async function getPricingData(
 			(dbProductQuantityAvailable || 0) - totalPurchases.length
 	}
 
+	await log.debug('query.pricing.complete', {
+		productId: options.productId,
+		quantityAvailable: resolvedQuantityAvailable,
+		hasPurchaseToUpgrade: !!purchaseToUpgrade,
+		totalPurchases: totalPurchases.length,
+		durationMs: performance.now() - startTime,
+		event: 'query.pricing.complete',
+	})
+
 	return {
 		formattedPrice,
 		purchaseToUpgrade,
@@ -63,6 +83,11 @@ export async function getPricingProps({
 }: {
 	searchParams?: { [key: string]: string | undefined }
 }) {
+	const startTime = performance.now()
+	await log.debug('query.pricing.props.start', {
+		event: 'query.pricing.props.start',
+	})
+
 	const token = await getServerAuthSession()
 	const user = token?.session?.user
 	const products = await getProducts()
@@ -129,6 +154,9 @@ export async function getPricingProps({
 			}
 		}
 	} else {
+		await log.debug('query.pricing.props.no_product', {
+			durationMs: performance.now() - startTime,
+		})
 		return {
 			pricingDataLoader: null,
 			allowPurchase: false,
@@ -137,5 +165,14 @@ export async function getPricingProps({
 			hasPurchased: false,
 		}
 	}
+
+	await log.debug('query.pricing.props.complete', {
+		hasProduct: !!product,
+		hasUser: !!user,
+		hasPurchased: pricingProps.hasPurchased || false,
+		durationMs: performance.now() - startTime,
+		event: 'query.pricing.props.complete',
+	})
+
 	return pricingProps
 }

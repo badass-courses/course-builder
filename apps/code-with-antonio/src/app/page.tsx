@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Link from 'next/link'
@@ -16,6 +17,7 @@ import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
 import { getActiveCoupon, getSaleBannerData } from '@/lib/sale-banner'
 import { getAllWorkshops } from '@/lib/workshops-query'
+import { log } from '@/server/logger'
 import { compileMDX } from '@/utils/compile-mdx'
 import { ChevronRight } from 'lucide-react'
 
@@ -48,20 +50,72 @@ type Props = {
 }
 
 const Home = async (props: Props) => {
+	const requestId = randomUUID()
+	const startTime = performance.now()
+
+	await log.info('page.render.start', {
+		page: 'home',
+		path: '/',
+		requestId,
+	})
+
 	// const searchParams = await props.searchParams
 	// const { allowPurchase, pricingDataLoader, product, commerceProps } =
 	// 	await getPricingProps({ searchParams })
+	const fetchStart = performance.now()
 	const isCommerceEnabled = await commerceEnabled()
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'commerceEnabled',
+		duration: performance.now() - fetchStart,
+	})
+
 	// const page = await getPage('homepage-default')
 	// const firstPageResource = page?.resources?.[0] && {
 	// 	path: page.resources[0]?.resource?.fields?.slug,
 	// 	title: page.resources[0]?.resource?.fields?.title,
 	// }
 	const searchParams = await props.searchParams
+
+	// SEQUENTIAL CALLS - Opportunity for parallelization
+	const couponStart = performance.now()
 	const activeCoupon = await getActiveCoupon(searchParams)
+	const couponDuration = performance.now() - couponStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getActiveCoupon',
+		duration: couponDuration,
+	})
+
+	const saleBannerStart = performance.now()
 	const saleBannerData = await getSaleBannerData(activeCoupon)
+	const saleBannerDuration = performance.now() - saleBannerStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getSaleBannerData',
+		duration: saleBannerDuration,
+	})
+
 	// const { content: bodyContent } = await compileMDX(page?.fields?.body || '')
+	const workshopsStart = performance.now()
 	const workshops = await getAllWorkshops()
+	const workshopsDuration = performance.now() - workshopsStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getAllWorkshops',
+		duration: workshopsDuration,
+	})
+
+	const totalDuration = performance.now() - startTime
+	await log.info('page.render.complete', {
+		page: 'home',
+		path: '/',
+		requestId,
+		duration: totalDuration,
+		dataLoadingTime: couponDuration + saleBannerDuration + workshopsDuration,
+		optimizationOpportunity: 'SEQUENTIAL_FETCHES',
+	})
+
 	return (
 		<LayoutClient
 			saleBannerData={saleBannerData}

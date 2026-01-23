@@ -53,6 +53,12 @@ export const getCachedWorkshopProduct = unstable_cache(
 )
 
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
+	const startTime = performance.now()
+	await log.debug('query.workshop.product.start', {
+		workshopIdOrSlug,
+		event: 'query.workshop.product.start',
+	})
+
 	// This query finds a product associated with a workshop in two ways:
 	// 1. Direct association: Workshop -> Product
 	// 2. Indirect via cohort: Workshop -> Cohort -> Product
@@ -103,8 +109,19 @@ LIMIT 1;`
 
 	if (!parsedProduct.success) {
 		console.debug('Error parsing product', parsedProduct.error)
+		await log.debug('query.workshop.product.not_found', {
+			workshopIdOrSlug,
+			durationMs: performance.now() - startTime,
+		})
 		return null
 	}
+
+	await log.debug('query.workshop.product.complete', {
+		workshopIdOrSlug,
+		productId: parsedProduct.data.id,
+		durationMs: performance.now() - startTime,
+		event: 'query.workshop.product.complete',
+	})
 
 	return parsedProduct.data
 }
@@ -145,6 +162,12 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
+	const startTime = performance.now()
+	await log.debug('query.workshop.start', {
+		moduleSlugOrId,
+		event: 'query.workshop.start',
+	})
+
 	const { ability } = await getServerAuthSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -209,15 +232,33 @@ export async function getWorkshop(moduleSlugOrId: string) {
 	const parsedWorkshop = WorkshopSchema.safeParse(workshop)
 	if (!parsedWorkshop.success) {
 		console.error('Error parsing workshop', workshop, parsedWorkshop.error)
+		await log.error('query.workshop.parse_failed', {
+			moduleSlugOrId,
+			durationMs: performance.now() - startTime,
+		})
 		return null
 	}
 
 	const workshopData = parsedWorkshop.data
 
+	await log.debug('query.workshop.complete', {
+		moduleSlugOrId,
+		workshopId: workshopData.id,
+		resourceCount: workshopData.resources?.length || 0,
+		tagCount: workshopData.tags?.length || 0,
+		durationMs: performance.now() - startTime,
+		event: 'query.workshop.complete',
+	})
+
 	return workshopData
 }
 
 export async function getAllWorkshops() {
+	const startTime = performance.now()
+	await log.debug('query.workshops.all.start', {
+		event: 'query.workshops.all.start',
+	})
+
 	const { ability } = await getServerAuthSession()
 
 	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
@@ -257,8 +298,18 @@ export async function getAllWorkshops() {
 	const parsedWorkshops = z.array(WorkshopSchema).safeParse(workshops)
 	if (!parsedWorkshops.success) {
 		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
+		await log.error('query.workshops.all.parse_failed', {
+			workshopCount: workshops.length,
+			durationMs: performance.now() - startTime,
+		})
 		throw new Error('Error parsing workshop')
 	}
+
+	await log.debug('query.workshops.all.complete', {
+		workshopCount: parsedWorkshops.data.length,
+		durationMs: performance.now() - startTime,
+		event: 'query.workshops.all.complete',
+	})
 
 	return parsedWorkshops.data
 }

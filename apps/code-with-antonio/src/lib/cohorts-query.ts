@@ -51,6 +51,12 @@ export const getCachedCohort = unstable_cache(
 )
 
 export async function getCohort(cohortIdOrSlug: string) {
+	const startTime = performance.now()
+	await log.debug('query.cohort.start', {
+		cohortIdOrSlug,
+		event: 'query.cohort.start',
+	})
+
 	const cohortData = await db.query.contentResource.findFirst({
 		where: and(
 			eq(contentResource.type, 'cohort'),
@@ -102,8 +108,21 @@ export async function getCohort(cohortIdOrSlug: string) {
 			errors: parsedCohort.error.errors,
 			data: cohortData,
 		})
+		await log.error('query.cohort.parse_failed', {
+			cohortIdOrSlug,
+			durationMs: performance.now() - startTime,
+		})
 		return null
 	}
+
+	await log.debug('query.cohort.complete', {
+		cohortIdOrSlug,
+		cohortId: parsedCohort.data.id,
+		resourceCount: parsedCohort.data.resources?.length || 0,
+		tagCount: parsedCohort.data.tags?.length || 0,
+		durationMs: performance.now() - startTime,
+		event: 'query.cohort.complete',
+	})
 
 	return parsedCohort.data
 }
@@ -114,6 +133,12 @@ export async function getCohort(cohortIdOrSlug: string) {
  * @returns An array of modules
  */
 export async function getAllWorkshopsInCohort(cohortId: string) {
+	const startTime = performance.now()
+	await log.debug('query.cohort.workshops.start', {
+		cohortId,
+		event: 'query.cohort.workshops.start',
+	})
+
 	try {
 		const results = await db
 			.select()
@@ -130,7 +155,7 @@ export async function getAllWorkshopsInCohort(cohortId: string) {
 			)
 			.orderBy(asc(contentResourceResource.position))
 
-		return results.map((r) => {
+		const workshops = results.map((r) => {
 			const parsed = WorkshopSchema.safeParse(r.ContentResource)
 			if (!parsed.success) {
 				console.error(
@@ -142,8 +167,22 @@ export async function getAllWorkshopsInCohort(cohortId: string) {
 			}
 			return parsed.data
 		})
+
+		await log.debug('query.cohort.workshops.complete', {
+			cohortId,
+			workshopCount: workshops.length,
+			durationMs: performance.now() - startTime,
+			event: 'query.cohort.workshops.complete',
+		})
+
+		return workshops
 	} catch (error) {
 		console.error('Failed to get workshops in cohort:', error)
+		await log.error('query.cohort.workshops.failed', {
+			cohortId,
+			durationMs: performance.now() - startTime,
+			error: error instanceof Error ? error.message : String(error),
+		})
 		throw error
 	}
 }
@@ -303,6 +342,12 @@ export async function getCohortPricing(
 	cohort: Cohort,
 	searchParams: ParsedUrlQuery,
 ): Promise<CohortPageProps> {
+	const startTime = performance.now()
+	await log.debug('query.cohort.pricing.start', {
+		cohortId: cohort.id,
+		event: 'query.cohort.pricing.start',
+	})
+
 	const { session } = await getServerAuthSession()
 	const user = session?.user
 	const currentOrganization = await getCurrentOrganization()
@@ -413,6 +458,15 @@ export async function getCohortPricing(
 			}),
 		}
 	}
+
+	await log.debug('query.cohort.pricing.complete', {
+		cohortId: cohort.id,
+		hasProduct: !!product,
+		hasUser: !!user,
+		hasPurchased: cohortProps.hasPurchasedCurrentProduct || false,
+		durationMs: performance.now() - startTime,
+		event: 'query.cohort.pricing.complete',
+	})
 
 	return cohortProps
 }

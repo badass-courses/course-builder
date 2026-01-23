@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import type { ParsedUrlQuery } from 'querystring'
 import * as React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
@@ -38,6 +39,7 @@ import {
 import type { Workshop } from '@/lib/workshops'
 import { getCachedWorkshopNavigation } from '@/lib/workshops-query'
 import { getProviders, getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { compileMDX } from '@/utils/compile-mdx'
 import { eq } from 'drizzle-orm'
 import { Event as CohortMetaSchema, Ticket } from 'schema-dts'
@@ -86,18 +88,53 @@ export default async function CohortPage(props: {
 	params: Promise<{ slug: string }>
 	searchParams: Promise<ParsedUrlQuery>
 }) {
-	const searchParams = await props.searchParams
+	const requestId = randomUUID()
+	const startTime = performance.now()
 
+	const searchParams = await props.searchParams
 	const params = await props.params
+
+	await log.info('page.render.start', {
+		page: 'cohort',
+		path: `/cohorts/${params.slug}`,
+		slug: params.slug,
+		requestId,
+	})
+
+	// Auth + Cohort fetch - could be parallelized
+	const authStart = performance.now()
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
+	const authDuration = performance.now() - authStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getServerAuthSession',
+		duration: authDuration,
+	})
+
+	const cohortStart = performance.now()
 	const cohort = await getCohort(params.slug)
+	const cohortDuration = performance.now() - cohortStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getCohort',
+		duration: cohortDuration,
+	})
 
 	if (!cohort) {
 		notFound()
 	}
 
+	// WATERFALL: getCohortPricing depends on cohort but other calls could happen in parallel
+	const pricingStart = performance.now()
 	const cohortPricingLoader = getCohortPricing(cohort, searchParams)
+	const pricingLoaderDuration = performance.now() - pricingStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getCohortPricing-loader',
+		duration: pricingLoaderDuration,
+		note: 'Creates loader, not awaited yet',
+	})
 
 	const { fields } = cohort
 
@@ -118,10 +155,42 @@ export default async function CohortPage(props: {
 		user?.id,
 	)
 
+	// WATERFALL: These could be parallelized with Promise.all
+	const pricingAwaitStart = performance.now()
 	const cohortPricingData = await cohortPricingLoader
+	const pricingAwaitDuration = performance.now() - pricingAwaitStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'cohortPricingLoader-await',
+		duration: pricingAwaitDuration,
+	})
+
+	const productMapStart = performance.now()
 	const productMap = await getProductSlugToIdMap()
+	const productMapDuration = performance.now() - productMapStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getProductSlugToIdMap',
+		duration: productMapDuration,
+	})
+
+	const couponStart = performance.now()
 	const defaultCoupon = await getActiveCoupon(searchParams)
+	const couponDuration = performance.now() - couponStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getActiveCoupon',
+		duration: couponDuration,
+	})
+
+	const saleDataStart = performance.now()
 	const saleData = await getSaleBannerData(defaultCoupon)
+	const saleDataDuration = performance.now() - saleDataStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getSaleBannerData',
+		duration: saleDataDuration,
+	})
 
 	const mdxComponents = createPricingMdxComponents({
 		product: cohortPricingData.product,
@@ -134,7 +203,14 @@ export default async function CohortPage(props: {
 		productMap,
 	})
 
+	const mdxStart = performance.now()
 	const { content } = await compileMDX(cohort.fields.body || '', mdxComponents)
+	const mdxDuration = performance.now() - mdxStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'compileMDX',
+		duration: mdxDuration,
+	})
 
 	const providers = getProviders()
 	const userWithAccountsLoader = user?.id
@@ -146,7 +222,36 @@ export default async function CohortPage(props: {
 			})
 		: null
 
+	const saleBannerStart = performance.now()
 	const saleBannerData = await getSaleBannerDataFromSearchParams(searchParams)
+	const saleBannerDuration = performance.now() - saleBannerStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getSaleBannerDataFromSearchParams',
+		duration: saleBannerDuration,
+	})
+
+	const totalDuration = performance.now() - startTime
+	const sequentialFetchTime =
+		authDuration +
+		cohortDuration +
+		pricingAwaitDuration +
+		productMapDuration +
+		couponDuration +
+		saleDataDuration +
+		mdxDuration +
+		saleBannerDuration
+
+	await log.info('page.render.complete', {
+		page: 'cohort',
+		path: `/cohorts/${params.slug}`,
+		slug: params.slug,
+		requestId,
+		duration: totalDuration,
+		sequentialFetchTime,
+		optimizationOpportunity: 'SEQUENTIAL_WATERFALL',
+		note: 'Multiple fetches could be parallelized with Promise.all after cohort is loaded',
+	})
 
 	return (
 		<ResourceLayout

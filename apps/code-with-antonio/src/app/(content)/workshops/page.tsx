@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import * as React from 'react'
 import { Metadata } from 'next'
 import Link from 'next/link'
@@ -11,6 +12,7 @@ import { env } from '@/env.mjs'
 import { getPricingProps } from '@/lib/pricing-query'
 import { getAllWorkshops } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
+import { log } from '@/server/logger'
 import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
 
@@ -39,8 +41,29 @@ export const metadata: Metadata = {
 export default async function Workshops(props: {
 	searchParams: Promise<{ [key: string]: string | undefined }>
 }) {
+	const requestId = randomUUID()
+	const startTime = performance.now()
+
+	await log.info('page.render.start', {
+		page: 'workshops',
+		path: '/workshops',
+		requestId,
+	})
+
 	const searchParams = await props.searchParams
+
+	// DUPLICATION: getServerAuthSession called here and again in WorkshopsList
+	const authStart = performance.now()
 	const { ability } = await getServerAuthSession()
+	const authDuration = performance.now() - authStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getServerAuthSession',
+		callSite: 'Workshops-main',
+		duration: authDuration,
+	})
+
+	const pricingStart = performance.now()
 	const {
 		allowPurchase,
 		pricingDataLoader,
@@ -48,6 +71,22 @@ export default async function Workshops(props: {
 		commerceProps,
 		hasPurchased,
 	} = await getPricingProps({ searchParams })
+	const pricingDuration = performance.now() - pricingStart
+	await log.debug('page.fetch', {
+		requestId,
+		fetchName: 'getPricingProps',
+		duration: pricingDuration,
+	})
+
+	const totalDuration = performance.now() - startTime
+	await log.info('page.render.complete', {
+		page: 'workshops',
+		path: '/workshops',
+		requestId,
+		duration: totalDuration,
+		optimizationOpportunity: 'DUPLICATE_AUTH_CALL',
+		note: 'getServerAuthSession called in main and WorkshopsList',
+	})
 
 	return (
 		<LayoutClient withContainer>
@@ -96,6 +135,15 @@ export default async function Workshops(props: {
 }
 
 async function WorkshopsList() {
+	const requestId = randomUUID()
+	const startTime = performance.now()
+
+	await log.debug('component.render.start', {
+		component: 'WorkshopsList',
+		requestId,
+	})
+
+	const productsStart = performance.now()
 	const products = await db.query.contentResourceProduct.findMany({
 		with: {
 			resource: {
@@ -112,6 +160,13 @@ async function WorkshopsList() {
 		},
 		orderBy: asc(contentResourceProduct.position),
 	})
+	await log.debug('component.fetch', {
+		requestId,
+		component: 'WorkshopsList',
+		fetchName: 'contentResourceProduct.findMany',
+		duration: performance.now() - productsStart,
+	})
+
 	const cohorts = products.flatMap((product) => {
 		return product.resource.resources
 			.filter((resource) => resource.resource.type === 'workshop')
@@ -119,18 +174,57 @@ async function WorkshopsList() {
 				return resource.resource
 			})
 	})
+
+	// DUPLICATION: getAllWorkshops called here, potentially twice
+	const workshopsStart1 = performance.now()
 	const allWorkshops = await getAllWorkshops()
+	await log.debug('component.fetch', {
+		requestId,
+		component: 'WorkshopsList',
+		fetchName: 'getAllWorkshops',
+		callNumber: 1,
+		duration: performance.now() - workshopsStart1,
+	})
+
 	let workshops = uniqBy(
 		[...allWorkshops, ...cohorts],
 		(item) => item.id,
 	) as ContentResource[]
+
+	// DUPLICATION: getServerAuthSession called again here
+	const authStart = performance.now()
 	const { ability } = await getServerAuthSession()
+	await log.debug('component.fetch', {
+		requestId,
+		component: 'WorkshopsList',
+		fetchName: 'getServerAuthSession',
+		callSite: 'WorkshopsList',
+		duration: performance.now() - authStart,
+		optimizationOpportunity: 'DUPLICATE_AUTH_CALL',
+	})
 
 	const canEdit = ability.can('create', 'Content')
 	if (canEdit) {
+		// DUPLICATION: getAllWorkshops called AGAIN
+		const workshopsStart2 = performance.now()
 		const allWorkshops = await getAllWorkshops()
+		await log.debug('component.fetch', {
+			requestId,
+			component: 'WorkshopsList',
+			fetchName: 'getAllWorkshops',
+			callNumber: 2,
+			duration: performance.now() - workshopsStart2,
+			optimizationOpportunity: 'DUPLICATE_WORKSHOPS_CALL',
+		})
 		workshops = allWorkshops
 	}
+
+	await log.debug('component.render.complete', {
+		component: 'WorkshopsList',
+		requestId,
+		duration: performance.now() - startTime,
+		workshopsCount: workshops.length,
+	})
 
 	return (
 		<ul className="mx-auto mt-8 flex w-full flex-col">
