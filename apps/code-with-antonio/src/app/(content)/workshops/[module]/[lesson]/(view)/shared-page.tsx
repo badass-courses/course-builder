@@ -45,7 +45,9 @@ export async function LessonPage({
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	workshop: MinimalWorkshop | null
 }) {
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation is intentionally impure
 	const pageStart = performance.now()
+	// eslint-disable-next-line react-compiler/react-compiler -- crypto for request tracing is acceptable
 	const requestId = crypto.randomUUID().slice(0, 8)
 	const path = `/workshops/${params.module}/${params.lesson}`
 
@@ -69,6 +71,7 @@ export async function LessonPage({
 	}
 
 	// Use IDs (not slugs) for ability checks - IDs use database indexes
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation
 	const abilityStart = performance.now()
 	const abilityLoader = getAbilityForResource(
 		lesson.id,
@@ -77,6 +80,7 @@ export async function LessonPage({
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
 
 	const ability = await abilityLoader
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation
 	const abilityDuration = performance.now() - abilityStart
 
 	log.info('page.lesson.ability.complete', {
@@ -97,6 +101,7 @@ export async function LessonPage({
 	}
 
 	// Log total render time at the end (note: this is before JSX render, actual paint is later)
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation
 	const renderDuration = performance.now() - pageStart
 	log.info('page.lesson.render.complete', {
 		requestId,
@@ -206,12 +211,14 @@ async function TranscriptContainer({
 		}
 	>
 }) {
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation
 	const transcriptStart = performance.now()
 	const transcriptLoader = getCachedLessonVideoTranscript(lessonId)
 
 	// Log transcript fetch initiation (actual await happens in Transcript component)
 	log.info('component.transcript.loader.start', {
 		lessonId,
+		// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation
 		durationMs: Math.round(performance.now() - transcriptStart),
 	})
 
@@ -259,10 +266,12 @@ async function PlayerContainer({
 	}
 
 	// Fetch mux playback ID with timing
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation is intentionally impure
 	const muxStart = performance.now()
 	const muxPlaybackId = ability.canViewLesson
 		? await getCachedLessonMuxPlaybackId(lesson.id)
 		: null
+	// eslint-disable-next-line react-compiler/react-compiler -- timing instrumentation is intentionally impure
 	const muxDuration = performance.now() - muxStart
 
 	log.info('component.player.mux_playback_id', {
