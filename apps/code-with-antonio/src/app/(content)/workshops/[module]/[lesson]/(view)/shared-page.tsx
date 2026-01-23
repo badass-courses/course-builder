@@ -16,6 +16,7 @@ import {
 	getCachedLessonVideoTranscript,
 } from '@/lib/lessons-query'
 import { MinimalWorkshop } from '@/lib/workshops'
+import { log } from '@/server/logger'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import {
@@ -44,11 +45,27 @@ export async function LessonPage({
 	lessonType?: 'lesson' | 'exercise' | 'solution'
 	workshop: MinimalWorkshop | null
 }) {
+	const pageStart = performance.now()
+	const requestId = crypto.randomUUID().slice(0, 8)
+	const path = `/workshops/${params.module}/${params.lesson}`
+
+	log.info('page.lesson.render.start', {
+		requestId,
+		path,
+		lessonSlug: params.lesson,
+		moduleSlug: params.module,
+		lessonType,
+		hasLesson: !!lesson,
+		hasWorkshop: !!workshop,
+	})
+
 	if (!lesson) {
+		log.warn('page.lesson.not_found', { requestId, path, lessonSlug: params.lesson })
 		notFound()
 	}
 
 	// Use IDs (not slugs) for ability checks - IDs use database indexes
+	const abilityStart = performance.now()
 	const abilityLoader = getAbilityForResource(
 		lesson.id,
 		workshop?.id || params.module,
@@ -56,10 +73,31 @@ export async function LessonPage({
 	const mdxContentPromise = compileMDX(lesson?.fields?.body || '')
 
 	const ability = await abilityLoader
+	const abilityDuration = performance.now() - abilityStart
+
+	log.info('page.lesson.ability.complete', {
+		requestId,
+		path,
+		durationMs: Math.round(abilityDuration),
+		canViewLesson: ability.canViewLesson,
+		canViewWorkshop: ability.canViewWorkshop,
+	})
 
 	if (!ability.canViewLesson) {
+		log.info('page.lesson.redirect.no_access', { requestId, path, lessonId: lesson.id })
 		redirect(`/workshops/${params.module}`)
 	}
+
+	// Log total render time at the end (note: this is before JSX render, actual paint is later)
+	const renderDuration = performance.now() - pageStart
+	log.info('page.lesson.render.complete', {
+		requestId,
+		path,
+		durationMs: Math.round(renderDuration),
+		lessonId: lesson.id,
+		lessonType,
+		workshopId: workshop?.id,
+	})
 
 	return (
 		<ActiveHeadingProvider>
@@ -160,7 +198,14 @@ async function TranscriptContainer({
 		}
 	>
 }) {
+	const transcriptStart = performance.now()
 	const transcriptLoader = getCachedLessonVideoTranscript(lessonId)
+
+	// Log transcript fetch initiation (actual await happens in Transcript component)
+	log.info('component.transcript.loader.start', {
+		lessonId,
+		durationMs: Math.round(performance.now() - transcriptStart),
+	})
 
 	return (
 		<div className={cn('pt-4', className)}>
@@ -205,10 +250,19 @@ async function PlayerContainer({
 		notFound()
 	}
 
-	// const playbackIdLoader = getCachedLessonMuxPlaybackId(lesson.id)
+	// Fetch mux playback ID with timing
+	const muxStart = performance.now()
 	const muxPlaybackId = ability.canViewLesson
 		? await getCachedLessonMuxPlaybackId(lesson.id)
 		: null
+	const muxDuration = performance.now() - muxStart
+
+	log.info('component.player.mux_playback_id', {
+		lessonId: lesson.id,
+		durationMs: Math.round(muxDuration),
+		hasPlaybackId: !!muxPlaybackId,
+		canViewLesson: ability.canViewLesson,
+	})
 	const videoResource = lesson?.resources?.find(({ resource, resourceId }) => {
 		return resource.type === 'videoResource'
 	})
