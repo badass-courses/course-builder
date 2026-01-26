@@ -107,6 +107,7 @@ export async function EventPricing({
 			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
 			product,
 			pricingDataLoader,
+			userData: user ? { name: user.name, email: user.email! } : undefined,
 			...commerceProps,
 		}
 
