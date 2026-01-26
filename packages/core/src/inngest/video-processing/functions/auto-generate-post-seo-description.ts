@@ -10,7 +10,7 @@ import { VIDEO_TRANSCRIPT_READY_EVENT } from '../events/event-video-transcript-r
 
 const autoGeneratePostSeoDescriptionConfig = {
 	id: 'auto-generate-post-seo-description',
-	name: 'Auto-Generate Post SEO Description',
+	name: 'Auto-Generate SEO Description',
 }
 
 const autoGeneratePostSeoDescriptionTrigger: CoreInngestTrigger = {
@@ -28,56 +28,57 @@ const autoGeneratePostSeoDescriptionHandler: CoreInngestHandler = async ({
 		throw new NonRetriableError('video resource id is required')
 	}
 
-	// Step 1: Find the parent post of this video resource
-	const post = await step.run('find parent post of video', async () => {
+	// Step 1: Find the parent resource (post or lesson) of this video
+	const resource = await step.run('find parent resource of video', async () => {
 		return await db.getParentResourceOfVideoResource(videoResourceId)
 	})
 
-	if (!post) {
-		// Not an error - video might not belong to a post (could be a lesson, etc.)
+	if (!resource) {
+		// Not an error - video might not belong to a post or lesson
 		return {
 			skipped: true,
-			reason: 'video does not belong to a post',
+			reason: 'video does not belong to a post or lesson',
 			videoResourceId,
 		}
 	}
 
 	// Step 2: Check if description already exists
 	const hasDescription =
-		post.fields?.description &&
-		typeof post.fields.description === 'string' &&
-		post.fields.description.trim() !== ''
+		resource.fields?.description &&
+		typeof resource.fields.description === 'string' &&
+		resource.fields.description.trim() !== ''
 
 	if (hasDescription) {
 		return {
 			skipped: true,
-			reason: 'post already has description',
-			postId: post.id,
+			reason: 'resource already has description',
+			resourceId: resource.id,
+			resourceType: resource.type,
 			videoResourceId,
 		}
 	}
 
-	// Step 3: Get the post creator user
-	const user = await step.run('get post creator', async () => {
-		return await db.getUserById(post.createdById)
+	// Step 3: Get the resource creator user
+	const user = await step.run('get resource creator', async () => {
+		return await db.getUserById(resource.createdById)
 	})
 
 	if (!user) {
 		throw new NonRetriableError(
-			`User not found for post creator id: ${post.createdById}`,
+			`User not found for resource creator id: ${resource.createdById}`,
 		)
 	}
 
 	// Step 4: Trigger SEO description generation
+	const contentType = resource.type === 'lesson' ? 'lesson' : 'post'
 	await step.sendEvent('trigger seo description generation', {
 		name: RESOURCE_CHAT_REQUEST_EVENT,
 		data: {
-			resourceId: post.id,
+			resourceId: resource.id,
 			messages: [
 				{
 					role: 'user',
-					content:
-						'Generate a SEO-friendly description for this post. The description should be under 160 characters, include relevant keywords, and be compelling for search results.',
+					content: `Generate a SEO-friendly description for this ${contentType}. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
 				},
 			],
 			selectedWorkflow: 'prompt-0541t',
@@ -90,7 +91,8 @@ const autoGeneratePostSeoDescriptionHandler: CoreInngestHandler = async ({
 
 	return {
 		success: true,
-		postId: post.id,
+		resourceId: resource.id,
+		resourceType: resource.type,
 		userId: user.id,
 		videoResourceId,
 	}

@@ -2704,7 +2704,7 @@ export function mySqlDrizzleAdapter(
 				return null
 			}
 
-			// Use a SQL query to find the parent post of this video resource
+			// Use a SQL query to find the parent post or lesson of this video resource
 			const results = await client
 				.select()
 				.from(contentResource)
@@ -2715,7 +2715,10 @@ export function mySqlDrizzleAdapter(
 				.where(
 					and(
 						eq(contentResourceResource.resourceId, videoResourceId),
-						eq(contentResource.type, 'post'),
+						or(
+							eq(contentResource.type, 'post'),
+							eq(contentResource.type, 'lesson'),
+						),
 					),
 				)
 				.limit(1)
