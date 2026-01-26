@@ -431,6 +431,8 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 	revalidatePath('/workshops')
 	revalidatePath(`/workshops/${workshopSlug}`)
 	revalidateTag('workshop-navigation', 'max')
+	revalidateTag('workshop-product', 'max')
+	revalidateTag('workshop-minimal', 'max')
 
 	return {
 		...updatedWorkshop,

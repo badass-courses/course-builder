@@ -348,9 +348,9 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 	}
 
 	if (revalidate) {
-		revalidateTag('lesson', 'max')
+		revalidateTag(`lesson:${id}`, 'max')
+		revalidateTag(`lesson:${currentLesson.fields.slug}`, 'max')
 	}
-
 	return updatedResource
 }
 
