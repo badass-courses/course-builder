@@ -33,13 +33,17 @@ import { last } from '@coursebuilder/nodash'
 
 import { upsertPostToTypeSense } from './typesense-query'
 
-export const getCachedWorkshopNavigation = cache(
-	unstable_cache(
-		async (slug: string) => getWorkshopNavigation(slug),
-		['workshop-navigation'],
-		{ revalidate: 3600, tags: ['workshop-navigation'] },
-	),
-)
+/**
+ * Get cached workshop navigation
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedWorkshopNavigation = cache(async (slug: string) => {
+	return unstable_cache(
+		async () => getWorkshopNavigation(slug),
+		['workshop-navigation', slug],
+		{ revalidate: 3600, tags: ['workshop-navigation', slug] },
+	)()
+})
 
 /**
  * Fetches workshop navigation data
@@ -49,12 +53,18 @@ export async function getWorkshopNavigation(moduleSlugOrId: string) {
 	return getContentNavigation(moduleSlugOrId)
 }
 
+/**
+ * Get cached workshop product
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
 export const getCachedWorkshopProduct = cache(
-	unstable_cache(
-		async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
-		['workshop-product'],
-		{ revalidate: 3600, tags: ['workshop-product'] },
-	),
+	async (workshopIdOrSlug: string) => {
+		return unstable_cache(
+			async () => getWorkshopProduct(workshopIdOrSlug),
+			['workshop-product', workshopIdOrSlug],
+			{ revalidate: 3600, tags: ['workshop-product', workshopIdOrSlug] },
+		)()
+	},
 )
 
 export async function getWorkshopProduct(workshopIdOrSlug: string) {
@@ -114,13 +124,17 @@ LIMIT 1;`
 	return parsedProduct.data
 }
 
-export const getCachedMinimalWorkshop = cache(
-	unstable_cache(
-		async (slug: string) => getMinimalWorkshop(slug),
-		['workshop-minimal'],
-		{ revalidate: 3600, tags: ['workshop-minimal'] },
-	),
-)
+/**
+ * Get cached minimal workshop data
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedMinimalWorkshop = cache(async (slug: string) => {
+	return unstable_cache(
+		async () => getMinimalWorkshop(slug),
+		['workshop-minimal', slug],
+		{ revalidate: 3600, tags: ['workshop-minimal', slug] },
+	)()
+})
 
 export async function getMinimalWorkshop(moduleSlugOrId: string) {
 	const workshop = await db.query.contentResource.findFirst({
@@ -303,7 +317,12 @@ export const addResourceToWorkshop = async ({
 		},
 	})
 
+	// Invalidate workshop caches
 	revalidateTag('workshop', 'max')
+	const workshopSlug = workshop.fields?.slug
+	if (workshopSlug) {
+		revalidateTag(workshopSlug, 'max')
+	}
 
 	return resourceResource
 }
@@ -329,6 +348,7 @@ export const updateResourcePosition = async ({
 			),
 		)
 
+	// Invalidate generic workshop cache (per-workshop invalidation handled by caller)
 	revalidateTag('workshop', 'max')
 
 	return result
@@ -425,14 +445,24 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 			},
 		})
 
+	// Invalidate generic workshop caches
 	revalidateTag('workshop', 'max')
 	revalidateTag('workshops', 'max')
-	revalidateTag(currentWorkshop.id, 'max')
-	revalidatePath('/workshops')
-	revalidatePath(`/workshops/${workshopSlug}`)
+
+	// Invalidate per-workshop caches using slug (matches cache tags)
+	revalidateTag(currentWorkshop.fields.slug, 'max')
 	revalidateTag('workshop-navigation', 'max')
 	revalidateTag('workshop-product', 'max')
 	revalidateTag('workshop-minimal', 'max')
+
+	// If slug changed, invalidate new slug too
+	if (workshopSlug !== currentWorkshop.fields.slug) {
+		revalidateTag(workshopSlug, 'max')
+	}
+
+	// Invalidate paths
+	revalidatePath('/workshops')
+	revalidatePath(`/workshops/${workshopSlug}`)
 
 	return {
 		...updatedWorkshop,

@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
@@ -58,10 +59,21 @@ export const getLessonVideoTranscript = async (
 	return parsedResult.data[0]?.transcript
 }
 
-export const getCachedLessonVideoTranscript = unstable_cache(
-	async (lessonIdOrSlug: string) => getLessonVideoTranscript(lessonIdOrSlug),
-	['lesson-transcript'],
-	{ revalidate: false, tags: ['lesson-transcript'] },
+/**
+ * Get cached lesson video transcript
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedLessonVideoTranscript = cache(
+	async (lessonIdOrSlug: string) => {
+		return unstable_cache(
+			async () => getLessonVideoTranscript(lessonIdOrSlug),
+			['lesson-transcript', lessonIdOrSlug],
+			{
+				revalidate: false,
+				tags: ['lesson-transcript', `lesson:${lessonIdOrSlug}`],
+			},
+		)()
+	},
 )
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
@@ -109,10 +121,21 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 	return parsedResult.data[0]?.muxPlaybackId
 }
 
-export const getCachedLessonMuxPlaybackId = unstable_cache(
-	async (lessonIdOrSlug: string) => getLessonMuxPlaybackId(lessonIdOrSlug),
-	['lesson-playback-id'],
-	{ revalidate: false, tags: ['lesson-playback-id'] },
+/**
+ * Get cached lesson Mux playback ID
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedLessonMuxPlaybackId = cache(
+	async (lessonIdOrSlug: string) => {
+		return unstable_cache(
+			async () => getLessonMuxPlaybackId(lessonIdOrSlug),
+			['lesson-playback-id', lessonIdOrSlug],
+			{
+				revalidate: false,
+				tags: ['lesson-playback-id', `lesson:${lessonIdOrSlug}`],
+			},
+		)()
+	},
 )
 
 export const addVideoResourceToLesson = async ({
@@ -167,6 +190,14 @@ export const addVideoResourceToLesson = async ({
 		position: lesson.resources.length,
 	})
 
+	// Invalidate lesson caches since video resource was added
+	const lessonSlug = lesson.fields?.slug
+	if (lessonSlug) {
+		revalidateTag(`lesson:${lessonSlug}`, 'max')
+	}
+	revalidateTag('lessons', 'max')
+	revalidateTag('workshop-navigation', 'max')
+
 	return db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, lesson.id),
@@ -178,11 +209,24 @@ export const addVideoResourceToLesson = async ({
 	})
 }
 
-export const getCachedLesson = unstable_cache(
-	async (slug: string) => getLesson(slug),
-	['lesson-full'],
-	{ revalidate: 3600, tags: ['lesson'] },
-)
+/**
+ * Get cached full lesson data
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ *
+ * @param slug - The lesson slug or ID
+ * @returns Promise<Lesson | null>
+ *
+ * @example
+ * ```ts
+ * const lesson = await getCachedLesson('intro-to-react')
+ * ```
+ */
+export const getCachedLesson = cache(async (slug: string) => {
+	return unstable_cache(async () => getLesson(slug), ['lesson', slug], {
+		revalidate: 3600,
+		tags: ['lessons', `lesson:${slug}`],
+	})()
+})
 
 export async function getLesson(lessonSlugOrId: string) {
 	const lesson = await db.query.contentResource.findFirst({
@@ -230,11 +274,17 @@ export async function getLesson(lessonSlugOrId: string) {
 	return parsedLesson.data
 }
 
-export const getCachedExerciseSolution = unstable_cache(
-	async (slug: string) => getExerciseSolution(slug),
-	['solution'],
-	{ revalidate: 3600, tags: ['solution'] },
-)
+/**
+ * Get cached exercise solution
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedExerciseSolution = cache(async (slug: string) => {
+	return unstable_cache(
+		async () => getExerciseSolution(slug),
+		['solution', slug],
+		{ revalidate: 3600, tags: ['solutions', `lesson:${slug}`] },
+	)()
+})
 
 export async function getExerciseSolution(lessonSlugOrId: string) {
 	const lesson = await db.query.contentResource.findFirst({
@@ -348,8 +398,14 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 	}
 
 	if (revalidate) {
-		revalidateTag(`lesson:${id}`, 'max')
+		revalidateTag('lessons', 'max')
 		revalidateTag(`lesson:${currentLesson.fields.slug}`, 'max')
+		// If slug changed, also invalidate the new slug
+		if (lessonSlug !== currentLesson.fields.slug) {
+			revalidateTag(`lesson:${lessonSlug}`, 'max')
+		}
+		// Invalidate workshop navigation since lesson title/slug may have changed
+		revalidateTag('workshop-navigation', 'max')
 	}
 	return updatedResource
 }
@@ -458,6 +514,10 @@ export async function writeNewLessonToDatabase(
 				})
 				// Continue even if TypeSense indexing fails
 			}
+
+			// Invalidate lessons list cache and workshop navigation
+			revalidateTag('lessons', 'max')
+			revalidateTag('workshop-navigation', 'max')
 
 			return lesson
 		} catch (error) {
@@ -677,6 +737,16 @@ export async function writeLessonUpdateToDatabase(input: {
 		// Don't rethrow - let the lesson update succeed even if TypeSense fails
 	}
 
+	// Invalidate caches
+	revalidateTag('lessons', 'max')
+	revalidateTag(`lesson:${currentLesson.fields.slug}`, 'max')
+	// If slug changed, also invalidate the new slug
+	if (lessonSlug !== currentLesson.fields.slug) {
+		revalidateTag(`lesson:${lessonSlug}`, 'max')
+	}
+	// Invalidate workshop navigation since lesson title/slug may have changed
+	revalidateTag('workshop-navigation', 'max')
+
 	return updatedLesson.data
 }
 
@@ -727,6 +797,11 @@ export async function deleteLessonFromDatabase(id: string) {
 		// Delete the lesson itself
 		await log.info('lesson.delete.content.started', { lessonId: id })
 		await db.delete(contentResource).where(eq(contentResource.id, id))
+
+		// Invalidate caches
+		revalidateTag('lessons', 'max')
+		revalidateTag(`lesson:${lesson.data.fields.slug}`, 'max')
+		revalidateTag('workshop-navigation', 'max')
 
 		await log.info('lesson.delete.completed', { lessonId: id })
 		return true
