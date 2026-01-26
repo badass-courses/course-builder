@@ -430,6 +430,7 @@ export async function updateWorkshop(input: Partial<Workshop>) {
 	revalidateTag(currentWorkshop.id, 'max')
 	revalidatePath('/workshops')
 	revalidatePath(`/workshops/${workshopSlug}`)
+	revalidateTag('workshop-navigation', 'max')
 
 	return {
 		...updatedWorkshop,
