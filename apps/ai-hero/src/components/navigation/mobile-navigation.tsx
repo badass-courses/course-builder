@@ -118,77 +118,114 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 								/>
 							)}
 							<div className="flex w-full flex-col gap-5">
-								{navData.courses.length > 0 && (
+								{(navData.learn.courses.length > 0 ||
+									navData.learn.freeTutorials.items.length > 0) && (
 									<div className="flex flex-col">
-										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
-											Courses
-										</div>
-										<ul className="flex flex-col">
-											{navData.courses.map((course) => (
+										{navData.learn.courses.length > 0 && (
+											<div className="mb-3 flex flex-col">
+												<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
+													Courses
+												</div>
+												<ul className="flex flex-col">
+													{navData.learn.courses.map((course) => (
+														<NavLinkItem
+															className="text-sm"
+															key={course.href}
+															href={course.href}
+															label={course.title}
+														/>
+													))}
+												</ul>
+											</div>
+										)}
+										<div className="flex flex-col">
+											<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
+												Free Tutorials
+											</div>
+											<ul className="flex flex-col">
 												<NavLinkItem
 													className="text-sm"
-													key={course.href}
-													href={course.href}
-													label={course.title}
+													href={navData.learn.freeTutorials.featured.href}
+													label={navData.learn.freeTutorials.featured.title}
 												/>
-											))}
-										</ul>
-									</div>
-								)}
-								{navData.events.length > 0 && (
-									<div className="flex flex-col">
-										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
-											Events
+												{navData.learn.freeTutorials.items.map((tutorial) => (
+													<NavLinkItem
+														className="text-sm"
+														key={tutorial.href}
+														href={tutorial.href}
+														label={tutorial.title}
+													/>
+												))}
+											</ul>
 										</div>
-										<ul className="flex flex-col">
-											{navData.events.map((event) => (
-												<NavLinkItem
-													className="text-sm"
-													key={event.href}
-													href={event.href}
-													label={`${event.title} - ${event.date}`}
-												/>
-											))}
-										</ul>
 									</div>
 								)}
-								{navData.cohorts.length > 0 && (
+								{(navData.live.events.length > 0 ||
+									navData.live.cohorts.length > 0 ||
+									navData.live.pastCohorts.length > 0) && (
 									<div className="flex flex-col">
-										<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
-											Cohorts
-										</div>
-										<ul className="flex flex-col">
-											{navData.cohorts.map((cohort) => (
-												<NavLinkItem
-													className="text-sm"
-													key={cohort.href}
-													href={cohort.href}
-													label={cohort.title}
-												/>
-											))}
-										</ul>
+										{navData.live.events.length > 0 && (
+											<div className="mb-3 flex flex-col">
+												<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
+													Events
+												</div>
+												<ul className="flex flex-col">
+													{navData.live.events.map((event) => (
+														<NavLinkItem
+															className="text-sm"
+															key={event.href}
+															href={event.href}
+															label={`${event.title} - ${event.date}`}
+														/>
+													))}
+												</ul>
+											</div>
+										)}
+										{(navData.live.cohorts.length > 0 ||
+											navData.live.pastCohorts.length > 0) && (
+											<div className="flex flex-col">
+												<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
+													Cohorts
+												</div>
+												{navData.live.cohorts.length === 0 &&
+													navData.live.pastCohorts.length > 0 && (
+														<div className="text-muted-foreground px-5 py-1.5 text-sm font-normal">
+															No cohorts scheduled at the moment.
+														</div>
+													)}
+												{navData.live.cohorts.length > 0 && (
+													<ul className="flex flex-col">
+														{navData.live.cohorts.map((cohort) => (
+															<NavLinkItem
+																className="text-sm"
+																key={cohort.href}
+																href={cohort.href}
+																label={cohort.title}
+															/>
+														))}
+													</ul>
+												)}
+												{navData.live.pastCohorts.length > 0 && (
+													<>
+														<div className="text-muted-foreground mb-1.5 mt-3 px-5 text-xs font-medium uppercase tracking-wider">
+															Past Cohorts
+														</div>
+														<ul className="flex flex-col">
+															{navData.live.pastCohorts.map((cohort) => (
+																<NavLinkItem
+																	className="text-sm opacity-75"
+																	key={cohort.href}
+																	href={cohort.href}
+																	label={cohort.title}
+																/>
+															))}
+														</ul>
+													</>
+												)}
+											</div>
+										)}
 									</div>
 								)}
-								<div className="flex flex-col">
-									<div className="text-muted-foreground mb-1.5 px-5 text-xs font-medium uppercase tracking-wider">
-										Free Tutorials
-									</div>
-									<ul className="flex flex-col">
-										<NavLinkItem
-											className="text-sm"
-											href={navData.freeTutorials.featured.href}
-											label={navData.freeTutorials.featured.title}
-										/>
-										{navData.freeTutorials.items.map((tutorial) => (
-											<NavLinkItem
-												className="text-sm"
-												key={tutorial.href}
-												href={tutorial.href}
-												label={tutorial.title}
-											/>
-										))}
-									</ul>
-								</div>
 								<ul className="border-border flex flex-col border-t pt-2">
 									<NavLinkItem
 										className="text-sm"
