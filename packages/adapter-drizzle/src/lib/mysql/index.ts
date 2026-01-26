@@ -2697,6 +2697,53 @@ export function mySqlDrizzleAdapter(
 					throw error
 				})
 		},
+		async getParentResourceOfVideoResource(
+			videoResourceId: string,
+		): Promise<ContentResource | null> {
+			if (!videoResourceId) {
+				return null
+			}
+
+			// Use a SQL query to find the parent post of this video resource
+			const results = await client
+				.select()
+				.from(contentResource)
+				.innerJoin(
+					contentResourceResource,
+					eq(contentResourceResource.resourceOfId, contentResource.id),
+				)
+				.where(
+					and(
+						eq(contentResourceResource.resourceId, videoResourceId),
+						eq(contentResource.type, 'post'),
+					),
+				)
+				.limit(1)
+
+			if (!results || results.length === 0) {
+				return null
+			}
+
+			const resourceData = results[0]?.ContentResource
+
+			if (!resourceData) {
+				return null
+			}
+
+			// Fetch the full resource with relationships
+			const fullResource = await client.query.contentResource.findFirst({
+				where: eq(contentResource.id, resourceData.id),
+				with: {
+					resources: true,
+				},
+			})
+
+			if (!fullResource) {
+				return null
+			}
+
+			return ContentResourceSchema.parse(fullResource)
+		},
 		async createContentResource(data) {
 			const id = data.id || crypto.randomUUID()
 
