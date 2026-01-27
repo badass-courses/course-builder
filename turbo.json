@@ -1,6 +1,6 @@
 {
 	"$schema": "https://turbo.build/schema.json",
-	"globalDependencies": ["**/.env.*local"],
+	"globalDependencies": [".env"],
 	"globalEnv": ["PORT"],
 	"tasks": {
 		"topo": {
@@ -8,6 +8,7 @@
 		},
 		"build": {
 			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*", ".env.*local"],
 			"outputs": [
 				".next/**",
 				"dist/**",
@@ -80,8 +81,7 @@
 			"outputs": ["public/sitemap.xml", "public/robots.txt"]
 		},
 		"lint": {
-			"dependsOn": ["^topo", "^build"],
-			"outputs": []
+			"dependsOn": ["^topo", "^build"]
 		},
 		"dev": {
 			"dependsOn": ["^build"],
@@ -92,12 +92,12 @@
 			"cache": false
 		},
 		"typecheck": {
-			"dependsOn": ["^topo", "^build"]
+			"dependsOn": ["^topo", "^build"],
+			"outputs": [".tsbuildinfo", "tsconfig.tsbuildinfo"]
 		},
 		"test": {
 			"outputs": ["coverage/**"],
-			"inputs": ["src/**/", "test/**/"],
-			"cache": false,
+			"inputs": ["$TURBO_DEFAULT$", "src/**/", "test/**/"],
 			"outputLogs": "new-only"
 		},
 		"test:e2e": {
