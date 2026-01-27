@@ -72,7 +72,7 @@
 		"lucide-react": "^0.288.0",
 		"mysql2": "^3.6.1",
 		"nanoid": "^5.0.2",
-		"next": "16.0.10",
+		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
 		"next-axiom": "1.9.1",
 		"next-themes": "^0.3",

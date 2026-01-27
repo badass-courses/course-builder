@@ -101,7 +101,7 @@
 		"marked": "^15.0.12",
 		"memoize-one": "^6.0.0",
 		"nanoid": "^5.0.2",
-		"next": "16.0.10",
+		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
 		"next-axiom": "1.9.1",
 		"next-cloudinary": "^6.5.1",

@@ -39,12 +39,12 @@
 	},
 	"devDependencies": {
 		"@auth/core": "0.37.2",
-		"next": "16.0.10",
+		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
 		"react": "19.2.3"
 	},
 	"peerDependencies": {
-		"next": "16.0.10",
+		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
 		"react": "19.2.3"
 	}

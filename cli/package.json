@@ -76,7 +76,7 @@
 		"@types/inquirer": "^9.0.3",
 		"@types/node": "^20.12.5",
 		"drizzle-kit": "0.27.1",
-		"next": "16.0.10",
+		"next": "16.0.7",
 		"next-auth": "5.0.0-beta.25",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.6.14",
