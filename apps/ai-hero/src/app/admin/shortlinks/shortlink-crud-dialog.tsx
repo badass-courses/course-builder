@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { env } from '@/env.mjs'
 import { isSlugAvailable } from '@/lib/shortlinks-query'
 import { CreateShortlinkSchema, Shortlink } from '@/lib/shortlinks-types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,6 +26,7 @@ import {
 	FormMessage,
 	Input,
 	Textarea,
+	useToast,
 } from '@coursebuilder/ui'
 
 const nanoid = customAlphabet(
@@ -69,6 +71,7 @@ export default function ShortlinkCrudDialog({
 	const [isOpen, setIsOpen] = useState(false)
 	const [isCheckingSlug, setIsCheckingSlug] = useState(false)
 	const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null)
+	const { toast } = useToast()
 
 	const form = useForm<FormSchemaType>({
 		resolver: zodResolver(formSchema),
@@ -141,6 +144,10 @@ export default function ShortlinkCrudDialog({
 					url: values.url,
 					description: values.description || undefined,
 				})
+				// Copy the new shortlink URL to clipboard
+				const shortlinkUrl = `${env.NEXT_PUBLIC_URL}/s/${values.slug}`
+				await navigator.clipboard.writeText(shortlinkUrl)
+				toast({ title: 'Shortlink copied to clipboard' })
 			}
 			setIsOpen(false)
 			form.reset()

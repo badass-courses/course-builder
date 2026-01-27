@@ -35,6 +35,7 @@ import {
 	productTransferWorkflow,
 } from './functions/product-transfer-workflow'
 import { sendLiveEventWelcomeEmail } from './functions/send-live-event-welcome-email'
+import { shortlinkAttribution } from './functions/shortlink-attribution'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
 import {
@@ -81,5 +82,6 @@ export const inngestConfig = {
 		postEventPurchase,
 		handleRefundAndRemoveFromCalendar,
 		sendLiveEventWelcomeEmail,
+		shortlinkAttribution,
 	],
 }

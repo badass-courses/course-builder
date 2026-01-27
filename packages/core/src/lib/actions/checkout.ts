@@ -19,6 +19,12 @@ export async function checkout(
 	const shortlinkRefCookie = cookies.find((c) => c.name === 'sl_ref')
 	const shortlinkRef = shortlinkRefCookie?.value
 
+	console.log('[CHECKOUT] cookies received:', {
+		cookieCount: cookies.length,
+		cookieNames: cookies.map((c) => c.name),
+		shortlinkRef: shortlinkRef || 'NOT FOUND',
+	})
+
 	const checkoutParamsParsed = CheckoutParamsSchema.safeParse({
 		...request.query,
 		country:

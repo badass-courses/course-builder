@@ -301,6 +301,17 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 											Replace Video
 										</Button>
 										{showTranscript && transcript && TranscriptDialog}
+										{!transcript && isTranscriptProcessing && (
+											<Button
+												variant="outline"
+												size="sm"
+												type="button"
+												disabled
+											>
+												<Spinner className="mr-2 h-3 w-3" />
+												Processing Transcript...
+											</Button>
+										)}
 										{!transcript && !isTranscriptProcessing && (
 											<Button
 												variant="outline"

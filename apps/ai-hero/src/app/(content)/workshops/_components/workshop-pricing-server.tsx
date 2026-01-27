@@ -46,6 +46,10 @@ export async function WorkshopPricing({
 			productId: product.id,
 		})
 
+		// Await pricing data to get calculated availability (subtracts purchases)
+		const pricingData = await pricingDataLoader
+		const calculatedQuantityAvailable = pricingData.quantityAvailable
+
 		const countryCode =
 			(await headers()).get('x-vercel-ip-country') ||
 			process.env.DEFAULT_COUNTRY ||
@@ -68,8 +72,8 @@ export async function WorkshopPricing({
 		const baseProps = {
 			availableBonuses: [],
 			product,
-			pricingDataLoader,
-			quantityAvailable: product.quantityAvailable,
+			pricingDataLoader: Promise.resolve(pricingData),
+			quantityAvailable: calculatedQuantityAvailable,
 			...commerceProps,
 		}
 
@@ -118,7 +122,7 @@ export async function WorkshopPricing({
 					...baseProps,
 					hasPurchasedCurrentProduct,
 					existingPurchase: existingPurchase?.existingPurchase || null,
-					quantityAvailable: product.quantityAvailable,
+					quantityAvailable: calculatedQuantityAvailable,
 					purchasedProductIds,
 				}
 			}

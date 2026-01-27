@@ -54,6 +54,9 @@ export const postEventPurchase = inngest.createFunction(
 			throw new Error(`user not found`)
 		}
 
+		// Note: Shortlink attribution is handled by the dedicated shortlink-attribution
+		// inngest function which runs for ALL purchase types
+
 		const isTeamPurchase = Boolean(purchase.bulkCouponId)
 
 		// Find the event or event-series associated with this product

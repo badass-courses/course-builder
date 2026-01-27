@@ -29,9 +29,15 @@ export type CohortItem = {
 
 export type FeaturedTutorial = {
 	href: string
-	badge: string
+	badge?: string
 	title: string
 	description: string
+	image: {
+		src: string
+		alt: string
+		width: number
+		height: number
+	}
 }
 
 export type TutorialItem = {
@@ -41,18 +47,22 @@ export type TutorialItem = {
 }
 
 export type NavigationMenuData = {
-	courses: CourseItem[]
-	cohorts: CohortItem[]
-	freeTutorials: {
-		featured: FeaturedTutorial
-		items: TutorialItem[]
+	learn: {
+		courses: CourseItem[]
+		freeTutorials: {
+			featured: FeaturedTutorial
+			items: TutorialItem[]
+		}
+	}
+	live: {
+		events: EventItem[]
+		cohorts: CohortItem[]
+		pastCohorts: CohortItem[]
 	}
 	browseAll: {
 		href: string
 		label: React.ReactNode | string
 	}
-	pastCohorts: CohortItem[]
-	events: EventItem[]
 }
 
 export type EventItem = {
@@ -88,19 +98,19 @@ export function useNavLinks(): NavigationMenuData {
 	]
 
 	const events: EventItem[] = [
-		// {
-		// 	href: '/events/turn-ai-agents-into-autonomous-software-engineers-with-ralph',
-		// 	date: 'February 11, 2026',
-		// 	image: {
-		// 		src: 'https://res.cloudinary.com/total-typescript/image/upload/v1768901937/events/event-w2789/vsanotsxrpkxykezruby.jpg',
-		// 		alt: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
-		// 		width: 960 / 6,
-		// 		height: 540 / 6,
-		// 	},
-		// 	title: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
-		// 	description:
-		// 		"Learn to build backlog agents, design effective PRDs, and implement feedback loops.",
-		// },
+		{
+			href: '/events/turn-ai-agents-into-autonomous-software-engineers-with-ralph',
+			date: 'February 11, 2026',
+			image: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1768901937/events/event-w2789/vsanotsxrpkxykezruby.jpg',
+				alt: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
+				width: 960 / 6,
+				height: 540 / 6,
+			},
+			title: 'Turn AI Agents into Autonomous Software Engineers with Ralph',
+			description:
+				'Learn to build backlog agents, design effective PRDs, and implement feedback loops.',
+		},
 	]
 
 	const cohorts: CohortItem[] = []
@@ -133,10 +143,16 @@ export function useNavLinks(): NavigationMenuData {
 	const freeTutorials = {
 		featured: {
 			href: '/llm-fundamentals',
-			badge: 'New',
+			badge: undefined,
 			title: 'LLM Fundamentals',
 			description:
 				"A free tutorial teaching you the fundamentals of LLM's so you can use them better.",
+			image: {
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1759305215/llm-fundamentals-thumbnail_2x.jpg',
+				alt: 'LLM Fundamentals',
+				width: 960 / 6,
+				height: 540 / 6,
+			},
 		},
 		items: [
 			{
@@ -171,11 +187,15 @@ export function useNavLinks(): NavigationMenuData {
 	}
 
 	return {
-		courses,
-		cohorts,
-		freeTutorials,
+		learn: {
+			courses,
+			freeTutorials,
+		},
+		live: {
+			events,
+			cohorts,
+			pastCohorts,
+		},
 		browseAll,
-		pastCohorts,
-		events,
 	}
 }

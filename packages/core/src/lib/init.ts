@@ -58,7 +58,20 @@ export async function init({
 		getCurrentUser: courseBuilderOptions.getCurrentUser,
 	}
 
-	const cookies: cookie.Cookie[] = []
+	// Convert request cookies to Cookie[] format for actions
+	const cookies: cookie.Cookie[] = Object.entries(reqCookies || {})
+		.filter((entry): entry is [string, string] => typeof entry[1] === 'string')
+		.map(([name, value]) => ({
+			name,
+			value,
+			options: {},
+		}))
+
+	console.log('[INIT] request cookies:', {
+		rawCookieKeys: Object.keys(reqCookies || {}),
+		convertedCount: cookies.length,
+		hasSl_ref: cookies.some((c) => c.name === 'sl_ref'),
+	})
 
 	return { options, cookies }
 }

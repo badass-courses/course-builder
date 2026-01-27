@@ -75,6 +75,16 @@ export async function toInternalRequest(
 			providerId,
 		})
 
+		const parsedCookies = parseCookie(req.headers.get('cookie') ?? '') ?? {}
+
+		console.log('[WEB] parsing request:', {
+			action,
+			rawCookieHeader: req.headers.get('cookie')?.substring(0, 200),
+			parsedCookieKeys: Object.keys(parsedCookies),
+			hasSl_ref: 'sl_ref' in parsedCookies,
+			sl_refValue: parsedCookies['sl_ref'] || 'NOT PRESENT',
+		})
+
 		return {
 			url,
 			action,
@@ -82,7 +92,7 @@ export async function toInternalRequest(
 			method: req.method as 'POST' | 'GET',
 			headers: Object.fromEntries(req.headers),
 			body: req.body ? await getBody(req, config) : undefined,
-			cookies: parseCookie(req.headers.get('cookie') ?? '') ?? {},
+			cookies: parsedCookies,
 			error: url.searchParams.get('error') ?? undefined,
 			query: Object.fromEntries(url.searchParams),
 		}

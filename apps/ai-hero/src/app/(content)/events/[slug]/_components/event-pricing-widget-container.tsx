@@ -16,6 +16,7 @@ import type { PricingOptions } from '@coursebuilder/core/types'
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import type { EventPageProps } from './event-page-props'
+import { LoggedInWaitlistButton } from './logged-in-waitlist-button'
 
 type EnrollmentState =
 	| { type: 'open' }
@@ -105,6 +106,7 @@ export const EventPricingWidgetContainer: React.FC<
 		hasPurchasedCurrentProduct,
 		pricingWidgetOptions,
 		couponFromCode,
+		userData,
 		...commerceProps
 	} = props
 
@@ -131,9 +133,13 @@ export const EventPricingWidgetContainer: React.FC<
 			.slice(0, 10),
 	}
 
+	// Check if sold out (limited seats and none available)
+	const hasLimitedSeats = totalQuantity > 0
+	const isSoldOut = hasLimitedSeats && quantityAvailable <= 0
+
 	/**
-	 * Determines the current enrollment state based on event timing
-	 * and product configuration.
+	 * Determines the current enrollment state based on event timing,
+	 * seat availability, and product configuration.
 	 */
 	const getEnrollmentState = (): EnrollmentState => {
 		// Bypass if coupon allows it
@@ -141,7 +147,16 @@ export const EventPricingWidgetContainer: React.FC<
 			return { type: 'open' }
 		}
 
-		// Events are simpler than cohorts - they're open if upcoming
+		// Check sold out FIRST (before checking if upcoming)
+		if (isSoldOut) {
+			return {
+				type: 'closed',
+				title: 'Sold Out',
+				subtitle: 'Join the waitlist to be notified if spots become available.',
+			}
+		}
+
+		// Events are open if upcoming and not sold out
 		if (isUpcoming) {
 			return { type: 'open' }
 		}
@@ -188,10 +203,27 @@ export const EventPricingWidgetContainer: React.FC<
 
 	// Default waitlist form renderer
 	const renderWaitlistForm = () => {
+		// Allow custom override first
 		if (renderWaitlistFormProp) {
 			return renderWaitlistFormProp()
 		}
 
+		// For logged-in users, show simple button (no need to enter name/email)
+		if (userData) {
+			return (
+				<LoggedInWaitlistButton
+					email={userData.email}
+					name={userData.name ?? undefined}
+					fields={waitlistCkFields}
+					actionLabel="Join Waitlist"
+					className="mt-5 h-12 w-full text-base"
+					productName={product?.name}
+					productId={product?.id}
+				/>
+			)
+		}
+
+		// For anonymous users, show full form
 		return (
 			<SubscribeToConvertkitForm
 				fields={waitlistCkFields}

@@ -230,6 +230,9 @@ export interface CourseBuilderAdapter<
 		fields: Record<string, any>
 	}): Promise<string[]>
 	getVideoResource(id: string | null | undefined): Promise<VideoResource | null>
+	getParentResourceOfVideoResource(
+		videoResourceId: string,
+	): Promise<ContentResource | null>
 	updateContentResourceFields(options: {
 		id: string
 		fields: Record<string, any>
@@ -662,6 +665,9 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 		return null
 	},
 	getVideoResource: async (_) => {
+		return null
+	},
+	getParentResourceOfVideoResource: async (_) => {
 		return null
 	},
 	updateContentResourceFields(_) {

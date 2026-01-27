@@ -25,6 +25,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import * as Pricing from '@coursebuilder/commerce-next/pricing/pricing'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Badge } from '@coursebuilder/ui/primitives/badge'
+import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import {
 	AIPracticesGrid,
@@ -81,7 +82,11 @@ const Home = async (props: Props) => {
 		isCommerceEnabled ? 'home-selling-live~i7ni0' : 'home-6z2ir',
 	)
 	const firstPageResource = page?.resources?.[0] && {
-		path: page.resources[0]?.resource?.fields?.slug,
+		path: getResourcePath(
+			page.resources[0]?.resource?.type,
+			page.resources[0]?.resource?.fields?.slug,
+			'view',
+		),
 		title: page.resources[0]?.resource?.fields?.title,
 	}
 	const searchParams = await props.searchParams
