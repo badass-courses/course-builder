@@ -65,15 +65,17 @@ export const getLessonVideoTranscript = async (
  */
 export const getCachedLessonVideoTranscript = cache(
 	async (lessonIdOrSlug: string) => {
-		// Resolve to canonical slug for consistent cache keys
-		const slug = lessonIdOrSlug
-
 		return unstable_cache(
-			async () => getLessonVideoTranscript(slug),
-			['lesson-transcript', slug],
+			async () => {
+				// Resolve to canonical slug inside cache to avoid uncached DB fetch
+				const lesson = await getLesson(lessonIdOrSlug)
+				const slug = lesson?.fields.slug || lessonIdOrSlug
+				return getLessonVideoTranscript(slug)
+			},
+			['lesson-transcript', lessonIdOrSlug],
 			{
 				revalidate: false,
-				tags: ['lesson-transcript', `lesson:${slug}`],
+				tags: ['lesson-transcript', `lesson:${lessonIdOrSlug}`],
 			},
 		)()
 	},
@@ -230,13 +232,24 @@ export const addVideoResourceToLesson = async ({
  */
 export const getCachedLesson = cache(async (slugOrId: string) => {
 	// Resolve to canonical slug for consistent cache keys
-	const lesson = await getLesson(slugOrId)
-	const slug = lesson?.fields.slug || slugOrId
+	const initialLesson = await getLesson(slugOrId)
+	const slug = initialLesson?.fields.slug || slugOrId
 
-	return unstable_cache(async () => getLesson(slug), ['lesson', slug], {
-		revalidate: 3600,
-		tags: ['lessons', `lesson:${slug}`],
-	})()
+	return unstable_cache(
+		async () => {
+			// Reuse initial lesson if it was already fetched with the canonical slug
+			if (slugOrId === slug && initialLesson) {
+				return initialLesson
+			}
+			// Otherwise fetch with canonical slug for normalization
+			return getLesson(slug)
+		},
+		['lesson', slug],
+		{
+			revalidate: 3600,
+			tags: ['lessons', `lesson:${slug}`],
+		},
+	)()
 })
 
 export async function getLesson(lessonSlugOrId: string) {
@@ -290,14 +303,15 @@ export async function getLesson(lessonSlugOrId: string) {
  * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
  */
 export const getCachedExerciseSolution = cache(async (slugOrId: string) => {
-	// Resolve to canonical slug for consistent cache keys
-	const lesson = await getLesson(slugOrId)
-	const slug = lesson?.fields.slug || slugOrId
-
 	return unstable_cache(
-		async () => getExerciseSolution(slug),
-		['solution', slug],
-		{ revalidate: 3600, tags: ['solutions', `lesson:${slug}`] },
+		async () => {
+			// Resolve to canonical slug inside cache to avoid uncached DB fetch
+			const lesson = await getLesson(slugOrId)
+			const slug = lesson?.fields.slug || slugOrId
+			return getExerciseSolution(slug)
+		},
+		['solution', slugOrId],
+		{ revalidate: 3600, tags: ['solutions', `lesson:${slugOrId}`] },
 	)()
 })
 

@@ -50,15 +50,10 @@ const getCachedWorkshopNavigationInternal = cache(
 			caller: caller ?? undefined,
 			debug,
 		})
-		const navigationOptions: ContentNavigationOptions = {
-			depth,
-			caller: caller ?? undefined,
-			debug,
-		}
 		const cacheKey = getContentNavigationCacheKey(slug, normalizedOptions)
 
 		return unstable_cache(
-			async () => getWorkshopNavigation(slug, navigationOptions),
+			async () => getWorkshopNavigation(slug, normalizedOptions),
 			['workshop-navigation', cacheKey],
 			{ revalidate: 3600, tags: ['workshop-navigation', slug] },
 		)()
@@ -359,6 +354,7 @@ export const addResourceToWorkshop = async ({
 
 	// Invalidate workshop caches
 	revalidateTag('workshop', 'max')
+	revalidateTag('workshop-navigation', 'max')
 	const workshopSlug = workshop.fields?.slug
 	if (workshopSlug) {
 		revalidateTag(workshopSlug, 'max')

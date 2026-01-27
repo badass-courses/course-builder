@@ -363,6 +363,10 @@ export async function deleteSolution(solutionId: string) {
 			throw new Error('Solution not found or not linked to a lesson')
 		}
 
+		// Fetch parent lesson before soft-delete to get slug for cache invalidation
+		const parentLesson = await getLessonForSolution(solutionId)
+		const parentLessonSlug = parentLesson?.fields?.slug
+
 		// Soft delete the solution
 		await db
 			.update(contentResource)
@@ -398,10 +402,9 @@ export async function deleteSolution(solutionId: string) {
 
 		revalidateTag('solution', 'max')
 
-		// Invalidate lesson cache
-		const parentLesson = await getLessonForSolution(solutionId)
-		if (parentLesson?.fields?.slug) {
-			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		// Invalidate lesson cache using pre-fetched slug
+		if (parentLessonSlug) {
+			revalidateTag(`lesson:${parentLessonSlug}`, 'max')
 		}
 
 		return { success: true }
