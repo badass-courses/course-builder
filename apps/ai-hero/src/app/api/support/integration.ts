@@ -1,18 +1,38 @@
 import { courseBuilderAdapter, db } from '@/db'
-import { purchases } from '@/db/schema'
+import {
+	contentResource,
+	contentResourceProduct,
+	coupon,
+	entitlements,
+	entitlementTypes,
+	merchantCoupon,
+	organization,
+	organizationMemberships,
+	products,
+	purchases,
+	resourceProgress,
+	users,
+} from '@/db/schema'
 import { env } from '@/env.mjs'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
 import type {
 	ActionResult,
+	AppInfo,
+	ContentAccess,
 	ContentSearchRequest,
 	ContentSearchResponse,
 	ContentSearchResult,
+	CouponInfo,
+	LicenseInfo,
 	ProductStatus,
+	Promotion,
 	Purchase,
+	RefundPolicy,
 	SupportIntegration,
 	User,
+	UserActivity,
 } from '@skillrecordings/sdk/integration'
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -47,7 +67,7 @@ export const integration: SupportIntegration = {
 	async getPurchases(userId: string): Promise<Purchase[]> {
 		const userPurchases = await courseBuilderAdapter.getPurchasesForUser(userId)
 
-		return userPurchases.map((p) => ({
+		return userPurchases.map((p: any) => ({
 			id: p.id,
 			productId: p.productId,
 			productName: p.product?.name ?? 'Unknown Product',
@@ -386,6 +406,445 @@ export const integration: SupportIntegration = {
 			}
 		}
 	},
+
+	// ── SDK v0.5.0 Agent Intelligence Methods ────────────────────────
+
+	/**
+	 * Get currently active promotions and sales.
+	 *
+	 * Queries the Coupon + MerchantCoupon tables for active, unexpired coupons
+	 * that have a code (i.e., user-facing promotional coupons, not internal ones).
+	 */
+	async getActivePromotions(): Promise<Promotion[]> {
+		const now = new Date()
+
+		const activeCoupons = await db
+			.select({
+				id: coupon.id,
+				code: coupon.code,
+				percentageDiscount: coupon.percentageDiscount,
+				amountDiscount: coupon.amountDiscount,
+				expires: coupon.expires,
+				maxUses: coupon.maxUses,
+				usedCount: coupon.usedCount,
+				status: coupon.status,
+				fields: coupon.fields,
+				merchantType: merchantCoupon.type,
+			})
+			.from(coupon)
+			.leftJoin(merchantCoupon, eq(coupon.merchantCouponId, merchantCoupon.id))
+			.where(
+				and(
+					// Must have a user-facing code
+					isNotNull(coupon.code),
+					// Active status (0 = active)
+					eq(coupon.status, 0),
+					// Not expired (null expires = never expires, or expires in the future)
+					or(isNull(coupon.expires), gt(coupon.expires, now)),
+				),
+			)
+
+		return activeCoupons.map((c) => {
+			const pctDiscount = c.percentageDiscount
+				? Number(c.percentageDiscount)
+				: 0
+			const isPercent = pctDiscount > 0
+			const discountAmount = isPercent
+				? Math.round(pctDiscount * 100) // 0.30 → 30
+				: (c.amountDiscount ?? 0) // already in cents
+
+			return {
+				id: c.id,
+				name: (c.fields as Record<string, any>)?.name ?? c.code ?? 'Promotion',
+				code: c.code ?? undefined,
+				discountType: isPercent ? ('percent' as const) : ('fixed' as const),
+				discountAmount,
+				validUntil: c.expires?.toISOString(),
+				active: true,
+				conditions: mapMerchantCouponType(c.merchantType),
+			}
+		})
+	},
+
+	/**
+	 * Look up a coupon or discount code.
+	 *
+	 * Queries the Coupon table by code, maps discount fields to SDK format.
+	 */
+	async getCouponInfo(code: string): Promise<CouponInfo | null> {
+		const results = await db
+			.select({
+				id: coupon.id,
+				code: coupon.code,
+				percentageDiscount: coupon.percentageDiscount,
+				amountDiscount: coupon.amountDiscount,
+				expires: coupon.expires,
+				maxUses: coupon.maxUses,
+				usedCount: coupon.usedCount,
+				status: coupon.status,
+				merchantType: merchantCoupon.type,
+			})
+			.from(coupon)
+			.leftJoin(merchantCoupon, eq(coupon.merchantCouponId, merchantCoupon.id))
+			.where(eq(coupon.code, code))
+			.limit(1)
+
+		const c = results[0]
+		if (!c) return null
+
+		const now = new Date()
+		const isExpired = c.expires ? c.expires < now : false
+		const isExhausted = c.maxUses !== -1 && c.usedCount >= c.maxUses
+		const isActive = c.status === 0
+
+		const pctDiscount = c.percentageDiscount
+			? Number(c.percentageDiscount)
+			: 0
+		const isPercent = pctDiscount > 0
+
+		return {
+			code: c.code ?? code,
+			valid: isActive && !isExpired && !isExhausted,
+			discountType: isPercent ? 'percent' : 'fixed',
+			discountAmount: isPercent
+				? Math.round(pctDiscount * 100) // 0.30 → 30
+				: (c.amountDiscount ?? 0),
+			restrictionType: mapRestrictionType(c.merchantType),
+			usageCount: c.usedCount,
+			maxUses: c.maxUses === -1 ? undefined : c.maxUses,
+			expiresAt: c.expires?.toISOString(),
+		}
+	},
+
+	/**
+	 * Get the app's refund policy configuration.
+	 *
+	 * Returns static config — AI Hero offers a 30-day refund window.
+	 */
+	async getRefundPolicy(): Promise<RefundPolicy> {
+		return {
+			autoApproveWindowDays: 30,
+			manualApproveWindowDays: 60,
+			noRefundAfterDays: 180,
+			specialConditions: [
+				'Lifetime access purchases: 30-day refund window',
+				'Team/organization licenses: contact support for custom terms',
+			],
+			policyUrl: 'https://www.aihero.dev/refund-policy',
+		}
+	},
+
+	/**
+	 * Get granular content access for a user.
+	 *
+	 * AI Hero uses an Entitlement-based access system:
+	 * - Queries Entitlement table joined with EntitlementType
+	 * - Maps entitlements to products via ContentResourceProduct
+	 * - Includes team membership via Organization + OrganizationMembership
+	 */
+	async getContentAccess(userId: string): Promise<ContentAccess> {
+		// Get user's entitlements
+		const userEntitlements = await db
+			.select({
+				entitlementId: entitlements.id,
+				entitlementType: entitlements.entitlementType,
+				sourceType: entitlements.sourceType,
+				sourceId: entitlements.sourceId,
+				expiresAt: entitlements.expiresAt,
+				deletedAt: entitlements.deletedAt,
+				organizationId: entitlements.organizationId,
+				typeName: entitlementTypes.name,
+				typeDescription: entitlementTypes.description,
+			})
+			.from(entitlements)
+			.leftJoin(
+				entitlementTypes,
+				eq(entitlements.entitlementType, entitlementTypes.id),
+			)
+			.where(
+				and(
+					eq(entitlements.userId, userId),
+					isNull(entitlements.deletedAt),
+				),
+			)
+
+		// Get user's active purchases to map to products
+		const userPurchases = await courseBuilderAdapter.getPurchasesForUser(userId)
+		const activePurchaseProductIds = userPurchases
+			.filter((p: any) => p.status === 'Valid' || p.status === 'Restricted')
+			.map((p: any) => p.productId)
+
+		// Get product details for purchased products
+		const productAccess: ContentAccess['products'] = []
+
+		if (activePurchaseProductIds.length > 0) {
+			const purchasedProducts = await db
+				.select({
+					id: products.id,
+					name: products.name,
+					type: products.type,
+				})
+				.from(products)
+				.where(inArray(products.id, activePurchaseProductIds))
+
+			for (const product of purchasedProducts) {
+				// Get content resources linked to this product
+				const linkedResources = await db
+					.select({
+						resourceId: contentResourceProduct.resourceId,
+						resourceType: contentResource.type,
+						resourceFields: contentResource.fields,
+					})
+					.from(contentResourceProduct)
+					.leftJoin(
+						contentResource,
+						eq(contentResourceProduct.resourceId, contentResource.id),
+					)
+					.where(eq(contentResourceProduct.productId, product.id))
+
+				const modules = linkedResources.map((r) => ({
+					id: r.resourceId,
+					title:
+						(r.resourceFields as Record<string, any>)?.title ??
+						r.resourceType ??
+						'Unknown',
+					accessible: true,
+				}))
+
+				// Check if any entitlement for this product has expired
+				const relevantEntitlement = userEntitlements.find(
+					(e) => e.sourceId === product.id,
+				)
+				const expiresAt = relevantEntitlement?.expiresAt
+
+				const isExpired = expiresAt ? expiresAt < new Date() : false
+
+				productAccess.push({
+					productId: product.id,
+					productName: product.name,
+					accessLevel: isExpired ? 'expired' : 'full',
+					modules: modules.length > 0 ? modules : undefined,
+					expiresAt: expiresAt?.toISOString(),
+				})
+			}
+		}
+
+		// Get team membership via Organization + OrganizationMembership
+		let teamMembership: ContentAccess['teamMembership'] = undefined
+
+		const memberships = await db
+			.select({
+				membershipId: organizationMemberships.id,
+				orgId: organizationMemberships.organizationId,
+				role: organizationMemberships.role,
+				createdAt: organizationMemberships.createdAt,
+				orgName: organization.name,
+			})
+			.from(organizationMemberships)
+			.leftJoin(
+				organization,
+				eq(organizationMemberships.organizationId, organization.id),
+			)
+			.where(eq(organizationMemberships.userId, userId))
+			.limit(1)
+
+		const membership = memberships[0]
+		if (membership?.orgId) {
+			const roleMap: Record<string, 'member' | 'admin' | 'owner'> = {
+				owner: 'owner',
+				admin: 'admin',
+				user: 'member',
+			}
+
+			teamMembership = {
+				teamId: membership.orgId,
+				teamName: membership.orgName ?? 'Organization',
+				role: roleMap[membership.role] ?? 'member',
+				seatClaimedAt:
+					membership.createdAt?.toISOString() ?? new Date().toISOString(),
+			}
+		}
+
+		return {
+			userId,
+			products: productAccess,
+			teamMembership,
+		}
+	},
+
+	/**
+	 * Get recent user activity and progress.
+	 *
+	 * AI Hero uses the ResourceProgress table (not LessonProgress).
+	 * Queries completed resources and calculates overall progress.
+	 */
+	async getRecentActivity(userId: string): Promise<UserActivity> {
+		// Get all resource progress for user
+		const allProgress = await db
+			.select({
+				resourceId: resourceProgress.resourceId,
+				completedAt: resourceProgress.completedAt,
+				updatedAt: resourceProgress.updatedAt,
+				createdAt: resourceProgress.createdAt,
+			})
+			.from(resourceProgress)
+			.where(eq(resourceProgress.userId, userId))
+
+		const completedCount = allProgress.filter((p) => p.completedAt).length
+		const totalCount = allProgress.length
+
+		// Get recent items (last 20, ordered by most recent activity)
+		const recentProgress = await db
+			.select({
+				resourceId: resourceProgress.resourceId,
+				completedAt: resourceProgress.completedAt,
+				updatedAt: resourceProgress.updatedAt,
+				createdAt: resourceProgress.createdAt,
+				resourceFields: contentResource.fields,
+				resourceType: contentResource.type,
+			})
+			.from(resourceProgress)
+			.leftJoin(
+				contentResource,
+				eq(resourceProgress.resourceId, contentResource.id),
+			)
+			.where(eq(resourceProgress.userId, userId))
+			.orderBy(desc(resourceProgress.updatedAt))
+			.limit(20)
+
+		const recentItems: UserActivity['recentItems'] = recentProgress
+			.filter((p) => p.completedAt)
+			.slice(0, 10)
+			.map((p) => ({
+				type: 'lesson_completed' as const,
+				title:
+					(p.resourceFields as Record<string, any>)?.title ??
+					p.resourceType ??
+					'Unknown resource',
+				timestamp: (
+					p.completedAt ??
+					p.updatedAt ??
+					p.createdAt
+				).toISOString(),
+			}))
+
+		// Determine last active timestamp
+		const lastActivity = recentProgress[0]
+		const lastActiveAt = lastActivity
+			? (
+					lastActivity.updatedAt ??
+					lastActivity.completedAt ??
+					lastActivity.createdAt
+				)?.toISOString()
+			: undefined
+
+		return {
+			userId,
+			lastActiveAt,
+			lessonsCompleted: completedCount,
+			totalLessons: totalCount,
+			completionPercent:
+				totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0,
+			recentItems,
+		}
+	},
+
+	/**
+	 * Get team license and seat information for a purchase.
+	 *
+	 * AI Hero uses Organization-based teams (not bulkCoupon).
+	 * A purchase linked to an Organization grants team access.
+	 */
+	async getLicenseInfo(purchaseId: string): Promise<LicenseInfo | null> {
+		// Get the purchase
+		const purchase = await courseBuilderAdapter.getPurchase(purchaseId)
+		if (!purchase) return null
+
+		// Check if this purchase is associated with an organization
+		const orgId = (purchase as any).organizationId
+		if (!orgId) {
+			// Individual purchase — no team license
+			return {
+				purchaseId,
+				licenseType: 'individual',
+				totalSeats: 1,
+				claimedSeats: 1,
+				availableSeats: 0,
+				claimedBy: [],
+			}
+		}
+
+		// Get organization details
+		const orgs = await db
+			.select({
+				id: organization.id,
+				name: organization.name,
+				fields: organization.fields,
+			})
+			.from(organization)
+			.where(eq(organization.id, orgId))
+			.limit(1)
+
+		const org = orgs[0]
+		if (!org) return null
+
+		// Get organization members
+		const members = await db
+			.select({
+				userId: organizationMemberships.userId,
+				role: organizationMemberships.role,
+				createdAt: organizationMemberships.createdAt,
+				email: users.email,
+			})
+			.from(organizationMemberships)
+			.leftJoin(users, eq(organizationMemberships.userId, users.id))
+			.where(eq(organizationMemberships.organizationId, orgId))
+
+		// Determine total seats from org fields or purchase quantity
+		const orgFields = org.fields as Record<string, any> | null
+		const totalSeats = orgFields?.maxSeats ?? orgFields?.seats ?? members.length
+
+		// Find the admin (owner role)
+		const admin = members.find((m) => m.role === 'owner')
+
+		// Determine license type based on seat count
+		let licenseType: LicenseInfo['licenseType'] = 'team'
+		if (totalSeats === 1) licenseType = 'individual'
+		else if (totalSeats > 50) licenseType = 'enterprise'
+
+		return {
+			purchaseId,
+			licenseType,
+			totalSeats,
+			claimedSeats: members.length,
+			availableSeats: Math.max(0, totalSeats - members.length),
+			claimedBy: members.map((m) => ({
+				email: m.email ?? 'unknown',
+				claimedAt:
+					m.createdAt?.toISOString() ?? new Date().toISOString(),
+			})),
+			adminEmail: admin?.email ?? undefined,
+		}
+	},
+
+	/**
+	 * Get app metadata.
+	 *
+	 * Returns static configuration for AI Hero.
+	 */
+	async getAppInfo(): Promise<AppInfo> {
+		return {
+			name: 'AI Hero',
+			instructorName: 'Matt Pocock',
+			supportEmail: 'team@aihero.dev',
+			websiteUrl: env.NEXT_PUBLIC_URL || 'https://www.aihero.dev',
+			invoicesUrl: `${env.NEXT_PUBLIC_URL || 'https://www.aihero.dev'}/invoices`,
+			discordUrl: 'https://aihero.dev/discord',
+			refundPolicyUrl: 'https://www.aihero.dev/refund-policy',
+			privacyPolicyUrl: 'https://www.aihero.dev/privacy',
+			termsUrl: 'https://www.aihero.dev/terms',
+		}
+	},
 }
 
 /**
@@ -402,6 +861,40 @@ function mapPurchaseStatus(
 		case 'Valid':
 		default:
 			return 'active'
+	}
+}
+
+/**
+ * Map MerchantCoupon type to human-readable conditions
+ */
+function mapMerchantCouponType(type: string | null): string | undefined {
+	if (!type) return undefined
+	switch (type) {
+		case 'ppp':
+			return 'PPP — purchasing power parity discount'
+		case 'bulk':
+			return 'Bulk/team discount'
+		case 'special':
+			return 'Special promotion'
+		default:
+			return type
+	}
+}
+
+/**
+ * Map MerchantCoupon type to SDK restriction type
+ */
+function mapRestrictionType(
+	type: string | null,
+): CouponInfo['restrictionType'] {
+	if (!type) return 'general'
+	switch (type) {
+		case 'ppp':
+			return 'ppp'
+		case 'bulk':
+			return 'bulk'
+		default:
+			return 'general'
 	}
 }
 
