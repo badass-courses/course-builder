@@ -9,7 +9,7 @@ import { db } from '@/db'
 import { contentResourceProduct, contentResourceResource } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { getPricingProps } from '@/lib/pricing-query'
-import { getAllWorkshops } from '@/lib/workshops-query'
+import { getAllWorkshopsMinimal } from '@/lib/workshops-query'
 import { getServerAuthSession } from '@/server/auth'
 import { asc } from 'drizzle-orm'
 import { FilePlus2 } from 'lucide-react'
@@ -119,7 +119,7 @@ async function WorkshopsList() {
 				return resource.resource
 			})
 	})
-	const allWorkshops = await getAllWorkshops()
+	const allWorkshops = await getAllWorkshopsMinimal()
 	let workshops = uniqBy(
 		[...allWorkshops, ...cohorts],
 		(item) => item.id,
@@ -128,8 +128,8 @@ async function WorkshopsList() {
 
 	const canEdit = ability.can('create', 'Content')
 	if (canEdit) {
-		const allWorkshops = await getAllWorkshops()
-		workshops = allWorkshops
+		const allWorkshopsForEdit = await getAllWorkshopsMinimal()
+		workshops = allWorkshopsForEdit
 	}
 
 	return (

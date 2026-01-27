@@ -76,80 +76,87 @@ export const processWorkshopTranscripts = inngest.createFunction(
 			delaySeconds,
 		})
 
-		// Step 1: Get the workshop
-		// Use getMinimalWorkshop first, then fetch full data if needed
-		// getMinimalWorkshop doesn't require auth
-		const workshop = await step.run('get workshop', async () => {
-			// Try getWorkshop first (with auth), fallback to direct query if auth fails
-			try {
-				return await getWorkshop(workshopId)
-			} catch (error) {
-				// If auth fails, query directly without visibility restrictions
-				await log.warn('workshop.transcript.batch.auth-fallback', {
-					workshopId,
-					error: error instanceof Error ? error.message : String(error),
-				})
+		// Step 1: Get the workshop and collect lesson IDs
+		// Combine these steps to minimize step output size - only return lesson IDs
+		const { lessonIds, workshopId: validatedWorkshopId } = await step.run(
+			'get workshop and collect lesson ids',
+			async () => {
+				let workshop
+				// Try getWorkshop first (with auth), fallback to direct query if auth fails
+				try {
+					workshop = await getWorkshop(workshopId)
+				} catch (error) {
+					// If auth fails, query directly without visibility restrictions
+					await log.warn('workshop.transcript.batch.auth-fallback', {
+						workshopId,
+						error: error instanceof Error ? error.message : String(error),
+					})
 
-				const workshop = await db.query.contentResource.findFirst({
-					where: and(
-						eq(contentResource.id, workshopId),
-						eq(contentResource.type, 'workshop'),
-					),
-					with: {
-						tags: {
-							with: {
-								tag: true,
+					const workshopData = await db.query.contentResource.findFirst({
+						where: and(
+							eq(contentResource.id, workshopId),
+							eq(contentResource.type, 'workshop'),
+						),
+						with: {
+							tags: {
+								with: {
+									tag: true,
+								},
+								orderBy: asc(contentResourceTagTable.position),
 							},
-							orderBy: asc(contentResourceTagTable.position),
-						},
-						resources: {
-							with: {
-								resource: {
-									with: {
-										resources: {
-											with: {
-												resource: true,
+							resources: {
+								with: {
+									resource: {
+										with: {
+											resources: {
+												with: {
+													resource: true,
+												},
+												orderBy: asc(contentResourceResource.position),
 											},
-											orderBy: asc(contentResourceResource.position),
 										},
 									},
 								},
+								orderBy: asc(contentResourceResource.position),
 							},
-							orderBy: asc(contentResourceResource.position),
 						},
-					},
-				})
+					})
 
-				if (!workshop) return null
+					if (!workshopData) {
+						return { lessonIds: [], workshopId: null }
+					}
 
-				const parsed = WorkshopSchema.safeParse(workshop)
-				return parsed.success ? parsed.data : null
-			}
-		})
+					const parsed = WorkshopSchema.safeParse(workshopData)
+					workshop = parsed.success ? parsed.data : null
+				}
 
-		if (!workshop) {
-			await log.error('workshop.transcript.batch.workshop-not-found', {
-				workshopId,
-			})
+				if (!workshop) {
+					await log.error('workshop.transcript.batch.workshop-not-found', {
+						workshopId,
+					})
+					return { lessonIds: [], workshopId: null }
+				}
+
+				const lessonIds = collectLessonIds(workshop)
+				return { lessonIds, workshopId: workshop.id }
+			},
+		)
+
+		if (!validatedWorkshopId) {
 			throw new Error(`Workshop not found: ${workshopId}`)
 		}
 
-		// Step 2: Find all lessons attached to the workshop
-		const lessonIds = await step.run('collect lesson ids', async () => {
-			return collectLessonIds(workshop)
-		})
-
 		await log.info('workshop.transcript.batch.lessons-found', {
-			workshopId: workshop.id,
+			workshopId: validatedWorkshopId,
 			lessonCount: lessonIds.length,
 		})
 
 		if (lessonIds.length === 0) {
 			await log.info('workshop.transcript.batch.no-lessons', {
-				workshopId: workshop.id,
+				workshopId: validatedWorkshopId,
 			})
 			return {
-				workshopId: workshop.id,
+				workshopId: validatedWorkshopId,
 				totalLessons: 0,
 				lessonsWithTranscripts: 0,
 				lessonsWithoutTranscripts: 0,
@@ -193,7 +200,7 @@ export const processWorkshopTranscripts = inngest.createFunction(
 		const lessonsWithTranscripts = lessonIds.length - lessonsToProcess.length
 
 		await log.info('workshop.transcript.batch.analysis', {
-			workshopId: workshop.id,
+			workshopId: validatedWorkshopId,
 			totalLessons: lessonIds.length,
 			lessonsWithTranscripts,
 			lessonsWithoutTranscripts: lessonsToProcess.length,
@@ -201,10 +208,10 @@ export const processWorkshopTranscripts = inngest.createFunction(
 
 		if (lessonsToProcess.length === 0) {
 			await log.info('workshop.transcript.batch.all-complete', {
-				workshopId: workshop.id,
+				workshopId: validatedWorkshopId,
 			})
 			return {
-				workshopId: workshop.id,
+				workshopId: validatedWorkshopId,
 				totalLessons: lessonIds.length,
 				lessonsWithTranscripts,
 				lessonsWithoutTranscripts: 0,
@@ -224,17 +231,28 @@ export const processWorkshopTranscripts = inngest.createFunction(
 			const current = i + 1
 			const total = lessonsToProcess.length
 
-			// Get the full video resource to ensure we have muxPlaybackId
-			const fullVideoResource = await step.run(
+			// Get only the minimal video resource data needed (id and muxPlaybackId)
+			// This minimizes step output size to avoid Inngest limits
+			const videoResourceData = await step.run(
 				`get video resource ${current}/${total}`,
 				async () => {
-					return courseBuilderAdapter.getVideoResource(lesson.videoResourceId)
+					const videoResource = await courseBuilderAdapter.getVideoResource(
+						lesson.videoResourceId,
+					)
+					if (!videoResource) {
+						return null
+					}
+					// Only return minimal data needed
+					return {
+						id: videoResource.id,
+						muxPlaybackId: videoResource.muxPlaybackId,
+					}
 				},
 			)
 
-			if (!fullVideoResource?.muxPlaybackId) {
+			if (!videoResourceData?.muxPlaybackId) {
 				await log.warn('workshop.transcript.batch.skip-no-mux', {
-					workshopId: workshop.id,
+					workshopId: validatedWorkshopId,
 					lessonId: lesson.lessonId,
 					videoResourceId: lesson.videoResourceId,
 				})
@@ -249,13 +267,13 @@ export const processWorkshopTranscripts = inngest.createFunction(
 				await inngest.send({
 					name: VIDEO_RESOURCE_CREATED_EVENT,
 					data: {
-						videoResourceId: fullVideoResource.id,
-						originalMediaUrl: `https://stream.mux.com/${fullVideoResource.muxPlaybackId}/low.mp4?download=${fullVideoResource.id}`,
+						videoResourceId: videoResourceData.id,
+						originalMediaUrl: `https://stream.mux.com/${videoResourceData.muxPlaybackId}/low.mp4?download=${videoResourceData.id}`,
 					},
 				})
 
 				await log.info('workshop.transcript.triggered', {
-					workshopId: workshop.id,
+					workshopId: validatedWorkshopId,
 					lessonId: lesson.lessonId,
 					videoResourceId: lesson.videoResourceId,
 					progress: `${current}/${total}`,
@@ -274,7 +292,7 @@ export const processWorkshopTranscripts = inngest.createFunction(
 		}
 
 		const result = {
-			workshopId: workshop.id,
+			workshopId: validatedWorkshopId,
 			totalLessons: lessonIds.length,
 			lessonsWithTranscripts,
 			lessonsWithoutTranscripts: lessonsToProcess.length,

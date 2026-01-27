@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { createCohortWithWorkshops } from '@/lib/cohorts-query'
-import { getAllWorkshops } from '@/lib/workshops-query'
+import { getAllWorkshopsMinimal } from '@/lib/workshops-query'
 import { api } from '@/trpc/react'
 import { Plus } from 'lucide-react'
 import { z } from 'zod'
@@ -67,7 +67,7 @@ export default function CreateNewCohortDialog({
 
 	React.useEffect(() => {
 		// Fetch workshops on mount
-		getAllWorkshops().then((workshopList) => {
+		getAllWorkshopsMinimal().then((workshopList) => {
 			setWorkshops(
 				workshopList.map((w) => ({
 					id: w.id,

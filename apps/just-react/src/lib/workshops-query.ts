@@ -14,6 +14,7 @@ import {
 	MinimalWorkshopSchema,
 	WorkshopSchema,
 	type CreateWorkshopWithLessonsInput,
+	type MinimalWorkshop,
 	type Workshop,
 } from '@/lib/workshops'
 import { getServerAuthSession } from '@/server/auth'
@@ -217,6 +218,58 @@ export async function getWorkshop(moduleSlugOrId: string) {
 	return workshopData
 }
 
+/**
+ * Fetches all workshops with minimal data (no nested resources)
+ * Use this for listing pages to avoid exceeding database message size limits
+ * Only fetches essential fields needed for listing (id, type, title, slug, description, visibility, state)
+ *
+ * @returns Array of minimal workshop data (id, type, fields only)
+ */
+export async function getAllWorkshopsMinimal(): Promise<MinimalWorkshop[]> {
+	const { ability } = await getServerAuthSession()
+
+	const visibility: ('public' | 'private' | 'unlisted')[] = ability.can(
+		'update',
+		'Content',
+	)
+		? ['public', 'private', 'unlisted']
+		: ['public']
+
+	// Fetch only essential columns - the fields JSON will be included but we're not fetching nested relations
+	// which is the main source of the size issue
+	const workshops: ContentResource[] = await db.query.contentResource.findMany({
+		where: and(
+			eq(contentResource.type, 'workshop'),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
+		),
+		columns: {
+			id: true,
+			type: true,
+			fields: true,
+			createdAt: true,
+			updatedAt: true,
+			organizationId: true,
+			createdById: true,
+		},
+		orderBy: desc(contentResource.createdAt),
+	})
+
+	const parsedWorkshops = z.array(MinimalWorkshopSchema).safeParse(workshops)
+	if (!parsedWorkshops.success) {
+		console.error('Error parsing workshop', workshops, parsedWorkshops.error)
+		throw new Error('Error parsing workshop')
+	}
+
+	return parsedWorkshops.data
+}
+
+/**
+ * Fetches all workshops with full nested resources
+ * WARNING: This can return very large datasets. Use getAllWorkshopsMinimal() for listing pages.
+ */
 export async function getAllWorkshops() {
 	const { ability } = await getServerAuthSession()
 
