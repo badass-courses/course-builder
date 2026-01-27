@@ -123,23 +123,25 @@ const useCodemirror = ({
 	const [yUndoManager, setYUndoManager] = useState<Y.UndoManager>()
 	const [currentText, setCurrentText] = useState<string>(value)
 
-	let updateListenerExtension = EditorView.updateListener.of(async (update) => {
-		if (update.docChanged) {
-			const docText = update.state.doc.toString()
-			const hash = await generateHash(docText)
-			if (hash !== currentText) {
-				onChange(docText)
-				setCurrentText(hash)
-			}
-		}
-	})
-
 	useEffect(() => {
 		let view: EditorView
 
 		if (!element) {
 			return
 		}
+
+		const updateListenerExtension = EditorView.updateListener.of(
+			async (update) => {
+				if (update.docChanged) {
+					const docText = update.state.doc.toString()
+					const hash = await generateHash(docText)
+					if (hash !== currentText) {
+						onChange(docText)
+						setCurrentText(hash)
+					}
+				}
+			},
+		)
 
 		const ytext = new Y.Doc().getText('codemirror')
 
@@ -175,7 +177,7 @@ const useCodemirror = ({
 			// provider?.destroy()
 			view?.destroy()
 		}
-	}, [roomName, value, user, theme])
+	}, [element, roomName, value, user, theme, onChange, currentText])
 
 	return {
 		codemirrorElementRef: useCallback((node: HTMLElement | null) => {

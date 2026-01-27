@@ -23,7 +23,7 @@ export function ReactCodemirror({
 			console.log('val:', val)
 			onChange(val)
 		},
-		[],
+		[onChange],
 	)
 	return (
 		<CodeMirror

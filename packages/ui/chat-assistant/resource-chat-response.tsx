@@ -133,7 +133,7 @@ export function ResourceChatResponse({
 					<ReactMarkdown
 						className="prose prose-sm dark:prose-invert"
 						components={{
-							pre: ({ children }) => <PreWithCopy children={children} />,
+							pre: ({ children }) => <PreWithCopy>{children}</PreWithCopy>,
 						}}
 					>
 						{message.body}

@@ -61,13 +61,16 @@ export function EditResourcesBodyPanel({
 		[formRef],
 	)
 
-	const onChange = React.useCallback((value: string, yDoc?: any) => {
-		if (yDoc) {
-			form.setValue('fields.yDoc', yDoc)
-		}
-		form.setValue('fields.body', value)
-		onResourceBodyChange && onResourceBodyChange(value)
-	}, [])
+	const onChange = React.useCallback(
+		(value: string, yDoc?: any) => {
+			if (yDoc) {
+				form.setValue('fields.yDoc', yDoc)
+			}
+			form.setValue('fields.body', value)
+			onResourceBodyChange && onResourceBodyChange(value)
+		},
+		[form, onResourceBodyChange],
+	)
 
 	const handleDrop = React.useCallback(
 		(e: React.DragEvent<HTMLTextAreaElement>) => {

@@ -31,7 +31,7 @@ export function useAutoSave({
 	// Track save state and maintain timer references
 	const [isAutoSaving, setIsAutoSaving] = React.useState(false)
 	const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null)
-	const lastTypedRef = React.useRef<number>(Date.now())
+	const lastTypedRef = React.useRef<number>(0)
 
 	const triggerAutoSave = React.useCallback(() => {
 		// Reset existing timer to prevent multiple concurrent saves
