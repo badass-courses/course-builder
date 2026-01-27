@@ -77,7 +77,7 @@ export default function RootLayout({
 						>
 							<NuqsAdapter>
 								<HolyLoader
-									color="hsl(var(--primary))"
+									color="var(--color-primary)"
 									height="0.15rem"
 									speed={250}
 								/>

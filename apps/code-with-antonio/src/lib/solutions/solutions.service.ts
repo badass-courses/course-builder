@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache'
 import { Ability, subject } from '@casl/ability'
 
 import { getLesson } from '../lessons/lessons.service'
@@ -74,6 +75,10 @@ export async function updateSolutionForLesson(
 		id: solution.id,
 	})
 
+	// Invalidate cache using the lesson's slug
+	const lessonSlug = lesson.fields.slug
+	revalidateTag(`lesson:${lessonSlug}`, 'max')
+
 	return updatedSolution
 }
 
@@ -112,6 +117,10 @@ export async function createSolutionForLesson(
 		createdById: userId,
 	})
 
+	// Invalidate cache using the lesson's slug
+	const lessonSlug = lesson.fields.slug
+	revalidateTag(`lesson:${lessonSlug}`, 'max')
+
 	return solution
 }
 
@@ -143,6 +152,10 @@ export async function deleteSolutionForLesson(
 	}
 
 	await deleteSolutionFromDatabase(solution.id)
+
+	// Invalidate cache using the lesson's slug
+	const lessonSlug = lesson.fields.slug
+	revalidateTag(`lesson:${lessonSlug}`, 'max')
 
 	return { message: 'Solution deleted' }
 }

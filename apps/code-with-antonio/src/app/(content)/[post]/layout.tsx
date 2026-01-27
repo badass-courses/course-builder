@@ -36,6 +36,10 @@ export default async function Layout(props: {
 		<ContentNavigationProvider
 			navigationDataLoader={getContentNavigation(
 				list ? list.id : post?.id || '',
+				{
+					caller: 'layout.post',
+					depth: 1,
+				},
 			)}
 		>
 			<ListProvider initialList={list}>

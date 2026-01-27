@@ -227,6 +227,13 @@ export async function createSolution({
 		}
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache
+		const parentLesson = await getLessonForSolution(solution.id)
+		if (parentLesson?.fields?.slug) {
+			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		}
+
 		return solution
 	} catch (error) {
 		log.error('solution.create.error', {
@@ -314,6 +321,13 @@ export async function updateSolution(input: Partial<Solution>) {
 		})
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache if this solution belongs to a lesson
+		const parentLesson = await getLessonForSolution(currentSolution.id)
+		if (parentLesson?.fields?.slug) {
+			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		}
+
 		return updatedResource
 	} catch (error) {
 		log.error('solution.update.error', {
@@ -349,6 +363,10 @@ export async function deleteSolution(solutionId: string) {
 			throw new Error('Solution not found or not linked to a lesson')
 		}
 
+		// Fetch parent lesson before soft-delete to get slug for cache invalidation
+		const parentLesson = await getLessonForSolution(solutionId)
+		const parentLessonSlug = parentLesson?.fields?.slug
+
 		// Soft delete the solution
 		await db
 			.update(contentResource)
@@ -383,6 +401,12 @@ export async function deleteSolution(solutionId: string) {
 		})
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache using pre-fetched slug
+		if (parentLessonSlug) {
+			revalidateTag(`lesson:${parentLessonSlug}`, 'max')
+		}
+
 		return { success: true }
 	} catch (error) {
 		log.error('solution.delete.error', {

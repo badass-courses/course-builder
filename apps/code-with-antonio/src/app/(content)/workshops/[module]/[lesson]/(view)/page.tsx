@@ -24,9 +24,10 @@ export async function generateStaticParams() {
 		for (const workshop of workshops.filter((workshop) =>
 			Boolean(workshop.fields?.slug),
 		)) {
-			const workshopNavigation = await getWorkshopNavigation(
-				workshop.fields?.slug,
-			)
+			const workshopNavigation = await getWorkshopNavigation(workshop.id, {
+				caller: 'build.static_params',
+				depth: 2,
+			})
 
 			workshopNavigation?.resources?.forEach((wrapper) => {
 				const resource = wrapper.resource
