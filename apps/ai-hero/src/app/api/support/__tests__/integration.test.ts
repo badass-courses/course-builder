@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ── Mocks ──────────────────────────────────────────────────────────
 // vi.mock is hoisted to the top of the file, so we must use vi.hoisted()
@@ -21,24 +21,34 @@ const { mockDb, mockAdapter } = vi.hoisted(() => {
 		getPurchasesForUser: vi.fn(),
 		getPurchase: vi.fn(),
 		getProduct: vi.fn(),
+		getProductResources: vi.fn(),
+		getContentResource: vi.fn(),
 		updatePurchaseStatusForCharge: vi.fn(),
 		findOrCreateUser: vi.fn(),
 		transferPurchaseToUser: vi.fn(),
 		createVerificationToken: vi.fn(),
 		updateUser: vi.fn(),
+		// Adapter helpers used by refactored methods
+		getDefaultCoupon: vi.fn(),
+		couponForIdOrCode: vi.fn(),
+		getEntitlementsForUser: vi.fn(),
+		getMembershipsForUser: vi.fn(),
+		getLessonProgressForUser: vi.fn(),
+		getOrganization: vi.fn(),
+		getOrganizationMembers: vi.fn(),
 	}
 
 	return { mockDb, mockAdapter }
 })
 
 // Make the query builder thenable so `await db.select(...)...` works
+// Still needed for getProductStatus which uses raw db for purchase count
 function makeThenable(resolveValue: any) {
 	mockDb.limit.mockImplementation(() => ({
 		then: (resolve: any) => resolve(resolveValue),
 		[Symbol.iterator]: () => resolveValue[Symbol.iterator](),
 	}))
 	mockDb.where.mockImplementation(() => {
-		// If `.limit()` is not called after `.where()`, resolve directly
 		const obj: any = {
 			then: (resolve: any) => resolve(resolveValue),
 			[Symbol.iterator]: () => resolveValue[Symbol.iterator](),
@@ -77,53 +87,7 @@ vi.mock('@/db', () => ({
 }))
 
 vi.mock('@/db/schema', () => ({
-	contentResource: { id: 'id', type: 'type', fields: 'fields' },
-	contentResourceProduct: {
-		resourceId: 'resourceId',
-		productId: 'productId',
-	},
-	coupon: {
-		id: 'id',
-		code: 'code',
-		percentageDiscount: 'percentageDiscount',
-		amountDiscount: 'amountDiscount',
-		expires: 'expires',
-		maxUses: 'maxUses',
-		usedCount: 'usedCount',
-		status: 'status',
-		fields: 'fields',
-		merchantCouponId: 'merchantCouponId',
-	},
-	entitlements: {
-		id: 'id',
-		entitlementType: 'entitlementType',
-		sourceType: 'sourceType',
-		sourceId: 'sourceId',
-		expiresAt: 'expiresAt',
-		deletedAt: 'deletedAt',
-		organizationId: 'organizationId',
-		userId: 'userId',
-	},
-	entitlementTypes: { id: 'id', name: 'name', description: 'description' },
-	merchantCoupon: { id: 'id', type: 'type' },
-	organization: { id: 'id', name: 'name', fields: 'fields' },
-	organizationMemberships: {
-		id: 'id',
-		organizationId: 'organizationId',
-		userId: 'userId',
-		role: 'role',
-		createdAt: 'createdAt',
-	},
-	products: { id: 'id', name: 'name', type: 'type' },
 	purchases: { productId: 'productId', status: 'status' },
-	resourceProgress: {
-		resourceId: 'resourceId',
-		userId: 'userId',
-		completedAt: 'completedAt',
-		updatedAt: 'updatedAt',
-		createdAt: 'createdAt',
-	},
-	users: { id: 'id', email: 'email' },
 }))
 
 vi.mock('@/env.mjs', () => ({
@@ -523,12 +487,85 @@ describe('AI Hero Support Integration', () => {
 
 	describe('getCouponInfo', () => {
 		it('returns null for unknown coupon code', async () => {
-			// Mock empty result
-			makeThenable([])
+			mockAdapter.couponForIdOrCode.mockResolvedValue(null)
 
 			const result = await integration.getCouponInfo('FAKECODE')
 
 			expect(result).toBeNull()
+			expect(mockAdapter.couponForIdOrCode).toHaveBeenCalledWith({
+				code: 'FAKECODE',
+			})
+		})
+
+		it('returns coupon info for a valid coupon', async () => {
+			mockAdapter.couponForIdOrCode.mockResolvedValue({
+				id: 'coupon-1',
+				code: 'SAVE30',
+				percentageDiscount: 0.3,
+				amountDiscount: null,
+				expires: new Date('2025-12-31'),
+				maxUses: 100,
+				usedCount: 5,
+				status: 1,
+				fields: {},
+				default: false,
+				merchantCouponId: 'mc-1',
+				bulkPurchases: [],
+				redeemedBulkCouponPurchases: [],
+				createdAt: new Date(),
+				restrictedToProductId: null,
+				merchantCoupon: {
+					id: 'mc-1',
+					type: 'special',
+					merchantAccountId: 'ma-1',
+					status: 0,
+				},
+			})
+
+			const result = await integration.getCouponInfo('SAVE30')
+
+			expect(result).toEqual({
+				code: 'SAVE30',
+				valid: true,
+				discountType: 'percent',
+				discountAmount: 30,
+				restrictionType: 'general',
+				usageCount: 5,
+				maxUses: 100,
+				expiresAt: new Date('2025-12-31').toISOString(),
+			})
+		})
+
+		it('returns invalid when coupon is exhausted', async () => {
+			mockAdapter.couponForIdOrCode.mockResolvedValue({
+				id: 'coupon-2',
+				code: 'USED',
+				percentageDiscount: 0.1,
+				amountDiscount: null,
+				expires: null,
+				maxUses: 5,
+				usedCount: 5,
+				status: 1,
+				fields: {},
+				default: false,
+				merchantCouponId: 'mc-1',
+				bulkPurchases: [],
+				redeemedBulkCouponPurchases: [],
+				createdAt: new Date(),
+				restrictedToProductId: null,
+				merchantCoupon: {
+					id: 'mc-1',
+					type: 'ppp',
+					merchantAccountId: 'ma-1',
+					status: 0,
+				},
+			})
+
+			const result = await integration.getCouponInfo('USED')
+
+			expect(result).not.toBeNull()
+			expect(result!.valid).toBe(false)
+			expect(result!.restrictionType).toBe('ppp')
 		})
 	})
 
@@ -551,11 +588,184 @@ describe('AI Hero Support Integration', () => {
 
 	describe('getActivePromotions', () => {
 		it('returns empty array when no active promotions', async () => {
-			makeThenable([])
+			mockAdapter.getDefaultCoupon.mockResolvedValue(null)
 
 			const result = await integration.getActivePromotions()
 
 			expect(result).toEqual([])
+			expect(mockAdapter.getDefaultCoupon).toHaveBeenCalled()
+		})
+
+		it('returns promotion when default coupon is active', async () => {
+			mockAdapter.getDefaultCoupon.mockResolvedValue({
+				defaultCoupon: {
+					id: 'coupon-1',
+					code: 'SALE2024',
+					percentageDiscount: 0.4,
+					amountDiscount: null,
+					expires: new Date('2025-06-01'),
+					maxUses: -1,
+					usedCount: 42,
+					status: 1,
+					default: true,
+					fields: { name: 'Summer Sale' },
+				},
+				defaultMerchantCoupon: {
+					id: 'mc-1',
+					type: 'special',
+					merchantAccountId: 'ma-1',
+					status: 0,
+				},
+			})
+
+			const result = await integration.getActivePromotions()
+
+			expect(result).toHaveLength(1)
+			expect(result[0]).toEqual({
+				id: 'coupon-1',
+				name: 'Summer Sale',
+				code: 'SALE2024',
+				discountType: 'percent',
+				discountAmount: 40,
+				validUntil: new Date('2025-06-01').toISOString(),
+				active: true,
+				conditions: 'Special promotion',
+			})
+		})
+	})
+
+	// ── getContentAccess ───────────────────────────────────────────
+
+	describe('getContentAccess', () => {
+		it('returns empty access for user with no purchases or memberships', async () => {
+			mockAdapter.getEntitlementsForUser.mockResolvedValue([])
+			mockAdapter.getPurchasesForUser.mockResolvedValue([])
+			mockAdapter.getMembershipsForUser.mockResolvedValue([])
+
+			const result = await integration.getContentAccess('user-1')
+
+			expect(result).toEqual({
+				userId: 'user-1',
+				products: [],
+				teamMembership: undefined,
+			})
+		})
+
+		it('returns product access from purchases', async () => {
+			mockAdapter.getEntitlementsForUser.mockResolvedValue([])
+			mockAdapter.getPurchasesForUser.mockResolvedValue([
+				{
+					id: 'purchase-1',
+					productId: 'prod-1',
+					status: 'Valid',
+					createdAt: new Date(),
+					totalAmount: 49.99,
+				},
+			])
+			mockAdapter.getProduct.mockResolvedValue({
+				id: 'prod-1',
+				name: 'AI Fundamentals',
+				type: 'self-paced',
+				fields: {},
+			})
+			mockAdapter.getProductResources.mockResolvedValue([
+				{
+					id: 'resource-1',
+					type: 'lesson',
+					fields: { title: 'Intro to AI' },
+				},
+			])
+			mockAdapter.getMembershipsForUser.mockResolvedValue([])
+
+			const result = await integration.getContentAccess('user-1')
+
+			expect(result.products).toHaveLength(1)
+			expect(result.products[0]).toEqual({
+				productId: 'prod-1',
+				productName: 'AI Fundamentals',
+				accessLevel: 'full',
+				modules: [{ id: 'resource-1', title: 'Intro to AI', accessible: true }],
+				expiresAt: undefined,
+			})
+		})
+
+		it('includes team membership when user belongs to org', async () => {
+			mockAdapter.getEntitlementsForUser.mockResolvedValue([])
+			mockAdapter.getPurchasesForUser.mockResolvedValue([])
+			mockAdapter.getMembershipsForUser.mockResolvedValue([
+				{
+					id: 'membership-1',
+					organizationId: 'org-1',
+					role: 'user',
+					userId: 'user-1',
+					invitedById: 'owner-1',
+					fields: {},
+					createdAt: new Date('2024-03-01'),
+					organization: { id: 'org-1', name: 'Acme Corp', fields: {}, image: null, createdAt: new Date() },
+					user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
+				},
+			])
+
+			const result = await integration.getContentAccess('user-1')
+
+			expect(result.teamMembership).toEqual({
+				teamId: 'org-1',
+				teamName: 'Acme Corp',
+				role: 'member',
+				seatClaimedAt: new Date('2024-03-01').toISOString(),
+			})
+		})
+	})
+
+	// ── getRecentActivity ──────────────────────────────────────────
+
+	describe('getRecentActivity', () => {
+		it('returns empty activity for user with no progress', async () => {
+			mockAdapter.getLessonProgressForUser.mockResolvedValue([])
+
+			const result = await integration.getRecentActivity('user-1')
+
+			expect(result).toEqual({
+				userId: 'user-1',
+				lastActiveAt: undefined,
+				lessonsCompleted: 0,
+				totalLessons: 0,
+				completionPercent: 0,
+				recentItems: [],
+			})
+		})
+
+		it('computes progress from adapter data', async () => {
+			const completedDate = new Date('2024-06-15T10:00:00Z')
+			mockAdapter.getLessonProgressForUser.mockResolvedValue([
+				{ userId: 'user-1', resourceId: 'lesson-1', completedAt: completedDate },
+				{ userId: 'user-1', resourceId: 'lesson-2', completedAt: null },
+				{ userId: 'user-1', resourceId: 'lesson-3', completedAt: new Date('2024-06-14T09:00:00Z') },
+			])
+			mockAdapter.getContentResource
+				.mockResolvedValueOnce({
+					id: 'lesson-1',
+					type: 'lesson',
+					fields: { title: 'Getting Started' },
+				})
+				.mockResolvedValueOnce({
+					id: 'lesson-3',
+					type: 'lesson',
+					fields: { title: 'Advanced Topics' },
+				})
+
+			const result = await integration.getRecentActivity('user-1')
+
+			expect(result.lessonsCompleted).toBe(2)
+			expect(result.totalLessons).toBe(3)
+			expect(result.completionPercent).toBe(67)
+			expect(result.lastActiveAt).toBe(completedDate.toISOString())
+			expect(result.recentItems).toHaveLength(2)
+			expect(result.recentItems[0]).toEqual({
+				type: 'lesson_completed',
+				title: 'Getting Started',
+				timestamp: completedDate.toISOString(),
+			})
 		})
 	})
 
@@ -585,6 +795,60 @@ describe('AI Hero Support Integration', () => {
 				claimedSeats: 1,
 				availableSeats: 0,
 				claimedBy: [],
+			})
+		})
+
+		it('returns team license for org purchase', async () => {
+			mockAdapter.getPurchase.mockResolvedValue({
+				id: 'purchase-1',
+				productId: 'prod-1',
+				organizationId: 'org-1',
+			})
+			mockAdapter.getOrganization.mockResolvedValue({
+				id: 'org-1',
+				name: 'Acme Corp',
+				fields: { maxSeats: 10 },
+				image: null,
+				createdAt: new Date(),
+			})
+			mockAdapter.getOrganizationMembers.mockResolvedValue([
+				{
+					id: 'member-1',
+					organizationId: 'org-1',
+					role: 'owner',
+					userId: 'user-1',
+					invitedById: 'user-1',
+					fields: {},
+					createdAt: new Date('2024-01-01'),
+					organization: { id: 'org-1', name: 'Acme Corp' },
+					user: { id: 'user-1', email: 'admin@acme.com', name: 'Admin' },
+				},
+				{
+					id: 'member-2',
+					organizationId: 'org-1',
+					role: 'user',
+					userId: 'user-2',
+					invitedById: 'user-1',
+					fields: {},
+					createdAt: new Date('2024-02-01'),
+					organization: { id: 'org-1', name: 'Acme Corp' },
+					user: { id: 'user-2', email: 'dev@acme.com', name: 'Dev' },
+				},
+			])
+
+			const result = await integration.getLicenseInfo('purchase-1')
+
+			expect(result).toEqual({
+				purchaseId: 'purchase-1',
+				licenseType: 'team',
+				totalSeats: 10,
+				claimedSeats: 2,
+				availableSeats: 8,
+				claimedBy: [
+					{ email: 'admin@acme.com', claimedAt: new Date('2024-01-01').toISOString() },
+					{ email: 'dev@acme.com', claimedAt: new Date('2024-02-01').toISOString() },
+				],
+				adminEmail: 'admin@acme.com',
 			})
 		})
 	})

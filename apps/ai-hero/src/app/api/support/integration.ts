@@ -1,18 +1,5 @@
 import { courseBuilderAdapter, db } from '@/db'
-import {
-	contentResource,
-	contentResourceProduct,
-	coupon,
-	entitlements,
-	entitlementTypes,
-	merchantCoupon,
-	organization,
-	organizationMemberships,
-	products,
-	purchases,
-	resourceProgress,
-	users,
-} from '@/db/schema'
+import { purchases } from '@/db/schema'
 import { env } from '@/env.mjs'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-instantsearch-adapter'
 import type {
@@ -32,7 +19,7 @@ import type {
 	User,
 	UserActivity,
 } from '@skillrecordings/sdk/integration'
-import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm'
+import { and, eq, inArray, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -412,90 +399,52 @@ export const integration: SupportIntegration = {
 	/**
 	 * Get currently active promotions and sales.
 	 *
-	 * Queries the Coupon + MerchantCoupon tables for active, unexpired coupons
-	 * that have a code (i.e., user-facing promotional coupons, not internal ones).
+	 * Uses the adapter's getDefaultCoupon() to find the active site-wide sale.
+	 * This queries for coupon.default === true, status === 1 (active sale),
+	 * and not expired — the canonical way to find active promotions.
 	 */
 	async getActivePromotions(): Promise<Promotion[]> {
-		const now = new Date()
+		const defaultCouponData = await courseBuilderAdapter.getDefaultCoupon()
 
-		const activeCoupons = await db
-			.select({
-				id: coupon.id,
-				code: coupon.code,
-				percentageDiscount: coupon.percentageDiscount,
-				amountDiscount: coupon.amountDiscount,
-				expires: coupon.expires,
-				maxUses: coupon.maxUses,
-				usedCount: coupon.usedCount,
-				status: coupon.status,
-				fields: coupon.fields,
-				merchantType: merchantCoupon.type,
-			})
-			.from(coupon)
-			.leftJoin(merchantCoupon, eq(coupon.merchantCouponId, merchantCoupon.id))
-			.where(
-				and(
-					// Must have a user-facing code
-					isNotNull(coupon.code),
-					// Active status (0 = active)
-					eq(coupon.status, 0),
-					// Not expired (null expires = never expires, or expires in the future)
-					or(isNull(coupon.expires), gt(coupon.expires, now)),
-				),
-			)
+		if (!defaultCouponData) return []
 
-		return activeCoupons.map((c) => {
-			const pctDiscount = c.percentageDiscount
-				? Number(c.percentageDiscount)
-				: 0
-			const isPercent = pctDiscount > 0
-			const discountAmount = isPercent
-				? Math.round(pctDiscount * 100) // 0.30 → 30
-				: (c.amountDiscount ?? 0) // already in cents
+		const { defaultCoupon: c, defaultMerchantCoupon: mc } = defaultCouponData
 
-			return {
+		const pctDiscount = c.percentageDiscount ? Number(c.percentageDiscount) : 0
+		const isPercent = pctDiscount > 0
+		const discountAmount = isPercent
+			? Math.round(pctDiscount * 100) // 0.30 → 30
+			: (c.amountDiscount ?? 0) // already in cents
+
+		return [
+			{
 				id: c.id,
-				name: (c.fields as Record<string, any>)?.name ?? c.code ?? 'Promotion',
+				name:
+					(c.fields as Record<string, any>)?.name ?? c.code ?? 'Promotion',
 				code: c.code ?? undefined,
 				discountType: isPercent ? ('percent' as const) : ('fixed' as const),
 				discountAmount,
 				validUntil: c.expires?.toISOString(),
 				active: true,
-				conditions: mapMerchantCouponType(c.merchantType),
-			}
-		})
+				conditions: mapMerchantCouponType(mc.type),
+			},
+		]
 	},
 
 	/**
 	 * Look up a coupon or discount code.
 	 *
-	 * Queries the Coupon table by code, maps discount fields to SDK format.
+	 * Uses the adapter's couponForIdOrCode() which handles id-or-code lookup,
+	 * validates expiry, and includes the linked MerchantCoupon for type info.
 	 */
 	async getCouponInfo(code: string): Promise<CouponInfo | null> {
-		const results = await db
-			.select({
-				id: coupon.id,
-				code: coupon.code,
-				percentageDiscount: coupon.percentageDiscount,
-				amountDiscount: coupon.amountDiscount,
-				expires: coupon.expires,
-				maxUses: coupon.maxUses,
-				usedCount: coupon.usedCount,
-				status: coupon.status,
-				merchantType: merchantCoupon.type,
-			})
-			.from(coupon)
-			.leftJoin(merchantCoupon, eq(coupon.merchantCouponId, merchantCoupon.id))
-			.where(eq(coupon.code, code))
-			.limit(1)
+		const couponData = await courseBuilderAdapter.couponForIdOrCode({ code })
 
-		const c = results[0]
-		if (!c) return null
+		if (!couponData) return null
 
-		const now = new Date()
-		const isExpired = c.expires ? c.expires < now : false
+		const { merchantCoupon: mc, ...c } = couponData
+
 		const isExhausted = c.maxUses !== -1 && c.usedCount >= c.maxUses
-		const isActive = c.status === 0
 
 		const pctDiscount = c.percentageDiscount
 			? Number(c.percentageDiscount)
@@ -504,12 +453,14 @@ export const integration: SupportIntegration = {
 
 		return {
 			code: c.code ?? code,
-			valid: isActive && !isExpired && !isExhausted,
+			// couponForIdOrCode already filters out expired coupons,
+			// so if we got a result, it's not expired. Check usage limits & status.
+			valid: c.status === 1 && !isExhausted,
 			discountType: isPercent ? 'percent' : 'fixed',
 			discountAmount: isPercent
 				? Math.round(pctDiscount * 100) // 0.30 → 30
 				: (c.amountDiscount ?? 0),
-			restrictionType: mapRestrictionType(c.merchantType),
+			restrictionType: mapRestrictionType(mc.type),
 			usageCount: c.usedCount,
 			maxUses: c.maxUses === -1 ? undefined : c.maxUses,
 			expiresAt: c.expires?.toISOString(),
@@ -537,119 +488,72 @@ export const integration: SupportIntegration = {
 	/**
 	 * Get granular content access for a user.
 	 *
-	 * AI Hero uses an Entitlement-based access system:
-	 * - Queries Entitlement table joined with EntitlementType
-	 * - Maps entitlements to products via ContentResourceProduct
-	 * - Includes team membership via Organization + OrganizationMembership
+	 * Uses adapter helpers for entitlements, purchases, products, and memberships
+	 * to determine what content the user can access and their team affiliation.
 	 */
 	async getContentAccess(userId: string): Promise<ContentAccess> {
-		// Get user's entitlements
-		const userEntitlements = await db
-			.select({
-				entitlementId: entitlements.id,
-				entitlementType: entitlements.entitlementType,
-				sourceType: entitlements.sourceType,
-				sourceId: entitlements.sourceId,
-				expiresAt: entitlements.expiresAt,
-				deletedAt: entitlements.deletedAt,
-				organizationId: entitlements.organizationId,
-				typeName: entitlementTypes.name,
-				typeDescription: entitlementTypes.description,
-			})
-			.from(entitlements)
-			.leftJoin(
-				entitlementTypes,
-				eq(entitlements.entitlementType, entitlementTypes.id),
-			)
-			.where(
-				and(
-					eq(entitlements.userId, userId),
-					isNull(entitlements.deletedAt),
-				),
-			)
+		// Get user's active entitlements via adapter (handles deleted/expired filtering)
+		const userEntitlements = await courseBuilderAdapter.getEntitlementsForUser({
+			userId,
+		})
 
-		// Get user's active purchases to map to products
+		// Get user's purchases via adapter (includes product data)
 		const userPurchases = await courseBuilderAdapter.getPurchasesForUser(userId)
-		const activePurchaseProductIds = userPurchases
-			.filter((p: any) => p.status === 'Valid' || p.status === 'Restricted')
-			.map((p: any) => p.productId)
+		const activePurchases = userPurchases.filter(
+			(p) => p.status === 'Valid' || p.status === 'Restricted',
+		)
 
-		// Get product details for purchased products
+		// Build product access from active purchases using adapter for product details
 		const productAccess: ContentAccess['products'] = []
+		const seenProductIds = new Set<string>()
 
-		if (activePurchaseProductIds.length > 0) {
-			const purchasedProducts = await db
-				.select({
-					id: products.id,
-					name: products.name,
-					type: products.type,
-				})
-				.from(products)
-				.where(inArray(products.id, activePurchaseProductIds))
+		for (const purchase of activePurchases) {
+			if (seenProductIds.has(purchase.productId)) continue
+			seenProductIds.add(purchase.productId)
 
-			for (const product of purchasedProducts) {
-				// Get content resources linked to this product
-				const linkedResources = await db
-					.select({
-						resourceId: contentResourceProduct.resourceId,
-						resourceType: contentResource.type,
-						resourceFields: contentResource.fields,
-					})
-					.from(contentResourceProduct)
-					.leftJoin(
-						contentResource,
-						eq(contentResourceProduct.resourceId, contentResource.id),
-					)
-					.where(eq(contentResourceProduct.productId, product.id))
+			// Use adapter to get full product with resources
+			const product = await courseBuilderAdapter.getProduct(purchase.productId)
+			if (!product) continue
 
-				const modules = linkedResources.map((r) => ({
-					id: r.resourceId,
-					title:
-						(r.resourceFields as Record<string, any>)?.title ??
-						r.resourceType ??
-						'Unknown',
-					accessible: true,
-				}))
+			// Use adapter to get product's linked content resources
+			const productResources =
+				(await courseBuilderAdapter.getProductResources(product.id)) ?? []
 
-				// Check if any entitlement for this product has expired
-				const relevantEntitlement = userEntitlements.find(
-					(e) => e.sourceId === product.id,
-				)
-				const expiresAt = relevantEntitlement?.expiresAt
+			const modules = productResources.map((r) => ({
+				id: r.id,
+				title:
+					(r.fields as Record<string, any>)?.title ?? r.type ?? 'Unknown',
+				accessible: true,
+			}))
 
-				const isExpired = expiresAt ? expiresAt < new Date() : false
+			// Check if any entitlement for this product has expired
+			const relevantEntitlement = userEntitlements.find(
+				(e) => e.sourceId === product.id,
+			)
+			const expiresAt = relevantEntitlement?.expiresAt
 
-				productAccess.push({
-					productId: product.id,
-					productName: product.name,
-					accessLevel: isExpired ? 'expired' : 'full',
-					modules: modules.length > 0 ? modules : undefined,
-					expiresAt: expiresAt?.toISOString(),
-				})
-			}
+			const isExpired = expiresAt ? new Date(expiresAt) < new Date() : false
+
+			productAccess.push({
+				productId: product.id,
+				productName: product.name,
+				accessLevel: isExpired ? 'expired' : 'full',
+				modules: modules.length > 0 ? modules : undefined,
+				expiresAt: expiresAt
+					? new Date(expiresAt).toISOString()
+					: undefined,
+			})
 		}
 
-		// Get team membership via Organization + OrganizationMembership
+		// Get team membership via adapter's getMembershipsForUser
+		// (includes organization and user data via relations)
 		let teamMembership: ContentAccess['teamMembership'] = undefined
 
-		const memberships = await db
-			.select({
-				membershipId: organizationMemberships.id,
-				orgId: organizationMemberships.organizationId,
-				role: organizationMemberships.role,
-				createdAt: organizationMemberships.createdAt,
-				orgName: organization.name,
-			})
-			.from(organizationMemberships)
-			.leftJoin(
-				organization,
-				eq(organizationMemberships.organizationId, organization.id),
-			)
-			.where(eq(organizationMemberships.userId, userId))
-			.limit(1)
-
+		const memberships =
+			await courseBuilderAdapter.getMembershipsForUser(userId)
 		const membership = memberships[0]
-		if (membership?.orgId) {
+
+		if (membership?.organizationId) {
 			const roleMap: Record<string, 'member' | 'admin' | 'owner'> = {
 				owner: 'owner',
 				admin: 'admin',
@@ -657,8 +561,8 @@ export const integration: SupportIntegration = {
 			}
 
 			teamMembership = {
-				teamId: membership.orgId,
-				teamName: membership.orgName ?? 'Organization',
+				teamId: membership.organizationId,
+				teamName: membership.organization?.name ?? 'Organization',
 				role: roleMap[membership.role] ?? 'member',
 				seatClaimedAt:
 					membership.createdAt?.toISOString() ?? new Date().toISOString(),
@@ -675,70 +579,50 @@ export const integration: SupportIntegration = {
 	/**
 	 * Get recent user activity and progress.
 	 *
-	 * AI Hero uses the ResourceProgress table (not LessonProgress).
-	 * Queries completed resources and calculates overall progress.
+	 * Uses the adapter's getLessonProgressForUser() to get ResourceProgress[],
+	 * then computes counts and recent items from the result.
+	 * For recent item titles, fetches content resources via adapter.
 	 */
 	async getRecentActivity(userId: string): Promise<UserActivity> {
-		// Use SQL COUNT for efficient aggregation instead of fetching all rows
-		const [{ completedCount }] = await db
-			.select({ completedCount: count() })
-			.from(resourceProgress)
-			.where(
-				and(
-					eq(resourceProgress.userId, userId),
-					isNotNull(resourceProgress.completedAt),
-				),
-			)
+		const progress =
+			(await courseBuilderAdapter.getLessonProgressForUser(userId)) ?? []
 
-		const [{ totalCount }] = await db
-			.select({ totalCount: count() })
-			.from(resourceProgress)
-			.where(eq(resourceProgress.userId, userId))
+		// Compute counts from the progress array
+		const totalCount = progress.length
+		const completedItems = progress.filter((p) => p.completedAt !== null)
+		const completedCount = completedItems.length
 
-		// Get recent items (last 20, ordered by most recent activity)
-		const recentProgress = await db
-			.select({
-				resourceId: resourceProgress.resourceId,
-				completedAt: resourceProgress.completedAt,
-				updatedAt: resourceProgress.updatedAt,
-				createdAt: resourceProgress.createdAt,
-				resourceFields: contentResource.fields,
-				resourceType: contentResource.type,
-			})
-			.from(resourceProgress)
-			.leftJoin(
-				contentResource,
-				eq(resourceProgress.resourceId, contentResource.id),
-			)
-			.where(eq(resourceProgress.userId, userId))
-			.orderBy(desc(resourceProgress.updatedAt))
-			.limit(20)
+		// Sort by completedAt descending for recent items
+		const sortedCompleted = [...completedItems].sort((a, b) => {
+			const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0
+			const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0
+			return dateB - dateA
+		})
 
-		const recentItems: UserActivity['recentItems'] = recentProgress
-			.filter((p) => p.completedAt)
-			.slice(0, 10)
-			.map((p) => ({
+		// Build recent items with titles from content resources
+		const recentItems: UserActivity['recentItems'] = []
+		for (const item of sortedCompleted.slice(0, 10)) {
+			let title = 'Unknown resource'
+			if (item.resourceId) {
+				const resource = await courseBuilderAdapter.getContentResource(
+					item.resourceId,
+				)
+				if (resource) {
+					title =
+						(resource.fields as Record<string, any>)?.title ??
+						resource.type ??
+						'Unknown resource'
+				}
+			}
+			recentItems.push({
 				type: 'lesson_completed' as const,
-				title:
-					(p.resourceFields as Record<string, any>)?.title ??
-					p.resourceType ??
-					'Unknown resource',
-				timestamp: (
-					p.completedAt ??
-					p.updatedAt ??
-					p.createdAt
-				).toISOString(),
-			}))
+				title,
+				timestamp: item.completedAt!.toISOString(),
+			})
+		}
 
-		// Determine last active timestamp
-		const lastActivity = recentProgress[0]
-		const lastActiveAt = lastActivity
-			? (
-					lastActivity.updatedAt ??
-					lastActivity.completedAt ??
-					lastActivity.createdAt
-				)?.toISOString()
-			: undefined
+		// Determine last active timestamp from most recently completed item
+		const lastActiveAt = sortedCompleted[0]?.completedAt?.toISOString()
 
 		return {
 			userId,
@@ -754,11 +638,11 @@ export const integration: SupportIntegration = {
 	/**
 	 * Get team license and seat information for a purchase.
 	 *
+	 * Uses adapter helpers for purchase, organization, and member lookups.
 	 * AI Hero uses Organization-based teams (not bulkCoupon).
-	 * A purchase linked to an Organization grants team access.
 	 */
 	async getLicenseInfo(purchaseId: string): Promise<LicenseInfo | null> {
-		// Get the purchase
+		// Get the purchase via adapter
 		const purchase = await courseBuilderAdapter.getPurchase(purchaseId)
 		if (!purchase) return null
 
@@ -776,37 +660,27 @@ export const integration: SupportIntegration = {
 			}
 		}
 
-		// Get organization details
-		const orgs = await db
-			.select({
-				id: organization.id,
-				name: organization.name,
-				fields: organization.fields,
-			})
-			.from(organization)
-			.where(eq(organization.id, orgId))
-			.limit(1)
-
-		const org = orgs[0]
+		// Get organization details via adapter
+		let org: { id: string; name: string | null; fields: Record<string, any> } | null = null
+		try {
+			org = await courseBuilderAdapter.getOrganization(orgId)
+		} catch {
+			// Organization not found
+			return null
+		}
 		if (!org) return null
 
-		// Get organization members
-		const members = await db
-			.select({
-				userId: organizationMemberships.userId,
-				role: organizationMemberships.role,
-				createdAt: organizationMemberships.createdAt,
-				email: users.email,
-			})
-			.from(organizationMemberships)
-			.leftJoin(users, eq(organizationMemberships.userId, users.id))
-			.where(eq(organizationMemberships.organizationId, orgId))
+		// Get organization members via adapter's getMembershipsForUser won't work here
+		// (we need all members of an org, not memberships for a single user).
+		// Use getOrganizationMembers which returns OrganizationMember[] with user data.
+		const members = await courseBuilderAdapter.getOrganizationMembers(orgId)
 
 		// Determine total seats from org fields or purchase quantity
 		const orgFields = org.fields as Record<string, any> | null
-		const totalSeats = orgFields?.maxSeats ?? orgFields?.seats ?? members.length
+		const totalSeats =
+			orgFields?.maxSeats ?? orgFields?.seats ?? members.length
 
-		// Find the admin (owner role)
+		// Find the admin (owner role) — members include user relation
 		const admin = members.find((m) => m.role === 'owner')
 
 		// Determine license type based on seat count
@@ -821,11 +695,11 @@ export const integration: SupportIntegration = {
 			claimedSeats: members.length,
 			availableSeats: Math.max(0, totalSeats - members.length),
 			claimedBy: members.map((m) => ({
-				email: m.email ?? 'unknown',
+				email: m.user?.email ?? 'unknown',
 				claimedAt:
 					m.createdAt?.toISOString() ?? new Date().toISOString(),
 			})),
-			adminEmail: admin?.email ?? undefined,
+			adminEmail: admin?.user?.email ?? undefined,
 		}
 	},
 
