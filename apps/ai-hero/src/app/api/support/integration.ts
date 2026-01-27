@@ -32,7 +32,7 @@ import type {
 	User,
 	UserActivity,
 } from '@skillrecordings/sdk/integration'
-import { and, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm'
+import { and, count, desc, eq, gt, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm'
 import Typesense from 'typesense'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -679,19 +679,21 @@ export const integration: SupportIntegration = {
 	 * Queries completed resources and calculates overall progress.
 	 */
 	async getRecentActivity(userId: string): Promise<UserActivity> {
-		// Get all resource progress for user
-		const allProgress = await db
-			.select({
-				resourceId: resourceProgress.resourceId,
-				completedAt: resourceProgress.completedAt,
-				updatedAt: resourceProgress.updatedAt,
-				createdAt: resourceProgress.createdAt,
-			})
+		// Use SQL COUNT for efficient aggregation instead of fetching all rows
+		const [{ completedCount }] = await db
+			.select({ completedCount: count() })
+			.from(resourceProgress)
+			.where(
+				and(
+					eq(resourceProgress.userId, userId),
+					isNotNull(resourceProgress.completedAt),
+				),
+			)
+
+		const [{ totalCount }] = await db
+			.select({ totalCount: count() })
 			.from(resourceProgress)
 			.where(eq(resourceProgress.userId, userId))
-
-		const completedCount = allProgress.filter((p) => p.completedAt).length
-		const totalCount = allProgress.length
 
 		// Get recent items (last 20, ordered by most recent activity)
 		const recentProgress = await db
