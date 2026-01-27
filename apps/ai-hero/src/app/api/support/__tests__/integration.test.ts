@@ -1,17 +1,35 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ── Mocks ──────────────────────────────────────────────────────────
+// vi.mock is hoisted to the top of the file, so we must use vi.hoisted()
+// to ensure mock objects exist before the factory runs.
 
-const mockDb = {
-	select: vi.fn().mockReturnThis(),
-	from: vi.fn().mockReturnThis(),
-	where: vi.fn().mockReturnThis(),
-	leftJoin: vi.fn().mockReturnThis(),
-	orderBy: vi.fn().mockReturnThis(),
-	limit: vi.fn().mockReturnThis(),
-	// final resolution — overridden per test
-	then: vi.fn(),
-}
+const { mockDb, mockAdapter } = vi.hoisted(() => {
+	const mockDb = {
+		select: vi.fn().mockReturnThis(),
+		from: vi.fn().mockReturnThis(),
+		where: vi.fn().mockReturnThis(),
+		leftJoin: vi.fn().mockReturnThis(),
+		orderBy: vi.fn().mockReturnThis(),
+		limit: vi.fn().mockReturnThis(),
+		// final resolution — overridden per test
+		then: vi.fn(),
+	}
+
+	const mockAdapter = {
+		getUserByEmail: vi.fn(),
+		getPurchasesForUser: vi.fn(),
+		getPurchase: vi.fn(),
+		getProduct: vi.fn(),
+		updatePurchaseStatusForCharge: vi.fn(),
+		findOrCreateUser: vi.fn(),
+		transferPurchaseToUser: vi.fn(),
+		createVerificationToken: vi.fn(),
+		updateUser: vi.fn(),
+	}
+
+	return { mockDb, mockAdapter }
+})
 
 // Make the query builder thenable so `await db.select(...)...` works
 function makeThenable(resolveValue: any) {
@@ -51,18 +69,6 @@ function makeThenable(resolveValue: any) {
 		}
 		return obj
 	})
-}
-
-const mockAdapter = {
-	getUserByEmail: vi.fn(),
-	getPurchasesForUser: vi.fn(),
-	getPurchase: vi.fn(),
-	getProduct: vi.fn(),
-	updatePurchaseStatusForCharge: vi.fn(),
-	findOrCreateUser: vi.fn(),
-	transferPurchaseToUser: vi.fn(),
-	createVerificationToken: vi.fn(),
-	updateUser: vi.fn(),
 }
 
 vi.mock('@/db', () => ({
