@@ -10,6 +10,11 @@ import {
 	contentResourceTag as contentResourceTagTable,
 	products as productTable,
 } from '@/db/schema'
+import {
+	getContentNavigationCacheKey,
+	normalizeContentNavigationOptions,
+	type ContentNavigationOptions,
+} from '@/lib/content-navigation-options'
 import { getContentNavigation } from '@/lib/content-navigation-query'
 import {
 	MinimalWorkshopSchema,
@@ -33,24 +38,59 @@ import { last } from '@coursebuilder/nodash'
 
 import { upsertPostToTypeSense } from './typesense-query'
 
+const getCachedWorkshopNavigationInternal = cache(
+	async (
+		slug: string,
+		depth: ContentNavigationOptions['depth'],
+		caller: ContentNavigationOptions['caller'] | null,
+		debug: ContentNavigationOptions['debug'],
+	) => {
+		const normalizedOptions = normalizeContentNavigationOptions({
+			depth,
+			caller: caller ?? undefined,
+			debug,
+		})
+		const navigationOptions: ContentNavigationOptions = {
+			depth,
+			caller: caller ?? undefined,
+			debug,
+		}
+		const cacheKey = getContentNavigationCacheKey(slug, normalizedOptions)
+
+		return unstable_cache(
+			async () => getWorkshopNavigation(slug, navigationOptions),
+			['workshop-navigation', cacheKey],
+			{ revalidate: 3600, tags: ['workshop-navigation', slug] },
+		)()
+	},
+)
+
 /**
  * Get cached workshop navigation
  * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
  */
-export const getCachedWorkshopNavigation = cache(async (slug: string) => {
-	return unstable_cache(
-		async () => getWorkshopNavigation(slug),
-		['workshop-navigation', slug],
-		{ revalidate: 3600, tags: ['workshop-navigation', slug] },
-	)()
-})
+export async function getCachedWorkshopNavigation(
+	slug: string,
+	options?: ContentNavigationOptions,
+) {
+	const normalizedOptions = normalizeContentNavigationOptions(options)
+	return getCachedWorkshopNavigationInternal(
+		slug,
+		normalizedOptions.depth,
+		normalizedOptions.caller,
+		normalizedOptions.debug,
+	)
+}
 
 /**
  * Fetches workshop navigation data
  * Uses the generic content navigation query
  */
-export async function getWorkshopNavigation(moduleSlugOrId: string) {
-	return getContentNavigation(moduleSlugOrId)
+export async function getWorkshopNavigation(
+	moduleSlugOrId: string,
+	options?: ContentNavigationOptions,
+) {
+	return getContentNavigation(moduleSlugOrId, options)
 }
 
 /**

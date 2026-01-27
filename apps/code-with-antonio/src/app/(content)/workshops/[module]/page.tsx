@@ -27,6 +27,7 @@ import {
 	getCachedMinimalWorkshop,
 	getCachedWorkshopProduct,
 } from '@/lib/workshops-query'
+import { log } from '@/server/logger'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getAbilityForResource } from '@/utils/get-current-ability-rules'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
@@ -53,6 +54,9 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
+/**
+ * Prebuilds known workshop slugs when available.
+ */
 export async function generateStaticParams() {
 	try {
 		const workshops = await db.query.contentResource.findMany({
@@ -67,14 +71,18 @@ export async function generateStaticParams() {
 	} catch (error) {
 		// If database is unavailable during build, return empty array
 		// Pages will be generated on-demand instead
-		console.warn(
-			'Failed to generate static params for workshops, database may be unavailable:',
+		await log.warn('page.workshop.generate_static_params.failed', {
+			message:
+				'Failed to generate static params for workshops, database may be unavailable.',
 			error,
-		)
+		})
 		return []
 	}
 }
 
+/**
+ * Generates metadata for workshop pages.
+ */
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
@@ -106,9 +114,14 @@ export async function generateMetadata(
 	}
 }
 
+/**
+ * Workshop module landing page.
+ */
 export default async function ModulePage(props: Props) {
 	const searchParams = await props.searchParams
 	const params = await props.params
+	const path = `/workshops/${params.module}`
+
 	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {

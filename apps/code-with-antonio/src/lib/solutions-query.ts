@@ -227,6 +227,13 @@ export async function createSolution({
 		}
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache
+		const parentLesson = await getLessonForSolution(solution.id)
+		if (parentLesson?.fields?.slug) {
+			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		}
+
 		return solution
 	} catch (error) {
 		log.error('solution.create.error', {
@@ -314,6 +321,13 @@ export async function updateSolution(input: Partial<Solution>) {
 		})
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache if this solution belongs to a lesson
+		const parentLesson = await getLessonForSolution(currentSolution.id)
+		if (parentLesson?.fields?.slug) {
+			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		}
+
 		return updatedResource
 	} catch (error) {
 		log.error('solution.update.error', {
@@ -383,6 +397,13 @@ export async function deleteSolution(solutionId: string) {
 		})
 
 		revalidateTag('solution', 'max')
+
+		// Invalidate lesson cache
+		const parentLesson = await getLessonForSolution(solutionId)
+		if (parentLesson?.fields?.slug) {
+			revalidateTag(`lesson:${parentLesson.fields.slug}`, 'max')
+		}
+
 		return { success: true }
 	} catch (error) {
 		log.error('solution.delete.error', {

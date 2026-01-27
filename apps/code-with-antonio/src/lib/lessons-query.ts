@@ -65,12 +65,15 @@ export const getLessonVideoTranscript = async (
  */
 export const getCachedLessonVideoTranscript = cache(
 	async (lessonIdOrSlug: string) => {
+		// Resolve to canonical slug for consistent cache keys
+		const slug = lessonIdOrSlug
+
 		return unstable_cache(
-			async () => getLessonVideoTranscript(lessonIdOrSlug),
-			['lesson-transcript', lessonIdOrSlug],
+			async () => getLessonVideoTranscript(slug),
+			['lesson-transcript', slug],
 			{
 				revalidate: false,
-				tags: ['lesson-transcript', `lesson:${lessonIdOrSlug}`],
+				tags: ['lesson-transcript', `lesson:${slug}`],
 			},
 		)()
 	},
@@ -127,12 +130,16 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
  */
 export const getCachedLessonMuxPlaybackId = cache(
 	async (lessonIdOrSlug: string) => {
+		// Resolve to canonical slug for consistent cache keys
+		const lesson = await getLesson(lessonIdOrSlug)
+		const slug = lesson?.fields.slug || lessonIdOrSlug
+
 		return unstable_cache(
-			async () => getLessonMuxPlaybackId(lessonIdOrSlug),
-			['lesson-playback-id', lessonIdOrSlug],
+			async () => getLessonMuxPlaybackId(slug),
+			['lesson-playback-id', slug],
 			{
 				revalidate: false,
-				tags: ['lesson-playback-id', `lesson:${lessonIdOrSlug}`],
+				tags: ['lesson-playback-id', `lesson:${slug}`],
 			},
 		)()
 	},
@@ -213,7 +220,7 @@ export const addVideoResourceToLesson = async ({
  * Get cached full lesson data
  * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
  *
- * @param slug - The lesson slug or ID
+ * @param slugOrId - The lesson slug or ID
  * @returns Promise<Lesson | null>
  *
  * @example
@@ -221,7 +228,11 @@ export const addVideoResourceToLesson = async ({
  * const lesson = await getCachedLesson('intro-to-react')
  * ```
  */
-export const getCachedLesson = cache(async (slug: string) => {
+export const getCachedLesson = cache(async (slugOrId: string) => {
+	// Resolve to canonical slug for consistent cache keys
+	const lesson = await getLesson(slugOrId)
+	const slug = lesson?.fields.slug || slugOrId
+
 	return unstable_cache(async () => getLesson(slug), ['lesson', slug], {
 		revalidate: 3600,
 		tags: ['lessons', `lesson:${slug}`],
@@ -278,7 +289,11 @@ export async function getLesson(lessonSlugOrId: string) {
  * Get cached exercise solution
  * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
  */
-export const getCachedExerciseSolution = cache(async (slug: string) => {
+export const getCachedExerciseSolution = cache(async (slugOrId: string) => {
+	// Resolve to canonical slug for consistent cache keys
+	const lesson = await getLesson(slugOrId)
+	const slug = lesson?.fields.slug || slugOrId
+
 	return unstable_cache(
 		async () => getExerciseSolution(slug),
 		['solution', slug],
