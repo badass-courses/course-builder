@@ -6,7 +6,6 @@ import {
 } from '@/components/resource-form/with-resource-form'
 import { Lesson, LessonSchema, type LessonUpdate } from '@/lib/lessons'
 import { autoUpdateLesson, updateLesson } from '@/lib/lessons-query'
-import { log } from '@/server/logger'
 import { ImagePlusIcon, VideoIcon } from 'lucide-react'
 import { z } from 'zod'
 
@@ -109,7 +108,7 @@ export const createWorkshopLessonFormConfig = (
 			const validationResult = LessonSchema.safeParse(updatedResource)
 
 			if (!validationResult.success) {
-				log.error('Invalid lesson data returned from update', {
+				console.error('Invalid lesson data returned from update', {
 					errors: validationResult.error.format(),
 					resourceId: resource.id,
 					moduleSlug,
@@ -121,7 +120,7 @@ export const createWorkshopLessonFormConfig = (
 
 			return validationResult.data
 		} catch (error) {
-			log.error('Failed to update lesson', {
+			console.error('Failed to update lesson', {
 				error,
 				resourceId: resource.id,
 				moduleSlug,

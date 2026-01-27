@@ -8,7 +8,10 @@ export async function getNextResource(
 	currentResourceId: string,
 	moduleSlugOrId: string,
 ) {
-	const navigation = await getCachedWorkshopNavigation(moduleSlugOrId)
+	const navigation = await getCachedWorkshopNavigation(moduleSlugOrId, {
+		caller: 'resource.next',
+		depth: 3,
+	})
 
 	const flattenedNavResources = flattenNavigationResources(navigation) || []
 

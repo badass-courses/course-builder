@@ -1,5 +1,6 @@
 'use server'
 
+import { cache } from 'react'
 import { revalidateTag, unstable_cache } from 'next/cache'
 import { courseBuilderAdapter, db } from '@/db'
 import {
@@ -7,7 +8,6 @@ import {
 	contentResourceResource,
 	contentResourceTag,
 } from '@/db/schema'
-import { env } from '@/env.mjs'
 import {
 	LessonSchema,
 	NewLessonInputSchema,
@@ -19,7 +19,6 @@ import { getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { guid } from '@/utils/guid'
 import slugify from '@sindresorhus/slugify'
-import { Redis } from '@upstash/redis'
 import { and, asc, desc, eq, like, or, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
@@ -33,8 +32,6 @@ import { last } from '@coursebuilder/nodash'
 import { Lesson } from './lessons'
 import { SolutionSchema } from './solution'
 import { getCachedSolution, getSolution } from './solutions-query'
-
-const redis = Redis.fromEnv()
 
 export const getLessonVideoTranscript = async (
 	lessonIdOrSlug?: string | null,
@@ -61,6 +58,28 @@ export const getLessonVideoTranscript = async (
 
 	return parsedResult.data[0]?.transcript
 }
+
+/**
+ * Get cached lesson video transcript
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedLessonVideoTranscript = cache(
+	async (lessonIdOrSlug: string) => {
+		return unstable_cache(
+			async () => {
+				// Resolve to canonical slug inside cache to avoid uncached DB fetch
+				const lesson = await getLesson(lessonIdOrSlug)
+				const slug = lesson?.fields.slug || lessonIdOrSlug
+				return getLessonVideoTranscript(slug)
+			},
+			['lesson-transcript', lessonIdOrSlug],
+			{
+				revalidate: false,
+				tags: ['lesson-transcript', `lesson:${lessonIdOrSlug}`],
+			},
+		)()
+	},
+)
 
 export const getVideoResourceForLesson = async (lessonIdOrSlug: string) => {
 	const query = sql`SELECT *
@@ -106,6 +125,27 @@ export const getLessonMuxPlaybackId = async (lessonIdOrSlug: string) => {
 
 	return parsedResult.data[0]?.muxPlaybackId
 }
+
+/**
+ * Get cached lesson Mux playback ID
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedLessonMuxPlaybackId = cache(
+	async (lessonIdOrSlug: string) => {
+		// Resolve to canonical slug for consistent cache keys
+		const lesson = await getLesson(lessonIdOrSlug)
+		const slug = lesson?.fields.slug || lessonIdOrSlug
+
+		return unstable_cache(
+			async () => getLessonMuxPlaybackId(slug),
+			['lesson-playback-id', slug],
+			{
+				revalidate: false,
+				tags: ['lesson-playback-id', `lesson:${slug}`],
+			},
+		)()
+	},
+)
 
 export const addVideoResourceToLesson = async ({
 	videoResourceId,
@@ -159,6 +199,14 @@ export const addVideoResourceToLesson = async ({
 		position: lesson.resources.length,
 	})
 
+	// Invalidate lesson caches since video resource was added
+	const lessonSlug = lesson.fields?.slug
+	if (lessonSlug) {
+		revalidateTag(`lesson:${lessonSlug}`, 'max')
+	}
+	revalidateTag('lessons', 'max')
+	revalidateTag('workshop-navigation', 'max')
+
 	return db.query.contentResourceResource.findFirst({
 		where: and(
 			eq(contentResourceResource.resourceOfId, lesson.id),
@@ -170,56 +218,76 @@ export const addVideoResourceToLesson = async ({
 	})
 }
 
-export const getCachedLesson = unstable_cache(
-	async (slug: string) => getLesson(slug),
-	['lesson'],
-	{ revalidate: 3600, tags: ['lesson'] },
-)
+/**
+ * Get cached full lesson data
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ *
+ * @param slugOrId - The lesson slug or ID
+ * @returns Promise<Lesson | null>
+ *
+ * @example
+ * ```ts
+ * const lesson = await getCachedLesson('intro-to-react')
+ * ```
+ */
+export const getCachedLesson = cache(async (slugOrId: string) => {
+	// Resolve to canonical slug for consistent cache keys
+	const initialLesson = await getLesson(slugOrId)
+	const slug = initialLesson?.fields.slug || slugOrId
+
+	return unstable_cache(
+		async () => {
+			// Reuse initial lesson if it was already fetched with the canonical slug
+			if (slugOrId === slug && initialLesson) {
+				return initialLesson
+			}
+			// Otherwise fetch with canonical slug for normalization
+			return getLesson(slug)
+		},
+		['lesson', slug],
+		{
+			revalidate: 3600,
+			tags: ['lessons', `lesson:${slug}`],
+		},
+	)()
+})
 
 export async function getLesson(lessonSlugOrId: string) {
-	// const start = new Date().getTime()
-
-	const cachedLesson = await redis.get(
-		`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-	)
-
-	const lesson = cachedLesson
-		? cachedLesson
-		: await db.query.contentResource.findFirst({
-				where: and(
-					or(
-						eq(
-							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-							lessonSlugOrId,
-						),
-						eq(contentResource.id, lessonSlugOrId),
-						like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
-					),
-					or(
-						eq(contentResource.type, 'lesson'),
-						eq(contentResource.type, 'exercise'),
-						eq(contentResource.type, 'solution'),
-						eq(contentResource.type, 'post'),
-					),
+	const lesson = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					lessonSlugOrId,
 				),
+				eq(contentResource.id, lessonSlugOrId),
+				like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
+			),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+				eq(contentResource.type, 'post'),
+			),
+		),
+		with: {
+			tags: {
 				with: {
-					tags: {
-						with: {
-							tag: true,
-						},
-						orderBy: asc(contentResourceTag.position),
-					},
-					resources: {
-						with: {
-							resource: {
-								columns: {
-									type: true,
-								},
-							},
+					tag: true,
+				},
+				orderBy: asc(contentResourceTag.position),
+			},
+			resources: {
+				with: {
+					resource: {
+						columns: {
+							type: true,
 						},
 					},
 				},
-			})
+			},
+		},
+	})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
@@ -227,24 +295,25 @@ export async function getLesson(lessonSlugOrId: string) {
 		return null
 	}
 
-	if (!cachedLesson) {
-		await redis.set(
-			`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-			lesson,
-			{ ex: 10 },
-		)
-	}
-
-	// console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
-
 	return parsedLesson.data
 }
 
-export const getCachedExerciseSolution = unstable_cache(
-	async (slug: string) => getExerciseSolution(slug),
-	['solution'],
-	{ revalidate: 3600, tags: ['solution'] },
-)
+/**
+ * Get cached exercise solution
+ * Combines React cache() for request-level deduplication with unstable_cache() for persistent caching
+ */
+export const getCachedExerciseSolution = cache(async (slugOrId: string) => {
+	return unstable_cache(
+		async () => {
+			// Resolve to canonical slug inside cache to avoid uncached DB fetch
+			const lesson = await getLesson(slugOrId)
+			const slug = lesson?.fields.slug || slugOrId
+			return getExerciseSolution(slug)
+		},
+		['solution', slugOrId],
+		{ revalidate: 3600, tags: ['solutions', `lesson:${slugOrId}`] },
+	)()
+})
 
 export async function getExerciseSolution(lessonSlugOrId: string) {
 	const lesson = await db.query.contentResource.findFirst({
@@ -358,9 +427,15 @@ export async function updateLesson(input: LessonUpdate, revalidate = true) {
 	}
 
 	if (revalidate) {
-		revalidateTag('lesson', 'max')
+		revalidateTag('lessons', 'max')
+		revalidateTag(`lesson:${currentLesson.fields.slug}`, 'max')
+		// If slug changed, also invalidate the new slug
+		if (lessonSlug !== currentLesson.fields.slug) {
+			revalidateTag(`lesson:${lessonSlug}`, 'max')
+		}
+		// Invalidate workshop navigation since lesson title/slug may have changed
+		revalidateTag('workshop-navigation', 'max')
 	}
-
 	return updatedResource
 }
 
@@ -468,6 +543,10 @@ export async function writeNewLessonToDatabase(
 				})
 				// Continue even if TypeSense indexing fails
 			}
+
+			// Invalidate lessons list cache and workshop navigation
+			revalidateTag('lessons', 'max')
+			revalidateTag('workshop-navigation', 'max')
 
 			return lesson
 		} catch (error) {
@@ -687,6 +766,16 @@ export async function writeLessonUpdateToDatabase(input: {
 		// Don't rethrow - let the lesson update succeed even if TypeSense fails
 	}
 
+	// Invalidate caches
+	revalidateTag('lessons', 'max')
+	revalidateTag(`lesson:${currentLesson.fields.slug}`, 'max')
+	// If slug changed, also invalidate the new slug
+	if (lessonSlug !== currentLesson.fields.slug) {
+		revalidateTag(`lesson:${lessonSlug}`, 'max')
+	}
+	// Invalidate workshop navigation since lesson title/slug may have changed
+	revalidateTag('workshop-navigation', 'max')
+
 	return updatedLesson.data
 }
 
@@ -737,6 +826,11 @@ export async function deleteLessonFromDatabase(id: string) {
 		// Delete the lesson itself
 		await log.info('lesson.delete.content.started', { lessonId: id })
 		await db.delete(contentResource).where(eq(contentResource.id, id))
+
+		// Invalidate caches
+		revalidateTag('lessons', 'max')
+		revalidateTag(`lesson:${lesson.data.fields.slug}`, 'max')
+		revalidateTag('workshop-navigation', 'max')
 
 		await log.info('lesson.delete.completed', { lessonId: id })
 		return true

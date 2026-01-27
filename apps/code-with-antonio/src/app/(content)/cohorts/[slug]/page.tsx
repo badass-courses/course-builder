@@ -109,7 +109,10 @@ export default async function CohortPage(props: {
 		(workshop) => ({
 			workshop,
 			moduleProgressLoader: getModuleProgressForUser(workshop.fields.slug),
-			workshopNavDataLoader: getCachedWorkshopNavigation(workshop.fields.slug),
+			workshopNavDataLoader: getCachedWorkshopNavigation(workshop.id, {
+				caller: 'cohort.page',
+				depth: 2,
+			}),
 		}),
 	)
 
