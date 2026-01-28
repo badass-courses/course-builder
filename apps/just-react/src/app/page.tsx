@@ -12,8 +12,6 @@ import { extractHeroHeadings } from '@/utils/extract-hero-headings'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
-import heroImage from '../../public/assets/eye@2x.png'
-
 export async function generateMetadata(
 	props: Props,
 	parent: ResolvingMetadata,
@@ -69,7 +67,7 @@ const Home = async (props: Props) => {
 						</div>
 						<div className="col-start-2 row-start-2 flex items-end justify-end pb-5">
 							<Image
-								src={heroImage}
+								src={'/assets/eye@2x.png'}
 								alt=""
 								aria-hidden={true}
 								width={478 / 2}
