@@ -131,7 +131,7 @@ describe('AI Hero Support Integration', () => {
 				name: 'Test User',
 			})
 
-			const result = await integration.lookupUser('test@example.com')
+			const result = await integration.lookupUser!('test@example.com')
 
 			expect(result).toEqual({
 				id: 'user-1',
@@ -147,7 +147,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns null when user not found', async () => {
 			mockAdapter.getUserByEmail.mockResolvedValue(null)
 
-			const result = await integration.lookupUser('nobody@example.com')
+			const result = await integration.lookupUser!('nobody@example.com')
 
 			expect(result).toBeNull()
 		})
@@ -159,7 +159,7 @@ describe('AI Hero Support Integration', () => {
 				name: null,
 			})
 
-			const result = await integration.lookupUser('noname@example.com')
+			const result = await integration.lookupUser!('noname@example.com')
 
 			expect(result).toEqual({
 				id: 'user-2',
@@ -186,7 +186,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			])
 
-			const result = await integration.getPurchases('user-1')
+			const result = await integration.getPurchases!('user-1')
 
 			expect(result).toHaveLength(1)
 			expect(result[0]).toEqual({
@@ -204,7 +204,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns empty array when user has no purchases', async () => {
 			mockAdapter.getPurchasesForUser.mockResolvedValue([])
 
-			const result = await integration.getPurchases('user-1')
+			const result = await integration.getPurchases!('user-1')
 
 			expect(result).toEqual([])
 		})
@@ -222,7 +222,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			])
 
-			const result = await integration.getPurchases('user-1')
+			const result = await integration.getPurchases!('user-1')
 
 			expect(result[0]!.status).toBe('refunded')
 			expect(result[0]!.stripeChargeId).toBeUndefined()
@@ -239,7 +239,7 @@ describe('AI Hero Support Integration', () => {
 			})
 			mockAdapter.updatePurchaseStatusForCharge.mockResolvedValue(undefined)
 
-			const result = await integration.revokeAccess({
+			const result = await integration.revokeAccess!({
 				purchaseId: 'purchase-1',
 				reason: 'Customer requested refund',
 				refundId: 'refund-1',
@@ -255,7 +255,7 @@ describe('AI Hero Support Integration', () => {
 		it('fails when purchase not found', async () => {
 			mockAdapter.getPurchase.mockResolvedValue(null)
 
-			const result = await integration.revokeAccess({
+			const result = await integration.revokeAccess!({
 				purchaseId: 'nonexistent',
 				reason: 'test',
 				refundId: 'refund-1',
@@ -273,7 +273,7 @@ describe('AI Hero Support Integration', () => {
 				merchantChargeId: null,
 			})
 
-			const result = await integration.revokeAccess({
+			const result = await integration.revokeAccess!({
 				purchaseId: 'purchase-1',
 				reason: 'test',
 				refundId: 'refund-1',
@@ -297,7 +297,7 @@ describe('AI Hero Support Integration', () => {
 				id: 'transfer-1',
 			})
 
-			const result = await integration.transferPurchase({
+			const result = await integration.transferPurchase!({
 				purchaseId: 'purchase-1',
 				fromUserId: 'user-1',
 				toEmail: 'recipient@example.com',
@@ -314,7 +314,7 @@ describe('AI Hero Support Integration', () => {
 		it('fails when target user cannot be created', async () => {
 			mockAdapter.findOrCreateUser.mockResolvedValue({ user: null })
 
-			const result = await integration.transferPurchase({
+			const result = await integration.transferPurchase!({
 				purchaseId: 'purchase-1',
 				fromUserId: 'user-1',
 				toEmail: 'bad@example.com',
@@ -332,7 +332,7 @@ describe('AI Hero Support Integration', () => {
 			})
 			mockAdapter.transferPurchaseToUser.mockResolvedValue(null)
 
-			const result = await integration.transferPurchase({
+			const result = await integration.transferPurchase!({
 				purchaseId: 'purchase-1',
 				fromUserId: 'user-1',
 				toEmail: 'recipient@example.com',
@@ -351,7 +351,7 @@ describe('AI Hero Support Integration', () => {
 		it('generates a magic link URL', async () => {
 			mockAdapter.createVerificationToken.mockResolvedValue(undefined)
 
-			const result = await integration.generateMagicLink({
+			const result = await integration.generateMagicLink!({
 				email: 'test@example.com',
 				expiresIn: 3600,
 			})
@@ -458,7 +458,7 @@ describe('AI Hero Support Integration', () => {
 
 	describe('getRefundPolicy', () => {
 		it('returns static refund policy', async () => {
-			const policy = await integration.getRefundPolicy()
+			const policy = await integration.getRefundPolicy!()
 
 			expect(policy.autoApproveWindowDays).toBe(30)
 			expect(policy.manualApproveWindowDays).toBe(60)
@@ -472,7 +472,7 @@ describe('AI Hero Support Integration', () => {
 
 	describe('getAppInfo', () => {
 		it('returns app metadata', async () => {
-			const info = await integration.getAppInfo()
+			const info = await integration.getAppInfo!()
 
 			expect(info.name).toBe('AI Hero')
 			expect(info.instructorName).toBe('Matt Pocock')
@@ -488,7 +488,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns null for unknown coupon code', async () => {
 			mockAdapter.couponForIdOrCode.mockResolvedValue(null)
 
-			const result = await integration.getCouponInfo('FAKECODE')
+			const result = await integration.getCouponInfo!('FAKECODE')
 
 			expect(result).toBeNull()
 			expect(mockAdapter.couponForIdOrCode).toHaveBeenCalledWith({
@@ -521,7 +521,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			})
 
-			const result = await integration.getCouponInfo('SAVE30')
+			const result = await integration.getCouponInfo!('SAVE30')
 
 			expect(result).toEqual({
 				code: 'SAVE30',
@@ -560,7 +560,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			})
 
-			const result = await integration.getCouponInfo('USED')
+			const result = await integration.getCouponInfo!('USED')
 
 			expect(result).not.toBeNull()
 			expect(result!.valid).toBe(false)
@@ -573,7 +573,7 @@ describe('AI Hero Support Integration', () => {
 	describe('searchContent', () => {
 		it('returns empty results when Typesense is not configured', async () => {
 			// Typesense env vars are not set in our mock
-			const result = await integration.searchContent({
+			const result = await integration.searchContent!({
 				query: 'typescript',
 			})
 
@@ -589,7 +589,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns empty array when no active promotions', async () => {
 			mockAdapter.getDefaultCoupon.mockResolvedValue(null)
 
-			const result = await integration.getActivePromotions()
+			const result = await integration.getActivePromotions!()
 
 			expect(result).toEqual([])
 			expect(mockAdapter.getDefaultCoupon).toHaveBeenCalled()
@@ -617,7 +617,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			})
 
-			const result = await integration.getActivePromotions()
+			const result = await integration.getActivePromotions!()
 
 			expect(result).toHaveLength(1)
 			expect(result[0]).toEqual({
@@ -641,7 +641,7 @@ describe('AI Hero Support Integration', () => {
 			mockAdapter.getPurchasesForUser.mockResolvedValue([])
 			mockAdapter.getMembershipsForUser.mockResolvedValue([])
 
-			const result = await integration.getContentAccess('user-1')
+			const result = await integration.getContentAccess!('user-1')
 
 			expect(result).toEqual({
 				userId: 'user-1',
@@ -676,7 +676,7 @@ describe('AI Hero Support Integration', () => {
 			])
 			mockAdapter.getMembershipsForUser.mockResolvedValue([])
 
-			const result = await integration.getContentAccess('user-1')
+			const result = await integration.getContentAccess!('user-1')
 
 			expect(result.products).toHaveLength(1)
 			expect(result.products[0]).toEqual({
@@ -711,7 +711,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			])
 
-			const result = await integration.getContentAccess('user-1')
+			const result = await integration.getContentAccess!('user-1')
 
 			expect(result.teamMembership).toEqual({
 				teamId: 'org-1',
@@ -728,7 +728,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns empty activity for user with no progress', async () => {
 			mockAdapter.getLessonProgressForUser.mockResolvedValue([])
 
-			const result = await integration.getRecentActivity('user-1')
+			const result = await integration.getRecentActivity!('user-1')
 
 			expect(result).toEqual({
 				userId: 'user-1',
@@ -767,7 +767,7 @@ describe('AI Hero Support Integration', () => {
 					fields: { title: 'Advanced Topics' },
 				})
 
-			const result = await integration.getRecentActivity('user-1')
+			const result = await integration.getRecentActivity!('user-1')
 
 			expect(result.lessonsCompleted).toBe(2)
 			expect(result.totalLessons).toBe(3)
@@ -788,7 +788,7 @@ describe('AI Hero Support Integration', () => {
 		it('returns null when purchase not found', async () => {
 			mockAdapter.getPurchase.mockResolvedValue(null)
 
-			const result = await integration.getLicenseInfo('nonexistent')
+			const result = await integration.getLicenseInfo!('nonexistent')
 
 			expect(result).toBeNull()
 		})
@@ -799,7 +799,7 @@ describe('AI Hero Support Integration', () => {
 				productId: 'prod-1',
 			})
 
-			const result = await integration.getLicenseInfo('purchase-1')
+			const result = await integration.getLicenseInfo!('purchase-1')
 
 			expect(result).toEqual({
 				purchaseId: 'purchase-1',
@@ -849,7 +849,7 @@ describe('AI Hero Support Integration', () => {
 				},
 			])
 
-			const result = await integration.getLicenseInfo('purchase-1')
+			const result = await integration.getLicenseInfo!('purchase-1')
 
 			expect(result).toEqual({
 				purchaseId: 'purchase-1',
