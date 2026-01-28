@@ -7280,6 +7280,9 @@ importers:
       lucide-react:
         specifier: ^0.288.0
         version: 0.288.0(react@19.2.3)
+      mdast-util-to-string:
+        specifier: ^4.0.0
+        version: 4.0.0
       memoize-one:
         specifier: ^6.0.0
         version: 6.0.0
@@ -7400,9 +7403,15 @@ importers:
       rehype-slug:
         specifier: ^6.0.0
         version: 6.0.0
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
       remark-gfm:
         specifier: ^4.0.0
         version: 4.0.1
+      remark-mdx:
+        specifier: ^3.1.1
+        version: 3.1.1
       resend:
         specifier: ^3.2.0
         version: 3.5.0(react-dom@19.2.3)(react@19.2.3)
@@ -7448,6 +7457,9 @@ importers:
       unified:
         specifier: ^11.0.5
         version: 11.0.5
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.0.0
       uploadthing:
         specifier: 7.4.4
         version: 7.4.4(next@16.0.10)(tailwindcss@4.1.11)
@@ -7509,6 +7521,9 @@ importers:
       '@types/json-schema':
         specifier: ^7.0.14
         version: 7.0.15
+      '@types/mdast':
+        specifier: ^4.0.3
+        version: 4.0.4
       '@types/node':
         specifier: ^20.12.5
         version: 20.17.30
@@ -37732,6 +37747,15 @@ packages:
       - supports-color
     dev: false
 
+  /remark-mdx@3.1.1:
+    resolution: {integrity: sha512-Pjj2IYlUY3+D8x00UJsIOg5BEvfMyeI+2uLPn9VO9Wg4MEtN/VTIq2NEJQfde9PnX15KgtHyl9S0BcTnWrIuWg==}
+    dependencies:
+      mdast-util-mdx: 3.0.0
+      micromark-extension-mdxjs: 3.0.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /remark-parse@11.0.0:
     resolution: {integrity: sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA==}
     dependencies:
@@ -37766,6 +37790,17 @@ packages:
       '@types/mdast': 4.0.4
       mdast-util-to-markdown: 2.1.2
       unified: 11.0.5
+
+  /remark@15.0.1:
+    resolution: {integrity: sha512-Eht5w30ruCXgFmxVUSlNWQ9iiimq07URKeFS3hNc8cUWy1llX4KDWfyEDZRycMc+znsN9Ux5/tJ/BFdgdOwA3A==}
+    dependencies:
+      '@types/mdast': 4.0.4
+      remark-parse: 11.0.0
+      remark-stringify: 11.0.0
+      unified: 11.0.5
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}

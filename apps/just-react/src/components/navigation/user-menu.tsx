@@ -79,10 +79,10 @@ export const UserMenu = () => {
 						<ChevronDownIcon className="size-4" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
-						<DropdownMenuLabel>
+						<DropdownMenuLabel className="text-popover-foreground">
 							{sessionData.user.email || 'Account'}
 						</DropdownMenuLabel>
-						<DropdownMenuSeparator />
+						<DropdownMenuSeparator className="bg-popover brightness-75" />
 						<ul className="flex flex-col">
 							{canViewInvoice && (
 								<NavLinkItem variant="menu" href="/invoices" label="Invoices" />
@@ -95,7 +95,7 @@ export const UserMenu = () => {
 									label="Admin"
 								/>
 							)}
-							<hr className="my-1" />
+							<DropdownMenuSeparator className="bg-popover brightness-75" />
 							<NavLinkItem
 								variant="menu"
 								href="#"

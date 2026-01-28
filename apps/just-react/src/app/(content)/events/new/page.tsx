@@ -15,7 +15,7 @@ export default async function NewEventPage() {
 
 	return (
 		<LayoutClient withContainer>
-			<main className="max-w-(--breakpoint-sm) mx-auto flex min-h-screen w-full flex-col items-center justify-center pb-16 pt-4">
+			<main className="max-w-(--breakpoint-sm) min-h-fullscreen mx-auto flex w-full flex-col items-center justify-center pb-16 pt-4">
 				<CreateNewEventDialog isOpen={true} />
 			</main>
 		</LayoutClient>

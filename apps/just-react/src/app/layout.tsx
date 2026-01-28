@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import { Inter, Source_Serif_4, TASA_Orbiter } from 'next/font/google'
+import { IM_Fell_Double_Pica, IM_Fell_DW_Pica, Inter } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
@@ -29,16 +29,18 @@ const inter = Inter({
 	variable: '--font-inter',
 })
 
-const tasaOrbiter = TASA_Orbiter({
+const imFellDoublePica = IM_Fell_Double_Pica({
 	subsets: ['latin'],
-	variable: '--font-tasa-orbiter',
+	variable: '--font-im-fell-double-pica',
 	adjustFontFallback: false,
+	weight: '400',
 })
 
-const sourceSerif = Source_Serif_4({
+const imFellDwPica = IM_Fell_DW_Pica({
 	subsets: ['latin'],
-	variable: '--font-source-serif',
+	variable: '--font-im-fell-dw-pica',
 	adjustFontFallback: false,
+	weight: '400',
 })
 
 export const metadata: Metadata = {
@@ -75,7 +77,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} ${tasaOrbiter.variable} ${sourceSerif.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${inter.variable} ${imFellDoublePica.variable} ${imFellDwPica.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

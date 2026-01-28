@@ -62,12 +62,22 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 		<div className="flex items-stretch md:hidden">
 			<Button
 				variant="ghost"
-				className="flex aspect-square h-full shrink-0 items-center justify-center px-5"
+				className="flex aspect-square h-full shrink-0 items-center justify-center p-0"
 				type="button"
 				onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 			>
 				{!isMobileMenuOpen ? (
-					<Menu className="size-6" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						className="size-6"
+						fill="none"
+						viewBox="0 0 20 16"
+					>
+						<path
+							fill="currentColor"
+							d="M1 2.625a.404.404 0 0 0-.253.119A.369.369 0 0 0 .642 3c0 .095.038.187.105.256A.4.4 0 0 0 1 3.375 146.278 146.278 0 0 0 14.5 4c1.2 0 2.4-.133 3.6-.4.3-.067.6-.142.9-.225a.487.487 0 0 0 .23-.136.357.357 0 0 0 .096-.239.357.357 0 0 0-.095-.24.487.487 0 0 0-.231-.135c-.3-.083-.6-.158-.9-.225-1.2-.267-2.4-.4-3.6-.4A146.278 146.278 0 0 0 1 2.625Zm0 10a.404.404 0 0 0-.253.119.369.369 0 0 0-.105.256c0 .095.038.187.105.256a.4.4 0 0 0 .253.119A146.302 146.302 0 0 0 14.5 14c1.2 0 2.4-.133 3.6-.4.3-.067.6-.142.9-.225a.487.487 0 0 0 .23-.136.357.357 0 0 0 .096-.239.357.357 0 0 0-.095-.24.487.487 0 0 0-.231-.135c-.3-.083-.6-.158-.9-.225-1.2-.267-2.4-.4-3.6-.4a146.302 146.302 0 0 0-13.5.625Zm18-5c.095.009.186.05.253.119a.37.37 0 0 1 .105.256.369.369 0 0 1-.105.256.404.404 0 0 1-.253.119A146.278 146.278 0 0 1 5.5 9c-1.2 0-2.4-.133-3.6-.4-.3-.067-.6-.142-.9-.225a.486.486 0 0 1-.23-.136A.357.357 0 0 1 .672 8c0-.087.035-.172.096-.24A.486.486 0 0 1 1 7.626c.3-.083.6-.158.9-.225C3.1 7.133 4.3 7 5.5 7a146.278 146.278 0 0 1 13.5.625Z"
+						/>
+					</svg>
 				) : (
 					<X className="size-6" />
 				)}
@@ -87,7 +97,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 					>
 						<div className="flex w-full flex-col">
 							{sessionStatus === 'authenticated' && (
-								<div className="mb-4 flex w-full flex-row items-center gap-1 gap-3 border-b px-5 py-5">
+								<div className="mb-4 flex w-full flex-row items-center gap-1 border-b px-5 py-5">
 									{userAvatar}
 									<span className="text-xl font-bold">
 										{sessionData.user.name

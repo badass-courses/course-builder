@@ -38,7 +38,7 @@ export function LandingPage() {
 	const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95])
 
 	return (
-		<div className="bg-background text-foreground selection:bg-primary selection:text-primary-foreground flex min-h-screen flex-col overflow-hidden">
+		<div className="bg-background text-foreground selection:bg-primary selection:text-primary-foreground min-h-fullscreen flex flex-col overflow-hidden">
 			{/* Hero Section */}
 			<section className="relative flex min-h-[90vh] flex-col items-center justify-center px-4 text-center">
 				<div className="from-primary/20 via-background to-background absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] opacity-50" />

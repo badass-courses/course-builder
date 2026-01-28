@@ -13,8 +13,8 @@ import { NavItem } from './pages/_components/nav-link'
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
-		<LayoutClient className="mx-auto w-full max-w-screen-lg px-5">
-			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-14 md:grid">
+		<LayoutClient className="mx-auto w-full px-5">
+			<div className="min-h-fullscreen flex w-full grid-cols-12 flex-col-reverse gap-14 md:grid">
 				<div className="relative col-span-3 hidden py-5 md:block">
 					<div className="bg-muted border-border sticky top-5 flex flex-col gap-2 overflow-hidden rounded-lg border p-2">
 						<nav className="border-border overflow-hidden rounded-lg border">

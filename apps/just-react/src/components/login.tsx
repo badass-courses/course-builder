@@ -87,7 +87,7 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 
 	return (
 		<div className={cn('flex flex-col gap-6', className)}>
-			<div className="grid min-h-[calc(100dvh-var(--nav-height))] divide-x p-0 md:grid-cols-2">
+			<div className="min-h-fullscreen grid divide-x p-0 md:grid-cols-2">
 				<div className="flex h-full items-center justify-center p-6 md:p-8">
 					<FieldGroup className="max-w-sm">
 						<div className="flex flex-col gap-2 text-center">

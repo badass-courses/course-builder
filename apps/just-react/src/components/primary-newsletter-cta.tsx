@@ -1,21 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ShinyText } from '@/app/admin/pages/_components/page-builder-mdx-components'
-import { redirectUrlBuilder, SubscribeToConvertkitForm } from '@/convertkit'
-import { Subscriber } from '@/schemas/subscriber'
+import { SubscribeForm } from '@/components/subscribe-form'
+import { type SubscribeResult } from '@/lib/subscribe-actions'
 import { api } from '@/trpc/react'
 import { track } from '@/utils/analytics'
 import { cn } from '@/utils/cn'
-import { LockIcon, ShieldCheckIcon } from 'lucide-react'
+import { ShieldCheckIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
-import { twMerge } from 'tailwind-merge'
 
 import common from '../text/common'
-import { CldImage } from './cld-image'
 
 type PrimaryNewsletterCtaProps = {
 	onSuccess?: () => void
@@ -53,12 +48,12 @@ export const PrimaryNewsletterCta: React.FC<
 	const { data: subscriber, status } =
 		api.ability.getCurrentSubscriberFromCookie.useQuery()
 
-	const handleOnSuccess = (subscriber: Subscriber | undefined) => {
-		if (subscriber) {
-			track(trackProps.event as string, trackProps.params)
-			const redirectUrl = redirectUrlBuilder(subscriber, '/confirm')
-			router.push(redirectUrl)
-		}
+	const handleOnSuccess = (
+		result: SubscribeResult & { success: true },
+		email?: string,
+	) => {
+		track(trackProps.event as string, trackProps.params)
+		router.push(`/confirmed?email=${encodeURIComponent(result.email)}`)
 	}
 	const { data: session } = useSession()
 
@@ -112,17 +107,18 @@ export const PrimaryNewsletterCta: React.FC<
 							subscriber,
 					})}
 				>
-					<SubscribeToConvertkitForm
+					<SubscribeForm
 						onSuccess={onSuccess ? onSuccess : handleOnSuccess}
 						actionLabel={actionLabel}
+						redirectTo={null}
 					/>
-					{/* <p
+					<p
 						data-nospam=""
 						className="text-muted-foreground inline-flex items-center py-5 text-sm"
 					>
 						<ShieldCheckIcon className="mr-2 h-4 w-4" /> I respect your privacy.
 						Unsubscribe at any time.
-					</p> */}
+					</p>
 				</div>
 			</div>
 		</section>

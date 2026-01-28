@@ -92,7 +92,7 @@ const Navigation = ({
 	return (
 		<header
 			className={cn(
-				'relative z-50 flex h-[var(--nav-height)] w-full items-stretch',
+				'fixed inset-0 z-50 flex h-[var(--nav-height)] w-full items-stretch',
 				className,
 			)}
 		>
@@ -102,9 +102,9 @@ const Navigation = ({
 				})}
 			>
 				<div className="flex items-center">
-					<Link href="/" tabIndex={isRoot ? -1 : 0} className="mr-3">
+					{/* <Link href="/" tabIndex={isRoot ? -1 : 0} className="mr-3">
 						<Logo />
-					</Link>
+					</Link> */}
 					{/* <Link
 						href="/browse"
 						className={cn(
@@ -216,7 +216,7 @@ const Navigation = ({
 							)}
 						</NavigationMenuList>
 					</NavigationMenu> */}
-					{showSearch && (
+					{/* {showSearch && (
 						<form
 							className="relative flex w-full max-w-xs sm:shrink-0"
 							onSubmit={handleSearch}
@@ -237,7 +237,7 @@ const Navigation = ({
 								disabled={isSearching}
 							/>
 						</form>
-					)}
+					)} */}
 				</div>
 				<nav className="flex items-stretch" aria-label={`User navigation`}>
 					{/* {!ability.can('read', 'Invoice') && abilityStatus !== 'pending' && (
@@ -248,14 +248,14 @@ const Navigation = ({
 					</div>
 				)} */}
 					<ul className="hidden items-stretch md:flex">
-						{sessionStatus === 'authenticated' && !isAdmin && (
+						{/* {sessionStatus === 'authenticated' && !isAdmin && (
 							<NavLinkItem
 								label="Feedback"
 								onClick={() => {
 									setIsFeedbackDialogOpen(true)
 								}}
 							/>
-						)}
+						)} */}
 						{isAdmin && (
 							<NavLinkItem
 								label="Admin"
@@ -278,7 +278,7 @@ const Navigation = ({
 								}
 							/>
 						)} */}
-						<UserMenu />
+						{isAdmin && <UserMenu />}
 					</ul>
 				</nav>
 				<MobileNavigation

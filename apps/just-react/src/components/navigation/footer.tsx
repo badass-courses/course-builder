@@ -36,15 +36,13 @@ export default function Footer() {
 
 	return (
 		<footer className="flex w-full flex-col items-center justify-center">
-			<div className="container flex w-full flex-col gap-12 pt-10 sm:pt-24">
-				{/* Top section */}
+			{/* <div className="container flex w-full flex-col gap-12 pt-10 sm:pt-24">
 				<div className="flex w-full flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
 					<div className="flex w-full flex-col items-center gap-8 md:items-start lg:flex-row lg:items-center lg:gap-12">
 						<Link href="/" tabIndex={isRoot ? -1 : 0}>
 							<Logo />
 						</Link>
-						{/* Navigation */}
-						{/* <nav className="text-muted-foreground flex flex-col items-center gap-8 text-base md:flex-row">
+						<nav className="text-muted-foreground flex flex-col items-center gap-8 text-base md:flex-row">
 							<Link href="/" className="hover:text-foreground transition">
 								Home
 							</Link>
@@ -67,48 +65,39 @@ export default function Footer() {
 							<Link href="/faq" className="hover:text-foreground transition">
 								FAQ
 							</Link>
-						</nav> */}
+						</nav>
 					</div>
 
-					{/* Right: Newsletter subscription */}
-					{
-						status === 'pending' ? (
-							<div className="w-full" />
-						) : subscriber ? (
-							<Link
-								className="hover:text-foreground text-muted-foreground shrink-0 transition"
-								href="/login"
-							>
-								Log in
-							</Link>
-						) : null
-						// <SubscribeToConvertkitForm
-						// 	emailPlaceholder="Your email"
-						// 	className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
-						// />
-					}
+					{status === 'pending' ? (
+						<div className="w-full" />
+					) : subscriber ? (
+						<Link
+							className="hover:text-foreground text-muted-foreground shrink-0 transition"
+							href="/login"
+						>
+							Log in
+						</Link>
+					) : (
+						<SubscribeToConvertkitForm
+							emailPlaceholder="Your email"
+							className="flex w-full flex-row items-start gap-3 text-left sm:max-w-[350px] sm:flex-col lg:flex-row lg:items-end [&_[data-sr-fieldset]]:first-of-type:hidden [&_button]:px-4 [&_input]:h-10 [&_input]:flex-1 [&_label]:sr-only"
+						/>
+					)}
 				</div>
 
-				{/* Separator */}
 				<div className="h-px w-full" />
 
-				{/* Bottom section */}
 				<div className="flex flex-col items-center justify-between gap-4 pb-10 lg:flex-row lg:items-center">
-					{/* Copyright */}
 					<p className="text-sm opacity-75">
 						{new Date().getFullYear()} © justreact.com
 					</p>
-
-					{/* Right: Terms + Theme Toggle */}
 					<div className="flex items-center gap-8">
-						{/* <Link
+						<Link
 							href="/privacy"
 							className="text-muted-foreground hover:text-foreground text-sm transition"
 						>
 							Terms of Service
-						</Link> */}
-
-						{/* Theme Toggle */}
+						</Link>
 						<button
 							onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
 							className="border-border bg-background relative flex h-6 w-12 items-center rounded-full border transition-colors"
@@ -130,7 +119,7 @@ export default function Footer() {
 						</button>
 					</div>
 				</div>
-			</div>
+			</div> */}
 		</footer>
 	)
 }
