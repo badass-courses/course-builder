@@ -84,16 +84,16 @@ export type EventItem = {
 export function useNavLinks(): NavigationMenuData {
 	const courses: CourseItem[] = [
 		{
-			href: '/workshops/ai-sdk-v5-crash-course',
+			href: '/workshops/ai-sdk-v6-crash-course',
 			image: {
-				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1758621207/workshops/workshop-xoh13/bkljkijniogppynqfqjc.jpg',
-				alt: 'AI SDK v5 Crash Course',
+				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1769629206/v6imageforproduct.png',
+				alt: 'AI SDK v6 Crash Course',
 				width: 960 / 6,
 				height: 540 / 6,
 			},
-			title: 'AI SDK v5 Crash Course',
+			title: 'AI SDK v6 Crash Course',
 			description:
-				"Master AI SDK v5 with AI Hero's comprehensive crash course.",
+				"Master AI SDK v6 with AI Hero's comprehensive crash course.",
 		},
 	]
 
