@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// ── Import integration after mocks ─────────────────────────────────
+
+import { integration } from '../integration'
+
 // ── Mocks ──────────────────────────────────────────────────────────
 // vi.mock is hoisted to the top of the file, so we must use vi.hoisted()
 // to ensure mock objects exist before the factory runs.
@@ -109,10 +113,6 @@ vi.mock('typesense', () => ({
 vi.mock('uuid', () => ({
 	v4: () => 'test-uuid-1234',
 }))
-
-// ── Import integration after mocks ─────────────────────────────────
-
-import { integration } from '../integration'
 
 // ── Tests ──────────────────────────────────────────────────────────
 
@@ -246,9 +246,10 @@ describe('AI Hero Support Integration', () => {
 			})
 
 			expect(result).toEqual({ success: true })
-			expect(
-				mockAdapter.updatePurchaseStatusForCharge,
-			).toHaveBeenCalledWith('ch_abc123', 'Refunded')
+			expect(mockAdapter.updatePurchaseStatusForCharge).toHaveBeenCalledWith(
+				'ch_abc123',
+				'Refunded',
+			)
 		})
 
 		it('fails when purchase not found', async () => {
@@ -375,7 +376,7 @@ describe('AI Hero Support Integration', () => {
 			mockAdapter.getUserByEmail.mockResolvedValue(null)
 			mockAdapter.updateUser.mockResolvedValue(undefined)
 
-			const result = await integration.updateEmail({
+			const result = await integration.updateEmail!({
 				userId: 'user-1',
 				newEmail: 'new@example.com',
 			})
@@ -393,7 +394,7 @@ describe('AI Hero Support Integration', () => {
 				email: 'taken@example.com',
 			})
 
-			const result = await integration.updateEmail({
+			const result = await integration.updateEmail!({
 				userId: 'user-1',
 				newEmail: 'taken@example.com',
 			})
@@ -411,7 +412,7 @@ describe('AI Hero Support Integration', () => {
 			})
 			mockAdapter.updateUser.mockResolvedValue(undefined)
 
-			const result = await integration.updateEmail({
+			const result = await integration.updateEmail!({
 				userId: 'user-1',
 				newEmail: 'same@example.com',
 			})
@@ -426,7 +427,7 @@ describe('AI Hero Support Integration', () => {
 		it('updates name successfully', async () => {
 			mockAdapter.updateUser.mockResolvedValue(undefined)
 
-			const result = await integration.updateName({
+			const result = await integration.updateName!({
 				userId: 'user-1',
 				newName: 'New Name',
 			})
@@ -441,7 +442,7 @@ describe('AI Hero Support Integration', () => {
 		it('handles adapter error gracefully', async () => {
 			mockAdapter.updateUser.mockRejectedValue(new Error('DB failure'))
 
-			const result = await integration.updateName({
+			const result = await integration.updateName!({
 				userId: 'user-1',
 				newName: 'Broken',
 			})
@@ -462,9 +463,7 @@ describe('AI Hero Support Integration', () => {
 			expect(policy.autoApproveWindowDays).toBe(30)
 			expect(policy.manualApproveWindowDays).toBe(60)
 			expect(policy.noRefundAfterDays).toBe(180)
-			expect(policy.policyUrl).toBe(
-				'https://www.aihero.dev/refund-policy',
-			)
+			expect(policy.policyUrl).toBe('https://www.aihero.dev/refund-policy')
 			expect(policy.specialConditions).toHaveLength(2)
 		})
 	})
@@ -701,7 +700,13 @@ describe('AI Hero Support Integration', () => {
 					invitedById: 'owner-1',
 					fields: {},
 					createdAt: new Date('2024-03-01'),
-					organization: { id: 'org-1', name: 'Acme Corp', fields: {}, image: null, createdAt: new Date() },
+					organization: {
+						id: 'org-1',
+						name: 'Acme Corp',
+						fields: {},
+						image: null,
+						createdAt: new Date(),
+					},
 					user: { id: 'user-1', email: 'test@example.com', name: 'Test' },
 				},
 			])
@@ -738,9 +743,17 @@ describe('AI Hero Support Integration', () => {
 		it('computes progress from adapter data', async () => {
 			const completedDate = new Date('2024-06-15T10:00:00Z')
 			mockAdapter.getLessonProgressForUser.mockResolvedValue([
-				{ userId: 'user-1', resourceId: 'lesson-1', completedAt: completedDate },
+				{
+					userId: 'user-1',
+					resourceId: 'lesson-1',
+					completedAt: completedDate,
+				},
 				{ userId: 'user-1', resourceId: 'lesson-2', completedAt: null },
-				{ userId: 'user-1', resourceId: 'lesson-3', completedAt: new Date('2024-06-14T09:00:00Z') },
+				{
+					userId: 'user-1',
+					resourceId: 'lesson-3',
+					completedAt: new Date('2024-06-14T09:00:00Z'),
+				},
 			])
 			mockAdapter.getContentResource
 				.mockResolvedValueOnce({
@@ -845,8 +858,14 @@ describe('AI Hero Support Integration', () => {
 				claimedSeats: 2,
 				availableSeats: 8,
 				claimedBy: [
-					{ email: 'admin@acme.com', claimedAt: new Date('2024-01-01').toISOString() },
-					{ email: 'dev@acme.com', claimedAt: new Date('2024-02-01').toISOString() },
+					{
+						email: 'admin@acme.com',
+						claimedAt: new Date('2024-01-01').toISOString(),
+					},
+					{
+						email: 'dev@acme.com',
+						claimedAt: new Date('2024-02-01').toISOString(),
+					},
 				],
 				adminEmail: 'admin@acme.com',
 			})

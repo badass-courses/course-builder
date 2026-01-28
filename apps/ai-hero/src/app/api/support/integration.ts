@@ -419,8 +419,7 @@ export const integration: SupportIntegration = {
 		return [
 			{
 				id: c.id,
-				name:
-					(c.fields as Record<string, any>)?.name ?? c.code ?? 'Promotion',
+				name: (c.fields as Record<string, any>)?.name ?? c.code ?? 'Promotion',
 				code: c.code ?? undefined,
 				discountType: isPercent ? ('percent' as const) : ('fixed' as const),
 				discountAmount,
@@ -446,9 +445,7 @@ export const integration: SupportIntegration = {
 
 		const isExhausted = c.maxUses !== -1 && c.usedCount >= c.maxUses
 
-		const pctDiscount = c.percentageDiscount
-			? Number(c.percentageDiscount)
-			: 0
+		const pctDiscount = c.percentageDiscount ? Number(c.percentageDiscount) : 0
 		const isPercent = pctDiscount > 0
 
 		return {
@@ -521,8 +518,7 @@ export const integration: SupportIntegration = {
 
 			const modules = productResources.map((r) => ({
 				id: r.id,
-				title:
-					(r.fields as Record<string, any>)?.title ?? r.type ?? 'Unknown',
+				title: (r.fields as Record<string, any>)?.title ?? r.type ?? 'Unknown',
 				accessible: true,
 			}))
 
@@ -539,9 +535,7 @@ export const integration: SupportIntegration = {
 				productName: product.name,
 				accessLevel: isExpired ? 'expired' : 'full',
 				modules: modules.length > 0 ? modules : undefined,
-				expiresAt: expiresAt
-					? new Date(expiresAt).toISOString()
-					: undefined,
+				expiresAt: expiresAt ? new Date(expiresAt).toISOString() : undefined,
 			})
 		}
 
@@ -549,8 +543,7 @@ export const integration: SupportIntegration = {
 		// (includes organization and user data via relations)
 		let teamMembership: ContentAccess['teamMembership'] = undefined
 
-		const memberships =
-			await courseBuilderAdapter.getMembershipsForUser(userId)
+		const memberships = await courseBuilderAdapter.getMembershipsForUser(userId)
 		const membership = memberships[0]
 
 		if (membership?.organizationId) {
@@ -661,7 +654,11 @@ export const integration: SupportIntegration = {
 		}
 
 		// Get organization details via adapter
-		let org: { id: string; name: string | null; fields: Record<string, any> } | null = null
+		let org: {
+			id: string
+			name: string | null
+			fields: Record<string, any>
+		} | null = null
 		try {
 			org = await courseBuilderAdapter.getOrganization(orgId)
 		} catch {
@@ -677,8 +674,7 @@ export const integration: SupportIntegration = {
 
 		// Determine total seats from org fields or purchase quantity
 		const orgFields = org.fields as Record<string, any> | null
-		const totalSeats =
-			orgFields?.maxSeats ?? orgFields?.seats ?? members.length
+		const totalSeats = orgFields?.maxSeats ?? orgFields?.seats ?? members.length
 
 		// Find the admin (owner role) — members include user relation
 		const admin = members.find((m) => m.role === 'owner')
@@ -696,8 +692,7 @@ export const integration: SupportIntegration = {
 			availableSeats: Math.max(0, totalSeats - members.length),
 			claimedBy: members.map((m) => ({
 				email: m.user?.email ?? 'unknown',
-				claimedAt:
-					m.createdAt?.toISOString() ?? new Date().toISOString(),
+				claimedAt: m.createdAt?.toISOString() ?? new Date().toISOString(),
 			})),
 			adminEmail: admin?.user?.email ?? undefined,
 		}
