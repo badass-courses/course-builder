@@ -57,6 +57,11 @@ const config = {
 					'/cohorts/build-your-own-ai-personal-assistant-in-typescript',
 				permanent: true,
 			},
+			{
+				source: '/workshops/ai-sdk-v5-crash-course',
+				destination: '/workshops/ai-sdk-v6-crash-course',
+				permanent: true,
+			},
 		]
 	},
 }
