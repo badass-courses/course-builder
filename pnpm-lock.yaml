@@ -333,8 +333,8 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3
       '@skillrecordings/sdk':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^0.5.0
+        version: 0.5.0
       '@skillrecordings/time':
         specifier: ^0.0.13
         version: 0.0.13
@@ -21386,8 +21386,8 @@ packages:
     resolution: {integrity: sha512-0a89yYp0xWDsSJr7SCo0qXc8OoY3SitR5+ePBrJuUReogv771yzsiiZEKK4oIORNwF7RWE+4IdJ2KYahYz31Qw==}
     dev: false
 
-  /@skillrecordings/sdk@0.4.0:
-    resolution: {integrity: sha512-TyMKO40UxCC/vzd/7iNTg3clKZvUvnGyAp0YvTQKoUfGcktfFYaGuSJ9XYTuao+Ohdz9D25MyxjFN2JXzqdsUw==}
+  /@skillrecordings/sdk@0.5.0:
+    resolution: {integrity: sha512-8TMdcYy1AJrGFGOAL/e1Et6ueE70ZCkhAAsg+4SFYDarMsP7l03OGImQQ7Gn8MtzXXKT/50HR+ObotqDcQY7VQ==}
     dev: false
 
   /@skillrecordings/time@0.0.13:
