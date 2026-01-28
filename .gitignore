@@ -13,6 +13,7 @@ server/dist
 public/dist
 .idea
 .react-email
+.opencode/
 
 packages/*/*.js
 packages/*/*.d.ts
