@@ -153,6 +153,7 @@ export default async function PostPage(props: {
 								},
 							}}
 						/> */}
+
 							<SubscribeFormWithStatus
 								className="mt-16 flex max-w-2xl flex-col items-start gap-2 font-serif text-xl font-semibold sm:flex-row sm:items-end"
 								trackProps={{
