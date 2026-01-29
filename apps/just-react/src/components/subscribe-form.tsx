@@ -111,7 +111,7 @@ export const SubscribeForm: React.FC<
 					data-input-with-error={Boolean(
 						touched.first_name && errors.first_name,
 					)}
-					className="h-auto"
+					className="h-auto text-lg"
 					id={id ? `first_name_${id}` : 'first_name'}
 					placeholder="Name"
 					type="text"
@@ -127,7 +127,7 @@ export const SubscribeForm: React.FC<
 				</Label>
 				<Input
 					data-input-with-error={Boolean(touched.email && errors.email)}
-					className="h-auto"
+					className="h-auto text-lg"
 					id={id ? `email_${id}` : 'email'}
 					placeholder={emailPlaceholder}
 					type="email"
@@ -160,6 +160,7 @@ export const SubscribeForm: React.FC<
 					}
 					type="submit"
 					formNoValidate={Boolean(validationSchema)}
+					className="h-11 text-lg"
 				>
 					{isSubmitting ? <Spinner className="h-5 w-5" /> : actionLabel}
 				</Button>

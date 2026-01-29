@@ -37,7 +37,7 @@ export default function LayoutClient({
 				/>
 			)}
 			<Navigation withSearch={withSearch} />
-			<div className="min-h-fullscreen mt-[var(--nav-height)] flex flex-col justify-between">
+			<div className="min-h-fullscreen flex flex-col justify-between">
 				<main
 					className={cn('', className, {
 						container: withContainer,

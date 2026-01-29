@@ -90,6 +90,23 @@ const Navigation = ({
 	const isAdmin = ability.can('manage', 'all')
 
 	return (
+		isAdmin &&
+		!isEditRoute && (
+			<div className="absolute right-0 top-5 z-50 flex h-[var(--nav-height)] items-stretch gap-1 px-5">
+				<NavLinkItem
+					label="Admin"
+					className="gap-1 hover:[&_svg]:opacity-90"
+					icon={
+						<SettingsIcon className="size-4 opacity-50 transition-opacity duration-300 ease-in-out" />
+					}
+					href="/admin/dashboard"
+				/>
+				<UserMenu />
+			</div>
+		)
+	)
+
+	return (
 		<header
 			className={cn(
 				'fixed inset-0 z-50 flex h-[var(--nav-height)] w-full items-stretch',

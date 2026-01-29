@@ -154,7 +154,11 @@ export async function getPostLists(postId: string): Promise<List[]> {
 	return z.array(ListSchema).parse(listResources)
 }
 
-export async function getPosts(): Promise<Post[]> {
+export async function getPosts({
+	limit,
+}: {
+	limit?: number
+} = {}): Promise<Post[]> {
 	const visibility: ('public' | 'private' | 'unlisted')[] = [
 		'public',
 		'private',
@@ -173,6 +177,7 @@ export async function getPosts(): Promise<Post[]> {
 			inArray(sql`JSON_EXTRACT (${contentResource.fields}, "$.state")`, states),
 		),
 		orderBy: desc(contentResource.createdAt),
+		limit,
 	})
 
 	const postsParsed = z.array(PostSchema).safeParse(posts)

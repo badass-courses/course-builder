@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import Noise from '@/components/brand/noise'
 import { Contributor } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
@@ -10,6 +11,7 @@ import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
 import { Share } from '@/components/share'
 import SplitText from '@/components/split-text'
+import SubscribeFormWithStatus from '@/components/subscribe-form-with-status'
 import TickerScroll from '@/components/ticker-scroll'
 import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
@@ -21,11 +23,17 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { Github } from 'lucide-react'
+import { ArrowLeftIcon, Github, PencilIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
-import { Button } from '@coursebuilder/ui'
+import {
+	Button,
+	CopyAsMarkdown,
+	OpenIn,
+	OpenInContent,
+	OpenInTrigger,
+} from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import ModuleResourceList from '../_components/navigation/module-resource-list'
@@ -74,69 +82,68 @@ export default async function PostPage(props: {
 				resource.type === 'videoResource',
 		),
 	)
+	const markdownToCopy = `# ${post?.fields?.title}
+
+	${post?.fields?.body}`
 
 	return (
-		<LayoutClient saleBannerData={saleBannerData}>
+		<LayoutClient withContainer={false} saleBannerData={saleBannerData}>
+			<nav className="absolute left-5 top-5 z-50 flex h-[var(--nav-height)] items-stretch text-sm">
+				<Link href="/#posts" className="flex items-center gap-1">
+					<ArrowLeftIcon className="inline-block size-4" />
+					All posts{' '}
+				</Link>
+			</nav>
+			<Noise />
 			<div className="flex flex-1 items-start">
-				<MobileListResourceNavigation />
+				{/* <MobileListResourceNavigation /> */}
 				<div className="w-full min-w-0">
 					{hasVideo && <PlayerContainer post={post} />}
-
-					<div className={cn('relative w-full', {})}>
-						{/* <div className="relative z-10 mx-auto flex w-full items-center justify-between">
-					{!list ? (
-						<Link
-							href="/browse"
-							className="text-foreground/75 hover:text-foreground mb-3 inline-flex text-sm transition duration-300 ease-in-out"
-						>
-							← All Posts
-						</Link>
-					) : (
-						<div />
-					)}
-				</div> */}
-						<div
-							className={cn(
-								'container relative z-10 border-x py-6 sm:py-14',
-								{},
-							)}
-						>
-							<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
-								<div className="mx-auto flex w-full flex-col gap-5">
-									<PostTitle post={post} hasVideo={hasVideo} />
-									<div className="relative mb-3 flex w-full items-center justify-between gap-3">
-										<div className="flex items-center gap-8">
-											<Contributor className="flex [&_img]:size-7 sm:[&_img]:size-auto" />
-											{post.fields?.github && (
-												<Button
-													asChild
-													variant="outline"
-													className="h-11 text-base"
-												>
-													<Link href={post.fields?.github} target="_blank">
-														<Github className="text-muted-foreground mr-2 h-4 w-4" />
-														Source Code
-													</Link>
-												</Button>
-											)}
-										</div>
-										<Suspense fallback={null}>
-											<PostActionBar post={post} />
-										</Suspense>
-									</div>
+					<div>
+						<article className="mx-auto flex w-full flex-col gap-5 px-[12vw] py-[17dvh] sm:px-[15vw]">
+							<PostTitle post={post} hasVideo={hasVideo} />
+							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
+								<div className="flex items-center gap-1">
+									<Contributor className="mr-4 flex [&_img]:size-7 sm:[&_img]:size-auto" />
+									<OpenIn query={markdownToCopy}>
+										<OpenInTrigger
+											label="Use with AI"
+											className="rounded-full"
+										/>
+										<OpenInContent className="w-auto rounded-full">
+											<CopyAsMarkdown className="h-7 rounded-full" />
+										</OpenInContent>
+									</OpenIn>
+									{post.fields?.github && (
+										<Button
+											asChild
+											variant="outline"
+											className="h-11 text-base"
+										>
+											<Link href={post.fields?.github} target="_blank">
+												<Github className="text-muted-foreground mr-2 h-4 w-4" />
+												Source Code
+											</Link>
+										</Button>
+									)}
+									<Suspense fallback={null}>
+										<PostActionBar post={post} />
+									</Suspense>
 								</div>
-								{post?.type === 'post' && post?.fields?.body && (
-									<PostToC markdown={post?.fields?.body} />
-								)}
-								<PostBody post={post} />
-								{/* {listSlugFromParam && (
+							</div>
+
+							{/* {post?.type === 'post' && post?.fields?.body && (
+								<PostToC markdown={post?.fields?.body} />
+							)} */}
+							<PostBody post={post} />
+							{/* {listSlugFromParam && (
 									<PostProgressToggle
 										className="flex w-full items-center justify-center"
 										postId={post.id}
 									/>
 								)} */}
 
-								{/* <PostNewsletterCta
+							{/* <PostNewsletterCta
 							className="flex pt-10 md:hidden"
 							trackProps={{
 								event: 'subscribed',
@@ -146,42 +153,30 @@ export default async function PostPage(props: {
 								},
 							}}
 						/> */}
-							</article>
-						</div>
-						{!hasVideo && (
-							<div className="w-full border-t">
-								<PrimaryNewsletterCta
-									isHiddenForSubscribers
-									className="container border-x px-0"
-									trackProps={{
-										event: 'subscribed',
-										params: {
-											post: post.fields.slug,
-											location: 'post',
-										},
-									}}
-								>
-									<div />
-								</PrimaryNewsletterCta>
-								<section className="">
-									<div className="px-0! container flex border-x">
-										<TickerScroll className="h-16" />
-									</div>
-								</section>
-							</div>
-						)}
+							<SubscribeFormWithStatus
+								className="mt-16 flex max-w-2xl flex-col items-start gap-2 font-serif text-xl font-semibold sm:flex-row sm:items-end"
+								trackProps={{
+									event: 'subscribed',
+									params: {
+										post: post.fields.slug,
+										location: 'post',
+									},
+								}}
+							/>
+						</article>
+
 						<div className="border-t">
 							<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
 								<strong className="text-base font-medium tracking-tight sm:text-lg">
 									Share
 								</strong>
 								<Share
-									className="w-full border-t sm:w-auto sm:border-t-0"
+									className="w-full border-t font-serif sm:w-auto sm:border-t-0"
 									title={post?.fields.title}
 								/>
 							</div>
 						</div>
-						<div className="border-t" data-theme="yellow">
+						<div className="border-t" data-theme="blue">
 							<PostNextUpFromListPagination
 								className="container mx-auto rounded-none border-x py-10 lg:py-16"
 								postId={post.id}
@@ -227,7 +222,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="">
-			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-primary-dark sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
+			<article className="prose prose-themed prose-code:text-sm dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5 lg:text-xl">
 				{content}
 			</article>
 		</div>
@@ -245,7 +240,7 @@ async function PostTitle({
 		<SplitText
 			as="h1"
 			className={cn(
-				'mb-4 text-3xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
+				'font-heading mb-4 text-5xl tracking-tight sm:text-5xl lg:text-6xl dark:text-white',
 				{},
 			)}
 		>
@@ -357,8 +352,14 @@ async function PostActionBar({ post }: { post: Post | null }) {
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
-					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
+				<Button
+					asChild
+					variant="outline"
+					className="flex items-center gap-2 rounded-full"
+				>
+					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>
+						<PencilIcon className="size-3" /> Edit
+					</Link>
 				</Button>
 			) : null}
 		</>

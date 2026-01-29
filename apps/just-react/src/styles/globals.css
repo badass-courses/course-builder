@@ -68,7 +68,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
-	--nav-height: 88px;
+	--nav-height: 48px;
 	--command-bar-height: 37px;
 	--pane-layout-height: calc(
 		100vh - var(--nav-height) - var(--command-bar-height)
@@ -77,26 +77,26 @@
 		100vh - var(--nav-height) - var(--command-bar-height) - 30px
 	);
 
-	--radius: 0.75rem;
+	--radius: 0.6rem;
 	--background: oklch(0.9632 0.0121 96.42);
 	--foreground: oklch(0.3212 0.2095 264.2);
 	--card: oklch(1 0.0124 91.52);
 	--card-foreground: oklch(0.141 0.005 285.823);
-	--popover: oklch(0.3212 0.2095 264.2);
-	--popover-foreground: oklch(1 0 0);
+	--popover: oklch(1 0.0124 91.52);
+	--popover-foreground: oklch(0.3212 0.2095 264.2);
 	--primary: oklch(0.3212 0.2095 264.2);
 	--primary-dark: #474cd5;
 	--primary-foreground: oklch(1 0 0);
-	--secondary: oklch(0.967 0.001 286.375);
+	--secondary: oklch(1 0.0124 91.52);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
 	--muted: oklch(0.92 0.0121 96.42);
 	--muted-foreground: oklch(0.5 0.12 264.2);
-	--accent: oklch(0.967 0.001 286.375);
-	--accent-foreground: oklch(0.21 0.006 285.885);
+	--accent: oklch(0.96 0.0121 96.42);
+	--accent-foreground: oklch(0.3212 0.2095 264.2);
 	--destructive: oklch(0.577 0.245 27.325);
 	--border: oklch(90.29% 0.0124 91.52);
 	--input: oklch(0.92 0.0121 96.42);
-	--ring: oklch(0.92 0.0121 96.42);
+	--ring: oklch(0.3212 0.2095 264.2);
 	--chart-1: oklch(0.646 0.222 41.116);
 	--chart-2: oklch(0.6 0.118 184.704);
 	--chart-3: oklch(0.398 0.07 227.392);
@@ -365,10 +365,25 @@
 	code {
 		@apply bg-foreground text-background rounded-xs px-1 font-bold;
 	}
+	ul,
+	ol {
+		padding-inline-start: 1.5em;
+	}
+	li {
+		list-style-position: outside;
+		padding-inline-start: 1em;
+		&::marker {
+			content: '✱';
+			color: var(--color-primary);
+			font-size: 0.8em;
+			transition: transform 0.2s ease-in-out;
+		}
+	}
 }
 
 @utility min-h-fullscreen {
-	min-height: calc(100dvh - var(--nav-height));
+	min-height: 100dvh;
+	/* min-height: calc(100dvh - var(--nav-height)); */
 }
 
 @utility prose {
@@ -450,13 +465,7 @@
 		--primary-foreground: #fff !important;
 	}
 	[data-theme='blue'] {
-		@apply bg-background text-foreground;
-		--background: #a9e1ff !important;
-		--muted-foreground: #000 !important;
-		--foreground: #000 !important;
-		--border: #90bed7 !important;
-		--primary: #000 !important;
-		--primary-foreground: #fff !important;
+		@apply bg-primary text-primary-foreground;
 	}
 	[data-theme='yellow'] {
 		@apply bg-background text-foreground;

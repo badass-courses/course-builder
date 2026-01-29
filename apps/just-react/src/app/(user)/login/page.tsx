@@ -16,11 +16,11 @@ export default async function LoginPage() {
 
 	return (
 		<LayoutClient withFooter={false}>
-			<div className="container border-x px-0">
+			<div className="">
 				<Login
 					csrfToken={csrfToken}
 					providers={providers}
-					title={`Log In`}
+					title={`Login / Register`}
 					subtitle={`We'll create your account if you don't have one yet.`}
 				/>
 			</div>

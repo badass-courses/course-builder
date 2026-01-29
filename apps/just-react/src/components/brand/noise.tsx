@@ -6,7 +6,6 @@ interface NoiseProps {
 	patternSize?: number
 	patternScaleX?: number
 	patternScaleY?: number
-	patternRefreshInterval?: number
 	patternAlpha?: number
 }
 
@@ -14,8 +13,7 @@ const Noise: React.FC<NoiseProps> = ({
 	patternSize = 250,
 	patternScaleX = 1,
 	patternScaleY = 1,
-	patternRefreshInterval = 0,
-	patternAlpha = 15,
+	patternAlpha = 20,
 }) => {
 	const grainRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -26,8 +24,6 @@ const Noise: React.FC<NoiseProps> = ({
 		const ctx = canvas.getContext('2d')
 		if (!ctx) return
 
-		let frame = 0
-
 		const patternCanvas = document.createElement('canvas')
 		patternCanvas.width = patternSize
 		patternCanvas.height = patternSize
@@ -37,26 +33,23 @@ const Noise: React.FC<NoiseProps> = ({
 		const patternData = patternCtx.createImageData(patternSize, patternSize)
 		const patternPixelDataLength = patternSize * patternSize * 4
 
-		const resize = () => {
+		// Generate static noise pattern once
+		for (let i = 0; i < patternPixelDataLength; i += 4) {
+			const value = Math.random() * 255
+			patternData.data[i] = value
+			patternData.data[i + 1] = value
+			patternData.data[i + 2] = value
+			patternData.data[i + 3] = patternAlpha
+		}
+		patternCtx.putImageData(patternData, 0, 0)
+
+		const drawGrain = () => {
 			if (!canvas) return
 			canvas.width = window.innerWidth * window.devicePixelRatio
 			canvas.height = window.innerHeight * window.devicePixelRatio
 
 			ctx.scale(patternScaleX, patternScaleY)
-		}
 
-		const updatePattern = () => {
-			for (let i = 0; i < patternPixelDataLength; i += 4) {
-				const value = Math.random() * 255
-				patternData.data[i] = value
-				patternData.data[i + 1] = value
-				patternData.data[i + 2] = value
-				patternData.data[i + 3] = patternAlpha
-			}
-			patternCtx.putImageData(patternData, 0, 0)
-		}
-
-		const drawGrain = () => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height)
 			const pattern = ctx.createPattern(patternCanvas, 'repeat')
 			if (pattern) {
@@ -65,29 +58,13 @@ const Noise: React.FC<NoiseProps> = ({
 			}
 		}
 
-		const loop = () => {
-			if (frame % patternRefreshInterval === 0) {
-				updatePattern()
-				drawGrain()
-			}
-			frame++
-			window.requestAnimationFrame(loop)
-		}
-
-		window.addEventListener('resize', resize)
-		resize()
-		loop()
+		window.addEventListener('resize', drawGrain)
+		drawGrain()
 
 		return () => {
-			window.removeEventListener('resize', resize)
+			window.removeEventListener('resize', drawGrain)
 		}
-	}, [
-		patternSize,
-		patternScaleX,
-		patternScaleY,
-		patternRefreshInterval,
-		patternAlpha,
-	])
+	}, [patternSize, patternScaleX, patternScaleY, patternAlpha])
 
 	return (
 		<canvas

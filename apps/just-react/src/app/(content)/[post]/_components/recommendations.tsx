@@ -76,14 +76,14 @@ export default function Recommendations({
 
 					ease: [0.21, 0.47, 0.32, 0.98],
 				}}
-				className="tracking-relaxed mb-6 font-mono text-sm font-semibold uppercase opacity-90 sm:text-base"
+				className="mb-6 font-serif text-lg tracking-tight sm:text-xl"
 			>
-				Recommended next
+				Read next
 			</motion.h2>
 			<ul className="w-full">
 				<li className="flex w-full flex-col">
 					{status === 'pending' ? (
-						<Skeleton className="mx-auto flex h-7 w-full max-w-sm" />
+						<Skeleton className="bg-background/10 mx-auto flex h-9 w-full max-w-sm" />
 					) : post ? (
 						<motion.div
 							whileInView={{
@@ -99,19 +99,15 @@ export default function Recommendations({
 						>
 							<Link
 								href={`/${post.slug}`}
-								className="text-primary-dark flex w-full items-center justify-center gap-2 text-balance text-center text-lg font-semibold underline-offset-2 hover:underline lg:text-xl"
+								className="font-heading flex w-full items-center justify-center gap-2 text-balance text-center text-2xl font-semibold underline-offset-2 hover:underline lg:text-3xl"
 							>
 								{post.title}{' '}
-								<ArrowRight
-									strokeWidth={3}
-									className="hidden size-5 sm:block"
-								/>
 							</Link>
 						</motion.div>
 					) : null}
 					{!session?.user ? (
 						<motion.span
-							className="text-muted-foreground mt-6 text-base opacity-90"
+							className="mt-6 font-serif text-base opacity-90"
 							whileInView={{
 								opacity: [0, 1],
 								y: [10, 0],
