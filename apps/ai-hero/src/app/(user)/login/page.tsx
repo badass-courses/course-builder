@@ -20,7 +20,7 @@ export default async function LoginPage() {
 				className="!min-h-[calc(100dvh-var(--nav-height))]"
 				csrfToken={csrfToken}
 				providers={providers}
-				title={`Log In`}
+				title={`Login / Register`}
 				subtitle={`We’ll create an account for you if you don’t already have one.`}
 			/>
 		</LayoutClient>

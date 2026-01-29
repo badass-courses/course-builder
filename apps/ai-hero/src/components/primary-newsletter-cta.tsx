@@ -89,10 +89,10 @@ export const PrimaryNewsletterCta: React.FC<
 						height={130}
 						className="mb-8 rotate-12"
 					/>
-					<h2 className="font-heading text-center text-2xl font-semibold sm:text-3xl dark:text-white">
+					<h2 className="font-heading text-center text-2xl font-semibold tracking-tight sm:text-3xl dark:text-white">
 						{title}
 					</h2>
-					<h3 className="pt-5 text-center font-sans text-lg font-normal opacity-90 sm:pt-8 sm:text-xl sm:font-light lg:text-2xl">
+					<h3 className="dark:text-primary pt-3 text-center font-sans text-base font-normal tracking-tight sm:pt-5 sm:text-lg lg:text-xl dark:sm:font-light">
 						{byline}
 					</h3>
 				</div>

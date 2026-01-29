@@ -132,8 +132,8 @@ export function useNavLinks(): NavigationMenuData {
 			image: {
 				src: 'https://res.cloudinary.com/total-typescript/image/upload/v1748619829/cohorts/cohort-5uyf5/kttfkqzngqj6uvbpgjhl.jpg',
 				alt: 'Build DeepSearch in TypeScript',
-				width: 776 / 6,
-				height: 507 / 6,
+				width: 960 / 6,
+				height: 540 / 6,
 			},
 			title: 'Build DeepSearch in TypeScript',
 			subtitle: 'July, 2025',

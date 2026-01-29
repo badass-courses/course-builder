@@ -71,8 +71,29 @@ const SessionDependentNavItems = ({
 					className="rounded-none border-l [&_span]:flex [&_span]:items-center"
 					label={
 						<>
-							<Newspaper className="mr-2 w-3 text-indigo-600 dark:text-orange-300" />
 							Newsletter
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								className="size-4.5 ml-1"
+								fill="none"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke="currentColor"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="1.5"
+									d="M6 8h8m-8 4h8m-8 4h4m8-8h1c1.414 0 2.121 0 2.56.44.44.439.44 1.146.44 2.56v8a2 2 0 1 1-4 0V8Z"
+									className="text-primary opacity-40 dark:opacity-100"
+								/>
+								<path
+									stroke="currentColor"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="1.5"
+									d="M12 3H8c-2.828 0-4.243 0-5.121.879C2 4.757 2 6.172 2 9v6c0 2.828 0 4.243.879 5.121C3.757 21 5.172 21 8 21h12a2 2 0 0 1-2-2V9c0-2.828 0-4.243-.879-5.121C16.243 3 14.828 3 12 3Z"
+								/>
+							</svg>
 						</>
 					}
 				/>
@@ -177,7 +198,6 @@ const Navigation = () => {
 												strokeLinejoin="round"
 												strokeWidth="1.5"
 												d="m18.5 2 .258.697c.338.914.507 1.371.84 1.704.334.334.791.503 1.705.841L22 5.5l-.697.258c-.914.338-1.371.507-1.704.84-.334.334-.503.791-.841 1.705L18.5 9l-.258-.697c-.338-.914-.507-1.371-.84-1.704-.334-.334-.791-.503-1.705-.841L15 5.5l.697-.258c.914-.338 1.371-.507 1.704-.84.334-.334.503-.791.841-1.705L18.5 2Z"
-												// opacity=".4"
 												className="text-primary opacity-40 dark:opacity-100"
 											/>
 										</svg>

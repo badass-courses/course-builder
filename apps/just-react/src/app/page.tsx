@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
+import Noise from '@/components/brand/noise'
 import LayoutClient from '@/components/layout-client'
 import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import config from '@/config'
@@ -48,6 +49,7 @@ const Home = async (props: Props) => {
 			isCommerceEnabled={isCommerceEnabled}
 			withContainer={false}
 		>
+			<Noise />
 			<div className="">
 				<section className="mx-auto w-full">
 					<div className="min-h-fullscreen grid grid-cols-2 grid-rows-2 px-[12vw] py-[17dvh] sm:px-[15vw]">

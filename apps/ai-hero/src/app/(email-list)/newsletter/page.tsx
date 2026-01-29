@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default async function NewsletterPage() {
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient className="max-w-[1030px]" withContainer>
 			<main className="pb-16 pt-3">
 				<PrimaryNewsletterCta
 					trackProps={{

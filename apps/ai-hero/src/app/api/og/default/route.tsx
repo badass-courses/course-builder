@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { db } from '@/db'
-import { coupon } from '@/db/schema'
-import { and, eq, gte, isNull, or } from 'drizzle-orm'
+import { coupon, products, purchases } from '@/db/schema'
+import { and, count, eq, gte, isNull, or } from 'drizzle-orm'
 
 export const runtime = 'edge'
 export const revalidate = 60
@@ -31,16 +31,52 @@ export async function GET(request: Request) {
 			const globalCoupon = await db.query.coupon.findFirst({
 				where: and(
 					eq(coupon.default, true), // flagged as default
-					eq(coupon.status, 1), // status “active” (matches adapter logic)
+					eq(coupon.status, 1), // status "active" (matches adapter logic)
 					or(isNull(coupon.expires), gte(coupon.expires, now)), // not expired
 				),
 				orderBy: (coupon, { desc }) => [desc(coupon.percentageDiscount)],
+				with: {
+					product: true,
+				},
 			})
 
 			if (globalCoupon?.percentageDiscount) {
-				discountPercentage = Math.floor(
-					Number(globalCoupon.percentageDiscount) * 100,
-				)
+				// Check if coupon is tied to a product with limited seats
+				if (globalCoupon.restrictedToProductId && globalCoupon.product) {
+					const product = globalCoupon.product
+					// Check if product has limited availability
+					if (product.quantityAvailable >= 0) {
+						// Count purchases for this product
+						const [purchaseCount] = await db
+							.select({ count: count() })
+							.from(purchases)
+							.where(eq(purchases.productId, product.id))
+
+						const availableSeats =
+							product.quantityAvailable - (purchaseCount?.count || 0)
+
+						// Don't show coupon if product is sold out
+						if (availableSeats <= 0) {
+							console.log(
+								`Coupon ${globalCoupon.id} tied to sold-out product ${product.id}`,
+							)
+						} else {
+							discountPercentage = Math.floor(
+								Number(globalCoupon.percentageDiscount) * 100,
+							)
+						}
+					} else {
+						// Unlimited quantity product
+						discountPercentage = Math.floor(
+							Number(globalCoupon.percentageDiscount) * 100,
+						)
+					}
+				} else {
+					// No product restriction or product not found
+					discountPercentage = Math.floor(
+						Number(globalCoupon.percentageDiscount) * 100,
+					)
+				}
 			}
 		} catch (error) {
 			// Fallback - if coupon query fails, continue without discount

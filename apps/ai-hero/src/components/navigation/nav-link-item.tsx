@@ -76,8 +76,17 @@ export const NavLinkItem: React.FC<NavLinkItem> = ({
 				{onClick ? (
 					content
 				) : (
-					<Link prefetch href={href!} onClick={handleClick}>
-						{isActive && <ChevronRight className="text-primary md:hidden" />}{' '}
+					<Link
+						prefetch
+						href={href!}
+						onClick={handleClick}
+						className={cn('relative', {
+							'underline md:no-underline': isActive,
+						})}
+					>
+						{/* {isActive && (
+							<ChevronRight className="text-primary absolute left-0 top-1/2 -translate-y-1/2 md:hidden" />
+						)} */}
 						{content}
 					</Link>
 				)}

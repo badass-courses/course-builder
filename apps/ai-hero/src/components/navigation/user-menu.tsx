@@ -63,7 +63,7 @@ export const UserMenu = () => {
 		return (
 			<NavLinkItem
 				className="rounded-none border-l"
-				label="Log in"
+				label="Login / Register"
 				href="/login"
 			/>
 		)
