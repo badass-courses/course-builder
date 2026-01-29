@@ -95,6 +95,7 @@ const Home = async (props: Props) => {
 										key={post.id}
 									>
 										<Link
+											prefetch
 											href={`/${post.fields.slug}`}
 											className="text-2xl hover:underline sm:text-2xl"
 										>
@@ -103,9 +104,6 @@ const Home = async (props: Props) => {
 										{post.fields.description && (
 											<p className="text-lg">{post.fields.description}</p>
 										)}
-										<p className="text-lg">
-											Testing lorem ipsum dolor sit amet
-										</p>
 									</li>
 								))}
 							</ul>
