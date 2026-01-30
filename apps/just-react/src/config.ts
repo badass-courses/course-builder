@@ -44,8 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `card@2x.jpg`,
-				// url: `${process.env.NEXT_PUBLIC_URL}/api/og/default?title=Build%20DeepSearch%20in%20TypeScript`, // `card@2x.jpg`,
+				url: `https://res.cloudinary.com/dbdlunqwz/image/upload/v1769772900/card_2x_l7vfan.jpg`,
 				width: 1200,
 				height: 630,
 			},

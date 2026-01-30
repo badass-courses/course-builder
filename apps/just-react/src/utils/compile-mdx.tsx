@@ -33,6 +33,10 @@ const DynamicCode = dynamic(() =>
 )
 const DynamicMDXVideo = dynamic(() => import('@/components/content/mdx-video'))
 
+const DynamicSubscribeForm = dynamic(
+	() => import('@/components/subscribe-form-with-status'),
+)
+
 /**
  * Compiles MDX content with support for CodeHike and Mermaid diagrams
  *
@@ -51,6 +55,7 @@ export async function compileMDX(
 			Scrollycoding: (props) => <Scrollycoding {...props} />,
 			AISummary,
 			PrimaryNewsletterCta: (props) => <PrimaryNewsletterCta {...props} />,
+			SubscribeForm: (props) => <DynamicSubscribeForm {...props} />,
 			Mermaid: (props) => (
 				<Mermaid
 					{...props}

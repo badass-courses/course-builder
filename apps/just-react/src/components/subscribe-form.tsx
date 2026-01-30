@@ -102,6 +102,7 @@ export const SubscribeForm: React.FC<
 		>
 			<div data-sr-fieldset="" className="w-full">
 				<Label
+					className="mb-2 text-base"
 					data-sr-input-label=""
 					htmlFor={id ? `first_name_${id}` : 'first_name'}
 				>
@@ -122,7 +123,11 @@ export const SubscribeForm: React.FC<
 				)}
 			</div>
 			<div data-sr-fieldset="" className="w-full">
-				<Label data-sr-input-label="" htmlFor={id ? `email_${id}` : 'email'}>
+				<Label
+					className="mb-2 text-base"
+					data-sr-input-label=""
+					htmlFor={id ? `email_${id}` : 'email'}
+				>
 					Email*
 				</Label>
 				<Input

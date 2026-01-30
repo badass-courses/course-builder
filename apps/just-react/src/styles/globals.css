@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
-/* @import '@code-hike/mdx/dist/index.css' layer(base); */
-/* @import './primary-newsletter-cta.css'; */
 @import './tip-newsletter-cta.css';
 @import './video-block-newsletter-cta.css';
 @import './login.css' layer(utilities);
@@ -90,12 +88,12 @@
 	--secondary: oklch(1 0.0124 91.52);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
 	--muted: oklch(0.93 0.0141 96.42);
-	--muted-foreground: oklch(0.5 0.12 264.2);
+	--muted-foreground: oklch(0.6 0.08 264.2);
 	--accent: oklch(0.93 0.0141 96.42);
 	--accent-foreground: oklch(0.3212 0.2095 264.2);
 	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.9 0.0121 96.42);
-	--input: oklch(0.92 0.0121 96.42);
+	--border: oklch(0.8632 0.0121 96.42);
+	--input: oklch(0.85 0.0121 96.42);
 	--ring: oklch(0.3212 0.2095 264.2);
 	--chart-1: oklch(0.646 0.222 41.116);
 	--chart-2: oklch(0.6 0.118 184.704);

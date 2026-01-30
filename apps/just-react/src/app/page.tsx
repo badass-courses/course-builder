@@ -1,17 +1,14 @@
 import React from 'react'
 import type { Metadata, ResolvingMetadata } from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
 import HeroVideo from '@/components/brand/hero-video'
 import Noise from '@/components/brand/noise'
 import { DirectionalHoverList } from '@/components/directional-hover-list'
 import LayoutClient from '@/components/layout-client'
 import SplitText from '@/components/split-text'
-import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import config from '@/config'
 import { commerceEnabled } from '@/flags'
 import { getPage } from '@/lib/pages-query'
-import { getCachedAllPosts, getPosts } from '@/lib/posts-query'
+import { getCachedAllPosts } from '@/lib/posts-query'
 import { getSaleBannerDataFromSearchParams } from '@/lib/sale-banner'
 import { compileMDX } from '@/utils/compile-mdx'
 import { extractHeroHeadings } from '@/utils/extract-hero-headings'
@@ -54,6 +51,7 @@ const Home = async (props: Props) => {
 			saleBannerData={saleBannerData}
 			isCommerceEnabled={isCommerceEnabled}
 			withContainer={false}
+			// className="font-serif"
 		>
 			<div className="">
 				<section className="mx-auto w-full">
@@ -70,12 +68,9 @@ const Home = async (props: Props) => {
 								<SplitText
 									splitBy="chars"
 									as="h2"
-									className={cn(
-										'text-primary font-serif text-base lg:text-lg',
-										{
-											'pl-6': h1?.text?.startsWith('J'),
-										},
-									)}
+									className={cn('text-primary text-base lg:text-lg', {
+										'pl-6': h1?.text?.startsWith('J'),
+									})}
 								>
 									{h2.text}
 								</SplitText>
@@ -103,12 +98,9 @@ const Home = async (props: Props) => {
 							<DirectionalHoverList posts={posts} />
 						</div>
 					)}
-					<article className="prose prose-themed dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5 lg:text-xl">
+					<article className="prose prose-themed dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5">
 						{body.content}
 					</article>
-					<div className="mt-12 max-w-2xl">
-						<SubscribeFormWithStatus className="flex flex-col items-start gap-2 font-serif text-xl font-semibold sm:flex-row sm:items-end" />
-					</div>
 				</section>
 			</div>
 			<Noise />

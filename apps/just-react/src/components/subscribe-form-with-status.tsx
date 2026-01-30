@@ -57,7 +57,15 @@ export function SubscribeFormWithStatus({
 	}
 
 	// Not subscribed - show form
-	return <SubscribeForm className={className} {...props} />
+	return (
+		<SubscribeForm
+			className={cn(
+				'not-prose flex flex-col items-start gap-2 text-lg sm:flex-row sm:items-end',
+				className,
+			)}
+			{...props}
+		/>
+	)
 }
 
 export default SubscribeFormWithStatus
