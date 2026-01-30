@@ -142,7 +142,7 @@ export function SplitText<T extends ElementType = 'span'>({
 	children,
 	className,
 	splitBy = 'words',
-	speed = 1,
+	speed = 2,
 }: SplitTextProps<T>) {
 	const textRef = useRef<HTMLElement>(null)
 

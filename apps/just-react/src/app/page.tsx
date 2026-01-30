@@ -50,17 +50,17 @@ const Home = async (props: Props) => {
 		<LayoutClient
 			saleBannerData={saleBannerData}
 			isCommerceEnabled={isCommerceEnabled}
-			withContainer={false}
-			// className="font-serif"
+			withContainer // ={false}
+			className="marketing-page"
 		>
 			<div className="">
 				<section className="mx-auto w-full">
-					<div className="min-h-fullscreen grid grid-cols-2 grid-rows-2 px-[12vw] py-[17dvh] sm:px-[15vw]">
+					<div className="flex flex-col items-center justify-between pt-[5dvh] md:flex-row">
 						<div className="flex flex-col">
 							<SplitText
 								splitBy="chars"
 								as="h1"
-								className="font-heading text-primary leading-0 text-5xl font-bold lg:text-7xl"
+								className="font-heading text-primary leading-0 text-5xl font-bold tracking-tight lg:text-7xl"
 							>
 								{h1?.text || page?.fields.title}
 							</SplitText>
@@ -68,7 +68,7 @@ const Home = async (props: Props) => {
 								<SplitText
 									splitBy="chars"
 									as="h2"
-									className={cn('text-primary text-base lg:text-lg', {
+									className={cn('text-primary -mt-2 text-base lg:text-lg', {
 										'pl-6': h1?.text?.startsWith('J'),
 									})}
 								>
@@ -76,8 +76,8 @@ const Home = async (props: Props) => {
 								</SplitText>
 							)}
 						</div>
-						<div className="col-span-2 col-start-1 row-start-2 flex items-end justify-end pb-5 md:col-span-1 md:col-start-2">
-							<HeroVideo />
+						<div className="flex items-start justify-end">
+							<HeroVideo className="-mr-3 md:-mr-10" />
 							{/* <Image
 								src={'/assets/eye@2x.png'}
 								alt=""
@@ -89,10 +89,10 @@ const Home = async (props: Props) => {
 						</div>
 					</div>
 				</section>
-				<section className="scroll-mt-8 px-8 pb-48 sm:px-[15vw]" id="posts">
+				<section className="scroll-mt-8 pb-48" id="posts">
 					{posts.length > 0 && (
 						<div className="mb-[20dvh]">
-							<h2 className="font-heading mb-6 text-sm font-medium uppercase tracking-wider">
+							<h2 className="mb-2 font-mono text-xs font-medium uppercase tracking-wider">
 								Latest Posts
 							</h2>
 							<DirectionalHoverList posts={posts} />

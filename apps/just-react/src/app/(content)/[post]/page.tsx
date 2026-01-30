@@ -23,6 +23,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
+import { format } from 'date-fns'
 import { ArrowLeftIcon, Github, PencilIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
@@ -87,48 +88,62 @@ export default async function PostPage(props: {
 	${post?.fields?.body}`
 
 	return (
-		<LayoutClient withContainer={false} saleBannerData={saleBannerData}>
+		<LayoutClient className="marketing-page" saleBannerData={saleBannerData}>
 			<nav className="absolute left-5 top-5 z-50 flex h-[var(--nav-height)] items-stretch text-sm">
-				<Link href="/#posts" className="flex items-center gap-1">
-					<ArrowLeftIcon className="inline-block size-4" />
-					All posts{' '}
-				</Link>
+				<Button
+					asChild
+					variant="outline"
+					className="rounded-full bg-transparent"
+				>
+					<Link href="/#posts" className="flex items-center gap-1">
+						<ArrowLeftIcon className="inline-block size-4" />
+						All posts{' '}
+					</Link>
+				</Button>
 			</nav>
 			<Noise />
-			<div className="flex flex-1 items-start">
+			<div className="flex flex-1 items-start pt-28 sm:pt-[15dvh]">
 				{/* <MobileListResourceNavigation /> */}
 				<div className="w-full min-w-0">
 					{hasVideo && <PlayerContainer post={post} />}
 					<div>
-						<article className="mx-auto flex w-full flex-col gap-5 px-8 py-[17dvh] sm:px-[15vw]">
+						<article className="container mx-auto flex w-full max-w-4xl flex-col gap-5 px-8">
 							<PostTitle post={post} hasVideo={hasVideo} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
-								<div className="flex items-center gap-1">
-									<Contributor className="mr-4 flex [&_img]:size-7 sm:[&_img]:size-auto" />
-									<OpenIn query={markdownToCopy}>
-										<OpenInTrigger
-											label="Use with AI"
-											className="rounded-full"
-										/>
-										<OpenInContent className="w-auto rounded-full">
-											<CopyAsMarkdown className="h-7 rounded-full" />
-										</OpenInContent>
-									</OpenIn>
-									{post.fields?.github && (
-										<Button
-											asChild
-											variant="outline"
-											className="h-11 text-base"
-										>
-											<Link href={post.fields?.github} target="_blank">
-												<Github className="text-muted-foreground mr-2 h-4 w-4" />
-												Source Code
-											</Link>
-										</Button>
-									)}
-									<Suspense fallback={null}>
-										<PostActionBar post={post} />
-									</Suspense>
+								<div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:justify-start sm:gap-1">
+									<Contributor className="mr-4 flex">
+										{post.createdAt && (
+											<span className="font-mono text-xs">
+												{format(new Date(post.createdAt), 'MMMM d, yyyy')}
+											</span>
+										)}
+									</Contributor>
+									<div className="flex items-center gap-1">
+										<OpenIn query={markdownToCopy}>
+											<OpenInTrigger
+												label="Use with AI"
+												className="rounded-full"
+											/>
+											<OpenInContent className="w-auto rounded-full">
+												<CopyAsMarkdown className="h-7 rounded-full" />
+											</OpenInContent>
+										</OpenIn>
+										{post.fields?.github && (
+											<Button
+												asChild
+												variant="outline"
+												className="h-11 text-base"
+											>
+												<Link href={post.fields?.github} target="_blank">
+													<Github className="text-muted-foreground mr-2 h-4 w-4" />
+													Source Code
+												</Link>
+											</Button>
+										)}
+										<Suspense fallback={null}>
+											<PostActionBar post={post} />
+										</Suspense>
+									</div>
 								</div>
 							</div>
 
@@ -166,8 +181,8 @@ export default async function PostPage(props: {
 							/>
 						</article>
 
-						<div className="border-t">
-							<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
+						<div className="mt-24 border-t">
+							<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 pt-5 sm:flex-row sm:pt-0">
 								<strong className="text-base font-medium tracking-tight sm:text-lg">
 									Share
 								</strong>
@@ -179,7 +194,7 @@ export default async function PostPage(props: {
 						</div>
 						<div className="border-t" data-theme="blue">
 							<PostNextUpFromListPagination
-								className="container mx-auto rounded-none border-x py-10 lg:py-16"
+								className="container mx-auto rounded-none py-10 lg:py-16"
 								postId={post.id}
 								documentIdsToSkip={list?.resources.map(
 									(resource) => resource.resource.id,
@@ -222,11 +237,9 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<div className="">
-			<article className="prose prose-themed dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5 lg:text-xl">
-				{content}
-			</article>
-		</div>
+		<article className="prose prose-themed dark:prose-invert mr-auto w-full max-w-none pt-8 sm:pt-16 sm:text-lg">
+			{content}
+		</article>
 	)
 }
 
@@ -242,7 +255,7 @@ async function PostTitle({
 			as="h1"
 			splitBy="chars"
 			className={cn(
-				'font-heading mb-4 text-5xl font-bold tracking-tight sm:text-5xl lg:text-6xl dark:text-white',
+				'font-heading mb-4 text-center text-5xl font-bold tracking-tight sm:text-left sm:text-6xl lg:text-7xl dark:text-white',
 				{},
 			)}
 		>

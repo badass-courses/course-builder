@@ -17,7 +17,7 @@ export default async function ConfirmedSubscriptionPage({
 	const { email } = await searchParams
 
 	return (
-		<LayoutClient withContainer>
+		<LayoutClient className="marketing-page" withContainer>
 			{/* Set subscriber cookie via client component */}
 			{email && <SetSubscriberCookie email={email} />}
 			<main className="min-h-fullscreen flex grow flex-col items-center justify-center">

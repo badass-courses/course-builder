@@ -5,14 +5,14 @@ import Image from 'next/image'
 import config from '@/config'
 import { cn } from '@/utils/cn'
 
-import danAbramovImage from '../../public/dan-abramov.png'
 import { CldImage } from './cld-image'
 
 export const Contributor: React.FC<{
 	className?: string
 	withBio?: boolean
 	imageSize?: number
-}> = ({ className, withBio = false, imageSize = 60 }) => {
+	children?: React.ReactNode
+}> = ({ className, withBio = false, imageSize = 60, children }) => {
 	return (
 		<div className={cn('flex items-center text-sm font-semibold', className)}>
 			<ContributorImage imageSize={imageSize} />
@@ -24,6 +24,7 @@ export const Contributor: React.FC<{
 						technical writing.
 					</p>
 				)}
+				{children}
 			</div>
 		</div>
 	)

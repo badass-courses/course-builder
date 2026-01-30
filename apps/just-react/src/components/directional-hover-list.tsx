@@ -29,7 +29,7 @@ export function DirectionalHoverList({
 	const [hoveredId, setHoveredId] = useState<string | null>(null)
 
 	return (
-		<ul className={cn('divide-border flex flex-col font-serif', className)}>
+		<ul className={cn('divide-border flex flex-col', className)}>
 			{posts.map((post, i) => (
 				<li
 					key={post.id}
@@ -57,7 +57,7 @@ export function DirectionalHoverList({
 							// hoveredId === post.id && 'text-primary-foreground',
 						)}
 					>
-						<span className="text-2xl font-semibold sm:text-2xl">
+						<span className="font-heading text-2xl font-semibold sm:text-2xl">
 							{post.fields.title}
 						</span>
 						{post.fields.description && (

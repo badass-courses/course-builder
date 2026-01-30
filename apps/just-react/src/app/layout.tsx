@@ -3,11 +3,11 @@ import '@/styles/globals.css'
 import * as React from 'react'
 import { Metadata } from 'next'
 import {
-	IM_Fell_Double_Pica,
-	IM_Fell_DW_Pica,
+	// IM_Fell_Double_Pica,
+	// IM_Fell_DW_Pica,
 	Inter,
-	Libre_Caslon_Display,
 	Libre_Caslon_Text,
+	TASA_Orbiter,
 } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import { Party } from '@/components/party'
@@ -35,25 +35,9 @@ const inter = Inter({
 	variable: '--font-inter',
 })
 
-const imFellDoublePica = IM_Fell_Double_Pica({
+const tasaOrbiter = TASA_Orbiter({
 	subsets: ['latin'],
-	variable: '--font-im-fell-double-pica',
-	adjustFontFallback: false,
-	weight: '400',
-})
-
-const imFellDwPica = IM_Fell_DW_Pica({
-	subsets: ['latin'],
-	variable: '--font-im-fell-dw-pica',
-	adjustFontFallback: false,
-	weight: '400',
-})
-
-const libreCaslonDisplay = Libre_Caslon_Display({
-	subsets: ['latin'],
-	variable: '--font-libre-caslon-display',
-	adjustFontFallback: false,
-	weight: ['400'],
+	variable: '--font-tasa-orbiter',
 })
 
 const libreCaslonText = Libre_Caslon_Text({
@@ -97,7 +81,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} ${imFellDoublePica.variable} ${imFellDwPica.variable} ${libreCaslonDisplay.variable} ${libreCaslonText.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${inter.variable} ${tasaOrbiter.variable} ${libreCaslonText.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

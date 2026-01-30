@@ -1,13 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
 
 import { cn } from '@coursebuilder/ui/utils/cn'
 
 import { CldImage } from '../cld-image'
 
-export default function HeroVideo() {
+export default function HeroVideo({ className }: { className?: string }) {
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const [videoLoaded, setVideoLoaded] = useState(false)
 
@@ -18,7 +17,7 @@ export default function HeroVideo() {
 	}, [])
 
 	return (
-		<div className="relative">
+		<div className={cn('relative', className)}>
 			<CldImage
 				src="https://res.cloudinary.com/dbdlunqwz/image/upload/v1769766066/eye-videoplaceholder_2x_r7nqsi.png"
 				alt="Eye"

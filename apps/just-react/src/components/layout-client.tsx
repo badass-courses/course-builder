@@ -39,7 +39,7 @@ export default function LayoutClient({
 			<Navigation withSearch={withSearch} />
 			<div className="min-h-fullscreen flex flex-col justify-between">
 				<main
-					className={cn('', className, {
+					className={cn('text-foreground', className, {
 						container: withContainer,
 					})}
 				>

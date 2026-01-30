@@ -66,6 +66,7 @@ export const SubscribeForm: React.FC<
 	mode,
 	emailPlaceholder = 'you@example.com',
 	redirectTo = '/confirmed',
+	trackProps: _trackProps, // destructure to prevent DOM leak
 	...rest
 }) => {
 	const router = useRouter()
