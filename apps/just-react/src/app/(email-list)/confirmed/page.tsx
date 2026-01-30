@@ -25,7 +25,7 @@ export default async function ConfirmedSubscriptionPage({
 					<h1 className="font-heading pb-5 text-4xl font-bold lg:text-5xl">
 						You&apos;re Subscribed
 					</h1>
-					<p className="mx-auto text-balance pb-8 font-serif leading-relaxed sm:text-lg">
+					<p className="mx-auto text-balance pb-8 leading-relaxed sm:text-lg">
 						Thanks for confirming your email address - you&apos;re all set to
 						receive emails from me.
 					</p>

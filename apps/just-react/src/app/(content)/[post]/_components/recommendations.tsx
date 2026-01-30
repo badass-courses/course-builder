@@ -76,7 +76,7 @@ export default function Recommendations({
 
 					ease: [0.21, 0.47, 0.32, 0.98],
 				}}
-				className="mb-6 font-serif text-lg tracking-tight sm:text-xl"
+				className="mb-6 text-lg tracking-tight sm:text-xl"
 			>
 				Read next
 			</motion.h2>
@@ -107,7 +107,7 @@ export default function Recommendations({
 					) : null}
 					{!session?.user ? (
 						<motion.span
-							className="mt-6 font-serif text-base opacity-90"
+							className="mt-6 text-base opacity-90"
 							whileInView={{
 								opacity: [0, 1],
 								y: [10, 0],

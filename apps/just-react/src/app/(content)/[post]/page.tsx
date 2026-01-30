@@ -170,7 +170,7 @@ export default async function PostPage(props: {
 						/> */}
 
 							<SubscribeFormWithStatus
-								className="mt-16 flex max-w-2xl flex-col items-start gap-2 font-serif text-xl font-semibold sm:flex-row sm:items-end"
+								className="mt-16 flex w-full flex-col items-start gap-2 sm:flex-row sm:items-end"
 								trackProps={{
 									event: 'subscribed',
 									params: {
@@ -187,7 +187,7 @@ export default async function PostPage(props: {
 									Share
 								</strong>
 								<Share
-									className="w-full border-t font-serif sm:w-auto sm:border-t-0"
+									className="w-full border-t sm:w-auto sm:border-t-0"
 									title={post?.fields.title}
 								/>
 							</div>
