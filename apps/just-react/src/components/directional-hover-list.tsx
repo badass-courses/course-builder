@@ -29,12 +29,7 @@ export function DirectionalHoverList({
 	const [hoveredId, setHoveredId] = useState<string | null>(null)
 
 	return (
-		<ul
-			className={cn(
-				'divide-primary/10 flex flex-col divide-y font-serif',
-				className,
-			)}
-		>
+		<ul className={cn('divide-border flex flex-col font-serif', className)}>
 			{posts.map((post, i) => (
 				<li
 					key={post.id}
@@ -45,7 +40,7 @@ export function DirectionalHoverList({
 					{hoveredId === post.id && (
 						<motion.div
 							layoutId="hover-bg"
-							className="absolute inset-0 -mx-4 bg-white"
+							className="bg-accent absolute inset-0 -mx-4"
 							initial={false}
 							transition={{
 								type: 'spring',
@@ -62,11 +57,13 @@ export function DirectionalHoverList({
 							// hoveredId === post.id && 'text-primary-foreground',
 						)}
 					>
-						<span className="text-2xl sm:text-2xl">{post.fields.title}</span>
+						<span className="text-2xl font-semibold sm:text-2xl">
+							{post.fields.title}
+						</span>
 						{post.fields.description && (
 							<p
 								className={cn(
-									'text-lg',
+									'font-sans text-base opacity-80',
 									hoveredId === post.id ? 'opacity-90' : 'opacity-80',
 								)}
 							>
@@ -74,6 +71,7 @@ export function DirectionalHoverList({
 							</p>
 						)}
 					</Link>
+					<div className="bg-border relative z-10 h-px w-full" />
 				</li>
 			))}
 		</ul>

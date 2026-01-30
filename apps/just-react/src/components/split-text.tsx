@@ -122,6 +122,10 @@ type SplitTextProps<T extends ElementType = 'span'> = {
 	as?: T
 	children: React.ReactNode
 	className?: string
+	/** Split type: 'chars', 'words', or 'lines' */
+	splitBy?: 'chars' | 'words' | 'lines'
+	/** Animation speed multiplier (default: 1). Higher = faster */
+	speed?: number
 }
 
 /**
@@ -137,6 +141,8 @@ export function SplitText<T extends ElementType = 'span'>({
 	as,
 	children,
 	className,
+	splitBy = 'words',
+	speed = 1,
 }: SplitTextProps<T>) {
 	const textRef = useRef<HTMLElement>(null)
 
@@ -146,20 +152,25 @@ export function SplitText<T extends ElementType = 'span'>({
 
 			textRef.current.style.visibility = 'visible'
 
-			const { words } = splitText(textRef.current)
+			const { chars, words, lines } = splitText(textRef.current)
+
+			const elements =
+				splitBy === 'chars' ? chars : splitBy === 'words' ? words : lines
+			const baseDuration = 2 / speed
+			const baseStagger = 0.05 / speed
 
 			animate(
-				words,
+				elements,
 				{ opacity: [0, 1], y: [10, 0], filter: ['blur(4px)', 'blur(0px)'] },
 				{
 					type: 'spring',
-					duration: 2,
+					duration: baseDuration,
 					bounce: 0,
-					delay: stagger(0.05),
+					delay: stagger(baseStagger),
 				},
 			)
 		})
-	}, [children])
+	}, [children, splitBy, speed])
 
 	const Tag = as || 'span'
 

@@ -5,24 +5,19 @@ import Image from 'next/image'
 import config from '@/config'
 import { cn } from '@/utils/cn'
 
-import danAbramovImage from '../../public/dan-abramov.jpg'
+import danAbramovImage from '../../public/dan-abramov.png'
 import { CldImage } from './cld-image'
 
 export const Contributor: React.FC<{
 	className?: string
 	withBio?: boolean
 	imageSize?: number
-}> = ({ className, withBio = false, imageSize = 40 }) => {
+}> = ({ className, withBio = false, imageSize = 60 }) => {
 	return (
-		<div
-			className={cn(
-				'flex items-center gap-2 font-serif font-normal',
-				className,
-			)}
-		>
+		<div className={cn('flex items-center text-sm font-semibold', className)}>
 			<ContributorImage imageSize={imageSize} />
 			<div className="flex flex-col">
-				<span className="text-foreground/90">{config.author}</span>
+				<span className="">{config.author}</span>
 				{withBio && (
 					<p className="text-foreground/75 text-sm">
 						Created Redux, worked on React team at Meta, known for deep-dive
@@ -44,8 +39,10 @@ export const ContributorImage = ({
 	imageSize?: number
 }) => {
 	return (
-		<Image
-			src={danAbramovImage}
+		<CldImage
+			src={
+				'https://res.cloudinary.com/dbdlunqwz/image/upload/v1769766029/dan-abramov_pleos6.png'
+			}
 			className={cn('rounded-full', className)}
 			alt={config.author}
 			width={imageSize}

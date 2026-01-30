@@ -79,22 +79,22 @@
 
 	--radius: 0.6rem;
 	--background: oklch(0.9632 0.0121 96.42);
-	--foreground: oklch(0.3212 0.2095 264.2);
+	--foreground: oklch(0.3112 0.2095 264.2);
 	--card: oklch(1 0.0124 91.52);
 	--card-foreground: oklch(0.141 0.005 285.823);
-	--popover: oklch(1 0.0124 91.52);
+	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.3212 0.2095 264.2);
 	--primary: oklch(0.3212 0.2095 264.2);
 	--primary-dark: #474cd5;
 	--primary-foreground: oklch(1 0 0);
 	--secondary: oklch(1 0.0124 91.52);
 	--secondary-foreground: oklch(0.21 0.006 285.885);
-	--muted: oklch(0.92 0.0121 96.42);
+	--muted: oklch(0.93 0.0141 96.42);
 	--muted-foreground: oklch(0.5 0.12 264.2);
-	--accent: oklch(0.96 0.0121 96.42);
+	--accent: oklch(0.93 0.0141 96.42);
 	--accent-foreground: oklch(0.3212 0.2095 264.2);
 	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(90.29% 0.0124 91.52);
+	--border: oklch(0.9 0.0121 96.42);
 	--input: oklch(0.92 0.0121 96.42);
 	--ring: oklch(0.3212 0.2095 264.2);
 	--chart-1: oklch(0.646 0.222 41.116);
@@ -219,10 +219,10 @@
 		var(--font-inter), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-heading:
-		var(--font-im-fell-double-pica), ui-sans-serif, system-ui, sans-serif,
+		var(--font-libre-caslon-text), ui-sans-serif, system-ui, sans-serif,
 		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-serif:
-		var(--font-im-fell-dw-pica), ui-serif, serif, 'Apple Color Emoji',
+		var(--font-libre-caslon-text), ui-serif, serif, 'Apple Color Emoji',
 		'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 	--font-mono:
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
@@ -363,7 +363,7 @@
 		content: '';
 	}
 	code {
-		@apply bg-foreground text-background rounded-xs px-1 font-bold;
+		@apply bg-muted text-foreground px-1 py-0.5 text-[0.875rem] font-bold;
 	}
 	ul,
 	ol {
@@ -378,6 +378,9 @@
 			font-size: 0.8em;
 			transition: transform 0.2s ease-in-out;
 		}
+	}
+	p {
+		@apply leading-relaxed;
 	}
 }
 
@@ -419,16 +422,6 @@
 	--tw-prose-invert-pre-bg: var(--color-muted);
 	--tw-prose-invert-th-borders: var(--color-foreground);
 	--tw-prose-invert-td-borders: var(--color-border);
-}
-
-@layer utilities {
-	.text-primary {
-		@apply dark:text-primary-dark text-primary-dark;
-	}
-
-	.hover\:text-primary:hover {
-		@apply dark:text-primary-dark text-primary-dark;
-	}
 }
 
 @layer base {

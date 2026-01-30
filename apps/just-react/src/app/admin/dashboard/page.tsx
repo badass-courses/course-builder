@@ -77,7 +77,7 @@ export default async function AdminDashboardPage({
 	)
 
 	return (
-		<main className="mx-auto flex w-full flex-1 flex-col gap-5 py-10 lg:gap-10">
+		<main className="mx-auto flex w-full flex-1 flex-col gap-5 p-10 lg:gap-10">
 			<div className="flex flex-col gap-2">
 				<h1 className="font-heading text-xl font-bold sm:text-3xl">
 					Admin Dashboard

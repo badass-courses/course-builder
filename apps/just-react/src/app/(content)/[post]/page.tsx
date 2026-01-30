@@ -100,7 +100,7 @@ export default async function PostPage(props: {
 				<div className="w-full min-w-0">
 					{hasVideo && <PlayerContainer post={post} />}
 					<div>
-						<article className="mx-auto flex w-full flex-col gap-5 px-[12vw] py-[17dvh] sm:px-[15vw]">
+						<article className="mx-auto flex w-full flex-col gap-5 px-8 py-[17dvh] sm:px-[15vw]">
 							<PostTitle post={post} hasVideo={hasVideo} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex items-center gap-1">
@@ -223,7 +223,7 @@ async function PostBody({ post }: { post: Post | null }) {
 
 	return (
 		<div className="">
-			<article className="prose prose-themed prose-code:text-sm dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5 lg:text-xl">
+			<article className="prose prose-themed dark:prose-invert prose-lg mr-auto w-full max-w-2xl pt-5 lg:text-xl">
 				{content}
 			</article>
 		</div>
@@ -240,8 +240,9 @@ async function PostTitle({
 	return (
 		<SplitText
 			as="h1"
+			splitBy="chars"
 			className={cn(
-				'font-heading mb-4 text-5xl tracking-tight sm:text-5xl lg:text-6xl dark:text-white',
+				'font-heading mb-4 text-5xl font-bold tracking-tight sm:text-5xl lg:text-6xl dark:text-white',
 				{},
 			)}
 		>

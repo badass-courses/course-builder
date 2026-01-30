@@ -37,6 +37,7 @@ export function SubscribeFormWithStatus({
 
 	// Subscribed state
 	if (subscriber) {
+		return null
 		return (
 			<div
 				className={cn('flex items-center gap-3 font-serif text-xl', className)}

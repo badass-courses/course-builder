@@ -2,7 +2,13 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import { IM_Fell_Double_Pica, IM_Fell_DW_Pica, Inter } from 'next/font/google'
+import {
+	IM_Fell_Double_Pica,
+	IM_Fell_DW_Pica,
+	Inter,
+	Libre_Caslon_Display,
+	Libre_Caslon_Text,
+} from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
@@ -43,6 +49,20 @@ const imFellDwPica = IM_Fell_DW_Pica({
 	weight: '400',
 })
 
+const libreCaslonDisplay = Libre_Caslon_Display({
+	subsets: ['latin'],
+	variable: '--font-libre-caslon-display',
+	adjustFontFallback: false,
+	weight: ['400'],
+})
+
+const libreCaslonText = Libre_Caslon_Text({
+	subsets: ['latin'],
+	variable: '--font-libre-caslon-text',
+	adjustFontFallback: false,
+	weight: ['400', '700'],
+})
+
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
 	title: `DEV`,
@@ -77,7 +97,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} ${imFellDoublePica.variable} ${imFellDwPica.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${inter.variable} ${imFellDoublePica.variable} ${imFellDwPica.variable} ${libreCaslonDisplay.variable} ${libreCaslonText.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />
