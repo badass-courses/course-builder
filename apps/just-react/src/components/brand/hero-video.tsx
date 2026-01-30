@@ -23,7 +23,7 @@ export default function HeroVideo({ className }: { className?: string }) {
 				alt="Eye"
 				width={300}
 				height={300}
-				className={cn('absolute inset-0', {
+				className={cn('absolute inset-0 contrast-150 saturate-0', {
 					'opacity-0': videoLoaded,
 					'opacity-100': !videoLoaded,
 				})}
@@ -43,7 +43,7 @@ export default function HeroVideo({ className }: { className?: string }) {
 				height={300}
 				playsInline
 				preload="auto"
-				className={cn('relative z-0 shrink-0', {
+				className={cn('relative z-0 shrink-0 contrast-150 saturate-0', {
 					'opacity-100': videoLoaded,
 					'opacity-0': !videoLoaded,
 				})}

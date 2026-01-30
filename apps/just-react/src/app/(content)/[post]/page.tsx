@@ -192,7 +192,7 @@ export default async function PostPage(props: {
 								/>
 							</div>
 						</div>
-						<div className="border-t" data-theme="blue">
+						<div className="border-t" data-theme="invert">
 							<PostNextUpFromListPagination
 								className="container mx-auto rounded-none py-10 lg:py-16"
 								postId={post.id}

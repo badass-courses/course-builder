@@ -42,7 +42,7 @@ export const ContributorImage = ({
 	return (
 		<CldImage
 			src={
-				'https://res.cloudinary.com/dbdlunqwz/image/upload/v1769766029/dan-abramov_pleos6.png'
+				'https://res.cloudinary.com/dbdlunqwz/image/upload/v1769787824/dan-abramov_fpfcze.png'
 			}
 			className={cn('rounded-full', className)}
 			alt={config.author}

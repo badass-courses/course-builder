@@ -60,7 +60,7 @@ const Home = async (props: Props) => {
 							<SplitText
 								splitBy="chars"
 								as="h1"
-								className="font-heading text-primary leading-0 text-5xl font-bold tracking-tight lg:text-7xl"
+								className="font-heading leading-0 text-5xl font-bold tracking-tight lg:text-7xl"
 							>
 								{h1?.text || page?.fields.title}
 							</SplitText>
@@ -68,8 +68,8 @@ const Home = async (props: Props) => {
 								<SplitText
 									splitBy="chars"
 									as="h2"
-									className={cn('text-primary -mt-2 text-base lg:text-lg', {
-										'pl-6': h1?.text?.startsWith('J'),
+									className={cn('text-base lg:text-lg', {
+										'': h1?.text?.startsWith('J'),
 									})}
 								>
 									{h2.text}
