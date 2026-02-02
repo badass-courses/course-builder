@@ -20,11 +20,6 @@ export async function GET(
 		return new NextResponse('Not Found', { status: 404 })
 	}
 
-	// Only serve free-tier lessons
-	if (lessonResource.metadata?.tier !== 'free') {
-		return new NextResponse('Premium content', { status: 403 })
-	}
-
 	const markdown = serializeToMarkdown(lessonResource.resource)
 
 	return new NextResponse(markdown, {
