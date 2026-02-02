@@ -44,7 +44,7 @@ const config = {
 		},
 		images: [
 			{
-				url: `https://res.cloudinary.com/dbdlunqwz/image/upload/v1769772900/card_2x_l7vfan.jpg`,
+				url: `https://res.cloudinary.com/dbdlunqwz/image/upload/v1770026380/card_2x_x1ei3j.jpg`,
 				width: 1200,
 				height: 630,
 			},

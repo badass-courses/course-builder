@@ -19,7 +19,7 @@ export default function CheckYourEmailTemplate() {
 				<div className="w-full max-w-sm md:max-w-4xl">
 					<div className="flex flex-col">
 						<Card className="overflow-hidden p-0">
-							<CardContent className="grid p-0 md:grid-cols-2">
+							<CardContent className="p-0">
 								<div className="flex flex-col items-center justify-center gap-3 p-6 text-center md:p-8">
 									<h1 className="text-2xl font-semibold">Check your email</h1>
 									<p className="text-muted-foreground">
@@ -27,7 +27,7 @@ export default function CheckYourEmailTemplate() {
 										you&apos;ll be able to access your account.
 									</p>
 								</div>
-								<div className="bg-primary relative hidden p-10 md:block"></div>
+								{/* <div className="bg-primary relative hidden p-10 md:block"></div> */}
 							</CardContent>
 						</Card>
 					</div>
