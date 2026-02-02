@@ -89,7 +89,7 @@ const Home = async (props: Props) => {
 						</div>
 					</div>
 				</section>
-				<section className="">
+				<section className="pb-48">
 					{posts.length > 0 && (
 						<div className="flex flex-col pb-16 pt-10 md:pt-24">
 							<h2
