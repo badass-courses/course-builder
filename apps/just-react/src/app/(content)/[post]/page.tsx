@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { type Metadata, type ResolvingMetadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Noise from '@/components/brand/noise'
@@ -9,11 +10,12 @@ import LayoutClient from '@/components/layout-client'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import { Share } from '@/components/share'
+import * as Share from '@/components/share'
 import SplitText from '@/components/split-text'
 import SubscribeFormWithStatus from '@/components/subscribe-form-with-status'
 import TickerScroll from '@/components/ticker-scroll'
 import { courseBuilderAdapter } from '@/db'
+import { env } from '@/env.mjs'
 import type { List } from '@/lib/lists'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
@@ -24,17 +26,11 @@ import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { format } from 'date-fns'
-import { ArrowLeftIcon, Github, PencilIcon } from 'lucide-react'
+import { ArrowLeftIcon, CopyIcon, Github, PencilIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
-import {
-	Button,
-	CopyAsMarkdown,
-	OpenIn,
-	OpenInContent,
-	OpenInTrigger,
-} from '@coursebuilder/ui'
+import { Button } from '@coursebuilder/ui'
 import { VideoPlayerOverlayProvider } from '@coursebuilder/ui/hooks/use-video-player-overlay'
 
 import ModuleResourceList from '../_components/navigation/module-resource-list'
@@ -43,6 +39,7 @@ import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
 import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+import { CopyAsMarkdown } from './_components/copy-as-markdown'
 import { MobileListResourceNavigation } from './_components/list-resource-navigation'
 
 type Props = {
@@ -95,7 +92,7 @@ export default async function PostPage(props: {
 					variant="outline"
 					className="rounded-full bg-transparent"
 				>
-					<Link href="/#posts" className="flex items-center gap-1">
+					<Link href="/" prefetch className="flex items-center gap-1">
 						<ArrowLeftIcon className="inline-block size-4" />
 						All posts{' '}
 					</Link>
@@ -107,7 +104,7 @@ export default async function PostPage(props: {
 				<div className="w-full min-w-0">
 					{hasVideo && <PlayerContainer post={post} />}
 					<div>
-						<article className="container mx-auto flex w-full max-w-4xl flex-col gap-5 px-8">
+						<article className="container mx-auto flex w-full max-w-3xl flex-col gap-5 px-8">
 							<PostTitle post={post} hasVideo={hasVideo} />
 							<div className="relative mb-3 flex w-full items-center justify-between gap-3">
 								<div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row sm:justify-start sm:gap-1">
@@ -119,15 +116,8 @@ export default async function PostPage(props: {
 										)}
 									</Contributor>
 									<div className="flex items-center gap-1">
-										<OpenIn query={markdownToCopy}>
-											<OpenInTrigger
-												label="Use with AI"
-												className="rounded-full"
-											/>
-											<OpenInContent className="w-auto rounded-full">
-												<CopyAsMarkdown className="h-7 rounded-full" />
-											</OpenInContent>
-										</OpenIn>
+										<CopyAsMarkdown query={markdownToCopy} />
+
 										{post.fields?.github && (
 											<Button
 												asChild
@@ -181,15 +171,35 @@ export default async function PostPage(props: {
 							/>
 						</article>
 
-						<div className="mt-24 border-t">
-							<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 pt-5 sm:flex-row sm:pt-0">
-								<strong className="text-base font-medium tracking-tight sm:text-lg">
+						<div className="flex w-full items-center justify-center px-8 py-24">
+							<div className="flex w-full flex-col items-start justify-center gap-3 sm:w-auto">
+								<strong className="font-mono text-xs uppercase tracking-wider">
 									Share
 								</strong>
-								<Share
-									className="w-full border-t sm:w-auto sm:border-t-0"
-									title={post?.fields.title}
-								/>
+								<Share.Root
+									className="flex flex-col gap-1 sm:flex-row sm:items-center"
+									title={post.fields.title}
+								>
+									<Image
+										src={`${env.NEXT_PUBLIC_URL}/api/og?resource=${encodeURIComponent(post.fields.slug)}`}
+										width={1200 / 4}
+										height={630 / 4}
+										alt="Share on Bluesky"
+										className="rounded-md"
+									/>
+									<div className="flex flex-row items-start justify-start gap-1 sm:flex-col">
+										<Share.Bluesky className="[&_span]:hidden sm:[&_span]:inline-block">
+											Share on Bluesky
+										</Share.Bluesky>
+										<Share.X className="[&_span]:hidden sm:[&_span]:inline-block">
+											Share on X
+										</Share.X>
+										<Share.LinkedIn className="[&_span]:hidden sm:[&_span]:inline-block">
+											Share on LinkedIn
+										</Share.LinkedIn>
+										<Share.CopyUrl className="">Share on CopyUrl</Share.CopyUrl>
+									</div>
+								</Share.Root>
 							</div>
 						</div>
 						<div className="border-t" data-theme="invert">

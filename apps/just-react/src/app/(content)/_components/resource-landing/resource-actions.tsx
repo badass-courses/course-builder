@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Share } from '@/components/share'
+import { ShareBar } from '@/components/share'
 import { Github, Share2 } from 'lucide-react'
 
 import {
@@ -61,7 +61,7 @@ export function ResourceActions({
 					</DialogTrigger>
 					<DialogContent>
 						<DialogTitle>Share {title}</DialogTitle>
-						<Share />
+						<ShareBar />
 					</DialogContent>
 				</Dialog>
 			</div>

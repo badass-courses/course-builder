@@ -39,7 +39,7 @@ function splitText(
 	const result: SplitResult = { chars: [], words: [], lines: [] }
 	const words = text.split(' ')
 	const wordElements: HTMLSpanElement[] = []
-	const spacerElements: (Text | null)[] = []
+	const spacerElements: (HTMLSpanElement | null)[] = []
 
 	// Create word and character spans
 	for (const [wordIndex, word] of words.entries()) {
@@ -56,7 +56,6 @@ function splitText(
 			const charSpan = document.createElement('span')
 			charSpan.className = charClass
 			charSpan.dataset.index = charIndex.toString()
-			charSpan.style.display = 'inline-block'
 			charSpan.textContent = char
 			wordSpan.appendChild(charSpan)
 			result.chars.push(charSpan)
@@ -66,9 +65,10 @@ function splitText(
 
 		// Add space between words
 		if (wordIndex < words.length - 1) {
-			const spaceNode = document.createTextNode(' ')
-			element.appendChild(spaceNode)
-			spacerElements.push(spaceNode)
+			const spaceSpan = document.createElement('span')
+			spaceSpan.innerHTML = '&nbsp;'
+			element.appendChild(spaceSpan)
+			spacerElements.push(spaceSpan)
 		} else {
 			spacerElements.push(null)
 		}
@@ -82,8 +82,8 @@ function splitText(
 	}))
 
 	// Group words into lines
-	const lines: { elements: (HTMLSpanElement | Text)[] }[] = []
-	let currentLine: (HTMLSpanElement | Text)[] = []
+	const lines: { elements: HTMLSpanElement[] }[] = []
+	let currentLine: HTMLSpanElement[] = []
 	let currentTop = wordData[0]?.top ?? 0
 
 	for (const { element: wordEl, top, spacer } of wordData) {
@@ -161,7 +161,11 @@ export function SplitText<T extends ElementType = 'span'>({
 
 			animate(
 				elements,
-				{ opacity: [0, 1], y: [10, 0], filter: ['blur(4px)', 'blur(0px)'] },
+				{
+					opacity: [0, 1],
+					y: [10, 0],
+					filter: ['blur(4px)', 'blur(0px)'],
+				},
 				{
 					type: 'spring',
 					duration: baseDuration,
@@ -179,6 +183,7 @@ export function SplitText<T extends ElementType = 'span'>({
 			ref={textRef}
 			className={cn(
 				'invisible [&_.split-word]:will-change-[transform,opacity,filter]',
+				splitBy === 'chars' && '[&_.split-word]:inline-flex',
 				className,
 			)}
 		>

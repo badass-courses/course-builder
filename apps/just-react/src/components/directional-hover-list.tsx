@@ -40,7 +40,7 @@ export function DirectionalHoverList({
 					{hoveredId === post.id && (
 						<motion.div
 							layoutId="hover-bg"
-							className="bg-accent absolute inset-0 -mx-4"
+							className="bg-muted absolute inset-0 -mx-4 rounded-md shadow-inner"
 							initial={false}
 							transition={{
 								type: 'spring',
@@ -57,7 +57,7 @@ export function DirectionalHoverList({
 							// hoveredId === post.id && 'text-primary-foreground',
 						)}
 					>
-						<span className="font-heading text-2xl font-semibold sm:text-2xl">
+						<span className="font-heading text-primary text-2xl font-semibold sm:text-2xl">
 							{post.fields.title}
 						</span>
 						{post.fields.description && (
@@ -71,7 +71,7 @@ export function DirectionalHoverList({
 							</p>
 						)}
 					</Link>
-					<div className="bg-border relative z-10 h-px w-full" />
+					<div className="bg-border relative z-10 -mx-4 h-px w-full" />
 				</li>
 			))}
 		</ul>

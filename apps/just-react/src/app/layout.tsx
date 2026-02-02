@@ -7,9 +7,11 @@ import {
 	// IM_Fell_DW_Pica,
 	Inter,
 	Libre_Caslon_Text,
+	Oooh_Baby,
 	TASA_Orbiter,
 } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
+import { HueShift } from '@/components/hue-shift'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -29,6 +31,12 @@ import { extractRouterConfig } from 'uploadthing/server'
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Toaster } from '@coursebuilder/ui/primitives/toaster'
+
+const ooohBaby = Oooh_Baby({
+	subsets: ['latin'],
+	weight: ['400'],
+	variable: '--font-oooh-baby',
+})
 
 const inter = Inter({
 	subsets: ['latin'],
@@ -81,9 +89,10 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} ${tasaOrbiter.variable} ${libreCaslonText.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${ooohBaby.variable} ${inter.variable} ${tasaOrbiter.variable} ${libreCaslonText.variable} antialised font-sans`}
 				>
 					<Toaster />
+					<HueShift />
 					<FeedbackInsert />
 					<TRPCReactProvider>
 						<Party />

@@ -1,4 +1,4 @@
-import { Share } from '@/components/share'
+import { ShareBar } from '@/components/share'
 
 export type ResourceShareFooterProps = {
 	/** Resource title for sharing */
@@ -23,7 +23,7 @@ export function ResourceShareFooter({
 					<strong className="text-base font-medium tracking-tight sm:text-lg">
 						Share
 					</strong>
-					<Share
+					<ShareBar
 						className="w-full border-t sm:w-auto sm:border-t-0"
 						title={title}
 					/>

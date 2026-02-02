@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { Share } from '@/components/share'
+import { ShareBar } from '@/components/share'
 import { db } from '@/db'
 import { isNotNull } from 'drizzle-orm'
 
@@ -133,7 +133,7 @@ export default async function ProfilePage({ params }: Props) {
 					{unlockedAchievements.length > 0 && (
 						<div className="py-4">
 							<strong className="">Share</strong>
-							<Share className="mt-2" />
+							<ShareBar className="mt-2" />
 						</div>
 					)}
 				</div>

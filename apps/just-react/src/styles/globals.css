@@ -19,6 +19,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@property --primary-hue {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 264.2;
+}
+
+@keyframes hue-shift {
+	from {
+		--primary-hue: 0;
+	}
+	to {
+		--primary-hue: 360;
+	}
+}
+
 @utility container {
 	margin-inline: auto;
 	padding-inline: 1.5rem;
@@ -75,14 +90,22 @@
 		100vh - var(--nav-height) - var(--command-bar-height) - 30px
 	);
 
+	--primary-hue: 30;
+	--primary-lightness: 0.65;
+	--primary-chroma: 0.2;
+
 	--radius: 0.6rem;
 	--background: oklch(1 0 0);
 	--foreground: oklch(0 0 0);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0 0 0);
 	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.3212 0.2095 264.2);
-	--primary: oklch(0.3212 0.2095 264.2);
+	--popover-foreground: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
+	--primary: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
 	--primary-dark: #474cd5;
 	--primary-foreground: oklch(1 0 0);
 	--secondary: oklch(0.98 0 0);
@@ -90,11 +113,15 @@
 	--muted: oklch(0.99 0 0);
 	--muted-foreground: oklch(0 0 0);
 	--accent: oklch(0.98 0 0);
-	--accent-foreground: oklch(0.3212 0.2095 264.2);
+	--accent-foreground: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
 	--destructive: oklch(0.577 0.245 27.325);
 	--border: oklch(0.93 0 0);
 	--input: oklch(0.97 0 0);
-	--ring: oklch(0.3212 0.2095 264.2);
+	--ring: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
 	--chart-1: oklch(0.646 0.222 41.116);
 	--chart-2: oklch(0.6 0.118 184.704);
 	--chart-3: oklch(0.398 0.07 227.392);
@@ -146,15 +173,21 @@
 
 .dark {
 	/* golden color scheme */
+	--primary-hue: 90;
+	--primary-lightness: 0.7;
+	--primary-chroma: 0.18;
 	--background: oklch(0.141 0.005 285.823);
 	--foreground: oklch(1 0 0);
 	--card: oklch(0.23 0.006 285.885);
 	--card-foreground: oklch(0.985 0 0);
 	--popover: oklch(0.21 0.006 285.885);
 	--popover-foreground: oklch(0.985 0 0);
-	--primary: oklch(0.8666 0.1344 93.33);
-	/* --primary: oklch(0.8983 0.1856 100.36); */
-	--primary-dark: oklch(0.8666 0.1344 93.33);
+	--primary: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
+	--primary-dark: oklch(
+		var(--primary-lightness) var(--primary-chroma) var(--primary-hue)
+	);
 	--primary-foreground: oklch(0 0 0);
 	--secondary: oklch(0.28 0.006 285.885);
 	--secondary-foreground: oklch(0.985 0 0);
@@ -226,7 +259,9 @@
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
 		'Courier New', monospace;
 
-	/* Font Sizes - Standard */
+	--font-hand:
+		var(--font-oooh-baby), ui-sans-serif, system-ui, sans-serif,
+		'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
 	--text-7xl: clamp(2.5rem, 2.25rem + 0.75vw, 3rem); /* 40px to 48px */
 	--text-7xl--line-height: 1.1;

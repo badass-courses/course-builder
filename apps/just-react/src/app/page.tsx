@@ -55,8 +55,8 @@ const Home = async (props: Props) => {
 		>
 			<div className="">
 				<section className="mx-auto w-full">
-					<div className="flex flex-col items-center justify-between pt-[5dvh] md:flex-row">
-						<div className="flex flex-col">
+					<div className="flex flex-col items-center justify-between pt-16 md:flex-row md:pt-[5dvh]">
+						<div className="flex flex-col items-center md:items-start">
 							<SplitText
 								splitBy="chars"
 								as="h1"
@@ -76,7 +76,7 @@ const Home = async (props: Props) => {
 								</SplitText>
 							)}
 						</div>
-						<div className="flex items-start justify-end">
+						<div className="flex items-start justify-end py-5 md:py-0">
 							<HeroVideo className="-mr-3 md:-mr-10" />
 							{/* <Image
 								src={'/assets/eye@2x.png'}
@@ -89,10 +89,13 @@ const Home = async (props: Props) => {
 						</div>
 					</div>
 				</section>
-				<section className="scroll-mt-8 pb-48" id="posts">
+				<section className="">
 					{posts.length > 0 && (
-						<div className="mb-[20dvh]">
-							<h2 className="mb-2 font-mono text-xs font-medium uppercase tracking-wider">
+						<div className="flex flex-col pb-16 pt-10 md:pt-24">
+							<h2
+								className="mb-2 scroll-mt-8 font-mono text-xs font-medium uppercase tracking-wider"
+								id="posts"
+							>
 								Latest Posts
 							</h2>
 							<DirectionalHoverList posts={posts} />
