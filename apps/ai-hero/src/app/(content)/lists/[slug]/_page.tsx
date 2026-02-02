@@ -193,19 +193,6 @@ export default async function ListPage(props: {
 						<ListActionBar className="absolute right-0 top-5" list={list} />
 					</Suspense>
 				</div>
-
-				<div className={cn('absolute right-0 top-0 z-0 w-full', {})}>
-					<img
-						src={squareGridPattern}
-						alt=""
-						aria-hidden="true"
-						className="object-top-right hidden h-[320px] w-full overflow-hidden object-cover opacity-[0.05] saturate-0 sm:flex dark:opacity-[0.15]"
-					/>
-					<div
-						className="to-background via-background bg-linear-to-bl absolute left-0 top-0 z-10 h-full w-full from-transparent"
-						aria-hidden="true"
-					/>
-				</div>
 			</header>
 			<Links>
 				<div className="col-span-2 hidden h-14 items-center border-l pl-5 text-base font-medium md:flex">
