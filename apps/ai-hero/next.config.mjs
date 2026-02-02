@@ -64,6 +64,48 @@ const config = {
 			},
 		]
 	},
+	async rewrites() {
+		return {
+			beforeFiles: [
+				// Posts/Lists: Accept: text/markdown → /md/[slug]
+				{
+					source: '/:slug',
+					destination: '/md/:slug',
+					has: [
+						{
+							type: 'header',
+							key: 'accept',
+							value: '(.*text/markdown.*)',
+						},
+					],
+				},
+				// Workshops
+				{
+					source: '/workshops/:module/:lesson',
+					destination: '/md/workshops/:module/:lesson',
+					has: [
+						{
+							type: 'header',
+							key: 'accept',
+							value: '(.*text/markdown.*)',
+						},
+					],
+				},
+				// Tutorials
+				{
+					source: '/tutorials/:module/:lesson',
+					destination: '/md/tutorials/:module/:lesson',
+					has: [
+						{
+							type: 'header',
+							key: 'accept',
+							value: '(.*text/markdown.*)',
+						},
+					],
+				},
+			],
+		}
+	},
 }
 
 export default withAxiom(withMDX(config))
