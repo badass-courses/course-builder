@@ -19,6 +19,8 @@ const config = {
 	experimental: {
 		mdxRs: true,
 		turbopackFileSystemCacheForDev: true,
+		serverComponentsHmrCache: true,
+		optimizePackageImports: ['lucide-react', '@coursebuilder/ui', 'shiki'],
 	},
 	serverExternalPackages: ['@sentry/nextjs', 'liquidjs'],
 	allowedDevOrigins: ['localhost:3000', '*.ngrok.app'],
@@ -67,6 +69,18 @@ const config = {
 	async rewrites() {
 		return {
 			beforeFiles: [
+				// Short-circuit /sitemap.md to prevent /:slug from catching it
+				{
+					source: '/sitemap.md',
+					destination: '/sitemap.md',
+					has: [
+						{
+							type: 'header',
+							key: 'accept',
+							value: '(.*text/markdown.*)',
+						},
+					],
+				},
 				// Posts/Lists: Accept: text/markdown → /md/[slug]
 				{
 					source: '/:slug',
