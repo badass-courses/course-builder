@@ -111,7 +111,7 @@ export interface ListEditorConfig {
  */
 export const defaultListEditorConfig: ListEditorConfig = {
 	selection: {
-		availableResourceTypes: ['article'],
+		availableResourceTypes: ['article', 'lesson'],
 		defaultResourceType: 'article',
 		createResourceTitle: 'Create a Resource',
 		showTierSelector: false,

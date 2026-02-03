@@ -1,5 +1,96 @@
 import z from 'zod'
 
+import { ContentResourceSchema } from '@coursebuilder/core/schemas/content-resource-schema'
+
+import { PostTagsSchema } from './posts'
+
+export const WorkshopStateSchema = z.enum([
+	'draft',
+	'published',
+	'archived',
+	'deleted',
+])
+
+export const WorkshopVisibilitySchema = z.enum([
+	'public',
+	'private',
+	'unlisted',
+])
+
+export const WorkshopFieldsSchema = z.object({
+	title: z.string().min(1, { message: 'Title is required' }),
+	subtitle: z.string().optional(),
+	description: z.string().optional(),
+	body: z.string().optional(),
+	state: WorkshopStateSchema.default('draft'),
+	startsAt: z.string().datetime().nullish(),
+	endsAt: z.string().datetime().nullish(),
+	timezone: z.string().default('America/Los_Angeles'),
+	slug: z.string().min(1, { message: 'Slug is required' }),
+	visibility: WorkshopVisibilitySchema.default('unlisted'),
+	coverImage: z
+		.object({
+			url: z.string().optional(),
+			alt: z.string().optional(),
+		})
+		.optional(),
+	workshopApp: z
+		.object({
+			port: z.string().optional(),
+			externalUrl: z.string().optional(),
+		})
+		.optional(),
+	github: z.string().optional(),
+})
+
+/**
+ * Workshop resource schema
+ */
+export const WorkshopSchema = ContentResourceSchema.merge(
+	z.object({
+		type: z.literal('workshop'),
+		id: z.string(),
+		fields: WorkshopFieldsSchema,
+		tags: PostTagsSchema,
+	}),
+)
+
+export type Workshop = z.infer<typeof WorkshopSchema>
+
+/**
+ * Minimal workshop schema for list views
+ */
+export const MinimalWorkshopSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	slug: z.string(),
+	state: WorkshopStateSchema,
+	visibility: WorkshopVisibilitySchema,
+	coverImage: z
+		.object({
+			url: z.string().optional(),
+			alt: z.string().optional(),
+		})
+		.optional(),
+})
+
+export type MinimalWorkshop = z.infer<typeof MinimalWorkshopSchema>
+
+/**
+ * Input schema for creating new workshops
+ */
+export const NewWorkshopInputSchema = z.object({
+	title: z.string().min(1, 'Title is required'),
+	createdById: z.string(),
+	subtitle: z.string().optional(),
+	description: z.string().optional(),
+	timezone: z.string().default('America/Los_Angeles'),
+})
+
+export type NewWorkshopInput = z.infer<typeof NewWorkshopInputSchema>
+
+// Navigation schemas
+
 export const NavigationLessonSchema = z.object({
 	id: z.string(),
 	slug: z.string(),

@@ -176,56 +176,38 @@ export const getCachedLesson = unstable_cache(
 )
 
 export async function getLesson(lessonSlugOrId: string) {
-	const start = new Date().getTime()
-
-	const cachedLesson = await redis.get(
-		`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-	)
-
-	const lesson = cachedLesson
-		? cachedLesson
-		: await db.query.contentResource.findFirst({
-				where: and(
-					or(
-						eq(
-							sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
-							lessonSlugOrId,
-						),
-						eq(contentResource.id, lessonSlugOrId),
-						like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
-					),
-					or(
-						eq(contentResource.type, 'lesson'),
-						eq(contentResource.type, 'exercise'),
-						eq(contentResource.type, 'solution'),
-						eq(contentResource.type, 'post'),
-					),
+	const lesson = await db.query.contentResource.findFirst({
+		where: and(
+			or(
+				eq(
+					sql`JSON_EXTRACT (${contentResource.fields}, "$.slug")`,
+					lessonSlugOrId,
 				),
+				eq(contentResource.id, lessonSlugOrId),
+				like(contentResource.id, `%${last(lessonSlugOrId.split('-'))}%`),
+			),
+			or(
+				eq(contentResource.type, 'lesson'),
+				eq(contentResource.type, 'exercise'),
+				eq(contentResource.type, 'solution'),
+				eq(contentResource.type, 'post'),
+			),
+		),
+		with: {
+			tags: {
 				with: {
-					tags: {
-						with: {
-							tag: true,
-						},
-						orderBy: asc(contentResourceTag.position),
-					},
+					tag: true,
 				},
-			})
+				orderBy: asc(contentResourceTag.position),
+			},
+		},
+	})
 
 	const parsedLesson = LessonSchema.safeParse(lesson)
 	if (!parsedLesson.success) {
 		console.error('Error parsing lesson', lesson, parsedLesson.error)
 		return null
 	}
-
-	if (!cachedLesson) {
-		await redis.set(
-			`lesson:${env.NEXT_PUBLIC_APP_NAME}:${lessonSlugOrId}`,
-			lesson,
-			{ ex: 10 },
-		)
-	}
-
-	console.log('getLesson end', { lessonSlugOrId }, new Date().getTime() - start)
 
 	return parsedLesson.data
 }

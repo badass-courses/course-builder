@@ -25,7 +25,14 @@ export const LessonSchema = ContentResourceSchema.merge(
 				.default('draft'),
 			visibility: z.enum(['public', 'private', 'unlisted']).default('unlisted'),
 			github: z.string().optional(),
+			gitpod: z.string().optional(),
 			thumbnailTime: z.number().nullish(),
+			optional: z.boolean().nullish().default(false),
+			workshopApp: z
+				.object({
+					path: z.string().optional(),
+				})
+				.optional(),
 		}),
 		resources: z.array(ContentResourceResourceSchema).default([]).nullable(),
 		tags: PostTagsSchema,
@@ -45,6 +52,7 @@ export const LessonUpdateSchema = z.object({
 		visibility: PostVisibilitySchema.optional(),
 		github: z.string().nullish(),
 		thumbnailTime: z.number().nullish(),
+		optional: z.boolean().nullish().default(false),
 	}),
 	tags: PostTagsSchema,
 })
