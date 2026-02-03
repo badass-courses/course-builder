@@ -1,8 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { FilePlus2 } from 'lucide-react'
 
 import type { ContentResource } from '@coursebuilder/core/schemas'
+import { Button } from '@coursebuilder/ui'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { CreatePostModal } from '../posts/_components/create-post-modal'
@@ -71,6 +74,14 @@ export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
 				contributorSelectable={isAdmin}
 				onResourceCreated={handleResourceCreated}
 			/>
+			{isAdmin && (
+				<Button asChild className="gap-1">
+					<Link href="/products/new">
+						<FilePlus2 className="h-4 w-4" />
+						New Product
+					</Link>
+				</Button>
+			)}
 		</>
 	)
 }

@@ -10,14 +10,14 @@ export type TreeItem = {
 	type?: string
 	children: TreeItem[]
 	isOpen?: boolean
-	tier?: 'standard' | 'premium' | 'vip'
+	tier?: 'free' | 'standard' | 'premium' | 'vip'
 	itemData?: {
 		position: number
 		resource: ContentResource
 		resourceId: string
 		resourceOfId: string
 		metadata?: {
-			tier?: 'standard' | 'premium' | 'vip'
+			tier?: 'free' | 'standard' | 'premium' | 'vip'
 		}
 	}
 }
@@ -113,7 +113,7 @@ export type TreeAction =
 	| {
 			type: 'update-tier'
 			itemId: string
-			tier: 'standard' | 'premium' | 'vip'
+			tier: 'free' | 'standard' | 'premium' | 'vip'
 	  }
 	| {
 			type: 'update-item'

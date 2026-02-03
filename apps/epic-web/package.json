@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "concurrently --kill-others-on-fail \"npm:dev:*\"",
-		"dev:next": "next dev --turbopack",
+		"dev:next": "next dev",
 		"dev:inngest": "pnpx inngest-cli@latest dev --no-discovery -u http://localhost:3000/api/inngest",
 		"dev:party": "pnpx partykit dev",
 		"tunnel": "ngrok http --domain=neatly-diverse-goldfish.ngrok-free.app 3000",

@@ -107,8 +107,8 @@ export default function Tree({
 	rootResource,
 	onRefresh,
 	showTierSelector = false,
-
 	onResourceUpdate,
+	onResourceRemove,
 }: {
 	state: TreeState
 	updateState: React.Dispatch<TreeAction>
@@ -120,6 +120,7 @@ export default function Tree({
 		itemId: string,
 		fields: Record<string, any>,
 	) => Promise<void>
+	onResourceRemove?: (itemId: string, listId: string) => Promise<void>
 }) {
 	const ref = useRef<HTMLDivElement>(null)
 	const { extractInstruction } = useContext(DependencyContext)
@@ -193,6 +194,47 @@ export default function Tree({
 				metadata?: any
 			}[] = []
 
+			/**
+			 * Recursively processes children of an item to collect position updates
+			 * Supports nested sections (sections within sections)
+			 */
+			const processChildren = (
+				children: TreeItemType[],
+				parentResourceId: string,
+			) => {
+				for (const [childIndex, childItem] of children.entries()) {
+					if (!childItem.itemData) {
+						if (DEBUG)
+							console.warn('Skipping child without itemData:', childItem)
+						continue
+					}
+
+					if (DEBUG) {
+						console.log('Queueing child position update:', {
+							childId: childItem.id,
+							parentId: parentResourceId,
+							position: childIndex,
+							currentParent: childItem.itemData.resourceOfId,
+						})
+					}
+
+					updates.push({
+						resourceId: childItem.itemData.resourceId,
+						resourceOfId: parentResourceId,
+						currentParentResourceId: childItem.itemData.resourceOfId,
+						position: childIndex,
+					})
+
+					// Recursively process nested children (e.g., lessons inside nested sections)
+					if (childItem.children.length > 0) {
+						if (DEBUG)
+							console.group(`Processing nested children of ${childItem.id}`)
+						processChildren(childItem.children, childItem.itemData.resourceId)
+						if (DEBUG) console.groupEnd()
+					}
+				}
+			}
+
 			for (const [itemIndex, item] of currentData.entries()) {
 				if (!item.itemData) {
 					if (DEBUG) console.warn('Skipping item without itemData:', item)
@@ -201,30 +243,7 @@ export default function Tree({
 
 				if (item.children.length > 0) {
 					if (DEBUG) console.group(`Processing children of ${item.id}`)
-
-					for (const [childIndex, childItem] of item.children.entries()) {
-						if (!childItem.itemData) {
-							if (DEBUG)
-								console.warn('Skipping child without itemData:', childItem)
-							continue
-						}
-
-						if (DEBUG) {
-							console.log('Queueing child position update:', {
-								childId: childItem.id,
-								parentId: item.itemData.resourceId,
-								position: childIndex,
-								currentParent: childItem.itemData.resourceOfId,
-							})
-						}
-
-						updates.push({
-							resourceId: childItem.itemData.resourceId,
-							resourceOfId: item.itemData.resourceId,
-							currentParentResourceId: childItem.itemData.resourceOfId,
-							position: childIndex,
-						})
-					}
+					processChildren(item.children, item.itemData.resourceId)
 					if (DEBUG) console.groupEnd()
 				}
 
@@ -404,6 +423,7 @@ export default function Tree({
 			rootResource,
 			onRefresh,
 			onResourceUpdate,
+			onResourceRemove,
 		}),
 		[
 			getChildrenOfItem,
@@ -414,6 +434,7 @@ export default function Tree({
 			rootResource,
 			onRefresh,
 			onResourceUpdate,
+			onResourceRemove,
 		],
 	)
 
