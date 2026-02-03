@@ -3,6 +3,7 @@ import { certificateRouter } from '@/trpc/api/routers/certificate'
 import { contentResourceRouter } from '@/trpc/api/routers/contentResources'
 import { deviceVerificationRouter } from '@/trpc/api/routers/device-verification'
 import { eventsRouter } from '@/trpc/api/routers/events'
+import { exercisesRouter } from '@/trpc/api/routers/exercises'
 import { imageResourceRouter } from '@/trpc/api/routers/imageResource'
 import { lessonsRouter } from '@/trpc/api/routers/lessons'
 import { pricingRouter } from '@/trpc/api/routers/pricing'
@@ -28,6 +29,7 @@ export const appRouter = createTRPCRouter({
 	pricing: pricingRouter,
 	contentResources: contentResourceRouter,
 	events: eventsRouter,
+	exercises: exercisesRouter,
 	progress: progressRouter,
 	lessons: lessonsRouter,
 	solutions: solutionsRouter,

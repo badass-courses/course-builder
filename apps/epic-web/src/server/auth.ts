@@ -134,6 +134,28 @@ export const authOptions: NextAuthConfig = {
 		strategy: 'database',
 		maxAge: 30 * 24 * 60 * 60, // 30 days
 	},
+	callbacks: {
+		session: async ({ session, user }) => {
+			if (user?.id) {
+				const dbUser = await db.query.users.findFirst({
+					where: (u, { eq }) => eq(u.id, user.id),
+					with: {
+						roles: {
+							with: {
+								role: true,
+							},
+						},
+					},
+				})
+
+				if (dbUser) {
+					session.user.role = (dbUser.role as Role) || 'user'
+					session.user.roles = dbUser.roles.map((userRole) => userRole.role)
+				}
+			}
+			return session
+		},
+	},
 	events: {
 		createUser: async ({ user }) => {
 			if (env.NEXT_PUBLIC_AMPLITUDE_API_KEY) {

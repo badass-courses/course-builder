@@ -6,6 +6,7 @@ import type { ContentResource } from '@coursebuilder/core/schemas'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 import { CreatePostModal } from '../posts/_components/create-post-modal'
+import { CreateWorkshopModal } from '../workshops/_components/create-workshop-modal'
 
 /**
  * Client component wrapper for creating tips, articles, and tutorials with proper redirect handling.
@@ -64,6 +65,10 @@ export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
 				defaultResourceType="tutorial"
 				topLevelResourceTypes={['tutorial']}
 				uploadEnabled={false}
+				onResourceCreated={handleResourceCreated}
+			/>
+			<CreateWorkshopModal
+				contributorSelectable={isAdmin}
 				onResourceCreated={handleResourceCreated}
 			/>
 		</>

@@ -117,6 +117,11 @@ const Home = async (props: Props) => {
 				label: 'All Pages',
 				description: 'Manage site pages',
 			},
+			{
+				href: '/admin/workshops',
+				label: 'All Workshops',
+				description: 'View and edit all workshops',
+			},
 		]
 
 		const userManagementLinks = [

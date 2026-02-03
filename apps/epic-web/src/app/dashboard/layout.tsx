@@ -1,6 +1,6 @@
 import React from 'react'
 import LayoutWithImpersonation from '@/components/layout-with-impersonation'
-import { FileText, Lightbulb, User } from 'lucide-react'
+import { FileText, Lightbulb, Presentation, User } from 'lucide-react'
 
 import { NavItem } from '../admin/pages/_components/nav-link'
 
@@ -25,6 +25,9 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
 									</NavItem>
 									<NavItem href="/dashboard/tips">
 										<Lightbulb className="h-4 w-4" /> Tips
+									</NavItem>
+									<NavItem href="/dashboard/workshops">
+										<Presentation className="h-4 w-4" /> Workshops
 									</NavItem>
 								</li>
 							</ul>
