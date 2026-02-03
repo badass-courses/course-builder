@@ -10,8 +10,9 @@ import {
 	products,
 } from '@/db/schema'
 import { NewProduct } from '@/lib/products'
+import { syncProductToOriginal } from '@/lib/sync-products'
 import { getServerAuthSession } from '@/server/auth'
-import { and, eq } from 'drizzle-orm'
+import { and, desc, eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
 
@@ -64,7 +65,9 @@ export async function archiveProduct(productId: string) {
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
-	return courseBuilderAdapter.archiveProduct(productId)
+	const result = await courseBuilderAdapter.archiveProduct(productId)
+	await syncProductToOriginal(productId)
+	return result
 }
 
 export async function getActiveSelfPacedProducts() {
@@ -80,7 +83,9 @@ export async function updateProduct(input: Product) {
 	if (!user || !ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
-	return courseBuilderAdapter.updateProduct(input)
+	const updatedProduct = await courseBuilderAdapter.updateProduct(input)
+	await syncProductToOriginal(input.id)
+	return updatedProduct
 }
 
 export async function getProduct(productSlugOrId?: string) {
@@ -90,6 +95,7 @@ export async function getProduct(productSlugOrId?: string) {
 export async function getProducts() {
 	const productsData = await db.query.products.findMany({
 		where: eq(products.status, 1),
+		orderBy: desc(products.createdAt),
 		with: {
 			price: true,
 			resources: {
@@ -123,5 +129,31 @@ export async function createProduct(input: NewProduct) {
 		throw new Error('Unauthorized')
 	}
 
-	return courseBuilderAdapter.createProduct(input)
+	const product = await courseBuilderAdapter.createProduct(input)
+	if (product) {
+		await syncProductToOriginal(product.id)
+	}
+	return product
+}
+
+export async function removeResourceFromProduct(
+	resourceId: string,
+	productId: string,
+) {
+	const { session, ability } = await getServerAuthSession()
+	const user = session?.user
+	if (!user || !ability.can('create', 'Content')) {
+		throw new Error('Unauthorized')
+	}
+
+	const result = await db
+		.delete(contentResourceProduct)
+		.where(
+			and(
+				eq(contentResourceProduct.resourceId, resourceId),
+				eq(contentResourceProduct.productId, productId),
+			),
+		)
+	console.log({ result })
+	return result
 }

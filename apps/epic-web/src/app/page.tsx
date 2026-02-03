@@ -122,6 +122,11 @@ const Home = async (props: Props) => {
 				label: 'All Workshops',
 				description: 'View and edit all workshops',
 			},
+			{
+				href: '/admin/products',
+				label: 'All Products',
+				description: 'View and edit all products',
+			},
 		]
 
 		const userManagementLinks = [
