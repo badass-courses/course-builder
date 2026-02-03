@@ -76,7 +76,7 @@ export function CreateResourceModals({ isAdmin }: { isAdmin?: boolean }) {
 			/>
 			{isAdmin && (
 				<Button asChild className="gap-1">
-					<Link href="/products/new">
+					<Link href="/admin/products/new">
 						<FilePlus2 className="h-4 w-4" />
 						New Product
 					</Link>
