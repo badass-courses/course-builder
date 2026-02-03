@@ -6,5 +6,5 @@ export const onProductSave = async (resource: {
 	fields: Record<string, any> | null
 }) => {
 	'use server'
-	redirect(`/products/${resource.fields?.slug}`)
+	redirect(`/admin/products/${resource.fields?.slug}`)
 }
