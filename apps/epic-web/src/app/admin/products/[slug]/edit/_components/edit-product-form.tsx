@@ -227,7 +227,7 @@ export function EditProductForm({ product }: { product: Product }) {
 			product={product}
 			form={form}
 			resourceSchema={productSchema}
-			getResourcePath={(slug?: string) => `/products/${slug}`}
+			getResourcePath={(slug?: string) => `/admin/products/${slug}`}
 			updateResource={updateProduct}
 			onSave={onProductSave}
 			availableWorkflows={[]}

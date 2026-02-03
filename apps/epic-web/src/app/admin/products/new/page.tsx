@@ -20,7 +20,7 @@ export default async function NewEventPage() {
 			<CreateProductCard
 				onCreate={async (product: Product) => {
 					'use server'
-					redirect(`/products/${product.fields?.slug}/edit`)
+					redirect(`/admin/products/${product.fields?.slug}/edit`)
 				}}
 				createProduct={createProduct}
 			/>
