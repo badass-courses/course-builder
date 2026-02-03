@@ -10,6 +10,7 @@ import { userHasRole } from '@/utils/user-has-role'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import {
 	ChevronDownIcon,
+	CircleDollarSign,
 	FileText,
 	Lightbulb,
 	ListChecks,
@@ -161,6 +162,12 @@ export const UserMenuClient = ({ user }: UserMenuClientProps) => {
 										href="/admin/contributors"
 										label="Admin Contributors"
 										icon={<Users className="mr-2 h-4 w-4" />}
+									/>
+									<NavLinkItem
+										variant="menu"
+										href="/admin/products"
+										label="Admin Products"
+										icon={<CircleDollarSign className="mr-2 h-4 w-4" />}
 									/>
 								</>
 							)}

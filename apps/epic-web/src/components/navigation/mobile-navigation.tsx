@@ -8,6 +8,7 @@ import { api } from '@/trpc/react'
 import { cn } from '@/utils/cn'
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline'
 import {
+	CircleDollarSign,
 	FileText,
 	Lightbulb,
 	ListChecks,
@@ -164,6 +165,12 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
 											href="/admin/contributors"
 											label="Admin Contributors"
 											icon={<Users className="mr-2 h-4 w-4" />}
+										/>
+										<NavLinkItem
+											className=""
+											href="/admin/products"
+											label="Admin Products"
+											icon={<CircleDollarSign className="mr-2 h-4 w-4" />}
 										/>
 									</>
 								)}
