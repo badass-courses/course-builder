@@ -15,6 +15,7 @@ import { courseBuilderCoreFunctions } from '@coursebuilder/core/inngest'
 
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
+import { dropboxVideoImport } from './functions/dropbox/dropbox-video-import'
 import { postCohortPurchaseWorkflow } from './functions/post-cohort-purchase-workflow'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'
@@ -47,5 +48,6 @@ export const inngestConfig = {
 		createUserOrganizations,
 		videoResourceAttached,
 		videoResourceDetached,
+		dropboxVideoImport,
 	],
 }

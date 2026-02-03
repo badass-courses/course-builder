@@ -73,6 +73,63 @@ export default function Deepgram(
 				},
 			)
 
+			// Handle HTTP errors with detailed logging
+			if (!deepgramResponse.ok) {
+				const errorBody = await deepgramResponse
+					.text()
+					.catch(() => 'Unable to read error body')
+
+				const errorDetails = {
+					status: deepgramResponse.status,
+					statusText: deepgramResponse.statusText,
+					resourceId: transcriptOptions.resourceId,
+					mediaUrl: transcriptOptions.mediaUrl,
+					errorBody,
+				}
+
+				if (deepgramResponse.status === 429) {
+					console.error(
+						'[Deepgram] RATE LIMITED (429) - Too many requests',
+						errorDetails,
+					)
+					throw new Error(
+						`Deepgram rate limited (429): Too many requests. ` +
+							`Resource: ${transcriptOptions.resourceId}. ` +
+							`Try again later or reduce request frequency.`,
+					)
+				}
+
+				if (
+					deepgramResponse.status === 401 ||
+					deepgramResponse.status === 403
+				) {
+					console.error('[Deepgram] AUTHENTICATION ERROR', errorDetails)
+					throw new Error(
+						`Deepgram authentication failed (${deepgramResponse.status}): ` +
+							`Check your DEEPGRAM_API_KEY. Resource: ${transcriptOptions.resourceId}`,
+					)
+				}
+
+				if (deepgramResponse.status >= 500) {
+					console.error('[Deepgram] SERVER ERROR', errorDetails)
+					throw new Error(
+						`Deepgram server error (${deepgramResponse.status}): ` +
+							`${deepgramResponse.statusText}. Resource: ${transcriptOptions.resourceId}`,
+					)
+				}
+
+				console.error('[Deepgram] REQUEST FAILED', errorDetails)
+				throw new Error(
+					`Deepgram request failed (${deepgramResponse.status}): ` +
+						`${deepgramResponse.statusText}. Resource: ${transcriptOptions.resourceId}`,
+				)
+			}
+
+			console.log('[Deepgram] Transcription request accepted', {
+				status: deepgramResponse.status,
+				resourceId: transcriptOptions.resourceId,
+			})
+
 			return await deepgramResponse.json()
 		},
 		// Define how to handle the callback with the transcription result
