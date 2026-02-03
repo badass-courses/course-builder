@@ -38,7 +38,6 @@ export default async function LessonEditPage(props: {
 			key={lesson.id}
 			lesson={lesson}
 			videoResource={videoResource}
-			moduleType="workshop"
 		/>
 	)
 }

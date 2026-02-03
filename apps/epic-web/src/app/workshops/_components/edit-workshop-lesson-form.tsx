@@ -28,7 +28,7 @@ function LessonFormInner({
 	form,
 }: {
 	resource: Lesson
-	form: UseFormReturn<z.infer<typeof LessonSchema>> | undefined
+	form?: UseFormReturn<z.infer<typeof LessonSchema>>
 }) {
 	const { videoResource } = useContext(VideoResourceContext)
 	if (!form) return null
