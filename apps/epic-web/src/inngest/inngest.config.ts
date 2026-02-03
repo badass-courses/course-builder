@@ -3,6 +3,7 @@ import { addPurchasesConvertkit } from '@/inngest/functions/convertkit/add-purch
 import { addSubscriptionRoleDiscord } from '@/inngest/functions/discord/add-purchase-role-discord'
 import { discordAccountLinked } from '@/inngest/functions/discord/discord-account-linked'
 import { removePurchaseRoleDiscord } from '@/inngest/functions/discord/remove-purchase-role-discord'
+import { dropboxVideoImport } from '@/inngest/functions/dropbox/dropbox-video-import'
 import { emailSendBroadcast } from '@/inngest/functions/email-send-broadcast'
 import { userSignupAdminEmail } from '@/inngest/functions/notify/creator/user-signup'
 import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extractor'
@@ -47,5 +48,6 @@ export const inngestConfig = {
 		createUserOrganizations,
 		videoResourceAttached,
 		videoResourceDetached,
+		dropboxVideoImport,
 	],
 }

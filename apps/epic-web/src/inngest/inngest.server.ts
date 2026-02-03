@@ -4,6 +4,10 @@ import { stripeProvider } from '@/coursebuilder/stripe-provider'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
 import {
+	DROPBOX_TO_COURSEBUILDER_MIGRATION_EVENT,
+	DropboxToCoursebuilderMigration,
+} from '@/inngest/events/dropbox-migration'
+import {
 	EMAIL_SEND_BROADCAST,
 	EmailSendBroadcast,
 } from '@/inngest/events/email-send-broadcast'
@@ -99,6 +103,7 @@ export type Events = {
 	[NEW_SUBSCRIPTION_CREATED_EVENT]: NewSubscriptionCreated
 	[VIDEO_ATTACHED_EVENT]: VideoAttached
 	[VIDEO_DETACHED_EVENT]: VideoDetached
+	[DROPBOX_TO_COURSEBUILDER_MIGRATION_EVENT]: DropboxToCoursebuilderMigration
 }
 
 const callbackBase =
