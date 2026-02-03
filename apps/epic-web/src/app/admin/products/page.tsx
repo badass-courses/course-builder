@@ -22,7 +22,7 @@ export default async function ProductsPage() {
 				<div className="flex h-9 w-full items-center justify-between px-1">
 					<div />
 					<Button asChild className="h-7">
-						<Link href={`/products/new`}>New Product</Link>
+						<Link href={`/admin/products/new`}>New Product</Link>
 					</Button>
 				</div>
 			) : null}
