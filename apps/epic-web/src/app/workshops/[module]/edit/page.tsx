@@ -40,7 +40,7 @@ export default async function WorkshopEditPage(props: {
 	const { ability } = await getServerAuthSession()
 	const workshop = await getWorkshop(params.module, ability)
 
-	if (!workshop || !ability.can('create', 'Content')) {
+	if (!workshop || !ability.can('update', 'Content')) {
 		notFound()
 	}
 

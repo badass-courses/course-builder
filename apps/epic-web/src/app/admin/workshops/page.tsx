@@ -86,7 +86,7 @@ export default async function AdminWorkshopsIndexPage() {
 							<TableRow key={workshop.id}>
 								<TableCell>
 									<Link
-										href={`/${workshop.fields.slug}`}
+										href={`/workshops/${workshop.fields.slug}/edit`}
 										className="font-medium"
 									>
 										{workshop.fields.title}
