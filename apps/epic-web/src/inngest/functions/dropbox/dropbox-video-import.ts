@@ -193,24 +193,73 @@ async function listDropboxFolder(path: string): Promise<DropboxFile[]> {
 	const headers = getDropboxHeaders()
 	const normalizedPath = normalizePathForNamespace(path)
 
+	const pathRootUsed = env.DROPBOX_TEAM_NAMESPACE_ID
 	console.log('[dropbox-import] Listing folder', {
 		originalPath: path,
 		normalizedPath,
+		pathRootSet: !!pathRootUsed,
+		pathRootNamespaceId: pathRootUsed || null,
 	})
 
-	const response = await fetch(
-		'https://api.dropboxapi.com/2/files/list_folder',
-		{
-			method: 'POST',
-			headers,
-			body: JSON.stringify({
-				path: normalizedPath,
-				recursive: false,
-				include_media_info: true,
-				include_deleted: false,
-			}),
-		},
-	)
+	let response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({
+			path: normalizedPath,
+			recursive: false,
+			include_media_info: true,
+			include_deleted: false,
+		}),
+	})
+
+	// On path/not_found with team namespace: retry with casing fix for "02 areas" -> "02 Areas" (team folder names often use capital A)
+	if (
+		!response.ok &&
+		response.status === 409 &&
+		pathRootUsed &&
+		(normalizedPath.includes('02 areas') || normalizedPath.includes('02 Areas'))
+	) {
+		const altPath = normalizedPath.replace(/\/02 areas\//i, '/02 Areas/')
+		if (altPath !== normalizedPath) {
+			console.log('[dropbox-import] Retrying with casing-corrected path', {
+				normalizedPath,
+				altPath,
+			})
+			response = await fetch('https://api.dropboxapi.com/2/files/list_folder', {
+				method: 'POST',
+				headers,
+				body: JSON.stringify({
+					path: altPath,
+					recursive: false,
+					include_media_info: true,
+					include_deleted: false,
+				}),
+			})
+			if (response.ok) {
+				const data: DropboxListFolderResponse = await response.json()
+				let allEntries = data.entries
+				let hasMore = data.has_more
+				let cursor = data.cursor
+				while (hasMore) {
+					const continueResponse = await fetch(
+						'https://api.dropboxapi.com/2/files/list_folder/continue',
+						{
+							method: 'POST',
+							headers: getDropboxHeaders(),
+							body: JSON.stringify({ cursor }),
+						},
+					)
+					if (!continueResponse.ok) break
+					const continueData: DropboxListFolderResponse =
+						await continueResponse.json()
+					allEntries = [...allEntries, ...continueData.entries]
+					hasMore = continueData.has_more
+					cursor = continueData.cursor
+				}
+				return allEntries
+			}
+		}
+	}
 
 	if (!response.ok) {
 		const errorText = await response.text()
@@ -226,6 +275,37 @@ async function listDropboxFolder(path: string): Promise<DropboxFile[]> {
 				const errorJson = JSON.parse(errorText)
 				if (errorJson.error?.path?.['.tag'] === 'not_found') {
 					errorMessage += `\n\nHint: Path not found: "${path}" (normalized: "${normalizedPath}")`
+					if (env.DROPBOX_TEAM_MEMBER_ID && !env.DROPBOX_TEAM_NAMESPACE_ID) {
+						errorMessage +=
+							'\n\nIf this folder is in Dropbox Team space (not "My files"), set DROPBOX_TEAM_NAMESPACE_ID to your team root namespace and use the path as shown under Team space (e.g. /02 areas/...). Get namespace IDs with: POST https://api.dropboxapi.com/2/team/namespaces/list'
+					} else if (pathRootUsed) {
+						errorMessage +=
+							'\n\nTeam namespace is set. Try folderPath with capital A: "/02 Areas/Epic Web/Epic TypeScript/test"'
+						// List root of namespace to show what Dropbox actually has
+						try {
+							const rootRes = await fetch(
+								'https://api.dropboxapi.com/2/files/list_folder',
+								{
+									method: 'POST',
+									headers,
+									body: JSON.stringify({
+										path: '',
+										recursive: false,
+										include_media_info: false,
+										include_deleted: false,
+									}),
+								},
+							)
+							if (rootRes.ok) {
+								const rootData =
+									(await rootRes.json()) as DropboxListFolderResponse
+								const names = rootData.entries.map((e) => e.name).join(', ')
+								errorMessage += `\n\nRoot of team folder contains: [${names}]. Use the exact name in your path.`
+							}
+						} catch {
+							// ignore
+						}
+					}
 				}
 			} catch {
 				// Ignore JSON parse errors
@@ -307,18 +387,79 @@ function isVideoFile(fileName: string): boolean {
 
 /**
  * Checks if a video is a problem exercise
- * "01.problem.hello-world.mp4" → true
+ * Matches various patterns:
+ * - "01.problem.hello-world.mp4" (dots)
+ * - "01-problem-hello-world.mp4" (dashes)
+ * - "01_problem_hello-world.mp4" (underscores)
+ * - "01 problem hello-world.mp4" (spaces)
  */
 function isProblemVideo(fileName: string): boolean {
-	return fileName.toLowerCase().includes('.problem.')
+	const lowerName = fileName.toLowerCase()
+	// Match "problem" surrounded by separators (., -, _, space) or at start/end
+	return (
+		/[.\-_\s]problem[.\-_\s]/i.test(lowerName) ||
+		lowerName.startsWith('problem.') ||
+		lowerName.startsWith('problem-') ||
+		lowerName.startsWith('problem_')
+	)
 }
 
 /**
  * Checks if a video is a solution
- * "01.solution.hello-world.mp4" → true
+ * Matches various patterns:
+ * - "01.solution.hello-world.mp4" (dots)
+ * - "01-solution-hello-world.mp4" (dashes)
+ * - "01_solution_hello-world.mp4" (underscores)
+ * - "01 solution hello-world.mp4" (spaces)
  */
 function isSolutionVideo(fileName: string): boolean {
-	return fileName.toLowerCase().includes('.solution.')
+	const lowerName = fileName.toLowerCase()
+	// Match "solution" surrounded by separators (., -, _, space) or at start/end
+	return (
+		/[.\-_\s]solution[.\-_\s]/i.test(lowerName) ||
+		lowerName.startsWith('solution.') ||
+		lowerName.startsWith('solution-') ||
+		lowerName.startsWith('solution_')
+	)
+}
+
+/**
+ * Checks if a video is an intro video
+ * "00.intro.mp4" or "00-intro.mp4" → true
+ */
+function isIntroVideo(fileName: string): boolean {
+	const lowerName = fileName.toLowerCase()
+	return (
+		lowerName.includes('intro') &&
+		!lowerName.includes('.problem.') &&
+		!lowerName.includes('.solution.')
+	)
+}
+
+/**
+ * Checks if a video is an outro video
+ * "99.outro.mp4" or "99-outro.mp4" → true
+ */
+function isOutroVideo(fileName: string): boolean {
+	const lowerName = fileName.toLowerCase()
+	return (
+		lowerName.includes('outro') &&
+		!lowerName.includes('.problem.') &&
+		!lowerName.includes('.solution.')
+	)
+}
+
+/**
+ * Checks if a video is a break video (section outro)
+ * "99.break.mp4" or "99-break.mp4" → true
+ */
+function isBreakVideo(fileName: string): boolean {
+	const lowerName = fileName.toLowerCase()
+	return (
+		lowerName.includes('break') &&
+		!lowerName.includes('.problem.') &&
+		!lowerName.includes('.solution.')
+	)
 }
 
 /**
@@ -327,9 +468,11 @@ function isSolutionVideo(fileName: string): boolean {
  * "01.problem.hello-world.mp4" → "Hello World"
  * "01.solution.hello-world.mp4" → "Hello World"
  * "01-programming-foundations" → "Programming Foundations"
+ * "01.section-first" → "Section First"
  */
 function extractTitleFromName(name: string): string {
-	let title = name.replace(/\.[^/.]+$/, '') // Remove file extension (.mp4, etc.)
+	// Remove only video file extensions (not arbitrary dots)
+	let title = name.replace(/\.(mp4|mov|avi|mkv|webm|m4v)$/i, '')
 
 	// Handle problem/solution pattern: "01.problem.hello-world" or "01.solution.hello-world"
 	const problemMatch = title.match(/^\d+\.problem\.(.+)$/i)
@@ -340,12 +483,13 @@ function extractTitleFromName(name: string): string {
 	} else if (solutionMatch && solutionMatch[1]) {
 		title = solutionMatch[1]
 	} else {
-		// Standard pattern: remove leading numbers and separators
-		title = title.replace(/^\d+[-_.\s]*[-–—]?\s*/, '')
+		// Standard pattern: remove leading numbers and any combination of separators
+		// Handles: "01.section-first", "01-section", "01_section", "01 section", "01 - section"
+		title = title.replace(/^\d+[\s._-]*/, '')
 	}
 
-	// Replace dashes, underscores with spaces
-	title = title.replace(/[-_]/g, ' ')
+	// Replace dashes, underscores, dots with spaces
+	title = title.replace(/[-_.]/g, ' ')
 	title = title
 		.split(' ')
 		.filter(Boolean)
@@ -518,16 +662,119 @@ export const dropboxVideoImport = inngest.createFunction(
 		}
 
 		// ========================================================================
-		// STEP 3: PROCESS ROOT-LEVEL VIDEOS (INTRO VIDEOS)
+		// STEP 3: CREATE INTRO SECTION AND PROCESS INTRO VIDEOS
 		// ========================================================================
-		const processedRootVideos: ProcessedVideo[] = []
+		// Separate intro videos from outro videos - intro goes first, outro goes last
+		const introVideos = rootVideos.filter((v) => isIntroVideo(v.name))
+		const outroVideos = rootVideos.filter((v) => isOutroVideo(v.name))
+		const otherRootVideos = rootVideos.filter(
+			(v) => !isIntroVideo(v.name) && !isOutroVideo(v.name),
+		)
 
-		console.log('[dropbox-import] Processing root-level videos', {
-			count: rootVideos.length,
+		const processedRootVideos: ProcessedVideo[] = []
+		let introSection: any = null
+
+		console.log('[dropbox-import] Processing intro videos', {
+			introCount: introVideos.length,
+			outroCount: outroVideos.length,
+			otherCount: otherRootVideos.length,
 		})
 
-		for (let i = 0; i < rootVideos.length; i++) {
-			const video = rootVideos[i]
+		// Create intro section if there are intro videos
+		if (introVideos.length > 0 && !dryRun) {
+			const introSectionName = `Introduction to ${workshopName}`
+			const introSectionGuid = guid()
+			const introSectionId = `section~${introSectionGuid}`
+
+			introSection = await step.run(
+				`Step 3a: Create intro section "${introSectionName}"`,
+				async () => {
+					const sectionResource = await adapter.createContentResource({
+						id: introSectionId,
+						type: 'section',
+						fields: {
+							title: introSectionName,
+							state: 'draft',
+							visibility: 'unlisted',
+							slug: `${slugify(introSectionName)}~${introSectionGuid}`,
+						},
+						createdById: createdById!,
+					})
+
+					console.log('[dropbox-import] Intro section created', {
+						sectionId: sectionResource.id,
+						sectionName: introSectionName,
+					})
+
+					return sectionResource
+				},
+			)
+
+			// Link intro section to workshop
+			await step.run(`Step 3b: Link intro section to workshop`, async () => {
+				if (!introSection?.id || !actualWorkshopId) {
+					throw new Error('Intro section or workshop ID missing')
+				}
+
+				try {
+					await adapter.addResourceToResource({
+						parentResourceId: actualWorkshopId,
+						childResourceId: introSection.id,
+					})
+				} catch (error: any) {
+					if (
+						error?.code === 'ER_DUP_ENTRY' ||
+						error?.message?.includes('Duplicate entry') ||
+						error?.message?.includes('UNIQUE constraint')
+					) {
+						console.log('[dropbox-import] Intro section already linked')
+						return
+					}
+					throw error
+				}
+
+				console.log('[dropbox-import] Intro section linked to workshop')
+			})
+		}
+
+		// Process intro videos into intro section
+		for (let i = 0; i < introVideos.length; i++) {
+			const video = introVideos[i]
+			if (!video) continue
+
+			if (dryRun) {
+				console.log('[dropbox-import] Dry run - would process intro video', {
+					videoName: video.name,
+				})
+				continue
+			}
+
+			try {
+				const introSectionName = `Introduction to ${workshopName}`
+
+				const result = await processVideo(
+					video,
+					actualWorkshopId!,
+					introSection?.id || null, // Attach to intro section
+					introSectionName,
+					createdById!,
+					adapter,
+					step,
+				)
+				if (result) {
+					processedRootVideos.push(result)
+				}
+			} catch (error: any) {
+				console.error('[dropbox-import] Intro video processing failed', {
+					videoName: video.name,
+					error: error?.message || String(error),
+				})
+			}
+		}
+
+		// Process other root videos (non-intro, non-outro) - attach directly to workshop
+		for (let i = 0; i < otherRootVideos.length; i++) {
+			const video = otherRootVideos[i]
 			if (!video) continue
 
 			if (dryRun) {
@@ -538,15 +785,15 @@ export const dropboxVideoImport = inngest.createFunction(
 			}
 
 			try {
-				// Get workshop folder name for lesson title generation
 				const workshopFolderName =
 					folderPath.split('/').filter(Boolean).pop() || 'Workshop'
+				const cleanedWorkshopName = extractTitleFromName(workshopFolderName)
 
 				const result = await processVideo(
 					video,
 					actualWorkshopId!,
-					null, // No section for root videos
-					workshopFolderName, // Parent name for lesson title
+					null,
+					cleanedWorkshopName,
 					createdById!,
 					adapter,
 					step,
@@ -671,24 +918,33 @@ export const dropboxVideoImport = inngest.createFunction(
 				},
 			)
 
-			// Separate videos into regular lessons, problems, and solutions
+			// Separate videos into regular lessons, problems, solutions, and breaks
+			// Break videos (like "99.break.mp4") should be processed last to be positioned at end of section
 			const regularVideos = sectionVideos.filter(
-				(v) => !isProblemVideo(v.name) && !isSolutionVideo(v.name),
+				(v) =>
+					!isProblemVideo(v.name) &&
+					!isSolutionVideo(v.name) &&
+					!isBreakVideo(v.name),
 			)
 			const problemVideos = sectionVideos.filter((v) => isProblemVideo(v.name))
 			const solutionVideos = sectionVideos.filter((v) =>
 				isSolutionVideo(v.name),
 			)
+			const breakVideos = sectionVideos.filter((v) => isBreakVideo(v.name))
 
 			console.log('[dropbox-import] Section video breakdown', {
 				sectionName,
 				regular: regularVideos.length,
 				problems: problemVideos.length,
 				solutions: solutionVideos.length,
+				breaks: breakVideos.length,
 			})
 
 			const sectionLessons: ProcessedVideo[] = []
 			const problemLessonsMap: Map<number, ProcessedVideo> = new Map() // Map position -> processed problem
+
+			// Extract section number from folder name for exercisePath (e.g., "01. Section Name" → 1)
+			const currentSectionNumber = extractPositionFromName(folder.name)
 
 			// First pass: Process regular lessons (attach to section)
 			for (const video of regularVideos) {
@@ -699,10 +955,11 @@ export const dropboxVideoImport = inngest.createFunction(
 						video,
 						actualWorkshopId!,
 						section.id,
-						folder.name,
+						sectionName, // Use cleaned section name for lesson titles
 						createdById!,
 						adapter,
 						step,
+						currentSectionNumber,
 					)
 					if (result) {
 						sectionLessons.push(result)
@@ -725,10 +982,11 @@ export const dropboxVideoImport = inngest.createFunction(
 						video,
 						actualWorkshopId!,
 						section.id,
-						folder.name,
+						sectionName, // Use cleaned section name for lesson titles
 						createdById!,
 						adapter,
 						step,
+						currentSectionNumber,
 					)
 					if (result) {
 						sectionLessons.push(result)
@@ -765,10 +1023,11 @@ export const dropboxVideoImport = inngest.createFunction(
 							video,
 							actualWorkshopId!,
 							section.id,
-							folder.name,
+							sectionName, // Use cleaned section name
 							createdById!,
 							adapter,
 							step,
+							currentSectionNumber,
 						)
 						if (result) {
 							sectionLessons.push(result)
@@ -790,7 +1049,7 @@ export const dropboxVideoImport = inngest.createFunction(
 					const result = await processSolutionVideo(
 						video,
 						matchingProblem.lesson.id, // Attach to the problem lesson
-						folder.name,
+						sectionName, // Use cleaned section name
 						createdById!,
 						adapter,
 						step,
@@ -812,6 +1071,33 @@ export const dropboxVideoImport = inngest.createFunction(
 				}
 			}
 
+			// Fourth pass: Process break videos LAST (to position them at end of section)
+			for (const video of breakVideos) {
+				if (!video) continue
+
+				try {
+					const result = await processVideo(
+						video,
+						actualWorkshopId!,
+						section.id,
+						sectionName,
+						createdById!,
+						adapter,
+						step,
+						currentSectionNumber,
+					)
+					if (result) {
+						sectionLessons.push(result)
+					}
+				} catch (error: any) {
+					console.error('[dropbox-import] Break video processing failed', {
+						sectionName,
+						videoName: video.name,
+						error: error?.message || String(error),
+					})
+				}
+			}
+
 			processedSections.push({
 				folder,
 				section,
@@ -825,9 +1111,112 @@ export const dropboxVideoImport = inngest.createFunction(
 		}
 
 		// ========================================================================
-		// STEP 5: GENERATE REPORT
+		// STEP 5: CREATE OUTRO SECTION AND PROCESS OUTRO VIDEOS
 		// ========================================================================
-		const report = await step.run('Step 5: Generate report', async () => {
+		const processedOutroVideos: ProcessedVideo[] = []
+		let outroSection: any = null
+
+		console.log('[dropbox-import] Processing outro videos', {
+			count: outroVideos.length,
+		})
+
+		// Create outro section if there are outro videos
+		if (outroVideos.length > 0 && !dryRun) {
+			const outroSectionName = `Outro to ${workshopName}`
+			const outroSectionGuid = guid()
+			const outroSectionId = `section~${outroSectionGuid}`
+
+			outroSection = await step.run(
+				`Step 5a: Create outro section "${outroSectionName}"`,
+				async () => {
+					const sectionResource = await adapter.createContentResource({
+						id: outroSectionId,
+						type: 'section',
+						fields: {
+							title: outroSectionName,
+							state: 'draft',
+							visibility: 'unlisted',
+							slug: `${slugify(outroSectionName)}~${outroSectionGuid}`,
+						},
+						createdById: createdById!,
+					})
+
+					console.log('[dropbox-import] Outro section created', {
+						sectionId: sectionResource.id,
+						sectionName: outroSectionName,
+					})
+
+					return sectionResource
+				},
+			)
+
+			// Link outro section to workshop (at the end)
+			await step.run(`Step 5b: Link outro section to workshop`, async () => {
+				if (!outroSection?.id || !actualWorkshopId) {
+					throw new Error('Outro section or workshop ID missing')
+				}
+
+				try {
+					await adapter.addResourceToResource({
+						parentResourceId: actualWorkshopId,
+						childResourceId: outroSection.id,
+					})
+				} catch (error: any) {
+					if (
+						error?.code === 'ER_DUP_ENTRY' ||
+						error?.message?.includes('Duplicate entry') ||
+						error?.message?.includes('UNIQUE constraint')
+					) {
+						console.log('[dropbox-import] Outro section already linked')
+						return
+					}
+					throw error
+				}
+
+				console.log('[dropbox-import] Outro section linked to workshop')
+			})
+		}
+
+		// Process outro videos into outro section
+		for (let i = 0; i < outroVideos.length; i++) {
+			const video = outroVideos[i]
+			if (!video) continue
+
+			if (dryRun) {
+				console.log('[dropbox-import] Dry run - would process outro video', {
+					videoName: video.name,
+				})
+				continue
+			}
+
+			try {
+				const outroSectionName = `Outro to ${workshopName}`
+
+				const result = await processVideo(
+					video,
+					actualWorkshopId!,
+					outroSection?.id || null, // Attach to outro section
+					outroSectionName,
+					createdById!,
+					adapter,
+					step,
+				)
+				if (result) {
+					processedOutroVideos.push(result)
+					processedRootVideos.push(result) // Also add to root videos for report
+				}
+			} catch (error: any) {
+				console.error('[dropbox-import] Outro video processing failed', {
+					videoName: video.name,
+					error: error?.message || String(error),
+				})
+			}
+		}
+
+		// ========================================================================
+		// STEP 6: GENERATE REPORT
+		// ========================================================================
+		const report = await step.run('Step 6: Generate report', async () => {
 			const report = {
 				migratedAt: new Date().toISOString(),
 				dryRun,
@@ -874,10 +1263,13 @@ export const dropboxVideoImport = inngest.createFunction(
 					: processedSections.map((s) => ({
 							sectionId: s.section?.id,
 							sectionName: extractTitleFromName(s.folder.name),
+							sectionNumber: extractPositionFromName(s.folder.name),
 							lessons: s.lessons.map((l) => ({
 								videoName: l.video.name,
 								videoResourceId: l.videoResource?.id,
 								lessonId: l.lesson?.id,
+								exercisePath: l.lesson?.fields?.exercisePath || null,
+								isProblem: isProblemVideo(l.video.name),
 							})),
 						})),
 			}
@@ -903,6 +1295,7 @@ async function processVideo(
 	createdById: string,
 	adapter: any,
 	step: any,
+	sectionNumber?: number, // Section number for exercisePath (from folder name like "01. Section")
 ): Promise<ProcessedVideo | null> {
 	const videoName = video.name
 
@@ -1001,17 +1394,30 @@ async function processVideo(
 	const lessonId = `lesson_${lessonGuid}`
 	const lessonTitle = createLessonTitle(videoName, parentName)
 
+	// Build lesson fields
+	const lessonPosition = extractPositionFromName(video.name)
+	const isProblem = isProblemVideo(video.name)
+
+	console.log('[dropbox-import] Checking if problem video', {
+		videoName: video.name,
+		isProblem,
+		sectionNumber,
+		lessonPosition,
+	})
+
+	const lessonFields: Record<string, any> = {
+		title: lessonTitle,
+		state: 'draft',
+		visibility: 'unlisted',
+		slug: `${slugify(lessonTitle)}~${lessonGuid}`,
+		lessonType: 'lesson',
+	}
+
 	const lesson = await step.run(`Create lesson "${lessonTitle}"`, async () => {
 		const lessonResource = await adapter.createContentResource({
 			id: lessonId,
 			type: 'lesson',
-			fields: {
-				title: lessonTitle,
-				state: 'draft',
-				visibility: 'unlisted',
-				slug: `${slugify(lessonTitle)}~${lessonGuid}`,
-				lessonType: 'lesson',
-			},
+			fields: lessonFields,
 			createdById,
 		})
 
@@ -1028,6 +1434,44 @@ async function processVideo(
 
 		return lessonResource
 	})
+
+	// Create and attach exercise for problem videos
+	if (isProblem && sectionNumber !== undefined && lesson?.id) {
+		const paddedSection = String(sectionNumber).padStart(2, '0')
+		const paddedLesson = String(lessonPosition).padStart(2, '0')
+		const exercisePath = `/${paddedSection}/${paddedLesson}/problem`
+
+		await step.run(`Create exercise for problem "${lessonTitle}"`, async () => {
+			const exerciseGuid = guid()
+			const exerciseId = `exercise_${exerciseGuid}`
+
+			// Create exercise resource
+			const exerciseResource = await adapter.createContentResource({
+				id: exerciseId,
+				type: 'exercise',
+				fields: {
+					workshopApp: {
+						path: exercisePath,
+					},
+				},
+				createdById,
+			})
+
+			// Link exercise to lesson
+			await adapter.addResourceToResource({
+				parentResourceId: lesson.id,
+				childResourceId: exerciseResource.id,
+			})
+
+			console.log('[dropbox-import] ✅ Exercise created and attached', {
+				exerciseId: exerciseResource.id,
+				lessonId: lesson.id,
+				exercisePath,
+			})
+
+			return exerciseResource
+		})
+	}
 
 	// Link lesson to section (if section exists) or workshop (if root video)
 	const parentId = sectionId || workshopId

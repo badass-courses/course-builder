@@ -1,6 +1,6 @@
 import { NonRetriableError } from 'inngest'
 
-import { RESOURCE_CHAT_REQUEST_EVENT } from '../../co-gardener/resource-chat'
+import { resourceChatWorkflowExecutor } from '../../co-gardener/resource-chat'
 import {
 	CoreInngestFunctionInput,
 	CoreInngestHandler,
@@ -21,6 +21,8 @@ const autoGeneratePostSeoDescriptionHandler: CoreInngestHandler = async ({
 	event,
 	step,
 	db,
+	openaiProvider,
+	partyProvider,
 }: CoreInngestFunctionInput) => {
 	const videoResourceId = event.data.videoResourceId
 
@@ -69,28 +71,88 @@ const autoGeneratePostSeoDescriptionHandler: CoreInngestHandler = async ({
 		)
 	}
 
-	// Step 4: Trigger SEO description generation
-	const contentType = resource.type === 'lesson' ? 'lesson' : 'post'
-	await step.sendEvent('trigger seo description generation', {
-		name: RESOURCE_CHAT_REQUEST_EVENT,
-		data: {
-			resourceId: resource.id,
-			messages: [
-				{
-					role: 'user',
-					content: `Generate a SEO-friendly description for this ${contentType}. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
-				},
-			],
-			selectedWorkflow: 'prompt-0541t',
-		},
-		user: {
-			id: user.id,
-			email: user.email || '',
-		},
+	// Step 4: Get video resource for transcript data
+	const videoResource = await step.run('get video resource', async () => {
+		return await db.getVideoResource(videoResourceId)
 	})
 
+	// Step 5: Execute SEO description generation directly
+	const contentType = resource.type === 'lesson' ? 'lesson' : 'post'
+
+	// Convert dates to ISO strings if they are Date objects, otherwise use as-is
+	const updatedAtStr = resource.updatedAt
+		? typeof resource.updatedAt === 'object' &&
+			'toISOString' in resource.updatedAt
+			? (resource.updatedAt as Date).toISOString()
+			: String(resource.updatedAt)
+		: null
+	const createdAtStr = resource.createdAt
+		? typeof resource.createdAt === 'object' &&
+			'toISOString' in resource.createdAt
+			? (resource.createdAt as Date).toISOString()
+			: String(resource.createdAt)
+		: null
+
+	const messages = await resourceChatWorkflowExecutor({
+		step,
+		workflowTrigger: 'prompt-0541t',
+		resourceId: resource.id,
+		messages: [
+			{
+				role: 'user',
+				content: `Generate a SEO-friendly description for this ${contentType}. The description should be under 160 characters, include relevant keywords, and be compelling for search results.`,
+			},
+		],
+		resource: {
+			id: resource.id,
+			type: resource.type,
+			updatedAt: updatedAtStr,
+			createdAt: createdAtStr,
+			title: resource.fields?.title ?? null,
+			body: resource.fields?.body ?? null,
+			transcript: videoResource?.transcript ?? null,
+			wordLevelSrt: videoResource?.wordLevelSrt ?? null,
+			resources: resource.resources ?? [],
+		},
+		// User type is compatible at runtime, cast to bypass Inngest's JSON serialization type mismatch
+		user: user as any,
+		openaiProvider,
+		partyProvider,
+		db,
+	})
+
+	// Step 6: Extract and save the generated description
+	const lastMessage = messages[messages.length - 1]
+	if (lastMessage?.content) {
+		// Remove markdown code blocks if present
+		const description = String(lastMessage.content).replace(
+			/```.*\n(.*)\n```/s,
+			'$1',
+		)
+
+		await step.run('save description to resource', async () => {
+			await db.updateContentResourceFields({
+				id: resource.id,
+				fields: {
+					...resource.fields,
+					description: description.trim(),
+				},
+			})
+		})
+
+		return {
+			success: true,
+			resourceId: resource.id,
+			resourceType: resource.type,
+			userId: user.id,
+			videoResourceId,
+			description: description.trim(),
+		}
+	}
+
 	return {
-		success: true,
+		success: false,
+		reason: 'no description generated',
 		resourceId: resource.id,
 		resourceType: resource.type,
 		userId: user.id,
