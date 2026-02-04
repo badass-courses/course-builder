@@ -8,11 +8,13 @@ import { api } from '@/trpc/react'
 interface ListContextType {
 	list: List | null
 	isLoading: boolean
+	currentPostHasVideo: boolean
 }
 
 const ListContext = React.createContext<ListContextType>({
 	list: null,
 	isLoading: false,
+	currentPostHasVideo: false,
 })
 
 /**
@@ -29,9 +31,11 @@ const ListContext = React.createContext<ListContextType>({
  */
 export function ListProvider({
 	initialList,
+	currentPostHasVideo = false,
 	children,
 }: {
 	initialList: List | null
+	currentPostHasVideo?: boolean
 	children: React.ReactNode
 }) {
 	const searchParams = useSearchParams()
@@ -54,7 +58,7 @@ export function ListProvider({
 	const isLoading = !isListFetched && mismatch
 
 	return (
-		<ListContext.Provider value={{ list, isLoading }}>
+		<ListContext.Provider value={{ list, isLoading, currentPostHasVideo }}>
 			{children}
 		</ListContext.Provider>
 	)
