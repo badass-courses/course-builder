@@ -479,7 +479,7 @@ LIMIT 50
 ```mermaid
 flowchart TD
     subgraph "Main List View"
-        A[/admin/shortlinks]
+        A["admin/shortlinks"]
         A1[Recent Stats Cards<br/>Last 60min, Last 24hrs]
         A2[Search Bar<br/>Filter by slug/url/description]
         A3[Create Button<br/>Opens CRUD dialog]
@@ -514,13 +514,13 @@ flowchart TD
     subgraph "CRUD Dialog"
         C1[Create Mode<br/>Empty form]
         C2[Edit Mode<br/>Pre-filled form]
-        C3[Fields:<br/>URL, Slug, Description]
+        C3["Fields: URL, Slug, Description"]
         C4[Generate Button<br/>Auto-generate slug]
-        C5[Save Action<br/>POST or PATCH]
+        C5["Save Action: POST or PATCH"]
     end
 
     subgraph "Analytics View"
-        D[/admin/shortlinks/[id]/analytics]
+        D["admin/shortlinks/id/analytics"]
         D1[Back Button<br/>Return to list]
         D2[Shortlink Header<br/>Slug + destination]
         D3[Total Clicks Card]
