@@ -200,6 +200,29 @@ export function someFunction() { /* implementation */ }
 
 These conflicts typically manifest as "Cannot redefine property" errors during build and are difficult to debug. They occur because the build process may try to define the same property multiple times through different bundling mechanisms.
 
+### Compound Component Pattern (Next.js)
+For compound components with dot notation (e.g., `Share.Root`, `Share.Button`), use namespace imports with named exports:
+
+```typescript
+// Component file: share.tsx
+export function Root({ children }) { ... }
+export function Button({ ... }) { ... }
+export function ShareBar() { ... }  // convenience composed version
+
+// Consumer file: page.tsx
+import * as Share from '@/components/share'
+
+<Share.Root>
+  <Share.Button />
+</Share.Root>
+
+// Or use the composed version directly
+import { ShareBar } from '@/components/share'
+<ShareBar />
+```
+
+Do NOT use `export const Share = { Root, Button }` object pattern - it breaks with Next.js bundler and causes "Element type is invalid: expected a string... but got: undefined" errors.
+
 ### TSDoc Comments for Utilities
 Always include comprehensive TSDoc comments for utility functions:
 
