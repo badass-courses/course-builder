@@ -1,5 +1,7 @@
+import { cookies } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
 import { env } from '@/env.mjs'
+import { createShortlinkAttribution } from '@/lib/shortlinks-query'
 import Postmark from 'next-auth/providers/postmark'
 
 import { sendVerificationRequest } from '@coursebuilder/core/lib/send-verification-request'
@@ -23,6 +25,30 @@ export const emailProvider = Postmark({
 		} catch {
 			// Not a form request or parsing failed
 		}
-		return sendVerificationRequest({ ...params, name }, courseBuilderAdapter)
+
+		const result = await sendVerificationRequest(
+			{ ...params, name },
+			courseBuilderAdapter,
+		)
+
+		// Track shortlink attribution for signups
+		try {
+			const cookieStore = await cookies()
+			const shortlinkSlug = cookieStore.get('sl_ref')?.value
+			if (shortlinkSlug && params.identifier) {
+				// Fire and forget - don't block the response
+				createShortlinkAttribution({
+					shortlinkSlug,
+					email: params.identifier,
+					type: 'signup',
+				}).catch((error) => {
+					console.error('Failed to record shortlink attribution:', error)
+				})
+			}
+		} catch (error) {
+			console.error('Error tracking shortlink attribution:', error)
+		}
+
+		return result
 	},
 })

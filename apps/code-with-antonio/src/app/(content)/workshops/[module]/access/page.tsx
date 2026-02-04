@@ -1,6 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { getCsrf } from '@/app/(user)/login/actions'
 import { CompanyLogos } from '@/components/brand/company-logos'
 import { CldImage } from '@/components/cld-image'
@@ -9,7 +9,7 @@ import { Login } from '@/components/login'
 import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { getCachedMinimalWorkshop } from '@/lib/workshops-query'
-import { getProviders } from '@/server/auth'
+import { getProviders, getServerAuthSession } from '@/server/auth'
 import { log } from '@/server/logger'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
 import { and, eq } from 'drizzle-orm'
@@ -83,6 +83,13 @@ export default async function WorkshopAccessPage(props: Props) {
 	await headers()
 
 	const params = await props.params
+	const { session } = await getServerAuthSession()
+
+	// Redirect signed-in users to the workshop page
+	if (session?.user) {
+		redirect(`/workshops/${params.module}`)
+	}
+
 	const workshop = await getCachedMinimalWorkshop(params.module)
 
 	if (!workshop) {
