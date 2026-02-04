@@ -9,8 +9,6 @@ import { redis } from '@/server/redis-client'
 import { and, count, desc, eq, like, or, sql } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 
-import { guid } from '@coursebuilder/utils-core/guid'
-
 import {
 	CreateShortlinkSchema,
 	UpdateShortlinkSchema,
@@ -527,66 +525,6 @@ export async function getRecentClickStats(): Promise<RecentClickStats> {
 	}
 }
 
-/**
- * Create a shortlink attribution record
- * This tracks when a user signs up or makes a purchase after clicking a shortlink
- */
-export async function createShortlinkAttribution(
-	data: ShortlinkAttributionData,
-): Promise<void> {
-	try {
-		// Look up shortlink by slug
-		const link = await db.query.shortlink.findFirst({
-			where: eq(shortlink.slug, data.shortlinkSlug),
-		})
-
-		if (!link) {
-			await log.warn('shortlink.attribution.notfound', {
-				slug: data.shortlinkSlug,
-			})
-			return
-		}
-
-		// Only dedupe signups - purchases should be recorded every time
-		// (user may buy multiple products via the same shortlink)
-		if (data.type === 'signup') {
-			const existing = await db.query.shortlinkAttribution.findFirst({
-				where: and(
-					eq(shortlinkAttribution.shortlinkId, link.id),
-					eq(shortlinkAttribution.email, data.email),
-					eq(shortlinkAttribution.type, data.type),
-				),
-			})
-
-			if (existing) {
-				await log.info('shortlink.attribution.duplicate', {
-					slug: data.shortlinkSlug,
-					userId: data.userId,
-					type: data.type,
-				})
-				return
-			}
-		}
-
-		// Insert attribution record
-		await db.insert(shortlinkAttribution).values({
-			id: guid(),
-			shortlinkId: link.id,
-			userId: data.userId,
-			email: data.email,
-			type: data.type,
-			metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
-		})
-
-		await log.info('shortlink.attribution.recorded', {
-			slug: data.shortlinkSlug,
-			userId: data.userId,
-			type: data.type,
-		})
-	} catch (error) {
-		await log.error('shortlink.attribution.error', {
-			slug: data.shortlinkSlug,
-			error: String(error),
-		})
-	}
-}
+// Re-export from separate file to avoid circular dependency
+// (email-provider → shortlinks-query → auth → email-provider)
+export { createShortlinkAttribution } from './shortlink-attribution'
