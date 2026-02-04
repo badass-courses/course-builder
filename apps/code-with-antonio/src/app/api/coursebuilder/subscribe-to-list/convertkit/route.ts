@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 import { POST as courseBuilderPOST } from '@/coursebuilder/course-builder-config'
-import { createShortlinkAttribution } from '@/lib/shortlinks-query'
+import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
 
 /**
  * Custom wrapper for the subscribe-to-list endpoint that adds shortlink attribution tracking
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 					shortlinkSlug,
 					email,
 					type: 'signup',
-				}).catch((error) => {
+				}).catch((error: unknown) => {
 					console.error('Failed to record shortlink attribution:', error)
 				})
 			}
