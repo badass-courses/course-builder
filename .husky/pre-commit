@@ -1,14 +1,2 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-
-# Fix PATH for IDE git integrations
-export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
-
-# Load nvm if available
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-# Load fnm if available
-[ -s "$HOME/.fnm/fnm" ] && eval "$(fnm env)"
-
-pnpm run pre-commit
