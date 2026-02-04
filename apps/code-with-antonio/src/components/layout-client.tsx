@@ -20,6 +20,7 @@ export default function LayoutClient({
 	saleBannerData,
 	isCommerceEnabled = true,
 	withFooter = true,
+	withNavigation = true,
 }: {
 	children: React.ReactNode
 	withContainer?: boolean
@@ -29,6 +30,7 @@ export default function LayoutClient({
 	isCommerceEnabled?: boolean
 	withNavContainer?: boolean
 	withFooterContainer?: boolean
+	withNavigation?: boolean
 }) {
 	return (
 		<div className={cn('w-full')}>
@@ -38,7 +40,9 @@ export default function LayoutClient({
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
-			<Navigation withContainer={withNavContainer || withContainer} />
+			{withNavigation && (
+				<Navigation withContainer={withNavContainer || withContainer} />
+			)}
 			<main
 				className={cn('min-h-[calc(100dvh-var(--nav-height))]', className, {
 					container: withContainer,

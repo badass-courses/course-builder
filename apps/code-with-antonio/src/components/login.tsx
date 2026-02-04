@@ -7,7 +7,6 @@ import { env } from '@/env.mjs'
 import { Provider } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { signIn } from 'next-auth/react'
-import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
 import {
@@ -34,6 +33,10 @@ export type LoginTemplateProps = {
 	subtitle?: string
 	callbackUrl?: string
 	className?: string
+	buttonLabel?: string
+	showFirstName?: boolean
+	firstNameLabel?: string
+	firstNamePlaceholder?: string
 }
 
 /**
@@ -46,10 +49,13 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	image,
 	title,
 	subtitle,
+	buttonLabel = 'Email me a login link',
 	callbackUrl: callbackUrlProp,
 	className,
+	showFirstName = false,
+	firstNameLabel = 'First Name',
+	firstNamePlaceholder = 'Your first name (optional)',
 }) => {
-	const { register } = useForm()
 	const searchParams = useSearchParams()
 
 	const callbackUrl = callbackUrlProp
@@ -90,9 +96,9 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	const emailProvider = providers?.postmark
 
 	return (
-		<div className={cn('flex flex-col gap-6', className)}>
-			<Card className="overflow-hidden p-0">
-				<CardContent className="grid p-0 md:grid-cols-2">
+		<div className={cn('flex w-full flex-col')}>
+			<Card className={cn('overflow-hidden p-0', className)}>
+				<CardContent className="p-0">
 					<div className="flex flex-col items-center justify-center p-6 md:p-8">
 						<FieldGroup>
 							<div className="flex flex-col gap-2 text-center">
@@ -123,14 +129,27 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							{emailProvider ? (
 								<form method="POST" action={emailProvider.signinUrl}>
 									<FieldGroup>
+										{showFirstName && (
+											<Field>
+												<FieldLabel htmlFor="firstName">
+													{firstNameLabel}
+												</FieldLabel>
+												<Input
+													id="firstName"
+													name="firstName"
+													type="text"
+													placeholder={firstNamePlaceholder}
+												/>
+											</Field>
+										)}
 										<Field>
 											<FieldLabel htmlFor="email">Email</FieldLabel>
 											<Input
 												id="email"
+												name="email"
 												type="email"
 												placeholder="you@example.com"
 												required
-												{...register('email', { required: true })}
 											/>
 										</Field>
 										<input
@@ -144,7 +163,9 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 											defaultValue={csrfToken}
 										/>
 										<Field>
-											<Button type="submit">Email me a login link</Button>
+											<Button type="submit" size="lg">
+												{buttonLabel}
+											</Button>
 										</Field>
 									</FieldGroup>
 								</form>
@@ -205,15 +226,6 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 								</Field>
 							)}
 						</FieldGroup>
-					</div>
-					<div className="bg-secondary relative hidden items-center justify-center p-10 md:flex">
-						{image ? (
-							<div className="absolute inset-0 h-full w-full">{image}</div>
-						) : (
-							<>
-								<Logo />
-							</>
-						)}
 					</div>
 				</CardContent>
 			</Card>

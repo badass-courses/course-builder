@@ -53,17 +53,17 @@ declare module 'next-auth' {
 			metadata: Record<string, any> | null
 		}[]
 		memberships?:
-			| {
-					organizationId: string | null
-					id: string
-					name: string
-					description: string | null
-					active: boolean
-					createdAt: Date | null
-					updatedAt: Date | null
-					deletedAt: Date | null
-			  }[]
-			| null
+		| {
+			organizationId: string | null
+			id: string
+			name: string
+			description: string | null
+			active: boolean
+			createdAt: Date | null
+			updatedAt: Date | null
+			deletedAt: Date | null
+		}[]
+		| null
 		organizationRoles?: {
 			organizationId: string | null
 			id: string
@@ -189,7 +189,7 @@ export const authOptions: NextAuthConfig = {
 
 			const isDiscordTokenExpired = Boolean(
 				discordAccount?.expires_at &&
-					discordAccount.expires_at * 1000 < Date.now(),
+				discordAccount.expires_at * 1000 < Date.now(),
 			)
 
 			if (discordAccount && isDiscordTokenExpired) {
@@ -249,25 +249,25 @@ export const authOptions: NextAuthConfig = {
 
 			const currentMembership = organizationId
 				? await db.query.organizationMemberships.findFirst({
-						where: and(
-							eq(organizationMemberships.organizationId, organizationId),
-							eq(organizationMemberships.userId, user.id),
-						),
-						orderBy: (om, { asc }) => [asc(om.createdAt)],
-					})
+					where: and(
+						eq(organizationMemberships.organizationId, organizationId),
+						eq(organizationMemberships.userId, user.id),
+					),
+					orderBy: (om, { asc }) => [asc(om.createdAt)],
+				})
 				: null
 
 			const activeEntitlements = currentMembership
 				? await db.query.entitlements.findMany({
-						where: and(
-							eq(entitlements.organizationMembershipId, currentMembership.id),
-							or(
-								isNull(entitlements.expiresAt),
-								gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
-							),
-							isNull(entitlements.deletedAt),
+					where: and(
+						eq(entitlements.organizationMembershipId, currentMembership.id),
+						or(
+							isNull(entitlements.expiresAt),
+							gt(entitlements.expiresAt, sql`CURRENT_TIMESTAMP`),
 						),
-					})
+						isNull(entitlements.deletedAt),
+					),
+				})
 				: []
 
 			return {
@@ -300,23 +300,23 @@ export const authOptions: NextAuthConfig = {
 		 */
 		...(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET
 			? [
-					GithubProvider({
-						clientId: env.GITHUB_CLIENT_ID,
-						clientSecret: env.GITHUB_CLIENT_SECRET,
-						allowDangerousEmailAccountLinking: true,
-					}),
-				]
+				GithubProvider({
+					clientId: env.GITHUB_CLIENT_ID,
+					clientSecret: env.GITHUB_CLIENT_SECRET,
+					allowDangerousEmailAccountLinking: true,
+				}),
+			]
 			: []),
 		...(env.DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET
 			? [
-					DiscordProvider({
-						clientId: env.DISCORD_CLIENT_ID,
-						clientSecret: env.DISCORD_CLIENT_SECRET,
-						allowDangerousEmailAccountLinking: true,
-						authorization:
-							'https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.join+guilds',
-					}),
-				]
+				DiscordProvider({
+					clientId: env.DISCORD_CLIENT_ID,
+					clientSecret: env.DISCORD_CLIENT_SECRET,
+					allowDangerousEmailAccountLinking: true,
+					authorization:
+						'https://discord.com/api/oauth2/authorize?scope=identify+email+guilds.join+guilds',
+				}),
+			]
 			: []),
 		emailProvider,
 	],
