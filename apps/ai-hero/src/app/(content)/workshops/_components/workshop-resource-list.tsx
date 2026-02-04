@@ -102,6 +102,35 @@ export function WorkshopResourceList(props: Props) {
 	const cohortSlug = cohortResource?.fields?.slug
 	const cohortTitle = cohortResource?.fields?.title
 
+	// Find current lesson and check if it has video
+	const currentLesson = React.useMemo(() => {
+		if (!props.currentLessonSlug || !resources) return null
+
+		for (const { resource } of resources) {
+			// Check if it's a direct match (top-level lesson)
+			if (resource.fields?.slug === props.currentLessonSlug) {
+				return resource
+			}
+			// Check if it's in a section
+			if (resource.type === 'section' && resource.resources) {
+				const foundLesson = resource.resources.find(
+					(r) => r.resource.fields?.slug === props.currentLessonSlug,
+				)
+				if (foundLesson) {
+					return foundLesson.resource
+				}
+			}
+		}
+		return null
+	}, [props.currentLessonSlug, resources])
+
+	const hasVideo = React.useMemo(() => {
+		if (!currentLesson?.resources) return false
+		return currentLesson.resources.some(
+			(r) => r.resource.type === 'videoResource',
+		)
+	}, [currentLesson])
+
 	return (
 		<nav
 			onClick={() => {
@@ -198,7 +227,9 @@ export function WorkshopResourceList(props: Props) {
 									>
 										{workshopNavigation.fields?.title}
 									</Link>
-									<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+									{hasVideo && (
+										<AutoPlayToggle className="text-muted-foreground hover:[&_label]:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+									)}
 								</div>
 							</div>
 						</div>

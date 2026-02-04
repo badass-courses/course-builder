@@ -25,6 +25,21 @@ export default function ListResourceNavigation({
 	const { list, isLoading: isListLoading } = useList()
 	const { progress } = useProgress()
 
+	// Find current resource and check if it has video
+	const currentResource = React.useMemo(() => {
+		if (!list?.resources) return null
+		return list.resources.find(({ resource }) =>
+			pathname.includes(`/${resource.fields.slug}`),
+		)
+	}, [list, pathname])
+
+	const hasVideo = React.useMemo(() => {
+		if (!currentResource?.resource?.resources) return false
+		return currentResource.resource.resources.some(
+			({ resource }: { resource: any }) => resource.type === 'videoResource',
+		)
+	}, [currentResource])
+
 	if (isListLoading) {
 		return (
 			<div
@@ -86,7 +101,9 @@ export default function ListResourceNavigation({
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+						{hasVideo && (
+							<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+						)}
 					</div>
 				)}
 				{/* Resource navigation list */}
