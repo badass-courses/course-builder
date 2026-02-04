@@ -525,6 +525,3 @@ export async function getRecentClickStats(): Promise<RecentClickStats> {
 	}
 }
 
-// Re-export from separate file to avoid circular dependency
-// (email-provider → shortlinks-query → auth → email-provider)
-export { createShortlinkAttribution } from './shortlink-attribution'
