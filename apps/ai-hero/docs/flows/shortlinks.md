@@ -18,19 +18,29 @@ The ai-hero shortlinks system provides URL shortening with click tracking, analy
 ## 1. Entity Relationship Diagram
 
 ```mermaid
+---
+title: Shortlinks Data Model
+---
 erDiagram
-    SHORTLINK ||--o{ SHORTLINK_CLICK : has
-    SHORTLINK ||--o{ SHORTLINK_ATTRIBUTION : tracks
-    SHORTLINK }o--|| USER : created_by
-    SHORTLINK_ATTRIBUTION }o--o| USER : attributed_to
-    PURCHASE ||--o{ SHORTLINK_ATTRIBUTION : attributed_from
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Core shortlink entity and its relationships
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    SHORTLINK ||--o{ SHORTLINK_CLICK : "tracks clicks"
+    SHORTLINK ||--o{ SHORTLINK_ATTRIBUTION : "tracks conversions"
+    SHORTLINK }o--|| USER : "created by"
+
+    %% Attribution can link to user (optional - signups may not have userId yet)
+    SHORTLINK_ATTRIBUTION }o--o| USER : "attributed to"
+
+    %% Purchase attribution links back to commerce
+    PURCHASE ||--o{ SHORTLINK_ATTRIBUTION : "conversion source"
 
     SHORTLINK {
-        string id PK
-        string slug UK
-        text url
-        string description
-        int clicks
+        string id PK "cuid"
+        string slug UK "unique short code"
+        text url "destination URL"
+        string description "optional label"
+        int clicks "denormalized counter"
         string createdById FK
         timestamp createdAt
         timestamp updatedAt
@@ -39,26 +49,26 @@ erDiagram
     SHORTLINK_CLICK {
         string id PK
         string shortlinkId FK
-        timestamp timestamp
-        string referrer
-        string userAgent
-        string country
-        string device
+        timestamp timestamp "click time"
+        string referrer "HTTP referer header"
+        string userAgent "browser UA string"
+        string country "from x-vercel-ip-country"
+        string device "mobile|tablet|desktop"
     }
 
     SHORTLINK_ATTRIBUTION {
         string id PK
         string shortlinkId FK
-        string userId FK
-        string email
-        string type
-        text metadata
+        string userId FK "nullable for pre-signup"
+        string email "always captured"
+        string type "signup|purchase"
+        text metadata "JSON: productId, amount, etc"
         timestamp createdAt
     }
 
     USER {
         string id PK
-        string email
+        string email UK
         string name
         timestamp createdAt
     }
@@ -78,57 +88,72 @@ erDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Admin as Admin User
-    participant UI as Admin UI
-    participant API as /api/shortlinks
-    participant Query as shortlinks-query
-    participant DB as Database
-    participant Redis as Redis Cache
+    autonumber
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Admin creates shortlink via UI → API → DB → Cache
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+    participant Admin as 👤 Admin
+    participant UI as 🖥️ Admin UI
+    participant API as 🔌 /api/shortlinks
+    participant Query as 📦 shortlinks-query
+    participant DB as 🗄️ Database
+    participant Redis as ⚡ Redis
+
+    %% Step 1: UI interaction
     Admin->>UI: Click "Create Shortlink"
     UI->>Admin: Show dialog with form
     Admin->>UI: Enter URL, optional slug/description
     UI->>API: POST /api/shortlinks<br/>{url, slug?, description?}
 
-    Note over API: Validate auth (can('create', 'Content'))
+    %% Step 2: Auth & validation
+    Note over API: 🔐 Validate auth<br/>can('create', 'Content')
     API->>API: CreateShortlinkSchema.parse()
 
-    alt Slug provided
+    %% Step 3: Slug handling
+    alt 🏷️ Custom slug provided
         API->>Query: isSlugAvailable(slug)
         Query->>DB: SELECT * FROM Shortlink WHERE slug=?
         DB-->>Query: null or existing
         Query-->>API: boolean
 
-        alt Slug taken
-            API-->>UI: 409 Conflict: "Slug already exists"
+        alt ❌ Slug taken
+            API-->>UI: 409 Conflict
             UI-->>Admin: Show error toast
         end
-    else No slug provided
+    else 🎲 Auto-generate slug
         API->>Query: generateUniqueSlug()
-        Query->>Query: nanoid() generates 6-char code
-        loop Until unique (max 10 attempts)
+        Query->>Query: nanoid(6) → "a1b2c3"
+        loop Until unique (max 10 retries)
             Query->>DB: Check availability
             DB-->>Query: Available or taken
         end
         Query-->>API: unique slug
     end
 
-    API->>Query: createShortlink()
-    Query->>DB: INSERT INTO Shortlink<br/>{slug, url, description, createdById}
-    Note over DB: Unique constraint prevents race conditions
-    DB-->>Query: insertedId
+    %% Step 4: Create record
+    rect rgb(240, 255, 240)
+        Note over Query,DB: 💾 Persist to database
+        API->>Query: createShortlink()
+        Query->>DB: INSERT INTO Shortlink
+        Note over DB: UK constraint = race protection
+        DB-->>Query: insertedId
+        Query->>DB: SELECT * WHERE id=insertedId
+        DB-->>Query: shortlink record
+    end
 
-    Query->>DB: SELECT * FROM Shortlink WHERE id=insertedId
-    DB-->>Query: shortlink record
-
-    Query->>Redis: SET shortlink:{slug} {full record}
-    Redis-->>Query: Cached
+    %% Step 5: Cache & respond
+    rect rgb(240, 248, 255)
+        Note over Query,Redis: ⚡ Cache for fast lookups
+        Query->>Redis: SET shortlink:{slug}
+        Redis-->>Query: OK
+    end
 
     Query->>Query: revalidateTag('shortlinks')
     Query-->>API: Created shortlink
-    API-->>UI: 201 Created with shortlink data
-    UI->>UI: Add new link to table
-    UI-->>Admin: Show success toast with short URL
+    API-->>UI: 201 Created
+    UI->>UI: Add to table
+    UI-->>Admin: ✅ Success toast
 ```
 
 **Key Steps:**
@@ -151,69 +176,69 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant User as User/Visitor
-    participant Route as /s/[slug]/route.ts
-    participant Query as shortlinks-query
-    participant Redis as Redis Cache
-    participant DB as Database
-    participant Logger as Logger
+    autonumber
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% User clicks shortlink → fast redirect + async click tracking
+    %% Critical path: lookup → redirect (must be fast!)
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+    participant User as 🌐 Visitor
+    participant Route as 🚀 /s/[slug]
+    participant Query as 📦 Query Layer
+    participant Redis as ⚡ Redis
+    participant DB as 🗄️ Database
+
+    %% Step 1: Incoming request
     User->>Route: GET /s/{slug}
 
-    Note over Route: Extract request metadata
-    Route->>Route: Parse headers:<br/>- referrer<br/>- user-agent<br/>- x-vercel-ip-country<br/>- device type
+    Note over Route: 📋 Extract metadata<br/>• referrer<br/>• user-agent<br/>• x-vercel-ip-country
 
+    %% Step 2: Fast lookup (Redis-first)
     Route->>Query: getShortlinkBySlug(slug)
 
-    Note over Query: Try Redis first
-    Query->>Redis: GET shortlink:{slug}
+    rect rgb(255, 250, 240)
+        Note over Query,Redis: ⚡ Cache-first lookup (~1ms)
+        Query->>Redis: GET shortlink:{slug}
 
-    alt Cache hit
-        Redis-->>Query: Cached shortlink
-        Query->>Logger: log('shortlink.cache.hit')
-        Query-->>Route: shortlink
-    else Cache miss
-        Redis-->>Query: null
-        Query->>DB: SELECT * FROM Shortlink WHERE slug=?
-        DB-->>Query: shortlink or null
+        alt ✅ Cache HIT
+            Redis-->>Query: shortlink data
+            Query-->>Route: shortlink
+        else ❌ Cache MISS
+            Redis-->>Query: null
+            Query->>DB: SELECT * WHERE slug=?
+            DB-->>Query: shortlink or null
 
-        alt Shortlink found
-            Query->>Redis: SET shortlink:{slug} {record}
-            Redis-->>Query: Cached
-            Query->>Logger: log('shortlink.cache.miss', {cached: true})
+            opt Found in DB
+                Query->>Redis: SET shortlink:{slug}
+                Redis-->>Query: cached
+            end
+
+            Query-->>Route: shortlink or null
         end
-
-        Query-->>Route: shortlink or null
     end
 
-    alt Shortlink not found
+    %% Step 3: Handle not found
+    alt ⚠️ Shortlink not found
         Route-->>User: 404 Not Found
     end
 
-    Note over Route: Record click asynchronously (don't await)
-    Route->>Query: recordClick(slug, metadata)<br/>.catch(error => log.error(...))
+    %% Step 4: Fast response (don't wait for click recording)
+    rect rgb(240, 255, 240)
+        Note over Route: 🏃 Respond immediately
+        Route->>Route: NextResponse.redirect(url)
+        Route->>Route: Set-Cookie: sl_ref={slug}<br/>maxAge=30d
+        Route-->>User: 302 Redirect
+    end
 
-    Note over Route: Set attribution cookie & redirect
-    Route->>Route: Create NextResponse.redirect(url)
-    Route->>Route: Set cookie 'sl_ref'={slug}<br/>maxAge=30 days, httpOnly=false
-    Route-->>User: 302 Redirect + Set-Cookie header
+    User->>User: → Browser follows redirect
 
-    User->>User: Browser follows redirect to destination
-
-    Note over Query: Background: Record click
-    Query->>DB: SELECT * FROM Shortlink WHERE slug=?
-    DB-->>Query: shortlink
-
-    alt Shortlink exists
-        Query->>DB: UPDATE Shortlink<br/>SET clicks = clicks + 1<br/>WHERE id=?
-        DB-->>Query: Updated
-
-        Query->>DB: INSERT INTO ShortlinkClick<br/>{shortlinkId, timestamp, referrer, userAgent, country, device}
-        DB-->>Query: Inserted
-
-        Query->>Logger: log('shortlink.click.recorded')
-    else Shortlink not found
-        Query->>Logger: log.warn('shortlink.click.notfound')
+    %% Step 5: Async click recording (background)
+    rect rgb(248, 248, 255)
+        Note over Query,DB: 🔄 Background task (fire & forget)
+        Query->>DB: UPDATE clicks = clicks + 1
+        DB-->>Query: OK
+        Query->>DB: INSERT ShortlinkClick
+        DB-->>Query: OK
     end
 ```
 
@@ -246,80 +271,68 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant User as User
-    participant Checkout as Stripe Checkout
-    participant Webhook as Stripe Webhook
-    participant Inngest as Inngest
-    participant Attribution as shortlink-attribution
-    participant Query as shortlinks-query
-    participant DB as Database
-    participant Logger as Logger
+    autonumber
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Cookie → Stripe metadata → Inngest event → Attribution record
+    %% Links marketing shortlinks to actual purchases
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    Note over User: Has sl_ref cookie from shortlink visit
+    participant User as 👤 User
+    participant Stripe as 💳 Stripe
+    participant Inngest as ⚡ Inngest
+    participant Attr as 🔗 Attribution Fn
+    participant DB as 🗄️ Database
 
-    User->>Checkout: Complete purchase
-    Note over Checkout: Cookie 'sl_ref' sent with request
-    Note over Checkout: Checkout session metadata includes:<br/>shortlinkRef={slug}
-
-    Webhook->>Inngest: checkout.session.completed event
-    Inngest->>Inngest: Create Purchase record
-    Inngest->>Inngest: Emit NEW_PURCHASE_CREATED_EVENT
-
-    Attribution->>Attribution: Listen: NEW_PURCHASE_CREATED_EVENT
-    Note over Attribution: Idempotency: purchaseId
-
-    Attribution->>Attribution: Get purchase details
-
-    alt No checkout session
-        Attribution-->>Inngest: {skipped: true, reason: 'No checkout session'}
+    %% Phase 1: Cookie captured during checkout
+    rect rgb(255, 250, 240)
+        Note over User,Stripe: 🍪 Cookie → Stripe metadata
+        Note over User: Has sl_ref cookie<br/>from earlier shortlink visit
+        User->>Stripe: Complete checkout
+        Note over Stripe: metadata.shortlinkRef = cookie value
     end
 
-    Attribution->>DB: getPurchase(purchaseId)
-    DB-->>Attribution: purchase
-
-    Attribution->>DB: getProduct(productId)
-    DB-->>Attribution: product
-
-    Attribution->>DB: getUserById(userId)
-    DB-->>Attribution: user
-
-    alt User not found
-        Attribution-->>Inngest: {skipped: true, reason: 'User not found'}
+    %% Phase 2: Webhook triggers Inngest
+    rect rgb(248, 248, 255)
+        Note over Stripe,Inngest: 🎣 Webhook processing
+        Stripe->>Inngest: checkout.session.completed
+        Inngest->>Inngest: Create Purchase record
+        Inngest->>Inngest: Emit NEW_PURCHASE_CREATED
     end
 
-    Attribution->>Checkout: getCheckoutSession(checkoutSessionId)
-    Checkout-->>Attribution: checkoutSession with metadata
+    %% Phase 3: Attribution function processes
+    rect rgb(240, 255, 240)
+        Note over Attr,DB: 📊 Attribution recording
+        Attr->>Attr: Listen: NEW_PURCHASE_CREATED
+        Note over Attr: 🔑 Idempotent by purchaseId
 
-    Note over Attribution: Extract metadata.shortlinkRef
+        %% Load context
+        Attr->>DB: getPurchase(purchaseId)
+        DB-->>Attr: purchase
+        Attr->>DB: getProduct(productId)
+        DB-->>Attr: product
+        Attr->>DB: getUser(userId)
+        DB-->>Attr: user
 
-    alt No shortlinkRef in metadata
-        Attribution->>Logger: log.info('no_ref_in_metadata')
-        Attribution-->>Inngest: {skipped: true, reason: 'No shortlink reference'}
+        %% Get Stripe metadata
+        Attr->>Stripe: getCheckoutSession()
+        Stripe-->>Attr: session.metadata
+
+        %% Check for shortlink ref
+        alt ❌ No shortlinkRef
+            Attr-->>Inngest: skip
+        else ✅ Has shortlinkRef
+            Attr->>DB: SELECT Shortlink WHERE slug=?
+            DB-->>Attr: shortlink
+
+            Note over Attr: No dedup for purchases<br/>(user can buy multiple)
+
+            Attr->>DB: INSERT ShortlinkAttribution
+            Note over DB: 📦 metadata:<br/>productId, productName<br/>purchaseId, totalAmount
+            DB-->>Attr: created
+
+            Attr-->>Inngest: ✅ recorded
+        end
     end
-
-    Attribution->>Logger: log.info('found_ref', {shortlinkRef, purchaseId, productType})
-
-    Attribution->>Query: createShortlinkAttribution({<br/>shortlinkSlug, email, userId, type: 'purchase', metadata<br/>})
-
-    Query->>DB: SELECT * FROM Shortlink WHERE slug=?
-    DB-->>Query: shortlink
-
-    alt Shortlink not found
-        Query->>Logger: log.warn('attribution.notfound')
-        Query-->>Attribution: void
-    end
-
-    Note over Query: No deduplication for purchases<br/>(user can buy multiple products)
-
-    Query->>DB: INSERT INTO ShortlinkAttribution<br/>{shortlinkId, userId, email, type, metadata}
-    Note over DB: metadata includes:<br/>- productId<br/>- productName<br/>- purchaseId<br/>- totalAmount<br/>- productType
-    DB-->>Query: Created
-
-    Query->>Logger: log.info('attribution.recorded')
-    Query-->>Attribution: void
-
-    Attribution->>Logger: log.info('attribution.recorded', {purchaseId, productType})
-    Attribution-->>Inngest: {recorded: true, shortlinkRef, userId}
 ```
 
 **Key Steps:**
@@ -352,36 +365,49 @@ sequenceDiagram
 ## 5. Signup Attribution Flow
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e1f5fe', 'primaryBorderColor': '#0288d1'}}}%%
 flowchart TD
-    A[User clicks shortlink] --> B[Set sl_ref cookie]
-    B --> C[User creates account]
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Signup attribution: one per email per shortlink (deduplicated)
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    C --> D[Auth system creates user]
-    D --> E{Check for sl_ref cookie}
+    A([🔗 User clicks shortlink]) --> B[🍪 Set sl_ref cookie]
+    B --> C[📝 User creates account]
 
-    E -->|Cookie present| F[Pass shortlinkRef to system]
-    E -->|No cookie| Z[Skip attribution]
+    C --> D[🔐 Auth creates user record]
+    D --> E{🍪 sl_ref cookie?}
 
-    F --> G[createShortlinkAttribution called]
-    G --> H[Lookup shortlink by slug]
+    E -->|✅ Present| F[Extract shortlinkRef]
+    E -->|❌ Missing| Z
 
-    H --> I{Shortlink found?}
-    I -->|No| Z
-    I -->|Yes| J{Check existing attribution}
+    F --> G[📦 createShortlinkAttribution]
+    G --> H[(🗄️ Lookup shortlink)]
 
-    J --> K[Query: shortlinkId + email + type='signup']
-    K --> L{Already attributed?}
+    H --> I{Found?}
+    I -->|❌ No| Z
+    I -->|✅ Yes| J{Check dedup}
 
-    L -->|Yes| M[Log: attribution.duplicate]
-    L -->|No| N[Insert ShortlinkAttribution]
+    J --> K[(🔍 Query existing:<br/>shortlinkId + email)]
+    K --> L{Already exists?}
+
+    L -->|⚠️ Yes| M[Log: duplicate]
+    L -->|✅ No| N[INSERT attribution]
 
     M --> Z
-    N --> O[Store: userId, email, type='signup']
-    O --> P[Log: attribution.recorded]
-    P --> Z[End]
+    N --> O[Store: userId, email<br/>type='signup']
+    O --> P[📊 Log: recorded]
+    P --> Z([✨ Done])
 
-    style N fill:#90EE90
-    style Z fill:#FFD700
+    %% Styling
+    classDef success fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    classDef warning fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef endpoint fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    classDef database fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+
+    class N success
+    class M warning
+    class Z endpoint
+    class H,K database
 ```
 
 **Key Points:**
@@ -397,26 +423,32 @@ flowchart TD
 ### Available Metrics
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#f3e5f5', 'primaryBorderColor': '#7b1fa2'}}}%%
 flowchart LR
-    subgraph "Overview Stats"
-        A[Total Clicks<br/>from Shortlink.clicks]
-        B[Last 60 Minutes<br/>time-based filter]
-        C[Last 24 Hours<br/>time-based filter]
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Analytics dashboard data sources and metrics
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    subgraph overview ["📊 Overview Stats"]
+        A["🔢 Total Clicks<br/><small>Shortlink.clicks</small>"]
+        B["⏱️ Last 60 min"]
+        C["📅 Last 24 hrs"]
     end
 
-    subgraph "Click Analytics"
-        D[Clicks by Day<br/>30-day chart]
-        E[Top Referrers<br/>grouped by referrer]
-        F[Device Breakdown<br/>mobile/tablet/desktop]
-        G[Recent Clicks<br/>last 50 events]
+    subgraph clicks ["📈 Click Analytics"]
+        D["📉 Clicks by Day<br/><small>30-day chart</small>"]
+        E["🔗 Top Referrers<br/><small>GROUP BY referrer</small>"]
+        F["📱 Device Split<br/><small>mobile/tablet/desktop</small>"]
+        G["🕐 Recent Clicks<br/><small>last 50 events</small>"]
     end
 
-    subgraph "Attribution Analytics"
-        H[Signups Count<br/>type='signup']
-        I[Purchases Count<br/>type='purchase']
-        J[Conversion Rate<br/>purchases/clicks]
+    subgraph attribution ["🎯 Conversions"]
+        H["👤 Signups<br/><small>type='signup'</small>"]
+        I["💰 Purchases<br/><small>type='purchase'</small>"]
+        J["📊 Conversion Rate<br/><small>purchases ÷ clicks</small>"]
     end
 
+    %% Data flow
     A --> D
     D --> E
     E --> F
@@ -424,6 +456,13 @@ flowchart LR
 
     H --> I
     I --> J
+
+    %% Styling
+    classDef metric fill:#e8f5e9,stroke:#43a047
+    classDef conversion fill:#fff3e0,stroke:#fb8c00
+
+    class A,B,C,D,E,F,G metric
+    class H,I,J conversion
 ```
 
 ### Analytics Queries
@@ -477,70 +516,77 @@ LIMIT 50
 ## 7. Admin Interface Structure
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#e3f2fd', 'primaryBorderColor': '#1976d2'}}}%%
 flowchart TD
-    subgraph "Main List View"
-        A["admin/shortlinks"]
-        A1[Recent Stats Cards<br/>Last 60min, Last 24hrs]
-        A2[Search Bar<br/>Filter by slug/url/description]
-        A3[Create Button<br/>Opens CRUD dialog]
-        A4[Shortlinks Table<br/>Desktop view]
-        A5[Shortlinks Cards<br/>Mobile view]
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Admin UI component hierarchy and navigation
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    subgraph list ["📋 Main List View"]
+        direction TB
+        A["🏠 /admin/shortlinks"]
+        A1["📊 Stats Cards<br/><small>60min • 24hrs</small>"]
+        A2["🔍 Search Bar"]
+        A3["➕ Create Button"]
+        A4["📱 Table/Cards<br/><small>responsive</small>"]
 
         A --> A1
         A --> A2
         A --> A3
         A --> A4
-        A --> A5
     end
 
-    subgraph "Table Columns"
-        B1[Short URL<br/>Copy button]
-        B2[Destination<br/>Truncated with tooltip]
-        B3[Clicks<br/>Total count]
-        B4[Signups<br/>Attribution count]
-        B5[Purchases<br/>Attribution count]
-        B6[Created<br/>Date]
-        B7[Actions<br/>Analytics/Edit/Delete]
+    subgraph columns ["📑 Table Columns"]
+        B1["🔗 Short URL<br/><small>+ copy btn</small>"]
+        B2["🎯 Destination"]
+        B3["👆 Clicks"]
+        B4["👤 Signups"]
+        B5["💰 Purchases"]
+        B6["📅 Created"]
+        B7["⚙️ Actions"]
 
-        A4 --> B1
-        A4 --> B2
-        A4 --> B3
-        A4 --> B4
-        A4 --> B5
-        A4 --> B6
-        A4 --> B7
+        A4 --> B1 & B2 & B3 & B4 & B5 & B6 & B7
     end
 
-    subgraph "CRUD Dialog"
-        C1[Create Mode<br/>Empty form]
-        C2[Edit Mode<br/>Pre-filled form]
-        C3["Fields: URL, Slug, Description"]
-        C4[Generate Button<br/>Auto-generate slug]
-        C5["Save Action: POST or PATCH"]
+    subgraph dialog ["✏️ CRUD Dialog"]
+        C1["🆕 Create Mode"]
+        C2["📝 Edit Mode"]
+        C3["📋 Fields:<br/>URL • Slug • Desc"]
+        C4["🎲 Generate Slug"]
+        C5["💾 Save"]
+
+        C1 & C2 --> C3
+        C3 --> C4
+        C3 --> C5
     end
 
-    subgraph "Analytics View"
-        D["admin/shortlinks/id/analytics"]
-        D1[Back Button<br/>Return to list]
-        D2[Shortlink Header<br/>Slug + destination]
-        D3[Total Clicks Card]
-        D4[Clicks Chart<br/>30-day line chart]
-        D5[Top Referrers Table]
-        D6[Device Breakdown<br/>Pie chart]
-        D7[Recent Clicks Table<br/>Last 50 events]
+    subgraph analytics ["📈 Analytics View"]
+        D["📊 /admin/shortlinks/:id/analytics"]
+        D1["⬅️ Back"]
+        D2["🏷️ Header"]
+        D3["🔢 Total Clicks"]
+        D4["📉 30-day Chart"]
+        D5["🔗 Top Referrers"]
+        D6["📱 Device Split"]
+        D7["🕐 Recent 50"]
+
+        D --> D1 & D2 & D3
+        D --> D4 & D5 & D6 & D7
     end
 
-    A3 --> C1
-    B7 --> C2
-    B7 --> D
+    %% Navigation
+    A3 ==> C1
+    B7 -.->|edit| C2
+    B7 ==>|analytics| D
 
-    D --> D1
-    D --> D2
-    D --> D3
-    D --> D4
-    D --> D5
-    D --> D6
-    D --> D7
+    %% Styling
+    classDef page fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+    classDef action fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    classDef data fill:#fff3e0,stroke:#f57c00
+
+    class A,D page
+    class A3,C5 action
+    class B3,B4,B5,D3,D4,D5,D6,D7 data
 ```
 
 ### Page Routes
@@ -684,27 +730,43 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant User as User
-    participant Page as Product Page
-    participant Checkout as Stripe Checkout
-    participant Cookie as Browser Cookie
-    participant Stripe as Stripe Session
+    autonumber
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% How shortlink attribution flows through Stripe checkout
+    %% Cookie → Client → Stripe Metadata → Webhook
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    Note over User: Arrives via /s/promo123
-    User->>Cookie: sl_ref=promo123 (30 days)
+    participant User as 👤 User
+    participant Page as 🛒 Product Page
+    participant Cookie as 🍪 Browser
+    participant Stripe as 💳 Stripe
 
-    User->>Page: Click "Buy Now"
-    Page->>Cookie: Read sl_ref cookie
-    Cookie-->>Page: "promo123"
+    %% Phase 1: Cookie was set earlier
+    rect rgb(255, 253, 231)
+        Note over User,Cookie: 🔗 Earlier: User clicked /s/promo123
+        User->>Cookie: sl_ref = promo123<br/>(30 day expiry)
+    end
 
-    Page->>Checkout: createCheckoutSession({<br/>priceId, metadata: {shortlinkRef: 'promo123'}<br/>})
-    Checkout->>Stripe: Create session with metadata
-    Stripe-->>Checkout: Session URL
+    %% Phase 2: Checkout captures cookie
+    rect rgb(232, 245, 233)
+        Note over User,Stripe: 🛒 Checkout flow
+        User->>Page: Click "Buy Now"
+        Page->>Cookie: Read sl_ref
+        Cookie-->>Page: "promo123"
 
-    Checkout-->>User: Redirect to Stripe
+        Page->>Stripe: createCheckoutSession
+        Note over Page,Stripe: metadata.shortlinkRef = "promo123"
+        Stripe-->>Page: Session URL
+        Page-->>User: Redirect → Stripe
+    end
 
-    User->>Stripe: Complete payment
-    Stripe->>Stripe: Webhook with metadata.shortlinkRef
+    %% Phase 3: Payment completes
+    rect rgb(227, 242, 253)
+        Note over User,Stripe: 💰 Payment & webhook
+        User->>Stripe: Complete payment
+        Stripe->>Stripe: 🎣 Webhook fires
+        Note over Stripe: metadata.shortlinkRef<br/>triggers attribution
+    end
 ```
 
 **Key Integration Points:**
@@ -750,14 +812,28 @@ shortlink:{slug} → Full Shortlink object
 
 **Cache Hit Flow:**
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#fff3e0'}}}%%
 flowchart LR
-    A[Request /s/abc123] --> B{Redis cache?}
-    B -->|Hit| C[Return cached record]
-    B -->|Miss| D[Query database]
-    D --> E[Cache result]
-    E --> F[Return record]
-    C --> G[Redirect user]
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    %% Redis-first lookup with DB fallback and cache-aside pattern
+    %% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    A["🌐 GET /s/abc123"] --> B{"⚡ Redis?"}
+    B -->|"✅ Hit<br/><small>~1ms</small>"| C["📦 Cached data"]
+    B -->|"❌ Miss"| D["🗄️ Query DB<br/><small>~10-50ms</small>"]
+    D --> E["💾 Cache result"]
+    E --> F["📦 Fresh data"]
+    C --> G["🚀 302 Redirect"]
     F --> G
+
+    %% Styling
+    classDef fast fill:#c8e6c9,stroke:#388e3c,stroke-width:2px
+    classDef slow fill:#ffecb3,stroke:#ffa000,stroke-width:2px
+    classDef endpoint fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+
+    class C fast
+    class D slow
+    class A,G endpoint
 ```
 
 **Benefits:**
