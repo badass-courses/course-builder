@@ -10,6 +10,7 @@ import { performCodeExtraction } from '@/inngest/functions/ocr/ocr-code-extracto
 import { postmarkWebhook } from '@/inngest/functions/postmark/postmarks-webhooks-handler'
 import { refundEntitlements } from '@/inngest/functions/refund/refund-entitlements'
 import { sendWorkshopAccessEmails } from '@/inngest/functions/send-workshop-access-emails'
+import { shortlinkAttribution } from '@/inngest/functions/shortlink-attribution'
 import { syncPurchaseTags } from '@/inngest/functions/sync-purchase-tags'
 import { userCreated } from '@/inngest/functions/user-created'
 import { inngest } from '@/inngest/inngest.server'
@@ -65,5 +66,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		shortlinkAttribution,
 	],
 }
