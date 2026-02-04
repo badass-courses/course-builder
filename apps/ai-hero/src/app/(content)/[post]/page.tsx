@@ -236,11 +236,16 @@ async function PostBody({ post }: { post: Post | null }) {
 		return null
 	}
 
-	const { content } = await compileMDX(post.fields.body)
+	const { content } = await compileMDX(
+		post.fields.body,
+		{},
+		{},
+		{ lessonId: post.id },
+	)
 
 	return (
 		<div className="px-5 md:px-10 lg:px-14">
-			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-blue-600 sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
+			<article className="prose prose-hr:border-border dark:prose-invert dark:prose-a:text-primary prose-a:text-blue-600 sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
 				{content}
 			</article>
 		</div>

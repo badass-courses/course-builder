@@ -110,7 +110,7 @@ export default function PostToC({
 		<nav
 			ref={containerRef}
 			className={cn(
-				'bg-background sticky top-[63px] z-50 mt-5 flex min-w-[200px] flex-col border-y',
+				'bg-background sticky top-[62px] z-50 mt-5 flex min-w-[200px] flex-col border-y',
 				className,
 			)}
 			aria-label="On this page"
