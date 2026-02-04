@@ -51,3 +51,6 @@ apps/*/public/robots.txt
 apps/*/test-results
 .vercel
 .env*.local
+
+.claude/.worker-tracking
+apps/*/.claude/.worker-tracking

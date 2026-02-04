@@ -22,7 +22,7 @@ export default function ListResourceNavigation({
 }) {
 	const pathname = usePathname()
 	const [isExpanded, setIsExpanded] = React.useState(true)
-	const { list, isLoading: isListLoading } = useList()
+	const { list, isLoading: isListLoading, currentPostHasVideo } = useList()
 	const { progress } = useProgress()
 
 	if (isListLoading) {
@@ -86,7 +86,9 @@ export default function ListResourceNavigation({
 						>
 							<Book className="text-primary w-4" /> {list.fields.title}
 						</Link>
-						<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+						{currentPostHasVideo && (
+							<AutoPlayToggle className="text-muted-foreground hover:text-foreground relative z-10 -ml-1 mt-2 gap-0 text-xs transition [&_button]:scale-75" />
+						)}
 					</div>
 				)}
 				{/* Resource navigation list */}

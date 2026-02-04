@@ -24,8 +24,15 @@ export default async function Layout(props: {
 		list ? list.id : params.post,
 	)
 
+	const currentPostHasVideo = Boolean(
+		post?.resources?.find(
+			(r: { resource: { type: string } }) =>
+				r.resource.type === 'videoResource',
+		),
+	)
+
 	return (
-		<ListProvider initialList={list}>
+		<ListProvider initialList={list} currentPostHasVideo={currentPostHasVideo}>
 			<ProgressProvider initialProgress={initialProgress}>
 				<ActiveHeadingProvider>
 					<LayoutClient withContainer>
