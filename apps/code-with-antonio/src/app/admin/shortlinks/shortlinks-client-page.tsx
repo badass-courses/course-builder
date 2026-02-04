@@ -110,10 +110,7 @@ function formatDestination(url: string): string {
 	try {
 		const parsed = new URL(url)
 		const host = parsed.hostname.toLowerCase()
-		if (
-			host === 'codewithantonio.com' ||
-			host === 'www.codewithantonio.com'
-		) {
+		if (host === 'codewithantonio.com' || host === 'www.codewithantonio.com') {
 			return parsed.pathname + parsed.search + parsed.hash || '/'
 		}
 		// For other URLs, show truncated version
@@ -234,91 +231,124 @@ export default function ShortlinksManagement({
 	}
 
 	return (
-		<main className="flex w-full flex-col p-10">
-			<div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
-				<h1 className="font-heading text-xl font-bold sm:text-3xl">
-					Shortlinks
-				</h1>
+		<main className="flex w-full flex-col p-6 sm:p-10">
+			<div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+				<div>
+					<h1 className="font-heading mb-1 text-2xl font-bold tracking-tight sm:text-4xl">
+						Shortlinks
+					</h1>
+					<p className="text-muted-foreground text-sm">
+						Manage and track your short URLs with analytics
+					</p>
+				</div>
 
 				{/* Recent stats cards */}
-				<div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:w-fit">
-					<Card className="border-muted">
-						<CardContent className="flex items-center gap-3 p-4">
-							<Clock className="text-muted-foreground h-5 w-5" />
+				<div className="grid grid-cols-2 gap-5 sm:grid-cols-2 lg:w-fit">
+					<Card className="border-border/50 from-background to-muted/20 group bg-gradient-to-br shadow-sm transition-all hover:shadow-md">
+						<CardContent className="flex items-center gap-4 p-6">
+							<div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+								<Clock className="h-5 w-5" />
+							</div>
 							<div>
-								<p className="text-2xl font-bold">
+								<p className="text-3xl font-bold tracking-tight">
 									{recentStats.last60Minutes}
 								</p>
-								<p className="text-muted-foreground text-xs">Last 60 min</p>
+								<p className="text-muted-foreground mt-0.5 text-xs font-medium uppercase tracking-wider">
+									Last 60 min
+								</p>
 							</div>
 						</CardContent>
 					</Card>
-					<Card className="border-muted">
-						<CardContent className="flex items-center gap-3 p-4">
-							<BarChart3 className="text-muted-foreground h-5 w-5" />
+					<Card className="border-border/50 from-background to-muted/20 group bg-gradient-to-br shadow-sm transition-all hover:shadow-md">
+						<CardContent className="flex items-center gap-4 p-6">
+							<div className="bg-primary/10 text-primary flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+								<BarChart3 className="h-5 w-5" />
+							</div>
 							<div>
-								<p className="text-2xl font-bold">{recentStats.last24Hours}</p>
-								<p className="text-muted-foreground text-xs">Last 24 hours</p>
+								<p className="text-3xl font-bold tracking-tight">
+									{recentStats.last24Hours}
+								</p>
+								<p className="text-muted-foreground mt-0.5 text-xs font-medium uppercase tracking-wider">
+									Last 24 hours
+								</p>
 							</div>
 						</CardContent>
 					</Card>
 				</div>
 
-				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-					<div className="relative w-full sm:w-64">
-						<Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+				<div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+					<div className="relative w-full sm:w-80">
+						<Search className="text-muted-foreground/50 absolute left-3 top-3 h-4 w-4" />
 						<Input
-							placeholder="Search shortlinks..."
+							placeholder="Search by slug, URL, or description..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="pl-8"
+							className="border-border/50 h-11 pl-10 shadow-sm transition-shadow focus:shadow-md"
 						/>
 					</div>
 					<ShortlinkCrudDialog onSubmit={handleCreate}>
-						<Button className="w-full sm:w-auto">
-							<Plus className="mr-2 h-4 w-4" /> Create Shortlink
+						<Button className="h-11 w-full gap-2 shadow-sm sm:w-auto">
+							<Plus className="h-4 w-4" /> Create Shortlink
 						</Button>
 					</ShortlinkCrudDialog>
 				</div>
 
 				{shortlinks.length === 0 ? (
-					<div className="text-muted-foreground py-12 text-center">
-						<p>No shortlinks yet. Create your first one!</p>
-					</div>
+					<Card className="border-border/50 from-background to-muted/10 border-2 border-dashed bg-gradient-to-br">
+						<CardContent className="flex flex-col items-center justify-center px-8 py-20 text-center">
+							<div className="bg-primary/10 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
+								<Plus className="text-primary h-10 w-10" />
+							</div>
+							<h3 className="mb-2 text-2xl font-bold tracking-tight">
+								No shortlinks yet
+							</h3>
+							<p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
+								Create your first shortlink to start tracking clicks, signups,
+								and conversions. Perfect for campaigns, social media, and
+								marketing attribution.
+							</p>
+							<ShortlinkCrudDialog onSubmit={handleCreate}>
+								<Button size="lg" className="gap-2 shadow-sm">
+									<Plus className="h-5 w-5" />
+									Create Your First Shortlink
+								</Button>
+							</ShortlinkCrudDialog>
+						</CardContent>
+					</Card>
 				) : (
 					<>
-						<div className="hidden overflow-x-auto rounded-lg shadow-sm sm:block">
+						<div className="border-border/50 hidden overflow-x-auto rounded-xl border shadow-sm sm:block">
 							<table className="divide-border min-w-full divide-y">
-								<thead>
+								<thead className="bg-muted/30">
 									<tr>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Short URL
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Destination
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Clicks
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Signups
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Purchases
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Created
 										</th>
-										<th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+										<th className="text-muted-foreground px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
 											Actions
 										</th>
 									</tr>
 								</thead>
-								<tbody className="divide-border divide-y">
+								<tbody className="divide-border bg-background divide-y">
 									{filteredShortlinks().map((link) => (
 										<tr
 											key={link.id}
-											className="hover:bg-gray-50 dark:hover:bg-gray-900"
+											className="hover:bg-muted/20 group transition-colors"
 										>
 											<td className="whitespace-nowrap px-6 py-4">
 												<div className="flex items-center gap-2">
@@ -425,11 +455,11 @@ export default function ShortlinksManagement({
 
 						<div className="space-y-4 sm:hidden">
 							{filteredShortlinks().map((link) => (
-								<div
+								<Card
 									key={link.id}
-									className="overflow-hidden rounded-lg border shadow-sm"
+									className="border-border/50 overflow-hidden shadow-sm transition-shadow hover:shadow-md"
 								>
-									<div className="border-b px-4 py-4">
+									<div className="bg-muted/20 border-border/50 border-b px-4 py-4">
 										<div className="flex items-center justify-between">
 											<div className="flex items-center gap-2">
 												<code className="bg-muted rounded px-2 py-1 text-sm">
@@ -500,7 +530,7 @@ export default function ShortlinksManagement({
 											</div>
 										</div>
 									</div>
-								</div>
+								</Card>
 							))}
 						</div>
 					</>
