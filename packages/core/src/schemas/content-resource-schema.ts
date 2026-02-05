@@ -29,6 +29,7 @@ export const ContentResourceSchema = z.object({
 	createdById: z.string(),
 	currentVersionId: z.string().nullish(),
 	fields: z.record(z.string(), z.any()).default({}).nullable().optional(),
+	slug: z.string().nullish(), // Generated column from fields.slug
 	createdAt: z.coerce.date().nullable(),
 	updatedAt: z.coerce.date().nullable(),
 	deletedAt: z.coerce.date().nullable(),
