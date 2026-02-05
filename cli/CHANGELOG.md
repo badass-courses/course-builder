@@ -1,5 +1,33 @@
 # Changelog
 
+## 8.1.7
+
+### Patch Changes
+
+- [#579](https://github.com/badass-courses/course-builder/pull/579)
+  [`5d94d4e`](https://github.com/badass-courses/course-builder/commit/5d94d4e4b634f612228dfa2c081fc96f201d85cc)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - upgrade next to beta,
+  update related deps (react, react-dom, eslint, etc)
+
+- [#629](https://github.com/badass-courses/course-builder/pull/629)
+  [`b3ef53b`](https://github.com/badass-courses/course-builder/commit/b3ef53b206b0677d64dde1ede7df88269c33b5fc)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - updates for next react
+  CVE
+
+- [#637](https://github.com/badass-courses/course-builder/pull/637)
+  [`25d5121`](https://github.com/badass-courses/course-builder/commit/25d512163a52d9d177489988ed4cde9467a8235f)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump react
+
+- [#667](https://github.com/badass-courses/course-builder/pull/667)
+  [`999c68e`](https://github.com/badass-courses/course-builder/commit/999c68e1a50d69b8c3bd41395bc852d9c77ada53)
+  Thanks [@nicollguarnizo](https://github.com/nicollguarnizo)! - chore(cli):
+  bump Next.js to 16.0.10 for security (CVE-2025-55184, CVE-2025-55183)
+
+- [#589](https://github.com/badass-courses/course-builder/pull/589)
+  [`f8dffc9`](https://github.com/badass-courses/course-builder/commit/f8dffc989c2636c25395701cfa949dfcb3ffd27b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next from beta to
+  stable
+
 ## 8.1.6
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @coursebuilder/eslint-config
 
+## 0.1.2
+
+### Patch Changes
+
+- [#589](https://github.com/badass-courses/course-builder/pull/589)
+  [`f8dffc9`](https://github.com/badass-courses/course-builder/commit/f8dffc989c2636c25395701cfa949dfcb3ffd27b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next from beta to
+  stable
+
 ## 0.1.1
 
 ### Patch Changes
