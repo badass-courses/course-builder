@@ -264,7 +264,9 @@ export async function runBasicTests(options: TestOptions) {
 			updatedAt: new Date(),
 			fields: {
 				title: 'Video Titles',
+				slug: 'video-titles',
 			},
+			slug: 'video-titles', // Generated from fields.slug
 			resources: [],
 		}
 		const createdResource = await adapter.createContentResource(resource)
@@ -281,19 +283,23 @@ export async function runBasicTests(options: TestOptions) {
 			updatedAt: new Date(),
 			fields: {
 				title: 'Video Titles',
+				slug: 'video-titles',
 			},
+			slug: 'video-titles', // Generated from fields.slug
 		}
 		const createdResource = await adapter.createContentResource(resource)
 		const updatedResource = await adapter.updateContentResourceFields({
 			id: createdResource.id,
 			fields: {
 				title: 'Updated Video Titles',
+				slug: 'video-titles',
 			},
 		})
 		expect(updatedResource).toEqual({
 			...createdResource,
 			fields: {
 				title: 'Updated Video Titles',
+				slug: 'video-titles',
 			},
 		})
 	})

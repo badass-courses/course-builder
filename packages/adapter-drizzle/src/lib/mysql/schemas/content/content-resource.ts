@@ -31,6 +31,11 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			type: varchar('type', { length: 255 }).notNull(),
 			createdById: varchar('createdById', { length: 255 }).notNull(),
 			fields: json('fields').$type<Record<string, any>>().default({}),
+			// Generated column for indexing JSON slug field
+			slug: varchar('slug', { length: 255 }).generatedAlwaysAs(
+				sql`(fields->>'$.slug')`,
+				{ mode: 'stored' },
+			),
 			currentVersionId: varchar('currentVersionId', { length: 255 }),
 			createdAt: timestamp('createdAt', {
 				mode: 'date',
@@ -55,6 +60,7 @@ export function getContentResourceSchema(mysqlTable: MySqlTableFn) {
 			createdByOrganizationMembershipIdIdx: index(
 				'createdByOrganizationMembershipId_idx',
 			).on(cm.createdByOrganizationMembershipId),
+			slugIdx: index('slug_idx').on(cm.slug),
 		}),
 	)
 }
