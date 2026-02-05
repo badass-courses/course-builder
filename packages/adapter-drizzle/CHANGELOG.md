@@ -1,5 +1,59 @@
 # @coursebuilder/adapter-drizzle
 
+## 1.0.6
+
+### Patch Changes
+
+- [#587](https://github.com/badass-courses/course-builder/pull/587)
+  [`fff302b`](https://github.com/badass-courses/course-builder/commit/fff302b9a483f8d9b6209bf5ec3fa57830c3e8e9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - extract cohort and
+  workshop creation to adapter and add tests
+
+- [`783e546`](https://github.com/badass-courses/course-builder/commit/783e546e443b1fcece4c5dee38b363e85d5ad99c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - fix getProgressForUser
+  to consider sections
+
+- [#678](https://github.com/badass-courses/course-builder/pull/678)
+  [`467e256`](https://github.com/badass-courses/course-builder/commit/467e256d42a4e9e8df21ab12c8db189679b2d789)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add generated column
+  for JSON slug indexing
+
+- [`1b92a3a`](https://github.com/badass-courses/course-builder/commit/1b92a3ac602291f219370fb264d8e0099f54963c)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add openEnrollment and
+  closeEnrollment fields to cohort creation
+
+- [#588](https://github.com/badass-courses/course-builder/pull/588)
+  [`43405a9`](https://github.com/badass-courses/course-builder/commit/43405a9d232d97234e671fe951472318c19632de)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump mux
+
+- [`08a0b23`](https://github.com/badass-courses/course-builder/commit/08a0b23ded51ffda51a78c8526b23ed98da4fca2)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - improve turbo cache
+
+- [#590](https://github.com/badass-courses/course-builder/pull/590)
+  [`cf94c52`](https://github.com/badass-courses/course-builder/commit/cf94c52d0f505985916813dc0c9ad523b3cb1e95)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump instantsearch
+
+- [#589](https://github.com/badass-courses/course-builder/pull/589)
+  [`f8dffc9`](https://github.com/badass-courses/course-builder/commit/f8dffc989c2636c25395701cfa949dfcb3ffd27b)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump next from beta to
+  stable
+
+- [#596](https://github.com/badass-courses/course-builder/pull/596)
+  [`896c68c`](https://github.com/badass-courses/course-builder/commit/896c68cf12b07e77c534e89cf0b1741776fa64ce)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - add QuestionResponses
+  table
+
+- [#653](https://github.com/badass-courses/course-builder/pull/653)
+  [`a7e4534`](https://github.com/badass-courses/course-builder/commit/a7e4534d5a0de0eab4e1965c9c07291754608e0e)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - subscriptions
+
+- [`516d0db`](https://github.com/badass-courses/course-builder/commit/516d0dbd2d57017eed1f7d601e5b00bac585e4b9)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - improve turbo cache
+
+- Updated dependencies
+  [[`a4dce03`](https://github.com/badass-courses/course-builder/commit/a4dce03ce7e954653d423dd48c66e15c0bd23e4e)]:
+  - @coursebuilder/nodash@0.0.3
+
 ## 1.0.5
 
 ### Patch Changes
