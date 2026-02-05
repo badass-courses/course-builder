@@ -61,8 +61,8 @@ function CheckYourEmailContent() {
 									) : (
 										<>
 											A login link has been sent to{' '}
-											{email ? <strong>{email}</strong> : 'your email'}. Use
-											it and you&apos;ll be able to access your account.
+											{email ? <strong>{email}</strong> : 'your email'}. Use it
+											and you&apos;ll be able to access your account.
 										</>
 									)}
 								</p>

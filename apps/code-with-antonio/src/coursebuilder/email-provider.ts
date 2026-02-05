@@ -5,11 +5,11 @@ import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
 import { render } from '@react-email/components'
 import Postmark from 'next-auth/providers/postmark'
 
-import { PostPurchaseLoginEmail } from '@coursebuilder/email-templates/emails/post-purchase-login'
 import {
 	sendVerificationRequest,
 	type HTMLEmailParams,
 } from '@coursebuilder/core/lib/send-verification-request'
+import { PostPurchaseLoginEmail } from '@coursebuilder/email-templates/emails/post-purchase-login'
 
 type ResourceContext = {
 	title?: string

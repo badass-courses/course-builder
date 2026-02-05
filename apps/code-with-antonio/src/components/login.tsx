@@ -124,19 +124,31 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 
 			if (response.ok || response.redirected) {
 				// Build check-your-email URL with context params
-				const checkEmailUrl = new URL('/check-your-email', window.location.origin)
+				const checkEmailUrl = new URL(
+					'/check-your-email',
+					window.location.origin,
+				)
 				const email = formData.get('email')?.toString()
 				if (email) {
 					checkEmailUrl.searchParams.set('email', email)
 				}
 				if (checkYourEmailPageContext?.title) {
-					checkEmailUrl.searchParams.set('title', checkYourEmailPageContext.title)
+					checkEmailUrl.searchParams.set(
+						'title',
+						checkYourEmailPageContext.title,
+					)
 				}
 				if (checkYourEmailPageContext?.resourceSlug) {
-					checkEmailUrl.searchParams.set('resourceSlug', checkYourEmailPageContext.resourceSlug)
+					checkEmailUrl.searchParams.set(
+						'resourceSlug',
+						checkYourEmailPageContext.resourceSlug,
+					)
 				}
 				if (checkYourEmailPageContext?.coverImage) {
-					checkEmailUrl.searchParams.set('coverImage', checkYourEmailPageContext.coverImage)
+					checkEmailUrl.searchParams.set(
+						'coverImage',
+						checkYourEmailPageContext.coverImage,
+					)
 				}
 				router.push(checkEmailUrl.toString())
 			} else {
@@ -185,7 +197,10 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							</div>
 
 							{emailProvider ? (
-								<form action={emailProvider.signinUrl} onSubmit={handleEmailFormSubmit}>
+								<form
+									action={emailProvider.signinUrl}
+									onSubmit={handleEmailFormSubmit}
+								>
 									<FieldGroup>
 										{showFirstName && (
 											<Field>
