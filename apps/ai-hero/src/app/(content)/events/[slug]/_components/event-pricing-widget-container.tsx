@@ -133,9 +133,7 @@ export const EventPricingWidgetContainer: React.FC<
 			.slice(0, 10),
 	}
 
-	// Check if sold out (limited seats and none available)
-	const hasLimitedSeats = totalQuantity > 0
-	const isSoldOut = hasLimitedSeats && quantityAvailable <= 0
+	const isSoldOut = props.isSoldOut
 
 	/**
 	 * Determines the current enrollment state based on event timing,

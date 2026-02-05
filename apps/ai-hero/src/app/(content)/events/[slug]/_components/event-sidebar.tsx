@@ -16,9 +16,13 @@ import { Button, ScrollArea } from '@coursebuilder/ui'
 export const EventSidebar = ({
 	children,
 	event,
+	isSoldOut,
+	hasPurchased,
 }: {
 	children: React.ReactNode
 	event: Event
+	isSoldOut?: boolean
+	hasPurchased?: boolean
 }) => {
 	const [sidebarRef, { height }] = useMeasure<HTMLDivElement>()
 	const [windowHeight, setWindowHeight] = useState(0)
@@ -86,6 +90,8 @@ export const EventSidebar = ({
 					'pointer-events-none opacity-0': isInView,
 				})}
 				event={event}
+				isSoldOut={isSoldOut}
+				hasPurchased={hasPurchased}
 			/>
 		</>
 	)
@@ -97,9 +103,13 @@ export const EventSidebar = ({
 export const EventSidebarMobile = ({
 	event,
 	className,
+	isSoldOut,
+	hasPurchased,
 }: {
 	event: Event
 	className?: string
+	isSoldOut?: boolean
+	hasPurchased?: boolean
 }) => {
 	const { fields } = event
 	const { startsAt, endsAt, timezone } = fields
@@ -117,6 +127,12 @@ export const EventSidebarMobile = ({
 		})
 	}
 
+	const buttonText = hasPurchased
+		? 'View Details'
+		: isSoldOut
+			? 'Join Waitlist'
+			: 'Get Ticket'
+
 	return (
 		<div
 			className={cn(
@@ -130,20 +146,32 @@ export const EventSidebarMobile = ({
 					{fields.title}
 				</p>
 			</div>
-			<Button
-				className="dark:bg-primary relative rounded-xl bg-blue-600 shadow"
-				asChild
-			>
-				<Link href="#buy" onClick={handleScrollToBuy}>
-					<span className="relative z-10">Get Ticket</span>
-					<div
-						style={{
-							backgroundSize: '200% 100%',
-						}}
-						className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
-					/>
-				</Link>
-			</Button>
+			<div className="flex flex-col items-end gap-0.5">
+				{isSoldOut && !hasPurchased && (
+					<span className="text-primary text-xs">Sold Out</span>
+				)}
+				<Button
+					className={cn(
+						'relative rounded-xl shadow',
+						hasPurchased
+							? 'bg-muted text-muted-foreground'
+							: 'dark:bg-primary bg-blue-600',
+					)}
+					asChild
+				>
+					<Link href="#buy" onClick={handleScrollToBuy}>
+						<span className="relative z-10">{buttonText}</span>
+						{!hasPurchased && (
+							<div
+								style={{
+									backgroundSize: '200% 100%',
+								}}
+								className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+							/>
+						)}
+					</Link>
+				</Button>
+			</div>
 		</div>
 	)
 }

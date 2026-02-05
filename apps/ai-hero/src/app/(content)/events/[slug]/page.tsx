@@ -173,12 +173,17 @@ export default async function EventPage(props: {
 			saleData = await getSaleBannerData(defaultCouponFromAdapter)
 		}
 
+		const totalQuantityValue =
+			productWithQuantityAvailable?.quantityAvailable || 0
+		const isSoldOut = totalQuantityValue > 0 && quantityAvailable <= 0
+
 		const baseProps: EventPageProps = {
 			event,
 			availableBonuses: [],
 			purchaseCount,
 			quantityAvailable,
-			totalQuantity: productWithQuantityAvailable?.quantityAvailable || 0,
+			totalQuantity: totalQuantityValue,
+			isSoldOut,
 			product,
 			pricingDataLoader,
 			defaultCoupon,
@@ -216,6 +221,7 @@ export default async function EventPage(props: {
 			availableBonuses: [],
 			quantityAvailable: -1,
 			totalQuantity: -1,
+			isSoldOut: false,
 			purchaseCount: 0,
 			pricingDataLoader: Promise.resolve({
 				formattedPrice: null,
@@ -363,7 +369,11 @@ export default async function EventPage(props: {
 							)}
 						</article>
 					</div>
-					<EventSidebar event={event}>
+					<EventSidebar
+						event={event}
+						isSoldOut={eventProps.isSoldOut}
+						hasPurchased={eventProps.hasPurchasedCurrentProduct}
+					>
 						{eventImage && (
 							<CldImage
 								className="hidden lg:flex"
