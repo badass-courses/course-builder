@@ -41,10 +41,10 @@ export async function getShortlinks(search?: string): Promise<Shortlink[]> {
 	const links = await db.query.shortlink.findMany({
 		where: search
 			? or(
-					like(shortlink.slug, `%${search}%`),
-					like(shortlink.url, `%${search}%`),
-					like(shortlink.description, `%${search}%`),
-				)
+				like(shortlink.slug, `%${search}%`),
+				like(shortlink.url, `%${search}%`),
+				like(shortlink.description, `%${search}%`),
+			)
 			: undefined,
 		orderBy: desc(shortlink.createdAt),
 	})
@@ -92,10 +92,10 @@ export async function getShortlinksWithAttributions(
 		.where(
 			search
 				? or(
-						like(shortlink.slug, `%${search}%`),
-						like(shortlink.url, `%${search}%`),
-						like(shortlink.description, `%${search}%`),
-					)
+					like(shortlink.slug, `%${search}%`),
+					like(shortlink.url, `%${search}%`),
+					like(shortlink.description, `%${search}%`),
+				)
 				: undefined,
 		)
 		.groupBy(
