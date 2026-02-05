@@ -25,6 +25,8 @@ interface PostPurchaseLoginEmailProps {
 	siteName: string
 	invoiceUrl?: string
 	previewText: string
+	/** Title of the resource they're accessing (e.g., workshop name) */
+	resourceTitle?: string
 }
 
 interface Theme {
@@ -41,6 +43,7 @@ export const PostPurchaseLoginEmail = (
 		siteName = 'Course Builder',
 		invoiceUrl,
 		previewText = 'Welcome!',
+		resourceTitle,
 	}: PostPurchaseLoginEmailProps,
 	theme?: Theme,
 ) => {
@@ -86,10 +89,10 @@ export const PostPurchaseLoginEmail = (
 								/>
 							</Section>
 						)}
-						<Text className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
+						<Text className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal leading-normal text-black">
 							Log in as{' '}
 							<strong className={`text-[${textColor}]`}>{email}</strong> to{' '}
-							{siteName}.
+							{resourceTitle ? `access ${resourceTitle}` : siteName}.
 						</Text>
 
 						<Section className="mb-[32px] mt-[32px] text-center">
@@ -97,7 +100,7 @@ export const PostPurchaseLoginEmail = (
 								className={`rounded bg-[${buttonBackgroundColor}] px-4 py-3 text-center text-[16px] font-semibold text-[${buttonTextColor}] no-underline`}
 								href={url}
 							>
-								Log In
+								{resourceTitle ? `Access ${resourceTitle}` : 'Log In'}
 							</Button>
 						</Section>
 						<Text className="text-[14px] leading-[24px] text-black">

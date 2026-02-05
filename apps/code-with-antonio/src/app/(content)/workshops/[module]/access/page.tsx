@@ -180,6 +180,11 @@ export default async function WorkshopAccessPage(props: Props) {
 								showFirstName
 								firstNameLabel="First Name"
 								firstNamePlaceholder="Your first name (optional)"
+								checkYourEmailPageContext={{
+									title: workshop.fields.title,
+									resourceSlug: params.module,
+									coverImage: workshop.fields.coverImage?.url,
+								}}
 							/>
 						</div>
 					</div>

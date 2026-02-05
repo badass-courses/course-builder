@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Icon } from '@/components/brand/icons'
 import { env } from '@/env.mjs'
 import { Provider } from '@/server/auth'
@@ -37,6 +37,11 @@ export type LoginTemplateProps = {
 	showFirstName?: boolean
 	firstNameLabel?: string
 	firstNamePlaceholder?: string
+	checkYourEmailPageContext?: {
+		title?: string
+		resourceSlug?: string
+		coverImage?: string
+	}
 }
 
 /**
@@ -55,8 +60,11 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 	showFirstName = false,
 	firstNameLabel = 'First Name',
 	firstNamePlaceholder = 'Your first name (optional)',
+	checkYourEmailPageContext,
 }) => {
+	const router = useRouter()
 	const searchParams = useSearchParams()
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
 
 	const callbackUrl = callbackUrlProp
 		? callbackUrlProp
@@ -90,6 +98,68 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 			}
 		}
 	}, [message, error])
+
+	const handleEmailFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		setIsSubmitting(true)
+
+		const form = e.currentTarget
+		const formData = new FormData(form)
+
+		try {
+			// Convert FormData to URLSearchParams - NextAuth expects application/x-www-form-urlencoded
+			const urlParams = new URLSearchParams()
+			for (const [key, value] of formData.entries()) {
+				urlParams.append(key, value.toString())
+			}
+
+			const response = await fetch(form.action, {
+				method: 'POST',
+				body: urlParams,
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			})
+
+			if (response.ok || response.redirected) {
+				// Build check-your-email URL with context params
+				const checkEmailUrl = new URL(
+					'/check-your-email',
+					window.location.origin,
+				)
+				const email = formData.get('email')?.toString()
+				if (email) {
+					checkEmailUrl.searchParams.set('email', email)
+				}
+				if (checkYourEmailPageContext?.title) {
+					checkEmailUrl.searchParams.set(
+						'title',
+						checkYourEmailPageContext.title,
+					)
+				}
+				if (checkYourEmailPageContext?.resourceSlug) {
+					checkEmailUrl.searchParams.set(
+						'resourceSlug',
+						checkYourEmailPageContext.resourceSlug,
+					)
+				}
+				if (checkYourEmailPageContext?.coverImage) {
+					checkEmailUrl.searchParams.set(
+						'coverImage',
+						checkYourEmailPageContext.coverImage,
+					)
+				}
+				router.push(checkEmailUrl.toString())
+			} else {
+				toast.error('Something went wrong. Please try again.')
+				setIsSubmitting(false)
+			}
+		} catch (error) {
+			toast.error('Something went wrong. Please try again.')
+			setIsSubmitting(false)
+		}
+	}
 
 	const githubProvider = providers?.github
 	const discordProvider = providers?.discord
@@ -127,7 +197,10 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 							</div>
 
 							{emailProvider ? (
-								<form method="POST" action={emailProvider.signinUrl}>
+								<form
+									action={emailProvider.signinUrl}
+									onSubmit={handleEmailFormSubmit}
+								>
 									<FieldGroup>
 										{showFirstName && (
 											<Field>
@@ -162,9 +235,23 @@ export const Login: React.FC<React.PropsWithChildren<LoginTemplateProps>> = ({
 											type="hidden"
 											defaultValue={csrfToken}
 										/>
+										{checkYourEmailPageContext?.title && (
+											<input
+												name="resourceTitle"
+												type="hidden"
+												defaultValue={checkYourEmailPageContext.title}
+											/>
+										)}
+										{checkYourEmailPageContext?.resourceSlug && (
+											<input
+												name="resourceSlug"
+												type="hidden"
+												defaultValue={checkYourEmailPageContext.resourceSlug}
+											/>
+										)}
 										<Field>
-											<Button type="submit" size="lg">
-												{buttonLabel}
+											<Button type="submit" size="lg" disabled={isSubmitting}>
+												{isSubmitting ? 'Sending...' : buttonLabel}
 												<div
 													style={{ backgroundSize: '200% 100%' }}
 													className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
