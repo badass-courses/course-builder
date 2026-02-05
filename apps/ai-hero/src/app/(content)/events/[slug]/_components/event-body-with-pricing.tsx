@@ -93,11 +93,13 @@ export async function EventBodyWithPricing({
 					discountValue: 0,
 				}
 
+	const isSoldOut = pricingProps.isSoldOut
+
 	const { content } = await compileMDX(
 		rawBody,
 		{
 			/**
-			 * Enroll/Register button. Only shows when product exists and user hasn't purchased.
+			 * Enroll/Register button. Shows button when available, or "Sold Out" label when sold out.
 			 *
 			 * @example
 			 * ```mdx
@@ -109,8 +111,20 @@ export async function EventBodyWithPricing({
 				children = 'Register Now',
 			}: {
 				children?: React.ReactNode
-			}) =>
-				product && !hasPurchasedCurrentProduct && allowPurchase ? (
+			}) => {
+				// Show sold out label
+				if (isSoldOut && product) {
+					return (
+						<div className="not-prose mt-5">
+							<div className="text-muted-foreground border-border flex h-auto w-full items-center justify-center rounded-lg border px-8 py-3 text-sm font-medium sm:h-14 sm:w-auto md:px-16">
+								Sold Out
+							</div>
+						</div>
+					)
+				}
+
+				// Show buy button
+				return product && !hasPurchasedCurrentProduct && allowPurchase ? (
 					<Pricing.Root
 						{...pricingProps}
 						product={product}
@@ -136,7 +150,8 @@ export async function EventBodyWithPricing({
 							</Pricing.BuyButton>
 						</Pricing.Product>
 					</Pricing.Root>
-				) : null,
+				) : null
+			},
 
 			/**
 			 * Conditional wrapper that shows children only when there's an active discount.

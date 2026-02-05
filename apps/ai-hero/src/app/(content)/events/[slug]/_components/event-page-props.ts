@@ -53,4 +53,6 @@ export type EventPageProps = {
 	allowPurchase?: boolean
 	/** User data for logged-in users (name and email for pre-filling waitlist) */
 	userData?: { name?: string | null; email: string }
+	/** Whether the event is sold out (computed once, passed everywhere) */
+	isSoldOut?: boolean
 } & CommerceProps
