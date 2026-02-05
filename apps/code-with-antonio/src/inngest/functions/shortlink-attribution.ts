@@ -1,5 +1,5 @@
 import { inngest } from '@/inngest/inngest.server'
-import { createShortlinkAttribution } from '@/lib/shortlinks-query'
+import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
 import { log } from '@/server/logger'
 
 import { NEW_PURCHASE_CREATED_EVENT } from '@coursebuilder/core/inngest/commerce/event-new-purchase-created'

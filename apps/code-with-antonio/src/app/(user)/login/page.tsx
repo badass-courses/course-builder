@@ -17,7 +17,7 @@ export default async function LoginPage() {
 	return (
 		<LayoutClient withFooter={false}>
 			<div className="bg-muted flex min-h-[calc(100svh-77px)] flex-col items-center justify-center p-6 md:p-10">
-				<div className="w-full max-w-sm md:max-w-4xl">
+				<div className="w-full max-w-sm md:max-w-md">
 					<Login
 						csrfToken={csrfToken}
 						providers={providers}

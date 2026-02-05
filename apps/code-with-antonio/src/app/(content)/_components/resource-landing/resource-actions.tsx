@@ -9,6 +9,7 @@ import {
 	getFirstResourceSlug,
 } from '@/lib/content-navigation'
 import { Github, Share2 } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 import {
 	Button,
@@ -85,6 +86,7 @@ export function ResourceActions({
 }: ResourceActionsProps) {
 	// Progress-aware mode when moduleType + moduleSlug provided
 	const isProgressAwareMode = Boolean(moduleType && moduleSlug)
+	const { data: session } = useSession()
 
 	return (
 		<div className={cn('', className)}>
@@ -103,7 +105,7 @@ export function ResourceActions({
 						</Button>
 					)
 				)}
-				{githubUrl && (
+				{githubUrl && session?.user && (
 					<Button variant="ghost" size="lg" asChild>
 						<Link href={githubUrl} target="_blank">
 							<Github className="mr-2 w-3" /> Code
