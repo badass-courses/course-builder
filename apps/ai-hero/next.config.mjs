@@ -64,6 +64,11 @@ const config = {
 				destination: '/workshops/ai-sdk-v6-crash-course',
 				permanent: true,
 			},
+			{
+				source: '/11-tips-for-ai-coding-with-ralph-wiggum',
+				destination: '/tips-for-ai-coding-with-ralph-wiggum',
+				permanent: true,
+			},
 		]
 	},
 	async rewrites() {
