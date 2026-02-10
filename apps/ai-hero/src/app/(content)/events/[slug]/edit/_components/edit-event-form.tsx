@@ -107,7 +107,11 @@ export function EditEventForm({ event }: { event: Event }) {
 			]}
 			theme={resolvedTheme}
 		>
-			<EventMetadataFormFields form={form} theme={resolvedTheme} eventId={event.id} />
+			<EventMetadataFormFields
+				form={form}
+				theme={resolvedTheme}
+				eventId={event.id}
+			/>
 		</ResourceForm>
 	)
 }
