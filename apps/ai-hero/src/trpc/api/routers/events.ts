@@ -15,7 +15,11 @@ import {
 	updateReminderEmailHours,
 } from '@/lib/events-query'
 import { getServerAuthSession } from '@/server/auth'
-import { createTRPCRouter, publicProcedure } from '@/trpc/api/trpc'
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from '@/trpc/api/trpc'
 import { sendAnEmail } from '@/utils/send-an-email'
 import { count, desc, eq } from 'drizzle-orm'
 import { Liquid } from 'liquidjs'
@@ -117,7 +121,7 @@ export const eventsRouter = createTRPCRouter({
 	getAllReminderEmails: publicProcedure.query(async () => {
 		return await getAllReminderEmails()
 	}),
-	attachReminderEmailToEvent: publicProcedure
+	attachReminderEmailToEvent: protectedProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -132,7 +136,7 @@ export const eventsRouter = createTRPCRouter({
 				input.hoursInAdvance,
 			)
 		}),
-	detachReminderEmailFromEvent: publicProcedure
+	detachReminderEmailFromEvent: protectedProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -142,7 +146,7 @@ export const eventsRouter = createTRPCRouter({
 		.mutation(async ({ input }) => {
 			return await detachReminderEmailFromEvent(input.eventId, input.emailId)
 		}),
-	createAndAttachReminderEmailToEvent: publicProcedure
+	createAndAttachReminderEmailToEvent: protectedProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -157,7 +161,7 @@ export const eventsRouter = createTRPCRouter({
 				input.hoursInAdvance,
 			)
 		}),
-	updateReminderEmailHours: publicProcedure
+	updateReminderEmailHours: protectedProcedure
 		.input(
 			z.object({
 				eventId: z.string(),
@@ -172,7 +176,7 @@ export const eventsRouter = createTRPCRouter({
 				input.hoursInAdvance,
 			)
 		}),
-	updateReminderEmail: publicProcedure
+	updateReminderEmail: protectedProcedure
 		.input(
 			z.object({
 				emailId: z.string(),
@@ -204,7 +208,7 @@ export const eventsRouter = createTRPCRouter({
 				},
 			})
 		}),
-	previewReminderEmail: publicProcedure
+	previewReminderEmail: protectedProcedure
 		.input(z.object({ eventId: z.string(), emailId: z.string() }))
 		.query(async ({ input }) => {
 			const event = await getEvent(input.eventId)
@@ -250,7 +254,7 @@ export const eventsRouter = createTRPCRouter({
 				})),
 			}
 		}),
-	sendReminderEmailNow: publicProcedure
+	sendReminderEmailNow: protectedProcedure
 		.input(z.object({ eventId: z.string(), emailId: z.string() }))
 		.mutation(async ({ input }) => {
 			const event = await getEvent(input.eventId)
@@ -272,7 +276,7 @@ export const eventsRouter = createTRPCRouter({
 				email.fields?.subject || `Reminder: ${event.fields.title}`
 
 			let sentCount = 0
-			const errors: string[] = []
+			let errorCount = 0
 
 			for (const purchaser of purchasers) {
 				try {
@@ -298,12 +302,11 @@ export const eventsRouter = createTRPCRouter({
 					})
 					sentCount++
 				} catch (err) {
-					errors.push(
-						`Failed to send to ${purchaser.email}: ${err instanceof Error ? err.message : String(err)}`,
-					)
+					console.error('Failed to send reminder email', err)
+					errorCount++
 				}
 			}
 
-			return { sent: sentCount, errors }
+			return { sent: sentCount, errorCount }
 		}),
 })

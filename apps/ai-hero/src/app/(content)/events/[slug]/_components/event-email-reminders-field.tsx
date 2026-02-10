@@ -476,10 +476,13 @@ function SendNowConfirmDialog({
 				toast({
 					title: `Sent ${result.sent} email${result.sent !== 1 ? 's' : ''}`,
 					description:
-						result.errors.length > 0
-							? `${result.errors.length} failed`
+						result?.errorCount && result.errorCount > 0
+							? `${result.errorCount} failed`
 							: 'All emails sent successfully',
-					variant: result.errors.length > 0 ? 'destructive' : 'default',
+					variant:
+						result?.errorCount && result.errorCount > 0
+							? 'destructive'
+							: 'default',
 				})
 			},
 			onError: (error) => {

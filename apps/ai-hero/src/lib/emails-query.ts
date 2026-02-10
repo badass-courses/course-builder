@@ -151,10 +151,6 @@ export async function createEmailSimple(
 	input: NewEmail,
 ): Promise<Email | null> {
 	const emailId = guid()
-	const slug = input.fields.title
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
 
 	const emailData = {
 		id: emailId,
@@ -162,7 +158,7 @@ export async function createEmailSimple(
 		createdById: 'system',
 		fields: {
 			...input.fields,
-			slug: `${slug}-${emailId.slice(0, 8)}`,
+			slug: slugify(`${input.fields.title}~${guid()}`),
 			state: 'draft' as const,
 			visibility: 'unlisted' as const,
 		},
