@@ -28,6 +28,7 @@ import { grantCouponEntitlements } from './functions/coupon/grant-coupon-entitle
 import { grantCouponEntitlementsForPurchase } from './functions/coupon/grant-coupon-entitlements-for-purchase'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
 import { postEventPurchase } from './functions/post-event-purchase'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
@@ -83,5 +84,6 @@ export const inngestConfig = {
 		handleRefundAndRemoveFromCalendar,
 		sendLiveEventWelcomeEmail,
 		shortlinkAttribution,
+		eventReminderBroadcast,
 	],
 }
