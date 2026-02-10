@@ -207,7 +207,6 @@ export function useEventEmailReminders(eventId: string) {
 		},
 		updateEmailHours: (params: UpdateEmailHoursParams) =>
 			updateEmailHours(params),
-		sendNow: (params: { eventId: string; emailId: string }) =>
-			sendNow(params),
+		sendNow: (params: { eventId: string; emailId: string }) => sendNow(params),
 	}
 }

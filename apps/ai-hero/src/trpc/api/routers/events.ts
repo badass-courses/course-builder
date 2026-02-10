@@ -282,14 +282,11 @@ export const eventsRouter = createTRPCRouter({
 						url: `${env.NEXT_PUBLIC_URL}/events/${event.fields.slug}`,
 						user: purchaser,
 					})
-					const parsedSubject = await liquid.parseAndRender(
-						emailSubject,
-						{
-							event,
-							title: event.fields.title,
-							user: purchaser,
-						},
-					)
+					const parsedSubject = await liquid.parseAndRender(emailSubject, {
+						event,
+						title: event.fields.title,
+						user: purchaser,
+					})
 
 					await sendAnEmail({
 						Component: BasicEmail,

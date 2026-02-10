@@ -5,11 +5,12 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { Email, EmailSchema, NewEmail } from '@/lib/emails'
 import { getServerAuthSession } from '@/server/auth'
-import { guid } from '@coursebuilder/utils-core/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
 import { z } from 'zod'
+
+import { guid } from '@coursebuilder/utils-core/guid'
 
 export async function getEmails(): Promise<Email[]> {
 	const { ability } = await getServerAuthSession()
@@ -146,7 +147,9 @@ export async function getEmail(slugOrId: string) {
  * @param input - Email data (title, subject, body)
  * @returns Created email or null on failure
  */
-export async function createEmailSimple(input: NewEmail): Promise<Email | null> {
+export async function createEmailSimple(
+	input: NewEmail,
+): Promise<Email | null> {
 	const emailId = guid()
 	const slug = input.fields.title
 		.toLowerCase()

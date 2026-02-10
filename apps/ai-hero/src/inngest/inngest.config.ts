@@ -28,6 +28,7 @@ import { grantCouponEntitlements } from './functions/coupon/grant-coupon-entitle
 import { grantCouponEntitlementsForPurchase } from './functions/coupon/grant-coupon-entitlements-for-purchase'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
 import { postEventPurchase } from './functions/post-event-purchase'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
 import {
@@ -35,7 +36,6 @@ import {
 	productTransferWorkflow,
 } from './functions/product-transfer-workflow'
 import { sendLiveEventWelcomeEmail } from './functions/send-live-event-welcome-email'
-import { eventReminderBroadcast } from './functions/event-reminder-broadcast'
 import { shortlinkAttribution } from './functions/shortlink-attribution'
 import { computeVideoSplitPoints } from './functions/split_video'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/stripe/event-subscription-checkout-session-completed'

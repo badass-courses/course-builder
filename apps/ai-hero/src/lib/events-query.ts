@@ -276,7 +276,8 @@ export async function getAllReminderEmails() {
 			index ===
 			self.findIndex(
 				(r) =>
-					r.resourceId === ref.resourceId && r.resourceOfId === ref.resourceOfId,
+					r.resourceId === ref.resourceId &&
+					r.resourceOfId === ref.resourceOfId,
 			),
 	)
 

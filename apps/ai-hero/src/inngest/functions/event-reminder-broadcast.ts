@@ -147,15 +147,13 @@ async function getRemindersNeedingScheduling(
 
 	return remindersNeedingScheduling.sort(
 		(a, b) =>
-			new Date(a.reminderTime).getTime() -
-			new Date(b.reminderTime).getTime(),
+			new Date(a.reminderTime).getTime() - new Date(b.reminderTime).getTime(),
 	)
 }
 
 async function sendEventReminder(reminderData: EventReminderData) {
 	try {
-		const { event, emailResource, hoursInAdvance, reminderTime } =
-			reminderData
+		const { event, emailResource, hoursInAdvance, reminderTime } = reminderData
 
 		let purchasers = await getEventPurchasers(event.id)
 
@@ -226,12 +224,8 @@ async function sendEventReminder(reminderData: EventReminderData) {
 				sentCount++
 			} catch (emailError) {
 				const errorMessage =
-					emailError instanceof Error
-						? emailError.message
-						: String(emailError)
-				errors.push(
-					`Failed to send to ${purchaser.email}: ${errorMessage}`,
-				)
+					emailError instanceof Error ? emailError.message : String(emailError)
+				errors.push(`Failed to send to ${purchaser.email}: ${errorMessage}`)
 			}
 		}
 
@@ -242,8 +236,7 @@ async function sendEventReminder(reminderData: EventReminderData) {
 			error: errors.length > 0 ? errors.join('; ') : null,
 		}
 	} catch (error) {
-		const errorMessage =
-			error instanceof Error ? error.message : String(error)
+		const errorMessage = error instanceof Error ? error.message : String(error)
 
 		return {
 			eventId: reminderData.event.id,
