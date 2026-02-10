@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import EmailEventRemindersField from '@/app/(content)/events/[slug]/_components/event-email-reminders-field'
 import { DateTimePicker } from '@/app/(content)/events/[slug]/edit/_components/date-time-picker/date-time-picker'
 import { onEventSave } from '@/app/(content)/events/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
@@ -106,7 +107,7 @@ export function EditEventForm({ event }: { event: Event }) {
 			]}
 			theme={resolvedTheme}
 		>
-			<EventMetadataFormFields form={form} theme={resolvedTheme} />
+			<EventMetadataFormFields form={form} theme={resolvedTheme} eventId={event.id} />
 		</ResourceForm>
 	)
 }
@@ -114,9 +115,11 @@ export function EditEventForm({ event }: { event: Event }) {
 const EventMetadataFormFields = ({
 	form,
 	theme,
+	eventId,
 }: {
 	form: UseFormReturn<z.infer<typeof EventSchema>>
 	theme?: string
+	eventId: string
 }) => {
 	return (
 		<EditResourcesMetadataFields form={form}>
@@ -336,6 +339,7 @@ const EventMetadataFormFields = ({
 					/>
 				</DialogContent>
 			</Dialog>
+			<EmailEventRemindersField parentResourceId={eventId} />
 		</EditResourcesMetadataFields>
 	)
 }

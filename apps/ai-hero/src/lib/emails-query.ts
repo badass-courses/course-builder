@@ -5,7 +5,7 @@ import { courseBuilderAdapter, db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { Email, EmailSchema, NewEmail } from '@/lib/emails'
 import { getServerAuthSession } from '@/server/auth'
-import { guid } from '@/utils/guid'
+import { guid } from '@coursebuilder/utils-core/guid'
 import slugify from '@sindresorhus/slugify'
 import { and, desc, eq, inArray, or, sql } from 'drizzle-orm'
 import { v4 } from 'uuid'
@@ -58,7 +58,7 @@ export async function createEmail(input: NewEmail) {
 		id: newEmailId,
 		type: 'email',
 		fields: {
-			title: input.fields.title,
+			...input.fields,
 			state: 'draft',
 			visibility: 'unlisted',
 			slug: slugify(`${input.fields.title}~${guid()}`),
@@ -138,4 +138,87 @@ export async function getEmail(slugOrId: string) {
 	}
 
 	return emailParsed.data
+}
+
+/**
+ * Create email without auth (for Inngest/system use)
+ *
+ * @param input - Email data (title, subject, body)
+ * @returns Created email or null on failure
+ */
+export async function createEmailSimple(input: NewEmail): Promise<Email | null> {
+	const emailId = guid()
+	const slug = input.fields.title
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-+|-+$/g, '')
+
+	const emailData = {
+		id: emailId,
+		type: 'email',
+		createdById: 'system',
+		fields: {
+			...input.fields,
+			slug: `${slug}-${emailId.slice(0, 8)}`,
+			state: 'draft' as const,
+			visibility: 'unlisted' as const,
+		},
+	}
+
+	await db.insert(contentResource).values(emailData)
+
+	const createdEmail = await db.query.contentResource.findFirst({
+		where: eq(contentResource.id, emailId),
+	})
+
+	const parsed = EmailSchema.safeParse(createdEmail)
+	if (!parsed.success) {
+		console.error('Failed to parse created email', createdEmail)
+		return null
+	}
+
+	return parsed.data
+}
+
+/**
+ * Get email by ID without auth (for Inngest/system use)
+ *
+ * @param emailId - Email resource ID
+ * @returns Email or null if not found
+ */
+export async function getEmailSimple(emailId: string): Promise<Email | null> {
+	const email = await db.query.contentResource.findFirst({
+		where: and(
+			eq(contentResource.id, emailId),
+			eq(contentResource.type, 'email'),
+		),
+	})
+
+	if (!email) return null
+
+	const parsed = EmailSchema.safeParse(email)
+	if (!parsed.success) {
+		console.error('Failed to parse email', email)
+		return null
+	}
+
+	return parsed.data
+}
+
+/**
+ * Update email without auth (for Inngest/system use)
+ *
+ * @param email - Email data to update
+ * @returns Updated email or null on failure
+ */
+export async function updateEmailSimple(email: Email): Promise<Email | null> {
+	await db
+		.update(contentResource)
+		.set({
+			fields: email.fields,
+			updatedAt: new Date(),
+		})
+		.where(eq(contentResource.id, email.id))
+
+	return await getEmailSimple(email.id)
 }
