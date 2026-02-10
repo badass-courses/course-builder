@@ -166,8 +166,15 @@ export const SubscribeToConvertkitForm: React.FC<
 					}
 					type="submit"
 					formNoValidate={Boolean(validationSchema)}
+					className="relative cursor-pointer shadow-xl"
 				>
 					{isSubmitting ? <Spinner className="h-5 w-5" /> : actionLabel}
+					<div
+						style={{
+							backgroundSize: '200% 100%',
+						}}
+						className="animate-shine absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0)40%,rgba(255,255,255,1)50%,rgba(255,255,255,0)60%)] opacity-10 dark:opacity-20"
+					/>
 				</Button>
 			)}
 			{status === 'success' &&

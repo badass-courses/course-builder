@@ -92,7 +92,7 @@ export const PrimaryNewsletterCta: React.FC<
 					<h2 className="font-heading text-center text-2xl font-semibold tracking-tight sm:text-3xl dark:text-white">
 						{title}
 					</h2>
-					<h3 className="dark:text-primary pt-3 text-center font-sans text-base font-normal tracking-tight sm:pt-5 sm:text-lg lg:text-xl dark:sm:font-light">
+					<h3 className="dark:text-primary pt-3 text-center font-sans text-base font-normal tracking-tight sm:pt-5 sm:text-lg lg:text-xl dark:brightness-110 dark:sm:font-light [&_strong]:font-bold">
 						{byline}
 					</h3>
 				</div>
