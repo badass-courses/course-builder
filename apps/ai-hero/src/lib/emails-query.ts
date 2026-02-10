@@ -145,17 +145,19 @@ export async function getEmail(slugOrId: string) {
  * Create email without auth (for Inngest/system use)
  *
  * @param input - Email data (title, subject, body)
+ * @param userId - The ID of the user creating this email
  * @returns Created email or null on failure
  */
 export async function createEmailSimple(
 	input: NewEmail,
+	userId: string,
 ): Promise<Email | null> {
 	const emailId = guid()
 
 	const emailData = {
 		id: emailId,
 		type: 'email',
-		createdById: 'system',
+		createdById: userId,
 		fields: {
 			...input.fields,
 			slug: slugify(`${input.fields.title}~${guid()}`),

@@ -191,13 +191,11 @@ export const eventsRouter = createTRPCRouter({
 				throw new Error('Email not found')
 			}
 
-			if (input.hoursInAdvance) {
-				await updateReminderEmailHours(
-					input.eventId,
-					input.emailId,
-					input.hoursInAdvance,
-				)
-			}
+			await updateReminderEmailHours(
+				input.eventId,
+				input.emailId,
+				input.hoursInAdvance,
+			)
 
 			return await updateEmailSimple({
 				...email,
