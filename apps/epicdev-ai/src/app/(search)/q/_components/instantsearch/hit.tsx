@@ -3,12 +3,64 @@
 import Link from 'next/link'
 import { Contributor } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
-import { format } from 'date-fns'
+import { api } from '@/trpc/react'
 import { formatInTimeZone } from 'date-fns-tz'
 import { ChevronRight } from 'lucide-react'
 import { Highlight } from 'react-instantsearch'
 
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
+
+/**
+ * Component that fetches and displays the author for a search hit.
+ * Fetches author data from the database via tRPC.
+ */
+function HitAuthor({ resourceId }: { resourceId: string }) {
+	const { data: author, isLoading } = api.authors.getResourceAuthor.useQuery(
+		{ resourceId },
+		{
+			staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+			refetchOnWindowFocus: false,
+		},
+	)
+
+	if (isLoading) {
+		return (
+			<div className="flex items-center gap-2 text-sm font-normal">
+				<div className="bg-muted ring-gray-800/7.5 h-7 w-7 animate-pulse rounded-full ring-1" />
+				<div className="bg-muted h-4 w-20 animate-pulse rounded" />
+			</div>
+		)
+	}
+
+	if (author) {
+		const authorName = author.name || author.email || 'Author'
+		const authorInitial = authorName[0]?.toUpperCase() || 'A'
+
+		return (
+			<div className="flex items-center gap-2 text-sm font-normal">
+				{author.image ? (
+					<img
+						src={author.image}
+						alt={authorName}
+						className="bg-muted ring-gray-800/7.5 w-7 shrink-0 rounded-full ring-1"
+					/>
+				) : (
+					<div className="bg-muted ring-gray-800/7.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ring-1">
+						<span className="text-foreground/60 text-xs font-medium">
+							{authorInitial}
+						</span>
+					</div>
+				)}
+				<span className="text-foreground/90 font-heading font-medium">
+					{authorName}
+				</span>
+			</div>
+		)
+	}
+
+	// Fallback to default contributor (Kent C. Dodds)
+	return <Contributor className="flex text-sm [&_img]:w-7" />
+}
 
 export default function Hit({ hit }: { hit: TypesenseResource }) {
 	return (
@@ -55,7 +107,8 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						)}
 					</div>
 					<div className="mt-auto flex w-full flex-wrap items-center justify-between gap-4">
-						<Contributor className="flex text-sm [&_img]:w-7" />
+						{/* Author display - fetched from database */}
+						<HitAuthor resourceId={hit.id} />
 						{/* <div className="text-muted-foreground flex flex-row flex-wrap gap-3 text-sm capitalize">
 							{hit.type && (
 								<>
