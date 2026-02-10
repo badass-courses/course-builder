@@ -1,10 +1,10 @@
 'use server'
 
 import { db } from '@/db'
-import { resourceProgress } from '@/db/schema'
+import { resourceProgress, users } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
 import { TYPESENSE_COLLECTION_NAME } from '@/utils/typesense-config'
-import { and, desc, eq, isNotNull, sql } from 'drizzle-orm'
+import { and, desc, eq, isNotNull } from 'drizzle-orm'
 import Typesense from 'typesense'
 import type { MultiSearchRequestSchema } from 'typesense/lib/Typesense/MultiSearch'
 import { z } from 'zod'
@@ -78,6 +78,29 @@ export async function upsertPostToTypeSense(
 			return []
 		})
 
+		// Fetch author data if authorId exists in post fields
+		let authorData: { id: string; name: string | null; image: string | null } | null = null
+		const authorId = (post.fields as any)?.authorId
+		if (authorId && typeof authorId === 'string' && authorId.length > 0) {
+			console.log('🔍 Fetching author data for authorId:', authorId)
+			try {
+				const author = await db.query.users.findFirst({
+					where: eq(users.id, authorId),
+					columns: {
+						id: true,
+						name: true,
+						image: true,
+					},
+				})
+				if (author) {
+					authorData = author
+					console.log('✅ Retrieved author data:', author.name)
+				}
+			} catch (err) {
+				console.error('⚠️ Failed to fetch author (continuing without author):', err)
+			}
+		}
+
 		let parentResources = null
 		if (post.type === 'lesson') {
 			console.log('🔍 Getting parent resources (workshops) for lesson', post.id)
@@ -126,6 +149,11 @@ export async function upsertPostToTypeSense(
 						state: resource.fields?.state,
 					}
 				}),
+			}),
+			...(authorData && {
+				authorId: authorData.id,
+				authorName: authorData.name ?? undefined,
+				authorImage: authorData.image ?? undefined,
 			}),
 			...(post.fields?.startsAt && {
 				startsAt: post.fields?.startsAt ?? null,
@@ -278,8 +306,40 @@ export async function indexAllContentToTypeSense(
 			resource.type === 'list',
 	)
 
+	// Collect all unique author IDs
+	const authorIds = [
+		...new Set(
+			indexableResources
+				.map((r) => (r?.fields as any)?.authorId)
+				.filter((id): id is string => typeof id === 'string' && id.length > 0),
+		),
+	]
+
+	// Batch fetch all authors
+	const authorsMap = new Map<string, { id: string; name: string | null; image: string | null }>()
+	if (authorIds.length > 0) {
+		console.log(`Fetching ${authorIds.length} authors for bulk indexing`)
+		for (const authorId of authorIds) {
+			try {
+				const author = await db.query.users.findFirst({
+					where: eq(users.id, authorId),
+					columns: { id: true, name: true, image: true },
+				})
+				if (author) {
+					authorsMap.set(authorId, author)
+				}
+			} catch (err) {
+				console.error(`Failed to fetch author ${authorId}:`, err)
+			}
+		}
+		console.log(`Fetched ${authorsMap.size} authors`)
+	}
+
 	const documents = indexableResources
 		.map((resource) => {
+			const authorId = (resource?.fields as any)?.authorId
+			const author = authorId ? authorsMap.get(authorId) : undefined
+
 			const parsedResource = TypesenseResourceSchema.safeParse({
 				id: resource.id,
 				title: resource?.fields?.title,
@@ -291,6 +351,11 @@ export async function indexAllContentToTypeSense(
 				created_at_timestamp: resource.createdAt?.getTime(),
 				published_at_timestamp: resource.updatedAt?.getTime(),
 				updated_at_timestamp: resource.updatedAt?.getTime(),
+				...(author && {
+					authorId: author.id,
+					authorName: author.name ?? undefined,
+					authorImage: author.image ?? undefined,
+				}),
 			})
 
 			if (!parsedResource.success) {

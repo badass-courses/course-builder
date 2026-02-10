@@ -3,11 +3,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Search from '@/app/(search)/q/_components/search'
 import { CldImage } from '@/components/cld-image'
-import { Contributor } from '@/components/contributor'
+import { Contributor, type AuthorInfo } from '@/components/contributor'
 import LayoutClient from '@/components/layout-client'
 import config from '@/config'
 import { db } from '@/db'
-import { contentResource } from '@/db/schema'
+import { contentResource, users } from '@/db/schema'
 import { env } from '@/env.mjs'
 import type { Event } from '@/lib/events'
 import type { List } from '@/lib/lists'
@@ -18,7 +18,7 @@ import { getAllPosts } from '@/lib/posts-query'
 import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { formatInTimeZone } from 'date-fns-tz'
-import { desc, inArray, sql } from 'drizzle-orm'
+import { desc, eq, inArray, sql } from 'drizzle-orm'
 import { Book, Calendar, ChevronRight } from 'lucide-react'
 
 import {
@@ -226,15 +226,41 @@ export default async function PostsIndexPage() {
 	)
 }
 
-const PostTeaser: React.FC<{
+async function PostTeaser({
+	post,
+	className,
+	i,
+	isHighlighted,
+}: {
 	post?: Post | List | Event
 	i?: number
 	className?: string
 	isHighlighted?: boolean
-}> = ({ post, className, i, isHighlighted }) => {
+}) {
 	if (!post) return null
 	const title = post.fields.title
 	const description = post.fields.description
+
+	// Fetch author data if authorId exists
+	let author: AuthorInfo | undefined = undefined
+	const authorId = (post.fields as any)?.authorId
+	if (authorId && typeof authorId === 'string' && authorId.length > 0) {
+		const user = await db.query.users.findFirst({
+			where: eq(users.id, authorId),
+			columns: {
+				id: true,
+				name: true,
+				email: true,
+				image: true,
+			},
+		})
+		if (user) {
+			author = {
+				name: user.name || user.email || 'Author',
+				image: user.image,
+			}
+		}
+	}
 
 	return (
 		<li className={cn('relative flex h-full', className)}>
@@ -299,7 +325,10 @@ const PostTeaser: React.FC<{
 							className="mt-4 flex flex-col items-start justify-between gap-5 p-0 text-sm sm:mt-8 sm:flex-row sm:items-center"
 						>
 							<div className="flex flex-wrap items-center gap-4">
-								<Contributor className="flex-shrink-0 [&_img]:size-8 sm:[&_img]:size-10" />
+								<Contributor
+									author={author}
+									className="flex-shrink-0 [&_img]:size-8 sm:[&_img]:size-10"
+								/>
 								{post.tags && post.tags.length > 0 && (
 									<div className="flex items-center gap-1">
 										{post.tags.map((tag) => {

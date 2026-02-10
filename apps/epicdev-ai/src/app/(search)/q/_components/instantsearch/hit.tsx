@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Contributor } from '@/components/contributor'
+import { Contributor, type AuthorInfo } from '@/components/contributor'
 import type { TypesenseResource } from '@/lib/typesense'
 import { format } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -11,6 +11,11 @@ import { Highlight } from 'react-instantsearch'
 import { getResourcePath } from '@coursebuilder/utils-resource/resource-paths'
 
 export default function Hit({ hit }: { hit: TypesenseResource }) {
+	// Create author object if author data exists in hit
+	const author: AuthorInfo | undefined = hit.authorName
+		? { name: hit.authorName, image: hit.authorImage }
+		: undefined
+
 	return (
 		<li className="bg-card rounded-lg border px-6 py-2 shadow-[0_0_10px_rgba(0,0,0,0.1)]">
 			<Link
@@ -55,7 +60,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 						)}
 					</div>
 					<div className="mt-auto flex w-full flex-wrap items-center justify-between gap-4">
-						<Contributor className="flex text-sm [&_img]:w-7" />
+						<Contributor className="flex text-sm [&_img]:w-7" author={author} />
 						{/* <div className="text-muted-foreground flex flex-row flex-wrap gap-3 text-sm capitalize">
 							{hit.type && (
 								<>

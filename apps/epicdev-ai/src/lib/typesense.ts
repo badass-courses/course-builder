@@ -28,6 +28,9 @@ export const TypesenseResourceSchema = z.object({
 			}),
 		)
 		.nullish(),
+	authorId: z.string().optional(),
+	authorName: z.string().optional(),
+	authorImage: z.string().optional(),
 	...EventFieldsSchema.shape,
 })
 
@@ -47,6 +50,9 @@ export const attributeLabelMap: {
 	created_at_timestamp: 'Created At',
 	tags: 'Tags',
 	parentResources: 'Parent Resources',
+	authorId: 'Author ID',
+	authorName: 'Author Name',
+	authorImage: 'Author Image',
 	startsAt: 'Starts At',
 	endsAt: 'Ends At',
 	timezone: 'Timezone',

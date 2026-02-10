@@ -16,6 +16,7 @@ import {
 	products,
 	purchases,
 	resourceProgress,
+	users,
 } from '@/db/schema'
 import {
 	NewPostInput,
@@ -78,11 +79,54 @@ export async function getAllPosts(): Promise<Post[]> {
 			return []
 		}
 
-		await log.info('posts.fetch.success', {
-			count: postsParsed.data.length,
+		// Collect all unique author IDs
+		const authorIds = [
+			...new Set(
+				posts
+					.map((p) => (p.fields as any)?.authorId)
+					.filter((id): id is string => typeof id === 'string' && id.length > 0),
+			),
+		]
+
+		// Batch fetch all authors
+		const authorsMap = new Map<
+			string,
+			{ id: string; name: string | null; image: string | null }
+		>()
+		if (authorIds.length > 0) {
+			for (const authorId of authorIds) {
+				const author = await db.query.users.findFirst({
+					where: eq(users.id, authorId),
+					columns: { id: true, name: true, image: true },
+				})
+				if (author) {
+					authorsMap.set(authorId, author)
+				}
+			}
+		}
+
+		// Enrich posts with author data
+		const postsWithAuthor = postsParsed.data.map((post) => {
+			const authorId = (post.fields as any)?.authorId
+			const author = authorId ? authorsMap.get(authorId) : undefined
+			return {
+				...post,
+				fields: {
+					...post.fields,
+					...(authorId && { authorId }),
+					...(author && {
+						authorName: author.name,
+						authorImage: author.image,
+					}),
+				},
+			}
 		})
 
-		return postsParsed.data
+		await log.info('posts.fetch.success', {
+			count: postsWithAuthor.length,
+		})
+
+		return postsWithAuthor
 	} catch (error) {
 		await log.error('posts.fetch.failed', {
 			error: getErrorMessage(error),
