@@ -186,6 +186,7 @@ export async function getWorkshops({
 export async function updateWorkshop(input: {
 	id: string
 	fields: Workshop['fields']
+	createdById?: string
 }) {
 	const { session, ability } = await getServerAuthSession()
 	const user = session?.user
@@ -204,6 +205,7 @@ export async function updateWorkshop(input: {
 	}
 
 	try {
+		// Update fields
 		const result = await courseBuilderAdapter.updateContentResourceFields({
 			id: originalWorkshop.id,
 			fields: {
@@ -214,6 +216,22 @@ export async function updateWorkshop(input: {
 
 		if (!result || !result.fields) {
 			throw new WorkshopError('Failed to update workshop', 500)
+		}
+
+		// Update createdById (author) if provided and user is admin
+		if (
+			input.createdById &&
+			input.createdById !== originalWorkshop.createdById
+		) {
+			const isAdmin = user.roles?.some(
+				(role: { name: string }) => role.name === 'admin',
+			)
+			if (isAdmin) {
+				await db
+					.update(contentResource)
+					.set({ createdById: input.createdById })
+					.where(eq(contentResource.id, originalWorkshop.id))
+			}
 		}
 
 		revalidatePath(`/workshops/${result.fields.slug}`)

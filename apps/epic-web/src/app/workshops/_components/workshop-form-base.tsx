@@ -335,7 +335,7 @@ export function WorkshopFormBase(
 							<FormDescription>
 								Select the author for this workshop.
 							</FormDescription>
-							<Select onValueChange={field.onChange} defaultValue={field.value}>
+							<Select onValueChange={field.onChange} value={field.value ?? ''}>
 								<SelectTrigger>
 									<SelectValue placeholder="Select author" />
 								</SelectTrigger>

@@ -20,6 +20,7 @@ import { cohortEntitlementSyncWorkflow } from './functions/cohort-entitlement-sy
 import { getOrCreateConcept } from './functions/concepts/get-or-create-tag'
 import { createUserOrganizations } from './functions/create-user-organization'
 import { addDiscordRoleWorkflow } from './functions/discord/add-discord-role-workflow'
+import { dropboxVideoImport } from './functions/dropbox/dropbox-video-import'
 import { stripeSubscriptionCheckoutSessionComplete } from './functions/membership/event-subscription-checkout-session-completed'
 import { handleSubscriptionUpdated } from './functions/membership/handle-subscription-updated'
 import { postPurchaseWorkflow } from './functions/post-purchase-workflow'
@@ -65,5 +66,6 @@ export const inngestConfig = {
 		addDiscordRoleWorkflow,
 		sendWorkshopAccessEmails,
 		refundEntitlements,
+		dropboxVideoImport,
 	],
 }

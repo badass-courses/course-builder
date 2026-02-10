@@ -77,6 +77,7 @@ export const workshopFormConfig: ResourceFormConfig<
 		const result = await updateWorkshop({
 			id: resource.id,
 			fields: resource.fields,
+			createdById: resource.createdById,
 		})
 
 		if (!result) {
