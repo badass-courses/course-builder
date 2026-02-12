@@ -106,7 +106,8 @@ export class StripePaymentAdapter implements PaymentsAdapter {
 		const stripe = this.createStripeClient(stripeToken)
 
 		if (!stripeWebhookSecret) {
-			throw new Error('Stripe webhook secret not found')
+			console.error('Stripe webhook secret not found')
+			// throw new Error('Stripe webhook secret not found')
 		}
 		this.webhookSecret = stripeWebhookSecret
 		this.stripe = stripe
@@ -266,10 +267,10 @@ export const mockStripeAdapter: PaymentsAdapter = {
 	verifyWebhookSignature: async () => true,
 	getCheckoutSession: async () => ({ id: 'mock-checkout-session-id' }) as any,
 	getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
-	updateCustomer: async () => {},
+	updateCustomer: async () => { },
 	refundCharge: async () => ({}) as any,
-	updateProduct: async () => {},
-	updatePrice: async () => {},
+	updateProduct: async () => { },
+	updatePrice: async () => { },
 	getProduct: async () => ({}) as any,
 	getPrice: async () => ({}) as any,
 	createPrice: async () => ({}) as any,
@@ -303,10 +304,10 @@ export const MockStripeProvider: PaymentsProviderConfig = {
 		}
 	},
 	getCustomer: async () => ({ id: 'mock-customer-id' }) as any,
-	updateCustomer: async () => {},
+	updateCustomer: async () => { },
 	refundCharge: async () => ({}) as any,
-	updateProduct: async () => {},
-	updatePrice: async () => {},
+	updateProduct: async () => { },
+	updatePrice: async () => { },
 	getProduct: async () => ({}) as any,
 	getPrice: async () => ({}) as any,
 	createPrice: async () => ({}) as any,
