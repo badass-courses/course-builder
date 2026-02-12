@@ -119,7 +119,10 @@ export default async function ModulePage(props: Props) {
 								<div className="flex flex-col px-5 pb-10 sm:px-10 md:flex-row md:gap-10">
 									<article className="prose sm:prose prose-sm w-full max-w-none py-8">
 										{workshop.fields?.body ? (
-											<MDXRemote source={workshop.fields.body} options={{ blockJS: false }} />
+											<MDXRemote
+												source={workshop.fields.body}
+												options={{ blockJS: false }}
+											/>
 										) : (
 											<p>No description found.</p>
 										)}

@@ -8,6 +8,7 @@ import {
 } from '@/components/brand/svgs'
 // import { CldImage } from '@/components/cld-image'
 import ResourceTeaser from '@/components/content/resource-teaser'
+import { HomePage } from '@/components/landing/home-page'
 import LayoutClient from '@/components/layout-client'
 import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import config from '@/config'
@@ -19,7 +20,6 @@ import { compileMDX } from '@/utils/compile-mdx'
 import { ChevronRight } from 'lucide-react'
 
 import { Button } from '@coursebuilder/ui'
-import { HomePage } from '@/components/landing/home-page'
 
 export async function generateMetadata(
 	props: Props,

@@ -1,71 +1,71 @@
-"use client";
+'use client'
 
-import React, { useEffect, useRef } from "react";
-import { setIntervalOnVisible } from "@/utils/set-timeout-on-visible";
+import React, { useEffect, useRef } from 'react'
+import { setIntervalOnVisible } from '@/utils/set-timeout-on-visible'
 
 export default function SubtleAsciiAnimation({
-  className = "",
+	className = '',
 }: {
-  className?: string;
+	className?: string
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null)
 
-  // Simple ASCII pattern for subtle animation
-  const asciiFrames = [
-    "░░░░░░░░░░░░░░░░",
-    "▒░░░░░░░░░░░░░░░",
-    "▒▒░░░░░░░░░░░░░░",
-    "░▒▒░░░░░░░░░░░░░",
-    "░░▒▒░░░░░░░░░░░░",
-    "░░░▒▒░░░░░░░░░░░",
-    "░░░░▒▒░░░░░░░░░░",
-    "░░░░░▒▒░░░░░░░░░",
-    "░░░░░░▒▒░░░░░░░░",
-    "░░░░░░░▒▒░░░░░░░",
-    "░░░░░░░░▒▒░░░░░░",
-    "░░░░░░░░░▒▒░░░░░",
-    "░░░░░░░░░░▒▒░░░░",
-    "░░░░░░░░░░░▒▒░░░",
-    "░░░░░░░░░░░░▒▒░░",
-    "░░░░░░░░░░░░░▒▒░",
-    "░░░░░░░░░░░░░░▒▒",
-    "░░░░░░░░░░░░░░░▒",
-  ];
+	// Simple ASCII pattern for subtle animation
+	const asciiFrames = [
+		'░░░░░░░░░░░░░░░░',
+		'▒░░░░░░░░░░░░░░░',
+		'▒▒░░░░░░░░░░░░░░',
+		'░▒▒░░░░░░░░░░░░░',
+		'░░▒▒░░░░░░░░░░░░',
+		'░░░▒▒░░░░░░░░░░░',
+		'░░░░▒▒░░░░░░░░░░',
+		'░░░░░▒▒░░░░░░░░░',
+		'░░░░░░▒▒░░░░░░░░',
+		'░░░░░░░▒▒░░░░░░░',
+		'░░░░░░░░▒▒░░░░░░',
+		'░░░░░░░░░▒▒░░░░░',
+		'░░░░░░░░░░▒▒░░░░',
+		'░░░░░░░░░░░▒▒░░░',
+		'░░░░░░░░░░░░▒▒░░',
+		'░░░░░░░░░░░░░▒▒░',
+		'░░░░░░░░░░░░░░▒▒',
+		'░░░░░░░░░░░░░░░▒',
+	]
 
-  useEffect(() => {
-    let frameIndex = 0;
+	useEffect(() => {
+		let frameIndex = 0
 
-    const animateAscii = () => {
-      if (containerRef.current) {
-        containerRef.current.textContent = asciiFrames[frameIndex]!;
-        frameIndex = (frameIndex + 1) % asciiFrames.length;
-      }
-    };
+		const animateAscii = () => {
+			if (containerRef.current) {
+				containerRef.current.textContent = asciiFrames[frameIndex]!
+				frameIndex = (frameIndex + 1) % asciiFrames.length
+			}
+		}
 
-    // Initialize first frame
-    animateAscii();
+		// Initialize first frame
+		animateAscii()
 
-    // Start animation when visible
-    const cleanup = setIntervalOnVisible({
-      element: containerRef.current,
-      callback: animateAscii,
-      interval: 150, // Slightly slower for subtlety
-    });
+		// Start animation when visible
+		const cleanup = setIntervalOnVisible({
+			element: containerRef.current,
+			callback: animateAscii,
+			interval: 150, // Slightly slower for subtlety
+		})
 
-    return () => {
-      cleanup?.();
-    };
-  }, []);
+		return () => {
+			cleanup?.()
+		}
+	}, [])
 
-  return (
-    <div
-      ref={containerRef}
-      className={`font-mono text-white/20 whitespace-pre select-none ${className}`}
-      style={{
-        fontSize: "10px",
-        lineHeight: "1",
-        letterSpacing: "0.05em",
-      }}
-    />
-  );
+	return (
+		<div
+			ref={containerRef}
+			className={`select-none whitespace-pre font-mono text-white/20 ${className}`}
+			style={{
+				fontSize: '10px',
+				lineHeight: '1',
+				letterSpacing: '0.05em',
+			}}
+		/>
+	)
 }
