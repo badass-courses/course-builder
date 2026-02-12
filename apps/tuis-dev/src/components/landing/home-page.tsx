@@ -38,6 +38,8 @@ export function HomePage() {
 							src="/ashley.png"
 							alt="Ashley"
 							width={32}
+							quality={100}
+							loading="eager"
 							height={32}
 							className="size-12 rounded-xl bg-white/10 object-cover outline-2 outline-black/20"
 						/>
