@@ -34,8 +34,8 @@ export async function generateMetadata(
 
 	return {
 		title: {
-			template: '%s | Code with Antonio',
-			default: `Build something great! - Code with Antonio`,
+			template: '%s | TUIs.dev',
+			default: `Build Beautiful Terminal UIs`,
 		},
 		openGraph: {
 			images: ogImageUrl ? [{ url: ogImageUrl }] : [],
