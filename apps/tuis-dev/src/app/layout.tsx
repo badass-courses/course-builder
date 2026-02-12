@@ -2,7 +2,6 @@ import '@/styles/globals.css'
 
 import * as React from 'react'
 import { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import { FeedbackInsert } from '@/components/feedback-widget/feedback-insert'
 import { Party } from '@/components/party'
 import { Providers } from '@/components/providers'
@@ -15,6 +14,9 @@ import { TRPCReactProvider } from '@/trpc/react'
 import { ourFileRouter } from '@/uploadthing/core'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import { GeistMono } from 'geist/font/mono'
+import { GeistPixelSquare } from 'geist/font/pixel'
+import { GeistSans } from 'geist/font/sans'
 import HolyLoader from 'holy-loader'
 import { AxiomWebVitals } from 'next-axiom'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
@@ -23,11 +25,6 @@ import { extractRouterConfig } from 'uploadthing/server'
 import { CouponProvider } from '@coursebuilder/commerce-next/coupons/coupon-context'
 import { getCouponForCode } from '@coursebuilder/core/pricing/props-for-commerce'
 import { Toaster } from '@coursebuilder/ui/primitives/toaster'
-
-const inter = Inter({
-	subsets: ['latin'],
-	variable: '--font-inter',
-})
 
 export const metadata: Metadata = {
 	metadataBase: new URL(env.NEXT_PUBLIC_URL),
@@ -63,7 +60,7 @@ export default function RootLayout({
 				<AxiomWebVitals />
 				<body
 					id="layout"
-					className={`relative overflow-x-hidden ${inter.variable} antialised font-sans`}
+					className={`relative overflow-x-hidden ${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} antialised font-sans`}
 				>
 					<Toaster />
 					<FeedbackInsert />

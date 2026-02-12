@@ -78,7 +78,7 @@ export function SubscribeForm() {
 		<form
 			ref={formRef}
 			onSubmit={handleSubmit}
-			className="rounded-xl bg-black/20 p-1.5 font-mono"
+			className="font-pixel rounded-xl bg-black/20 p-1.5"
 		>
 			<div className="grid grid-cols-2 overflow-hidden rounded-t-lg border border-white/10">
 				<label className="relative w-full">
@@ -116,7 +116,7 @@ export function SubscribeForm() {
 			<button
 				type="submit"
 				disabled={status === 'submitting'}
-				className="w-full cursor-pointer rounded-b-lg bg-[#C0FFBD] py-3 font-mono text-black transition-colors hover:bg-[#d4ffcf] disabled:opacity-50"
+				className="font-pixel w-full cursor-pointer rounded-b-lg bg-[#C0FFBD] py-3 text-black transition-colors hover:bg-[#d4ffcf] disabled:opacity-50"
 			>
 				{status === 'submitting' ? (
 					'Subscribing...'
