@@ -112,6 +112,7 @@ async function Post({ post }: { post: Post | null }) {
 		// @ts-expect-error
 		components: { Code, Scrollycoding },
 		options: {
+			blockJS: false,
 			mdxOptions: {
 				remarkPlugins: [
 					remarkGfm,

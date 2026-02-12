@@ -156,7 +156,7 @@
 		"next-auth": "5.0.0-beta.25",
 		"next-axiom": "1.9.1",
 		"next-cloudinary": "^6.5.1",
-		"next-mdx-remote": "5.0.0",
+		"next-mdx-remote": "6.0.0",
 		"next-themes": "^0.3",
 		"nodemailer": "^6.7.2",
 		"nodemailer-postmark-transport": "^5.2.1",

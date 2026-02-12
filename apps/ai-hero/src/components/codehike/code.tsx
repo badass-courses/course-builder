@@ -7,6 +7,9 @@ import { CopyButton } from './copy-button'
 import { callout, diff, focus, fold, link, mark } from './handlers'
 
 export async function Code({ codeblock }: { codeblock: RawCode }) {
+	if (!codeblock) {
+		return <div>Codeblock is required {JSON.stringify(codeblock)}</div>
+	}
 	const highlighted = await highlight(codeblock, 'github-from-css')
 	const isTerminalCode = highlighted.lang === 'shellscript'
 	return (

@@ -159,9 +159,10 @@ export async function compileMDX(
 					recommendation={recommendation}
 				/>
 			),
-			CldImage: ({ ...props }) => <CldImage {...props} />,
+			CldImage: (props) => <CldImage {...props} />,
 		},
 		options: {
+			blockJS: false,
 			mdxOptions: {
 				remarkPlugins: [
 					[

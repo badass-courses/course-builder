@@ -86,6 +86,7 @@ export default async function ListPage(props: {
 			// @ts-expect-error
 			components: { Code, Scrollycoding },
 			options: {
+				blockJS: false,
 				mdxOptions: {
 					remarkPlugins: [
 						remarkGfm,

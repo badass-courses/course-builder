@@ -215,6 +215,7 @@ const Home = async (props: Props) => {
 					{page?.fields?.body ? (
 						<MDXRemote
 							source={page?.fields?.body}
+							options={{ blockJS: false }}
 							components={{
 								CenteredTitle,
 								Instructor,

@@ -223,6 +223,7 @@ export async function compileMDX(
 			),
 		},
 		options: {
+			blockJS: false,
 			mdxOptions: {
 				remarkPlugins: [
 					[

@@ -78,6 +78,7 @@ export async function compileMDX(source: string) {
 			),
 		},
 		options: {
+			blockJS: false,
 			mdxOptions: {
 				remarkPlugins: [
 					[

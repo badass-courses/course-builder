@@ -67,6 +67,7 @@ export default async function Home() {
 								components={{
 									Image,
 								}}
+								options={{ blockJS: false }}
 								source={page.fields.body}
 							/>
 						) : (

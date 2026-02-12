@@ -75,6 +75,7 @@ async function Post({ post }: { post: Article }) {
 		return null
 	}
 	const mdxSerialized = await serialize(post.fields.body, {
+		blockJS: false,
 		mdxOptions: {
 			rehypePlugins: [[rehypeExpressiveCode]],
 		},

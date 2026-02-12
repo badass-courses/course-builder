@@ -516,8 +516,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -1198,8 +1198,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -1902,8 +1902,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -2539,8 +2539,8 @@ importers:
         specifier: 1.9.1
         version: 1.9.1(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -3161,8 +3161,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -3834,8 +3834,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -5235,8 +5235,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -5914,8 +5914,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -6638,8 +6638,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -7311,8 +7311,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -8002,8 +8002,8 @@ importers:
         specifier: ^6.5.1
         version: 6.16.0(next@16.0.10)(react@19.2.3)
       next-mdx-remote:
-        specifier: 5.0.0
-        version: 5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
+        specifier: 6.0.0
+        version: 6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3)
       next-themes:
         specifier: ^0.3
         version: 0.3.0(react-dom@19.2.3)(react@19.2.3)
@@ -11430,22 +11430,6 @@ packages:
       uuid: 11.1.0
     dev: false
 
-  /@babel/code-frame@7.26.2:
-    resolution: {integrity: sha512-RJlIHRueQgwWitWgF8OdFYGZX328Ax5BCemNGlqHfplnRT9ESi8JkFlvaVYbS+UubVY6dpv87Fs2u5M29iNFVQ==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      '@babel/helper-validator-identifier': 7.25.9
-      js-tokens: 4.0.0
-      picocolors: 1.1.1
-
-  /@babel/code-frame@7.27.1:
-    resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
-      js-tokens: 4.0.0
-      picocolors: 1.1.1
-
   /@babel/code-frame@7.29.0:
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
     engines: {node: '>=6.9.0'}
@@ -11472,7 +11456,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.29.0
       '@babel/generator': 7.27.0
       '@babel/helper-compilation-targets': 7.27.0
       '@babel/helper-module-transforms': 7.26.0(@babel/core@7.26.10)
@@ -11494,7 +11478,7 @@ packages:
     resolution: {integrity: sha512-2BCOP7TN8M+gVDj7/ht3hsaO/B/n5oDbiAyyvnRlNOs+u1o+JWNYTQrmpuNp1/Wq2gcFrI01JAW+paEKDMx/CA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/generator': 7.28.3
       '@babel/helper-compilation-targets': 7.27.2
       '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.4)
@@ -11517,7 +11501,7 @@ packages:
     resolution: {integrity: sha512-e7jT4DxYvIDLk1ZHmU/m/mB19rex9sv0c2ftBtjSBv+kVM/902eh0fINUzD7UwLLNR+jU585GxUJ8/EBfAM5fw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/generator': 7.28.5
       '@babel/helper-compilation-targets': 7.27.2
       '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.5)
@@ -12036,7 +12020,7 @@ packages:
     resolution: {integrity: sha512-2ncevenBqXI6qRMukPlXwHKHchC7RyMuu4xv5JBXRfOGVcTy1mXCD12qrp7Jsoxll1EV3+9sE4GugBVRjT2jFA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/parser': 7.28.5
       '@babel/types': 7.28.5
     dev: true
@@ -12045,7 +12029,7 @@ packages:
     resolution: {integrity: sha512-LPDZ85aEJyYSd18/DkjNh4/y1ntkE5KwUHWTiqgRxruuZL2F1yuHligVHLvcHY2vMHXttKFpJn6LwfI7cw7ODw==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/parser': 7.28.5
       '@babel/types': 7.28.5
 
@@ -12061,7 +12045,7 @@ packages:
     resolution: {integrity: sha512-19lYZFzYVQkkHkl4Cy4WrAVcqBkgvV2YM2TU3xG6DIwO7O3ecbDPfW3yM3bjAGcqcQHi+CCtjMR3dIEHxsd6bA==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.4
       '@babel/template': 7.27.2
@@ -12075,7 +12059,7 @@ packages:
     resolution: {integrity: sha512-TCCj4t55U90khlYkVV/0TfkJkAkUg3jZFA3Neb7unZT8CPok7iiRfaX0F+WnqWqt7OxhOn0uBKXCw4lbL8W0aQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       '@babel/generator': 7.28.5
       '@babel/helper-globals': 7.28.0
       '@babel/parser': 7.28.5
@@ -14741,7 +14725,7 @@ packages:
       hastscript: 9.0.1
       postcss: 8.5.6
       postcss-nested: 6.2.0(postcss@8.5.6)
-      unist-util-visit: 5.0.0
+      unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.1
     dev: false
 
@@ -29908,7 +29892,7 @@ packages:
       '@types/estree-jsx': 1.0.5
       acorn: 8.15.0
       esast-util-from-estree: 2.0.0
-      vfile-message: 4.0.2
+      vfile-message: 4.0.3
     dev: false
 
   /esbuild-react18-useclient@1.0.8:
@@ -32443,7 +32427,7 @@ packages:
       hast-util-from-parse5: 8.0.3
       parse5: 7.2.1
       vfile: 6.0.3
-      vfile-message: 4.0.2
+      vfile-message: 4.0.3
 
   /hast-util-from-parse5@8.0.3:
     resolution: {integrity: sha512-3kxEVkEKt0zvcZ3hCRYI8rqrgwtlIOFMWkbclACvjlDw8Li9S2hk/d51OI0nr/gIpdMHNepwgOKqZ/sy0Clpyg==}
@@ -32497,7 +32481,7 @@ packages:
       mdast-util-to-hast: 13.2.0
       parse5: 7.2.1
       unist-util-position: 5.0.0
-      unist-util-visit: 5.0.0
+      unist-util-visit: 5.1.0
       vfile: 6.0.3
       web-namespaces: 2.0.1
       zwitch: 2.0.4
@@ -33882,7 +33866,7 @@ packages:
     resolution: {integrity: sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.29.0
       '@jest/types': 29.6.3
       '@types/stack-utils': 2.0.3
       chalk: 4.1.2
@@ -35106,7 +35090,7 @@ packages:
     resolution: {integrity: sha512-TqICwyvJJpBwvGAMZjj4J2n0X8QWp21b9l0o7eXyVJ25YNWYbJDVIyD1bZXE6WtV6RmKJVYmQAKWa0zWOABz2w==}
     dependencies:
       '@types/mdast': 4.0.4
-      unist-util-is: 6.0.0
+      unist-util-is: 6.0.1
 
   /mdast-util-to-hast@13.2.0:
     resolution: {integrity: sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==}
@@ -36331,17 +36315,18 @@ packages:
       react: 19.2.3
     dev: false
 
-  /next-mdx-remote@5.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3):
-    resolution: {integrity: sha512-RNNbqRpK9/dcIFZs/esQhuLA8jANqlH694yqoDBK8hkVdJUndzzGmnPHa2nyi90N4Z9VmzuSWNRpr5ItT3M7xQ==}
+  /next-mdx-remote@6.0.0(@types/react@19.2.7)(acorn@8.15.0)(react@19.2.3):
+    resolution: {integrity: sha512-cJEpEZlgD6xGjB4jL8BnI8FaYdN9BzZM4NwadPe1YQr7pqoWjg9EBCMv3nXBkuHqMRfv2y33SzUsuyNh9LFAQQ==}
     engines: {node: '>=14', npm: '>=7'}
     peerDependencies:
       react: '>=16'
     dependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.29.0
       '@mdx-js/mdx': 3.1.0(acorn@8.15.0)
       '@mdx-js/react': 3.1.0(@types/react@19.2.7)(react@19.2.3)
       react: 19.2.3
-      unist-util-remove: 3.1.1
+      unist-util-remove: 4.0.0
+      unist-util-visit: 5.1.0
       vfile: 6.0.3
       vfile-matter: 5.0.1
     transitivePeerDependencies:
@@ -37286,7 +37271,7 @@ packages:
     resolution: {integrity: sha512-ayCKvm/phCGxOkYRSCM82iDwct8/EonSEgCSxWxD7ve6jHggsFl4fZVQBPRNgQoKiuV/odhFrGzQXZwbifC8Rg==}
     engines: {node: '>=8'}
     dependencies:
-      '@babel/code-frame': 7.27.1
+      '@babel/code-frame': 7.29.0
       error-ex: 1.3.2
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
@@ -37687,6 +37672,7 @@ packages:
       lilconfig: 3.1.3
       postcss: 8.4.35
       yaml: 2.7.1
+    dev: false
 
   /postcss-load-config@4.0.2(postcss@8.5.6):
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
@@ -37703,7 +37689,6 @@ packages:
       lilconfig: 3.1.3
       postcss: 8.5.6
       yaml: 2.7.1
-    dev: false
 
   /postcss-nested@6.2.0(postcss@8.5.6):
     resolution: {integrity: sha512-HQbt28KulC5AJzG+cZtj9kvKB93CFCdLvog1WFLf1D+xmMvPGlBstkpTEZfK5+AN9hfJocyBFCNiqyS48bpgzQ==}
@@ -37749,6 +37734,7 @@ packages:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+    dev: false
 
   /postcss@8.5.3:
     resolution: {integrity: sha512-dle9A3yYxlBSrt8Fu+IpjGT8SY8hN0mlaA6GY8t0P5PjIOZemULz/E2Bnm/2dcUOena75OTNkHI76uZBNUUq3A==}
@@ -41449,7 +41435,7 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.35)
+      postcss-load-config: 4.0.2(postcss@8.5.6)
       resolve-from: 5.0.0
       rollup: 4.39.0
       source-map: 0.8.0-beta.0
@@ -41866,24 +41852,23 @@ packages:
     resolution: {integrity: sha512-pHx7D4Zt6+TsfwylH9+lYhBhzyhEnCXs/lbq/Hstxno5z4gVdyc2WEW0asfjGKPyG4pEKrnBv5hdkO6+aRnQJw==}
     dependencies:
       '@types/unist': 3.0.3
-      unist-util-is: 6.0.0
-      unist-util-visit-parents: 6.0.1
+      unist-util-is: 6.0.1
+      unist-util-visit-parents: 6.0.2
     dev: false
 
   /unist-util-find-after@5.0.0:
     resolution: {integrity: sha512-amQa0Ep2m6hE2g72AugUItjbuM8X8cGQnFoHk0pGfrFeT9GZhzN5SW8nRsiGKK7Aif4CrACPENkA6P/Lw6fHGQ==}
     dependencies:
       '@types/unist': 3.0.3
-      unist-util-is: 6.0.0
-
-  /unist-util-is@5.2.1:
-    resolution: {integrity: sha512-u9njyyfEh43npf1M+yGKDGVPbY/JWEemg5nH05ncKPfi+kBbKBJoTdsogMu33uhytuLlv9y0O7GH7fEdwLdLQw==}
-    dependencies:
-      '@types/unist': 2.0.11
-    dev: false
+      unist-util-is: 6.0.1
 
   /unist-util-is@6.0.0:
     resolution: {integrity: sha512-2qCTHimwdxLfz+YzdGfkqNlH0tLi9xjTnHddPmJwtIG9MGsdbutfTc4P+haPD7l7Cjxf/WZj+we5qfVPvvxfYw==}
+    dependencies:
+      '@types/unist': 3.0.3
+
+  /unist-util-is@6.0.1:
+    resolution: {integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==}
     dependencies:
       '@types/unist': 3.0.3
 
@@ -41910,12 +41895,12 @@ packages:
       '@types/unist': 3.0.3
       unist-util-visit: 5.0.0
 
-  /unist-util-remove@3.1.1:
-    resolution: {integrity: sha512-kfCqZK5YVY5yEa89tvpl7KnBBHu2c6CzMkqHUrlOqaRgGOMp0sMvwWOVrbAtj03KhovQB7i96Gda72v/EFE0vw==}
+  /unist-util-remove@4.0.0:
+    resolution: {integrity: sha512-b4gokeGId57UVRX/eVKej5gXqGlc9+trkORhFJpu9raqZkZhU0zm8Doi05+HaiBsMEIJowL+2WtQ5ItjsngPXg==}
     dependencies:
-      '@types/unist': 2.0.11
-      unist-util-is: 5.2.1
-      unist-util-visit-parents: 5.1.3
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+      unist-util-visit-parents: 6.0.2
     dev: false
 
   /unist-util-stringify-position@4.0.0:
@@ -41928,18 +41913,17 @@ packages:
     dependencies:
       '@types/unist': 3.0.3
 
-  /unist-util-visit-parents@5.1.3:
-    resolution: {integrity: sha512-x6+y8g7wWMyQhL1iZfhIPhDAs7Xwbn9nRosDXl7qoPTSCy0yNxnKc+hWokFifWQIDGi154rdUqKvbCa4+1kLhg==}
-    dependencies:
-      '@types/unist': 2.0.11
-      unist-util-is: 5.2.1
-    dev: false
-
   /unist-util-visit-parents@6.0.1:
     resolution: {integrity: sha512-L/PqWzfTP9lzzEa6CKs0k2nARxTdZduw3zyh8d2NVBnsyvHjSX4TWse388YrrQKbvI8w20fGjGlhgT96WwKykw==}
     dependencies:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.0
+
+  /unist-util-visit-parents@6.0.2:
+    resolution: {integrity: sha512-goh1s1TBrqSqukSc8wrjwWhL0hiJxgA8m4kFxGlQ+8FYQ3C/m11FcTs4YYem7V664AhHVvgoQLk890Ssdsr2IQ==}
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
 
   /unist-util-visit@5.0.0:
     resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
@@ -41947,6 +41931,13 @@ packages:
       '@types/unist': 3.0.3
       unist-util-is: 6.0.0
       unist-util-visit-parents: 6.0.1
+
+  /unist-util-visit@5.1.0:
+    resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+      unist-util-visit-parents: 6.0.2
 
   /universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
@@ -42346,11 +42337,18 @@ packages:
     resolution: {integrity: sha512-o6roP82AiX0XfkyTHyRCMXgHfltUNlXSEqCIS80f+mbAyiQBE2fxtDVMtseyytGx75sihiJFo/zR6r/4LTs2Cw==}
     dependencies:
       vfile: 6.0.3
-      yaml: 2.7.1
+      yaml: 2.8.2
     dev: false
 
   /vfile-message@4.0.2:
     resolution: {integrity: sha512-jRDZ1IMLttGj41KcZvlrYAaI3CfqpLpfpf+Mfig13viT6NKvRzWZ+lXz0Y5D60w6uJIBAOGq9mSHf0gktF0duw==}
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-stringify-position: 4.0.0
+    dev: false
+
+  /vfile-message@4.0.3:
+    resolution: {integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==}
     dependencies:
       '@types/unist': 3.0.3
       unist-util-stringify-position: 4.0.0
@@ -42359,7 +42357,7 @@ packages:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
     dependencies:
       '@types/unist': 3.0.3
-      vfile-message: 4.0.2
+      vfile-message: 4.0.3
 
   /vite-node@1.6.0(@types/node@20.17.30):
     resolution: {integrity: sha512-de6HJgzC+TFzOu0NTC4RAIsyf/DY/ibWDYQUcuEA84EMHhcefTUGkjFHKKEJhQN4A+6I0u++kr3l36ZF2d7XRw==}
@@ -43137,6 +43135,12 @@ packages:
     resolution: {integrity: sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==}
     engines: {node: '>= 14'}
     hasBin: true
+
+  /yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+    dev: false
 
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}

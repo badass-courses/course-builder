@@ -119,6 +119,7 @@ export async function compileMDX(
 			TableWrapper: ({ children }) => <TableWrapper>{children}</TableWrapper>,
 		},
 		options: {
+			blockJS: false,
 			mdxOptions: {
 				remarkPlugins: [
 					[

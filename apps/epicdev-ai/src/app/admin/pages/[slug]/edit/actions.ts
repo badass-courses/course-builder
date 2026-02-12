@@ -12,7 +12,7 @@ export const onPageSave = async (resource: ContentResource) => {
 
 export async function serializeForPreview(mdxSource: string) {
 	try {
-		const serializedResult = await serialize(mdxSource)
+		const serializedResult = await serialize(mdxSource, { blockJS: false })
 		return serializedResult
 	} catch (error) {
 		console.error('Error serializing MDX:', error)

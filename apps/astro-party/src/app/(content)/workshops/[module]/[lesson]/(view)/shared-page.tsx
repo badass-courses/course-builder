@@ -282,6 +282,7 @@ async function LessonBody({ lesson }: { lesson: Lesson | null }) {
 				<div className="prose mt-5 max-w-none border-t px-5 pt-8 sm:px-8">
 					<MDXRemote
 						source={lesson.fields.body}
+						options={{ blockJS: false }}
 						components={{
 							pre: async (props: any) => {
 								const children = props?.children.props.children
