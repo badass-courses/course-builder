@@ -15,8 +15,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	return {
 		title: {
-			template: '%s | Tech Build',
-			default: `Build something great! - Tech Build`,
+			template: '%s | TUIs.dev',
+			default: `Build Beautiful Terminal UIs`,
 		},
 		openGraph: {
 			images: [{ url: config.openGraph.images[0]!.url }],
