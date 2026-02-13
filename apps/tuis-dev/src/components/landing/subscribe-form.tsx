@@ -93,7 +93,7 @@ export function SubscribeForm() {
 						type="text"
 						placeholder="Name"
 						disabled={status === 'submitting'}
-						className="w-full border-r border-white/10 bg-white/5 p-3 pt-5 outline-none transition-colors focus:border-[#C0FFBD]/50 disabled:opacity-50"
+						className="w-full border-r border-white/10 bg-white/5 p-3 pt-5 outline-none transition-colors focus:border-[#C0FFBD]/50 focus-visible:border-transparent focus-visible:bg-white/10 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50"
 					/>
 				</label>
 				<label className="relative w-full">
@@ -109,20 +109,23 @@ export function SubscribeForm() {
 						placeholder="Email"
 						required
 						disabled={status === 'submitting'}
-						className="w-full bg-white/5 p-3 pt-5 outline-none transition-colors focus:border-[#C0FFBD]/50 disabled:opacity-50"
+						className="w-full bg-white/5 p-3 pt-5 outline-none transition-colors focus:border-[#C0FFBD]/50 focus-visible:border-transparent focus-visible:bg-white/10 focus-visible:outline-none focus-visible:ring-0 disabled:opacity-50"
 					/>
 				</label>
 			</div>
 			<button
 				type="submit"
 				disabled={status === 'submitting'}
-				className="font-pixel w-full cursor-pointer rounded-b-lg bg-[#C0FFBD] py-3 text-black transition-colors hover:bg-[#d4ffcf] disabled:opacity-50"
+				className="font-pixel group w-full cursor-pointer rounded-b-lg bg-[#C0FFBD] py-3 text-black transition-colors hover:bg-[#d4ffcf] disabled:opacity-50"
 			>
 				{status === 'submitting' ? (
 					'Subscribing...'
 				) : (
 					<>
-						<span aria-hidden="true">[S]</span> Subscribe
+						<span aria-hidden="true" className="group-focus-within:underline">
+							[S]
+						</span>{' '}
+						Subscribe
 					</>
 				)}
 			</button>

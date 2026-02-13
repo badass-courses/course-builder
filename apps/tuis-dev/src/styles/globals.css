@@ -310,6 +310,14 @@
 }
 
 @layer base {
+	@media (max-width: 639px) {
+		[data-scale-mobile] {
+			transform: scale(0.55);
+			transform-origin: top center;
+			margin-bottom: -45%;
+		}
+	}
+
 	h1,
 	h2,
 	h3,

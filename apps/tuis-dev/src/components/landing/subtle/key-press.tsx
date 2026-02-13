@@ -3,109 +3,139 @@
 import { useEffect, useRef } from 'react'
 import { setIntervalOnVisible } from '@/utils/set-timeout-on-visible'
 
-const ROWS = 7
-const COLS = 10
-const TOTAL_FRAMES = 60
+const ROWS = 9
+const COLS = 14
 
-// Cell states: 0 = empty (·), 1 = cursor (█), 2 = visited/selected (▪)
-// Visited cells decay back to empty over a few frames
-const CHAR_EMPTY = '· '
-const CHAR_CURSOR = `<span class="text-[#C0FFBD]">▪ </span>`
-const CHAR_VISITED = '▪ '
+type Pos = [number, number]
+type Dir = [number, number]
 
-// Cursor path: snaking, jumping, selecting clusters
-// [row, col] positions for each frame
-const cursorPath: [number, number][] = [
-	// start top-left, snake right across row 0
-	[0, 0],
-	[0, 1],
-	[0, 2],
-	[0, 3],
-	[0, 4],
-	// drop down and snake left across row 1
-	[1, 4],
-	[1, 3],
-	[1, 2],
-	[1, 1],
-	// jump down to cluster in center
-	[3, 3],
-	[3, 4],
-	[3, 5],
-	[4, 5],
-	[4, 4],
-	[4, 3],
-	// jump to bottom-right corner
-	[6, 9],
-	[6, 8],
-	[5, 8],
-	[5, 9],
-	// jump up to top-right
-	[0, 8],
-	[0, 9],
-	[1, 9],
-	[1, 8],
-	// diagonal descent toward center-left
-	[2, 7],
-	[3, 6],
-	[4, 6],
-	[5, 5],
-	// jump to bottom-left cluster
-	[5, 0],
-	[5, 1],
-	[6, 1],
-	[6, 0],
-	// snake up left column
-	[4, 0],
-	[3, 0],
-	[2, 0],
-	[1, 0],
-	// return home
-	[0, 0],
+const DIRS: Dir[] = [
+	[0, 1], // right
+	[1, 0], // down
+	[0, -1], // left
+	[-1, 0], // up
 ]
 
-// How many frames a visited cell persists before fading
-const VISIT_DECAY = 5
+function eq(a: Pos, b: Pos) {
+	return a[0] === b[0] && a[1] === b[1]
+}
 
-function buildFrames(): string[] {
-	// Track when each cell was last visited (frame index, -Infinity = never)
-	const lastVisited: number[][] = Array.from({ length: ROWS }, () =>
-		Array(COLS).fill(-Infinity),
-	)
+function wrap(p: Pos): Pos {
+	return [((p[0] % ROWS) + ROWS) % ROWS, ((p[1] % COLS) + COLS) % COLS]
+}
 
+function occupied(snake: Pos[], p: Pos) {
+	return snake.some((s) => eq(s, p))
+}
+
+// Simple seeded RNG for deterministic replay
+function mulberry32(seed: number) {
+	return () => {
+		seed |= 0
+		seed = (seed + 0x6d2b79f5) | 0
+		let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+	}
+}
+
+function placeFood(snake: Pos[], rng: () => number): Pos {
+	let p: Pos
+	do {
+		p = [Math.floor(rng() * ROWS), Math.floor(rng() * COLS)]
+	} while (occupied(snake, p))
+	return p
+}
+
+// Pick best direction toward food, avoiding self
+function chooseDir(head: Pos, food: Pos, snake: Pos[], currentDir: Dir): Dir {
+	// Score each direction
+	const scored = DIRS.map((d) => {
+		const next = wrap([head[0] + d[0], head[1] + d[1]])
+		// Can't reverse into yourself
+		if (d[0] === -currentDir[0] && d[1] === -currentDir[1] && snake.length > 1)
+			return { d, score: -1000 }
+		// Can't go into own body
+		if (occupied(snake, next)) return { d, score: -500 }
+		// Manhattan distance to food (on torus)
+		const dr = Math.min(
+			Math.abs(next[0] - food[0]),
+			ROWS - Math.abs(next[0] - food[0]),
+		)
+		const dc = Math.min(
+			Math.abs(next[1] - food[1]),
+			COLS - Math.abs(next[1] - food[1]),
+		)
+		return { d, score: -(dr + dc) }
+	}).sort((a, b) => b.score - a.score)
+
+	return scored[0]!.d
+}
+
+const MAX_LEN = 12
+
+function simulate() {
+	const rng = mulberry32(42)
 	const frames: string[] = []
+	let snake: Pos[] = [
+		[4, 3],
+		[4, 2],
+		[4, 1],
+	]
+	let dir: Dir = [0, 1]
+	let food = placeFood(snake, rng)
+	let maxLen = 3
 
-	for (let f = 0; f < cursorPath.length; f++) {
-		const [cursorR, cursorC] = cursorPath[f]!
+	for (let f = 0; f < 200; f++) {
+		// render
+		const grid: string[][] = Array.from({ length: ROWS }, () =>
+			new Array(COLS).fill('· '),
+		)
 
-		// Mark current cursor position as visited
-		lastVisited[cursorR]![cursorC] = f
+		// food
+		grid[food[0]]![food[1]] = `<span class="text-white/50">◆ </span>`
 
-		// Build grid for this frame (HTML)
-		const lines: string[] = []
-		for (let r = 0; r < ROWS; r++) {
-			let line = ''
-			for (let c = 0; c < COLS; c++) {
-				if (r === cursorR && c === cursorC) {
-					line += CHAR_CURSOR
-				} else if (f - lastVisited[r]![c]! <= VISIT_DECAY) {
-					line += CHAR_VISITED
-				} else {
-					line += CHAR_EMPTY
-				}
-			}
-			lines.push(line)
+		// body
+		for (let i = 1; i < snake.length; i++) {
+			grid[snake[i]![0]]![snake[i]![1]] = '◼︎ '
 		}
-		frames.push(lines.join('\n'))
+
+		// head
+		const [hr, hc] = snake[0]!
+		grid[hr]![hc] = `<span class="text-[#C0FFBD]">◼︎ </span>`
+
+		frames.push(grid.map((row) => row.join('')).join('\n'))
+
+		// move
+		dir = chooseDir(snake[0]!, food, snake, dir)
+		const next = wrap([snake[0]![0] + dir[0], snake[0]![1] + dir[1]])
+
+		// check self-collision → reset
+		if (occupied(snake.slice(1), next)) {
+			snake = [next]
+			maxLen = 3
+			food = placeFood(snake, rng)
+			continue
+		}
+
+		snake.unshift(next)
+
+		if (eq(next, food)) {
+			maxLen = Math.min(maxLen + 1, MAX_LEN)
+			food = placeFood(snake, rng)
+		}
+
+		while (snake.length > maxLen) snake.pop()
 	}
 
 	return frames
 }
 
-const precomputedFrames = buildFrames()
+const precomputedFrames = simulate()
 
 export function SubtleKeyPress({
 	className = '',
-	interval = 180,
+	interval = 140,
 }: {
 	className?: string
 	interval?: number
@@ -116,8 +146,8 @@ export function SubtleKeyPress({
 		let i = 0
 		const animate = () => {
 			if (ref.current) {
-				ref.current.innerHTML = precomputedFrames[i]!
-				i = (i + 1) % precomputedFrames.length
+				ref.current.innerHTML = precomputedFrames[i % precomputedFrames.length]!
+				i++
 			}
 		}
 		animate()

@@ -29,7 +29,7 @@ export function FpsCounter() {
 	return (
 		<div
 			ref={ref}
-			className="pointer-events-none fixed bottom-3 right-3 z-50 select-none font-mono text-[10px] text-white/30"
+			className="pointer-events-none fixed right-3 top-3 z-50 select-none font-mono text-[10px] text-white/30"
 		/>
 	)
 }

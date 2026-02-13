@@ -1,6 +1,7 @@
 'use client'
 
 import { AsciiField } from './ascii-field'
+import { BinaryField } from './binary-field'
 import { Reveal } from './reveal'
 import { SubtleDataStream } from './subtle/data-stream'
 import { SubtleGridLines } from './subtle/grid-lines'
@@ -42,7 +43,7 @@ function Card({
 
 export function BentoGrid() {
 	return (
-		<div className="grid w-full grid-cols-2 gap-1 rounded-2xl bg-black/20 p-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-3">
+		<div className="grid w-full grid-cols-2 gap-1 rounded-3xl bg-black/20 p-2 sm:grid-cols-2 sm:gap-2 lg:grid-cols-3">
 			<Card
 				title="The Basics"
 				description="How terminals actually render, escape codes, the building blocks."
@@ -50,7 +51,7 @@ export function BentoGrid() {
 				delay={0}
 			>
 				{/* <SubtleEscapeCodes /> */}
-				<AsciiField opacity={100} />
+				<BinaryField fps={10} density={0.001} opacity={100} />
 			</Card>
 
 			<Card
@@ -58,7 +59,7 @@ export function BentoGrid() {
 				description="Grids, positioning, responsive design — in monospace."
 				delay={0.05}
 			>
-				<SubtleGridLines />
+				<SubtleGridLines className="scale-75 sm:scale-100" />
 			</Card>
 
 			<Card
@@ -75,7 +76,7 @@ export function BentoGrid() {
 				delay={0.15}
 				// className="sm:col-span-2"
 			>
-				<SubtleHeartbeat />
+				<SubtleHeartbeat className="scale-75 sm:scale-100" />
 				{/* <SubtleColorBlocks /> */}
 			</Card>
 
@@ -86,7 +87,7 @@ export function BentoGrid() {
 				// className="sm:col-span-2"
 			>
 				{/* <SubtleStateMachine /> */}
-				<SubtleDataStream interval={100} />
+				<SubtleDataStream interval={200} />
 			</Card>
 
 			<Card
@@ -96,7 +97,7 @@ export function BentoGrid() {
 				delay={0.25}
 			>
 				{/* <SubtleToolOutput /> */}
-				<SubtleSignalBars />
+				<SubtleSignalBars className="scale-75 sm:scale-100" />
 				<AsciiField opacity={100} />
 			</Card>
 		</div>

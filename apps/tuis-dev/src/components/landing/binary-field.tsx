@@ -2,20 +2,11 @@
 
 import { useEffect, useRef } from 'react'
 
-// Fills the container with a slow-drifting interference pattern
-// Very low contrast — mostly spaces with faint dots/dashes
-
-const CHAR_WIDTH = 6.65 // approx width of a monospace char at 11px
-const CHAR_HEIGHT = 12.65 // approx line height at 11px * 1.15
+const CHAR_WIDTH = 6.65
+const CHAR_HEIGHT = 12.65
 const TOTAL_FRAMES = 120
 
-// Only use the faintest chars — keep it whisper-quiet
-const FIELD_CHARS = ' .·:'
-
-// Tailwind classes for each intensity level (must appear literally for scanner)
-const fClass = ['', 'text-white/15', 'text-white/25', 'text-white/40']
-
-function generateFrame(f: number, cols: number, rows: number): string {
+function generateFrame(f: number, cols: number, rows: number, density: number): string {
 	const t = (f / TOTAL_FRAMES) * Math.PI * 2
 	const lines: string[] = []
 
@@ -40,13 +31,22 @@ function generateFrame(f: number, cols: number, rows: number): string {
 
 			v *= fade
 
-			const intensity = Math.max(0, (v + 0.3) * 0.7)
-			const ci = Math.floor(intensity * (FIELD_CHARS.length - 1))
+			// density: 0 = nearly empty, 1 = packed
+			// bias controls how much of the wave is above zero
+			const bias = 0.05 + density * 0.5
+			const intensity = Math.max(0, (v + bias) * 0.7)
 
-			if (ci <= 0) {
+			if (intensity < 0.08) {
 				parts.push(' ')
+			} else if (intensity < 0.25) {
+				const digit = ((col * 7 + row * 13 + f) % 2).toString()
+				parts.push(`<span class="text-white/10">${digit}</span>`)
+			} else if (intensity < 0.45) {
+				const digit = ((col * 7 + row * 13 + f) % 2).toString()
+				parts.push(`<span class="text-white/20">${digit}</span>`)
 			} else {
-				parts.push(`<span class="${fClass[ci]}">${FIELD_CHARS[ci]}</span>`)
+				const digit = ((col * 7 + row * 13 + f) % 2).toString()
+				parts.push(`<span class="text-white/40">${digit}</span>`)
 			}
 		}
 		lines.push(parts.join(''))
@@ -54,12 +54,16 @@ function generateFrame(f: number, cols: number, rows: number): string {
 	return lines.join('\n')
 }
 
-export function AsciiField({
+export function BinaryField({
 	opacity = 50,
 	className = '',
+	fps = 12,
+	density = 0.5,
 }: {
 	opacity?: number
 	className?: string
+	fps?: number
+	density?: number
 }) {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const preRef = useRef<HTMLPreElement>(null)
@@ -68,7 +72,6 @@ export function AsciiField({
 	const frameIdxRef = useRef(0)
 	const genRef = useRef(0)
 
-	// Measure container and regenerate all frames when size changes
 	useEffect(() => {
 		const container = containerRef.current
 		if (!container) return
@@ -81,7 +84,6 @@ export function AsciiField({
 			const cols = Math.ceil(w / CHAR_WIDTH)
 			const rows = Math.ceil(h / CHAR_HEIGHT)
 
-			// Skip if size hasn't changed
 			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows)
 				return
 
@@ -99,6 +101,7 @@ export function AsciiField({
 						nextFrame,
 						cols,
 						rows,
+						density,
 					)
 					nextFrame++
 				}
@@ -118,12 +121,11 @@ export function AsciiField({
 			gen.current++
 			ro.disconnect()
 		}
-	}, [])
+	}, [density])
 
-	// Playback loop — runs once, always indexes by frameIdx % TOTAL_FRAMES
 	useEffect(() => {
 		let lastTime = 0
-		const interval = 1000 / 12
+		const interval = 1000 / fps
 		let rafId: number
 
 		function tick(time: number) {
@@ -141,7 +143,7 @@ export function AsciiField({
 
 		rafId = requestAnimationFrame(tick)
 		return () => cancelAnimationFrame(rafId)
-	}, [])
+	}, [fps])
 
 	return (
 		<div
