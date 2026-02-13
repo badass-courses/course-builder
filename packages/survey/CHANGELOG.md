@@ -1,5 +1,12 @@
 # @coursebuilder/survey
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @coursebuilder/ui@2.0.10
+
 ## 1.0.2
 
 ### Patch Changes
