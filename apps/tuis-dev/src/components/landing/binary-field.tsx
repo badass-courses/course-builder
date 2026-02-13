@@ -6,7 +6,12 @@ const CHAR_WIDTH = 6.65
 const CHAR_HEIGHT = 12.65
 const TOTAL_FRAMES = 120
 
-function generateFrame(f: number, cols: number, rows: number, density: number): string {
+function generateFrame(
+	f: number,
+	cols: number,
+	rows: number,
+	density: number,
+): string {
 	const t = (f / TOTAL_FRAMES) * Math.PI * 2
 	const lines: string[] = []
 
@@ -84,8 +89,7 @@ export function BinaryField({
 			const cols = Math.ceil(w / CHAR_WIDTH)
 			const rows = Math.ceil(h / CHAR_HEIGHT)
 
-			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows)
-				return
+			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows) return
 
 			const gen = ++genRef.current
 			sizeRef.current = { cols, rows }

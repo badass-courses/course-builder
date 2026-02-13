@@ -82,8 +82,7 @@ export function AsciiField({
 			const rows = Math.ceil(h / CHAR_HEIGHT)
 
 			// Skip if size hasn't changed
-			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows)
-				return
+			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows) return
 
 			const gen = ++genRef.current
 			sizeRef.current = { cols, rows }
@@ -95,11 +94,7 @@ export function AsciiField({
 				if (genRef.current !== gen) return
 				const deadline = performance.now() + 8
 				while (nextFrame < TOTAL_FRAMES && performance.now() < deadline) {
-					framesRef.current[nextFrame] = generateFrame(
-						nextFrame,
-						cols,
-						rows,
-					)
+					framesRef.current[nextFrame] = generateFrame(nextFrame, cols, rows)
 					nextFrame++
 				}
 				if (nextFrame < TOTAL_FRAMES) {

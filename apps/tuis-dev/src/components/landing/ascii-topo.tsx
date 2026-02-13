@@ -114,8 +114,7 @@ export function AsciiTopo({
 
 			const cols = Math.ceil(w / CHAR_WIDTH)
 			const rows = Math.ceil(h / CHAR_HEIGHT)
-			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows)
-				return
+			if (cols === sizeRef.current.cols && rows === sizeRef.current.rows) return
 
 			sizeRef.current = { cols, rows }
 			framesRef.current = []
@@ -127,11 +126,7 @@ export function AsciiTopo({
 				if (cancelled) return
 				const deadline = performance.now() + 8
 				while (nextFrame < TOTAL_FRAMES && performance.now() < deadline) {
-					framesRef.current[nextFrame] = generateFrame(
-						nextFrame,
-						cols,
-						rows,
-					)
+					framesRef.current[nextFrame] = generateFrame(nextFrame, cols, rows)
 					nextFrame++
 				}
 				if (nextFrame < TOTAL_FRAMES) {

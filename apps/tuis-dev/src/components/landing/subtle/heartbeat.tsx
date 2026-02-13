@@ -25,9 +25,7 @@ function fillFromWeight(w: number): string {
 type Rect = { x: number; y: number; w: number; h: number; fill: string }
 
 function rasterize(rects: Rect[]): number[][] {
-	const grid: number[][] = Array.from({ length: H }, () =>
-		new Array(W).fill(0),
-	)
+	const grid: number[][] = Array.from({ length: H }, () => new Array(W).fill(0))
 	for (const { x, y, w, h, fill } of rects) {
 		const weight = fillWeights[fill] ?? 0
 		for (let r = y; r < y + h && r < H; r++) {
@@ -40,9 +38,7 @@ function rasterize(rects: Rect[]): number[][] {
 }
 
 function renderGrid(grid: number[][]): string {
-	return grid
-		.map((row) => row.map(fillFromWeight).join(''))
-		.join('\n')
+	return grid.map((row) => row.map(fillFromWeight).join('')).join('\n')
 }
 
 function lerp(a: number, b: number, t: number): number {

@@ -11,7 +11,14 @@ const STAGNATION_LIMIT = 40
 
 // Tailwind classes (must appear literally for scanner)
 // text-white/8 text-white/15 text-white/25 text-white/40
-const ALIVE_OPACITY = ['', 'text-white/15', 'text-white/15', 'text-white/25', 'text-white/25', 'text-white/40']
+const ALIVE_OPACITY = [
+	'',
+	'text-white/15',
+	'text-white/15',
+	'text-white/25',
+	'text-white/25',
+	'text-white/40',
+]
 
 interface LifeState {
 	cols: number
@@ -62,7 +69,11 @@ function stepLife(s: LifeState) {
 			for (let dy = -1; dy <= 1; dy++) {
 				for (let dx = -1; dx <= 1; dx++) {
 					if (dx === 0 && dy === 0) continue
-					if (grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)] === 1) n++
+					if (
+						grid[((y + dy + rows) % rows) * cols + ((x + dx + cols) % cols)] ===
+						1
+					)
+						n++
 				}
 			}
 

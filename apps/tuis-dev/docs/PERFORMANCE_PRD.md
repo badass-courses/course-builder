@@ -1,22 +1,25 @@
 # Caching Architecture PRD: Code with Antonio
 
-**Status**: Draft
-**Author**: Performance Engineering
-**Last Updated**: 2026-01-22
+**Status**: Draft **Author**: Performance Engineering **Last Updated**:
+2026-01-22
 
 ---
 
 ## Executive Summary
 
-The Code with Antonio workshop platform has a broken caching architecture that results in **<30% cache hit rates** despite using Next.js `unstable_cache`. The root causes are cache key collisions, nuclear tag-based invalidation, completely uncached video data functions, and dead code adding latency without benefit.
+The Code with Antonio workshop platform has a broken caching architecture that
+results in **<30% cache hit rates** despite using Next.js `unstable_cache`. The
+root causes are cache key collisions, nuclear tag-based invalidation, completely
+uncached video data functions, and dead code adding latency without benefit.
 
 **Impact**:
+
 - 10-15 unnecessary database queries per page load
 - 300-500ms additional latency on every request
 - Video data re-fetched on every lesson view (never changes after upload)
 
-**Effort**: 4-8 hours of focused changes
-**Risk**: Low (backward compatible, incremental rollout)
+**Effort**: 4-8 hours of focused changes **Risk**: Low (backward compatible,
+incremental rollout)
 
 ---
 
@@ -29,35 +32,41 @@ Three functions in `workshops-query.ts` share identical `keyParts`:
 ```typescript
 // workshops-query.ts:35-39
 export const getCachedWorkshopNavigation = unstable_cache(
-  async (slug: string) => getWorkshopNavigation(slug),
-  ['workshop'],  // ← SHARED KEY
-  { revalidate: 3600, tags: ['workshop'] },
+	async (slug: string) => getWorkshopNavigation(slug),
+	['workshop'], // ← SHARED KEY
+	{ revalidate: 3600, tags: ['workshop'] },
 )
 
 // workshops-query.ts:49-53
 export const getCachedWorkshopProduct = unstable_cache(
-  async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
-  ['workshop'],  // ← SAME KEY
-  { revalidate: 3600, tags: ['workshop'] },
+	async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
+	['workshop'], // ← SAME KEY
+	{ revalidate: 3600, tags: ['workshop'] },
 )
 
 // workshops-query.ts:112-116
 export const getCachedMinimalWorkshop = unstable_cache(
-  async (slug: string) => getMinimalWorkshop(slug),
-  ['workshop'],  // ← SAME KEY
-  { revalidate: 3600, tags: ['workshop'] },
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop'], // ← SAME KEY
+	{ revalidate: 3600, tags: ['workshop'] },
 )
 ```
 
-**How `unstable_cache` keyParts work**: The cache key is formed by combining `keyParts` array with the function arguments. With keyParts `['workshop']` and argument `'next-js-course'`:
+**How `unstable_cache` keyParts work**: The cache key is formed by combining
+`keyParts` array with the function arguments. With keyParts `['workshop']` and
+argument `'next-js-course'`:
 
 ```
 Cache Key: workshop:next-js-course
 ```
 
-**The collision**: All three functions produce the **same cache key** for the same slug input. The first function called populates the cache. Subsequent functions find a cache entry but it contains the **wrong data** (e.g., navigation data when product data was expected).
+**The collision**: All three functions produce the **same cache key** for the
+same slug input. The first function called populates the cache. Subsequent
+functions find a cache entry but it contains the **wrong data** (e.g.,
+navigation data when product data was expected).
 
 **Measured impact**:
+
 - Cache hit rate: ~30% (should be >90%)
 - 4-6 extra DB queries per workshop page from cache misses
 - ~200ms additional latency per page
@@ -68,14 +77,16 @@ All three functions use `tags: ['workshop']`. When ANY workshop is updated:
 
 ```typescript
 // workshops-query.ts:421-424
-revalidateTag('workshop')  // Nukes EVERY workshop cache entry
+revalidateTag('workshop') // Nukes EVERY workshop cache entry
 ```
 
-A single workshop edit invalidates cached data for **all workshops** in the system.
+A single workshop edit invalidates cached data for **all workshops** in the
+system.
 
 ### Workshop Page: Duplicate Fetches
 
-The workshop page renders `WorkshopPricing` **twice** (sidebar + body), each triggering independent data fetches:
+The workshop page renders `WorkshopPricing` **twice** (sidebar + body), each
+triggering independent data fetches:
 
 ```typescript
 // workshops/[module]/page.tsx:173-175 (sidebar)
@@ -86,6 +97,7 @@ The workshop page renders `WorkshopPricing` **twice** (sidebar + body), each tri
 ```
 
 Each `WorkshopPricing` instance calls:
+
 - `getCachedWorkshopProduct(moduleSlug)`
 - `getCachedMinimalWorkshop(moduleSlug)`
 - `getAbilityForResource(undefined, workshop.id)`
@@ -100,16 +112,16 @@ Each `WorkshopPricing` instance calls:
 ```typescript
 // lessons-query.ts:173-177
 export const getCachedLesson = unstable_cache(
-  async (slug: string) => getLesson(slug),
-  ['lesson'],  // ← SHARED KEY (same pattern as workshops)
-  { revalidate: 3600, tags: ['lesson'] },
+	async (slug: string) => getLesson(slug),
+	['lesson'], // ← SHARED KEY (same pattern as workshops)
+	{ revalidate: 3600, tags: ['lesson'] },
 )
 
 // lessons-query.ts:243-247
 export const getCachedExerciseSolution = unstable_cache(
-  async (slug: string) => getExerciseSolution(slug),
-  ['solution'],
-  { revalidate: 3600, tags: ['solution'] },
+	async (slug: string) => getExerciseSolution(slug),
+	['solution'],
+	{ revalidate: 3600, tags: ['solution'] },
 )
 ```
 
@@ -146,11 +158,14 @@ export async function getLesson(lessonSlugOrId: string) {
 
 1. `getCachedLesson` wraps `getLesson` with `unstable_cache` (3600s TTL)
 2. `getLesson` only executes when `unstable_cache` **misses**
-3. When it runs, Redis cache was populated 3600+ seconds ago → **already expired** (10s TTL)
-4. Redis gets populated again, then `unstable_cache` intercepts for the next 3600 seconds
+3. When it runs, Redis cache was populated 3600+ seconds ago → **already
+   expired** (10s TTL)
+4. Redis gets populated again, then `unstable_cache` intercepts for the next
+   3600 seconds
 5. By the time `getLesson` runs again, Redis has expired again
 
-**Result**: The Redis layer adds ~20-50ms network latency to Upstash on every cache miss while providing **zero cache hits**. Pure overhead.
+**Result**: The Redis layer adds ~20-50ms network latency to Upstash on every
+cache miss while providing **zero cache hits**. Pure overhead.
 
 ### Lesson Caching: Completely Uncached Video Functions
 
@@ -189,16 +204,19 @@ Called from `shared-page.tsx`:
 ```typescript
 // shared-page.tsx:209-211
 const muxPlaybackId = ability.canViewLesson
-  ? await getLessonMuxPlaybackId(lesson.id)  // UNCACHED
-  : null
+	? await getLessonMuxPlaybackId(lesson.id) // UNCACHED
+	: null
 
 // shared-page.tsx:163
-const transcriptLoader = getLessonVideoTranscript(lessonId)  // UNCACHED
+const transcriptLoader = getLessonVideoTranscript(lessonId) // UNCACHED
 ```
 
-**Critical insight**: `muxPlaybackId` and `transcript` are **static data**. They're set once when the video is processed and **never change**. There's no reason to query them more than once per deployment.
+**Critical insight**: `muxPlaybackId` and `transcript` are **static data**.
+They're set once when the video is processed and **never change**. There's no
+reason to query them more than once per deployment.
 
 **Impact**:
+
 - 2 unnecessary DB queries per lesson page view
 - Popular lesson with 1,000 views = 2,000 wasted queries
 - ~40-80ms latency added to every lesson page
@@ -217,21 +235,21 @@ unstable_cache(fn, ['workshop'], { tags: ['workshop'] })
 
 // workshops-query.ts - AFTER
 export const getCachedWorkshopNavigation = unstable_cache(
-  async (slug: string) => getWorkshopNavigation(slug),
-  ['workshop-navigation'],
-  { revalidate: 3600, tags: ['workshop-navigation'] },
+	async (slug: string) => getWorkshopNavigation(slug),
+	['workshop-navigation'],
+	{ revalidate: 3600, tags: ['workshop-navigation'] },
 )
 
 export const getCachedWorkshopProduct = unstable_cache(
-  async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
-  ['workshop-product'],
-  { revalidate: 3600, tags: ['workshop-product'] },
+	async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
+	['workshop-product'],
+	{ revalidate: 3600, tags: ['workshop-product'] },
 )
 
 export const getCachedMinimalWorkshop = unstable_cache(
-  async (slug: string) => getMinimalWorkshop(slug),
-  ['workshop-minimal'],
-  { revalidate: 3600, tags: ['workshop-minimal'] },
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop-minimal'],
+	{ revalidate: 3600, tags: ['workshop-minimal'] },
 )
 ```
 
@@ -239,13 +257,14 @@ export const getCachedMinimalWorkshop = unstable_cache(
 
 ```typescript
 export const getCachedLesson = unstable_cache(
-  async (slug: string) => getLesson(slug),
-  ['lesson-full'],
-  { revalidate: 3600, tags: ['lesson'] },
+	async (slug: string) => getLesson(slug),
+	['lesson-full'],
+	{ revalidate: 3600, tags: ['lesson'] },
 )
 ```
 
 **Expected impact**:
+
 - Cache hit rate: 30% → 90%+
 - DB queries per page: -6 to -10
 - TTFB reduction: 200-300ms
@@ -259,29 +278,30 @@ Add resource ID to tags for surgical invalidation:
 ```typescript
 // workshops-query.ts
 export const getCachedMinimalWorkshop = unstable_cache(
-  async (slug: string) => getMinimalWorkshop(slug),
-  ['workshop-minimal'],
-  {
-    revalidate: 3600,
-    tags: (slug) => ['workshop-minimal', `workshop:${slug}`]  // Resource-specific
-  },
+	async (slug: string) => getMinimalWorkshop(slug),
+	['workshop-minimal'],
+	{
+		revalidate: 3600,
+		tags: (slug) => ['workshop-minimal', `workshop:${slug}`], // Resource-specific
+	},
 )
 
 // On update, invalidate only the affected workshop:
 export async function updateWorkshop(input: Partial<Workshop>) {
-  // ... update logic ...
+	// ... update logic ...
 
-  // Surgical invalidation - only this workshop
-  revalidateTag(`workshop:${workshopSlug}`)
+	// Surgical invalidation - only this workshop
+	revalidateTag(`workshop:${workshopSlug}`)
 
-  // Only if structure changed (e.g., sections added/removed)
-  if (structureChanged) {
-    revalidateTag('workshop-navigation')
-  }
+	// Only if structure changed (e.g., sections added/removed)
+	if (structureChanged) {
+		revalidateTag('workshop-navigation')
+	}
 }
 ```
 
 **Expected impact**:
+
 - Prevents cache stampede when one workshop updates
 - Other workshop caches remain warm
 - Reduces unnecessary revalidation by ~95%
@@ -294,38 +314,43 @@ Add `unstable_cache` to the static video data functions:
 
 ```typescript
 // lessons-query.ts - BEFORE
-export const getLessonVideoTranscript = async (lessonIdOrSlug?: string | null) => {
-  // Raw DB query every time
+export const getLessonVideoTranscript = async (
+	lessonIdOrSlug?: string | null,
+) => {
+	// Raw DB query every time
 }
 
 // lessons-query.ts - AFTER
 export const getCachedLessonVideoTranscript = unstable_cache(
-  async (lessonIdOrSlug: string) => {
-    if (!lessonIdOrSlug) return null
-    const query = sql`SELECT cr_video.fields->>'$.transcript' AS transcript...`
-    const result = await db.execute(query)
-    // ... parsing ...
-    return parsedResult.data[0]?.transcript
-  },
-  ['lesson-transcript'],
-  {
-    revalidate: false,  // Never expires - transcript is immutable
-    tags: (lessonIdOrSlug) => ['lesson-transcript', `lesson:${lessonIdOrSlug}`]
-  },
+	async (lessonIdOrSlug: string) => {
+		if (!lessonIdOrSlug) return null
+		const query = sql`SELECT cr_video.fields->>'$.transcript' AS transcript...`
+		const result = await db.execute(query)
+		// ... parsing ...
+		return parsedResult.data[0]?.transcript
+	},
+	['lesson-transcript'],
+	{
+		revalidate: false, // Never expires - transcript is immutable
+		tags: (lessonIdOrSlug) => ['lesson-transcript', `lesson:${lessonIdOrSlug}`],
+	},
 )
 
 export const getCachedLessonMuxPlaybackId = unstable_cache(
-  async (lessonIdOrSlug: string) => {
-    const query = sql`SELECT cr_video.fields->>'$.muxPlaybackId'...`
-    const result = await db.execute(query)
-    // ... parsing ...
-    return parsedResult.data[0]?.muxPlaybackId
-  },
-  ['lesson-playback-id'],
-  {
-    revalidate: false,  // Never expires - playbackId is immutable
-    tags: (lessonIdOrSlug) => ['lesson-playback-id', `lesson:${lessonIdOrSlug}`]
-  },
+	async (lessonIdOrSlug: string) => {
+		const query = sql`SELECT cr_video.fields->>'$.muxPlaybackId'...`
+		const result = await db.execute(query)
+		// ... parsing ...
+		return parsedResult.data[0]?.muxPlaybackId
+	},
+	['lesson-playback-id'],
+	{
+		revalidate: false, // Never expires - playbackId is immutable
+		tags: (lessonIdOrSlug) => [
+			'lesson-playback-id',
+			`lesson:${lessonIdOrSlug}`,
+		],
+	},
 )
 ```
 
@@ -334,10 +359,10 @@ export const getCachedLessonMuxPlaybackId = unstable_cache(
 ```typescript
 // shared-page.tsx
 const muxPlaybackId = ability.canViewLesson
-  ? await getCachedLessonMuxPlaybackId(lesson.id)  // Now cached
-  : null
+	? await getCachedLessonMuxPlaybackId(lesson.id) // Now cached
+	: null
 
-const transcriptLoader = getCachedLessonVideoTranscript(lessonId)  // Now cached
+const transcriptLoader = getCachedLessonVideoTranscript(lessonId) // Now cached
 ```
 
 **Invalidation** (only when video is re-processed):
@@ -348,6 +373,7 @@ revalidateTag(`lesson:${lessonId}`)
 ```
 
 **Expected impact**:
+
 - 2 DB queries eliminated per lesson page
 - Popular lesson: 2,000 queries → 1 query
 - ~40-80ms latency eliminated per lesson page
@@ -399,6 +425,7 @@ export async function getLesson(lessonSlugOrId: string) {
 ```
 
 **Expected impact**:
+
 - 20-50ms latency reduction on cache misses
 - Removes Redis import and connection
 - Simpler, more predictable code path
@@ -407,7 +434,8 @@ export async function getLesson(lessonSlugOrId: string) {
 
 ### Fix 5: Request-Level Deduplication
 
-Wrap cached functions with React `cache()` to deduplicate within a single request:
+Wrap cached functions with React `cache()` to deduplicate within a single
+request:
 
 ```typescript
 // workshops-query.ts
@@ -415,19 +443,19 @@ import { cache } from 'react'
 
 // Request-level deduplication + cross-request caching
 export const getCachedMinimalWorkshop = cache(
-  unstable_cache(
-    async (slug: string) => getMinimalWorkshop(slug),
-    ['workshop-minimal'],
-    { revalidate: 3600, tags: ['workshop-minimal'] },
-  )
+	unstable_cache(
+		async (slug: string) => getMinimalWorkshop(slug),
+		['workshop-minimal'],
+		{ revalidate: 3600, tags: ['workshop-minimal'] },
+	),
 )
 
 export const getCachedWorkshopProduct = cache(
-  unstable_cache(
-    async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
-    ['workshop-product'],
-    { revalidate: 3600, tags: ['workshop-product'] },
-  )
+	unstable_cache(
+		async (workshopIdOrSlug: string) => getWorkshopProduct(workshopIdOrSlug),
+		['workshop-product'],
+		{ revalidate: 3600, tags: ['workshop-product'] },
+	),
 )
 ```
 
@@ -439,6 +467,7 @@ export const getCachedWorkshopProduct = cache(
 4. React `cache()` returns the same promise (no second fetch)
 
 **Expected impact**:
+
 - Eliminates duplicate fetches from double `WorkshopPricing` renders
 - 3-5 fewer queries per workshop page
 - ~100ms latency reduction
@@ -447,7 +476,8 @@ export const getCachedWorkshopProduct = cache(
 
 ### Fix 6: Deduplicate WorkshopPricing Render (Optional)
 
-If Fix 5 doesn't fully address the double-render issue, restructure to render once:
+If Fix 5 doesn't fully address the double-render issue, restructure to render
+once:
 
 ```typescript
 // workshops/[module]/page.tsx
@@ -477,14 +507,14 @@ export default async function ModulePage(props: Props) {
 
 ## Implementation Order
 
-| Order | Fix | Impact | Effort | Risk |
-|-------|-----|--------|--------|------|
-| 1 | Isolate cache keys | High | 30 min | None |
-| 2 | Cache video functions | High | 1 hr | None |
-| 3 | Remove dead Redis code | Medium | 15 min | None |
-| 4 | Request-level deduplication | Medium | 30 min | None |
-| 5 | Resource-specific tags | Medium | 1 hr | Low |
-| 6 | Deduplicate WorkshopPricing | Low | 2-3 hrs | Low |
+| Order | Fix                         | Impact | Effort  | Risk |
+| ----- | --------------------------- | ------ | ------- | ---- |
+| 1     | Isolate cache keys          | High   | 30 min  | None |
+| 2     | Cache video functions       | High   | 1 hr    | None |
+| 3     | Remove dead Redis code      | Medium | 15 min  | None |
+| 4     | Request-level deduplication | Medium | 30 min  | None |
+| 5     | Resource-specific tags      | Medium | 1 hr    | Low  |
+| 6     | Deduplicate WorkshopPricing | Low    | 2-3 hrs | Low  |
 
 **Total effort**: 4-6 hours for fixes 1-5 (high/medium impact)
 
@@ -494,23 +524,24 @@ export default async function ModulePage(props: Props) {
 
 ### Before
 
-| Metric | Workshop Page | Lesson Page |
-|--------|---------------|-------------|
-| Cache hit rate | ~30% | ~30% |
-| DB queries | 18-22 | 20-25 |
-| TTFB | 800-1000ms | 600-800ms |
-| Video data queries | N/A | 2 per view |
+| Metric             | Workshop Page | Lesson Page |
+| ------------------ | ------------- | ----------- |
+| Cache hit rate     | ~30%          | ~30%        |
+| DB queries         | 18-22         | 20-25       |
+| TTFB               | 800-1000ms    | 600-800ms   |
+| Video data queries | N/A           | 2 per view  |
 
 ### After
 
-| Metric | Workshop Page | Lesson Page |
-|--------|---------------|-------------|
-| Cache hit rate | 90%+ | 90%+ |
-| DB queries | 6-8 | 5-7 |
-| TTFB | 200-400ms | 150-300ms |
-| Video data queries | N/A | 0 (cached) |
+| Metric             | Workshop Page | Lesson Page |
+| ------------------ | ------------- | ----------- |
+| Cache hit rate     | 90%+          | 90%+        |
+| DB queries         | 6-8           | 5-7         |
+| TTFB               | 200-400ms     | 150-300ms   |
+| Video data queries | N/A           | 0 (cached)  |
 
 **Projected improvement**:
+
 - TTFB: 60-70% reduction
 - DB queries: 65-75% reduction
 - Cache hit rate: 3x improvement
@@ -526,26 +557,28 @@ Add logging to track cache effectiveness:
 ```typescript
 // lib/cache-monitoring.ts
 export function monitoredCache<T>(
-  fn: (...args: any[]) => Promise<T>,
-  keyParts: string[],
-  options: { revalidate: number | false; tags: string[] }
+	fn: (...args: any[]) => Promise<T>,
+	keyParts: string[],
+	options: { revalidate: number | false; tags: string[] },
 ) {
-  const cacheFn = unstable_cache(
-    async (...args: any[]) => {
-      const start = performance.now()
-      const result = await fn(...args)
-      const duration = performance.now() - start
+	const cacheFn = unstable_cache(
+		async (...args: any[]) => {
+			const start = performance.now()
+			const result = await fn(...args)
+			const duration = performance.now() - start
 
-      // Log cache miss (function executed = miss)
-      console.log(`[CACHE MISS] ${keyParts.join(':')} - ${duration.toFixed(0)}ms`)
+			// Log cache miss (function executed = miss)
+			console.log(
+				`[CACHE MISS] ${keyParts.join(':')} - ${duration.toFixed(0)}ms`,
+			)
 
-      return result
-    },
-    keyParts,
-    options
-  )
+			return result
+		},
+		keyParts,
+		options,
+	)
 
-  return cacheFn
+	return cacheFn
 }
 ```
 
@@ -577,20 +610,22 @@ console.log(`[QUERY COUNT] ${queryCount} queries this request`)
 
 ## Files to Modify
 
-| File | Changes |
-|------|---------|
-| `src/lib/workshops-query.ts` | Fix cache keys, add React cache wrapper, resource-specific tags |
-| `src/lib/lessons-query.ts` | Fix cache keys, cache video functions, remove dead Redis code |
-| `src/app/(content)/workshops/[module]/page.tsx` | (Optional) Deduplicate WorkshopPricing |
-| `src/app/(content)/workshops/[module]/[lesson]/(view)/shared-page.tsx` | Update to use cached video functions |
+| File                                                                   | Changes                                                         |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `src/lib/workshops-query.ts`                                           | Fix cache keys, add React cache wrapper, resource-specific tags |
+| `src/lib/lessons-query.ts`                                             | Fix cache keys, cache video functions, remove dead Redis code   |
+| `src/app/(content)/workshops/[module]/page.tsx`                        | (Optional) Deduplicate WorkshopPricing                          |
+| `src/app/(content)/workshops/[module]/[lesson]/(view)/shared-page.tsx` | Update to use cached video functions                            |
 
 ---
 
 ## Rollout
 
-1. **Phase 1**: Deploy fixes 1-4 (cache keys, video caching, Redis removal, deduplication)
+1. **Phase 1**: Deploy fixes 1-4 (cache keys, video caching, Redis removal,
+   deduplication)
 2. **Monitor**: 24 hours of cache hit rate and TTFB monitoring
 3. **Phase 2**: Deploy fix 5 (resource-specific tags)
 4. **Phase 3**: (If needed) Deploy fix 6 (WorkshopPricing restructure)
 
-**Rollback**: All changes are backward compatible. If issues arise, revert the specific commit.
+**Rollback**: All changes are backward compatible. If issues arise, revert the
+specific commit.
