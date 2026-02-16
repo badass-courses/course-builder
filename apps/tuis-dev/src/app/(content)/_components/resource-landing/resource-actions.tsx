@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useModuleProgress } from '@/app/(content)/_components/module-progress-provider'
 import { useContentNavigation } from '@/app/(content)/_components/navigation/provider'
-import { Share } from '@/components/share'
+import * as Share from '@/components/share'
 import {
 	flattenNavigationResources,
 	getFirstResourceSlug,
@@ -120,7 +120,12 @@ export function ResourceActions({
 					</DialogTrigger>
 					<DialogContent>
 						<DialogTitle>Share {title}</DialogTitle>
-						<Share />
+						<Share.Root title={title}>
+							<Share.Bluesky />
+							<Share.X />
+							<Share.LinkedIn />
+							<Share.CopyUrl />
+						</Share.Root>
 					</DialogContent>
 				</Dialog>
 			</div>

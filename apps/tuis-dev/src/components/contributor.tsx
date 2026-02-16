@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import config from '@/config'
 import { cn } from '@/utils/cn'
 
@@ -37,15 +38,25 @@ export const ContributorImage = ({
 	imageSize?: number
 }) => {
 	return (
-		<CldImage
-			src={
-				'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760621497/antonio-thumbs-up_2x_r4upxk.png'
-			}
+		<Image
+			src={'/ashley.png'}
 			alt={config.author}
 			width={imageSize}
 			height={imageSize}
 			quality={100}
-			className={cn('', className)}
+			className={cn('rounded-full border ring-2 ring-black/10', className)}
 		/>
 	)
+	// return (
+	// 	<CldImage
+	// 		src={
+	// 			'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760621497/antonio-thumbs-up_2x_r4upxk.png'
+	// 		}
+	// 		alt={config.author}
+	// 		width={imageSize}
+	// 		height={imageSize}
+	// 		quality={100}
+	// 		className={cn('', className)}
+	// 	/>
+	// )
 }

@@ -342,7 +342,7 @@ export async function getNearestNeighbour(
 		console.error(
 			'⚠️ Missing TypeSense configuration, skipping retrieval operation',
 		)
-		return
+		return null
 	}
 	const typesenseWriteClient = new Typesense.Client({
 		nodes: [
@@ -436,7 +436,7 @@ export async function getNearestNeighbour(
 		const randomIndex = Math.floor(
 			Math.random() * (parsedResults[0]?.hits?.length ?? 0),
 		)
-		return parsedResults[0]?.hits[randomIndex]?.document
+		return parsedResults[0]?.hits[randomIndex]?.document ?? null
 	} catch (e) {
 		console.debug(e)
 		return null

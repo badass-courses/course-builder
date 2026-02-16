@@ -38,18 +38,41 @@ export default async function PagesIndexPage() {
 						</Link>
 					</Button>
 				</div>
-				<ul className="divide-border flex flex-col divide-y">
-					{allPages.map((page, i) => {
-						return (
-							<PageTeaser
-								i={i}
-								article={page}
-								key={page.id}
-								className="flex w-full items-center py-4"
-							/>
-						)
-					})}
-				</ul>
+				{allPages.length === 0 ? (
+					<Card className="border-border/50 from-background to-muted/10 border-2 border-dashed bg-gradient-to-br">
+						<CardContent className="flex flex-col items-center justify-center px-8 py-20 text-center">
+							<div className="bg-primary/10 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
+								<FileText className="text-primary h-10 w-10" />
+							</div>
+							<h3 className="mb-2 text-2xl font-bold tracking-tight">
+								No pages yet
+							</h3>
+							<p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
+								Create your first page to start building out your site. Pages are
+								great for about, terms, privacy, and other static content.
+							</p>
+							<Button asChild size="lg" className="gap-2 shadow-sm">
+								<Link href="/admin/pages/new">
+									<FilePlus2 className="h-5 w-5" />
+									Create Your First Page
+								</Link>
+							</Button>
+						</CardContent>
+					</Card>
+				) : (
+					<ul className="divide-border flex flex-col divide-y">
+						{allPages.map((page, i) => {
+							return (
+								<PageTeaser
+									i={i}
+									article={page}
+									key={page.id}
+									className="flex w-full items-center py-4"
+								/>
+							)
+						})}
+					</ul>
+				)}
 			</div>
 		</main>
 	)

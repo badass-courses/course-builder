@@ -80,7 +80,7 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
-	--nav-height: 77px;
+	--nav-height: 68px;
 	--command-bar-height: 37px;
 	--pane-layout-height: calc(
 		100vh - var(--nav-height) - var(--command-bar-height)

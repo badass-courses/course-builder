@@ -66,6 +66,7 @@ const Home = async (props: Props) => {
 		<LayoutClient
 			saleBannerData={saleBannerData}
 			isCommerceEnabled={isCommerceEnabled}
+			withNavigation={false}
 		>
 			<HomePage />
 		</LayoutClient>

@@ -3,12 +3,16 @@ import { type Metadata, type ResolvingMetadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Contributor } from '@/components/contributor'
+import { AsciiField } from '@/components/landing/ascii-field'
+import { AsciiHeart } from '@/components/landing/ascii-heart'
+import { Reveal } from '@/components/landing/reveal'
+import { SubscribeForm as LandingSubscribeForm } from '@/components/landing/subscribe-form'
 import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
-import { PrimaryNewsletterCta } from '@/components/primary-newsletter-cta'
-import { Share } from '@/components/share'
+import * as Share from '@/components/share'
+import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import { courseBuilderAdapter } from '@/db'
 import type { List } from '@/lib/lists'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
@@ -19,7 +23,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { Github } from 'lucide-react'
+import { ArrowLeftIcon, CopyIcon, Github } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
@@ -31,7 +35,7 @@ import PostNextUpFromListPagination from '../_components/post-next-up-from-list-
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
-import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
+import { CopyAsMarkdown } from './_components/copy-as-markdown'
 import { MobileListResourceNavigation } from './_components/list-resource-navigation'
 
 type Props = {
@@ -93,40 +97,56 @@ export default async function PostPage(props: {
 						<div />
 					)}
 				</div> */}
-						<div
-							className={cn(
-								'container relative z-10 border-x py-6 sm:py-14',
-								{},
-							)}
-						>
+						<div className={cn('container relative z-10 py-6 sm:py-8', {})}>
+							{/* <Reveal delay={0.3}>
+								<Link
+									href="/"
+									className="flex items-center gap-1 font-mono text-xs uppercase tracking-wider"
+								>
+									<span>❮</span>
+									<span>All Posts</span>
+								</Link>
+							</Reveal> */}
 							<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 								<div className="mx-auto flex w-full flex-col gap-5">
-									<PostTitle post={post} hasVideo={hasVideo} />
-									<div className="relative mb-3 flex w-full items-center justify-between gap-3">
-										<div className="flex items-center gap-8">
-											<Contributor className="flex [&_img]:size-7 sm:[&_img]:size-auto" />
-											{post.fields?.github && (
-												<Button
-													asChild
-													variant="outline"
-													className="h-11 text-base"
-												>
-													<Link href={post.fields?.github} target="_blank">
-														<Github className="text-muted-foreground mr-2 h-4 w-4" />
-														Source Code
-													</Link>
-												</Button>
-											)}
-										</div>
-										<Suspense fallback={null}>
-											<PostActionBar post={post} />
-										</Suspense>
+									<div className="relative flex w-full flex-col items-center justify-center py-24">
+										<Reveal>
+											<PostTitle post={post} hasVideo={hasVideo} />
+										</Reveal>
+										<Reveal delay={0.1} className="pt-12">
+											<div className="relative flex w-full items-center justify-center gap-3">
+												<div className="flex items-center gap-8">
+													<Contributor className="flex [&_img]:size-7 sm:[&_img]:size-auto" />
+													<CopyAsMarkdown
+														text={`# ${post.fields?.title}\n\n${post.fields?.body}`}
+													/>
+													{post.fields?.github && (
+														<Button
+															asChild
+															variant="outline"
+															className="h-11 text-base"
+														>
+															<Link href={post.fields?.github} target="_blank">
+																<Github className="text-muted-foreground mr-2 h-4 w-4" />
+																Source Code
+															</Link>
+														</Button>
+													)}
+												</div>
+												<Suspense fallback={null}>
+													<PostActionBar post={post} />
+												</Suspense>
+											</div>
+										</Reveal>
+										<AsciiField opacity={80} />
 									</div>
 								</div>
 								{post?.type === 'post' && post?.fields?.body && (
 									<PostToC markdown={post?.fields?.body} />
 								)}
-								<PostBody post={post} />
+								<Reveal delay={0.2}>
+									<PostBody post={post} />
+								</Reveal>
 								{/* {listSlugFromParam && (
 									<PostProgressToggle
 										className="flex w-full items-center justify-center"
@@ -147,36 +167,56 @@ export default async function PostPage(props: {
 							</article>
 						</div>
 						{!hasVideo && (
-							<div className="w-full border-t">
-								<PrimaryNewsletterCta
-									isHiddenForSubscribers
-									className="container border-x px-0"
-									trackProps={{
-										event: 'subscribed',
-										params: {
-											post: post.fields.slug,
-											location: 'post',
-										},
-									}}
-								>
-									<div />
-								</PrimaryNewsletterCta>
+							<div className="w-full">
+								<div className="container flex flex-col items-center gap-3 py-10 text-center sm:py-16">
+									<AsciiHeart />
+									<h2 className="max-w-sm text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+										Join the Terminal UI Revolution
+									</h2>
+									<h3 className="text-balance text-lg font-normal tracking-tight opacity-75">
+										Get the latest news and updates delivered straight to your
+										inbox.
+									</h3>
+									<div className="mt-4 w-full max-w-xl">
+										<LandingSubscribeForm />
+									</div>
+									<small className="mt-2 font-mono text-xs opacity-50">
+										No spam. Unsubscribe anytime.
+									</small>
+								</div>
 							</div>
 						)}
-						<div className="border-t">
-							<div className="px-0! container mx-auto flex w-full flex-col items-center justify-center gap-5 border-x pt-5 sm:flex-row sm:pt-0">
-								<strong className="text-base font-medium tracking-tight sm:text-lg">
-									Share
-								</strong>
-								<Share
-									className="w-full border-t sm:w-auto sm:border-t-0"
-									title={post?.fields.title}
-								/>
+						<div className="">
+							<div className="container mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 pb-16">
+								<p className="font-mono text-xs opacity-50">Share</p>
+								<Share.Root
+									className="flex flex-col gap-1 sm:flex-row sm:items-center"
+									title={post.fields.title}
+								>
+									{/* <Image
+										src={`${env.NEXT_PUBLIC_URL}/api/og?resource=${encodeURIComponent(post.fields.slug)}`}
+										width={1200 / 4}
+										height={630 / 4}
+										alt="Share on Bluesky"
+										className="rounded-md"
+									/> */}
+
+									<Share.Bluesky className="[&_span]:hidden sm:[&_span]:inline-block">
+										Share on Bluesky
+									</Share.Bluesky>
+									<Share.X className="[&_span]:hidden sm:[&_span]:inline-block">
+										Tweet
+									</Share.X>
+									<Share.LinkedIn className="[&_span]:hidden sm:[&_span]:inline-block">
+										Share on LinkedIn
+									</Share.LinkedIn>
+									<Share.CopyUrl className="">Share on CopyUrl</Share.CopyUrl>
+								</Share.Root>
 							</div>
 						</div>
-						<div className="border-t" data-theme="yellow">
+						<div className="" data-theme="yellow">
 							<PostNextUpFromListPagination
-								className="container mx-auto rounded-none border-x py-10 lg:py-16"
+								className="container mx-auto rounded-none py-10 lg:py-16"
 								postId={post.id}
 								documentIdsToSkip={list?.resources.map(
 									(resource) => resource.resource.id,
@@ -219,11 +259,9 @@ async function PostBody({ post }: { post: Post | null }) {
 	const { content } = await compileMDX(post.fields.body)
 
 	return (
-		<div className="">
-			<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-primary-dark sm:prose-lg lg:prose-lg prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl mt-10 max-w-none">
-				{content}
-			</article>
-		</div>
+		<article className="prose dark:prose-invert dark:prose-a:text-primary prose-a:text-primary-dark sm:prose-lg lg:prose-lg mx-auto max-w-2xl">
+			{content}
+		</article>
 	)
 }
 
@@ -237,7 +275,7 @@ async function PostTitle({
 	return (
 		<h1
 			className={cn(
-				'mb-4 text-3xl font-bold sm:text-3xl lg:text-4xl dark:text-white',
+				'text-center font-sans text-4xl font-semibold tracking-tight sm:text-5xl',
 				{},
 			)}
 		>
@@ -273,7 +311,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 			>
 				<section
 					aria-label="video"
-					className="flex flex-col items-center justify-center border-b bg-black"
+					className="flex flex-col items-center justify-center bg-black"
 				>
 					<PostPlayer
 						postSlug={post.fields?.slug}
@@ -284,16 +322,7 @@ async function PlayerContainer({ post }: { post: Post | null }) {
 						className=""
 						videoResource={videoResource}
 					/>
-					<PostNewsletterCta
-						className="hidden md:flex"
-						trackProps={{
-							event: 'subscribed',
-							params: {
-								location: 'post-below-video',
-								post: post.fields.slug,
-							},
-						}}
-					/>
+					<PostVideoSubscribeBar />
 				</section>
 			</Suspense>
 		</VideoPlayerOverlayProvider>
@@ -343,13 +372,41 @@ export async function generateMetadata(
 	}
 }
 
+function PostVideoSubscribeBar() {
+	return (
+		<div className="bg-muted relative hidden w-full flex-row items-center md:flex">
+			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 lg:container md:h-20 md:flex-row md:pl-3 md:pr-0 lg:pr-0">
+				<div
+					className="via-muted-foreground/20 bg-linear-to-r absolute -top-px left-0 z-10 h-px w-1/2 from-transparent to-transparent"
+					aria-hidden="true"
+				/>
+				<div
+					className="via-muted-foreground/20 bg-linear-to-r absolute -bottom-px left-0 z-10 h-px w-full from-transparent to-transparent"
+					aria-hidden="true"
+				/>
+				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left md:flex-col md:items-start md:pt-0">
+					<div className="font-heading shrink-0 text-xl font-semibold sm:text-lg">
+						Ship Beautiful TUIs
+					</div>
+					<div className="dark:text-primary font-heading text-balance text-sm text-gray-600">
+						New TUI content straight to your inbox
+					</div>
+				</div>
+				<div className="w-full md:w-auto">
+					<SubscribeFormWithStatus className="flex flex-row items-end gap-2 [&>div:first-child]:hidden [&_label]:sr-only" />
+				</div>
+			</div>
+		</div>
+	)
+}
+
 async function PostActionBar({ post }: { post: Post | null }) {
 	const { session, ability } = await getServerAuthSession()
 
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm" className="absolute right-0 top-0 z-50">
+				<Button asChild size="sm">
 					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
 				</Button>
 			) : null}

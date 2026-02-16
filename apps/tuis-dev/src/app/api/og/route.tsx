@@ -128,7 +128,7 @@ export async function GET(request: Request) {
 			if (hasTitle) {
 				title = searchParams.get('title')?.slice(0, 100)
 			} else {
-				title = 'Code with Antonio'
+				title = 'TUIs.dev'
 			}
 		}
 
@@ -163,29 +163,62 @@ export async function GET(request: Request) {
 					tw="flex h-full w-full bg-white flex-col"
 					style={{
 						fontFamily: 'HeadingFont',
-						background: '#f1f1f1',
-						color: '#0D0D0D',
+						background: '#1B1B1B',
+						color: '#fff',
 						width: 1200,
 						height: 630,
-						backgroundImage:
-							resource && resource.type === 'post' && image
-								? `url(${image})`
-								: '',
+						// backgroundImage:
+						// 	resource && resource.type === 'post' && image
+						// 		? `url(${image})`
+						// 		: '',
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 					}}
 				>
-					<div
-						style={{
-							position: 'absolute',
-							width: '100%',
-							height: '100%',
-							backdropFilter: 'blur(10px)',
-							background:
-								'linear-gradient(-130deg, rgba(241, 241, 241, 0.4), #f1f1f1 50%)',
-							zIndex: 1,
-						}}
-					/>
+					<div tw="absolute left-8 top-8 flex opacity-25">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="27"
+							height="27"
+							fill="none"
+							viewBox="0 0 27 27"
+						>
+							<path stroke="#fff" d="M26.5.5H.5v26" />
+						</svg>
+					</div>
+					<div tw="absolute right-8 top-8 flex opacity-25">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="27"
+							height="27"
+							fill="none"
+							viewBox="0 0 27 27"
+						>
+							<path stroke="#fff" d="M0 .5h26v26" />
+						</svg>
+					</div>
+					<div tw="absolute bottom-8 left-8 flex opacity-25">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="27"
+							height="27"
+							fill="none"
+							viewBox="0 0 27 27"
+						>
+							<path stroke="#fff" d="M.5 0v26h26" />
+						</svg>
+					</div>
+					<div tw="absolute bottom-8 right-8 flex opacity-25">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="27"
+							height="27"
+							fill="none"
+							viewBox="0 0 27 27"
+						>
+							<path stroke="#fff" d="M26 0v26H0" />
+						</svg>
+					</div>
 					{resource && resource.type === 'post' && image && (
 						<div
 							style={{
@@ -202,21 +235,17 @@ export async function GET(request: Request) {
 								height={48}
 								viewBox="0 0 12 12"
 							>
-								<g fill="#fff">
+								<g fill="#1B1B1B">
 									<path
 										d="M11.741,5.562l-10-5.5a.5.5,0,0,0-.5.008A.5.5,0,0,0,1,.5v11a.5.5,0,0,0,.246.43A.491.491,0,0,0,1.5,12a.5.5,0,0,0,.241-.062l10-5.5a.5.5,0,0,0,0-.876Z"
-										fill="#fff"
+										fill="#1B1B1B"
 									/>
 								</g>
 							</svg>
 						</div>
 					)}
-					<div tw="flex items-center justify-center absolute left-26 top-26">
-						<img
-							src="https://res.cloudinary.com/dezn0ffbx/image/upload/v1769506929/cwa-logo-dark_2x_owhiye.png"
-							width={201}
-							height={72}
-						/>
+					<div tw="flex items-center justify-center text-3xl absolute left-26 top-26">
+						TUIs.dev
 					</div>
 
 					<main
@@ -224,7 +253,7 @@ export async function GET(request: Request) {
 						style={{ zIndex: 10 }}
 					>
 						<div
-							tw={`${resource?.type === 'post' ? 'text-[62px]' : resource?.type === 'workshop' ? 'text-[42px]' : 'text-[56px]'} min-w-[500px] text-[#0D0D0D] leading-tight pr-16`}
+							tw={`${resource?.type === 'post' ? 'text-[62px]' : resource?.type === 'workshop' ? 'text-[42px]' : 'text-[56px]'} min-w-[500px] text-[#fff] leading-tight pr-16`}
 						>
 							{title}
 						</div>
@@ -239,10 +268,10 @@ export async function GET(request: Request) {
 											height={80}
 											viewBox="0 0 12 12"
 										>
-											<g fill="#fff">
+											<g fill="#1B1B1B">
 												<path
 													d="M11.741,5.562l-10-5.5a.5.5,0,0,0-.5.008A.5.5,0,0,0,1,.5v11a.5.5,0,0,0,.246.43A.491.491,0,0,0,1.5,12a.5.5,0,0,0,.241-.062l10-5.5a.5.5,0,0,0,0-.876Z"
-													fill="#fff"
+													fill="#1B1B1B"
 												/>
 											</g>
 										</svg>

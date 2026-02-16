@@ -38,9 +38,11 @@ import { UserMenu } from './user-menu'
 const Navigation = ({
 	className,
 	withContainer = true,
+	withNavigation = true,
 }: {
 	className?: string
 	withContainer?: boolean
+	withNavigation?: boolean
 }) => {
 	const navData = useNavLinks()
 	const pathname = usePathname()
@@ -94,20 +96,42 @@ const Navigation = ({
 	const isAdmin = ability.can('manage', 'all')
 
 	return (
-		isAdmin &&
-		!isEditRoute && (
-			<div className="absolute right-0 top-5 z-50 flex h-[var(--nav-height)] items-stretch gap-1 px-5">
-				<NavLinkItem
-					label="Admin"
-					className="gap-1 hover:[&_svg]:opacity-90"
-					icon={
-						<SettingsIcon className="size-4 opacity-50 transition-opacity duration-300 ease-in-out" />
-					}
-					href="/admin/dashboard"
-				/>
-				<UserMenu />
-			</div>
-		)
+		<header
+			className={cn('flex w-full items-center justify-between p-3 px-5', {
+				'h-[var(--nav-height)]': withNavigation,
+			})}
+		>
+			{withNavigation && (
+				<Link href="/" className="p-2">
+					<span className="font-mono text-base font-semibold tracking-wider">
+						TUIs
+						<span className="text-muted-foreground text-[10px] font-normal">
+							.dev
+						</span>
+					</span>
+				</Link>
+			)}
+			{isAdmin && !isEditRoute && (
+				<div
+					className={cn(
+						'absolute right-0 z-50 flex h-[var(--nav-height)] items-stretch gap-1 px-5',
+						{
+							'top-4 h-10': !withNavigation,
+						},
+					)}
+				>
+					<NavLinkItem
+						label="Admin"
+						className="gap-1 hover:[&_svg]:opacity-90"
+						icon={
+							<SettingsIcon className="size-4 opacity-50 transition-opacity duration-300 ease-in-out" />
+						}
+						href="/admin/dashboard"
+					/>
+					<UserMenu />
+				</div>
+			)}
+		</header>
 	)
 
 	// return (
