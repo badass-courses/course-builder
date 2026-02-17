@@ -25,7 +25,7 @@ export const NavItem = ({
 						isActive,
 				},
 			)}
-			prefetch={false}
+			prefetch={true}
 		>
 			{children}
 		</Link>

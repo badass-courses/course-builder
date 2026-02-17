@@ -91,7 +91,8 @@ const Navigation = ({
 	}
 
 	const showSearch = false // pathname !== '/browse'
-	const { data: abilityRules } = api.ability.getCurrentAbilityRules.useQuery()
+	const { data: abilityRules, status: abilityStatus } =
+		api.ability.getCurrentAbilityRules.useQuery()
 	const ability = createAppAbility(abilityRules || [])
 	const isAdmin = ability.can('manage', 'all')
 
@@ -278,22 +279,26 @@ const Navigation = ({
 					</div>
 				)} */}
 					<ul className="hidden items-center gap-2 md:flex">
-						{isAdmin && (
-							<NavLinkItem
-								label="Admin"
-								href="/admin/pages"
-								icon={<SettingsIcon className="size-4" />}
-								className="gap-1 [&_svg]:opacity-75"
-							/>
-						)}
-						{sessionStatus === 'authenticated' && !isAdmin && (
-							<NavLinkItem
-								label="Feedback"
-								onClick={() => {
-									setIsFeedbackDialogOpen(true)
-								}}
-							/>
-						)}
+						{sessionStatus === 'authenticated' &&
+							isAdmin &&
+							abilityStatus !== 'pending' && (
+								<NavLinkItem
+									label="Admin"
+									href="/admin/pages"
+									icon={<SettingsIcon className="size-4" />}
+									className="gap-1 [&_svg]:opacity-75"
+								/>
+							)}
+						{sessionStatus === 'authenticated' &&
+							!isAdmin &&
+							abilityStatus !== 'pending' && (
+								<NavLinkItem
+									label="Feedback"
+									onClick={() => {
+										setIsFeedbackDialogOpen(true)
+									}}
+								/>
+							)}
 						{/* {sessionStatus === 'unauthenticated' && !subscriber && (
 							<NavLinkItem
 								href="/newsletter"

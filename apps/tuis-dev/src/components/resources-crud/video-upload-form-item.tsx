@@ -12,6 +12,8 @@ import {
 } from '@coursebuilder/ui/primitives/form'
 import { Input } from '@coursebuilder/ui/primitives/input'
 
+import Spinner from '../spinner'
+
 export function VideoUploadFormItem({
 	selectedPostType,
 	form,
@@ -54,7 +56,7 @@ export function VideoUploadFormItem({
 							<div className="flex flex-col divide-y">
 								<span className="text-primary flex items-center gap-2 py-1 text-sm">
 									<FileVideo className="h-4 w-4" />
-									<span>{videoResourceId}</span>
+									<span className="max-w-xs truncate">{videoResourceId}</span>
 								</span>
 							</div>
 							<Button
@@ -71,7 +73,9 @@ export function VideoUploadFormItem({
 						</div>
 					)}
 					{isValidatingVideoResource && !videoResourceValid ? (
-						<FormMessage>Processing Upload</FormMessage>
+						<FormMessage className="text-foreground flex items-center gap-2">
+							<Spinner className="h-4 w-4" /> Processing Upload
+						</FormMessage>
 					) : null}
 
 					<FormMessage />
