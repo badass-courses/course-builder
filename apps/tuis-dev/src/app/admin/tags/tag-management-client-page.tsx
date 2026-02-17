@@ -79,11 +79,11 @@ export default function TagManagement({ initialTags }: { initialTags: Tag[] }) {
 	}
 
 	return (
-		<main className="flex w-full flex-col p-10">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
+		<main className="flex w-full flex-1 flex-col gap-5">
+			<div className="flex w-full flex-col gap-5">
 				<h1 className="font-heading text-xl font-bold sm:text-3xl">Tags</h1>
 
-				<div className="mb-6 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+				<div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-64">
 						<Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
 						<Input

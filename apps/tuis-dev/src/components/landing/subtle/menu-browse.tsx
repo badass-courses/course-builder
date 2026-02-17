@@ -41,7 +41,7 @@ export function SubtleMenuBrowse({ className = '' }: { className?: string }) {
 	return (
 		<div
 			ref={ref}
-			className={`select-none whitespace-pre font-mono text-white/20 ${className}`}
+			className={`select-none whitespace-pre text-left font-mono text-white/20 ${className}`}
 			style={{ fontSize: '10px', lineHeight: '1.4', letterSpacing: '0.05em' }}
 		/>
 	)

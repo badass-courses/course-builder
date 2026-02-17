@@ -22,6 +22,11 @@ import { CreatePost } from './create-post'
  */
 export interface CreatePostModalProps {
 	/**
+	 * The variant of the button
+	 * @default 'default'
+	 */
+	variant?: 'default' | 'secondary'
+	/**
 	 * Callback fired when the dialog's open state changes
 	 */
 	onOpenChange?: (isOpen: boolean) => void
@@ -80,6 +85,7 @@ export interface CreatePostModalProps {
  * ```
  */
 export function CreatePostModal({
+	variant = 'default',
 	onOpenChange,
 	onResourceCreated,
 	showTrigger = true,
@@ -118,13 +124,14 @@ export function CreatePostModal({
 			{showTrigger && (
 				<DialogTrigger asChild>
 					<Button
-						variant="default"
+						variant={variant}
 						type="button"
 						size="lg"
-						className="w-full justify-between gap-1 capitalize"
+						className="capitalize! w-full justify-between gap-1"
 						onClick={() => setIsOpen(true)}
 					>
-						Create {defaultResourceType}
+						Create{' '}
+						{defaultResourceType === 'article' ? 'Post' : defaultResourceType}
 						<Plus className="size-3 opacity-80" strokeWidth={3} />
 					</Button>
 				</DialogTrigger>

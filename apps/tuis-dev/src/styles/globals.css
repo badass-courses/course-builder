@@ -167,7 +167,7 @@
 	--primary: oklch(0.9411 0.1084 143.54);
 	--primary-dark: oklch(0.9411 0.1084 143.54);
 	--primary-foreground: oklch(0 0 0);
-	--secondary: oklch(0.28 0.006 285.885);
+	--secondary: oklch(0.265 0 0);
 	--secondary-foreground: oklch(0.985 0 0);
 	--muted: oklch(0.19 0.006 286.033);
 	--muted-foreground: oklch(0.7 0 0);
@@ -329,7 +329,7 @@
 	}
 
 	[data-sr-button='secondary'] {
-		@apply ring-foreground/10 ring-1; /* soft inner small */
+		@apply ring-foreground/10 cursor-pointer ring-1; /* soft inner small */
 		box-shadow:
 			inset 0 2px 1px 1px rgba(255, 255, 255, 0.1),
 			inset 0 -1px 1px 1px rgba(0, 0, 0, 0.5) shadow ring-1 !important;

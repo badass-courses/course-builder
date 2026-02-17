@@ -14,51 +14,45 @@ import { NavItem } from './pages/_components/nav-link'
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 	return (
-		<LayoutClient withContainer>
-			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse gap-14 md:grid">
-				<div className="col-span-3 hidden py-5 md:block">
-					<div className="bg-muted border-border flex h-full flex-col gap-2 overflow-hidden rounded-lg border p-2">
-						<nav className="border-border overflow-hidden rounded-lg border">
-							<ul>
-								<li className="divide-border flex flex-col divide-y">
-									<NavItem href="/admin/dashboard">
-										<HomeIcon className="h-4 w-4" />
-										Dashboard
-									</NavItem>
-									<NavItem href="/admin/pages">
-										<FileText className="h-4 w-4" />
-										Pages
-									</NavItem>
-									<NavItem href="/admin/shortlinks">
-										<Link2 className="h-4 w-4" />
-										Shortlinks
-									</NavItem>
-									<NavItem href="/lists">
-										<ListChecks className="h-4 w-4" />
-										Lists
-									</NavItem>
-									<NavItem href="/admin/coupons">
-										<TicketIcon className="h-4 w-4" />
-										Coupons
-									</NavItem>
-									<NavItem href="/admin/tags">
-										<TagIcon className="h-4 w-4" />
-										Tags
-									</NavItem>
-									<NavItem href="/admin/emails">
-										<Mail className="h-4 w-4" />
-										Emails
-									</NavItem>
-									<NavItem href="/admin/flags">
-										<Flag className="h-4 w-4" />
-										Feature Flags
-									</NavItem>
-								</li>
-							</ul>
-						</nav>
-					</div>
+		<LayoutClient withNavContainer={false}>
+			<div className="flex min-h-screen w-full grid-cols-12 flex-col-reverse md:grid">
+				<div className="col-span-3 hidden px-5 pb-5 md:block">
+					<nav className="border-border overflow-hidden rounded-lg border">
+						<ul>
+							<li className="divide-border flex flex-col divide-y">
+								<NavItem href="/admin/dashboard">
+									<HomeIcon className="h-4 w-4" />
+									Dashboard
+								</NavItem>
+								<NavItem href="/admin/pages">
+									<FileText className="h-4 w-4" />
+									Pages
+								</NavItem>
+								<NavItem href="/admin/shortlinks">
+									<Link2 className="h-4 w-4" />
+									Shortlinks
+								</NavItem>
+								<NavItem href="/admin/coupons">
+									<TicketIcon className="h-4 w-4" />
+									Coupons
+								</NavItem>
+								<NavItem href="/admin/tags">
+									<TagIcon className="h-4 w-4" />
+									Tags
+								</NavItem>
+								<NavItem href="/admin/emails">
+									<Mail className="h-4 w-4" />
+									Emails
+								</NavItem>
+								<NavItem href="/admin/flags">
+									<Flag className="h-4 w-4" />
+									Feature Flags
+								</NavItem>
+							</li>
+						</ul>
+					</nav>
 				</div>
-				<div className="col-span-9 flex flex-col">{children}</div>
+				<div className="col-span-9 flex flex-col p-5">{children}</div>
 			</div>
 		</LayoutClient>
 	)

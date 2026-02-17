@@ -231,10 +231,10 @@ export default function ShortlinksManagement({
 	}
 
 	return (
-		<main className="flex w-full flex-col p-6 sm:p-10">
-			<div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-				<div>
-					<h1 className="font-heading mb-1 text-2xl font-bold tracking-tight sm:text-4xl">
+		<main className="flex w-full flex-1 flex-col gap-5">
+			<div className="flex w-full flex-col gap-5">
+				<div className="flex flex-col gap-1">
+					<h1 className="font-heading text-xl font-bold sm:text-3xl">
 						Shortlinks
 					</h1>
 					<p className="text-muted-foreground text-sm">
@@ -276,7 +276,7 @@ export default function ShortlinksManagement({
 					</Card>
 				</div>
 
-				<div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+				<div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
 					<div className="relative w-full sm:w-80">
 						<Search className="text-muted-foreground/50 absolute left-3 top-3 h-4 w-4" />
 						<Input
@@ -294,7 +294,7 @@ export default function ShortlinksManagement({
 				</div>
 
 				{shortlinks.length === 0 ? (
-					<Card className="border-border/50 from-background to-muted/10 border-2 border-dashed bg-gradient-to-br">
+					<Card className="border-border/50 border-2">
 						<CardContent className="flex flex-col items-center justify-center px-8 py-20 text-center">
 							<div className="bg-primary/10 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
 								<Plus className="text-primary h-10 w-10" />

@@ -22,11 +22,13 @@ export default async function FeatureFlagsPage() {
 	console.log('[FeatureFlagsPage] All flag values:', flagValues)
 
 	return (
-		<div className="container py-8">
-			<div className="flex flex-col gap-8">
-				<div>
-					<h1 className="text-4xl font-bold">Feature Flags</h1>
-					<p className="text-muted-foreground mt-2">
+		<div className="flex w-full flex-1 flex-col gap-5">
+			<div className="flex flex-col gap-5">
+				<div className="flex flex-col gap-1">
+					<h1 className="font-heading text-xl font-bold sm:text-3xl">
+						Feature Flags
+					</h1>
+					<p className="text-muted-foreground text-sm">
 						Manage feature flags for the application.
 					</p>
 				</div>

@@ -75,7 +75,7 @@ export const UserMenu = () => {
 			)}
 			<li className="hidden shrink-0 items-stretch sm:flex">
 				<DropdownMenu modal={false}>
-					<DropdownMenuTrigger className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 text-sm font-medium">
+					<DropdownMenuTrigger className="hover:bg-muted flex items-center gap-1 rounded-lg px-2 py-2 text-sm font-medium">
 						{userAvatar}
 						<span className="w-full max-w-[20ch] truncate overflow-ellipsis">
 							{sessionData.user.name?.split(' ')[0] || 'Account'}

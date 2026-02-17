@@ -40,7 +40,9 @@ function EmptyState({ type }: { type: 'posts' | 'lists' }) {
 			) : (
 				<GraduationCapIcon className="text-muted-foreground/50 h-8 w-8" />
 			)}
-			<p className="text-muted-foreground mt-2 text-sm">No {type} found</p>
+			<p className="text-muted-foreground mt-2 text-sm">
+				No published {type} found
+			</p>
 		</div>
 	)
 }
@@ -77,12 +79,12 @@ export default async function AdminDashboardPage({
 	)
 
 	return (
-		<main className="mx-auto flex w-full flex-1 flex-col gap-5 py-10 lg:gap-10">
-			<div className="flex flex-col gap-2">
+		<main className="flex w-full flex-1 flex-col gap-5">
+			<div className="flex flex-col gap-1">
 				<h1 className="font-heading text-xl font-bold sm:text-3xl">
 					Admin Dashboard
 				</h1>
-				<p className="text-muted-foreground">
+				<p className="text-muted-foreground text-sm">
 					Create new content and track engagement.
 				</p>
 			</div>
@@ -100,7 +102,10 @@ export default async function AdminDashboardPage({
 						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="article" />
+						<CreatePostModal
+							variant="secondary"
+							defaultResourceType="article"
+						/>
 					</CardContent>
 				</Card>
 				<Card className="relative flex flex-col justify-between">
@@ -114,7 +119,7 @@ export default async function AdminDashboardPage({
 						</Badge>
 					</CardHeader>
 					<CardContent className="">
-						<CreatePostModal defaultResourceType="list" />
+						<CreatePostModal variant="secondary" defaultResourceType="list" />
 					</CardContent>
 				</Card>
 				<Card className="relative flex flex-col justify-between">
@@ -134,6 +139,7 @@ export default async function AdminDashboardPage({
 							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Event"
+							variant="secondary"
 						/>
 					</CardContent>
 				</Card>
@@ -152,6 +158,7 @@ export default async function AdminDashboardPage({
 							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Workshop"
+							variant="secondary"
 						/>
 					</CardContent>
 				</Card>
@@ -171,6 +178,7 @@ export default async function AdminDashboardPage({
 							modal={false}
 							className="w-full justify-between"
 							buttonLabel="Create Cohort"
+							variant="secondary"
 						/>
 					</CardContent>
 				</Card>

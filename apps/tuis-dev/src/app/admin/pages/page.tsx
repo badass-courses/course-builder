@@ -27,9 +27,9 @@ export default async function PagesIndexPage() {
 	const allPages = await getPages()
 
 	return (
-		<main className="flex w-full justify-between p-10">
-			<div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-				<div className="mb-5 flex w-full items-center justify-between">
+		<main className="flex w-full flex-1 flex-col gap-5">
+			<div className="flex w-full flex-col gap-5">
+				<div className="flex w-full items-center justify-between">
 					<h1 className="font-heading text-xl font-bold sm:text-3xl">Pages</h1>
 					<Button asChild className="gap-1">
 						<Link href={`/admin/pages/new`}>
@@ -39,7 +39,7 @@ export default async function PagesIndexPage() {
 					</Button>
 				</div>
 				{allPages.length === 0 ? (
-					<Card className="border-border/50 from-background to-muted/10 border-2 border-dashed bg-gradient-to-br">
+					<Card className="border-border/50 border-2 border-dashed">
 						<CardContent className="flex flex-col items-center justify-center px-8 py-20 text-center">
 							<div className="bg-primary/10 mb-6 flex h-20 w-20 items-center justify-center rounded-2xl">
 								<FileText className="text-primary h-10 w-10" />
@@ -48,8 +48,8 @@ export default async function PagesIndexPage() {
 								No pages yet
 							</h3>
 							<p className="text-muted-foreground mb-8 max-w-md text-sm leading-relaxed">
-								Create your first page to start building out your site. Pages are
-								great for about, terms, privacy, and other static content.
+								Create your first page to start building out your site. Pages
+								are great for about, terms, privacy, and other static content.
 							</p>
 							<Button asChild size="lg" className="gap-2 shadow-sm">
 								<Link href="/admin/pages/new">

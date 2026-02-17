@@ -63,7 +63,7 @@ export function AllResourcesClient({
 	}
 
 	return (
-		<div className="space-y-4">
+		<div>
 			<ConfirmDialog />
 			<Table>
 				<TableHeader>
@@ -250,7 +250,7 @@ export function AllResourcesClient({
 			</Table>
 
 			{totalPages > 1 && (
-				<Pagination>
+				<Pagination className="border-t py-3">
 					<PaginationContent>
 						<PaginationItem>
 							{currentPage > 1 ? (

@@ -7,6 +7,7 @@ import { AsciiField } from '@/components/landing/ascii-field'
 import { AsciiHeart } from '@/components/landing/ascii-heart'
 import { Reveal } from '@/components/landing/reveal'
 import { SubscribeForm as LandingSubscribeForm } from '@/components/landing/subscribe-form'
+import TerminalIllustration from '@/components/landing/terminal-illustration'
 import LayoutClient from '@/components/layout-client'
 // import { PricingWidget } from '@/components/home-pricing-widget'
 // import { getPricingProps } from '@/lib/pricing-query'
@@ -14,6 +15,7 @@ import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import * as Share from '@/components/share'
 import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import { courseBuilderAdapter } from '@/db'
+import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
 import { getAllLists, getCachedListForPost } from '@/lib/lists-query'
 import { type Post } from '@/lib/posts'
@@ -23,7 +25,7 @@ import { getServerAuthSession } from '@/server/auth'
 import { cn } from '@/utils/cn'
 import { compileMDX } from '@/utils/compile-mdx'
 import { getOGImageUrlForResource } from '@/utils/get-og-image-url-for-resource'
-import { ArrowLeftIcon, CopyIcon, Github } from 'lucide-react'
+import { ArrowLeftIcon, CopyIcon, Github, PencilIcon } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 
 import { ContentResourceResource } from '@coursebuilder/core/schemas'
@@ -109,7 +111,7 @@ export default async function PostPage(props: {
 							</Reveal> */}
 							<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 								<div className="mx-auto flex w-full flex-col gap-5">
-									<div className="relative flex w-full flex-col items-center justify-center py-24">
+									<div className="relative flex w-full flex-col items-center justify-center pb-24 pt-16">
 										<Reveal>
 											<PostTitle post={post} hasVideo={hasVideo} />
 										</Reveal>
@@ -168,9 +170,10 @@ export default async function PostPage(props: {
 						</div>
 						{!hasVideo && (
 							<div className="w-full">
-								<div className="container flex flex-col items-center gap-3 py-10 text-center sm:py-16">
-									<AsciiHeart />
-									<h2 className="max-w-sm text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+								<div className="container -mt-16 flex flex-col items-center gap-3 pb-10 text-center sm:pb-16">
+									{/* <AsciiHeart /> */}
+									<TerminalIllustration className="sm:scale-80 mb-4 origin-bottom scale-75 sm:mb-6" />
+									<h2 className="mt-3 max-w-sm text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
 										Join the Terminal UI Revolution
 									</h2>
 									<h3 className="text-balance text-lg font-normal tracking-tight opacity-75">
@@ -190,7 +193,7 @@ export default async function PostPage(props: {
 							<div className="container mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 pb-16">
 								<p className="font-mono text-xs opacity-50">Share</p>
 								<Share.Root
-									className="flex flex-col gap-1 sm:flex-row sm:items-center"
+									className="flex flex-row flex-wrap gap-1 sm:items-center"
 									title={post.fields.title}
 								>
 									{/* <Image
@@ -406,8 +409,11 @@ async function PostActionBar({ post }: { post: Post | null }) {
 	return (
 		<>
 			{post && ability.can('update', 'Content') ? (
-				<Button asChild size="sm">
-					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>Edit</Link>
+				<Button asChild variant="outline">
+					<Link href={`/posts/${post.fields?.slug || post.id}/edit`}>
+						<PencilIcon className="size-3 opacity-75" />
+						Edit
+					</Link>
 				</Button>
 			) : null}
 		</>

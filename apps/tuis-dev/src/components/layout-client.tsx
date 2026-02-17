@@ -40,12 +40,9 @@ export default function LayoutClient({
 					isCommerceEnabled={isCommerceEnabled}
 				/>
 			)}
-
-			<Navigation
-				withNavigation={withNavigation}
-				withContainer={withNavContainer || withContainer}
-			/>
-
+			{withNavigation && (
+				<Navigation withContainer={withNavContainer || withContainer} />
+			)}
 			<main
 				className={cn('min-h-[calc(100dvh-var(--nav-height))]', className, {
 					container: withContainer,

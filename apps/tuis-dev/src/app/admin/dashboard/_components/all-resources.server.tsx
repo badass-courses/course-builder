@@ -6,6 +6,15 @@ import { db } from '@/db'
 import { contentResource } from '@/db/schema'
 import { deletePostInTypeSense } from '@/lib/typesense-query'
 import { count, desc, eq, inArray } from 'drizzle-orm'
+import { LayoutListIcon } from 'lucide-react'
+
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '@coursebuilder/ui'
 
 import { AllResourcesClient } from './all-resource.client'
 
@@ -117,14 +126,22 @@ export default async function AllResourcesList({
 	const dataPromise = loadResourcesData(currentPage, limit)
 
 	return (
-		<section>
-			<h2 className="mb-5 text-lg font-semibold leading-none tracking-tight">
-				All your resources
-			</h2>
-			<Suspense fallback={<ResourcesLoadingFallback />}>
-				<AllResourcesClient dataPromise={dataPromise} />
-			</Suspense>
-		</section>
+		<Card>
+			<CardHeader>
+				<div className="flex items-center gap-5">
+					<LayoutListIcon className="text-muted-foreground h-4 w-4" />
+					<div className="space-y-1">
+						<CardTitle className="text-lg font-bold">All Resources</CardTitle>
+						<CardDescription>Browse and manage all content</CardDescription>
+					</div>
+				</div>
+			</CardHeader>
+			<CardContent className="border-t px-0">
+				<Suspense fallback={<ResourcesLoadingFallback />}>
+					<AllResourcesClient dataPromise={dataPromise} />
+				</Suspense>
+			</CardContent>
+		</Card>
 	)
 }
 
