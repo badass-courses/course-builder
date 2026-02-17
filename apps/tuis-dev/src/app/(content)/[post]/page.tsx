@@ -13,7 +13,6 @@ import LayoutClient from '@/components/layout-client'
 // import { getPricingProps } from '@/lib/pricing-query'
 import { PlayerContainerSkeleton } from '@/components/player-skeleton'
 import * as Share from '@/components/share'
-import { SubscribeFormWithStatus } from '@/components/subscribe-form-with-status'
 import { courseBuilderAdapter } from '@/db'
 import { useIsMobile } from '@/hooks/use-is-mobile'
 import type { List } from '@/lib/lists'
@@ -37,6 +36,7 @@ import PostNextUpFromListPagination from '../_components/post-next-up-from-list-
 import ListPage from '../lists/[slug]/_page'
 import { PostPlayer } from '../posts/_components/post-player'
 import PostToC from '../posts/_components/post-toc'
+import { PostNewsletterCta } from '../posts/_components/post-video-subscribe-form'
 import { CopyAsMarkdown } from './_components/copy-as-markdown'
 import { MobileListResourceNavigation } from './_components/list-resource-navigation'
 
@@ -85,7 +85,6 @@ export default async function PostPage(props: {
 				<MobileListResourceNavigation />
 				<div className="w-full min-w-0">
 					{hasVideo && <PlayerContainer post={post} />}
-
 					<div className={cn('relative w-full', {})}>
 						{/* <div className="relative z-10 mx-auto flex w-full items-center justify-between">
 					{!list ? (
@@ -376,31 +375,7 @@ export async function generateMetadata(
 }
 
 function PostVideoSubscribeBar() {
-	return (
-		<div className="bg-muted relative hidden w-full flex-row items-center md:flex">
-			<div className="max-w-(--breakpoint-xl) relative mx-auto flex w-full flex-col items-center justify-between gap-5 lg:container md:h-20 md:flex-row md:pl-3 md:pr-0 lg:pr-0">
-				<div
-					className="via-muted-foreground/20 bg-linear-to-r absolute -top-px left-0 z-10 h-px w-1/2 from-transparent to-transparent"
-					aria-hidden="true"
-				/>
-				<div
-					className="via-muted-foreground/20 bg-linear-to-r absolute -bottom-px left-0 z-10 h-px w-full from-transparent to-transparent"
-					aria-hidden="true"
-				/>
-				<div className="flex flex-col items-center justify-center pt-4 text-center sm:text-left md:flex-col md:items-start md:pt-0">
-					<div className="font-heading shrink-0 text-xl font-semibold sm:text-lg">
-						Ship Beautiful TUIs
-					</div>
-					<div className="dark:text-primary font-heading text-balance text-sm text-gray-600">
-						New TUI content straight to your inbox
-					</div>
-				</div>
-				<div className="w-full md:w-auto">
-					<SubscribeFormWithStatus className="flex flex-row items-end gap-2 [&>div:first-child]:hidden [&_label]:sr-only" />
-				</div>
-			</div>
-		</div>
-	)
+	return <PostNewsletterCta className="hidden md:flex" />
 }
 
 async function PostActionBar({ post }: { post: Post | null }) {

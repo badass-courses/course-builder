@@ -63,9 +63,8 @@ export default {
 	'primary-newsletter-byline': `Join builder’s list to get notified when new cohorts open, unlock early-bird pricing, and never miss a new course.`,
 	'tip-newsletter-button-cta-label': 'Subscribe',
 	'tip-newsletter-tittle': 'New AI Engineering tips delivered to your inbox:',
-	'video-newsletter-title': 'Ship AI Apps That Work',
-	'video-newsletter-subtitle':
-		'New AI Engineering content straight to your inbox',
+	'video-newsletter-title': 'Ship Beautiful TUIs',
+	'video-newsletter-subtitle': 'New TUI content straight to your inbox',
 	'video-block-newsletter-button-cta-label': 'Continue Watching',
 	'video-block-newsletter-tittle': (moduleTitle: string) =>
 		`Level up with ${moduleTitle}`,

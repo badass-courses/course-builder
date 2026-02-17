@@ -68,7 +68,7 @@ export const PostNewsletterCta: React.FC<
 		<section
 			aria-label="Newsletter sign-up"
 			className={cn(
-				'bg-muted relative flex w-full flex-row items-center border-t',
+				'relative flex w-full flex-row items-center border-t bg-white/5',
 				className,
 			)}
 		>

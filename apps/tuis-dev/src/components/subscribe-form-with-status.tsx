@@ -23,7 +23,7 @@ type SubscribeFormWithStatusProps = SubscribeFormProps & {
  */
 export function SubscribeFormWithStatus({
 	subscribedMessage = "You're subscribed!",
-	showLoginLink = true,
+	showLoginLink = false,
 	className,
 	...props
 }: SubscribeFormWithStatusProps) {
