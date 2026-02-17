@@ -19,8 +19,8 @@ const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5)
  * Input schema for email subscription
  */
 const subscribeInputSchema = z.object({
-	email: z.string().email('Invalid email address'),
-	firstName: z.string().optional(),
+	email: z.string().max(255).email('Invalid email address'),
+	firstName: z.string().max(100).optional(),
 })
 
 /**
