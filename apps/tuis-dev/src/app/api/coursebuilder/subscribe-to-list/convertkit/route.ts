@@ -1,7 +1,9 @@
 import { cookies } from 'next/headers'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { POST as courseBuilderPOST } from '@/coursebuilder/course-builder-config'
 import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
+import { redis } from '@/server/redis-client'
+import { Ratelimit } from '@upstash/ratelimit'
 
 /**
  * Custom wrapper for the subscribe-to-list endpoint that adds shortlink attribution tracking
@@ -10,6 +12,20 @@ import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
  * came from a shortlink (identified by the sl_ref cookie)
  */
 export async function POST(req: NextRequest) {
+	// Rate limit: 5 subscribe attempts per hour per IP
+	const ip = req.headers.get('x-forwarded-for') || 'unknown'
+	const ratelimit = new Ratelimit({
+		redis,
+		limiter: Ratelimit.slidingWindow(5, '1 h'),
+	})
+	const { success: withinLimit } = await ratelimit.limit(`subscribe_${ip}`)
+	if (!withinLimit) {
+		return NextResponse.json(
+			{ error: 'Too many attempts. Please try again later.' },
+			{ status: 429 },
+		)
+	}
+
 	// Read the request body before passing to coursebuilder
 	const body = await req.json()
 	const email = body.email

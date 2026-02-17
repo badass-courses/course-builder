@@ -213,7 +213,7 @@ export default async function PostPage(props: {
 									<Share.LinkedIn className="[&_span]:hidden sm:[&_span]:inline-block">
 										Share on LinkedIn
 									</Share.LinkedIn>
-									<Share.CopyUrl className="">Share on CopyUrl</Share.CopyUrl>
+									<Share.CopyUrl />
 								</Share.Root>
 							</div>
 						</div>

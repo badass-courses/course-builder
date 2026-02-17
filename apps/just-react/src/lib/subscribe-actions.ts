@@ -1,12 +1,14 @@
 'use server'
 
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { courseBuilderAdapter, db } from '@/db'
 import { communicationPreferences } from '@/db/schema'
 import {
 	SUBSCRIBER_COOKIE_NAME,
 	type SubscriberCookie,
 } from '@/lib/subscriber-cookie'
+import { redis } from '@/server/redis-client'
+import { Ratelimit } from '@upstash/ratelimit'
 import { eq } from 'drizzle-orm'
 import { customAlphabet } from 'nanoid'
 import { z } from 'zod'
@@ -40,6 +42,23 @@ export async function subscribeToNewsletter(
 ): Promise<SubscribeResult> {
 	try {
 		const validated = subscribeInputSchema.parse(input)
+
+		// Rate limit: 5 subscribe attempts per hour per IP
+		const headersList = await headers()
+		const ip = headersList.get('x-forwarded-for') || 'unknown'
+		const ratelimit = new Ratelimit({
+			redis,
+			limiter: Ratelimit.slidingWindow(5, '1 h'),
+		})
+		const { success: withinLimit } = await ratelimit.limit(
+			`subscribe_${ip}`,
+		)
+		if (!withinLimit) {
+			return {
+				success: false,
+				error: 'Too many attempts. Please try again later.',
+			}
+		}
 
 		// Find or create the user
 		const { user, isNewUser } = await courseBuilderAdapter.findOrCreateUser(

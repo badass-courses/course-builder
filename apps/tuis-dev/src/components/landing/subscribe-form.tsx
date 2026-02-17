@@ -65,8 +65,8 @@ export function SubscribeForm() {
 
 	if (status === 'success') {
 		return (
-			<div className="bg-black/20 p-1.5 font-mono">
-				<div className="flex items-center justify-center border border-[#C0FFBD]/30 bg-[#C0FFBD]/5 p-6 text-center text-sm text-[#C0FFBD]">
+			<div className="rounded-2xl bg-black/20 p-1.5 font-mono">
+				<div className="flex items-center justify-center rounded-lg border border-[#C0FFBD]/30 bg-[#C0FFBD]/5 p-6 text-center text-sm text-[#C0FFBD]">
 					&#10003; You're in.
 					{/* Check your inbox. */}
 				</div>
