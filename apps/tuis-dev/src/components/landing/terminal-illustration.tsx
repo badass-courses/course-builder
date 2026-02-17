@@ -20,7 +20,7 @@ export default function TerminalIllustration({
 		<div
 			className={cn(
 				'flex origin-top items-center justify-center',
-				'scale-[0.6] mb-[-150px] sm:mb-0 sm:scale-100',
+				'mb-[-150px] scale-[0.6] sm:mb-0 sm:scale-100',
 				className,
 			)}
 		>

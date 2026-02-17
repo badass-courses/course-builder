@@ -50,9 +50,7 @@ export async function subscribeToNewsletter(
 			redis,
 			limiter: Ratelimit.slidingWindow(5, '1 h'),
 		})
-		const { success: withinLimit } = await ratelimit.limit(
-			`subscribe_${ip}`,
-		)
+		const { success: withinLimit } = await ratelimit.limit(`subscribe_${ip}`)
 		if (!withinLimit) {
 			return {
 				success: false,

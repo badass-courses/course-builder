@@ -21,9 +21,7 @@ export default async function EmailsIndexPage() {
 		<main className="flex w-full flex-1 flex-col gap-5">
 			<div className="flex w-full flex-col gap-5">
 				<div className="flex w-full items-center justify-between">
-					<h1 className="font-heading text-xl font-bold sm:text-3xl">
-						Emails
-					</h1>
+					<h1 className="font-heading text-xl font-bold sm:text-3xl">Emails</h1>
 					<Button asChild className="gap-1">
 						<Link href="/admin/emails/new">
 							<FilePlus2 className="h-4 w-4" />
