@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import LayoutClient from '@/components/layout-client'
+import Spinner from '@/components/spinner'
 import {
 	getInitialTreeState,
 	treeStateReducer,
@@ -614,20 +615,20 @@ function EditProductFormDesktop({
 			<EditProductActionBar
 				resource={product}
 				resourcePath={getResourcePath(product.fields?.slug)}
-				onSubmit={() => {
-					onSubmit(form.getValues())
+				onSubmit={async () => {
+					await onSubmit(form.getValues())
 				}}
-				onPublish={() => {
+				onPublish={async () => {
 					form.setValue('fields.state', 'published')
-					onSubmit(form.getValues())
+					await onSubmit(form.getValues())
 				}}
-				onArchive={() => {
+				onArchive={async () => {
 					form.setValue('fields.state', 'archived')
-					onArchive(form.getValues())
+					await onArchive(form.getValues())
 				}}
-				onUnPublish={() => {
+				onUnPublish={async () => {
 					form.setValue('fields.state', 'draft')
-					onSubmit(form.getValues())
+					await onSubmit(form.getValues())
 				}}
 			/>
 			<EditResourcePanelGroup>
@@ -684,12 +685,28 @@ function EditProductActionBar({
 	onUnPublish,
 }: {
 	resource: Product
-	onSubmit: () => void
-	onPublish: () => void
-	onUnPublish: () => void
-	onArchive: () => void
+	onSubmit: () => Promise<void>
+	onPublish: () => Promise<void>
+	onUnPublish: () => Promise<void>
+	onArchive: () => Promise<void>
 	resourcePath: string
 }) {
+	const [pending, setPending] = React.useState<
+		'save' | 'publish' | 'archive' | 'unpublish' | null
+	>(null)
+
+	const run = async (
+		key: 'save' | 'publish' | 'archive' | 'unpublish',
+		fn: () => Promise<void>,
+	) => {
+		setPending(key)
+		try {
+			await fn()
+		} finally {
+			setPending(null)
+		}
+	}
+
 	return (
 		<div className="md:bg-muted bg-muted/60 sticky top-0 z-10 flex h-9 w-full items-center justify-between px-1 backdrop-blur-md md:backdrop-blur-none">
 			<div className="flex items-center gap-2">
@@ -708,53 +725,61 @@ function EditProductActionBar({
 			<div className="flex items-center gap-2">
 				{resource.fields?.state === 'draft' && (
 					<Button
-						onClick={(e) => {
-							onPublish()
-						}}
+						onClick={() => run('publish', onPublish)}
 						type="button"
 						variant="default"
 						size="sm"
-						className="h-7 disabled:cursor-wait"
+						disabled={!!pending}
+						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						Save & Publish
+						{pending === 'publish' && (
+							<Spinner className="h-3 w-3" />
+						)}
+						{pending === 'publish' ? 'Publishing…' : 'Save & Publish'}
 					</Button>
 				)}
 				{resource.fields?.state === 'published' && (
 					<Button
-						onClick={(e) => {
-							onArchive()
-						}}
+						onClick={() => run('archive', onArchive)}
 						type="button"
 						variant="default"
 						size="sm"
-						className="h-7 disabled:cursor-wait"
+						disabled={!!pending}
+						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						Archive
+						{pending === 'archive' && (
+							<Spinner className="h-3 w-3" />
+						)}
+						{pending === 'archive' ? 'Archiving…' : 'Archive'}
 					</Button>
 				)}
 				{resource.fields?.state === 'published' && (
 					<Button
-						onClick={(e) => {
-							onUnPublish()
-						}}
+						onClick={() => run('unpublish', onUnPublish)}
 						type="button"
 						variant="default"
 						size="sm"
-						className="h-7 disabled:cursor-wait"
+						disabled={!!pending}
+						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						Return to Draft
+						{pending === 'unpublish' && (
+							<Spinner className="h-3 w-3" />
+						)}
+						{pending === 'unpublish' ? 'Saving…' : 'Return to Draft'}
 					</Button>
 				)}
 				<Button
-					onClick={(e) => {
-						onSubmit()
-					}}
+					onClick={() => run('save', onSubmit)}
 					type="button"
 					variant="default"
 					size="sm"
-					className="h-7 disabled:cursor-wait"
+					disabled={!!pending}
+					className="h-7 gap-1.5 disabled:cursor-wait"
 				>
-					Save
+					{pending === 'save' && (
+						<Spinner className="h-3 w-3" />
+					)}
+					{pending === 'save' ? 'Saving…' : 'Save'}
 				</Button>
 			</div>
 		</div>

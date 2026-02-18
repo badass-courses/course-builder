@@ -4,6 +4,7 @@ import { Archive, ArrowLeft, Undo2 } from 'lucide-react'
 import type { ContentResource } from '@coursebuilder/core/schemas'
 
 import { Button } from '../primitives/button'
+import Spinner from '../primitives/spinner'
 
 /**
  * Action bar for editing a resource, with optional breadcrumb navigation.
@@ -36,15 +37,29 @@ export function EditResourcesActionBar({
 		}
 	}
 	onSubmit: () => Promise<void>
-	onPublish: () => void
-	onUnPublish: () => void
-	onArchive: () => void
+	onPublish: () => Promise<void>
+	onUnPublish: () => Promise<void>
+	onArchive: () => Promise<void>
 	resourcePath: string
 	isAutoSaving?: boolean
 	breadcrumb?: { title: string; href?: string }[]
 }) {
-	const [isSubmitting, setIsSubmitting] = React.useState(false)
-	const isDisabled = isSubmitting || isAutoSaving
+	const [pending, setPending] = React.useState<
+		'save' | 'publish' | 'archive' | 'unpublish' | null
+	>(null)
+	const isDisabled = !!pending || isAutoSaving
+
+	const run = async (
+		key: 'save' | 'publish' | 'archive' | 'unpublish',
+		fn: () => Promise<void>,
+	) => {
+		setPending(key)
+		try {
+			await fn()
+		} finally {
+			setPending(null)
+		}
+	}
 
 	return (
 		<div className="md:bg-muted bg-muted/80 sticky top-0 z-20 flex h-20 w-full flex-col px-1 text-sm backdrop-blur-md sm:text-base md:h-9 md:flex-row md:items-center md:justify-between md:backdrop-blur-none">
@@ -92,64 +107,65 @@ export function EditResourcesActionBar({
 			<div className="flex items-center justify-center gap-2 md:justify-start">
 				{resource.fields?.state === 'draft' && (
 					<Button
-						onClick={() => {
-							onPublish()
-						}}
+						onClick={() => run('publish', onPublish)}
 						type="button"
 						variant="outline"
 						size="sm"
 						disabled={isDisabled}
-						className="border-primary h-7 disabled:cursor-wait"
+						className="border-primary h-7 gap-1.5 disabled:cursor-wait"
 					>
-						Save & Publish
+						{pending === 'publish' && (
+							<Spinner className="h-3 w-3" />
+						)}
+						{pending === 'publish' ? 'Publishing…' : 'Save & Publish'}
 					</Button>
 				)}
 				{resource.fields?.state === 'published' && (
 					<Button
-						onClick={() => {
-							onArchive()
-						}}
+						onClick={() => run('archive', onArchive)}
 						type="button"
 						variant="ghost"
 						size="sm"
 						disabled={isDisabled}
 						className="h-7 gap-1 px-2 disabled:cursor-wait"
 					>
-						<Archive className="w-3 opacity-75" />
-						Archive
+						{pending === 'archive' ? (
+							<Spinner className="h-3 w-3" />
+						) : (
+							<Archive className="w-3 opacity-75" />
+						)}
+						{pending === 'archive' ? 'Archiving…' : 'Archive'}
 					</Button>
 				)}
 				{resource.fields?.state === 'published' && (
 					<Button
-						onClick={() => {
-							onUnPublish()
-						}}
+						onClick={() => run('unpublish', onUnPublish)}
 						type="button"
 						variant="ghost"
 						size="sm"
 						disabled={isDisabled}
 						className="h-7 gap-1 px-2 disabled:cursor-wait"
 					>
-						<Undo2 className="w-3 opacity-75" />
-						Return to Draft
+						{pending === 'unpublish' ? (
+							<Spinner className="h-3 w-3" />
+						) : (
+							<Undo2 className="w-3 opacity-75" />
+						)}
+						{pending === 'unpublish' ? 'Saving…' : 'Return to Draft'}
 					</Button>
 				)}
 				<Button
-					onClick={async () => {
-						setIsSubmitting(true)
-						await onSubmit().then(() => {
-							setIsSubmitting(false)
-						})
-					}}
+					onClick={() => run('save', onSubmit)}
 					type="button"
 					variant="default"
 					size="sm"
 					disabled={isDisabled}
-					className="relative h-7 w-[90px] disabled:cursor-wait"
+					className="relative h-7 w-[90px] gap-1.5 disabled:cursor-wait"
 				>
-					<span className="absolute left-1/2 -translate-x-1/2">
-						{isAutoSaving ? 'Auto-saving...' : isSubmitting ? 'Saving' : 'Save'}
-					</span>
+					{(pending === 'save' || isAutoSaving) && (
+						<Spinner className="h-3 w-3" />
+					)}
+					{isAutoSaving ? 'Auto-saving…' : pending === 'save' ? 'Saving…' : 'Save'}
 				</Button>
 			</div>
 		</div>
