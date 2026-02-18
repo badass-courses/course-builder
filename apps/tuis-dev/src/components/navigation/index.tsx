@@ -284,7 +284,7 @@ const Navigation = ({
 							abilityStatus !== 'pending' && (
 								<NavLinkItem
 									label="Admin"
-									href="/admin/pages"
+									href="/admin/dashboard"
 									icon={<SettingsIcon className="size-4" />}
 									className="gap-1 [&_svg]:opacity-75"
 								/>
