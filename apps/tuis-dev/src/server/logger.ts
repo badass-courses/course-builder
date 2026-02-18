@@ -61,7 +61,7 @@ function getMinLevel(): LogLevel {
  * Check if Axiom is properly configured
  */
 function isAxiomConfigured(): boolean {
-	return Boolean(process.env.AXIOM_TOKEN && env.NEXT_PUBLIC_AXIOM_DATASET)
+	return Boolean(process.env.AXIOM_TOKEN)
 }
 
 /**
@@ -78,8 +78,8 @@ async function getAxiomClient(): Promise<import('@axiomhq/js').Axiom | null> {
 	if (!axiomClient) {
 		const { Axiom } = await import('@axiomhq/js')
 		axiomClient = new Axiom({
-			token: process.env.AXIOM_TOKEN!,
-			orgId: 'code-with-antonio',
+			token: process.env.AXIOM_TOKEN,
+			orgId: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 			onError: (err) => {
 				// Always log Axiom errors to console for visibility
 				console.error('[Logger] Axiom error:', err)

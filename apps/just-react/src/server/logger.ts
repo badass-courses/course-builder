@@ -3,7 +3,7 @@ import { Axiom } from '@axiomhq/js'
 
 const axiom = new Axiom({
 	token: process.env.AXIOM_TOKEN!,
-	orgId: 'code-with-antonio',
+	orgId: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 	onError: (err) => {
 		if (env.NODE_ENV === 'development') {
 			console.error('Axiom logging error:', err)
