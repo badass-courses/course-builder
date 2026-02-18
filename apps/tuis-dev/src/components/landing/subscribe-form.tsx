@@ -10,9 +10,7 @@ export function SubscribeForm() {
 	const nameRef = useRef<HTMLInputElement>(null)
 	const emailRef = useRef<HTMLInputElement>(null)
 	const formRef = useRef<HTMLFormElement>(null)
-	const [status, setStatus] = useState<
-		'idle' | 'submitting' | 'error'
-	>('idle')
+	const [status, setStatus] = useState<'idle' | 'submitting' | 'error'>('idle')
 	const [errorMsg, setErrorMsg] = useState('')
 
 	const handleKeyDown = useCallback((e: KeyboardEvent) => {

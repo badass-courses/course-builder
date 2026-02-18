@@ -1,11 +1,10 @@
 import { cookies } from 'next/headers'
 import { courseBuilderAdapter } from '@/db'
+import { ConfirmSubscriptionEmail } from '@/emails/confirm-subscription-email'
 import { env } from '@/env.mjs'
 import { createShortlinkAttribution } from '@/lib/shortlink-attribution'
 import { render } from '@react-email/components'
 import Postmark from 'next-auth/providers/postmark'
-
-import { ConfirmSubscriptionEmail } from '@/emails/confirm-subscription-email'
 
 import {
 	sendVerificationRequest,
@@ -78,7 +77,8 @@ export const emailProvider = Postmark({
 				// NextAuth wraps form data as a JSON string body
 				const parsed = JSON.parse(body)
 				name = parsed.firstName?.trim() || undefined
-				isSubscribeConfirm = parsed.subscribeConfirm === true || parsed.subscribeConfirm === 'true'
+				isSubscribeConfirm =
+					parsed.subscribeConfirm === true || parsed.subscribeConfirm === 'true'
 				resourceContext = {
 					title: parsed.resourceTitle?.trim() || undefined,
 					slug: parsed.resourceSlug?.trim() || undefined,
@@ -136,10 +136,7 @@ export const emailProvider = Postmark({
 
 				if (!res.ok) {
 					const errorBody = await res.json()
-					console.error(
-						'Postmark error sending confirmation email:',
-						errorBody,
-					)
+					console.error('Postmark error sending confirmation email:', errorBody)
 				}
 			}
 

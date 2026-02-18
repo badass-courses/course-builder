@@ -22,9 +22,6 @@ export async function POST(req: NextRequest) {
 
 		return NextResponse.json({ error: result.error }, { status })
 	} catch {
-		return NextResponse.json(
-			{ error: 'Invalid request body' },
-			{ status: 400 },
-		)
+		return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
 	}
 }
