@@ -765,7 +765,9 @@ function EditProductActionBar({
 						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
 						{pending === 'unpublish' && <Spinner className="h-3 w-3" />}
-						{pending === 'unpublish' ? 'Reverting to draft…' : 'Return to Draft'}
+						{pending === 'unpublish'
+							? 'Reverting to draft…'
+							: 'Return to Draft'}
 					</Button>
 				)}
 				<Button
