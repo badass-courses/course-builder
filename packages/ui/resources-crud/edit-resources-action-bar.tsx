@@ -114,9 +114,7 @@ export function EditResourcesActionBar({
 						disabled={isDisabled}
 						className="border-primary h-7 gap-1.5 disabled:cursor-wait"
 					>
-						{pending === 'publish' && (
-							<Spinner className="h-3 w-3" />
-						)}
+						{pending === 'publish' && <Spinner className="h-3 w-3" />}
 						{pending === 'publish' ? 'Publishing…' : 'Save & Publish'}
 					</Button>
 				)}
@@ -165,7 +163,11 @@ export function EditResourcesActionBar({
 					{(pending === 'save' || isAutoSaving) && (
 						<Spinner className="h-3 w-3" />
 					)}
-					{isAutoSaving ? 'Auto-saving…' : pending === 'save' ? 'Saving…' : 'Save'}
+					{isAutoSaving
+						? 'Auto-saving…'
+						: pending === 'save'
+							? 'Saving…'
+							: 'Save'}
 				</Button>
 			</div>
 		</div>

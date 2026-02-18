@@ -116,8 +116,7 @@ const ResourceTeaser = ({
 	className,
 }: ResourceTeaserProps) => {
 	const isCard = variant === 'card'
-	const needsFetch =
-		thumbnailUrl && !thumbnailUrl.includes('cloudinary.com')
+	const needsFetch = thumbnailUrl && !thumbnailUrl.includes('cloudinary.com')
 
 	return (
 		<>

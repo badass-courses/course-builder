@@ -30,17 +30,11 @@ const RESOURCE_TYPES = [
 ]
 
 export async function deleteResource(resourceId: string) {
-	await db
-		.delete(contentResource)
-		.where(eq(contentResource.id, resourceId))
-		.then(() => {
-			deletePostInTypeSense(resourceId).then(() => {
-				revalidatePath('/admin/dashboard')
-			})
-		})
-		.catch((error) => {
-			console.error('Error deleting resource:', error)
-		})
+	await db.delete(contentResource).where(eq(contentResource.id, resourceId))
+	await deletePostInTypeSense(resourceId).catch((error) => {
+		console.error('Error deleting from TypeSense:', error)
+	})
+	revalidatePath('/admin/dashboard', 'page')
 }
 
 /**

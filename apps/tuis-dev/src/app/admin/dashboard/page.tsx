@@ -283,7 +283,10 @@ export default async function AdminDashboardPage({
 											<div className="flex items-center gap-2">
 												<p className="text-muted-foreground text-xs">
 													{totalPostCompletions > 0
-														? ((completions / totalPostCompletions) * 100).toFixed(1)
+														? (
+																(completions / totalPostCompletions) *
+																100
+															).toFixed(1)
 														: '0.0'}
 													% of total
 												</p>

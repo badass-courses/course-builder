@@ -6,12 +6,12 @@ import { useRouter } from 'next/navigation'
 import { onProductSave } from '@/app/(commerce)/products/[slug]/edit/actions'
 import { ImageResourceUploader } from '@/components/image-uploader/image-resource-uploader'
 import LayoutClient from '@/components/layout-client'
-import Spinner from '@/components/spinner'
 import {
 	getInitialTreeState,
 	treeStateReducer,
 } from '@/components/list-editor/lesson-list/data/tree'
 import Tree from '@/components/list-editor/lesson-list/tree'
+import Spinner from '@/components/spinner'
 import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import {
@@ -732,9 +732,7 @@ function EditProductActionBar({
 						disabled={!!pending}
 						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						{pending === 'publish' && (
-							<Spinner className="h-3 w-3" />
-						)}
+						{pending === 'publish' && <Spinner className="h-3 w-3" />}
 						{pending === 'publish' ? 'Publishing…' : 'Save & Publish'}
 					</Button>
 				)}
@@ -747,9 +745,7 @@ function EditProductActionBar({
 						disabled={!!pending}
 						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						{pending === 'archive' && (
-							<Spinner className="h-3 w-3" />
-						)}
+						{pending === 'archive' && <Spinner className="h-3 w-3" />}
 						{pending === 'archive' ? 'Archiving…' : 'Archive'}
 					</Button>
 				)}
@@ -762,9 +758,7 @@ function EditProductActionBar({
 						disabled={!!pending}
 						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						{pending === 'unpublish' && (
-							<Spinner className="h-3 w-3" />
-						)}
+						{pending === 'unpublish' && <Spinner className="h-3 w-3" />}
 						{pending === 'unpublish' ? 'Saving…' : 'Return to Draft'}
 					</Button>
 				)}
@@ -776,9 +770,7 @@ function EditProductActionBar({
 					disabled={!!pending}
 					className="h-7 gap-1.5 disabled:cursor-wait"
 				>
-					{pending === 'save' && (
-						<Spinner className="h-3 w-3" />
-					)}
+					{pending === 'save' && <Spinner className="h-3 w-3" />}
 					{pending === 'save' ? 'Saving…' : 'Save'}
 				</Button>
 			</div>
