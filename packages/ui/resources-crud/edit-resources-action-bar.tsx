@@ -49,6 +49,11 @@ export function EditResourcesActionBar({
 	>(null)
 	const isDisabled = !!pending || isAutoSaving
 
+	// Clear pending when resource state changes (server response arrived)
+	React.useEffect(() => {
+		setPending(null)
+	}, [resource.fields?.state])
+
 	const run = async (
 		key: 'save' | 'publish' | 'archive' | 'unpublish',
 		fn: () => Promise<void>,
@@ -57,7 +62,11 @@ export function EditResourcesActionBar({
 		try {
 			await fn()
 		} finally {
-			setPending(null)
+			// Only clear for save — state-changing actions stay pending
+			// until resource.fields.state updates via the effect above
+			if (key === 'save') {
+				setPending(null)
+			}
 		}
 	}
 
@@ -105,70 +114,73 @@ export function EditResourcesActionBar({
 				</span>
 			</div>
 			<div className="flex items-center justify-center gap-2 md:justify-start">
-				{resource.fields?.state === 'draft' && (
+				{pending ? (
 					<Button
-						onClick={() => run('publish', onPublish)}
-						type="button"
-						variant="outline"
-						size="sm"
-						disabled={isDisabled}
-						className="border-primary h-7 gap-1.5 disabled:cursor-wait"
-					>
-						{pending === 'publish' && <Spinner className="h-3 w-3" />}
-						{pending === 'publish' ? 'Publishing…' : 'Save & Publish'}
-					</Button>
-				)}
-				{resource.fields?.state === 'published' && (
-					<Button
-						onClick={() => run('archive', onArchive)}
 						type="button"
 						variant="ghost"
 						size="sm"
-						disabled={isDisabled}
-						className="h-7 gap-1 px-2 disabled:cursor-wait"
+						disabled
+						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
-						{pending === 'archive' ? (
-							<Spinner className="h-3 w-3" />
-						) : (
-							<Archive className="w-3 opacity-75" />
-						)}
-						{pending === 'archive' ? 'Archiving…' : 'Archive'}
-					</Button>
-				)}
-				{resource.fields?.state === 'published' && (
-					<Button
-						onClick={() => run('unpublish', onUnPublish)}
-						type="button"
-						variant="ghost"
-						size="sm"
-						disabled={isDisabled}
-						className="h-7 gap-1 px-2 disabled:cursor-wait"
-					>
-						{pending === 'unpublish' ? (
-							<Spinner className="h-3 w-3" />
-						) : (
-							<Undo2 className="w-3 opacity-75" />
-						)}
-						{pending === 'unpublish' ? 'Saving…' : 'Return to Draft'}
-					</Button>
-				)}
-				<Button
-					onClick={() => run('save', onSubmit)}
-					type="button"
-					variant="default"
-					size="sm"
-					disabled={isDisabled}
-					className="relative h-7 w-[90px] gap-1.5 disabled:cursor-wait"
-				>
-					{(pending === 'save' || isAutoSaving) && (
 						<Spinner className="h-3 w-3" />
-					)}
-					{isAutoSaving
-						? 'Auto-saving…'
-						: pending === 'save'
-							? 'Saving…'
-							: 'Save'}
-				</Button>
+						{pending === 'publish' && 'Publishing…'}
+						{pending === 'archive' && 'Archiving…'}
+						{pending === 'unpublish' && 'Reverting to draft…'}
+						{pending === 'save' && 'Saving…'}
+					</Button>
+				) : (
+					<>
+						{resource.fields?.state === 'draft' && (
+							<Button
+								onClick={() => run('publish', onPublish)}
+								type="button"
+								variant="outline"
+								size="sm"
+								disabled={isDisabled}
+								className="border-primary h-7 disabled:cursor-wait"
+							>
+								Save & Publish
+							</Button>
+						)}
+						{resource.fields?.state === 'published' && (
+							<Button
+								onClick={() => run('archive', onArchive)}
+								type="button"
+								variant="ghost"
+								size="sm"
+								disabled={isDisabled}
+								className="h-7 gap-1 px-2 disabled:cursor-wait"
+							>
+								<Archive className="w-3 opacity-75" />
+								Archive
+							</Button>
+						)}
+						{resource.fields?.state === 'published' && (
+							<Button
+								onClick={() => run('unpublish', onUnPublish)}
+								type="button"
+								variant="ghost"
+								size="sm"
+								disabled={isDisabled}
+								className="h-7 gap-1 px-2 disabled:cursor-wait"
+							>
+								<Undo2 className="w-3 opacity-75" />
+								Return to Draft
+							</Button>
+						)}
+						<Button
+							onClick={() => run('save', onSubmit)}
+							type="button"
+							variant="default"
+							size="sm"
+							disabled={isDisabled}
+							className="h-7 gap-1.5 disabled:cursor-wait"
+						>
+							{isAutoSaving && <Spinner className="h-3 w-3" />}
+							{isAutoSaving ? 'Auto-saving…' : 'Save'}
+						</Button>
+					</>
+				)}
 			</div>
 		</div>
 	)

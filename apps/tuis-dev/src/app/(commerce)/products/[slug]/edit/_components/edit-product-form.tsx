@@ -695,6 +695,10 @@ function EditProductActionBar({
 		'save' | 'publish' | 'archive' | 'unpublish' | null
 	>(null)
 
+	React.useEffect(() => {
+		setPending(null)
+	}, [resource.fields?.state])
+
 	const run = async (
 		key: 'save' | 'publish' | 'archive' | 'unpublish',
 		fn: () => Promise<void>,
@@ -703,7 +707,9 @@ function EditProductActionBar({
 		try {
 			await fn()
 		} finally {
-			setPending(null)
+			if (key === 'save') {
+				setPending(null)
+			}
 		}
 	}
 
@@ -759,7 +765,7 @@ function EditProductActionBar({
 						className="h-7 gap-1.5 disabled:cursor-wait"
 					>
 						{pending === 'unpublish' && <Spinner className="h-3 w-3" />}
-						{pending === 'unpublish' ? 'Saving…' : 'Return to Draft'}
+						{pending === 'unpublish' ? 'Reverting to draft…' : 'Return to Draft'}
 					</Button>
 				)}
 				<Button
