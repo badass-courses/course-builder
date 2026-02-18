@@ -5,7 +5,15 @@ const SHOULD_DELETE_ALL_FIRST = true
 
 async function main() {
 	try {
-		const resources = await db.query.contentResource.findMany()
+		const resources = await db.query.contentResource.findMany({
+			with: {
+				resources: {
+					with: {
+						resource: true,
+					},
+				},
+			},
+		})
 		if (!resources) {
 			console.log('No resources found to process')
 			return

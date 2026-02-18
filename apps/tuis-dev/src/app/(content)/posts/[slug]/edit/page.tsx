@@ -71,7 +71,7 @@ export default async function ArticleEditPage(props: {
 	const listsLoader = getAllLists()
 
 	return (
-		<LayoutClient>
+		<LayoutClient withNavContainer={false}>
 			<EditPostForm
 				key={post.fields.slug}
 				post={{ ...post }}

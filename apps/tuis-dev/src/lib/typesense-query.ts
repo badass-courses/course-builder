@@ -100,6 +100,19 @@ export async function upsertPostToTypeSense(
 
 		console.log('✅ Retrieved tags:', tags.length)
 
+		// Build image URL: prefer coverImage/image, fall back to Mux video thumbnail
+		let imageUrl = post.fields?.coverImage?.url || post.fields?.image || ''
+		if (!imageUrl && post.resources) {
+			const videoResource = post.resources.find(
+				(r: any) => r.resource?.type === 'videoResource',
+			)
+			const muxPlaybackId = videoResource?.resource?.fields?.muxPlaybackId
+			if (muxPlaybackId) {
+				const thumbnailTime = post.fields?.thumbnailTime || 0
+				imageUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${thumbnailTime}&width=480`
+			}
+		}
+
 		console.log('🔄 Validating resource schema')
 		const resource = TypesenseResourceSchema.safeParse({
 			id: post.id,
@@ -107,7 +120,7 @@ export async function upsertPostToTypeSense(
 			slug: post.fields?.slug,
 			description: post.fields?.body || '',
 			summary: post.fields?.description || '',
-			image: post.fields?.coverImage?.url || post.fields?.image || '',
+			image: imageUrl,
 			type:
 				post?.fields && 'postType' in post.fields
 					? post.fields.postType
@@ -286,11 +299,26 @@ export async function indexAllContentToTypeSense(
 
 	const documents = indexableResources
 		.map((resource) => {
+			// Build image URL: prefer coverImage/image, fall back to Mux video thumbnail
+			let imageUrl =
+				resource?.fields?.coverImage?.url || resource?.fields?.image || ''
+			if (!imageUrl && resource.resources) {
+				const videoRes = resource.resources.find(
+					(r: any) => r.resource?.type === 'videoResource',
+				)
+				const muxPlaybackId = videoRes?.resource?.fields?.muxPlaybackId
+				if (muxPlaybackId) {
+					const thumbnailTime = resource?.fields?.thumbnailTime || 0
+					imageUrl = `https://image.mux.com/${muxPlaybackId}/thumbnail.png?time=${thumbnailTime}&width=480`
+				}
+			}
+
 			const parsedResource = TypesenseResourceSchema.safeParse({
 				id: resource.id,
 				title: resource?.fields?.title,
 				slug: resource?.fields?.slug,
 				description: resource?.fields?.body || resource?.fields?.description,
+				image: imageUrl,
 				type: resource.type,
 				visibility: resource?.fields?.visibility,
 				state: resource?.fields?.state,

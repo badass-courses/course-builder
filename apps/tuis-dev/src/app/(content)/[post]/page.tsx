@@ -110,7 +110,15 @@ export default async function PostPage(props: {
 							</Reveal> */}
 							<article className="relative mx-auto flex h-full w-full max-w-4xl flex-col">
 								<div className="mx-auto flex w-full flex-col gap-5">
-									<div className="relative flex w-full flex-col items-center justify-center pb-24 pt-16">
+									<div
+										className={cn(
+											'relative flex w-full flex-col items-center justify-center pb-24',
+											{
+												'pt-16': !hasVideo,
+												'pt-5': hasVideo,
+											},
+										)}
+									>
 										<Reveal>
 											<PostTitle post={post} hasVideo={hasVideo} />
 										</Reveal>
@@ -189,7 +197,7 @@ export default async function PostPage(props: {
 							</div>
 						)}
 						<div className="">
-							<div className="container mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 pb-16">
+							<div className="container mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 pb-24 pt-10">
 								<p className="font-mono text-xs opacity-50">Share</p>
 								<Share.Root
 									className="flex flex-row flex-wrap gap-1 sm:items-center"

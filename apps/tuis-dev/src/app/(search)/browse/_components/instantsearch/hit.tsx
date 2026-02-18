@@ -68,7 +68,7 @@ export default function Hit({ hit }: { hit: TypesenseResource }) {
 				}
 				thumbnailUrl={
 					hit.image ||
-					'https://res.cloudinary.com/dezn0ffbx/image/upload/v1760615686/thumbnail-article_2x_sl3c0e.jpg'
+					'https://res.cloudinary.com/dtzzo5icy/image/upload/v1771421924/fallback-image_2x_n4o60r.jpg'
 				}
 				tags={hit.tags?.map((tag) => tag.fields?.label || tag.fields?.name)}
 				titleSlot={

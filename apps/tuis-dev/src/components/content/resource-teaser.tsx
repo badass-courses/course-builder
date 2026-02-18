@@ -116,6 +116,8 @@ const ResourceTeaser = ({
 	className,
 }: ResourceTeaserProps) => {
 	const isCard = variant === 'card'
+	const needsFetch =
+		thumbnailUrl && !thumbnailUrl.includes('cloudinary.com')
 
 	return (
 		<>
@@ -133,6 +135,7 @@ const ResourceTeaser = ({
 								alt={title}
 								fill
 								className="object-cover"
+								{...(needsFetch && { deliveryType: 'fetch' })}
 							/>
 							{thumbnailBadge && (
 								<div className="bg-secondary text-secondary-foreground absolute right-3 top-3 rounded-xl px-4 py-1.5 text-sm">
