@@ -78,7 +78,7 @@ async function getAxiomClient(): Promise<import('@axiomhq/js').Axiom | null> {
 	if (!axiomClient) {
 		const { Axiom } = await import('@axiomhq/js')
 		axiomClient = new Axiom({
-			token: process.env.AXIOM_TOKEN,
+			token: process.env.AXIOM_TOKEN!,
 			orgId: process.env.NEXT_PUBLIC_AXIOM_DATASET,
 			onError: (err) => {
 				// Always log Axiom errors to console for visibility
