@@ -1,17 +1,17 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import {
-	setSubscriberCookie,
-	subscribeToNewsletter,
-} from '@/lib/subscribe-actions'
+import { useRouter } from 'next/navigation'
+import { getCsrf } from '@/app/(user)/login/actions'
+import { subscribeToNewsletter } from '@/lib/subscribe-actions'
 
 export function SubscribeForm() {
+	const router = useRouter()
 	const nameRef = useRef<HTMLInputElement>(null)
 	const emailRef = useRef<HTMLInputElement>(null)
 	const formRef = useRef<HTMLFormElement>(null)
 	const [status, setStatus] = useState<
-		'idle' | 'submitting' | 'success' | 'error'
+		'idle' | 'submitting' | 'error'
 	>('idle')
 	const [errorMsg, setErrorMsg] = useState('')
 
@@ -55,23 +55,36 @@ export function SubscribeForm() {
 		const result = await subscribeToNewsletter({ email, firstName })
 
 		if (result.success) {
-			await setSubscriberCookie(result.email)
-			setStatus('success')
+			const callbackUrl = `/confirmed?email=${encodeURIComponent(result.email)}`
+			const csrfToken = await getCsrf()
+
+			// POST directly to NextAuth's postmark signin endpoint
+			// so we can pass custom form fields (subscribeConfirm)
+			const params = new URLSearchParams()
+			params.append('email', result.email)
+			params.append('callbackUrl', callbackUrl)
+			params.append('csrfToken', csrfToken)
+			params.append('subscribeConfirm', 'true')
+			if (firstName) params.append('firstName', firstName)
+
+			const res = await fetch('/api/auth/signin/postmark', {
+				method: 'POST',
+				body: params,
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			})
+
+			if (!res.ok) {
+				setErrorMsg('Failed to send confirmation email. Please try again.')
+				setStatus('error')
+				return
+			}
+
+			router.push(`/confirm?email=${encodeURIComponent(result.email)}`)
 		} else {
 			setErrorMsg(result.error)
 			setStatus('error')
 		}
-	}
-
-	if (status === 'success') {
-		return (
-			<div className="rounded-2xl bg-black/20 p-1.5 font-mono">
-				<div className="flex items-center justify-center rounded-lg border border-[#C0FFBD]/30 bg-[#C0FFBD]/5 p-6 text-center text-sm text-[#C0FFBD]">
-					&#10003; You're in.
-					{/* Check your inbox. */}
-				</div>
-			</div>
-		)
 	}
 
 	return (

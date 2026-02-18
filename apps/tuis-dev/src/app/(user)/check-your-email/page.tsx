@@ -75,20 +75,12 @@ function CheckYourEmailContent() {
 									},
 								)}
 							>
-								{coverImage ? (
+								{coverImage && (
 									<CldImage
 										src={coverImage}
 										alt={title || 'Cover image'}
 										fill
 										className="object-contain"
-									/>
-								) : (
-									<CldImage
-										src="https://res.cloudinary.com/dezn0ffbx/image/upload/v1770297352/antonio-opening-mail_2x_t12wcj.png"
-										alt="Antonio opening mail"
-										width={404 / 1.5}
-										height={568 / 1.5}
-										className="px-10"
 									/>
 								)}
 							</div>
