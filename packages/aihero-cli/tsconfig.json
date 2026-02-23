@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"baseUrl": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"lib": ["esnext", "dom"],
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"outDir": "dist",
+		"resolveJsonModule": true,
+		"rootDir": "src",
+		"skipDefaultLibCheck": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"target": "es2020"
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "*.js", "*.d.ts"]
+}

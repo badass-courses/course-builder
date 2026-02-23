@@ -1,0 +1,39 @@
+{
+	"name": "@coursebuilder/aihero-cli",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/cli.d.ts",
+			"import": "./dist/cli.js",
+			"default": "./dist/cli.js"
+		}
+	},
+	"bin": {
+		"aihero": "./dist/cli.js"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"build": "tsup",
+		"build:exe": "bun build src/cli.ts --compile --outfile dist/aihero",
+		"dev": "tsx src/cli.ts",
+		"start": "node dist/cli.js",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist .turbo"
+	},
+	"dependencies": {
+		"@effect/cli": "^0.73.2",
+		"@effect/platform-node": "^0.104.1",
+		"effect": "^3.19.19"
+	},
+	"devDependencies": {
+		"@types/node": "^20.12.5",
+		"tsup": "8.0.2",
+		"tsx": "^4.7.1",
+		"typescript": "5.4.5"
+	}
+}

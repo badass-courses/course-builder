@@ -62,6 +62,39 @@ export const SurveyFieldsSchema = z.object({
 	afterCompletionMessages: AfterCompletionMessagesSchema.optional(),
 })
 
+/**
+ * API schema for creating a survey.
+ */
+export const CreateSurveyApiInputSchema = z.object({
+	title: z.string().min(1),
+	slug: z
+		.string()
+		.min(1)
+		.max(120)
+		.regex(/^[a-z0-9-]+$/)
+		.optional(),
+	state: z.enum(['draft', 'published']).optional(),
+	visibility: z.enum(['public', 'private', 'unlisted']).optional(),
+	afterCompletionMessages: AfterCompletionMessagesSchema.optional(),
+})
+
+/**
+ * API schema for updating a survey.
+ */
+export const UpdateSurveyApiInputSchema = z.object({
+	id: z.string().min(1),
+	title: z.string().min(1).optional(),
+	slug: z
+		.string()
+		.min(1)
+		.max(120)
+		.regex(/^[a-z0-9-]+$/)
+		.optional(),
+	state: z.enum(['draft', 'published']).optional(),
+	visibility: z.enum(['public', 'private', 'unlisted']).optional(),
+	afterCompletionMessages: AfterCompletionMessagesSchema.optional(),
+})
+
 // Question content resource schema
 export const QuestionSchema = ContentResourceSchema.merge(
 	z.object({
@@ -105,6 +138,8 @@ export type AfterCompletionMessages = z.infer<
 export type Question = z.infer<typeof QuestionSchema>
 export type Survey = z.infer<typeof SurveySchema>
 export type SurveyWithQuestions = z.infer<typeof SurveyWithQuestionsSchema>
+export type CreateSurveyApiInput = z.infer<typeof CreateSurveyApiInputSchema>
+export type UpdateSurveyApiInput = z.infer<typeof UpdateSurveyApiInputSchema>
 
 // Default values
 export const DEFAULT_AFTER_COMPLETION_MESSAGES: AfterCompletionMessages = {
@@ -137,3 +172,34 @@ export const QuestionResponseWithUserSchema = questionResponseSchema.extend({
 export type QuestionResponseWithUser = z.infer<
 	typeof QuestionResponseWithUserSchema
 >
+
+export interface SurveyQuestionAnalytics {
+	questionId: string
+	questionSlug: string | null
+	question: string
+	type: string | null
+	responses: number
+}
+
+export interface SurveyRecentResponse {
+	id: string
+	questionId: string
+	questionSlug: string | null
+	question: string
+	answer: string
+	userId: string | null
+	userEmail: string | null
+	emailListSubscriberId: string | null
+	createdAt: Date
+}
+
+export interface SurveyAnalytics {
+	surveyId: string
+	surveySlug: string
+	surveyTitle: string
+	totalResponses: number
+	uniqueRespondents: number
+	responsesByDay: Array<{ date: string; responses: number }>
+	topQuestions: SurveyQuestionAnalytics[]
+	recentResponses: SurveyRecentResponse[]
+}
