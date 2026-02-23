@@ -9,10 +9,8 @@ import { env } from '@/env.mjs'
 import { sendResourceChatMessage } from '@/lib/ai-chat-query'
 import { Event, EventSchema } from '@/lib/events'
 import { updateResource } from '@/lib/resources-query'
-import { EditorView } from '@codemirror/view'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { parseAbsolute } from '@internationalized/date'
-import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Calendar, ImagePlusIcon } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
@@ -34,10 +32,6 @@ import {
 	Input,
 	Textarea,
 } from '@coursebuilder/ui'
-import {
-	CourseBuilderEditorThemeDark,
-	CourseBuilderEditorThemeLight,
-} from '@coursebuilder/ui/codemirror/editor'
 import { EditResourcesForm } from '@coursebuilder/ui/resources-crud/edit-resources-form'
 import { EditResourcesMetadataFields } from '@coursebuilder/ui/resources-crud/edit-resources-metadata-fields'
 
@@ -109,7 +103,6 @@ export function EditEventForm({ event }: { event: Event }) {
 		>
 			<EventMetadataFormFields
 				form={form}
-				theme={resolvedTheme}
 				eventId={event.id}
 			/>
 		</ResourceForm>
@@ -118,11 +111,9 @@ export function EditEventForm({ event }: { event: Event }) {
 
 const EventMetadataFormFields = ({
 	form,
-	theme,
 	eventId,
 }: {
 	form: UseFormReturn<z.infer<typeof EventSchema>>
-	theme?: string
 	eventId: string
 }) => {
 	return (
@@ -269,20 +260,13 @@ const EventMetadataFormFields = ({
 						name="fields.details"
 						render={({ field }) => (
 							<FormItem>
-								<MarkdownEditor
-									theme={
-										(theme === 'dark'
-											? CourseBuilderEditorThemeDark
-											: CourseBuilderEditorThemeLight) ||
-										CourseBuilderEditorThemeDark
-									}
-									extensions={[EditorView.lineWrapping]}
-									height="300px"
-									maxHeight="500px"
-									onChange={(value) => {
-										form.setValue('fields.details', value)
+								<Textarea
+									{...field}
+									className="min-h-[300px]"
+									onChange={(e) => {
+										form.setValue('fields.details', e.target.value)
 									}}
-									value={field.value?.toString()}
+									value={field.value?.toString() ?? ''}
 								/>
 								<FormMessage />
 							</FormItem>
@@ -322,20 +306,13 @@ const EventMetadataFormFields = ({
 						name="fields.attendeeInstructions"
 						render={({ field }) => (
 							<FormItem>
-								<MarkdownEditor
-									theme={
-										(theme === 'dark'
-											? CourseBuilderEditorThemeDark
-											: CourseBuilderEditorThemeLight) ||
-										CourseBuilderEditorThemeDark
-									}
-									extensions={[EditorView.lineWrapping]}
-									height="300px"
-									maxHeight="500px"
-									onChange={(value) => {
-										form.setValue('fields.attendeeInstructions', value)
+								<Textarea
+									{...field}
+									className="min-h-[300px]"
+									onChange={(e) => {
+										form.setValue('fields.attendeeInstructions', e.target.value)
 									}}
-									value={field.value?.toString()}
+									value={field.value?.toString() ?? ''}
 								/>
 								<FormMessage />
 							</FormItem>

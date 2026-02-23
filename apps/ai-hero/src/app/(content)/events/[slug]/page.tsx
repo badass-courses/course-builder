@@ -267,6 +267,11 @@ export default async function EventPage(props: {
 		? await compileMDX(event.fields.body || '')
 		: { content: null }
 
+	const isAdmin = ability.can('update', 'Content')
+	const attendeeInstructions =
+		event.fields.attendeeInstructions &&
+		(await compileMDX(event.fields.attendeeInstructions))
+
 	return (
 		<LayoutClient withContainer>
 			<main className="relative">
@@ -301,15 +306,6 @@ export default async function EventPage(props: {
 						</div>
 					</div>
 				) : null}
-
-				{eventProps.hasPurchasedCurrentProduct && (
-					<div className="mx-auto max-w-4xl px-5 pt-8 lg:px-10">
-						<AttendeeInstructions
-							attendeeInstructions={event.fields.attendeeInstructions}
-							hasPurchased={Boolean(eventProps.hasPurchasedCurrentProduct)}
-						/>
-					</div>
-				)}
 
 				<div className="flex flex-col lg:flex-row">
 					<div className="w-full">
@@ -359,6 +355,12 @@ export default async function EventPage(props: {
 							</div>
 						</header>
 						<article className="prose dark:prose-invert sm:prose-lg lg:prose-lg prose-hr:border-border prose-p:max-w-4xl prose-headings:max-w-4xl prose-ul:max-w-4xl prose-table:max-w-4xl prose-pre:max-w-4xl **:data-pre:max-w-4xl max-w-none px-5 py-10 sm:px-8 lg:px-10">
+							{(eventProps.hasPurchasedCurrentProduct || isAdmin) &&
+								attendeeInstructions && (
+									<AttendeeInstructions
+										attendeeInstructions={attendeeInstructions.content}
+									/>
+								)}
 							{product ? (
 								<EventBodyWithPricing
 									rawBody={event.fields.body || ''}
