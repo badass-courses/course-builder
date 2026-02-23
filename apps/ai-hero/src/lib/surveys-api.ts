@@ -414,8 +414,10 @@ export async function getSurveyAnalyticsForApi({
 		limit: 50,
 	})
 
-	const recentResponses: SurveyRecentResponse[] = recentResponsesRaw.map(
+	const recentResponses: SurveyRecentResponse[] = recentResponsesRaw.flatMap(
 		(response) => {
+			if (!response.createdAt) return []
+
 			const fields = (response.fields || {}) as Record<string, unknown>
 			const questionFields = (response.question?.fields || {}) as Record<
 				string,
@@ -434,19 +436,28 @@ export async function getSurveyAnalyticsForApi({
 						? ''
 						: String(fields.answer)
 
-			return {
-				id: response.id,
-				questionId: response.questionId,
-				questionSlug,
-				question,
-				answer,
-				userId: response.userId || null,
-				userEmail: response.user?.email || null,
-				emailListSubscriberId: response.emailListSubscriberId || null,
-				createdAt: response.createdAt,
-			}
+			return [
+				{
+					id: response.id,
+					questionId: response.questionId,
+					questionSlug,
+					question,
+					answer,
+					userId: response.userId || null,
+					userEmail: response.user?.email || null,
+					emailListSubscriberId: response.emailListSubscriberId || null,
+					createdAt: response.createdAt,
+				},
+			]
 		},
 	)
+
+	if (recentResponsesRaw.length !== recentResponses.length) {
+		await log.warn('api.survey.analytics.missing_created_at', {
+			surveyId: survey.id,
+			droppedResponses: recentResponsesRaw.length - recentResponses.length,
+		})
+	}
 
 	const surveyFields = survey.fields as Record<string, unknown>
 	return {
