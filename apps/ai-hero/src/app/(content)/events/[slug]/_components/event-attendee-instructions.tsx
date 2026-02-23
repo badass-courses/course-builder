@@ -12,7 +12,7 @@ export function AttendeeInstructions({
 	attendeeInstructions: any
 }) {
 	return (
-		<div className="bg-card rounded-xl border p-5 sm:p-8">
+		<div className="bg-card rounded-xl border p-5 sm:p-8" id="attendee">
 			<p className="not-prose inline-flex items-center text-xl font-semibold">
 				<StarIcon className="dark:text-primary mr-1 size-5 text-blue-600" /> For
 				attendees

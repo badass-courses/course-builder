@@ -10,11 +10,8 @@ import {
 } from '@/hooks/use-event-email-reminders'
 import type { Email } from '@/lib/emails'
 import { api } from '@/trpc/react'
-import { EditorView } from '@codemirror/view'
 import { zodResolver } from '@hookform/resolvers/zod'
-import MarkdownEditor from '@uiw/react-markdown-editor'
 import { Loader2, Mail, Pencil, Plus } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import pluralize from 'pluralize'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 
@@ -44,12 +41,9 @@ import {
 	FormLabel,
 	FormMessage,
 	Input,
+	Textarea,
 	useToast,
 } from '@coursebuilder/ui'
-import {
-	CourseBuilderEditorThemeDark,
-	CourseBuilderEditorThemeLight,
-} from '@coursebuilder/ui/codemirror/editor'
 import { cn } from '@coursebuilder/utils-ui/cn'
 
 export default function EmailEventRemindersField({
@@ -296,23 +290,19 @@ function CreateOrUpdateEmailReminderForm({
 	form: UseFormReturn<ReminderEmailForm>
 	onSubmit: (data: ReminderEmailForm) => void
 }) {
-	const { theme, forcedTheme } = useTheme()
-	const [editorView, setEditorView] = React.useState<EditorView | null>(null)
+	const bodyRef = React.useRef<HTMLTextAreaElement>(null)
 	const insertAtCursor = (text: string) => {
-		if (editorView) {
-			const { state } = editorView
-			const cursor = state.selection.main.head
-
-			editorView.dispatch({
-				changes: {
-					from: cursor,
-					insert: text,
-				},
-				selection: {
-					anchor: cursor + text.length,
-				},
-			})
-		}
+		const el = bodyRef.current
+		if (!el) return
+		const start = el.selectionStart
+		const end = el.selectionEnd
+		const current = el.value
+		const next = current.slice(0, start) + text + current.slice(end)
+		form.setValue('fields.body', next)
+		requestAnimationFrame(() => {
+			el.focus()
+			el.setSelectionRange(start + text.length, start + text.length)
+		})
 	}
 
 	const currentValues = form.watch()
@@ -386,33 +376,20 @@ function CreateOrUpdateEmailReminderForm({
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Email Body (markdown)</FormLabel>
-								<MarkdownEditor
-									theme={
-										(forcedTheme === 'dark' || theme === 'dark'
-											? CourseBuilderEditorThemeDark
-											: CourseBuilderEditorThemeLight) ||
-										CourseBuilderEditorThemeDark
-									}
-									extensions={[EditorView.lineWrapping]}
-									height="300px"
-									maxHeight="500px"
-									onChange={(value) => {
-										form.setValue('fields.body', value)
+								<Textarea
+									{...field}
+									ref={bodyRef}
+									className="min-h-[300px] font-mono"
+									onChange={(e) => {
+										form.setValue('fields.body', e.target.value)
 									}}
-									onUpdate={(viewUpdate) => {
-										if (viewUpdate.view && !editorView) {
-											setEditorView(viewUpdate.view)
-										}
-									}}
-									value={field.value?.toString()}
+									value={field.value?.toString() ?? ''}
 								/>
 								<div className="inline-flex flex-wrap gap-1">
 									{MARKDOWN_EDITOR_EXTENSIONS.map((item) => (
 										<button
 											type="button"
-											onClick={() => {
-												insertAtCursor(item)
-											}}
+											onClick={() => insertAtCursor(item)}
 											key={item}
 											className="bg-card hover:bg-card/80 text-primary hover:text-foreground border-border flex flex-shrink-0 items-center rounded-full border px-2 py-1 text-sm transition-all ease-in-out hover:cursor-pointer"
 										>
