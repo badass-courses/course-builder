@@ -28,7 +28,7 @@ export function CreatePost() {
 
 	const availableMediaTypes: PostType[] = isAdmin
 		? ['lesson', 'article', 'podcast', 'course']
-		: ['lesson', 'article']
+		: ['lesson', 'article', 'course']
 
 	return (
 		<Card>
