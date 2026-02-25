@@ -96,6 +96,14 @@ const CLI_NAME = 'aihero'
 const CLI_VERSION = '0.2.0'
 const DEFAULT_APP_ID = 'ai-hero'
 const DEFAULT_BASE_URL = 'http://localhost:3000'
+const FOCUSED_TOP_LEVEL_COMMANDS = new Set([
+	'app',
+	'auth',
+	'creator',
+	'support',
+	'crud',
+	'analytics',
+])
 const HTTP_METHODS: HttpMethod[] = [
 	'GET',
 	'POST',
@@ -145,11 +153,76 @@ const unwrapOption = <T>(value: unknown): T | undefined => {
 
 const normalizeAppId = (value?: string) => value?.trim().toLowerCase()
 
+const rewriteLegacyCommandPath = (command: string) => {
+	const trimmed = command.trim()
+	if (!trimmed) return ''
+
+	const [firstToken] = trimmed.split(/\s+/, 1)
+	if (firstToken && FOCUSED_TOP_LEVEL_COMMANDS.has(firstToken)) return trimmed
+
+	if (trimmed === 'survey analytics' || trimmed.startsWith('survey analytics ')) {
+		return trimmed.replace(/^survey analytics\b/, 'analytics survey analytics')
+	}
+	if (trimmed === 'survey' || trimmed.startsWith('survey ')) {
+		return trimmed.replace(/^survey\b/, 'crud survey')
+	}
+	if (trimmed === 'post' || trimmed.startsWith('post ')) {
+		return trimmed.replace(/^post\b/, 'crud post')
+	}
+	if (trimmed === 'lesson' || trimmed.startsWith('lesson ')) {
+		return trimmed.replace(/^lesson\b/, 'crud lesson')
+	}
+	if (trimmed === 'product' || trimmed.startsWith('product ')) {
+		return trimmed.replace(/^product\b/, 'crud product')
+	}
+	if (trimmed === 'shortlink' || trimmed.startsWith('shortlink ')) {
+		return trimmed.replace(/^shortlink\b/, 'crud shortlink')
+	}
+	if (trimmed === 'upload' || trimmed.startsWith('upload ')) {
+		return trimmed.replace(/^upload\b/, 'creator upload')
+	}
+	if (trimmed === 'video' || trimmed.startsWith('video ')) {
+		return trimmed.replace(/^video\b/, 'creator video')
+	}
+
+	return trimmed
+}
+
+const rewriteUsageInResult = (value: unknown): unknown => {
+	if (Array.isArray(value)) {
+		return value.map((item) => rewriteUsageInResult(item))
+	}
+
+	if (typeof value === 'object' && value !== null) {
+		const entries = Object.entries(value as Record<string, unknown>).map(
+			([key, entryValue]) => {
+				if (key === 'usage' && typeof entryValue === 'string') {
+					const trimmed = entryValue.trim()
+					if (trimmed === CLI_NAME || trimmed.startsWith(`${CLI_NAME} `)) {
+						const withoutCliPrefix =
+							trimmed === CLI_NAME ? '' : trimmed.slice(`${CLI_NAME} `.length)
+						const rewrittenPath = rewriteLegacyCommandPath(withoutCliPrefix)
+						return [key, rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME]
+					}
+				}
+				return [key, rewriteUsageInResult(entryValue)]
+			},
+		)
+		return Object.fromEntries(entries)
+	}
+
+	return value
+}
+
 const normalizeCommand = (command: string) => {
 	const trimmed = command.trim()
-	if (!trimmed) return CLI_NAME
-	if (trimmed === CLI_NAME || trimmed.startsWith(`${CLI_NAME} `)) return trimmed
-	return `${CLI_NAME} ${trimmed}`
+	if (!trimmed || trimmed === CLI_NAME) return CLI_NAME
+
+	const withoutCliPrefix = trimmed.startsWith(`${CLI_NAME} `)
+		? trimmed.slice(`${CLI_NAME} `.length)
+		: trimmed
+	const rewrittenPath = rewriteLegacyCommandPath(withoutCliPrefix)
+	return rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME
 }
 
 const respond = (command: string, result: unknown, nextActions: NextAction[]) =>
@@ -157,7 +230,7 @@ const respond = (command: string, result: unknown, nextActions: NextAction[]) =>
 		{
 			ok: true,
 			command: normalizeCommand(command),
-			result,
+			result: rewriteUsageInResult(result),
 			next_actions: nextActions.map((action) => ({
 				...action,
 				command: normalizeCommand(action.command),
@@ -4231,38 +4304,30 @@ const creatorCommand = Command.make('creator', {}, () =>
 			'creator',
 			{
 				description:
-					'Creator workflow surface area (content publishing + video upload)',
+					'Creator workflow surface area (upload + video operations, post publishing via CRUD)',
 				commands: [
-					{
-						name: 'post',
-						description: 'Create and manage posts',
-						usage: 'aihero post create --body <json>',
-					},
 					{
 						name: 'upload',
 						description: 'Get signed URLs and register uploaded videos',
-						usage: 'aihero upload signed-url --object-name <filename>',
+						usage:
+							'aihero creator upload signed-url --object-name <filename>',
 					},
 					{
 						name: 'video',
 						description: 'Inspect video resources and thumbnails',
-						usage: 'aihero video get <video-resource-id>',
+						usage: 'aihero creator video get <video-resource-id>',
+					},
+					{
+						name: 'post',
+						description: 'Create and manage posts via CRUD surface',
+						usage: 'aihero crud post create --body <json>',
 					},
 				],
 			},
 			[
 				{
-					command: "post create --body '<json>' [--app <app-id>]",
-					description: 'Create a post',
-					params: {
-						'app-id': {
-							value: DEFAULT_APP_ID,
-							required: true,
-						},
-					},
-				},
-				{
-					command: 'upload signed-url --object-name <filename> [--app <app-id>]',
+					command:
+						'creator upload signed-url --object-name <filename> [--app <app-id>]',
 					description: 'Get signed S3 URL for creator upload flow',
 					params: {
 						filename: {
@@ -4276,7 +4341,7 @@ const creatorCommand = Command.make('creator', {}, () =>
 					},
 				},
 				{
-					command: 'video get <video-resource-id> [--app <app-id>]',
+					command: 'creator video get <video-resource-id> [--app <app-id>]',
 					description: 'Fetch video resource status',
 					params: {
 						'video-resource-id': {
@@ -4289,10 +4354,27 @@ const creatorCommand = Command.make('creator', {}, () =>
 						},
 					},
 				},
+				{
+					command: "crud post create --body '<json>' [--app <app-id>]",
+					description: 'Create a post',
+					params: {
+						json: {
+							description: 'Post JSON payload',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
 			],
 		),
 	),
-).pipe(Command.withDescription('Creator-oriented workflows'))
+).pipe(
+	Command.withSubcommands([uploadCommand, videoCommand]),
+	Command.withDescription('Creator-oriented workflows'),
+)
 
 const crudCommand = Command.make('crud', {}, () =>
 	runAndPrint(async () =>
@@ -4304,33 +4386,33 @@ const crudCommand = Command.make('crud', {}, () =>
 					{
 						name: 'survey',
 						description: 'Survey CRUD operations',
-						usage: 'aihero survey list [--app <app-id>]',
+						usage: 'aihero crud survey list [--app <app-id>]',
 					},
 					{
 						name: 'post',
 						description: 'Post CRUD operations',
-						usage: 'aihero post list [--app <app-id>]',
+						usage: 'aihero crud post list [--app <app-id>]',
 					},
 					{
 						name: 'lesson',
 						description: 'Lesson and solution operations',
-						usage: 'aihero lesson list [--app <app-id>]',
+						usage: 'aihero crud lesson list [--app <app-id>]',
 					},
 					{
 						name: 'product',
 						description: 'Product lookup and availability operations',
-						usage: 'aihero product list [--app <app-id>]',
+						usage: 'aihero crud product list [--app <app-id>]',
 					},
 					{
 						name: 'shortlink',
 						description: 'Shortlink CRUD operations',
-						usage: 'aihero shortlink list [--app <app-id>]',
+						usage: 'aihero crud shortlink list [--app <app-id>]',
 					},
 				],
 			},
 			[
 				{
-					command: 'survey list [--app <app-id>]',
+					command: 'crud survey list [--app <app-id>]',
 					description: 'List surveys',
 					params: {
 						'app-id': {
@@ -4340,7 +4422,7 @@ const crudCommand = Command.make('crud', {}, () =>
 					},
 				},
 				{
-					command: 'post list [--app <app-id>]',
+					command: 'crud post list [--app <app-id>]',
 					description: 'List posts',
 					params: {
 						'app-id': {
@@ -4350,7 +4432,7 @@ const crudCommand = Command.make('crud', {}, () =>
 					},
 				},
 				{
-					command: 'shortlink list [--app <app-id>]',
+					command: 'crud shortlink list [--app <app-id>]',
 					description: 'List shortlinks',
 					params: {
 						'app-id': {
@@ -4362,25 +4444,35 @@ const crudCommand = Command.make('crud', {}, () =>
 			],
 		),
 	),
-).pipe(Command.withDescription('Content CRUD operations'))
+).pipe(
+	Command.withSubcommands([
+		surveyCommand,
+		postCommand,
+		lessonCommand,
+		productCommand,
+		shortlinkCommand,
+	]),
+	Command.withDescription('Content CRUD operations'),
+)
 
-const analyticsCommand = Command.make('analytics', {}, () =>
+const analyticsSurveyCommand = Command.make('survey', {}, () =>
 	runAndPrint(async () =>
 		respond(
-			'analytics',
+			'analytics survey',
 			{
-				description: 'Analytics surfaces for support and creator reporting',
+				description: 'Survey analytics operations',
 				commands: [
 					{
-						name: 'survey',
+						name: 'analytics',
 						description: 'Survey analytics by slug or ID',
-						usage: 'aihero survey analytics <slug-or-id> [--app <app-id>]',
+						usage:
+							'aihero analytics survey analytics <slug-or-id> [--app <app-id>]',
 					},
 				],
 			},
 			[
 				{
-					command: 'survey analytics <slug-or-id> [--app <app-id>]',
+					command: 'analytics survey analytics <slug-or-id> [--app <app-id>]',
 					description: 'Get survey analytics',
 					params: {
 						'slug-or-id': {
@@ -4396,7 +4488,48 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 			],
 		),
 	),
-).pipe(Command.withDescription('Analytics operations'))
+).pipe(
+	Command.withSubcommands([surveyAnalyticsCommand]),
+	Command.withDescription('Survey analytics'),
+)
+
+const analyticsCommand = Command.make('analytics', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'analytics',
+			{
+				description: 'Analytics surfaces for support and creator reporting',
+				commands: [
+					{
+						name: 'survey',
+						description: 'Survey analytics by slug or ID',
+						usage:
+							'aihero analytics survey analytics <slug-or-id> [--app <app-id>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'analytics survey analytics <slug-or-id> [--app <app-id>]',
+					description: 'Get survey analytics',
+					params: {
+						'slug-or-id': {
+							description: 'Survey slug or ID',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([analyticsSurveyCommand]),
+	Command.withDescription('Analytics operations'),
+)
 
 const trpcGetCommand = Command.make(
 	'get',
@@ -4678,7 +4811,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 					description: 'Open analytics command surface',
 				},
 				{
-					command: 'survey list [--app <app-id>]',
+					command: 'crud survey list [--app <app-id>]',
 					description: 'List surveys once authenticated',
 					params: {
 						'app-id': {
@@ -4698,13 +4831,6 @@ const root = Command.make(CLI_NAME, {}, () =>
 		supportCommand,
 		crudCommand,
 		analyticsCommand,
-		surveyCommand,
-		postCommand,
-		lessonCommand,
-		productCommand,
-		shortlinkCommand,
-		uploadCommand,
-		videoCommand,
 	]),
 	Command.withDescription(
 		'AI Hero CLI focused on creator workflows, support actions, CRUD, and analytics',
