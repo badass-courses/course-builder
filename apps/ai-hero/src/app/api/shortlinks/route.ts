@@ -53,7 +53,7 @@ const getShortlinksHandler = async (request: NextRequest) => {
 		}
 
 		if (analytics === 'recent') {
-			const stats = await getRecentClickStats()
+			const stats = await getRecentClickStats({ ability, userId: user.id })
 			return NextResponse.json(stats, { headers: corsHeaders })
 		}
 
@@ -65,13 +65,16 @@ const getShortlinksHandler = async (request: NextRequest) => {
 				)
 			}
 
-			const shortlinkAnalytics = await getShortlinkAnalytics(id)
+			const shortlinkAnalytics = await getShortlinkAnalytics(id, {
+				ability,
+				userId: user.id,
+			})
 			return NextResponse.json(shortlinkAnalytics, { headers: corsHeaders })
 		}
 
 		if (id) {
 			// Get single shortlink
-			const link = await getShortlinkById(id)
+			const link = await getShortlinkById(id, { ability, userId: user.id })
 			if (!link) {
 				return NextResponse.json(
 					{ error: 'Shortlink not found' },
@@ -82,7 +85,10 @@ const getShortlinksHandler = async (request: NextRequest) => {
 		}
 
 		// List all shortlinks
-		const links = await getShortlinks(search ?? undefined)
+		const links = await getShortlinks(search ?? undefined, {
+			ability,
+			userId: user.id,
+		})
 		return NextResponse.json(links, { headers: corsHeaders })
 	} catch (error) {
 		const message = error instanceof Error ? error.message : 'Unknown error'
@@ -144,7 +150,10 @@ const createShortlinkHandler = async (request: NextRequest) => {
 			userId: user.id,
 		})
 
-		const link = await createShortlink(parsed.data)
+		const link = await createShortlink(parsed.data, {
+			ability,
+			userId: user.id,
+		})
 
 		await log.info('api.shortlinks.post.success', {
 			id: link.id,
@@ -212,7 +221,10 @@ const updateShortlinkHandler = async (request: NextRequest) => {
 			userId: user.id,
 		})
 
-		const link = await updateShortlink(parsed.data)
+		const link = await updateShortlink(parsed.data, {
+			ability,
+			userId: user.id,
+		})
 
 		await log.info('api.shortlinks.patch.success', {
 			id: link.id,
@@ -284,7 +296,7 @@ const deleteShortlinkHandler = async (request: NextRequest) => {
 
 		await log.info('api.shortlinks.delete.started', { id, userId: user.id })
 
-		await deleteShortlink(id)
+		await deleteShortlink(id, { ability, userId: user.id })
 
 		await log.info('api.shortlinks.delete.success', { id })
 

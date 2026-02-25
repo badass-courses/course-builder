@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidateTag } from 'next/cache'
+import type { AppAbility } from '@/ability'
 import { db } from '@/db'
 import { shortlink, shortlinkAttribution, shortlinkClick } from '@/db/schema'
 import { getServerAuthSession } from '@/server/auth'
@@ -31,11 +32,33 @@ const nanoid = customAlphabet(
 
 const REDIS_KEY_PREFIX = 'shortlink:'
 
+type ShortlinkAuthContext = {
+	ability?: AppAbility
+	userId?: string | null
+}
+
+async function resolveShortlinkAuth(auth?: ShortlinkAuthContext) {
+	const sessionAuth = auth?.ability ? null : await getServerAuthSession()
+	const ability = auth?.ability ?? sessionAuth?.ability
+
+	if (!ability) {
+		throw new Error('Missing ability context')
+	}
+
+	return {
+		ability,
+		userId: auth?.userId ?? sessionAuth?.session?.user?.id ?? null,
+	}
+}
+
 /**
  * Get all shortlinks with optional search filter
  */
-export async function getShortlinks(search?: string): Promise<Shortlink[]> {
-	const { ability } = await getServerAuthSession()
+export async function getShortlinks(
+	search?: string,
+	auth?: ShortlinkAuthContext,
+): Promise<Shortlink[]> {
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('manage', 'all')) {
 		throw new Error('Unauthorized')
 	}
@@ -59,8 +82,9 @@ export async function getShortlinks(search?: string): Promise<Shortlink[]> {
  */
 export async function getShortlinksWithAttributions(
 	search?: string,
+	auth?: ShortlinkAuthContext,
 ): Promise<ShortlinkWithAttributions[]> {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('manage', 'all')) {
 		throw new Error('Unauthorized')
 	}
@@ -118,8 +142,11 @@ export async function getShortlinksWithAttributions(
 /**
  * Get a single shortlink by ID
  */
-export async function getShortlinkById(id: string): Promise<Shortlink | null> {
-	const { ability } = await getServerAuthSession()
+export async function getShortlinkById(
+	id: string,
+	auth?: ShortlinkAuthContext,
+): Promise<Shortlink | null> {
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('manage', 'all')) {
 		throw new Error('Unauthorized')
 	}
@@ -194,8 +221,9 @@ export async function generateUniqueSlug(): Promise<string> {
  */
 export async function createShortlink(
 	input: CreateShortlinkInput,
+	auth?: ShortlinkAuthContext,
 ): Promise<Shortlink> {
-	const { session, ability } = await getServerAuthSession()
+	const { ability, userId } = await resolveShortlinkAuth(auth)
 	if (!ability.can('create', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -219,7 +247,7 @@ export async function createShortlink(
 				slug,
 				url: parsed.url,
 				description: parsed.description,
-				createdById: session?.user?.id,
+				createdById: userId,
 			})
 			.$returningId()
 
@@ -243,7 +271,7 @@ export async function createShortlink(
 
 	await log.info('shortlink.created', { slug, url: parsed.url })
 
-	const link = await getShortlinkById(insertedId)
+	const link = await getShortlinkById(insertedId, auth)
 	if (!link) {
 		throw new Error('Failed to create shortlink')
 	}
@@ -261,8 +289,9 @@ export async function createShortlink(
  */
 export async function updateShortlink(
 	input: UpdateShortlinkInput,
+	auth?: ShortlinkAuthContext,
 ): Promise<Shortlink> {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('update', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -323,7 +352,7 @@ export async function updateShortlink(
 
 	revalidateTag('shortlinks', 'max')
 
-	const updated = await getShortlinkById(parsed.id)
+	const updated = await getShortlinkById(parsed.id, auth)
 	if (!updated) {
 		throw new Error('Failed to update shortlink')
 	}
@@ -337,8 +366,11 @@ export async function updateShortlink(
 /**
  * Delete a shortlink
  */
-export async function deleteShortlink(id: string): Promise<void> {
-	const { ability } = await getServerAuthSession()
+export async function deleteShortlink(
+	id: string,
+	auth?: ShortlinkAuthContext,
+): Promise<void> {
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('delete', 'Content')) {
 		throw new Error('Unauthorized')
 	}
@@ -424,8 +456,9 @@ export async function recordClick(
  */
 export async function getShortlinkAnalytics(
 	id: string,
+	auth?: ShortlinkAuthContext,
 ): Promise<ShortlinkAnalytics> {
-	const { ability } = await getServerAuthSession()
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('manage', 'all')) {
 		throw new Error('Unauthorized')
 	}
@@ -500,8 +533,10 @@ export async function getShortlinkAnalytics(
 /**
  * Get click counts for the last 60 minutes and 24 hours
  */
-export async function getRecentClickStats(): Promise<RecentClickStats> {
-	const { ability } = await getServerAuthSession()
+export async function getRecentClickStats(
+	auth?: ShortlinkAuthContext,
+): Promise<RecentClickStats> {
+	const { ability } = await resolveShortlinkAuth(auth)
 	if (!ability.can('manage', 'all')) {
 		throw new Error('Unauthorized')
 	}
