@@ -406,34 +406,41 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 												<span className="text-xs">Detach video</span>
 											</TooltipContent>
 										</Tooltip>
-										{/* Detach Confirmation Dialog */}
-										<AlertDialog
-											open={showDetachConfirmation}
-											onOpenChange={setShowDetachConfirmation}
-										>
-											<AlertDialogContent>
-												<AlertDialogHeader>
-													<AlertDialogTitle>Detach Video</AlertDialogTitle>
-													<AlertDialogDescription>
-														Are you sure you want to detach this video from the
-														content? This action will remove the video from this
-														content but won't delete the video resource.
-													</AlertDialogDescription>
-												</AlertDialogHeader>
-												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
-													<AlertDialogAction onClick={handleDetachVideo}>
-														Detach
-													</AlertDialogAction>
-												</AlertDialogFooter>
-											</AlertDialogContent>
-										</AlertDialog>
-									</div>
+										</div>
 								</div>
 							) : videoResource ? (
 								<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
-									<Spinner className="h-5 w-5" />
-									<span>video is {videoResource.state}</span>
+									{videoResource.state === 'errored' ? (
+										<>
+											<span className="text-destructive">
+												video is errored
+											</span>
+											<div className="flex gap-2">
+												<Button
+													variant="outline"
+													size="sm"
+													type="button"
+													onClick={() => setReplacingVideo(true)}
+												>
+													Replace Video
+												</Button>
+												<Button
+													variant="outline"
+													size="sm"
+													type="button"
+													onClick={() => setShowDetachConfirmation(true)}
+												>
+													<Unlink className="mr-1.5 h-3 w-3" />
+													Detach Video
+												</Button>
+											</div>
+										</>
+									) : (
+										<>
+											<Spinner className="h-5 w-5" />
+											<span>video is {videoResource.state}</span>
+										</>
+									)}
 								</div>
 							) : (
 								<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
@@ -441,6 +448,28 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 									<span>video is {videoUploadStatus}</span>
 								</div>
 							)}
+							{/* Detach Confirmation Dialog */}
+							<AlertDialog
+								open={showDetachConfirmation}
+								onOpenChange={setShowDetachConfirmation}
+							>
+								<AlertDialogContent>
+									<AlertDialogHeader>
+										<AlertDialogTitle>Detach Video</AlertDialogTitle>
+										<AlertDialogDescription>
+											Are you sure you want to detach this video from the
+											content? This action will remove the video from this
+											content but won't delete the video resource.
+										</AlertDialogDescription>
+									</AlertDialogHeader>
+									<AlertDialogFooter>
+										<AlertDialogCancel>Cancel</AlertDialogCancel>
+										<AlertDialogAction onClick={handleDetachVideo}>
+											Detach
+										</AlertDialogAction>
+									</AlertDialogFooter>
+								</AlertDialogContent>
+							</AlertDialog>
 						</>
 					)
 				) : (
