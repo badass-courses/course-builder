@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(request: NextRequest) {
+const getThumbnailHandler = async (request: NextRequest) => {
 	try {
 		const { searchParams } = new URL(request.url)
 		// const searchParams = request.nextUrl.searchParams
@@ -80,3 +81,4 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getThumbnailHandler)

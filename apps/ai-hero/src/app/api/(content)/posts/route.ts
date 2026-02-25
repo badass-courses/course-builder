@@ -9,6 +9,7 @@ import {
 } from '@/lib/posts/posts.service'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -20,7 +21,7 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(request: NextRequest) {
+const getPostsHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const slugOrId = searchParams.get('slugOrId')
 
@@ -65,8 +66,9 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getPostsHandler)
 
-export async function POST(request: NextRequest) {
+const createPostHandler = async (request: NextRequest) => {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 		if (!user) {
@@ -116,8 +118,9 @@ export async function POST(request: NextRequest) {
 		)
 	}
 }
+export const POST = withSkill(createPostHandler)
 
-export async function PUT(request: NextRequest) {
+const updatePostHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const action = searchParams.get('action')
 	const id = searchParams.get('id')
@@ -195,8 +198,9 @@ export async function PUT(request: NextRequest) {
 		)
 	}
 }
+export const PUT = withSkill(updatePostHandler)
 
-export async function DELETE(request: NextRequest) {
+const deletePostHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 
@@ -240,3 +244,4 @@ export async function DELETE(request: NextRequest) {
 		)
 	}
 }
+export const DELETE = withSkill(deletePostHandler)

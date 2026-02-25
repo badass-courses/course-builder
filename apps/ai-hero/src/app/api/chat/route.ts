@@ -1,10 +1,11 @@
 // ./app/api/chat/route.js
 import { redis } from '@/server/redis-client'
+import { withSkill } from '@/server/with-skill'
 import { openai } from '@ai-sdk/openai'
 import { Ratelimit } from '@upstash/ratelimit'
 import { streamText } from 'ai'
 
-export async function POST(req: Request) {
+export const POST = withSkill(async (req: Request) => {
 	// Use a constant string to limit all requests with a single ratelimit
 	// Or use a userID, apiKey or ip address for individual limits.
 	const ip = req.headers.get('x-forwarded-for')
@@ -37,4 +38,4 @@ export async function POST(req: Request) {
 	})
 
 	return result.toDataStreamResponse()
-}
+})

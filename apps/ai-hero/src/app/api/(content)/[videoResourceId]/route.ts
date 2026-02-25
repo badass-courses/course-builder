@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getVideoResource } from '@/lib/video-resource-query'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -13,10 +14,10 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(
+const getVideoResourceHandler = async (
 	request: NextRequest,
 	props: { params: Promise<{ videoResourceId: string }> },
-) {
+) => {
 	try {
 		const params = await props.params
 		const { ability, user } = await getUserAbilityForRequest(request)
@@ -91,3 +92,4 @@ export async function GET(
 		)
 	}
 }
+export const GET = withSkill(getVideoResourceHandler)

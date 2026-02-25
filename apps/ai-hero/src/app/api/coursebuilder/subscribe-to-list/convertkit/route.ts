@@ -2,6 +2,8 @@ import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 import { POST as courseBuilderPOST } from '@/coursebuilder/course-builder-config'
 import { createShortlinkAttribution } from '@/lib/shortlinks-query'
+import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 /**
  * Custom wrapper for the subscribe-to-list endpoint that adds shortlink attribution tracking
@@ -9,7 +11,7 @@ import { createShortlinkAttribution } from '@/lib/shortlinks-query'
  * This route intercepts newsletter signups and records attribution if the user
  * came from a shortlink (identified by the sl_ref cookie)
  */
-export async function POST(req: NextRequest) {
+const subscribeWithAttribution = async (req: NextRequest) => {
 	// Read the request body before passing to coursebuilder
 	const body = await req.json()
 	const email = body.email
@@ -38,14 +40,23 @@ export async function POST(req: NextRequest) {
 					email,
 					type: 'signup',
 				}).catch((error) => {
-					console.error('Failed to record shortlink attribution:', error)
+					void log.error('api.coursebuilder.subscribe.attribution.failed', {
+						shortlinkSlug,
+						email,
+						error: error instanceof Error ? error.message : String(error),
+					})
 				})
 			}
 		} catch (error) {
 			// Log error but don't fail the subscription
-			console.error('Error tracking shortlink attribution:', error)
+			await log.error('api.coursebuilder.subscribe.attribution.error', {
+				email,
+				error: error instanceof Error ? error.message : String(error),
+			})
 		}
 	}
 
 	return response
 }
+
+export const POST = withSkill(subscribeWithAttribution)

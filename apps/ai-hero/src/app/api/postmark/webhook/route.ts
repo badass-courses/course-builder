@@ -1,9 +1,9 @@
-import { type NextRequest, type NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 import { POSTMARK_WEBHOOK_EVENT } from '@/inngest/events/postmark-webhook'
 import { inngest } from '@/inngest/inngest.server'
 import { withSkill } from '@/server/with-skill'
 
-export const POST = withSkill(async (req: NextRequest, res: NextResponse) => {
+export const POST = withSkill(async (req: NextRequest) => {
 	const body = await req.json()
 
 	if (

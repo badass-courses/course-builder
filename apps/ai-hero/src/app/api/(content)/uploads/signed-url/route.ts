@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { withSkill } from '@/server/with-skill'
 import { getSignedUrlForVideoFile } from '@/video-uploader/get-signed-s3-url'
 
-export const GET = async (request: NextRequest) => {
+export const GET = withSkill(async (request: NextRequest) => {
 	const searchParams = new URL(request.url).searchParams
 	const filename = searchParams.get('objectName')
 
@@ -28,4 +29,4 @@ export const GET = async (request: NextRequest) => {
 			},
 		},
 	)
-}
+})

@@ -6,6 +6,7 @@ import {
 } from '@/lib/lessons/lessons.service'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -17,7 +18,7 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(request: NextRequest) {
+const getLessonsHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const slugOrId = searchParams.get('slugOrId')
 
@@ -66,8 +67,9 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getLessonsHandler)
 
-export async function PUT(request: NextRequest) {
+const updateLessonHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 
@@ -151,3 +153,4 @@ export async function PUT(request: NextRequest) {
 		)
 	}
 }
+export const PUT = withSkill(updateLessonHandler)

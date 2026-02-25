@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { courseBuilderAdapter, db } from '@/db'
 import { purchases } from '@/db/schema'
+import { withSkill } from '@/server/with-skill'
 import { eq } from 'drizzle-orm'
 
 const corsHeaders = {
@@ -19,10 +20,10 @@ export async function OPTIONS() {
  * Returns current seat availability for a product (for live events)
  * Used by client-side polling to detect when seats sell out
  */
-export async function GET(
+const getAvailability = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ productId: string }> },
-) {
+) => {
 	const { productId } = await params
 
 	if (!productId) {
@@ -72,3 +73,5 @@ export async function GET(
 		)
 	}
 }
+
+export const GET = withSkill(getAvailability)

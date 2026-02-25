@@ -9,6 +9,7 @@ import {
 } from '@/lib/surveys-api'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -25,7 +26,7 @@ export async function OPTIONS() {
  * - /api/surveys?slugOrId=<id-or-slug> returns a single survey
  * - /api/surveys?search=<query> returns all surveys filtered by search
  */
-export async function GET(request: NextRequest) {
+const getSurveysHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const slugOrId = searchParams.get('slugOrId')
 	const search = searchParams.get('search')
@@ -74,12 +75,13 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getSurveysHandler)
 
 /**
  * POST /api/surveys
  * Creates a new survey.
  */
-export async function POST(request: NextRequest) {
+const createSurveyHandler = async (request: NextRequest) => {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 		if (!user) {
@@ -115,12 +117,13 @@ export async function POST(request: NextRequest) {
 		)
 	}
 }
+export const POST = withSkill(createSurveyHandler)
 
 /**
  * PATCH /api/surveys
  * Updates an existing survey.
  */
-export async function PATCH(request: NextRequest) {
+const updateSurveyHandler = async (request: NextRequest) => {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 		if (!user) {
@@ -156,12 +159,13 @@ export async function PATCH(request: NextRequest) {
 		)
 	}
 }
+export const PATCH = withSkill(updateSurveyHandler)
 
 /**
  * DELETE /api/surveys?id=<survey-id>
  * Deletes a survey and related records.
  */
-export async function DELETE(request: NextRequest) {
+const deleteSurveyHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 
@@ -207,3 +211,4 @@ export async function DELETE(request: NextRequest) {
 		)
 	}
 }
+export const DELETE = withSkill(deleteSurveyHandler)

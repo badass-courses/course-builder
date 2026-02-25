@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { inngest } from '@/inngest/inngest.server'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
+import { withSkill } from '@/server/with-skill'
 import { z } from 'zod'
 
 import { VIDEO_UPLOADED_EVENT } from '@coursebuilder/core/inngest/video-processing/events/event-video-uploaded'
@@ -26,7 +27,7 @@ export const OPTIONS = async () => {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export const POST = async (request: NextRequest) => {
+export const POST = withSkill(async (request: NextRequest) => {
 	const { user, ability } = await getUserAbilityForRequest(request)
 
 	if (ability.cannot('create', 'Content')) {
@@ -66,4 +67,4 @@ export const POST = async (request: NextRequest) => {
 			{ status: 500, headers: corsHeaders },
 		)
 	}
-}
+})

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/env.mjs'
+import { withSkill } from '@/server/with-skill'
 import { createSupportHandler } from '@skillrecordings/sdk/handler'
 
 import { integration } from '../integration'
@@ -18,7 +19,7 @@ import { integration } from '../integration'
  *
  * All requests are authenticated via HMAC-SHA256 signature.
  */
-export async function POST(request: NextRequest) {
+export const POST = withSkill(async (request: NextRequest) => {
 	// Check at request time, not build time
 	if (!env.SUPPORT_WEBHOOK_SECRET) {
 		return NextResponse.json(
@@ -33,4 +34,4 @@ export async function POST(request: NextRequest) {
 	})
 
 	return handler(request)
-}
+})

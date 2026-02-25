@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSurveyAnalyticsForApi, SurveyApiError } from '@/lib/surveys-api'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -17,7 +18,7 @@ export async function OPTIONS() {
  * GET /api/surveys/analytics?slugOrId=<survey-id-or-slug>
  * Returns aggregate survey analytics.
  */
-export async function GET(request: NextRequest) {
+const getSurveyAnalyticsHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const slugOrId = searchParams.get('slugOrId')
 
@@ -62,3 +63,4 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getSurveyAnalyticsHandler)

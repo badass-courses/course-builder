@@ -8,6 +8,7 @@ import {
 } from '@/lib/solutions/solutions.service'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -19,10 +20,10 @@ export async function OPTIONS() {
 	return NextResponse.json({}, { headers: corsHeaders })
 }
 
-export async function GET(
+const getLessonSolutionHandler = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ lessonId: string }> },
-) {
+) => {
 	const { lessonId } = await params
 
 	try {
@@ -66,11 +67,12 @@ export async function GET(
 		)
 	}
 }
+export const GET = withSkill(getLessonSolutionHandler)
 
-export async function PUT(
+const updateLessonSolutionHandler = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ lessonId: string }> },
-) {
+) => {
 	const { lessonId } = await params
 	try {
 		const body = await request.json()
@@ -126,11 +128,12 @@ export async function PUT(
 		)
 	}
 }
+export const PUT = withSkill(updateLessonSolutionHandler)
 
-export async function POST(
+const createLessonSolutionHandler = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ lessonId: string }> },
-) {
+) => {
 	const { lessonId } = await params
 	try {
 		const body = await request.json()
@@ -175,11 +178,12 @@ export async function POST(
 		)
 	}
 }
+export const POST = withSkill(createLessonSolutionHandler)
 
-export async function DELETE(
+const deleteLessonSolutionHandler = async (
 	request: NextRequest,
 	{ params }: { params: Promise<{ lessonId: string }> },
-) {
+) => {
 	const { lessonId } = await params
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
@@ -218,3 +222,4 @@ export async function DELETE(
 		)
 	}
 }
+export const DELETE = withSkill(deleteLessonSolutionHandler)

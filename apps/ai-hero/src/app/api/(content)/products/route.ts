@@ -5,6 +5,7 @@ import {
 } from '@/lib/products-query'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -21,7 +22,7 @@ export async function OPTIONS() {
  * Returns all products OR single product if ?slugOrId=xxx provided
  * Product includes full nested structure: product → cohort → workshops → sections → lessons
  */
-export async function GET(request: NextRequest) {
+const getProductsHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const slugOrId = searchParams.get('slugOrId')
 
@@ -87,3 +88,4 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getProductsHandler)
