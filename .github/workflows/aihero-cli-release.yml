@@ -1,0 +1,74 @@
+name: aihero-cli Release
+
+on:
+  push:
+    tags:
+      - "aihero-cli-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. 0.1.0 or aihero-cli-v0.1.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + Publish aihero-cli release assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve release tag
+        id: release_tag
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            RAW="${{ github.event.inputs.version }}"
+            if [[ "$RAW" == aihero-cli-v* ]]; then
+              TAG="$RAW"
+            else
+              TAG="aihero-cli-v$RAW"
+            fi
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Using release tag: $TAG"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build release assets
+        run: bash packages/aihero-cli/scripts/build-release-assets.sh packages/aihero-cli/release
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          name: ${{ steps.release_tag.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            packages/aihero-cli/release/aihero-darwin-x64.tar.gz
+            packages/aihero-cli/release/aihero-darwin-arm64.tar.gz
+            packages/aihero-cli/release/aihero-linux-x64.tar.gz
+            packages/aihero-cli/release/aihero-linux-arm64.tar.gz
+            packages/aihero-cli/release/aihero-checksums.txt

@@ -20,6 +20,7 @@
 	"scripts": {
 		"build": "tsup",
 		"build:exe": "bun build src/cli.ts --compile --outfile dist/aihero",
+		"build:release-assets": "bash ./scripts/build-release-assets.sh",
 		"dev": "tsx src/cli.ts",
 		"start": "node dist/cli.js",
 		"typecheck": "tsc --noEmit",
