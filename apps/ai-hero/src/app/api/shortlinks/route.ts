@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import {
 	createShortlink,
 	deleteShortlink,
+	getRecentClickStats,
+	getShortlinkAnalytics,
 	getShortlinkById,
 	getShortlinks,
 	updateShortlink,
@@ -12,6 +14,7 @@ import {
 } from '@/lib/shortlinks-types'
 import { getUserAbilityForRequest } from '@/server/ability-for-request'
 import { log } from '@/server/logger'
+import { withSkill } from '@/server/with-skill'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -26,10 +29,11 @@ export async function OPTIONS() {
 /**
  * GET /api/shortlinks - List all shortlinks (admin) or get single by ID
  */
-export async function GET(request: NextRequest) {
+const getShortlinksHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 	const search = searchParams.get('search')
+	const analytics = searchParams.get('analytics')
 
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
@@ -48,6 +52,23 @@ export async function GET(request: NextRequest) {
 			)
 		}
 
+		if (analytics === 'recent') {
+			const stats = await getRecentClickStats()
+			return NextResponse.json(stats, { headers: corsHeaders })
+		}
+
+		if (analytics === 'true' || analytics === '1') {
+			if (!id) {
+				return NextResponse.json(
+					{ error: 'ID is required for analytics queries' },
+					{ status: 400, headers: corsHeaders },
+				)
+			}
+
+			const shortlinkAnalytics = await getShortlinkAnalytics(id)
+			return NextResponse.json(shortlinkAnalytics, { headers: corsHeaders })
+		}
+
 		if (id) {
 			// Get single shortlink
 			const link = await getShortlinkById(id)
@@ -64,8 +85,17 @@ export async function GET(request: NextRequest) {
 		const links = await getShortlinks(search ?? undefined)
 		return NextResponse.json(links, { headers: corsHeaders })
 	} catch (error) {
+		const message = error instanceof Error ? error.message : 'Unknown error'
+
+		if (message === 'Shortlink not found') {
+			return NextResponse.json(
+				{ error: 'Shortlink not found' },
+				{ status: 404, headers: corsHeaders },
+			)
+		}
+
 		await log.error('api.shortlinks.get.failed', {
-			error: error instanceof Error ? error.message : 'Unknown error',
+			error: message,
 			stack: error instanceof Error ? error.stack : undefined,
 		})
 		return NextResponse.json(
@@ -74,11 +104,12 @@ export async function GET(request: NextRequest) {
 		)
 	}
 }
+export const GET = withSkill(getShortlinksHandler)
 
 /**
  * POST /api/shortlinks - Create a new shortlink
  */
-export async function POST(request: NextRequest) {
+const createShortlinkHandler = async (request: NextRequest) => {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 
@@ -142,11 +173,12 @@ export async function POST(request: NextRequest) {
 		)
 	}
 }
+export const POST = withSkill(createShortlinkHandler)
 
 /**
  * PATCH /api/shortlinks - Update an existing shortlink
  */
-export async function PATCH(request: NextRequest) {
+const updateShortlinkHandler = async (request: NextRequest) => {
 	try {
 		const { ability, user } = await getUserAbilityForRequest(request)
 
@@ -216,11 +248,12 @@ export async function PATCH(request: NextRequest) {
 		)
 	}
 }
+export const PATCH = withSkill(updateShortlinkHandler)
 
 /**
  * DELETE /api/shortlinks - Delete a shortlink by ID
  */
-export async function DELETE(request: NextRequest) {
+const deleteShortlinkHandler = async (request: NextRequest) => {
 	const { searchParams } = new URL(request.url)
 	const id = searchParams.get('id')
 
@@ -280,3 +313,4 @@ export async function DELETE(request: NextRequest) {
 		)
 	}
 }
+export const DELETE = withSkill(deleteShortlinkHandler)

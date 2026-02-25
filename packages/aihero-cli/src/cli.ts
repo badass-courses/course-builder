@@ -175,6 +175,15 @@ const rewriteLegacyCommandPath = (command: string) => {
 	if (trimmed === 'product' || trimmed.startsWith('product ')) {
 		return trimmed.replace(/^product\b/, 'crud product')
 	}
+	if (
+		trimmed === 'shortlink analytics' ||
+		trimmed.startsWith('shortlink analytics ')
+	) {
+		return trimmed.replace(/^shortlink analytics\b/, 'analytics shortlink get')
+	}
+	if (trimmed === 'shortlink recent' || trimmed.startsWith('shortlink recent ')) {
+		return trimmed.replace(/^shortlink recent\b/, 'analytics shortlink recent')
+	}
 	if (trimmed === 'shortlink' || trimmed.startsWith('shortlink ')) {
 		return trimmed.replace(/^shortlink\b/, 'crud shortlink')
 	}
@@ -4493,6 +4502,141 @@ const analyticsSurveyCommand = Command.make('survey', {}, () =>
 	Command.withDescription('Survey analytics'),
 )
 
+const shortlinkAnalyticsGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Shortlink ID')),
+	},
+	({ app, baseUrl, token, noAuth, id }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `analytics shortlink get ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/shortlinks',
+				queryParams: {
+					analytics: 'true',
+					id,
+				},
+				defaultNextActions: [
+					{
+						command: 'analytics shortlink recent [--app <app-id>]',
+						description: 'Get cross-shortlink click stats for last 60m/24h',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+						},
+					},
+					{
+						command: 'crud shortlink list [--app <app-id>]',
+						description: 'List shortlinks and pick another ID',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('Get analytics for a shortlink ID'))
+
+const shortlinkAnalyticsRecentCommand = Command.make(
+	'recent',
+	{
+		...entityRequestOptions,
+	},
+	({ app, baseUrl, token, noAuth }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'analytics shortlink recent',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/shortlinks',
+				queryParams: {
+					analytics: 'recent',
+				},
+				defaultNextActions: [
+					{
+						command: 'crud shortlink list [--app <app-id>]',
+						description: 'List shortlinks',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('Get recent shortlink click stats (60m/24h)'))
+
+const analyticsShortlinkCommand = Command.make('shortlink', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'analytics shortlink',
+			{
+				description: 'Shortlink analytics operations',
+				commands: [
+					{
+						name: 'get',
+						description: 'Get analytics for a specific shortlink ID',
+						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
+					},
+					{
+						name: 'recent',
+						description: 'Get click velocity across all shortlinks',
+						usage: 'aihero analytics shortlink recent [--app <app-id>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'analytics shortlink get <id> [--app <app-id>]',
+					description: 'Get analytics for a shortlink',
+					params: {
+						id: {
+							description: 'Shortlink ID',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'analytics shortlink recent [--app <app-id>]',
+					description: 'Get recent click stats across all shortlinks',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		shortlinkAnalyticsGetCommand,
+		shortlinkAnalyticsRecentCommand,
+	]),
+	Command.withDescription('Shortlink analytics'),
+)
+
 const analyticsCommand = Command.make('analytics', {}, () =>
 	runAndPrint(async () =>
 		respond(
@@ -4505,6 +4649,11 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 						description: 'Survey analytics by slug or ID',
 						usage:
 							'aihero analytics survey analytics <slug-or-id> [--app <app-id>]',
+					},
+					{
+						name: 'shortlink',
+						description: 'Shortlink analytics by link ID and recent click stats',
+						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
 					},
 				],
 			},
@@ -4523,11 +4672,35 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 						},
 					},
 				},
+				{
+					command: 'analytics shortlink get <id> [--app <app-id>]',
+					description: 'Get shortlink analytics',
+					params: {
+						id: {
+							description: 'Shortlink ID',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'analytics shortlink recent [--app <app-id>]',
+					description: 'Get recent click stats across all shortlinks',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
 			],
 		),
 	),
 ).pipe(
-	Command.withSubcommands([analyticsSurveyCommand]),
+	Command.withSubcommands([analyticsSurveyCommand, analyticsShortlinkCommand]),
 	Command.withDescription('Analytics operations'),
 )
 
@@ -4809,6 +4982,16 @@ const root = Command.make(CLI_NAME, {}, () =>
 				{
 					command: 'analytics',
 					description: 'Open analytics command surface',
+				},
+				{
+					command: 'analytics shortlink recent [--app <app-id>]',
+					description: 'Get recent click stats across all shortlinks',
+					params: {
+						'app-id': {
+							value: currentApp,
+							required: true,
+						},
+					},
 				},
 				{
 					command: 'crud survey list [--app <app-id>]',
