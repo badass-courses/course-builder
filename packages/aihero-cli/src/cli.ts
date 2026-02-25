@@ -20,6 +20,8 @@ type NextAction = {
 	params?: Record<string, NextActionParam>
 }
 
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'OPTIONS'
+
 type AppProfile = {
 	baseUrl?: string
 	token?: string
@@ -71,6 +73,15 @@ type ResolvedContext = {
 	token?: string
 }
 
+type ApiRawResponse = {
+	status: number
+	ok: boolean
+	url: string
+	headers: Record<string, string>
+	body: unknown
+	contentType: string | null
+}
+
 class ApiRequestError extends Error {
 	constructor(
 		message: string,
@@ -85,6 +96,15 @@ const CLI_NAME = 'aihero'
 const CLI_VERSION = '0.2.0'
 const DEFAULT_APP_ID = 'ai-hero'
 const DEFAULT_BASE_URL = 'http://localhost:3000'
+const HTTP_METHODS: HttpMethod[] = [
+	'GET',
+	'POST',
+	'PUT',
+	'PATCH',
+	'DELETE',
+	'OPTIONS',
+]
+const MAX_RESPONSE_CHARS = 12_000
 
 const KNOWN_APPS: Record<string, AppDefinition> = {
 	'ai-hero': {
@@ -395,6 +415,117 @@ const setCurrentApp = async (appId: string) => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+const buildUrl = (baseUrl: string, pathname: string) => {
+	const normalizedBase = baseUrl.replace(/\/+$/, '')
+	const normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`
+	return `${normalizedBase}${normalizedPath}`
+}
+
+const appendQueryParams = (
+	pathname: string,
+	queryParams: Record<string, string | undefined>,
+) => {
+	const url = new URL(pathname, 'http://localhost')
+	for (const [key, value] of Object.entries(queryParams)) {
+		if (value !== undefined && value !== '') {
+			url.searchParams.set(key, value)
+		}
+	}
+	return `${url.pathname}${url.search}`
+}
+
+const stringifyShort = (value: unknown, maxChars = 300) => {
+	try {
+		const str =
+			typeof value === 'string' ? value : JSON.stringify(value, null, 2)
+		if (str.length <= maxChars) return str
+		return `${str.slice(0, maxChars)}…`
+	} catch {
+		return String(value)
+	}
+}
+
+const parseJsonOption = ({
+	command,
+	option,
+	value,
+	required = false,
+}: {
+	command: string
+	option: string
+	value?: string
+	required?: boolean
+}): { ok: true; value: unknown } | { ok: false; payload: string } => {
+	if (!value) {
+		if (!required) return { ok: true, value: undefined }
+		return {
+			ok: false,
+			payload: respondError(
+				command,
+				`Missing required --${option} JSON payload`,
+				'MISSING_JSON_BODY',
+				`Provide valid JSON in --${option}, e.g. --${option} '{"key":"value"}'.`,
+				[],
+			),
+		}
+	}
+
+	try {
+		return {
+			ok: true,
+			value: JSON.parse(value),
+		}
+	} catch (error) {
+		return {
+			ok: false,
+			payload: respondError(
+				command,
+				`Invalid JSON in --${option}: ${error instanceof Error ? error.message : 'Parse error'}`,
+				'INVALID_JSON_BODY',
+				`Provide valid JSON in --${option}, e.g. --${option} '{"key":"value"}'.`,
+				[],
+			),
+		}
+	}
+}
+
+const compactResponseBody = async ({
+	body,
+	label,
+}: {
+	body: unknown
+	label: string
+}) => {
+	let serialized = ''
+	try {
+		serialized =
+			typeof body === 'string' ? body : JSON.stringify(body, null, 2) || 'null'
+	} catch {
+		serialized = String(body)
+	}
+
+	if (serialized.length <= MAX_RESPONSE_CHARS) {
+		return {
+			body,
+			bodyTruncated: false,
+			bodyFullOutput: null as string | null,
+			bodyCharCount: serialized.length,
+		}
+	}
+
+	const fullOutputPath = path.join(
+		os.tmpdir(),
+		`${CLI_NAME}-${label}-${Date.now()}.json`,
+	)
+	await fs.writeFile(fullOutputPath, serialized, 'utf8')
+	return {
+		body: `${serialized.slice(0, MAX_RESPONSE_CHARS)}…`,
+		bodyTruncated: true,
+		bodyFullOutput: fullOutputPath,
+		bodyCharCount: serialized.length,
+	}
+}
+
 const requestApi = async <T>({
 	baseUrl,
 	pathname,
@@ -405,12 +536,12 @@ const requestApi = async <T>({
 }: {
 	baseUrl: string
 	pathname: string
-	method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+	method?: HttpMethod
 	token?: string
 	body?: unknown
 	formBody?: URLSearchParams
 }): Promise<T> => {
-	const url = `${baseUrl}${pathname}`
+	const url = buildUrl(baseUrl, pathname)
 	const headers = new Headers()
 	headers.set('Accept', 'application/json')
 	if (token) headers.set('Authorization', `Bearer ${token}`)
@@ -454,6 +585,78 @@ const requestApi = async <T>({
 	}
 
 	return parsedBody as T
+}
+
+const requestApiRaw = async ({
+	baseUrl,
+	pathname,
+	method,
+	token,
+	body,
+	extraHeaders,
+}: {
+	baseUrl: string
+	pathname: string
+	method: HttpMethod
+	token?: string
+	body?: unknown
+	extraHeaders?: Record<string, string>
+}): Promise<ApiRawResponse> => {
+	const url = buildUrl(baseUrl, pathname)
+	const headers = new Headers()
+	headers.set('Accept', 'application/json')
+	if (token) headers.set('Authorization', `Bearer ${token}`)
+	for (const [key, value] of Object.entries(extraHeaders || {})) {
+		headers.set(key, value)
+	}
+
+	let payload: string | undefined
+	if (body !== undefined) {
+		payload = JSON.stringify(body)
+		if (!headers.has('Content-Type')) {
+			headers.set('Content-Type', 'application/json')
+		}
+	}
+
+	const response = await fetch(url, {
+		method,
+		headers,
+		body: payload,
+	})
+
+	const contentType = response.headers.get('content-type')
+	let parsedBody: unknown
+
+	if (contentType?.startsWith('image/')) {
+		const bytes = await response.arrayBuffer()
+		parsedBody = {
+			type: 'binary',
+			contentType,
+			byteLength: bytes.byteLength,
+		}
+	} else {
+		const rawText = await response.text()
+		parsedBody = rawText
+			? contentType?.includes('application/json')
+				? (JSON.parse(rawText) as unknown)
+				: rawText
+			: null
+	}
+
+	return {
+		status: response.status,
+		ok: response.ok,
+		url,
+		contentType,
+		headers: (() => {
+			const headerMap: Record<string, string> = {}
+			response.headers.forEach((value, key) => {
+				headerMap[key] = value
+			})
+			return headerMap
+		})(),
+		body: parsedBody,
+	}
 }
 
 const truncateArray = async <T>({
@@ -505,6 +708,23 @@ const tokenOption = Options.text('token').pipe(
 	Options.withDescription('Bearer token (defaults to stored token for app)'),
 	Options.optional,
 )
+
+const bodyOption = Options.text('body').pipe(
+	Options.withDescription('JSON request body'),
+	Options.optional,
+)
+
+const noAuthOption = Options.boolean('no-auth').pipe(
+	Options.withDescription('Do not send Authorization header'),
+	Options.withDefault(false),
+)
+
+const entityRequestOptions = {
+	app: appOption,
+	baseUrl: baseUrlOption,
+	token: tokenOption,
+	noAuth: noAuthOption,
+}
 
 const withContext = async ({
 	app,
@@ -609,6 +829,134 @@ const parseAppFromArgs = async (app: unknown, baseUrl: unknown) => {
 		appDefinition,
 		resolvedBaseUrl,
 	}
+}
+
+const runEndpointCommand = async ({
+	command,
+	app,
+	baseUrl,
+	token,
+	noAuth = false,
+	method,
+	pathname,
+	queryParams = {},
+	body,
+	extraHeaders = {},
+	successDescription,
+	defaultNextActions,
+}: {
+	command: string
+	app: unknown
+	baseUrl: unknown
+	token: unknown
+	noAuth?: boolean
+	method: HttpMethod
+	pathname: string
+	queryParams?: Record<string, string | undefined>
+	body?: unknown
+	extraHeaders?: Record<string, string>
+	successDescription?: string
+	defaultNextActions?: NextAction[]
+}): Promise<string> => {
+	const resolved = await withContext({
+		app,
+		baseUrl,
+		token,
+		command,
+		requireToken: false,
+	})
+	if (!resolved.ok) return resolved.payload
+
+	const finalPath = appendQueryParams(pathname, queryParams)
+	const response = await requestApiRaw({
+		baseUrl: resolved.context.baseUrl,
+		pathname: finalPath,
+		method,
+		token: noAuth ? undefined : resolved.context.token,
+		body,
+		extraHeaders,
+	})
+
+	const compactBody = await compactResponseBody({
+		body: response.body,
+		label: `${resolved.context.appId}-${method.toLowerCase()}-${finalPath.replace(/[^a-z0-9]+/gi, '-')}`,
+	})
+
+	const authNextActions: NextAction[] =
+		response.status === 401 || response.status === 403
+			? [
+					{
+						command: 'auth login [--app <app-id>] [--base-url <url>]',
+						description: 'Authenticate and retry',
+						params: {
+							'app-id': {
+								value: resolved.context.appId,
+								required: true,
+							},
+							url: {
+								value: resolved.context.baseUrl,
+							},
+						},
+					},
+					{
+						command:
+							'auth whoami [--app <app-id>] [--base-url <url>] [--token <token>]',
+						description: 'Verify active identity and token',
+						params: {
+							'app-id': {
+								value: resolved.context.appId,
+								required: true,
+							},
+						},
+					},
+				]
+			: []
+
+	const nextActions = [
+		...(defaultNextActions || []),
+		...authNextActions,
+	].filter(
+		(action, index, all) =>
+			all.findIndex((candidate) => candidate.command === action.command) ===
+			index,
+	)
+
+	if (nextActions.length === 0) {
+		nextActions.push({
+			command: 'app current',
+			description: 'Show current app profile context',
+		})
+	}
+
+	if (!response.ok) {
+		return respondError(
+			command,
+			`HTTP ${response.status} from ${method} ${finalPath}: ${stringifyShort(response.body)}`,
+			`HTTP_${response.status}`,
+			'Check request parameters/body and permissions, then retry.',
+			nextActions,
+		)
+	}
+
+	return respond(
+		command,
+		{
+			app: resolved.context.appId,
+			...(successDescription && { description: successDescription }),
+			method,
+			path: finalPath,
+			url: response.url,
+			status: response.status,
+			content_type: response.contentType,
+			body: compactBody.body,
+			body_truncated: compactBody.bodyTruncated,
+			body_char_count: compactBody.bodyCharCount,
+			...(compactBody.bodyFullOutput && {
+				body_full_output: compactBody.bodyFullOutput,
+			}),
+		},
+		nextActions,
+	)
 }
 
 const appListCommand = Command.make('list', {}, () =>
@@ -1230,8 +1578,91 @@ const authLogoutCommand = Command.make(
 					},
 				],
 			)
-		}),
+	}),
 ).pipe(Command.withDescription('Clear stored auth token from local config'))
+
+const authRouteCommand = Command.make(
+	'route',
+	{
+		app: appOption,
+		baseUrl: baseUrlOption,
+		token: tokenOption,
+		noAuth: noAuthOption,
+		action: Args.text({ name: 'action' }).pipe(
+			Args.withDescription(
+				'NextAuth catchall path (for example: session, csrf, providers, callback/github)',
+			),
+		),
+		method: Options.text('method').pipe(
+			Options.withDescription(`HTTP method (${HTTP_METHODS.join('|')})`),
+			Options.optional,
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, action, method, body }) =>
+		runAndPrint(async () => {
+			const normalizedAction = action.replace(/^\/+/, '')
+			const resolvedMethod = (unwrapOption<string>(method) || 'GET').toUpperCase()
+			if (!HTTP_METHODS.includes(resolvedMethod as HttpMethod)) {
+				return respondError(
+					`auth route ${normalizedAction}`,
+					`Unsupported --method '${resolvedMethod}'`,
+					'INVALID_HTTP_METHOD',
+					`Use one of: ${HTTP_METHODS.join(', ')}.`,
+					[],
+				)
+			}
+
+			const parsedBody = parseJsonOption({
+				command: `auth route ${normalizedAction}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: false,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: `auth route ${normalizedAction}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: resolvedMethod as HttpMethod,
+				pathname: `/api/auth/${normalizedAction}`,
+				body: parsedBody.value,
+				defaultNextActions: [
+					{
+						command: 'auth route session [--app <app-id>] [--method <method>]',
+						description: 'Inspect current auth session',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+							method: {
+								default: 'GET',
+								enum: ['GET', 'POST'],
+							},
+						},
+					},
+					{
+						command: 'auth route providers [--app <app-id>] [--method <method>]',
+						description: 'List configured auth providers',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+							method: {
+								default: 'GET',
+								enum: ['GET'],
+							},
+						},
+					},
+				],
+			})
+		}),
+).pipe(Command.withDescription('Call /api/auth/[...nextauth] catchall endpoints'))
 
 const authCommand = Command.make('auth', {}, () =>
 	runAndPrint(async () =>
@@ -2068,6 +2499,2078 @@ const surveyCommand = Command.make('survey', {}, () =>
 	Command.withDescription('Survey CRUD and analytics'),
 )
 
+const postListCommand = Command.make(
+	'list',
+	{
+		...entityRequestOptions,
+		slugOrId: Options.text('slug-or-id').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, slugOrId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'post list',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/posts',
+				queryParams: {
+					slugOrId: unwrapOption<string>(slugOrId),
+				},
+				defaultNextActions: [
+					{
+						command: 'post create --body <json> [--app <app-id>]',
+						description: 'Create a post',
+						params: {
+							json: {
+								description: 'Post JSON payload',
+								required: true,
+							},
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('List posts or get a post by slug/id'))
+
+const postGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		slugOrId: Args.text({ name: 'slug-or-id' }).pipe(
+			Args.withDescription('Post slug or ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, slugOrId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `post get ${slugOrId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/posts',
+				queryParams: { slugOrId },
+				defaultNextActions: [
+					{
+						command:
+							'post update <id> --body <json> [--action <action>] [--app <app-id>]',
+						description: 'Update a post',
+						params: {
+							id: {
+								description: 'Post ID',
+								required: true,
+							},
+							json: {
+								description: 'JSON patch payload',
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('Get a post by slug or ID'))
+
+const postCreateCommand = Command.make(
+	'create',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'post create',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: 'post create',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/posts',
+				body: parsedBody.value,
+				defaultNextActions: [
+					{
+						command: 'post list [--app <app-id>]',
+						description: 'List posts',
+						params: {
+							'app-id': {
+								value: DEFAULT_APP_ID,
+								required: true,
+							},
+						},
+					},
+				],
+			})
+		}),
+).pipe(Command.withDescription('Create a post from JSON payload'))
+
+const postUpdateCommand = Command.make(
+	'update',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Post ID')),
+		action: Options.text('action').pipe(Options.optional),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, id, action, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `post update ${id}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: `post update ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'PUT',
+				pathname: '/api/posts',
+				queryParams: {
+					id,
+					action: unwrapOption<string>(action),
+				},
+				body: parsedBody.value,
+				defaultNextActions: [
+					{
+						command: 'post get <slug-or-id> [--app <app-id>]',
+						description: 'Fetch a post',
+						params: {
+							'slug-or-id': {
+								value: id,
+								required: true,
+							},
+						},
+					},
+				],
+			})
+		}),
+).pipe(Command.withDescription('Update a post by ID'))
+
+const postDeleteCommand = Command.make(
+	'delete',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Post ID')),
+	},
+	({ app, baseUrl, token, noAuth, id }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `post delete ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'DELETE',
+				pathname: '/api/posts',
+				queryParams: { id },
+				defaultNextActions: [
+					{
+						command: 'post list [--app <app-id>]',
+						description: 'List remaining posts',
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('Delete a post by ID'))
+
+const postCommand = Command.make('post', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'post',
+			{
+				description: 'Post operations',
+				commands: [
+					{
+						name: 'list',
+						description: 'List posts',
+						usage: 'aihero post list [--slug-or-id <slug-or-id>]',
+					},
+					{
+						name: 'get',
+						description: 'Get a post by slug or ID',
+						usage: 'aihero post get <slug-or-id>',
+					},
+					{
+						name: 'create',
+						description: 'Create a post from JSON',
+						usage: "aihero post create --body '<json>'",
+					},
+					{
+						name: 'update',
+						description: 'Update a post by ID',
+						usage: "aihero post update <id> --body '<json>' [--action <action>]",
+					},
+					{
+						name: 'delete',
+						description: 'Delete a post by ID',
+						usage: 'aihero post delete <id>',
+					},
+				],
+			},
+			[
+				{
+					command: 'post list [--app <app-id>]',
+					description: 'List posts',
+				},
+				{
+					command: "post create --body '<json>' [--app <app-id>]",
+					description: 'Create a post',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		postListCommand,
+		postGetCommand,
+		postCreateCommand,
+		postUpdateCommand,
+		postDeleteCommand,
+	]),
+	Command.withDescription('Post CRUD operations'),
+)
+
+const lessonListCommand = Command.make(
+	'list',
+	{
+		...entityRequestOptions,
+		slugOrId: Options.text('slug-or-id').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, slugOrId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'lesson list',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/lessons',
+				queryParams: {
+					slugOrId: unwrapOption<string>(slugOrId),
+				},
+			}),
+		),
+).pipe(Command.withDescription('List lessons or get lesson by slug/id'))
+
+const lessonUpdateCommand = Command.make(
+	'update',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Lesson ID')),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, id, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `lesson update ${id}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: `lesson update ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'PUT',
+				pathname: '/api/lessons',
+				queryParams: { id },
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Update a lesson by ID'))
+
+const lessonSolutionGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		lessonId: Args.text({ name: 'lesson-id' }).pipe(
+			Args.withDescription('Lesson ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, lessonId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `lesson solution get ${lessonId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/lessons/${lessonId}/solution`,
+			}),
+		),
+).pipe(Command.withDescription('Get lesson solution'))
+
+const lessonSolutionCreateCommand = Command.make(
+	'create',
+	{
+		...entityRequestOptions,
+		lessonId: Args.text({ name: 'lesson-id' }).pipe(
+			Args.withDescription('Lesson ID'),
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, lessonId, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `lesson solution create ${lessonId}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: `lesson solution create ${lessonId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: `/api/lessons/${lessonId}/solution`,
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Create lesson solution'))
+
+const lessonSolutionUpdateCommand = Command.make(
+	'update',
+	{
+		...entityRequestOptions,
+		lessonId: Args.text({ name: 'lesson-id' }).pipe(
+			Args.withDescription('Lesson ID'),
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, lessonId, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `lesson solution update ${lessonId}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: `lesson solution update ${lessonId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'PUT',
+				pathname: `/api/lessons/${lessonId}/solution`,
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Update lesson solution'))
+
+const lessonSolutionDeleteCommand = Command.make(
+	'delete',
+	{
+		...entityRequestOptions,
+		lessonId: Args.text({ name: 'lesson-id' }).pipe(
+			Args.withDescription('Lesson ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, lessonId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `lesson solution delete ${lessonId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'DELETE',
+				pathname: `/api/lessons/${lessonId}/solution`,
+			}),
+		),
+).pipe(Command.withDescription('Delete lesson solution'))
+
+const lessonSolutionCommand = Command.make('solution', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'lesson solution',
+			{
+				description: 'Lesson solution operations',
+				commands: [
+					{
+						name: 'get',
+						description: 'Get lesson solution',
+						usage: 'aihero lesson solution get <lesson-id>',
+					},
+					{
+						name: 'create',
+						description: 'Create lesson solution from JSON',
+						usage: "aihero lesson solution create <lesson-id> --body '<json>'",
+					},
+					{
+						name: 'update',
+						description: 'Update lesson solution with JSON',
+						usage: "aihero lesson solution update <lesson-id> --body '<json>'",
+					},
+					{
+						name: 'delete',
+						description: 'Delete lesson solution',
+						usage: 'aihero lesson solution delete <lesson-id>',
+					},
+				],
+			},
+			[
+				{
+					command: 'lesson solution get <lesson-id> [--app <app-id>]',
+					description: 'Fetch lesson solution',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		lessonSolutionGetCommand,
+		lessonSolutionCreateCommand,
+		lessonSolutionUpdateCommand,
+		lessonSolutionDeleteCommand,
+	]),
+	Command.withDescription('Lesson solution CRUD'),
+)
+
+const lessonCommand = Command.make('lesson', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'lesson',
+			{
+				description: 'Lesson operations',
+				commands: [
+					{
+						name: 'list',
+						description: 'List lessons',
+						usage: 'aihero lesson list [--slug-or-id <slug-or-id>]',
+					},
+					{
+						name: 'update',
+						description: 'Update lesson',
+						usage: "aihero lesson update <id> --body '<json>'",
+					},
+					{
+						name: 'solution',
+						description: 'Manage lesson solutions',
+						usage: 'aihero lesson solution get <lesson-id>',
+					},
+				],
+			},
+			[
+				{
+					command: 'lesson list [--app <app-id>]',
+					description: 'List lessons',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		lessonListCommand,
+		lessonUpdateCommand,
+		lessonSolutionCommand,
+	]),
+	Command.withDescription('Lesson and solution operations'),
+)
+
+const productListCommand = Command.make(
+	'list',
+	{
+		...entityRequestOptions,
+		slugOrId: Options.text('slug-or-id').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, slugOrId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'product list',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/products',
+				queryParams: {
+					slugOrId: unwrapOption<string>(slugOrId),
+				},
+			}),
+		),
+).pipe(Command.withDescription('List products or get product by slug/id'))
+
+const productAvailabilityCommand = Command.make(
+	'availability',
+	{
+		...entityRequestOptions,
+		productId: Args.text({ name: 'product-id' }).pipe(
+			Args.withDescription('Product ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, productId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `product availability ${productId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/products/${productId}/availability`,
+			}),
+		),
+).pipe(Command.withDescription('Get seat availability for product'))
+
+const productCommand = Command.make('product', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'product',
+			{
+				description: 'Product operations',
+				commands: [
+					{
+						name: 'list',
+						description: 'List products',
+						usage: 'aihero product list [--slug-or-id <slug-or-id>]',
+					},
+					{
+						name: 'availability',
+						description: 'Check product seat availability',
+						usage: 'aihero product availability <product-id>',
+					},
+				],
+			},
+			[
+				{
+					command: 'product list [--app <app-id>]',
+					description: 'List products',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([productListCommand, productAvailabilityCommand]),
+	Command.withDescription('Product operations'),
+)
+
+const shortlinkListCommand = Command.make(
+	'list',
+	{
+		...entityRequestOptions,
+		search: Options.text('search').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, search }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'shortlink list',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/shortlinks',
+				queryParams: {
+					search: unwrapOption<string>(search),
+				},
+			}),
+		),
+).pipe(Command.withDescription('List shortlinks'))
+
+const shortlinkGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Shortlink ID')),
+	},
+	({ app, baseUrl, token, noAuth, id }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `shortlink get ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/shortlinks',
+				queryParams: { id },
+			}),
+		),
+).pipe(Command.withDescription('Get shortlink by ID'))
+
+const shortlinkCreateCommand = Command.make(
+	'create',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'shortlink create',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: 'shortlink create',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/shortlinks',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Create shortlink from JSON payload'))
+
+const shortlinkUpdateCommand = Command.make(
+	'update',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'shortlink update',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: 'shortlink update',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'PATCH',
+				pathname: '/api/shortlinks',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Update shortlink with JSON payload'))
+
+const shortlinkDeleteCommand = Command.make(
+	'delete',
+	{
+		...entityRequestOptions,
+		id: Args.text({ name: 'id' }).pipe(Args.withDescription('Shortlink ID')),
+	},
+	({ app, baseUrl, token, noAuth, id }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `shortlink delete ${id}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'DELETE',
+				pathname: '/api/shortlinks',
+				queryParams: { id },
+			}),
+		),
+).pipe(Command.withDescription('Delete shortlink by ID'))
+
+const shortlinkCommand = Command.make('shortlink', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'shortlink',
+			{
+				description: 'Shortlink operations',
+				commands: [
+					{
+						name: 'list',
+						description: 'List shortlinks',
+						usage: 'aihero shortlink list [--search <text>]',
+					},
+					{
+						name: 'get',
+						description: 'Get shortlink by ID',
+						usage: 'aihero shortlink get <id>',
+					},
+					{
+						name: 'create',
+						description: 'Create shortlink from JSON',
+						usage: "aihero shortlink create --body '<json>'",
+					},
+					{
+						name: 'update',
+						description: 'Update shortlink from JSON',
+						usage: "aihero shortlink update --body '<json>'",
+					},
+					{
+						name: 'delete',
+						description: 'Delete shortlink',
+						usage: 'aihero shortlink delete <id>',
+					},
+				],
+			},
+			[
+				{
+					command: 'shortlink list [--app <app-id>]',
+					description: 'List shortlinks',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		shortlinkListCommand,
+		shortlinkGetCommand,
+		shortlinkCreateCommand,
+		shortlinkUpdateCommand,
+		shortlinkDeleteCommand,
+	]),
+	Command.withDescription('Shortlink CRUD operations'),
+)
+
+const uploadNewCommand = Command.make(
+	'new',
+	{
+		...entityRequestOptions,
+		fileUrl: Options.text('file-url').pipe(
+			Options.withDescription('Uploaded file URL'),
+			Options.optional,
+		),
+		fileName: Options.text('file-name').pipe(
+			Options.withDescription('Optional file name'),
+			Options.optional,
+		),
+		parentResourceId: Options.text('parent-resource-id').pipe(
+			Options.withDescription('Parent resource ID'),
+			Options.optional,
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, fileUrl, fileName, parentResourceId, body }) =>
+		runAndPrint(async () => {
+			let payload: unknown
+			const rawBody = unwrapOption<string>(body)
+			if (rawBody) {
+				const parsedBody = parseJsonOption({
+					command: 'upload new',
+					option: 'body',
+					value: rawBody,
+					required: true,
+				})
+				if (!parsedBody.ok) return parsedBody.payload
+				payload = parsedBody.value
+			} else {
+				const urlValue = unwrapOption<string>(fileUrl)
+				const parentIdValue = unwrapOption<string>(parentResourceId)
+				if (!urlValue || !parentIdValue) {
+					return respondError(
+						'upload new',
+						'Missing upload payload',
+						'MISSING_UPLOAD_PAYLOAD',
+						"Provide --body JSON or both --file-url and --parent-resource-id.",
+						[],
+					)
+				}
+				payload = {
+					file: {
+						url: urlValue,
+						...(unwrapOption<string>(fileName) && {
+							name: unwrapOption<string>(fileName),
+						}),
+					},
+					metadata: {
+						parentResourceId: parentIdValue,
+					},
+				}
+			}
+
+			return runEndpointCommand({
+				command: 'upload new',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/uploads/new',
+				body: payload,
+			})
+		}),
+).pipe(Command.withDescription('Create new uploaded video event'))
+
+const uploadSignedUrlCommand = Command.make(
+	'signed-url',
+	{
+		...entityRequestOptions,
+		objectName: Options.text('object-name').pipe(
+			Options.withDescription('Object filename/key'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, objectName }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'upload signed-url',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/uploads/signed-url',
+				queryParams: {
+					objectName: unwrapOption<string>(objectName),
+				},
+			}),
+		),
+).pipe(Command.withDescription('Get signed upload URL'))
+
+const uploadCommand = Command.make('upload', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'upload',
+			{
+				description: 'Upload-related operations',
+				commands: [
+					{
+						name: 'new',
+						description: 'Submit uploaded file event',
+						usage:
+							'aihero upload new --file-url <url> --parent-resource-id <id>',
+					},
+					{
+						name: 'signed-url',
+						description: 'Get signed S3 upload URL',
+						usage: 'aihero upload signed-url --object-name <filename>',
+					},
+				],
+			},
+			[
+				{
+					command: 'upload signed-url --object-name <filename>',
+					description: 'Request a signed upload URL',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([uploadNewCommand, uploadSignedUrlCommand]),
+	Command.withDescription('Upload endpoints'),
+)
+
+const videoGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		videoResourceId: Args.text({ name: 'video-resource-id' }).pipe(
+			Args.withDescription('Video resource ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, videoResourceId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `video get ${videoResourceId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/${videoResourceId}`,
+			}),
+		),
+).pipe(Command.withDescription('Get video resource by ID'))
+
+const videoThumbnailCommand = Command.make(
+	'thumbnail',
+	{
+		...entityRequestOptions,
+		videoResourceId: Args.text({ name: 'video-resource-id' }).pipe(
+			Args.withDescription('Video resource ID'),
+		),
+		time: Options.text('time').pipe(
+			Options.withDescription('Thumbnail time in seconds'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, videoResourceId, time }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `video thumbnail ${videoResourceId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/thumbnails',
+				queryParams: {
+					videoResourceId,
+					time: unwrapOption<string>(time),
+				},
+			}),
+		),
+).pipe(Command.withDescription('Get video thumbnail image metadata'))
+
+const videoCommand = Command.make('video', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'video',
+			{
+				description: 'Video resource operations',
+				commands: [
+					{
+						name: 'get',
+						description: 'Get video resource',
+						usage: 'aihero video get <video-resource-id>',
+					},
+					{
+						name: 'thumbnail',
+						description: 'Get thumbnail for video resource',
+						usage: 'aihero video thumbnail <video-resource-id> [--time <seconds>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'video get <video-resource-id> [--app <app-id>]',
+					description: 'Fetch video resource',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([videoGetCommand, videoThumbnailCommand]),
+	Command.withDescription('Video and thumbnail endpoints'),
+)
+
+const certificateGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		resource: Options.text('resource').pipe(
+			Options.withDescription('Resource slug or ID'),
+			Options.optional,
+		),
+		user: Options.text('user').pipe(
+			Options.withDescription('User ID or email'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, resource, user }) =>
+		runAndPrint(async () => {
+			const resourceValue = unwrapOption<string>(resource)
+			const userValue = unwrapOption<string>(user)
+			if (!resourceValue || !userValue) {
+				return respondError(
+					'certificate get',
+					'Missing --resource or --user',
+					'MISSING_CERTIFICATE_QUERY',
+					'Provide both --resource and --user.',
+					[],
+				)
+			}
+
+			return runEndpointCommand({
+				command: 'certificate get',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/certificates',
+				queryParams: {
+					resource: resourceValue,
+					user: userValue,
+				},
+			})
+		}),
+).pipe(Command.withDescription('Generate certificate image/response'))
+
+const certificateCommand = Command.make('certificate', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'certificate',
+			{
+				description: 'Certificate generation endpoint',
+				commands: [
+					{
+						name: 'get',
+						description: 'Generate certificate',
+						usage: 'aihero certificate get --resource <slug-or-id> --user <id>',
+					},
+				],
+			},
+			[
+				{
+					command:
+						'certificate get --resource <slug-or-id> --user <id> [--app <app-id>]',
+					description: 'Generate certificate',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([certificateGetCommand]),
+	Command.withDescription('Certificate endpoint'),
+)
+
+const ogGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		resource: Options.text('resource').pipe(Options.optional),
+		title: Options.text('title').pipe(Options.optional),
+		image: Options.text('image').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, resource, title, image }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'og get',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/og',
+				queryParams: {
+					resource: unwrapOption<string>(resource),
+					title: unwrapOption<string>(title),
+					image: unwrapOption<string>(image),
+				},
+			}),
+		),
+).pipe(Command.withDescription('Generate OG image'))
+
+const ogDefaultCommand = Command.make(
+	'default',
+	{
+		...entityRequestOptions,
+		title: Options.text('title').pipe(Options.optional),
+	},
+	({ app, baseUrl, token, noAuth, title }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'og default',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/og/default',
+				queryParams: {
+					title: unwrapOption<string>(title),
+				},
+			}),
+		),
+).pipe(Command.withDescription('Generate default OG image'))
+
+const ogCommand = Command.make('og', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'og',
+			{
+				description: 'Open Graph image endpoints',
+				commands: [
+					{
+						name: 'get',
+						description: 'Generate OG image',
+						usage:
+							'aihero og get [--resource <slug-or-id>] [--title <title>] [--image <url>]',
+					},
+					{
+						name: 'default',
+						description: 'Generate default OG image',
+						usage: 'aihero og default [--title <title>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'og get [--resource <slug-or-id>] [--app <app-id>]',
+					description: 'Generate OG image',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([ogGetCommand, ogDefaultCommand]),
+	Command.withDescription('OG image endpoints'),
+)
+
+const chatSendCommand = Command.make(
+	'send',
+	{
+		...entityRequestOptions,
+		messages: Options.text('messages').pipe(
+			Options.withDescription('JSON array of chat messages'),
+			Options.optional,
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, messages, body }) =>
+		runAndPrint(async () => {
+			const messagesRaw = unwrapOption<string>(messages)
+			const bodyRaw = unwrapOption<string>(body)
+			const parsed = parseJsonOption({
+				command: 'chat send',
+				option: messagesRaw ? 'messages' : 'body',
+				value: messagesRaw || bodyRaw,
+				required: true,
+			})
+			if (!parsed.ok) return parsed.payload
+
+			const payload =
+				messagesRaw || !bodyRaw
+					? { messages: parsed.value }
+					: (parsed.value as unknown)
+
+			return runEndpointCommand({
+				command: 'chat send',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/chat',
+				body: payload,
+			})
+		}),
+).pipe(Command.withDescription('Send chat messages to /api/chat'))
+
+const chatCommand = Command.make('chat', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'chat',
+			{
+				description: 'Chat endpoint',
+				commands: [
+					{
+						name: 'send',
+						description: 'Send messages to chat endpoint',
+						usage: "aihero chat send --messages '<json-array>'",
+					},
+				],
+			},
+			[
+				{
+					command: "chat send --messages '<json-array>' [--app <app-id>]",
+					description: 'Send chat messages',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([chatSendCommand]),
+	Command.withDescription('Chat endpoint'),
+)
+
+const coursebuilderGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		path: Args.text({ name: 'path' }).pipe(
+			Args.withDescription('Coursebuilder catchall path'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, path }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `coursebuilder get ${path}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/coursebuilder/${path.replace(/^\/+/, '')}`,
+			}),
+		),
+).pipe(Command.withDescription('GET /api/coursebuilder/[...path]'))
+
+const coursebuilderPostCommand = Command.make(
+	'post',
+	{
+		...entityRequestOptions,
+		path: Args.text({ name: 'path' }).pipe(
+			Args.withDescription('Coursebuilder catchall path'),
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, path, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `coursebuilder post ${path}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: `coursebuilder post ${path}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: `/api/coursebuilder/${path.replace(/^\/+/, '')}`,
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('POST /api/coursebuilder/[...path]'))
+
+const coursebuilderSubscribeCommand = Command.make(
+	'subscribe',
+	{
+		...entityRequestOptions,
+		email: Options.text('email').pipe(
+			Options.withDescription('Email address'),
+			Options.optional,
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, email, body }) =>
+		runAndPrint(async () => {
+			const bodyRaw = unwrapOption<string>(body)
+			let payload: unknown
+			if (bodyRaw) {
+				const parsedBody = parseJsonOption({
+					command: 'coursebuilder subscribe',
+					option: 'body',
+					value: bodyRaw,
+					required: true,
+				})
+				if (!parsedBody.ok) return parsedBody.payload
+				payload = parsedBody.value
+			} else {
+				const emailValue = unwrapOption<string>(email)
+				if (!emailValue) {
+					return respondError(
+						'coursebuilder subscribe',
+						'Missing --email or --body',
+						'MISSING_SUBSCRIBE_PAYLOAD',
+						'Provide --email or full --body JSON payload.',
+						[],
+					)
+				}
+				payload = { email: emailValue }
+			}
+			return runEndpointCommand({
+				command: 'coursebuilder subscribe',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/coursebuilder/subscribe-to-list/convertkit',
+				body: payload,
+			})
+		}),
+).pipe(Command.withDescription('Subscribe email via convertkit endpoint'))
+
+const coursebuilderCommand = Command.make('coursebuilder', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'coursebuilder',
+			{
+				description: 'Coursebuilder integration endpoints',
+				commands: [
+					{
+						name: 'get',
+						description: 'GET catchall path',
+						usage: 'aihero coursebuilder get <path>',
+					},
+					{
+						name: 'post',
+						description: 'POST catchall path',
+						usage: "aihero coursebuilder post <path> --body '<json>'",
+					},
+					{
+						name: 'subscribe',
+						description: 'Subscribe to list',
+						usage: 'aihero coursebuilder subscribe --email <email>',
+					},
+				],
+			},
+			[
+				{
+					command: 'coursebuilder subscribe --email <email> [--app <app-id>]',
+					description: 'Subscribe to list',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		coursebuilderGetCommand,
+		coursebuilderPostCommand,
+		coursebuilderSubscribeCommand,
+	]),
+	Command.withDescription('Coursebuilder endpoints'),
+)
+
+const inngestGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+	},
+	({ app, baseUrl, token, noAuth }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'inngest get',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/inngest',
+			}),
+		),
+).pipe(Command.withDescription('GET /api/inngest'))
+
+const inngestPostCommand = Command.make(
+	'post',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'inngest post',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: false,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: 'inngest post',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/inngest',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('POST /api/inngest'))
+
+const inngestPutCommand = Command.make(
+	'put',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'inngest put',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: false,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: 'inngest put',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'PUT',
+				pathname: '/api/inngest',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('PUT /api/inngest (refresh/sync)'))
+
+const inngestCommand = Command.make('inngest', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'inngest',
+			{
+				description: 'Inngest route handlers',
+				commands: [
+					{
+						name: 'get',
+						description: 'GET /api/inngest',
+						usage: 'aihero inngest get',
+					},
+					{
+						name: 'post',
+						description: 'POST /api/inngest',
+						usage: "aihero inngest post [--body '<json>']",
+					},
+					{
+						name: 'put',
+						description: 'PUT /api/inngest',
+						usage: "aihero inngest put [--body '<json>']",
+					},
+				],
+			},
+			[
+				{
+					command: 'inngest get [--app <app-id>]',
+					description: 'Inspect inngest route',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		inngestGetCommand,
+		inngestPostCommand,
+		inngestPutCommand,
+	]),
+	Command.withDescription('Inngest endpoints'),
+)
+
+const cronRunCommand = Command.make(
+	'run',
+	{
+		...entityRequestOptions,
+	},
+	({ app, baseUrl, token, noAuth }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'cron run',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/cron',
+			}),
+		),
+).pipe(Command.withDescription('Run cron refresh endpoint'))
+
+const cronCommand = Command.make('cron', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'cron',
+			{
+				description: 'Cron endpoint',
+				commands: [
+					{
+						name: 'run',
+						description: 'Trigger /api/cron',
+						usage: 'aihero cron run',
+					},
+				],
+			},
+			[
+				{
+					command: 'cron run [--app <app-id>]',
+					description: 'Trigger cron refresh',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([cronRunCommand]),
+	Command.withDescription('Cron endpoint'),
+)
+
+const muxUploadUrlCommand = Command.make(
+	'upload-url',
+	{
+		...entityRequestOptions,
+	},
+	({ app, baseUrl, token, noAuth }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'mux upload-url',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/mux',
+			}),
+		),
+).pipe(Command.withDescription('Create Mux direct upload URL'))
+
+const muxWebhookCommand = Command.make(
+	'webhook',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'mux webhook',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: 'mux webhook',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/mux/webhook',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Send payload to mux webhook endpoint'))
+
+const muxCommand = Command.make('mux', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'mux',
+			{
+				description: 'Mux endpoints',
+				commands: [
+					{
+						name: 'upload-url',
+						description: 'Create direct upload URL',
+						usage: 'aihero mux upload-url',
+					},
+					{
+						name: 'webhook',
+						description: 'Send mux webhook payload',
+						usage: "aihero mux webhook --body '<json>'",
+					},
+				],
+			},
+			[
+				{
+					command: 'mux upload-url [--app <app-id>]',
+					description: 'Request Mux upload URL',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([muxUploadUrlCommand, muxWebhookCommand]),
+	Command.withDescription('Mux endpoints'),
+)
+
+const ocrWebhookCommand = Command.make(
+	'ocr',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'webhook ocr',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: 'webhook ocr',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/ocr/webhook',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Send payload to OCR webhook endpoint'))
+
+const postmarkWebhookCommand = Command.make(
+	'postmark',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+		secret: Options.text('secret').pipe(
+			Options.withDescription('POSTMARK_WEBHOOK_SECRET (header override)'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, body, secret }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'webhook postmark',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: 'webhook postmark',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/postmark/webhook',
+				body: parsedBody.value,
+				extraHeaders: unwrapOption<string>(secret)
+					? {
+							'course-builder': unwrapOption<string>(secret) as string,
+						}
+					: {},
+			})
+		}),
+).pipe(Command.withDescription('Send payload to postmark webhook endpoint'))
+
+const webhookCommand = Command.make('webhook', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'webhook',
+			{
+				description: 'Webhook endpoints',
+				commands: [
+					{
+						name: 'ocr',
+						description: 'Send OCR webhook payload',
+						usage: "aihero webhook ocr --body '<json>'",
+					},
+					{
+						name: 'postmark',
+						description: 'Send Postmark webhook payload',
+						usage: "aihero webhook postmark --body '<json>' [--secret <secret>]",
+					},
+				],
+			},
+			[
+				{
+					command: "webhook ocr --body '<json>' [--app <app-id>]",
+					description: 'Send OCR webhook payload',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([ocrWebhookCommand, postmarkWebhookCommand]),
+	Command.withDescription('Webhook helpers'),
+)
+
+const supportActionCommand = Command.make(
+	'action',
+	{
+		...entityRequestOptions,
+		action: Args.text({ name: 'action' }).pipe(
+			Args.withDescription('Support action path segment'),
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, action, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `support action ${action}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: `support action ${action}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: `/api/support/${action.replace(/^\/+/, '')}`,
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('Invoke support action endpoint'))
+
+const supportCommand = Command.make('support', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'support',
+			{
+				description: 'Support integration endpoint',
+				commands: [
+					{
+						name: 'action',
+						description: 'Invoke support action',
+						usage: "aihero support action <action> --body '<json>'",
+					},
+				],
+			},
+			[
+				{
+					command: "support action <action> --body '<json>' [--app <app-id>]",
+					description: 'Invoke support action',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([supportActionCommand]),
+	Command.withDescription('Support endpoint'),
+)
+
+const creatorCommand = Command.make('creator', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'creator',
+			{
+				description:
+					'Creator workflow surface area (content publishing + video upload)',
+				commands: [
+					{
+						name: 'post',
+						description: 'Create and manage posts',
+						usage: 'aihero post create --body <json>',
+					},
+					{
+						name: 'upload',
+						description: 'Get signed URLs and register uploaded videos',
+						usage: 'aihero upload signed-url --object-name <filename>',
+					},
+					{
+						name: 'video',
+						description: 'Inspect video resources and thumbnails',
+						usage: 'aihero video get <video-resource-id>',
+					},
+				],
+			},
+			[
+				{
+					command: "post create --body '<json>' [--app <app-id>]",
+					description: 'Create a post',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'upload signed-url --object-name <filename> [--app <app-id>]',
+					description: 'Get signed S3 URL for creator upload flow',
+					params: {
+						filename: {
+							description: 'Original file name',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'video get <video-resource-id> [--app <app-id>]',
+					description: 'Fetch video resource status',
+					params: {
+						'video-resource-id': {
+							description: 'Video resource ID',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(Command.withDescription('Creator-oriented workflows'))
+
+const crudCommand = Command.make('crud', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'crud',
+			{
+				description: 'CRUD surfaces for content and links',
+				commands: [
+					{
+						name: 'survey',
+						description: 'Survey CRUD operations',
+						usage: 'aihero survey list [--app <app-id>]',
+					},
+					{
+						name: 'post',
+						description: 'Post CRUD operations',
+						usage: 'aihero post list [--app <app-id>]',
+					},
+					{
+						name: 'lesson',
+						description: 'Lesson and solution operations',
+						usage: 'aihero lesson list [--app <app-id>]',
+					},
+					{
+						name: 'product',
+						description: 'Product lookup and availability operations',
+						usage: 'aihero product list [--app <app-id>]',
+					},
+					{
+						name: 'shortlink',
+						description: 'Shortlink CRUD operations',
+						usage: 'aihero shortlink list [--app <app-id>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'survey list [--app <app-id>]',
+					description: 'List surveys',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'post list [--app <app-id>]',
+					description: 'List posts',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'shortlink list [--app <app-id>]',
+					description: 'List shortlinks',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(Command.withDescription('Content CRUD operations'))
+
+const analyticsCommand = Command.make('analytics', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'analytics',
+			{
+				description: 'Analytics surfaces for support and creator reporting',
+				commands: [
+					{
+						name: 'survey',
+						description: 'Survey analytics by slug or ID',
+						usage: 'aihero survey analytics <slug-or-id> [--app <app-id>]',
+					},
+				],
+			},
+			[
+				{
+					command: 'survey analytics <slug-or-id> [--app <app-id>]',
+					description: 'Get survey analytics',
+					params: {
+						'slug-or-id': {
+							description: 'Survey slug or ID',
+							required: true,
+						},
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(Command.withDescription('Analytics operations'))
+
+const trpcGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		procedure: Args.text({ name: 'procedure' }).pipe(
+			Args.withDescription('tRPC procedure path'),
+		),
+		query: Options.text('query').pipe(
+			Options.withDescription('Raw query string'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, procedure, query }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `trpc get ${procedure}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/trpc/${procedure.replace(/^\/+/, '')}${unwrapOption<string>(query) ? `?${unwrapOption<string>(query)}` : ''}`,
+			}),
+		),
+).pipe(Command.withDescription('GET tRPC procedure endpoint'))
+
+const trpcPostCommand = Command.make(
+	'post',
+	{
+		...entityRequestOptions,
+		procedure: Args.text({ name: 'procedure' }).pipe(
+			Args.withDescription('tRPC procedure path'),
+		),
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, procedure, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: `trpc post ${procedure}`,
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+			return runEndpointCommand({
+				command: `trpc post ${procedure}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: `/api/trpc/${procedure.replace(/^\/+/, '')}`,
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('POST tRPC procedure endpoint'))
+
+const trpcCommand = Command.make('trpc', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'trpc',
+			{
+				description: 'tRPC endpoints',
+				commands: [
+					{
+						name: 'get',
+						description: 'GET tRPC procedure',
+						usage: 'aihero trpc get <procedure> [--query <query>]',
+					},
+					{
+						name: 'post',
+						description: 'POST tRPC procedure',
+						usage: "aihero trpc post <procedure> --body '<json>'",
+					},
+				],
+			},
+			[
+				{
+					command: 'trpc get <procedure> [--app <app-id>]',
+					description: 'Call tRPC procedure',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([trpcGetCommand, trpcPostCommand]),
+	Command.withDescription('tRPC endpoints'),
+)
+
+const uploadthingGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		query: Options.text('query').pipe(
+			Options.withDescription('Raw query string'),
+			Options.optional,
+		),
+	},
+	({ app, baseUrl, token, noAuth, query }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'uploadthing get',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: `/api/uploadthing${unwrapOption<string>(query) ? `?${unwrapOption<string>(query)}` : ''}`,
+			}),
+		),
+).pipe(Command.withDescription('GET /api/uploadthing'))
+
+const uploadthingPostCommand = Command.make(
+	'post',
+	{
+		...entityRequestOptions,
+		body: bodyOption,
+	},
+	({ app, baseUrl, token, noAuth, body }) =>
+		runAndPrint(async () => {
+			const parsedBody = parseJsonOption({
+				command: 'uploadthing post',
+				option: 'body',
+				value: unwrapOption<string>(body),
+				required: true,
+			})
+			if (!parsedBody.ok) return parsedBody.payload
+
+			return runEndpointCommand({
+				command: 'uploadthing post',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/uploadthing',
+				body: parsedBody.value,
+			})
+		}),
+).pipe(Command.withDescription('POST /api/uploadthing'))
+
+const uploadthingCommand = Command.make('uploadthing', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'uploadthing',
+			{
+				description: 'UploadThing route handlers',
+				commands: [
+					{
+						name: 'get',
+						description: 'GET uploadthing route',
+						usage: 'aihero uploadthing get [--query <query>]',
+					},
+					{
+						name: 'post',
+						description: 'POST uploadthing route',
+						usage: "aihero uploadthing post --body '<json>'",
+					},
+				],
+			},
+			[
+				{
+					command: 'uploadthing get [--app <app-id>]',
+					description: 'Inspect uploadthing route',
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([uploadthingGetCommand, uploadthingPostCommand]),
+	Command.withDescription('UploadThing endpoints'),
+)
+
 const root = Command.make(CLI_NAME, {}, () =>
 	runAndPrint(async () => {
 		const config = await readConfig()
@@ -2084,7 +4587,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 			'',
 			{
 				description:
-					'Agent-first multi-app CLI (JSON envelopes, HATEOAS next_actions, OAuth device login)',
+					'Agent-first AI Hero CLI focused on creator workflows, support actions, CRUD, and analytics',
 				current_app: currentApp,
 				app: {
 					id: currentApp,
@@ -2096,6 +4599,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 				config_path: getConfigPath(),
 				registered_apps: knownAppIds,
 				discovered_apps: discoveredAppIds,
+				focus_areas: ['creator', 'support', 'crud', 'analytics'],
 				commands: [
 					{
 						name: 'app',
@@ -2109,10 +4613,26 @@ const root = Command.make(CLI_NAME, {}, () =>
 						usage: 'aihero auth login --app ai-hero',
 					},
 					{
-						name: 'survey',
+						name: 'creator',
 						description:
-							'Survey CRUD and analytics commands (only on apps with survey API)',
-						usage: 'aihero survey list --app ai-hero',
+							'Creator workflows for post publishing and video upload/inspection',
+						usage: 'aihero creator',
+					},
+					{
+						name: 'support',
+						description: 'Support actions and workflows',
+						usage: "aihero support action <action> --body '<json>'",
+					},
+					{
+						name: 'crud',
+						description:
+							'CRUD surfaces for surveys, posts, lessons, products, and shortlinks',
+						usage: 'aihero crud',
+					},
+					{
+						name: 'analytics',
+						description: 'Analytics surfaces for support and creator reporting',
+						usage: 'aihero analytics',
 					},
 				],
 			},
@@ -2136,6 +4656,28 @@ const root = Command.make(CLI_NAME, {}, () =>
 					},
 				},
 				{
+					command: 'creator',
+					description: 'Open creator-focused command surface',
+				},
+				{
+					command: 'support action <action> --body <json> [--app <app-id>]',
+					description: 'Run a support action',
+					params: {
+						action: {
+							description: 'Support action path segment',
+							required: true,
+						},
+					},
+				},
+				{
+					command: 'crud',
+					description: 'Open CRUD command surface',
+				},
+				{
+					command: 'analytics',
+					description: 'Open analytics command surface',
+				},
+				{
 					command: 'survey list [--app <app-id>]',
 					description: 'List surveys once authenticated',
 					params: {
@@ -2147,10 +4689,26 @@ const root = Command.make(CLI_NAME, {}, () =>
 				},
 			],
 		)
-	}),
+		}),
 ).pipe(
-	Command.withSubcommands([appCommand, authCommand, surveyCommand]),
-	Command.withDescription('AI Hero / app-profile CLI'),
+	Command.withSubcommands([
+		appCommand,
+		authCommand,
+		creatorCommand,
+		supportCommand,
+		crudCommand,
+		analyticsCommand,
+		surveyCommand,
+		postCommand,
+		lessonCommand,
+		productCommand,
+		shortlinkCommand,
+		uploadCommand,
+		videoCommand,
+	]),
+	Command.withDescription(
+		'AI Hero CLI focused on creator workflows, support actions, CRUD, and analytics',
+	),
 )
 
 const cli = Command.run(root, {
