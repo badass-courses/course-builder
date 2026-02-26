@@ -12,6 +12,11 @@
 			"types": "./dist/resource-paths.d.ts",
 			"import": "./dist/resource-paths.js",
 			"default": "./dist/resource-paths.js"
+		},
+		"./transform-workshop-result": {
+			"types": "./dist/transform-workshop-result.d.ts",
+			"import": "./dist/transform-workshop-result.js",
+			"default": "./dist/transform-workshop-result.js"
 		}
 	},
 	"files": [
