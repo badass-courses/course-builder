@@ -394,6 +394,51 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
 	return workshop
 }
 
+type WorkshopTransformInput = Parameters<typeof transformWorkshopToModuleSchema>[0]
+
+const workshopTransformFieldsSchema = z.preprocess(
+	(value) =>
+		value && typeof value === 'object' && !Array.isArray(value)
+			? value
+			: {},
+	z.record(z.any()),
+)
+
+const workshopTransformResourceSchema: z.ZodType<WorkshopTransformInput> = z.lazy(
+	() =>
+		z
+			.object({
+				id: z.string(),
+				type: z.string(),
+				fields: workshopTransformFieldsSchema,
+				resources: z
+					.array(
+						z
+							.object({
+								resourceId: z.string(),
+								position: z.number(),
+								metadata: z.unknown().optional(),
+								resource: workshopTransformResourceSchema,
+							})
+							.passthrough(),
+					)
+					.optional(),
+			})
+			.passthrough(),
+)
+
+/**
+ * Normalizes workshop query results for the module transform utility.
+ *
+ * @param workshop - Raw Drizzle result value.
+ * @returns Zod parse result for normalized transform input.
+ */
+function normalizeWorkshopForApiTransform(
+	workshop: unknown,
+): z.SafeParseReturnType<unknown, WorkshopTransformInput> {
+	return workshopTransformResourceSchema.safeParse(workshop)
+}
+
 /**
  * Fetches workshop/tutorial data for external CLI usage via API routes.
  */
@@ -462,10 +507,17 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 		return null
 	}
 
+	const normalizedWorkshop = normalizeWorkshopForApiTransform(workshop)
+	if (!normalizedWorkshop.success) {
+		await log.error('getWorkshopViaApi.invalidWorkshopShape', {
+			moduleSlugOrId,
+			issues: normalizedWorkshop.error.issues,
+		})
+		return null
+	}
+
 	// Transform to ModuleSchema format
-	return transformWorkshopToModuleSchema(
-		workshop as Parameters<typeof transformWorkshopToModuleSchema>[0],
-	)
+	return transformWorkshopToModuleSchema(normalizedWorkshop.data)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
