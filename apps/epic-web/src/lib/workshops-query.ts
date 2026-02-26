@@ -431,7 +431,21 @@ const workshopTransformResourceSchema: z.ZodType<
 )
 
 /**
- * Fetches workshop/tutorial data for external CLI usage via API routes.
+ * Fetches workshop/tutorial resource graph for external CLI API consumers.
+ *
+ * @param moduleSlugOrId - Workshop or tutorial slug (`fields.slug`) or content
+ * resource id to resolve.
+ * @returns A promise that resolves to transformed module resource data when
+ * found, or `null` when no matching module exists or the query result shape is
+ * invalid. The promise can reject if the underlying database query fails.
+ *
+ * @example
+ * ```ts
+ * async function run() {
+ * 	const moduleData = await getWorkshopViaApi('slug-or-id')
+ * 	console.log(moduleData)
+ * }
+ * ```
  */
 export async function getWorkshopViaApi(moduleSlugOrId: string) {
 	const visibility: ('public' | 'unlisted')[] = ['public', 'unlisted']
@@ -456,6 +470,13 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 			resources: {
 				with: {
 					resource: {
+						extras: {
+							fields: sql<
+								Record<string, any>
+							>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
+								'fields',
+							),
+						},
 						with: {
 							resources: {
 								with: {
