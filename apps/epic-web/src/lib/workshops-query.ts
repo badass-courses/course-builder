@@ -463,7 +463,9 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 	}
 
 	// Transform to ModuleSchema format
-	return transformWorkshopToModuleSchema(workshop)
+	return transformWorkshopToModuleSchema(
+		workshop as Parameters<typeof transformWorkshopToModuleSchema>[0],
+	)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
