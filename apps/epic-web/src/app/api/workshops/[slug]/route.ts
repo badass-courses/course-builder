@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getWorkshopViaApi } from '@/lib/workshops-query'
+import { log } from '@/server/logger'
 
 const corsHeaders = {
 	'Access-Control-Allow-Origin': '*',
@@ -25,7 +26,13 @@ export async function GET(
 		}
 
 		return NextResponse.json(workshop, { headers: corsHeaders })
-	} catch {
+	} catch (error) {
+		await log.error('api.workshops.get.failed', {
+			slug,
+			error: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+		})
+
 		return NextResponse.json(null, { headers: corsHeaders })
 	}
 }

@@ -398,6 +398,8 @@ export async function getMinimalWorkshop(moduleSlugOrId: string) {
  * Fetches workshop/tutorial data for external CLI usage via API routes.
  */
 export async function getWorkshopViaApi(moduleSlugOrId: string) {
+	const visibility: ('public' | 'unlisted')[] = ['public', 'unlisted']
+
 	const workshop = await db.query.contentResource.findFirst({
 		where: and(
 			or(
@@ -408,6 +410,10 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 				eq(contentResource.id, moduleSlugOrId),
 			),
 			inArray(contentResource.type, ['workshop', 'tutorial']),
+			inArray(
+				sql`JSON_EXTRACT (${contentResource.fields}, "$.visibility")`,
+				visibility,
+			),
 		),
 
 		with: {

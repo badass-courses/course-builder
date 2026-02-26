@@ -45,6 +45,43 @@ interface ModuleResult {
 }
 
 /**
+ * Returns `true` when a lesson resource contains a solution child resource.
+ *
+ * @param resource - Lesson resource to inspect for nested solutions.
+ */
+function resourceHasSolution(resource: DatabaseResource): boolean {
+	return (
+		resource.resources?.some(
+			(nestedResourceRelation) =>
+				nestedResourceRelation.resource.type === 'solution',
+		) ?? false
+	)
+}
+
+/**
+ * Returns a stable slug value for transformed resources.
+ *
+ * Falls back to the resource id and warns when source data is missing slug.
+ *
+ * @param resource - Resource that should provide a slug.
+ */
+function getSlugOrId(resource: DatabaseResource): string {
+	if (resource.fields.slug) {
+		return resource.fields.slug
+	}
+
+	console.warn(
+		'transformWorkshopToModuleSchema: missing slug, using resource id fallback',
+		{
+			resourceId: resource.id,
+			resourceType: resource.type,
+		},
+	)
+
+	return resource.id
+}
+
+/**
  * Transform a database workshop result into ModuleSchema format
  */
 export function transformWorkshopToModuleSchema(
@@ -85,18 +122,12 @@ function transformSection(section: DatabaseResource): ModuleResource {
 		const resource = resourceRelation.resource
 
 		if (resource.type === 'lesson') {
-			// Check if lesson has a solution to determine type
-			let hasSolution = false
-			resource.resources?.forEach((nestedResourceRelation) => {
-				if (nestedResourceRelation.resource.type === 'solution') {
-					hasSolution = true
-				}
-			})
+			const hasSolution = resourceHasSolution(resource)
 
 			lessons.push({
 				_type: hasSolution ? 'exercise' : 'lesson',
 				_id: resource.id,
-				slug: resource.fields.slug || '',
+				slug: getSlugOrId(resource),
 			})
 		}
 	})
@@ -104,7 +135,7 @@ function transformSection(section: DatabaseResource): ModuleResource {
 	return {
 		_type: 'section',
 		_id: section.id,
-		slug: section.fields.slug || '',
+		slug: getSlugOrId(section),
 		lessons,
 	}
 }
@@ -113,16 +144,7 @@ function transformSection(section: DatabaseResource): ModuleResource {
  * Transform a lesson resource
  */
 function transformLesson(lesson: DatabaseResource): ModuleResource {
-	let hasSolution = false
-
-	// Look for solution in lesson resources
-	lesson.resources?.forEach((resourceRelation) => {
-		const resource = resourceRelation.resource
-
-		if (resource.type === 'solution') {
-			hasSolution = true
-		}
-	})
+	const hasSolution = resourceHasSolution(lesson)
 
 	// Determine lesson type based on whether it has a solution
 	// lesson becomes exercise if it contains a solution
@@ -131,6 +153,6 @@ function transformLesson(lesson: DatabaseResource): ModuleResource {
 	return {
 		_type: lessonType,
 		_id: lesson.id,
-		slug: lesson.fields.slug || '',
+		slug: getSlugOrId(lesson),
 	}
 }
