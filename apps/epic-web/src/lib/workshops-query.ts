@@ -456,29 +456,8 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 		return null
 	}
 
-	// Transform nested resources to apply field sanitization
-	const transformResource = (resource: any): any => {
-		if (!resource) return resource
-
-		const transformed = { ...resource }
-
-		// Transform nested resources
-		if (resource.resources) {
-			transformed.resources = resource.resources.map(
-				(resourceRelation: any) => ({
-					...resourceRelation,
-					resource: transformResource(resourceRelation.resource),
-				}),
-			)
-		}
-
-		return transformed
-	}
-
-	const sanitizedWorkshop = transformResource(workshop)
-
 	// Transform to ModuleSchema format
-	return transformWorkshopToModuleSchema(sanitizedWorkshop)
+	return transformWorkshopToModuleSchema(workshop)
 }
 
 export async function getWorkshop(moduleSlugOrId: string) {
