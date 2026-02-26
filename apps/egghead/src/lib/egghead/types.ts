@@ -1,5 +1,11 @@
 import * as z from 'zod'
 
+/** URL field that treats empty strings as null before validation */
+const urlField = z
+	.string()
+	.transform((val) => (val === '' ? null : val))
+	.pipe(z.string().url().nullish())
+
 /**
  * Type for Egghead lesson state
  */
@@ -44,8 +50,8 @@ export const eggheadLessonSchema = z.object({
 	instructor: z.object({
 		id: z.number(),
 		full_name: z.string().nullish(),
-		url: z.string().url().nullish(),
-		avatar_url: z.string().url().nullish(),
+		url: urlField,
+		avatar_url: urlField,
 	}),
 })
 
@@ -109,18 +115,18 @@ export const EggheadCurrentUserInstructorSchema = z.object({
 	first_name: z.string().nullish(),
 	last_name: z.string().nullish(),
 	twitter: z.string().nullish(),
-	website: z.string().url().nullish(),
+	website: urlField,
 	bio_short: z.string().nullish(),
 	state: z.string().nullish(),
-	http_url: z.string().url().nullish(),
+	http_url: urlField,
 	path: z.string().nullish(),
-	avatar_url: z.string().url().nullish(),
-	avatar_480_url: z.string().url().nullish(),
-	lessons_url: z.string().url().nullish(),
+	avatar_url: urlField,
+	avatar_480_url: urlField,
+	lessons_url: urlField,
 	lesson_tags: z.array(z.any()).nullish(),
 	published_lessons: z.number().nullish(),
 	published_courses: z.number().nullish(),
-	rss_url: z.string().url().nullish(),
+	rss_url: urlField,
 	slack_id: z.string().nullish(),
 	slack_group_id: z.string().nullish(),
 	pending_courses: z.number().nullish(),
@@ -130,10 +136,10 @@ export const EggheadCurrentUserInstructorSchema = z.object({
 	approved_lessons: z.number().nullish(),
 	reviewing_lessons: z.number().nullish(),
 	updated_lessons: z.number().nullish(),
-	revenue_url: z.string().url().nullish(),
-	affiliate_http_url: z.string().url().nullish(),
-	stats_url: z.string().url().nullish(),
-	playlists_url: z.string().url().nullish(),
+	revenue_url: urlField,
+	affiliate_http_url: urlField,
+	stats_url: urlField,
+	playlists_url: urlField,
 })
 export type EggheadCurrentUserInstructor = z.infer<
 	typeof EggheadCurrentUserInstructorSchema
