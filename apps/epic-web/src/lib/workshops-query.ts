@@ -40,7 +40,7 @@ import {
 } from '@coursebuilder/core/schemas'
 import { last } from '@coursebuilder/nodash'
 
-import { transformWorkshopToModuleSchema } from './transform-workshop-result'
+import { transformWorkshopToModuleSchema } from '@coursebuilder/utils-resource/transform-workshop-result'
 
 /**
  * Fetches workshop navigation data with a single efficient query
