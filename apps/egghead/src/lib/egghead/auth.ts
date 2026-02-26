@@ -55,23 +55,56 @@ export async function getEggheadUserProfile(userId: string) {
 	const eggheadToken = await getEggheadToken(userId)
 	const eggheadUserUrl = 'https://app.egghead.io/api/v1/users/current'
 
-	const profile = await fetch(eggheadUserUrl, {
+	const res = await fetch(eggheadUserUrl, {
 		headers: {
 			Authorization: `Bearer ${eggheadToken}`,
 			'User-Agent': 'authjs',
 		},
-	}).then(async (res) => {
-		if (!res.ok) {
-			throw new EggheadApiError(res.statusText, res.status)
-		}
-		return await res.json()
 	})
 
+	if (!res.ok) {
+		console.error(
+			JSON.stringify({
+				event: 'egghead_profile_fetch_failed',
+				userId,
+				status: res.status,
+				statusText: res.statusText,
+			}),
+		)
+		throw new EggheadApiError(res.statusText, res.status)
+	}
+
+	const profile = await res.json()
 	const parsedProfile = EggheadCurrentUserSchema.safeParse(profile)
 
 	if (!parsedProfile.success) {
+		const fieldErrors = parsedProfile.error.flatten().fieldErrors
+		const issues = parsedProfile.error.issues.map((issue) => ({
+			path: issue.path.join('.'),
+			code: issue.code,
+			message: issue.message,
+			received: issue.path.reduce(
+				(obj: any, key) => obj?.[key],
+				profile,
+			),
+		}))
+
+		console.error(
+			JSON.stringify({
+				event: 'egghead_profile_parse_failed',
+				userId,
+				eggheadUserId: profile?.id,
+				fieldErrors,
+				issues,
+				rawKeys: Object.keys(profile ?? {}),
+				instructorKeys: profile?.instructor
+					? Object.keys(profile.instructor)
+					: null,
+			}),
+		)
+
 		throw new Error('Failed to parse egghead profile', {
-			cause: parsedProfile.error.flatten().fieldErrors,
+			cause: fieldErrors,
 		})
 	}
 

@@ -104,34 +104,59 @@ export async function createPost(input: NewPost) {
 		throw new Error('Unauthorized')
 	}
 
-	const profile = await getEggheadUserProfile(session.user.id)
+	try {
+		const profile = await getEggheadUserProfile(session.user.id)
 
-	if (!profile?.instructor?.id) {
-		throw new Error('No egghead instructor id found for user')
-	}
+		if (!profile?.instructor?.id) {
+			console.error(
+				JSON.stringify({
+					event: 'create_post_no_instructor',
+					userId: session.user.id,
+					eggheadUserId: profile?.id,
+					hasInstructor: !!profile?.instructor,
+				}),
+			)
+			throw new Error('No egghead instructor id found for user')
+		}
 
-	const post = await writeNewPostToDatabase({
-		title: input.title,
-		videoResourceId: input.videoResourceId || undefined,
-		postType: input.postType,
-		eggheadInstructorId: profile.instructor.id,
-		eggheadUserId: profile.id,
-		createdById: session.user.id,
-	})
-
-	if (post) {
-		await inngest.send({
-			name: POST_CREATED_EVENT,
-			data: {
-				post: post,
-			},
+		const post = await writeNewPostToDatabase({
+			title: input.title,
+			videoResourceId: input.videoResourceId || undefined,
+			postType: input.postType,
+			eggheadInstructorId: profile.instructor.id,
+			eggheadUserId: profile.id,
+			createdById: session.user.id,
 		})
 
-		revalidateTag('posts', 'max')
+		if (post) {
+			await inngest.send({
+				name: POST_CREATED_EVENT,
+				data: {
+					post: post,
+				},
+			})
 
-		return post
-	} else {
-		throw new Error('🚨 Error creating post: Post not found')
+			revalidateTag('posts', 'max')
+
+			return post
+		} else {
+			throw new Error('🚨 Error creating post: Post not found')
+		}
+	} catch (error) {
+		console.error(
+			JSON.stringify({
+				event: 'create_post_failed',
+				userId: session.user.id,
+				postType: input.postType,
+				title: input.title,
+				error: error instanceof Error ? error.message : String(error),
+				cause:
+					error instanceof Error && error.cause
+						? JSON.stringify(error.cause)
+						: undefined,
+			}),
+		)
+		throw error
 	}
 }
 
