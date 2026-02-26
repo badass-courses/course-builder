@@ -428,18 +428,6 @@ const workshopTransformResourceSchema: z.ZodType<WorkshopTransformInput> = z.laz
 )
 
 /**
- * Normalizes workshop query results for the module transform utility.
- *
- * @param workshop - Raw Drizzle result value.
- * @returns Zod parse result for normalized transform input.
- */
-function normalizeWorkshopForApiTransform(
-	workshop: unknown,
-): z.SafeParseReturnType<unknown, WorkshopTransformInput> {
-	return workshopTransformResourceSchema.safeParse(workshop)
-}
-
-/**
  * Fetches workshop/tutorial data for external CLI usage via API routes.
  */
 export async function getWorkshopViaApi(moduleSlugOrId: string) {
@@ -507,7 +495,7 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 		return null
 	}
 
-	const normalizedWorkshop = normalizeWorkshopForApiTransform(workshop)
+	const normalizedWorkshop = workshopTransformResourceSchema.safeParse(workshop)
 	if (!normalizedWorkshop.success) {
 		await log.error('getWorkshopViaApi.invalidWorkshopShape', {
 			moduleSlugOrId,
