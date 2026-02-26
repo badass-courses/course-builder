@@ -1,10 +1,6 @@
 /**
- * Transform workshop database result into the expected ModuleSchema format.
- *
- * This utility converts the nested database structure into a simplified
- * format that matches the ModuleSchema requirements.
+ * Resource shape used by workshop transformation helpers.
  */
-
 interface DatabaseResource {
 	id: string
 	type: string
@@ -84,26 +80,23 @@ function getSlugOrId(resource: DatabaseResource): string {
 }
 
 /**
- * Transform a database workshop result into ModuleSchema format.
+ * Transform workshop database result into the expected ModuleSchema format.
  *
- * @param workshop - Workshop resource from the database.
- * @returns ModuleSchema-compatible resource tree.
+ * @param workshop - Workshop resource with nested sections/lessons.
+ * @returns Minimal ModuleSchema-compatible resources payload.
  */
 export function transformWorkshopToModuleSchema(
 	workshop: DatabaseResource,
 ): ModuleResult {
 	const resources: ModuleResource[] = []
 
-	// Process each top-level resource (sections and lessons)
 	workshop.resources?.forEach((resourceRelation) => {
 		const resource = resourceRelation.resource
 
 		if (resource.type === 'section') {
-			const section = transformSection(resource)
-			resources.push(section)
+			resources.push(transformSection(resource))
 		} else if (resource.type === 'lesson') {
-			const lesson = transformLesson(resource)
-			resources.push(lesson)
+			resources.push(transformLesson(resource))
 		}
 	})
 
@@ -113,10 +106,9 @@ export function transformWorkshopToModuleSchema(
 }
 
 /**
- * Transform a section resource.
+ * Transform a section resource and nested lessons.
  *
  * @param section - Section resource to transform.
- * @returns ModuleSchema section with lesson references.
  */
 function transformSection(section: DatabaseResource): ModuleResource {
 	const lessons: Array<{
@@ -125,7 +117,6 @@ function transformSection(section: DatabaseResource): ModuleResource {
 		slug: string
 	}> = []
 
-	// Process lessons within the section
 	section.resources?.forEach((resourceRelation) => {
 		const resource = resourceRelation.resource
 
@@ -149,16 +140,13 @@ function transformSection(section: DatabaseResource): ModuleResource {
 }
 
 /**
- * Transform a lesson resource.
+ * Transform a lesson resource into lesson/exercise shape.
  *
  * @param lesson - Lesson resource to transform.
  * @returns ModuleSchema lesson/exercise reference.
  */
 function transformLesson(lesson: DatabaseResource): ModuleResource {
 	const hasSolution = resourceHasSolution(lesson)
-
-	// Determine lesson type based on whether it has a solution
-	// lesson becomes exercise if it contains a solution
 	const lessonType = hasSolution ? 'exercise' : 'lesson'
 
 	return {
