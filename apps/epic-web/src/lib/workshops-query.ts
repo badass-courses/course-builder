@@ -404,27 +404,30 @@ const workshopTransformFieldsSchema = z.preprocess(
 	z.record(z.any()),
 )
 
-const workshopTransformResourceSchema: z.ZodType<WorkshopTransformInput> = z.lazy(
-	() =>
-		z
-			.object({
-				id: z.string(),
-				type: z.string(),
-				fields: workshopTransformFieldsSchema,
-				resources: z
-					.array(
-						z
-							.object({
-								resourceId: z.string(),
-								position: z.number(),
-								metadata: z.unknown().optional(),
-								resource: workshopTransformResourceSchema,
-							})
-							.passthrough(),
-					)
-					.optional(),
-			})
-			.passthrough(),
+const workshopTransformResourceSchema: z.ZodType<
+	WorkshopTransformInput,
+	z.ZodTypeDef,
+	unknown
+> = z.lazy(() =>
+	z
+		.object({
+			id: z.string(),
+			type: z.string(),
+			fields: workshopTransformFieldsSchema,
+			resources: z
+				.array(
+					z
+						.object({
+							resourceId: z.string(),
+							position: z.number(),
+							metadata: z.unknown().optional(),
+							resource: workshopTransformResourceSchema,
+						})
+						.passthrough(),
+				)
+				.optional(),
+		})
+		.passthrough(),
 )
 
 /**
