@@ -2,13 +2,22 @@ import { NextResponse } from 'next/server'
 import { getWorkshopViaApi } from '@/lib/workshops-query'
 import { log } from '@/server/logger'
 
-const corsOrigin = process.env.WORKSHOPS_API_ALLOWED_ORIGIN || '*'
+const corsOrigin = process.env.WORKSHOPS_API_ALLOWED_ORIGIN?.trim()
 
-const corsHeaders = {
-	'Access-Control-Allow-Origin': corsOrigin,
-	'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+if (!corsOrigin) {
+	console.warn(
+		'WORKSHOPS_API_ALLOWED_ORIGIN is not set; omitting CORS allow-origin header for /api/workshops/[slug]',
+	)
+}
+
+const baseCorsHeaders = {
+	'Access-Control-Allow-Methods': 'GET, OPTIONS',
 	'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
+
+const corsHeaders = corsOrigin
+	? { ...baseCorsHeaders, 'Access-Control-Allow-Origin': corsOrigin }
+	: baseCorsHeaders
 
 /**
  * Respond to CORS preflight requests.
