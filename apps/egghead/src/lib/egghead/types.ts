@@ -1,10 +1,10 @@
 import * as z from 'zod'
 
-/** URL field that treats empty strings as null before validation */
+/** URL-like field that coerces empty strings to null, no strict URL validation */
 const urlField = z
 	.string()
 	.transform((val) => (val === '' ? null : val))
-	.pipe(z.string().url().nullish())
+	.nullish()
 
 /**
  * Type for Egghead lesson state
