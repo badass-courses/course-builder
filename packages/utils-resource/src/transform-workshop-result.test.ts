@@ -111,4 +111,85 @@ describe('transformWorkshopToModuleSchema', () => {
 
 		expect(console.warn).toHaveBeenCalled()
 	})
+
+	it('handles mixed top-level section and standalone lesson resources', () => {
+		const result = transformWorkshopToModuleSchema({
+			id: 'workshop-4',
+			type: 'workshop',
+			fields: { slug: 'workshop-4' },
+			resources: [
+				{
+					resourceId: 'section-mixed',
+					position: 0,
+					resource: {
+						id: 'section-mixed',
+						type: 'section',
+						fields: {},
+						resources: [
+							{
+								resourceId: 'section-lesson-1',
+								position: 0,
+								resource: {
+									id: 'section-lesson-1',
+									type: 'lesson',
+									fields: { slug: 'section-lesson-1' },
+									resources: [],
+								},
+							},
+						],
+					},
+				},
+				{
+					resourceId: 'standalone-lesson',
+					position: 1,
+					resource: {
+						id: 'standalone-lesson',
+						type: 'lesson',
+						fields: {},
+						resources: [],
+					},
+				},
+			],
+		})
+
+		expect(result).toEqual({
+			resources: [
+				{
+					_type: 'section',
+					_id: 'section-mixed',
+					slug: 'section-mixed',
+					lessons: [
+						{
+							_type: 'lesson',
+							_id: 'section-lesson-1',
+							slug: 'section-lesson-1',
+						},
+					],
+				},
+				{
+					_type: 'lesson',
+					_id: 'standalone-lesson',
+					slug: 'standalone-lesson',
+				},
+			],
+		})
+
+		expect(console.warn).toHaveBeenCalledTimes(2)
+		expect(console.warn).toHaveBeenNthCalledWith(
+			1,
+			'transformWorkshopToModuleSchema: missing slug, using resource id fallback',
+			{
+				resourceId: 'section-mixed',
+				resourceType: 'section',
+			},
+		)
+		expect(console.warn).toHaveBeenNthCalledWith(
+			2,
+			'transformWorkshopToModuleSchema: missing slug, using resource id fallback',
+			{
+				resourceId: 'standalone-lesson',
+				resourceType: 'lesson',
+			},
+		)
+	})
 })
