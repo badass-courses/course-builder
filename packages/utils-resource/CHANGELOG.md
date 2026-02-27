@@ -1,5 +1,13 @@
 # @coursebuilder/utils-resource
 
+## 1.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  [[`ee21e11`](https://github.com/badass-courses/course-builder/commit/ee21e112dd8b355166e0459ccdda440204475d92)]:
+  - @coursebuilder/core@1.2.1
+
 ## 1.0.5
 
 ### Patch Changes

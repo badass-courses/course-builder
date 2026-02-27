@@ -1,5 +1,13 @@
 # @coursebuilder/core
 
+## 1.2.1
+
+### Patch Changes
+
+- [`ee21e11`](https://github.com/badass-courses/course-builder/commit/ee21e112dd8b355166e0459ccdda440204475d92)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - allow initializing
+  stripe provider without webhook secret env var present
+
 ## 1.2.0
 
 ### Minor Changes
