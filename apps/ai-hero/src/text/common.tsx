@@ -58,11 +58,11 @@ export default {
 	},
 
 	'primary-newsletter-button-cta-label': 'Subscribe',
-	'primary-newsletter-tittle': 'Join over 50,000 Developers Becoming AI Heroes',
+	'primary-newsletter-tittle': 'Join over 54,000 Developers Becoming AI Heroes',
 	'primary-newsletter-byline': (
 		<>
-			Get my <strong>new agent skills</strong> first, skip the doom scroll and
-			grab subscriber-only discounts.
+			Engineering fundamentals are your biggest advantage. Learn how to leverage
+			them and leave the vibe coders behind.
 		</>
 	),
 	'tip-newsletter-button-cta-label': 'Subscribe',
