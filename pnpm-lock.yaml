@@ -895,7 +895,7 @@ importers:
         specifier: ^0.2.0
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.8
@@ -907,7 +907,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.9
+        specifier: ^2.0.10
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -934,7 +934,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/utils-media
       '@coursebuilder/utils-resource':
-        specifier: 1.0.5
+        specifier: 1.0.6
         version: link:../../packages/utils-resource
       '@coursebuilder/utils-seo':
         specifier: 1.0.2
@@ -2263,7 +2263,7 @@ importers:
         specifier: ^0.2.0
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.8
@@ -2275,7 +2275,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.9
+        specifier: ^2.0.10
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -4568,7 +4568,7 @@ importers:
         specifier: 1.0.6
         version: link:../../packages/adapter-drizzle
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../../packages/core
       '@coursebuilder/next':
         specifier: workspace:^
@@ -4577,7 +4577,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.9
+        specifier: ^2.0.10
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -6296,7 +6296,7 @@ importers:
         specifier: ^0.2.0
         version: link:../../packages/commerce-next
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../../packages/core
       '@coursebuilder/email-templates':
         specifier: ^1.0.8
@@ -6308,7 +6308,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/nodash
       '@coursebuilder/ui':
-        specifier: ^2.0.9
+        specifier: ^2.0.10
         version: link:../../packages/ui
       '@coursebuilder/utils-ai':
         specifier: 1.0.1
@@ -6335,7 +6335,7 @@ importers:
         specifier: 1.0.0
         version: link:../../packages/utils-media
       '@coursebuilder/utils-resource':
-        specifier: 1.0.5
+        specifier: 1.0.6
         version: link:../../packages/utils-resource
       '@coursebuilder/utils-search':
         specifier: 1.0.2
@@ -8401,7 +8401,7 @@ importers:
         version: 4.1.11
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       type-fest:
         specifier: ^3.7.0
         version: 3.13.1
@@ -8434,7 +8434,7 @@ importers:
         specifier: 0.37.2
         version: 0.37.2(nodemailer@6.10.0)
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../core
       '@libsql/client':
         specifier: 0.5.6
@@ -8462,7 +8462,7 @@ importers:
         version: 3.4.5
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -8487,7 +8487,7 @@ importers:
         version: 20.17.30
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       tsx:
         specifier: ^4.7.1
         version: 4.19.3
@@ -8747,7 +8747,7 @@ importers:
         version: 9.6.1
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -8761,7 +8761,7 @@ importers:
         version: 20.17.30
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
 
   packages/core:
     dependencies:
@@ -8919,7 +8919,7 @@ importers:
         version: 19.2.3(react@19.2.3)
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -8927,7 +8927,7 @@ importers:
   packages/next:
     dependencies:
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../core
       inngest:
         specifier: 3.35.0
@@ -8950,7 +8950,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9011,7 +9011,7 @@ importers:
         version: 19.2.3(react@19.2.3)
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9049,7 +9049,7 @@ importers:
         specifier: ^6.36.2
         version: 6.36.5
       '@coursebuilder/core':
-        specifier: 1.2.0
+        specifier: 1.2.1
         version: link:../core
       '@hookform/resolvers':
         specifier: ^3.3.2
@@ -9281,7 +9281,7 @@ importers:
         version: 20.17.30
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9293,7 +9293,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9318,7 +9318,7 @@ importers:
         version: 20.17.30
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9337,7 +9337,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9353,7 +9353,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9378,7 +9378,7 @@ importers:
         version: 19.2.3
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9394,7 +9394,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9406,7 +9406,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9425,7 +9425,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9444,7 +9444,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9459,7 +9459,7 @@ importers:
         version: 20.17.30
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9471,7 +9471,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9499,7 +9499,7 @@ importers:
         version: 9.37.0
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -9518,7 +9518,7 @@ importers:
     devDependencies:
       tsup:
         specifier: 8.0.2
-        version: 8.0.2(typescript@5.4.5)
+        version: 8.0.2(@swc/core@1.15.11)(typescript@5.4.5)
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -41162,7 +41162,7 @@ packages:
       joycon: 3.1.1
       postcss-load-config: 4.0.2(postcss@8.4.35)
       resolve-from: 5.0.0
-      rollup: 4.53.5
+      rollup: 4.39.0
       source-map: 0.8.0-beta.0
       sucrase: 3.35.0
       tree-kill: 1.2.2
@@ -41202,45 +41202,6 @@ packages:
       postcss: 8.4.35
       postcss-load-config: 4.0.2(postcss@8.4.35)
       resolve-from: 5.0.0
-      rollup: 4.53.5
-      source-map: 0.8.0-beta.0
-      sucrase: 3.35.0
-      tree-kill: 1.2.2
-      typescript: 5.4.5
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: false
-
-  /tsup@8.0.2(typescript@5.4.5):
-    resolution: {integrity: sha512-NY8xtQXdH7hDUAZwcQdY/Vzlw9johQsaqf7iwZ6g1DOUlFYQ5/AtVAjTvihhEyeRlGo4dLRVHtrRaL35M1daqQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      '@microsoft/api-extractor': ^7.36.0
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.5.0'
-    peerDependenciesMeta:
-      '@microsoft/api-extractor':
-        optional: true
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.2.1(esbuild@0.19.12)
-      cac: 6.7.14
-      chokidar: 3.6.0
-      debug: 4.4.3(supports-color@5.5.0)
-      esbuild: 0.19.12
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss-load-config: 4.0.2(postcss@8.4.35)
-      resolve-from: 5.0.0
       rollup: 4.39.0
       source-map: 0.8.0-beta.0
       sucrase: 3.35.0
@@ -41249,7 +41210,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - ts-node
-    dev: true
+    dev: false
 
   /tsx@4.19.3:
     resolution: {integrity: sha512-4H8vUNGNjQ4V2EOoGw005+c+dGuPSnhpPBPHBtsZdGZBk/iJb4kguGlPWaZTZ3q5nMtFOEsY0nRDlh9PJyd6SQ==}

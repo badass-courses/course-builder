@@ -1,5 +1,21 @@
 # @coursebuilder/ui
 
+## 2.0.10
+
+### Patch Changes
+
+- [`1801806`](https://github.com/badass-courses/course-builder/commit/18018062151694879aaa00913e5b7120e0c45a3e)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - polish resource action
+  bar loading state
+
+- [`ee84668`](https://github.com/badass-courses/course-builder/commit/ee84668a596fea4093adf6bc66d4938297a838f6)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - loading states in edit
+  resource action bar
+
+- Updated dependencies
+  [[`ee21e11`](https://github.com/badass-courses/course-builder/commit/ee21e112dd8b355166e0459ccdda440204475d92)]:
+  - @coursebuilder/core@1.2.1
+
 ## 2.0.9
 
 ### Patch Changes
