@@ -431,6 +431,19 @@ const workshopTransformResourceSchema: z.ZodType<
 )
 
 /**
+ * Builds the shared workshop API JSON field sanitization SQL expression.
+ *
+ * Removes large media/transcript payload keys before API transformation.
+ */
+function getSanitizedWorkshopApiFieldsSql() {
+	return sql<
+		Record<string, any>
+	>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
+		'fields',
+	)
+}
+
+/**
  * Fetches workshop/tutorial resource graph for external CLI API consumers.
  *
  * @param moduleSlugOrId - Workshop or tutorial slug (`fields.slug`) or content
@@ -471,33 +484,22 @@ export async function getWorkshopViaApi(moduleSlugOrId: string) {
 				with: {
 					resource: {
 						extras: {
-							fields: sql<
-								Record<string, any>
-							>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
-								'fields',
-							),
+							fields: getSanitizedWorkshopApiFieldsSql(),
 						},
 						with: {
 							resources: {
 								with: {
 									resource: {
 										extras: {
-											fields: sql<
-												Record<string, any>
-											>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
-												'fields',
-											),
+											fields: getSanitizedWorkshopApiFieldsSql(),
 										},
 										with: {
 											resources: {
 												with: {
 													resource: {
 														extras: {
-															fields: sql<
-																Record<string, any>
-															>`JSON_REMOVE(${contentResource.fields}, '$.muxPlaybackId', '$.transcript', '$.wordLevelSrt', '$.srt', '$.deepgramResults', '$.muxAssetId', '$.originalMediaUrl')`.as(
-																'fields',
-															),
+															fields:
+																getSanitizedWorkshopApiFieldsSql(),
 														},
 													},
 												},
