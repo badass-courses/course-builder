@@ -99,10 +99,10 @@ const CreateTagSchema = z.object({
 	type: z.literal('topic'),
 	fields: z.object({
 		name: z.string(),
-		label: z.string(),
+		label: z.string().nullable(),
 		description: z.string().nullish(),
 		slug: z.string(),
-		image_url: z.string().url().nullish(),
+		image_url: z.string().nullish(),
 		contexts: z.array(z.string()).nullish(),
 		url: z.string().nullish(),
 		popularity_order: z.number().nullish(),

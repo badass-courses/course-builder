@@ -92,7 +92,7 @@ export default function TagCrudDialog({
 								<FormItem>
 									<FormLabel>Label</FormLabel>
 									<FormControl>
-										<Input placeholder="Tag Label" {...field} />
+										<Input placeholder="Tag Label" {...field} value={field.value ?? ''} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

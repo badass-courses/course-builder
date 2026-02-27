@@ -3,11 +3,11 @@ import { z } from 'zod'
 // Egghead tag schema - this is what we use
 export const EggheadApiTagSchema = z.object({
 	id: z.number(),
-	label: z.string(),
+	label: z.string().nullable(),
 	name: z.string(),
 	description: z.string().nullable(),
 	slug: z.string(),
-	image_url: z.string().url().nullish().default(null),
+	image_url: z.string().nullish().default(null),
 	contexts: z.array(z.string()).default([]),
 })
 

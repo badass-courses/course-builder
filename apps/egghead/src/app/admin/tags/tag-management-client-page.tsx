@@ -54,7 +54,7 @@ export default function TagManagement({
 				tag.fields.name
 					.toLowerCase()
 					.includes(debouncedSearchTerm.toLowerCase()) ||
-				tag.fields.label
+				(tag.fields.label ?? '')
 					.toLowerCase()
 					.includes(debouncedSearchTerm.toLowerCase()),
 		)
@@ -150,7 +150,7 @@ export default function TagManagement({
 										{tag.fields.image_url && (
 											<Image
 												src={tag.fields.image_url}
-												alt={tag.fields.label}
+												alt={tag.fields.label ?? tag.fields.name}
 												width={40}
 												height={40}
 												className="rounded object-cover"
@@ -234,7 +234,7 @@ export default function TagManagement({
 											<dd className="mt-1 text-sm text-gray-900">
 												<Image
 													src={tag.fields.image_url}
-													alt={tag.fields.label}
+													alt={tag.fields.label ?? tag.fields.name}
 													width={40}
 													height={40}
 													className="rounded object-cover"

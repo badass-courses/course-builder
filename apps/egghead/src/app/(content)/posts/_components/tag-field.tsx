@@ -66,12 +66,16 @@ export const TagField: React.FC<TagFieldProps> = ({
 			z.object({
 				id: z.string(),
 				fields: z.object({
-					label: z.string(),
+					label: z.string().nullable(),
 					name: z.string(),
 				}),
 			}),
 		)
 		.parse(tags || [])
+		.map((t) => ({
+			...t,
+			fields: { ...t.fields, label: t.fields.label ?? t.fields.name },
+		}))
 
 	const parsedSelectedTagsForUiPackage = z
 		.array(
@@ -79,13 +83,20 @@ export const TagField: React.FC<TagFieldProps> = ({
 				tag: z.object({
 					id: z.string(),
 					fields: z.object({
-						label: z.string(),
+						label: z.string().nullable(),
 						name: z.string(),
 					}),
 				}),
 			}),
 		)
 		.parse(resource.tags || [])
+		.map((t) => ({
+			...t,
+			tag: {
+				...t.tag,
+				fields: { ...t.tag.fields, label: t.tag.fields.label ?? t.tag.fields.name },
+			},
+		}))
 
 	const handleCreateTag = (tag: Tag) => {
 		createTag({
