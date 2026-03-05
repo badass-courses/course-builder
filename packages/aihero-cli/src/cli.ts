@@ -6,6 +6,13 @@ import { Args, Command, Options } from '@effect/cli'
 import { NodeContext, NodeRuntime } from '@effect/platform-node'
 import { Console, Effect } from 'effect'
 
+import {
+	type DropboxClientOptions,
+	type DropboxEntry,
+	getTemporaryLink,
+	listFolder,
+} from './adapters/dropbox'
+
 type NextActionParam = {
 	description?: string
 	value?: string | number | boolean
@@ -4599,84 +4606,17 @@ const dropboxImportCommand = Command.make(
 					.replace(/(?:^|\s)\S/g, (ch) => ch.toUpperCase())
 			}
 
-			type DropboxEntry = {
-				'.tag': 'file' | 'folder'
-				name: string
-				path_lower?: string
-				path_display?: string
-				id?: string
-			}
-
-			const dropboxHeaders = (): Record<string, string> => {
-				const headers: Record<string, string> = {
-					Authorization: `Bearer ${resolvedDropboxToken}`,
-					'Content-Type': 'application/json',
-				}
-				if (resolvedTeamMemberId) {
-					headers['Dropbox-API-Select-User'] = resolvedTeamMemberId
-				}
-				if (resolvedTeamNamespaceId) {
-					headers['Dropbox-API-Path-Root'] = JSON.stringify({
-						'.tag': 'namespace_id',
-						namespace_id: resolvedTeamNamespaceId,
-					})
-				}
-				return headers
-			}
-
-			const listFolder = async (
-				sharedUrl: string,
-				folderPath = '',
-			): Promise<DropboxEntry[]> => {
-				const res = await fetch(
-					'https://api.dropboxapi.com/2/files/list_folder',
-					{
-						method: 'POST',
-						headers: dropboxHeaders(),
-						body: JSON.stringify({
-							shared_link: { url: sharedUrl },
-							path: folderPath,
-						}),
-					},
-				)
-				if (!res.ok) {
-					const errorBody = await res.text()
-					throw new Error(
-						`Dropbox API error ${res.status}: ${errorBody}`,
-					)
-				}
-				const data = (await res.json()) as {
-					entries: DropboxEntry[]
-				}
-				return data.entries
-			}
-
-			const getTemporaryLink = async (
-				path: string,
-			): Promise<string> => {
-				const res = await fetch(
-					'https://api.dropboxapi.com/2/files/get_temporary_link',
-					{
-						method: 'POST',
-						headers: dropboxHeaders(),
-						body: JSON.stringify({ path }),
-					},
-				)
-				if (!res.ok) {
-					const errorBody = await res.text()
-					throw new Error(
-						`Dropbox get_temporary_link error ${res.status}: ${errorBody}`,
-					)
-				}
-				const data = (await res.json()) as { link: string }
-				return data.link
+			const dropboxOpts: DropboxClientOptions = {
+				token: resolvedDropboxToken,
+				teamMemberId: resolvedTeamMemberId,
+				teamNamespaceId: resolvedTeamNamespaceId,
 			}
 
 			const isVideoFile = (name: string) =>
 				/\.(mp4|mov|webm)$/i.test(name)
 
 			try {
-				const topEntries = await listFolder(url, '')
+				const topEntries = await listFolder(dropboxOpts, url, '')
 				const sorted = [...topEntries].sort((a, b) =>
 					a.name.localeCompare(b.name),
 				)
@@ -4695,7 +4635,7 @@ const dropboxImportCommand = Command.make(
 				for (const entry of sorted) {
 					if (entry['.tag'] === 'folder') {
 						const sectionTitle = buildTitleFromFilename(entry.name)
-						const children = await listFolder(url, entry.path_lower || `/${entry.name}`)
+						const children = await listFolder(dropboxOpts, url, entry.path_lower || `/${entry.name}`)
 						const childSorted = [...children].sort((a, b) =>
 							a.name.localeCompare(b.name),
 						)
@@ -4882,7 +4822,7 @@ const dropboxImportCommand = Command.make(
 
 					let downloadUrl: string
 					try {
-						downloadUrl = await getTemporaryLink(dropboxEntry.dropboxPath)
+						downloadUrl = await getTemporaryLink(dropboxOpts, dropboxEntry.dropboxPath)
 					} catch (linkErr) {
 						uploadStatuses.push({
 							lessonId: lessonRef.id,
