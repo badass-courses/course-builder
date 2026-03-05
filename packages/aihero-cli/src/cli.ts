@@ -6,6 +6,13 @@ import { Args, Command, Options } from '@effect/cli'
 import { NodeContext, NodeRuntime } from '@effect/platform-node'
 import { Console, Effect } from 'effect'
 
+import {
+	getTemporaryLink,
+	listFolder,
+	type DropboxClientOptions,
+	type DropboxEntry,
+} from './adapters/dropbox'
+
 type NextActionParam = {
 	description?: string
 	value?: string | number | boolean
@@ -132,6 +139,23 @@ const KNOWN_APPS: Record<string, AppDefinition> = {
 			surveyAnalyticsPath: '/api/surveys/analytics',
 		},
 	},
+	'code-with-antonio': {
+		id: 'code-with-antonio',
+		displayName: 'Code with Antonio',
+		defaultBaseUrl: DEFAULT_BASE_URL,
+		auth: {
+			deviceCodePath: '/oauth/device/code',
+			tokenPath: '/oauth/token',
+			userInfoPath: '/oauth/userinfo',
+		},
+		capabilities: {
+			surveyApi: false,
+		},
+		api: {
+			surveysPath: '/api/surveys',
+			surveyAnalyticsPath: '/api/surveys/analytics',
+		},
+	},
 }
 
 const getConfigPath = () =>
@@ -160,7 +184,10 @@ const rewriteLegacyCommandPath = (command: string) => {
 	const [firstToken] = trimmed.split(/\s+/, 1)
 	if (firstToken && FOCUSED_TOP_LEVEL_COMMANDS.has(firstToken)) return trimmed
 
-	if (trimmed === 'survey analytics' || trimmed.startsWith('survey analytics ')) {
+	if (
+		trimmed === 'survey analytics' ||
+		trimmed.startsWith('survey analytics ')
+	) {
 		return trimmed.replace(/^survey analytics\b/, 'analytics survey analytics')
 	}
 	if (trimmed === 'survey' || trimmed.startsWith('survey ')) {
@@ -181,7 +208,10 @@ const rewriteLegacyCommandPath = (command: string) => {
 	) {
 		return trimmed.replace(/^shortlink analytics\b/, 'analytics shortlink get')
 	}
-	if (trimmed === 'shortlink recent' || trimmed.startsWith('shortlink recent ')) {
+	if (
+		trimmed === 'shortlink recent' ||
+		trimmed.startsWith('shortlink recent ')
+	) {
 		return trimmed.replace(/^shortlink recent\b/, 'analytics shortlink recent')
 	}
 	if (trimmed === 'shortlink' || trimmed.startsWith('shortlink ')) {
@@ -192,6 +222,9 @@ const rewriteLegacyCommandPath = (command: string) => {
 	}
 	if (trimmed === 'video' || trimmed.startsWith('video ')) {
 		return trimmed.replace(/^video\b/, 'creator video')
+	}
+	if (trimmed === 'workshop' || trimmed.startsWith('workshop ')) {
+		return trimmed.replace(/^workshop\b/, 'crud workshop')
 	}
 
 	return trimmed
@@ -211,7 +244,10 @@ const rewriteUsageInResult = (value: unknown): unknown => {
 						const withoutCliPrefix =
 							trimmed === CLI_NAME ? '' : trimmed.slice(`${CLI_NAME} `.length)
 						const rewrittenPath = rewriteLegacyCommandPath(withoutCliPrefix)
-						return [key, rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME]
+						return [
+							key,
+							rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME,
+						]
 					}
 				}
 				return [key, rewriteUsageInResult(entryValue)]
@@ -1660,7 +1696,7 @@ const authLogoutCommand = Command.make(
 					},
 				],
 			)
-	}),
+		}),
 ).pipe(Command.withDescription('Clear stored auth token from local config'))
 
 const authRouteCommand = Command.make(
@@ -1684,7 +1720,9 @@ const authRouteCommand = Command.make(
 	({ app, baseUrl, token, noAuth, action, method, body }) =>
 		runAndPrint(async () => {
 			const normalizedAction = action.replace(/^\/+/, '')
-			const resolvedMethod = (unwrapOption<string>(method) || 'GET').toUpperCase()
+			const resolvedMethod = (
+				unwrapOption<string>(method) || 'GET'
+			).toUpperCase()
 			if (!HTTP_METHODS.includes(resolvedMethod as HttpMethod)) {
 				return respondError(
 					`auth route ${normalizedAction}`,
@@ -1728,7 +1766,8 @@ const authRouteCommand = Command.make(
 						},
 					},
 					{
-						command: 'auth route providers [--app <app-id>] [--method <method>]',
+						command:
+							'auth route providers [--app <app-id>] [--method <method>]',
 						description: 'List configured auth providers',
 						params: {
 							'app-id': {
@@ -1744,7 +1783,9 @@ const authRouteCommand = Command.make(
 				],
 			})
 		}),
-).pipe(Command.withDescription('Call /api/auth/[...nextauth] catchall endpoints'))
+).pipe(
+	Command.withDescription('Call /api/auth/[...nextauth] catchall endpoints'),
+)
 
 const authCommand = Command.make('auth', {}, () =>
 	runAndPrint(async () =>
@@ -2800,7 +2841,8 @@ const postCommand = Command.make('post', {}, () =>
 					{
 						name: 'update',
 						description: 'Update a post by ID',
-						usage: "aihero post update <id> --body '<json>' [--action <action>]",
+						usage:
+							"aihero post update <id> --body '<json>' [--action <action>]",
 					},
 					{
 						name: 'delete',
@@ -3335,6 +3377,215 @@ const shortlinkCommand = Command.make('shortlink', {}, () =>
 	Command.withDescription('Shortlink CRUD operations'),
 )
 
+const workshopListCommand = Command.make(
+	'list',
+	{
+		...entityRequestOptions,
+	},
+	({ app, baseUrl, token, noAuth }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: 'workshop list',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/workshops',
+				defaultNextActions: [
+					{
+						command: 'workshop get <slug-or-id> [--app <app-id>]',
+						description: 'Get a workshop by slug or ID',
+						params: {
+							'slug-or-id': {
+								description: 'Workshop slug or ID',
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('List workshops'))
+
+const workshopGetCommand = Command.make(
+	'get',
+	{
+		...entityRequestOptions,
+		slugOrId: Args.text({ name: 'slug-or-id' }).pipe(
+			Args.withDescription('Workshop slug or ID'),
+		),
+	},
+	({ app, baseUrl, token, noAuth, slugOrId }) =>
+		runAndPrint(async () =>
+			runEndpointCommand({
+				command: `workshop get ${slugOrId}`,
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'GET',
+				pathname: '/api/workshops',
+				queryParams: { slugOrId },
+				defaultNextActions: [
+					{
+						command: 'workshop list [--app <app-id>]',
+						description: 'List all workshops',
+					},
+					{
+						command:
+							'creator upload new --file-url <url> --parent-resource-id <lesson-id> [--app <app-id>]',
+						description: 'Upload a video file to a lesson',
+						params: {
+							url: {
+								description: 'Direct download URL of the video file',
+								required: true,
+							},
+							'lesson-id': {
+								description: 'Lesson resource ID from this workshop',
+								required: true,
+							},
+						},
+					},
+				],
+			}),
+		),
+).pipe(Command.withDescription('Get a workshop by slug or ID'))
+
+const workshopCreateCommand = Command.make(
+	'create',
+	{
+		...entityRequestOptions,
+		title: Options.text('title').pipe(
+			Options.withDescription('Workshop title'),
+		),
+		structure: Options.text('structure').pipe(
+			Options.withDescription('Workshop structure as JSON string'),
+		),
+		description: Options.text('description').pipe(
+			Options.withDescription('Workshop description'),
+			Options.optional,
+		),
+		createProduct: Options.boolean('create-product').pipe(
+			Options.withDescription('Create a product for this workshop'),
+			Options.withDefault(false),
+		),
+		price: Options.text('price').pipe(
+			Options.withDescription('Product price (used when --create-product)'),
+			Options.optional,
+		),
+	},
+	({
+		app,
+		baseUrl,
+		token,
+		noAuth,
+		title,
+		structure,
+		description,
+		createProduct,
+		price,
+	}) =>
+		runAndPrint(async () => {
+			const parsedStructure = parseJsonOption({
+				command: 'workshop create',
+				option: 'structure',
+				value: structure,
+				required: true,
+			})
+			if (!parsedStructure.ok) return parsedStructure.payload
+
+			const priceValue = unwrapOption<string>(price)
+			const payload = {
+				workshop: {
+					title,
+					...(unwrapOption<string>(description) && {
+						description: unwrapOption<string>(description),
+					}),
+				},
+				...(createProduct ? { createProduct: true } : {}),
+				pricing: {
+					...(priceValue ? { price: parseFloat(priceValue) } : {}),
+				},
+				structure: parsedStructure.value,
+			}
+
+			return runEndpointCommand({
+				command: 'workshop create',
+				app,
+				baseUrl,
+				token,
+				noAuth,
+				method: 'POST',
+				pathname: '/api/workshops',
+				body: payload,
+				defaultNextActions: [
+					{
+						command: 'workshop list [--app <app-id>]',
+						description: 'List workshops',
+					},
+				],
+			})
+		}),
+).pipe(Command.withDescription('Create a workshop with optional structure'))
+
+const workshopCommand = Command.make('workshop', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'workshop',
+			{
+				description: 'Workshop content operations',
+				commands: [
+					{
+						name: 'list',
+						description: 'List workshops',
+						usage: 'aihero workshoplist',
+					},
+					{
+						name: 'get',
+						description: 'Get a workshop by slug or ID',
+						usage: 'aihero workshopget <slug-or-id>',
+					},
+					{
+						name: 'create',
+						description: 'Create a workshop',
+						usage:
+							"aihero workshop create --title <title> --structure '<json>' [--description <desc>] [--create-product] [--price <price>]",
+					},
+				],
+			},
+			[
+				{
+					command: 'workshop list [--app <app-id>]',
+					description: 'List workshops',
+				},
+				{
+					command:
+						"workshop create --title <title> --structure '<json>' [--app <app-id>]",
+					description: 'Create a workshop',
+					params: {
+						title: {
+							description: 'Workshop title',
+							required: true,
+						},
+						json: {
+							description: 'Workshop structure JSON',
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([
+		workshopListCommand,
+		workshopGetCommand,
+		workshopCreateCommand,
+	]),
+	Command.withDescription('Workshop content operations'),
+)
+
 const uploadNewCommand = Command.make(
 	'new',
 	{
@@ -3353,7 +3604,16 @@ const uploadNewCommand = Command.make(
 		),
 		body: bodyOption,
 	},
-	({ app, baseUrl, token, noAuth, fileUrl, fileName, parentResourceId, body }) =>
+	({
+		app,
+		baseUrl,
+		token,
+		noAuth,
+		fileUrl,
+		fileName,
+		parentResourceId,
+		body,
+	}) =>
 		runAndPrint(async () => {
 			let payload: unknown
 			const rawBody = unwrapOption<string>(body)
@@ -3374,7 +3634,7 @@ const uploadNewCommand = Command.make(
 						'upload new',
 						'Missing upload payload',
 						'MISSING_UPLOAD_PAYLOAD',
-						"Provide --body JSON or both --file-url and --parent-resource-id.",
+						'Provide --body JSON or both --file-url and --parent-resource-id.',
 						[],
 					)
 				}
@@ -3530,7 +3790,8 @@ const videoCommand = Command.make('video', {}, () =>
 					{
 						name: 'thumbnail',
 						description: 'Get thumbnail for video resource',
-						usage: 'aihero video thumbnail <video-resource-id> [--time <seconds>]',
+						usage:
+							'aihero video thumbnail <video-resource-id> [--time <seconds>]',
 					},
 				],
 			},
@@ -4232,7 +4493,8 @@ const webhookCommand = Command.make('webhook', {}, () =>
 					{
 						name: 'postmark',
 						description: 'Send Postmark webhook payload',
-						usage: "aihero webhook postmark --body '<json>' [--secret <secret>]",
+						usage:
+							"aihero webhook postmark --body '<json>' [--secret <secret>]",
 					},
 				],
 			},
@@ -4307,6 +4569,440 @@ const supportCommand = Command.make('support', {}, () =>
 	Command.withDescription('Support endpoint'),
 )
 
+const dropboxImportCommand = Command.make(
+	'dropbox',
+	{
+		...entityRequestOptions,
+		url: Options.text('url').pipe(
+			Options.withDescription('Dropbox shared folder URL'),
+		),
+		title: Options.text('title').pipe(
+			Options.withDescription('Workshop title'),
+		),
+		dryRun: Options.boolean('dry-run').pipe(
+			Options.withDescription(
+				'Preview inferred structure without creating anything',
+			),
+			Options.withDefault(false),
+		),
+		dropboxToken: Options.text('dropbox-token').pipe(
+			Options.withDescription(
+				'Dropbox API access token (defaults to DROPBOX_ACCESS_TOKEN or DROPBOX_TOKEN env var)',
+			),
+			Options.optional,
+		),
+		dropboxTeamMemberId: Options.text('dropbox-team-member-id').pipe(
+			Options.withDescription(
+				'Dropbox team member ID for Business accounts (defaults to DROPBOX_TEAM_MEMBER_ID env var)',
+			),
+			Options.optional,
+		),
+		dropboxTeamNamespaceId: Options.text('dropbox-team-namespace-id').pipe(
+			Options.withDescription(
+				'Dropbox team namespace ID for Business accounts (defaults to DROPBOX_TEAM_NAMESPACE_ID env var)',
+			),
+			Options.optional,
+		),
+	},
+	({
+		app,
+		baseUrl,
+		token,
+		noAuth,
+		url,
+		title,
+		dryRun,
+		dropboxToken,
+		dropboxTeamMemberId,
+		dropboxTeamNamespaceId,
+	}) =>
+		runAndPrint(async () => {
+			const resolvedDropboxToken =
+				unwrapOption<string>(dropboxToken) ||
+				process.env.DROPBOX_ACCESS_TOKEN ||
+				process.env.DROPBOX_TOKEN
+
+			const resolvedTeamMemberId =
+				unwrapOption<string>(dropboxTeamMemberId) ||
+				process.env.DROPBOX_TEAM_MEMBER_ID
+
+			const resolvedTeamNamespaceId =
+				unwrapOption<string>(dropboxTeamNamespaceId) ||
+				process.env.DROPBOX_TEAM_NAMESPACE_ID
+
+			if (!resolvedDropboxToken) {
+				return respondError(
+					'creator import dropbox',
+					'No Dropbox API token found',
+					'MISSING_DROPBOX_TOKEN',
+					'Provide --dropbox-token or set the DROPBOX_ACCESS_TOKEN / DROPBOX_TOKEN environment variable.',
+					[],
+				)
+			}
+
+			const buildTitleFromFilename = (filename: string): string => {
+				const noExt = filename.replace(/\.[^.]+$/, '')
+				const noPrefix = noExt.replace(/^\d+[_-]+/, '')
+				const spaced = noPrefix.replace(/[_-]+/g, ' ')
+				return spaced
+					.toLowerCase()
+					.replace(/(?:^|\s)\S/g, (ch) => ch.toUpperCase())
+			}
+
+			const dropboxOpts: DropboxClientOptions = {
+				token: resolvedDropboxToken,
+				teamMemberId: resolvedTeamMemberId,
+				teamNamespaceId: resolvedTeamNamespaceId,
+			}
+
+			const isVideoFile = (name: string) => /\.(mp4|mov|webm)$/i.test(name)
+
+			try {
+				const topEntries = await listFolder(dropboxOpts, url, '')
+				const sorted = [...topEntries].sort((a, b) =>
+					a.name.localeCompare(b.name),
+				)
+
+				type StructureLesson = { title: string; dropboxPath?: string }
+				type StructureItem =
+					| {
+							type: 'section'
+							title: string
+							lessons: StructureLesson[]
+					  }
+					| (StructureLesson & { type: 'lesson' })
+
+				const structure: StructureItem[] = []
+
+				for (const entry of sorted) {
+					if (entry['.tag'] === 'folder') {
+						const sectionTitle = buildTitleFromFilename(entry.name)
+						const children = await listFolder(
+							dropboxOpts,
+							url,
+							entry.path_lower || `/${entry.name}`,
+						)
+						const childSorted = [...children].sort((a, b) =>
+							a.name.localeCompare(b.name),
+						)
+						const lessons: StructureLesson[] = childSorted
+							.filter((c) => c['.tag'] === 'file' && isVideoFile(c.name))
+							.map((c) => ({
+								title: buildTitleFromFilename(c.name),
+								dropboxPath: c.path_lower || c.id,
+							}))
+						if (lessons.length > 0) {
+							structure.push({
+								type: 'section',
+								title: sectionTitle,
+								lessons,
+							})
+						}
+					} else if (entry['.tag'] === 'file' && isVideoFile(entry.name)) {
+						structure.push({
+							type: 'lesson',
+							title: buildTitleFromFilename(entry.name),
+							dropboxPath: entry.path_lower || entry.id,
+						})
+					}
+				}
+
+				if (dryRun) {
+					return respond(
+						'creator import dropbox',
+						{
+							dry_run: true,
+							workshop_title: title,
+							structure,
+							section_count: structure.filter((s) => s.type === 'section')
+								.length,
+							top_level_lesson_count: structure.filter(
+								(s) => s.type === 'lesson',
+							).length,
+						},
+						[
+							{
+								command:
+									'creator import dropbox --url <url> --title <title> [--dropbox-token <token>]',
+								description:
+									'Remove --dry-run to create the workshop and upload videos',
+								params: {
+									url: { value: url, required: true },
+									title: { value: title, required: true },
+								},
+							},
+						],
+					)
+				}
+
+				// Not dry-run: build structure without dropboxPath for the API
+				const apiStructure = structure.map((item) => {
+					if (item.type === 'section') {
+						return {
+							type: 'section',
+							title: item.title,
+							lessons: item.lessons.map(({ title: t }) => ({
+								title: t,
+							})),
+						}
+					}
+					return { type: 'lesson', title: item.title }
+				})
+
+				// Resolve auth context for CWA requests
+				const resolved = await withContext({
+					app,
+					baseUrl,
+					token,
+					command: 'creator import dropbox',
+					requireToken: false,
+				})
+				if (!resolved.ok) return resolved.payload
+
+				const ctx = resolved.context
+
+				// Create the workshop
+				let workshopData: unknown
+				try {
+					workshopData = await requestApi({
+						baseUrl: ctx.baseUrl,
+						pathname: '/api/workshops',
+						method: 'POST',
+						token: noAuth ? undefined : ctx.token,
+						body: { workshop: { title }, structure: apiStructure },
+					})
+				} catch (err) {
+					return respondError(
+						'creator import dropbox',
+						err instanceof Error ? err.message : 'Failed to create workshop',
+						'WORKSHOP_CREATE_FAILED',
+						'Check your auth token and server availability, then retry.',
+						[
+							{
+								command: 'auth login [--app <app-id>] [--base-url <url>]',
+								description: 'Re-authenticate and retry',
+							},
+						],
+					)
+				}
+
+				// Extract workshop ID from response { success, workshop: { id }, lessons: [...] }
+				const workshopRecord = workshopData as Record<string, unknown>
+				const workshopObj = workshopRecord.workshop as
+					| Record<string, unknown>
+					| undefined
+				const workshopId =
+					typeof workshopObj?.id === 'string' ? workshopObj.id : null
+
+				// Extract lesson IDs from response (lessons array has { id, type, fields: { title } })
+				type LessonRef = { id: string; title: string }
+				const extractLessons = (node: unknown): LessonRef[] => {
+					if (!node || typeof node !== 'object') return []
+					const rec = node as Record<string, unknown>
+					const results: LessonRef[] = []
+					if (rec.type === 'lesson' && typeof rec.id === 'string') {
+						const fields = rec.fields as Record<string, unknown> | undefined
+						results.push({
+							id: rec.id,
+							title: typeof fields?.title === 'string' ? fields.title : '',
+						})
+					}
+					for (const val of Object.values(rec)) {
+						if (Array.isArray(val)) {
+							for (const item of val) {
+								results.push(...extractLessons(item))
+							}
+						} else if (typeof val === 'object') {
+							results.push(...extractLessons(val))
+						}
+					}
+					return results
+				}
+
+				const allLessons = extractLessons(workshopRecord)
+
+				// Build flat list of dropbox paths in structure order (matching lesson order)
+				const dropboxPaths: { title: string; dropboxPath: string }[] = []
+				for (const item of structure) {
+					if (item.type === 'section') {
+						for (const lesson of item.lessons) {
+							if (lesson.dropboxPath) {
+								dropboxPaths.push({
+									title: lesson.title,
+									dropboxPath: lesson.dropboxPath,
+								})
+							}
+						}
+					} else if (item.type === 'lesson') {
+						const lessonItem = item as StructureLesson & { type: 'lesson' }
+						if (lessonItem.dropboxPath) {
+							dropboxPaths.push({
+								title: lessonItem.title,
+								dropboxPath: lessonItem.dropboxPath,
+							})
+						}
+					}
+				}
+
+				// Get temporary download URLs from Dropbox and submit uploads
+				const uploadStatuses: {
+					lessonId: string
+					lessonTitle: string
+					downloadUrl: string
+					status: 'ok' | 'error'
+					response?: unknown
+					error?: string
+				}[] = []
+
+				for (let i = 0; i < allLessons.length; i++) {
+					const lessonRef = allLessons[i]
+					if (!lessonRef) continue
+					const dropboxEntry = dropboxPaths[i]
+					if (!dropboxEntry) continue
+
+					let downloadUrl: string
+					try {
+						downloadUrl = await getTemporaryLink(
+							dropboxOpts,
+							dropboxEntry.dropboxPath,
+						)
+					} catch (linkErr) {
+						uploadStatuses.push({
+							lessonId: lessonRef.id,
+							lessonTitle: lessonRef.title,
+							downloadUrl: dropboxEntry.dropboxPath,
+							status: 'error',
+							error:
+								linkErr instanceof Error
+									? `Failed to get download URL: ${linkErr.message}`
+									: String(linkErr),
+						})
+						continue
+					}
+
+					try {
+						const uploadResp = await requestApi({
+							baseUrl: ctx.baseUrl,
+							pathname: '/api/uploads/new',
+							method: 'POST',
+							token: noAuth ? undefined : ctx.token,
+							body: {
+								file: {
+									url: downloadUrl,
+									name: crypto.randomUUID(),
+								},
+								metadata: { parentResourceId: lessonRef.id },
+							},
+						})
+						uploadStatuses.push({
+							lessonId: lessonRef.id,
+							lessonTitle: lessonRef.title,
+							downloadUrl,
+							status: 'ok',
+							response: uploadResp,
+						})
+					} catch (uploadErr) {
+						uploadStatuses.push({
+							lessonId: lessonRef.id,
+							lessonTitle: lessonRef.title,
+							downloadUrl,
+							status: 'error',
+							error:
+								uploadErr instanceof Error
+									? uploadErr.message
+									: String(uploadErr),
+						})
+					}
+				}
+
+				return respond(
+					'creator import dropbox',
+					{
+						workshop_id: workshopId,
+						workshop_title: title,
+						lesson_count: allLessons.length,
+						upload_statuses: uploadStatuses,
+					},
+					[
+						...(workshopId
+							? [
+									{
+										command: `workshop get ${workshopId} [--app <app-id>]`,
+										description: 'View the created workshop',
+									},
+								]
+							: []),
+						...allLessons.slice(0, 5).map((l) => ({
+							command: `creator video get ${l.id} [--app <app-id>]`,
+							description: `Check video processing for lesson: ${l.title}`,
+						})),
+					],
+				)
+			} catch (err) {
+				return respondError(
+					'creator import dropbox',
+					err instanceof Error ? err.message : 'Dropbox import failed',
+					'DROPBOX_IMPORT_FAILED',
+					'Check Dropbox token, shared URL, and server availability.',
+					[
+						{
+							command:
+								'creator import dropbox --url <url> --title <title> --dry-run [--dropbox-token <token>]',
+							description: 'Preview structure without executing',
+							params: {
+								url: { value: url, required: true },
+								title: { value: title, required: true },
+							},
+						},
+					],
+				)
+			}
+		}),
+).pipe(
+	Command.withDescription(
+		'Import a Dropbox shared folder as a workshop with video uploads',
+	),
+)
+
+const importCommand = Command.make('import', {}, () =>
+	runAndPrint(async () =>
+		respond(
+			'creator import',
+			{
+				description: 'Import content from external sources',
+				commands: [
+					{
+						name: 'dropbox',
+						description: 'Import a Dropbox shared folder as a workshop',
+						usage:
+							'aihero creator import dropbox --url <url> --title <title> [--dry-run] [--dropbox-token <token>]',
+					},
+				],
+			},
+			[
+				{
+					command:
+						'creator import dropbox --url <url> --title <title> --dry-run [--app <app-id>]',
+					description: 'Preview Dropbox folder structure as workshop',
+					params: {
+						url: {
+							description: 'Dropbox shared folder URL',
+							required: true,
+						},
+						title: {
+							description: 'Workshop title',
+							required: true,
+						},
+					},
+				},
+			],
+		),
+	),
+).pipe(
+	Command.withSubcommands([dropboxImportCommand]),
+	Command.withDescription('Import content from external sources'),
+)
+
 const creatorCommand = Command.make('creator', {}, () =>
 	runAndPrint(async () =>
 		respond(
@@ -4318,8 +5014,7 @@ const creatorCommand = Command.make('creator', {}, () =>
 					{
 						name: 'upload',
 						description: 'Get signed URLs and register uploaded videos',
-						usage:
-							'aihero creator upload signed-url --object-name <filename>',
+						usage: 'aihero creator upload signed-url --object-name <filename>',
 					},
 					{
 						name: 'video',
@@ -4330,6 +5025,11 @@ const creatorCommand = Command.make('creator', {}, () =>
 						name: 'post',
 						description: 'Create and manage posts via CRUD surface',
 						usage: 'aihero crud post create --body <json>',
+					},
+					{
+						name: 'import',
+						description: 'Import content from external sources',
+						usage: 'aihero creator import dropbox --url <url> --title <title>',
 					},
 				],
 			},
@@ -4377,11 +5077,26 @@ const creatorCommand = Command.make('creator', {}, () =>
 						},
 					},
 				},
+				{
+					command:
+						'creator import dropbox --url <url> --title <title> --dry-run [--app <app-id>]',
+					description: 'Preview Dropbox folder as workshop structure',
+					params: {
+						url: {
+							description: 'Dropbox shared folder URL',
+							required: true,
+						},
+						title: {
+							description: 'Workshop title',
+							required: true,
+						},
+					},
+				},
 			],
 		),
 	),
 ).pipe(
-	Command.withSubcommands([uploadCommand, videoCommand]),
+	Command.withSubcommands([uploadCommand, videoCommand, importCommand]),
 	Command.withDescription('Creator-oriented workflows'),
 )
 
@@ -4417,6 +5132,11 @@ const crudCommand = Command.make('crud', {}, () =>
 						description: 'Shortlink CRUD operations',
 						usage: 'aihero crud shortlink list [--app <app-id>]',
 					},
+					{
+						name: 'workshop',
+						description: 'Workshop content operations',
+						usage: 'aihero crudworkshop list [--app <app-id>]',
+					},
 				],
 			},
 			[
@@ -4450,6 +5170,16 @@ const crudCommand = Command.make('crud', {}, () =>
 						},
 					},
 				},
+				{
+					command: 'crud workshop list [--app <app-id>]',
+					description: 'List workshops',
+					params: {
+						'app-id': {
+							value: DEFAULT_APP_ID,
+							required: true,
+						},
+					},
+				},
 			],
 		),
 	),
@@ -4460,6 +5190,7 @@ const crudCommand = Command.make('crud', {}, () =>
 		lessonCommand,
 		productCommand,
 		shortlinkCommand,
+		workshopCommand,
 	]),
 	Command.withDescription('Content CRUD operations'),
 )
@@ -4652,7 +5383,8 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 					},
 					{
 						name: 'shortlink',
-						description: 'Shortlink analytics by link ID and recent click stats',
+						description:
+							'Shortlink analytics by link ID and recent click stats',
 						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
 					},
 				],
@@ -5005,7 +5737,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 				},
 			],
 		)
-		}),
+	}),
 ).pipe(
 	Command.withSubcommands([
 		appCommand,
