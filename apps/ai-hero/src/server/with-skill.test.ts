@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { withSkill } from './with-skill'
+
 const loggerMocks = vi.hoisted(() => {
 	return {
 		createRequestContext: vi.fn(),
@@ -21,8 +23,6 @@ vi.mock('@/server/logger', () => ({
 		error: loggerMocks.error,
 	},
 }))
-
-import { withSkill } from './with-skill'
 
 describe('withSkill', () => {
 	beforeEach(() => {
@@ -120,7 +120,9 @@ describe('withSkill', () => {
 		)
 
 		const request = new Request('https://aihero.dev/api/lessons/lesson-123')
-		const response = await handler(request, { params: { lessonId: 'lesson-123' } })
+		const response = await handler(request, {
+			params: { lessonId: 'lesson-123' },
+		})
 
 		expect(response.status).toBe(202)
 		expect(await response.text()).toBe('lesson-123')
@@ -138,7 +140,9 @@ describe('withSkill', () => {
 			throw failure
 		})
 
-		const request = new Request('https://aihero.dev/api/fail?password=secret-pass')
+		const request = new Request(
+			'https://aihero.dev/api/fail?password=secret-pass',
+		)
 
 		await expect(handler(request)).rejects.toThrow('handler exploded')
 

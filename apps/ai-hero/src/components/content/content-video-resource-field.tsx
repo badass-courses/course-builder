@@ -406,15 +406,13 @@ export const ContentVideoResourceField = <T extends ContentResourceBase>({
 												<span className="text-xs">Detach video</span>
 											</TooltipContent>
 										</Tooltip>
-										</div>
+									</div>
 								</div>
 							) : videoResource ? (
 								<div className="bg-muted/75 -mt-5 mb-[42px] flex aspect-video h-full w-full flex-col items-center justify-center gap-3 p-5 text-sm">
 									{videoResource.state === 'errored' ? (
 										<>
-											<span className="text-destructive">
-												video is errored
-											</span>
+											<span className="text-destructive">video is errored</span>
 											<div className="flex gap-2">
 												<Button
 													variant="outline"

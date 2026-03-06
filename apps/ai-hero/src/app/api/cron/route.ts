@@ -7,9 +7,12 @@ export const dynamic = 'force-dynamic'
 const runCronRefresh = async () => {
 	await headers()
 	try {
-		const response = await fetch(`${process.env.COURSEBUILDER_URL}/api/inngest`, {
-			method: 'PUT',
-		})
+		const response = await fetch(
+			`${process.env.COURSEBUILDER_URL}/api/inngest`,
+			{
+				method: 'PUT',
+			},
+		)
 
 		await log.info('api.cron.refresh_inngest.completed', {
 			status: response.status,

@@ -230,7 +230,7 @@
 	"devDependencies": {
 		"@coursebuilder/eslint-config": "workspace:*",
 		"@mux/mux-node": "^12.8.0",
-		"@tailwindcss/typography": "^0.5.16",
+		"@tailwindcss/typography": "^0.5.19",
 		"@types/base-64": "^1.0.1",
 		"@types/eslint": "^9.6.1",
 		"@types/js-cookie": "^3.0.6",
@@ -256,7 +256,7 @@
 		"shiki": "1.1.7",
 		"stripe": "16.9.0",
 		"tailwind-scrollbar": "^4.0.2",
-		"tailwindcss": "^4.1.11",
+		"tailwindcss": "^4.2.1",
 		"tailwindcss-fluid-typography": "^1.0.5",
 		"tsx": "^4.7.1",
 		"typescript": "5.4.5"

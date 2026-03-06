@@ -160,7 +160,10 @@ const rewriteLegacyCommandPath = (command: string) => {
 	const [firstToken] = trimmed.split(/\s+/, 1)
 	if (firstToken && FOCUSED_TOP_LEVEL_COMMANDS.has(firstToken)) return trimmed
 
-	if (trimmed === 'survey analytics' || trimmed.startsWith('survey analytics ')) {
+	if (
+		trimmed === 'survey analytics' ||
+		trimmed.startsWith('survey analytics ')
+	) {
 		return trimmed.replace(/^survey analytics\b/, 'analytics survey analytics')
 	}
 	if (trimmed === 'survey' || trimmed.startsWith('survey ')) {
@@ -181,7 +184,10 @@ const rewriteLegacyCommandPath = (command: string) => {
 	) {
 		return trimmed.replace(/^shortlink analytics\b/, 'analytics shortlink get')
 	}
-	if (trimmed === 'shortlink recent' || trimmed.startsWith('shortlink recent ')) {
+	if (
+		trimmed === 'shortlink recent' ||
+		trimmed.startsWith('shortlink recent ')
+	) {
 		return trimmed.replace(/^shortlink recent\b/, 'analytics shortlink recent')
 	}
 	if (trimmed === 'shortlink' || trimmed.startsWith('shortlink ')) {
@@ -211,7 +217,10 @@ const rewriteUsageInResult = (value: unknown): unknown => {
 						const withoutCliPrefix =
 							trimmed === CLI_NAME ? '' : trimmed.slice(`${CLI_NAME} `.length)
 						const rewrittenPath = rewriteLegacyCommandPath(withoutCliPrefix)
-						return [key, rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME]
+						return [
+							key,
+							rewrittenPath ? `${CLI_NAME} ${rewrittenPath}` : CLI_NAME,
+						]
 					}
 				}
 				return [key, rewriteUsageInResult(entryValue)]
@@ -1660,7 +1669,7 @@ const authLogoutCommand = Command.make(
 					},
 				],
 			)
-	}),
+		}),
 ).pipe(Command.withDescription('Clear stored auth token from local config'))
 
 const authRouteCommand = Command.make(
@@ -1684,7 +1693,9 @@ const authRouteCommand = Command.make(
 	({ app, baseUrl, token, noAuth, action, method, body }) =>
 		runAndPrint(async () => {
 			const normalizedAction = action.replace(/^\/+/, '')
-			const resolvedMethod = (unwrapOption<string>(method) || 'GET').toUpperCase()
+			const resolvedMethod = (
+				unwrapOption<string>(method) || 'GET'
+			).toUpperCase()
 			if (!HTTP_METHODS.includes(resolvedMethod as HttpMethod)) {
 				return respondError(
 					`auth route ${normalizedAction}`,
@@ -1728,7 +1739,8 @@ const authRouteCommand = Command.make(
 						},
 					},
 					{
-						command: 'auth route providers [--app <app-id>] [--method <method>]',
+						command:
+							'auth route providers [--app <app-id>] [--method <method>]',
 						description: 'List configured auth providers',
 						params: {
 							'app-id': {
@@ -1744,7 +1756,9 @@ const authRouteCommand = Command.make(
 				],
 			})
 		}),
-).pipe(Command.withDescription('Call /api/auth/[...nextauth] catchall endpoints'))
+).pipe(
+	Command.withDescription('Call /api/auth/[...nextauth] catchall endpoints'),
+)
 
 const authCommand = Command.make('auth', {}, () =>
 	runAndPrint(async () =>
@@ -2800,7 +2814,8 @@ const postCommand = Command.make('post', {}, () =>
 					{
 						name: 'update',
 						description: 'Update a post by ID',
-						usage: "aihero post update <id> --body '<json>' [--action <action>]",
+						usage:
+							"aihero post update <id> --body '<json>' [--action <action>]",
 					},
 					{
 						name: 'delete',
@@ -3353,7 +3368,16 @@ const uploadNewCommand = Command.make(
 		),
 		body: bodyOption,
 	},
-	({ app, baseUrl, token, noAuth, fileUrl, fileName, parentResourceId, body }) =>
+	({
+		app,
+		baseUrl,
+		token,
+		noAuth,
+		fileUrl,
+		fileName,
+		parentResourceId,
+		body,
+	}) =>
 		runAndPrint(async () => {
 			let payload: unknown
 			const rawBody = unwrapOption<string>(body)
@@ -3374,7 +3398,7 @@ const uploadNewCommand = Command.make(
 						'upload new',
 						'Missing upload payload',
 						'MISSING_UPLOAD_PAYLOAD',
-						"Provide --body JSON or both --file-url and --parent-resource-id.",
+						'Provide --body JSON or both --file-url and --parent-resource-id.',
 						[],
 					)
 				}
@@ -3530,7 +3554,8 @@ const videoCommand = Command.make('video', {}, () =>
 					{
 						name: 'thumbnail',
 						description: 'Get thumbnail for video resource',
-						usage: 'aihero video thumbnail <video-resource-id> [--time <seconds>]',
+						usage:
+							'aihero video thumbnail <video-resource-id> [--time <seconds>]',
 					},
 				],
 			},
@@ -4232,7 +4257,8 @@ const webhookCommand = Command.make('webhook', {}, () =>
 					{
 						name: 'postmark',
 						description: 'Send Postmark webhook payload',
-						usage: "aihero webhook postmark --body '<json>' [--secret <secret>]",
+						usage:
+							"aihero webhook postmark --body '<json>' [--secret <secret>]",
 					},
 				],
 			},
@@ -4318,8 +4344,7 @@ const creatorCommand = Command.make('creator', {}, () =>
 					{
 						name: 'upload',
 						description: 'Get signed URLs and register uploaded videos',
-						usage:
-							'aihero creator upload signed-url --object-name <filename>',
+						usage: 'aihero creator upload signed-url --object-name <filename>',
 					},
 					{
 						name: 'video',
@@ -4652,7 +4677,8 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 					},
 					{
 						name: 'shortlink',
-						description: 'Shortlink analytics by link ID and recent click stats',
+						description:
+							'Shortlink analytics by link ID and recent click stats',
 						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
 					},
 				],
@@ -5005,7 +5031,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 				},
 			],
 		)
-		}),
+	}),
 ).pipe(
 	Command.withSubcommands([
 		appCommand,

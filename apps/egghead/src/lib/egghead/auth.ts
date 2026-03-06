@@ -83,10 +83,7 @@ export async function getEggheadUserProfile(userId: string) {
 			path: issue.path.join('.'),
 			code: issue.code,
 			message: issue.message,
-			received: issue.path.reduce(
-				(obj: any, key) => obj?.[key],
-				profile,
-			),
+			received: issue.path.reduce((obj: any, key) => obj?.[key], profile),
 		}))
 
 		console.error(
