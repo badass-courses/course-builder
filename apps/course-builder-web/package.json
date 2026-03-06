@@ -189,7 +189,7 @@
 		"@coursebuilder/eslint-config": "workspace:*",
 		"@mux/mux-node": "^12.8.0",
 		"@tailwindcss/postcss": "^4.1.11",
-		"@tailwindcss/typography": "^0.5.16",
+		"@tailwindcss/typography": "^0.5.19",
 		"@types/base-64": "^1.0.1",
 		"@types/eslint": "^9.6.1",
 		"@types/json-schema": "^7.0.14",
@@ -213,7 +213,7 @@
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.6.14",
 		"stripe": "16.9.0",
-		"tailwindcss": "^4.1.11",
+		"tailwindcss": "^4.2.1",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.7.1",
 		"typescript": "5.4.5"

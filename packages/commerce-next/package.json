@@ -105,7 +105,7 @@
 		"react-use": "^17.5.0",
 		"react-wrap-balancer": "^0.2.4",
 		"tailwind-merge": "^3.3.1",
-		"tailwindcss": "^4.1.11",
+		"tailwindcss": "^4.2.1",
 		"uuid": "^9.0.1",
 		"xstate": "^5.13.0",
 		"yup": "^0.32.11",
