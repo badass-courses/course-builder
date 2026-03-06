@@ -2,18 +2,18 @@
 set -eu
 
 REPO="badass-courses/course-builder"
-INSTALL_DIR="${AIHERO_INSTALL_DIR:-$HOME/.local/bin}"
+INSTALL_DIR="${COURSEBUILDER_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="latest"
 
 usage() {
 	cat <<'EOF'
-Install aihero CLI from GitHub Releases.
+Install coursebuilder CLI from GitHub Releases.
 
 Usage:
   install.sh [--version <tag>] [--install-dir <path>] [--repo <owner/repo>]
 
 Options:
-  --version      Release tag (default: latest aihero-cli-v* release)
+  --version      Release tag (default: latest coursebuilder-cli-v* release)
   --install-dir  Install directory (default: ~/.local/bin)
   --repo         GitHub repo (default: badass-courses/course-builder)
   -h, --help     Show this help
@@ -72,19 +72,19 @@ if [ "$VERSION" = "latest" ]; then
 	VERSION="$(printf '%s' "$releases_json" |
 		tr '\n' ' ' |
 		sed 's/},{/}\n{/g' |
-		grep -o '"tag_name":"aihero-cli-v[^"]*"' |
+		grep -o '"tag_name":"coursebuilder-cli-v[^"]*"' |
 		head -n 1 |
 		cut -d'"' -f4)"
 
 	if [ -z "$VERSION" ]; then
-		echo "Could not find any aihero-cli-v* release tags in $REPO." >&2
+		echo "Could not find any coursebuilder-cli-v* release tags in $REPO." >&2
 		exit 1
 	fi
-elif [ "${VERSION#aihero-cli-v}" = "$VERSION" ]; then
-	VERSION="aihero-cli-v$VERSION"
+elif [ "${VERSION#coursebuilder-cli-v}" = "$VERSION" ]; then
+	VERSION="coursebuilder-cli-v$VERSION"
 fi
 
-asset="aihero-$os-$arch.tar.gz"
+asset="coursebuilder-$os-$arch.tar.gz"
 download_url="https://github.com/$REPO/releases/download/$VERSION/$asset"
 
 tmpdir="$(mktemp -d)"
@@ -99,9 +99,9 @@ curl -fsSL "$download_url" -o "$tmpdir/$asset"
 tar -xzf "$tmpdir/$asset" -C "$tmpdir"
 
 mkdir -p "$INSTALL_DIR"
-install -m 755 "$tmpdir/aihero" "$INSTALL_DIR/aihero"
+install -m 755 "$tmpdir/coursebuilder" "$INSTALL_DIR/coursebuilder"
 
-echo "Installed aihero to: $INSTALL_DIR/aihero"
+echo "Installed coursebuilder to: $INSTALL_DIR/coursebuilder"
 
 case ":${PATH:-}:" in
 *":$INSTALL_DIR:"*) ;;

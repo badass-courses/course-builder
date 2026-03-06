@@ -1,6 +1,6 @@
 {
-	"name": "@coursebuilder/aihero-cli",
-	"version": "0.1.0",
+	"name": "@coursebuilder/cli",
+	"version": "0.3.0",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -11,7 +11,7 @@
 		}
 	},
 	"bin": {
-		"aihero": "./dist/cli.js"
+		"coursebuilder": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -19,7 +19,7 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"build:exe": "bun build src/cli.ts --compile --outfile dist/aihero",
+		"build:exe": "bun build src/cli.ts --compile --outfile dist/coursebuilder",
 		"build:release-assets": "bash ./scripts/build-release-assets.sh",
 		"dev": "tsx src/cli.ts",
 		"start": "node dist/cli.js",

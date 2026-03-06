@@ -62,11 +62,29 @@ export interface CourseBuilderAdapter<
 	addResourceToResource(options: {
 		childResourceId: string
 		parentResourceId: string
+		position?: number
+		metadata?: Record<string, unknown>
 	}): Awaitable<ContentResourceResource | null>
 	removeResourceFromResource(options: {
 		childResourceId: string
 		parentResourceId: string
 	}): Promise<ContentResource | null>
+	queryContentResources?(params: {
+		type?: string
+		state?: string
+		visibility?: string
+		organizationId?: string
+		search?: string
+		page?: number
+		limit?: number
+		sort?: string
+		order?: string
+	}): Promise<{
+		data: ContentResource[]
+		pagination: { page: number; limit: number; total: number; totalPages: number }
+	}>
+	getResourceChildren?(id: string): Promise<ContentResource[]>
+	getResourceParents?(id: string): Promise<ContentResource[]>
 	createContentResource(resource: {
 		id: string
 		type: string
@@ -638,6 +656,12 @@ export const MockCourseBuilderAdapter: CourseBuilderAdapter = {
 	removeResourceFromResource: async (options) => {
 		return null
 	},
+	queryContentResources: async () => ({
+		data: [],
+		pagination: { page: 1, limit: 25, total: 0, totalPages: 0 },
+	}),
+	getResourceChildren: async () => [],
+	getResourceParents: async () => [],
 	createContentResource: async (resource) => {
 		return resource as ContentResource
 	},

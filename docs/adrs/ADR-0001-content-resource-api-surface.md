@@ -145,17 +145,24 @@ Response contains:
 - optional constraints (for example max depth, required fields, visibility
   rules)
 
-## TypeScript Contract Strategy
+## Package and Contract Strategy
 
-Define a shared package-level contract (for example
-`@coursebuilder/content-api-contract`) with:
+Use a single shared package: `@coursebuilder/content-api`.
 
-- discriminated unions for write commands
-- per-type Zod schema registry
-- capability matrix and edge matrix types
-- stable read model DTOs for generic query responses
+That package contains:
 
-The API layer should reject unvalidated `unknown` payloads at boundaries.
+- Zod schemas for read DTOs, graph payloads, envelopes, and capability metadata
+- a per-app schema registry builder for resource types and edge rules
+- framework-agnostic handlers that return plain `{ status, body, headers }`
+- small Next.js route wrappers in each app that parse requests and call handlers
+
+The shared package must not depend on app-local auth types such as `AppAbility`.
+Instead, each app injects authorization callbacks or a small policy object into
+the handlers.
+
+The API layer rejects unvalidated `unknown` payloads at the boundary, then
+exposes validated typed data internally. Avoid `any` in the shared contract
+surface.
 
 ## Consequences
 
@@ -179,24 +186,36 @@ The API layer should reject unvalidated `unknown` payloads at boundaries.
 
 ## Implementation Plan
 
-1. Create shared contract module:
-   - `packages/content-api-contract/src/content-model.ts`
-   - `packages/content-api-contract/src/content-resource-read.ts`
-   - `packages/content-api-contract/src/content-resource-graph.ts`
-2. Add shared read/graph routes in app adapters:
+1. Create `packages/content-api` with:
+   - `src/schemas/content-model.ts`
+   - `src/schemas/content-resource-read.ts`
+   - `src/schemas/content-resource-graph.ts`
+   - `src/schemas/envelope.ts`
+   - `src/handlers/*`
+2. Add app-level schema registries and ship `GET /api/content-model` first:
+   - `apps/ai-hero/src/lib/content-model/registry.ts`
+   - `apps/code-with-antonio/src/lib/content-model/registry.ts`
+   - `apps/*/src/app/api/content-model/route.ts`
+3. Extend `CourseBuilderAdapter` for generic reads and explicit graph writes:
+   - `queryContentResources`
+   - `getResourceChildren`
+   - `getResourceParents`
+   - `addResourceToResource` accepts `position` and `metadata`
+4. Add shared read routes in both apps:
    - `apps/ai-hero/src/app/api/content-resources/*`
    - `apps/code-with-antonio/src/app/api/content-resources/*`
-3. Add `GET /api/content-model` in each app, generated from local schema
-   registry.
-4. Keep existing typed write endpoints; incrementally align response envelopes.
-5. Update `packages/aihero-cli` to:
-   - use capability discovery
+5. Add shared graph mutation routes in both apps:
+   - `apps/*/src/app/api/content-resource-links/route.ts`
+6. Keep existing typed write endpoints; incrementally align response envelopes.
+7. Update `packages/aihero-cli` to:
+   - use capability discovery first
    - route writes to typed endpoints
    - use generic query endpoints for list/discovery
-6. Add observability:
+8. Add observability:
    - `content_model.read`
    - `content_resource.query`
-   - `content_resource_link.create/delete`
+   - `content_resource_link.create`
+   - `content_resource_link.delete`
    - per-type write events (`post.create`, `lesson.update`, etc.)
 
 ## Verification Criteria
@@ -214,10 +233,12 @@ The API layer should reject unvalidated `unknown` payloads at boundaries.
 
 ## Rollout
 
-1. Ship contract package and `content-model` endpoint first.
-2. Migrate read/list clients to generic query surface.
-3. Keep write paths unchanged until parity checks pass.
-4. Gate any generic write proposals behind a new ADR with concrete schema proof.
+1. Ship `@coursebuilder/content-api` and `content-model` first.
+2. Add automated package and adapter tests before external smoke tests.
+3. Migrate read/list clients to the generic query surface.
+4. Add graph mutations after registry-driven edge validation is proven.
+5. Keep typed write paths unchanged until parity checks pass.
+6. Gate any generic write proposals behind a new ADR with concrete schema proof.
 
 ## References
 

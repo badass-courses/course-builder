@@ -2548,7 +2548,7 @@ export function mySqlDrizzleAdapter(
 				.parse(purchaseUserTransferData)
 		},
 		addResourceToResource: async function (options) {
-			const { parentResourceId, childResourceId } = options
+			const { parentResourceId, childResourceId, position, metadata } = options
 
 			const parentResourceData = await client.query.contentResource.findFirst({
 				where: or(
@@ -2565,10 +2565,16 @@ export function mySqlDrizzleAdapter(
 
 			const parentResource = ContentResourceSchema.parse(parentResourceData)
 
+			const resolvedPosition =
+				position !== undefined
+					? position
+					: parentResource.resources?.length || 0
+
 			await client.insert(contentResourceResource).values({
 				resourceOfId: parentResource.id,
 				resourceId: childResourceId,
-				position: parentResource.resources?.length || 0,
+				position: resolvedPosition,
+				...(metadata ? { metadata } : {}),
 			})
 
 			const resourceJoin = client.query.contentResourceResource.findFirst({
@@ -4492,6 +4498,112 @@ export function mySqlDrizzleAdapter(
 				.update(subscriptionTable)
 				.set({ status })
 				.where(eq(subscriptionTable.id, subscriptionId))
+		},
+		async queryContentResources(params) {
+			const {
+				type,
+				state,
+				visibility,
+				organizationId,
+				page = 1,
+				limit = 25,
+				sort = 'updatedAt',
+				order = 'desc',
+			} = params
+
+			const conditions = []
+
+			if (type) {
+				conditions.push(eq(contentResource.type, type))
+			}
+			if (state) {
+				conditions.push(
+					sql`JSON_EXTRACT(${contentResource.fields}, '$.state') = ${state}`,
+				)
+			}
+			if (visibility) {
+				conditions.push(
+					sql`JSON_EXTRACT(${contentResource.fields}, '$.visibility') = ${visibility}`,
+				)
+			}
+			if (organizationId) {
+				conditions.push(
+					eq(contentResource.organizationId, organizationId),
+				)
+			}
+
+			const where =
+				conditions.length > 0 ? and(...conditions) : undefined
+
+			const sortColumn =
+				sort === 'createdAt'
+					? contentResource.createdAt
+					: sort === 'title'
+						? sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`
+						: contentResource.updatedAt
+
+			const orderFn = order === 'asc' ? asc : desc
+
+			const offset = (page - 1) * limit
+
+			const [rows, countRows] = await Promise.all([
+				client.query.contentResource.findMany({
+					where,
+					orderBy: orderFn(
+						sort === 'title'
+							? sql`JSON_EXTRACT(${contentResource.fields}, '$.title')`
+							: sort === 'createdAt'
+								? contentResource.createdAt
+								: contentResource.updatedAt,
+					),
+					limit,
+					offset,
+				}),
+				client
+					.select({ total: count() })
+					.from(contentResource)
+					.where(where),
+			])
+
+			const total = countRows[0]?.total ?? 0
+			const totalPages = Math.ceil(total / limit)
+
+			const data = rows
+				.map((r) => ContentResourceSchema.safeParse(r))
+				.filter((r) => r.success)
+				.map((r) => r.data as NonNullable<(typeof r)['data']>)
+
+			return {
+				data,
+				pagination: { page, limit, total, totalPages },
+			}
+		},
+		async getResourceChildren(id) {
+			const joins = await client.query.contentResourceResource.findMany({
+				where: eq(contentResourceResource.resourceOfId, id),
+				orderBy: asc(contentResourceResource.position),
+				with: {
+					resource: true,
+				},
+			})
+
+			return joins
+				.map((j) => ContentResourceSchema.safeParse(j.resource))
+				.filter((r) => r.success)
+				.map((r) => r.data as NonNullable<(typeof r)['data']>)
+		},
+		async getResourceParents(id) {
+			const joins = await client.query.contentResourceResource.findMany({
+				where: eq(contentResourceResource.resourceId, id),
+				with: {
+					resourceOf: true,
+				},
+			})
+
+			return joins
+				.map((j) => ContentResourceSchema.safeParse(j.resourceOf))
+				.filter((r) => r.success)
+				.map((r) => r.data as NonNullable<(typeof r)['data']>)
 		},
 	}
 

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-PKG_DIR="$ROOT_DIR/packages/aihero-cli"
+PKG_DIR="$ROOT_DIR/packages/cli"
 OUTPUT_DIR="${1:-$PKG_DIR/release}"
 
 mkdir -p "$OUTPUT_DIR"
@@ -13,7 +13,7 @@ build_target() {
 	local os="$2"
 	local arch="$3"
 	local stage_dir="$OUTPUT_DIR/stage/$os-$arch"
-	local archive="$OUTPUT_DIR/aihero-$os-$arch.tar.gz"
+	local archive="$OUTPUT_DIR/coursebuilder-$os-$arch.tar.gz"
 
 	mkdir -p "$stage_dir"
 
@@ -21,10 +21,10 @@ build_target() {
 	bun build "$PKG_DIR/src/cli.ts" \
 		--compile \
 		--target="$target" \
-		--outfile "$stage_dir/aihero"
+		--outfile "$stage_dir/coursebuilder"
 
-	chmod +x "$stage_dir/aihero"
-	tar -czf "$archive" -C "$stage_dir" aihero
+	chmod +x "$stage_dir/coursebuilder"
+	tar -czf "$archive" -C "$stage_dir" coursebuilder
 }
 
 build_target "bun-linux-x64" "linux" "x64"
@@ -34,7 +34,7 @@ build_target "bun-darwin-arm64" "darwin" "arm64"
 
 (
 	cd "$OUTPUT_DIR"
-	shasum -a 256 aihero-*.tar.gz > aihero-checksums.txt
+	shasum -a 256 coursebuilder-*.tar.gz > coursebuilder-checksums.txt
 )
 
 echo "Release assets written to: $OUTPUT_DIR"
