@@ -899,7 +899,7 @@ const withContext = async ({
 				command,
 				`No auth token found for app '${appId}'`,
 				'AUTH_REQUIRED',
-				`Run \`aihero auth login --app ${appId}\` to authenticate this app profile.`,
+				`Run \`coursebuilder auth login --app ${appId}\` to authenticate this app profile.`,
 				[
 					{
 						command: 'auth login [--app <app-id>] [--base-url <url>]',
@@ -1225,17 +1225,17 @@ const appCommand = Command.make('app', {}, () =>
 					{
 						name: 'list',
 						description: 'List app profiles and capabilities',
-						usage: 'aihero app list',
+						usage: 'coursebuilder app list',
 					},
 					{
 						name: 'current',
 						description: 'Show current app profile',
-						usage: 'aihero app current',
+						usage: 'coursebuilder app current',
 					},
 					{
 						name: 'use',
 						description: 'Set current app profile',
-						usage: 'aihero app use <app-id>',
+						usage: 'coursebuilder app use <app-id>',
 					},
 				],
 			},
@@ -1379,7 +1379,7 @@ const authLoginCommand = Command.make(
 									'auth login',
 									'Device code expired before verification completed',
 									'DEVICE_CODE_EXPIRED',
-									'Run `aihero auth login` again to generate a new code.',
+									'Run `coursebuilder auth login` again to generate a new code.',
 									[
 										{
 											command: 'auth login [--app <app-id>] [--base-url <url>]',
@@ -1426,7 +1426,7 @@ const authLoginCommand = Command.make(
 							'auth login',
 							error instanceof Error ? error.message : 'Token polling failed',
 							'AUTH_POLL_FAILED',
-							'Ensure the server is reachable and retry `aihero auth login`.',
+							'Ensure the server is reachable and retry `coursebuilder auth login`.',
 							[
 								{
 									command: 'auth login [--app <app-id>] [--base-url <url>]',
@@ -1451,7 +1451,7 @@ const authLoginCommand = Command.make(
 						'auth login',
 						'Timed out waiting for device verification',
 						'AUTH_TIMEOUT',
-						'Open the verification URL, complete login, then rerun `aihero auth login`.',
+						'Open the verification URL, complete login, then rerun `coursebuilder auth login`.',
 						[
 							{
 								command: 'auth login [--app <app-id>] [--base-url <url>]',
@@ -1639,7 +1639,7 @@ const authWhoamiCommand = Command.make(
 					'auth whoami',
 					error instanceof Error ? error.message : 'Failed to fetch user info',
 					'AUTH_WHOAMI_FAILED',
-					'Run `aihero auth login` to refresh the token.',
+					'Run `coursebuilder auth login` to refresh the token.',
 					[
 						{
 							command: 'auth login [--app <app-id>] [--base-url <url>]',
@@ -1793,18 +1793,18 @@ const authCommand = Command.make('auth', {}, () =>
 						name: 'login',
 						description: 'Start device login, print URL, and poll for token',
 						usage:
-							'aihero auth login [--app <app-id>] [--base-url <url>] [--interval <seconds>]',
+							'coursebuilder auth login [--app <app-id>] [--base-url <url>] [--interval <seconds>]',
 					},
 					{
 						name: 'whoami',
 						description: 'Get current user profile from token',
 						usage:
-							'aihero auth whoami [--app <app-id>] [--base-url <url>] [--token <token>]',
+							'coursebuilder auth whoami [--app <app-id>] [--base-url <url>] [--token <token>]',
 					},
 					{
 						name: 'logout',
 						description: 'Clear stored token for app profile',
-						usage: 'aihero auth logout [--app <app-id>]',
+						usage: 'coursebuilder auth logout [--app <app-id>]',
 					},
 				],
 			},
@@ -2546,34 +2546,34 @@ const surveyCommand = Command.make('survey', {}, () =>
 					{
 						name: 'list',
 						description: 'List surveys',
-						usage: 'aihero survey list [--app <app-id>] [--search <text>]',
+						usage: 'coursebuilder survey list [--app <app-id>] [--search <text>]',
 					},
 					{
 						name: 'get',
 						description: 'Get a survey by slug or ID',
-						usage: 'aihero survey get <slug-or-id> [--app <app-id>]',
+						usage: 'coursebuilder survey get <slug-or-id> [--app <app-id>]',
 					},
 					{
 						name: 'create',
 						description: 'Create a survey',
 						usage:
-							'aihero survey create <title> [--app <app-id>] [--slug <slug>]',
+							'coursebuilder survey create <title> [--app <app-id>] [--slug <slug>]',
 					},
 					{
 						name: 'update',
 						description: 'Update a survey',
 						usage:
-							'aihero survey update <id> [--app <app-id>] [--title <title>] [--state <state>] [--visibility <visibility>]',
+							'coursebuilder survey update <id> [--app <app-id>] [--title <title>] [--state <state>] [--visibility <visibility>]',
 					},
 					{
 						name: 'delete',
 						description: 'Delete a survey',
-						usage: 'aihero survey delete <id> [--app <app-id>]',
+						usage: 'coursebuilder survey delete <id> [--app <app-id>]',
 					},
 					{
 						name: 'analytics',
 						description: 'Get survey analytics',
-						usage: 'aihero survey analytics <slug-or-id> [--app <app-id>]',
+						usage: 'coursebuilder survey analytics <slug-or-id> [--app <app-id>]',
 					},
 				],
 			},
@@ -2821,28 +2821,28 @@ const postCommand = Command.make('post', {}, () =>
 					{
 						name: 'list',
 						description: 'List posts',
-						usage: 'aihero post list [--slug-or-id <slug-or-id>]',
+						usage: 'coursebuilder post list [--slug-or-id <slug-or-id>]',
 					},
 					{
 						name: 'get',
 						description: 'Get a post by slug or ID',
-						usage: 'aihero post get <slug-or-id>',
+						usage: 'coursebuilder post get <slug-or-id>',
 					},
 					{
 						name: 'create',
 						description: 'Create a post from JSON',
-						usage: "aihero post create --body '<json>'",
+						usage: "coursebuilder post create --body '<json>'",
 					},
 					{
 						name: 'update',
 						description: 'Update a post by ID',
 						usage:
-							"aihero post update <id> --body '<json>' [--action <action>]",
+							"coursebuilder post update <id> --body '<json>' [--action <action>]",
 					},
 					{
 						name: 'delete',
 						description: 'Delete a post by ID',
-						usage: 'aihero post delete <id>',
+						usage: 'coursebuilder post delete <id>',
 					},
 				],
 			},
@@ -3041,22 +3041,22 @@ const lessonSolutionCommand = Command.make('solution', {}, () =>
 					{
 						name: 'get',
 						description: 'Get lesson solution',
-						usage: 'aihero lesson solution get <lesson-id>',
+						usage: 'coursebuilder lesson solution get <lesson-id>',
 					},
 					{
 						name: 'create',
 						description: 'Create lesson solution from JSON',
-						usage: "aihero lesson solution create <lesson-id> --body '<json>'",
+						usage: "coursebuilder lesson solution create <lesson-id> --body '<json>'",
 					},
 					{
 						name: 'update',
 						description: 'Update lesson solution with JSON',
-						usage: "aihero lesson solution update <lesson-id> --body '<json>'",
+						usage: "coursebuilder lesson solution update <lesson-id> --body '<json>'",
 					},
 					{
 						name: 'delete',
 						description: 'Delete lesson solution',
-						usage: 'aihero lesson solution delete <lesson-id>',
+						usage: 'coursebuilder lesson solution delete <lesson-id>',
 					},
 				],
 			},
@@ -3088,17 +3088,17 @@ const lessonCommand = Command.make('lesson', {}, () =>
 					{
 						name: 'list',
 						description: 'List lessons',
-						usage: 'aihero lesson list [--slug-or-id <slug-or-id>]',
+						usage: 'coursebuilder lesson list [--slug-or-id <slug-or-id>]',
 					},
 					{
 						name: 'update',
 						description: 'Update lesson',
-						usage: "aihero lesson update <id> --body '<json>'",
+						usage: "coursebuilder lesson update <id> --body '<json>'",
 					},
 					{
 						name: 'solution',
 						description: 'Manage lesson solutions',
-						usage: 'aihero lesson solution get <lesson-id>',
+						usage: 'coursebuilder lesson solution get <lesson-id>',
 					},
 				],
 			},
@@ -3174,12 +3174,12 @@ const productCommand = Command.make('product', {}, () =>
 					{
 						name: 'list',
 						description: 'List products',
-						usage: 'aihero product list [--slug-or-id <slug-or-id>]',
+						usage: 'coursebuilder product list [--slug-or-id <slug-or-id>]',
 					},
 					{
 						name: 'availability',
 						description: 'Check product seat availability',
-						usage: 'aihero product availability <product-id>',
+						usage: 'coursebuilder product availability <product-id>',
 					},
 				],
 			},
@@ -3329,27 +3329,27 @@ const shortlinkCommand = Command.make('shortlink', {}, () =>
 					{
 						name: 'list',
 						description: 'List shortlinks',
-						usage: 'aihero shortlink list [--search <text>]',
+						usage: 'coursebuilder shortlink list [--search <text>]',
 					},
 					{
 						name: 'get',
 						description: 'Get shortlink by ID',
-						usage: 'aihero shortlink get <id>',
+						usage: 'coursebuilder shortlink get <id>',
 					},
 					{
 						name: 'create',
 						description: 'Create shortlink from JSON',
-						usage: "aihero shortlink create --body '<json>'",
+						usage: "coursebuilder shortlink create --body '<json>'",
 					},
 					{
 						name: 'update',
 						description: 'Update shortlink from JSON',
-						usage: "aihero shortlink update --body '<json>'",
+						usage: "coursebuilder shortlink update --body '<json>'",
 					},
 					{
 						name: 'delete',
 						description: 'Delete shortlink',
-						usage: 'aihero shortlink delete <id>',
+						usage: 'coursebuilder shortlink delete <id>',
 					},
 				],
 			},
@@ -3487,12 +3487,12 @@ const uploadCommand = Command.make('upload', {}, () =>
 						name: 'new',
 						description: 'Submit uploaded file event',
 						usage:
-							'aihero upload new --file-url <url> --parent-resource-id <id>',
+							'coursebuilder upload new --file-url <url> --parent-resource-id <id>',
 					},
 					{
 						name: 'signed-url',
 						description: 'Get signed S3 upload URL',
-						usage: 'aihero upload signed-url --object-name <filename>',
+						usage: 'coursebuilder upload signed-url --object-name <filename>',
 					},
 				],
 			},
@@ -3571,13 +3571,13 @@ const videoCommand = Command.make('video', {}, () =>
 					{
 						name: 'get',
 						description: 'Get video resource',
-						usage: 'aihero video get <video-resource-id>',
+						usage: 'coursebuilder video get <video-resource-id>',
 					},
 					{
 						name: 'thumbnail',
 						description: 'Get thumbnail for video resource',
 						usage:
-							'aihero video thumbnail <video-resource-id> [--time <seconds>]',
+							'coursebuilder video thumbnail <video-resource-id> [--time <seconds>]',
 					},
 				],
 			},
@@ -3647,7 +3647,7 @@ const certificateCommand = Command.make('certificate', {}, () =>
 					{
 						name: 'get',
 						description: 'Generate certificate',
-						usage: 'aihero certificate get --resource <slug-or-id> --user <id>',
+						usage: 'coursebuilder certificate get --resource <slug-or-id> --user <id>',
 					},
 				],
 			},
@@ -3726,12 +3726,12 @@ const ogCommand = Command.make('og', {}, () =>
 						name: 'get',
 						description: 'Generate OG image',
 						usage:
-							'aihero og get [--resource <slug-or-id>] [--title <title>] [--image <url>]',
+							'coursebuilder og get [--resource <slug-or-id>] [--title <title>] [--image <url>]',
 					},
 					{
 						name: 'default',
 						description: 'Generate default OG image',
-						usage: 'aihero og default [--title <title>]',
+						usage: 'coursebuilder og default [--title <title>]',
 					},
 				],
 			},
@@ -3798,7 +3798,7 @@ const chatCommand = Command.make('chat', {}, () =>
 					{
 						name: 'send',
 						description: 'Send messages to chat endpoint',
-						usage: "aihero chat send --messages '<json-array>'",
+						usage: "coursebuilder chat send --messages '<json-array>'",
 					},
 				],
 			},
@@ -3927,17 +3927,17 @@ const coursebuilderCommand = Command.make('coursebuilder', {}, () =>
 					{
 						name: 'get',
 						description: 'GET catchall path',
-						usage: 'aihero coursebuilder get <path>',
+						usage: 'coursebuilder coursebuilder get <path>',
 					},
 					{
 						name: 'post',
 						description: 'POST catchall path',
-						usage: "aihero coursebuilder post <path> --body '<json>'",
+						usage: "coursebuilder coursebuilder post <path> --body '<json>'",
 					},
 					{
 						name: 'subscribe',
 						description: 'Subscribe to list',
-						usage: 'aihero coursebuilder subscribe --email <email>',
+						usage: 'coursebuilder coursebuilder subscribe --email <email>',
 					},
 				],
 			},
@@ -4043,17 +4043,17 @@ const inngestCommand = Command.make('inngest', {}, () =>
 					{
 						name: 'get',
 						description: 'GET /api/inngest',
-						usage: 'aihero inngest get',
+						usage: 'coursebuilder inngest get',
 					},
 					{
 						name: 'post',
 						description: 'POST /api/inngest',
-						usage: "aihero inngest post [--body '<json>']",
+						usage: "coursebuilder inngest post [--body '<json>']",
 					},
 					{
 						name: 'put',
 						description: 'PUT /api/inngest',
-						usage: "aihero inngest put [--body '<json>']",
+						usage: "coursebuilder inngest put [--body '<json>']",
 					},
 				],
 			},
@@ -4103,7 +4103,7 @@ const cronCommand = Command.make('cron', {}, () =>
 					{
 						name: 'run',
 						description: 'Trigger /api/cron',
-						usage: 'aihero cron run',
+						usage: 'coursebuilder cron run',
 					},
 				],
 			},
@@ -4177,12 +4177,12 @@ const muxCommand = Command.make('mux', {}, () =>
 					{
 						name: 'upload-url',
 						description: 'Create direct upload URL',
-						usage: 'aihero mux upload-url',
+						usage: 'coursebuilder mux upload-url',
 					},
 					{
 						name: 'webhook',
 						description: 'Send mux webhook payload',
-						usage: "aihero mux webhook --body '<json>'",
+						usage: "coursebuilder mux webhook --body '<json>'",
 					},
 				],
 			},
@@ -4274,13 +4274,13 @@ const webhookCommand = Command.make('webhook', {}, () =>
 					{
 						name: 'ocr',
 						description: 'Send OCR webhook payload',
-						usage: "aihero webhook ocr --body '<json>'",
+						usage: "coursebuilder webhook ocr --body '<json>'",
 					},
 					{
 						name: 'postmark',
 						description: 'Send Postmark webhook payload',
 						usage:
-							"aihero webhook postmark --body '<json>' [--secret <secret>]",
+							"coursebuilder webhook postmark --body '<json>' [--secret <secret>]",
 					},
 				],
 			},
@@ -4338,7 +4338,7 @@ const supportCommand = Command.make('support', {}, () =>
 					{
 						name: 'action',
 						description: 'Invoke support action',
-						usage: "aihero support action <action> --body '<json>'",
+						usage: "coursebuilder support action <action> --body '<json>'",
 					},
 				],
 			},
@@ -4366,17 +4366,17 @@ const creatorCommand = Command.make('creator', {}, () =>
 					{
 						name: 'upload',
 						description: 'Get signed URLs and register uploaded videos',
-						usage: 'aihero creator upload signed-url --object-name <filename>',
+						usage: 'coursebuilder creator upload signed-url --object-name <filename>',
 					},
 					{
 						name: 'video',
 						description: 'Inspect video resources and thumbnails',
-						usage: 'aihero creator video get <video-resource-id>',
+						usage: 'coursebuilder creator video get <video-resource-id>',
 					},
 					{
 						name: 'post',
 						description: 'Create and manage posts via CRUD surface',
-						usage: 'aihero crud post create --body <json>',
+						usage: 'coursebuilder crud post create --body <json>',
 					},
 				],
 			},
@@ -4442,27 +4442,27 @@ const crudCommand = Command.make('crud', {}, () =>
 					{
 						name: 'survey',
 						description: 'Survey CRUD operations',
-						usage: 'aihero crud survey list [--app <app-id>]',
+						usage: 'coursebuilder crud survey list [--app <app-id>]',
 					},
 					{
 						name: 'post',
 						description: 'Post CRUD operations',
-						usage: 'aihero crud post list [--app <app-id>]',
+						usage: 'coursebuilder crud post list [--app <app-id>]',
 					},
 					{
 						name: 'lesson',
 						description: 'Lesson and solution operations',
-						usage: 'aihero crud lesson list [--app <app-id>]',
+						usage: 'coursebuilder crud lesson list [--app <app-id>]',
 					},
 					{
 						name: 'product',
 						description: 'Product lookup and availability operations',
-						usage: 'aihero crud product list [--app <app-id>]',
+						usage: 'coursebuilder crud product list [--app <app-id>]',
 					},
 					{
 						name: 'shortlink',
 						description: 'Shortlink CRUD operations',
-						usage: 'aihero crud shortlink list [--app <app-id>]',
+						usage: 'coursebuilder crud shortlink list [--app <app-id>]',
 					},
 				],
 			},
@@ -4522,7 +4522,7 @@ const analyticsSurveyCommand = Command.make('survey', {}, () =>
 						name: 'analytics',
 						description: 'Survey analytics by slug or ID',
 						usage:
-							'aihero analytics survey analytics <slug-or-id> [--app <app-id>]',
+							'coursebuilder analytics survey analytics <slug-or-id> [--app <app-id>]',
 					},
 				],
 			},
@@ -4639,12 +4639,12 @@ const analyticsShortlinkCommand = Command.make('shortlink', {}, () =>
 					{
 						name: 'get',
 						description: 'Get analytics for a specific shortlink ID',
-						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
+						usage: 'coursebuilder analytics shortlink get <id> [--app <app-id>]',
 					},
 					{
 						name: 'recent',
 						description: 'Get click velocity across all shortlinks',
-						usage: 'aihero analytics shortlink recent [--app <app-id>]',
+						usage: 'coursebuilder analytics shortlink recent [--app <app-id>]',
 					},
 				],
 			},
@@ -4695,13 +4695,13 @@ const analyticsCommand = Command.make('analytics', {}, () =>
 						name: 'survey',
 						description: 'Survey analytics by slug or ID',
 						usage:
-							'aihero analytics survey analytics <slug-or-id> [--app <app-id>]',
+							'coursebuilder analytics survey analytics <slug-or-id> [--app <app-id>]',
 					},
 					{
 						name: 'shortlink',
 						description:
 							'Shortlink analytics by link ID and recent click stats',
-						usage: 'aihero analytics shortlink get <id> [--app <app-id>]',
+						usage: 'coursebuilder analytics shortlink get <id> [--app <app-id>]',
 					},
 				],
 			},
@@ -4819,12 +4819,12 @@ const trpcCommand = Command.make('trpc', {}, () =>
 					{
 						name: 'get',
 						description: 'GET tRPC procedure',
-						usage: 'aihero trpc get <procedure> [--query <query>]',
+						usage: 'coursebuilder trpc get <procedure> [--query <query>]',
 					},
 					{
 						name: 'post',
 						description: 'POST tRPC procedure',
-						usage: "aihero trpc post <procedure> --body '<json>'",
+						usage: "coursebuilder trpc post <procedure> --body '<json>'",
 					},
 				],
 			},
@@ -4903,12 +4903,12 @@ const uploadthingCommand = Command.make('uploadthing', {}, () =>
 					{
 						name: 'get',
 						description: 'GET uploadthing route',
-						usage: 'aihero uploadthing get [--query <query>]',
+						usage: 'coursebuilder uploadthing get [--query <query>]',
 					},
 					{
 						name: 'post',
 						description: 'POST uploadthing route',
-						usage: "aihero uploadthing post --body '<json>'",
+						usage: "coursebuilder uploadthing post --body '<json>'",
 					},
 				],
 			},
@@ -4958,35 +4958,35 @@ const root = Command.make(CLI_NAME, {}, () =>
 					{
 						name: 'app',
 						description: 'Manage app profiles and active app context',
-						usage: 'aihero app list',
+						usage: 'coursebuilder app list',
 					},
 					{
 						name: 'auth',
 						description:
 							'Headless device-flow authentication (per app profile)',
-						usage: 'aihero auth login --app ai-hero',
+						usage: 'coursebuilder auth login --app ai-hero',
 					},
 					{
 						name: 'creator',
 						description:
 							'Creator workflows for post publishing and video upload/inspection',
-						usage: 'aihero creator',
+						usage: 'coursebuilder creator',
 					},
 					{
 						name: 'support',
 						description: 'Support actions and workflows',
-						usage: "aihero support action <action> --body '<json>'",
+						usage: "coursebuilder support action <action> --body '<json>'",
 					},
 					{
 						name: 'crud',
 						description:
 							'CRUD surfaces for surveys, posts, lessons, products, and shortlinks',
-						usage: 'aihero crud',
+						usage: 'coursebuilder crud',
 					},
 					{
 						name: 'analytics',
 						description: 'Analytics surfaces for support and creator reporting',
-						usage: 'aihero analytics',
+						usage: 'coursebuilder analytics',
 					},
 				],
 			},
