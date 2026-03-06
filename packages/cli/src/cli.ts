@@ -118,7 +118,7 @@ const KNOWN_APPS: Record<string, AppDefinition> = {
 	'ai-hero': {
 		id: 'ai-hero',
 		displayName: 'AI Hero',
-		defaultBaseUrl: DEFAULT_BASE_URL,
+		defaultBaseUrl: 'https://aihero.dev',
 		auth: {
 			deviceCodePath: '/oauth/device/code',
 			tokenPath: '/oauth/token',
@@ -126,6 +126,23 @@ const KNOWN_APPS: Record<string, AppDefinition> = {
 		},
 		capabilities: {
 			surveyApi: true,
+		},
+		api: {
+			surveysPath: '/api/surveys',
+			surveyAnalyticsPath: '/api/surveys/analytics',
+		},
+	},
+	'code-with-antonio': {
+		id: 'code-with-antonio',
+		displayName: 'Code with Antonio',
+		defaultBaseUrl: 'https://codewithantonio.com',
+		auth: {
+			deviceCodePath: '/oauth/device/code',
+			tokenPath: '/oauth/token',
+			userInfoPath: '/oauth/userinfo',
+		},
+		capabilities: {
+			surveyApi: false,
 		},
 		api: {
 			surveysPath: '/api/surveys',
@@ -4924,7 +4941,7 @@ const root = Command.make(CLI_NAME, {}, () =>
 			'',
 			{
 				description:
-					'Agent-first AI Hero CLI focused on creator workflows, support actions, CRUD, and analytics',
+					'Agent-first Course Builder CLI for wired apps and ADR-backed content operations',
 				current_app: currentApp,
 				app: {
 					id: currentApp,
