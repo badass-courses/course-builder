@@ -28,7 +28,7 @@ type AppProfile = {
 	tokenCreatedAt?: string
 }
 
-type AiheroConfig = {
+type CoursebuilderConfig = {
 	currentApp?: string
 	apps?: Record<string, AppProfile>
 }
@@ -92,8 +92,8 @@ class ApiRequestError extends Error {
 	}
 }
 
-const CLI_NAME = 'aihero'
-const CLI_VERSION = '0.2.0'
+const CLI_NAME = 'coursebuilder'
+const CLI_VERSION = '0.3.0'
 const DEFAULT_APP_ID = 'ai-hero'
 const DEFAULT_BASE_URL = 'http://localhost:3000'
 const FOCUSED_TOP_LEVEL_COMMANDS = new Set([
@@ -134,9 +134,14 @@ const KNOWN_APPS: Record<string, AppDefinition> = {
 	},
 }
 
+const getConfigDir = () =>
+	process.env.COURSEBUILDER_CONFIG_PATH
+		? path.dirname(process.env.COURSEBUILDER_CONFIG_PATH)
+		: path.join(os.homedir(), '.config', 'coursebuilder')
+
 const getConfigPath = () =>
-	process.env.AIHERO_CONFIG_PATH ||
-	path.join(os.homedir(), '.config', 'aihero', 'config.json')
+	process.env.COURSEBUILDER_CONFIG_PATH ||
+	path.join(os.homedir(), '.config', 'coursebuilder', 'config.json')
 
 const unwrapOption = <T>(value: unknown): T | undefined => {
 	if (
@@ -334,7 +339,7 @@ const normalizeProfile = (value: unknown): AppProfile => {
 	}
 }
 
-const readConfig = async (): Promise<AiheroConfig> => {
+const readConfig = async (): Promise<CoursebuilderConfig> => {
 	const configPath = getConfigPath()
 	try {
 		const raw = await fs.readFile(configPath, 'utf8')
@@ -390,7 +395,7 @@ const readConfig = async (): Promise<AiheroConfig> => {
 	}
 }
 
-const writeConfig = async (config: AiheroConfig): Promise<void> => {
+const writeConfig = async (config: CoursebuilderConfig): Promise<void> => {
 	const configPath = getConfigPath()
 	await fs.mkdir(path.dirname(configPath), { recursive: true })
 
@@ -407,7 +412,7 @@ const writeConfig = async (config: AiheroConfig): Promise<void> => {
 		}),
 	)
 
-	const normalized: AiheroConfig = {
+	const normalized: CoursebuilderConfig = {
 		currentApp: normalizeAppId(config.currentApp) || DEFAULT_APP_ID,
 		apps,
 	}
@@ -422,7 +427,7 @@ const resolveAppId = async (appFlag?: string) => {
 	const config = await readConfig()
 	return (
 		normalizeAppId(appFlag) ||
-		normalizeAppId(process.env.AIHERO_APP) ||
+		normalizeAppId(process.env.COURSEBUILDER_APP) ||
 		normalizeAppId(config.currentApp) ||
 		DEFAULT_APP_ID
 	)
@@ -434,8 +439,8 @@ const resolveBaseUrl = async (appId: string, baseUrlFlag?: string) => {
 	const appSuffix = envSuffixForApp(appId)
 	return (
 		baseUrlFlag ||
-		process.env[`AIHERO_BASE_URL_${appSuffix}`] ||
-		process.env.AIHERO_BASE_URL ||
+		process.env[`COURSEBUILDER_BASE_URL_${appSuffix}`] ||
+		process.env.COURSEBUILDER_BASE_URL ||
 		appProfile?.baseUrl ||
 		getAppDefinition(appId).defaultBaseUrl
 	)
@@ -447,8 +452,8 @@ const resolveToken = async (appId: string, tokenFlag?: string) => {
 	const appSuffix = envSuffixForApp(appId)
 	return (
 		tokenFlag ||
-		process.env[`AIHERO_AUTH_TOKEN_${appSuffix}`] ||
-		process.env.AIHERO_AUTH_TOKEN ||
+		process.env[`COURSEBUILDER_AUTH_TOKEN_${appSuffix}`] ||
+		process.env.COURSEBUILDER_AUTH_TOKEN ||
 		process.env.AUTH_TOKEN ||
 		appProfile?.token
 	)
