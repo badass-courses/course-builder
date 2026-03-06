@@ -42,11 +42,15 @@ export async function PricingWidgetServer({
 	const product = await getProduct(productId)
 	let resource
 
+	const sortedResources = [...(product?.resources || [])].sort(
+		(a, b) => (a.position ?? 0) - (b.position ?? 0),
+	)
+
 	if (product?.type === 'self-paced') {
-		resource = await getWorkshop(product.resources?.[0]?.resource?.fields?.slug)
+		resource = await getWorkshop(sortedResources[0]?.resource?.fields?.slug)
 	}
 	if (product?.type === 'cohort') {
-		resource = await getCohort(product.resources?.[0]?.resource?.fields?.slug)
+		resource = await getCohort(sortedResources[0]?.resource?.fields?.slug)
 	}
 
 	if (!product) return null
