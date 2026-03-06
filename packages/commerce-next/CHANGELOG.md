@@ -1,5 +1,20 @@
 # @coursebuilder/commerce-next
 
+## 0.2.1
+
+### Patch Changes
+
+- [#687](https://github.com/badass-courses/course-builder/pull/687)
+  [`c1c05be`](https://github.com/badass-courses/course-builder/commit/c1c05be3709b86f0abd90a3f88befd3ee56fe871)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump tailwind
+
+- Updated dependencies
+  [[`ee21e11`](https://github.com/badass-courses/course-builder/commit/ee21e112dd8b355166e0459ccdda440204475d92),
+  [`1801806`](https://github.com/badass-courses/course-builder/commit/18018062151694879aaa00913e5b7120e0c45a3e),
+  [`ee84668`](https://github.com/badass-courses/course-builder/commit/ee84668a596fea4093adf6bc66d4938297a838f6)]:
+  - @coursebuilder/core@1.2.1
+  - @coursebuilder/ui@2.0.10
+
 ## 0.2.0
 
 ### Minor Changes

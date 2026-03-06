@@ -1,5 +1,13 @@
 # Changelog
 
+## 8.1.8
+
+### Patch Changes
+
+- [#687](https://github.com/badass-courses/course-builder/pull/687)
+  [`c1c05be`](https://github.com/badass-courses/course-builder/commit/c1c05be3709b86f0abd90a3f88befd3ee56fe871)
+  Thanks [@vojtaholik](https://github.com/vojtaholik)! - bump tailwind
+
 ## 8.1.7
 
 ### Patch Changes
