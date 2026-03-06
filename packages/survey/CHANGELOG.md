@@ -1,5 +1,14 @@
 # @coursebuilder/survey
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies
+  [[`1801806`](https://github.com/badass-courses/course-builder/commit/18018062151694879aaa00913e5b7120e0c45a3e),
+  [`ee84668`](https://github.com/badass-courses/course-builder/commit/ee84668a596fea4093adf6bc66d4938297a838f6)]:
+  - @coursebuilder/ui@2.0.10
+
 ## 1.0.2
 
 ### Patch Changes
