@@ -56,8 +56,10 @@ function extractRequestTelemetry(req: Request): RequestTelemetry {
 		method: req.method,
 		host: req.headers.get('host') || url.host,
 		forwardedHost: req.headers.get('x-forwarded-host'),
-		deploymentUrl: req.headers.get('x-vercel-deployment-url') || envDeploymentUrl,
-		vercelEnv: req.headers.get('x-vercel-env') || process.env.VERCEL_ENV || null,
+		deploymentUrl:
+			req.headers.get('x-vercel-deployment-url') || envDeploymentUrl,
+		vercelEnv:
+			req.headers.get('x-vercel-env') || process.env.VERCEL_ENV || null,
 		vercelId: req.headers.get('x-vercel-id'),
 		userAgent: req.headers.get('user-agent'),
 		referer: req.headers.get('referer'),

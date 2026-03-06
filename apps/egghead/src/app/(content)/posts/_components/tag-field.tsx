@@ -94,7 +94,10 @@ export const TagField: React.FC<TagFieldProps> = ({
 			...t,
 			tag: {
 				...t.tag,
-				fields: { ...t.tag.fields, label: t.tag.fields.label ?? t.tag.fields.name },
+				fields: {
+					...t.tag.fields,
+					label: t.tag.fields.label ?? t.tag.fields.name,
+				},
 			},
 		}))
 
